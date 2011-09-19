@@ -1,5 +1,12 @@
 2011-11-18  H.J. Lu  <hongjiu.lu@intel.com>
 
+	* sysdeps/ieee754/dbl-64/wordsize-64/s_lround.c: Moved to ...
+	* sysdeps/ieee754/dbl-64/wordsize-64/s_llround.c: This.  Updated.
+
+	* sysdeps/ieee754/dbl-64/wordsize-64/s_lround.c: Empty file.
+
+2011-11-18  H.J. Lu  <hongjiu.lu@intel.com>
+
 	* time/mktime.c (ydhms_diff): Check TIME_T_MAX instead of
 	LONG_MAX.
 
