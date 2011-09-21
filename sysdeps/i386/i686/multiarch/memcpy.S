@@ -29,6 +29,9 @@
 ENTRY(memcpy)
 	.type	memcpy, @gnu_indirect_function
 	LOAD_GOT_AND_RTLD_GLOBAL_RO
+	LOAD_FUNC_GOT_EAX (__memcpy_erms)
+	HAS_ARCH_FEATURE (Fast_ERMS)
+	jnz	2f
 	LOAD_FUNC_GOT_EAX (__memcpy_ia32)
 	HAS_CPU_FEATURE (SSE2)
 	jz	2f

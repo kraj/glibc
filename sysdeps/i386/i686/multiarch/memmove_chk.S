@@ -27,6 +27,9 @@
 ENTRY(__memmove_chk)
 	.type	__memmove_chk, @gnu_indirect_function
 	LOAD_GOT_AND_RTLD_GLOBAL_RO
+	LOAD_FUNC_GOT_EAX (__memmove_chk_erms)
+	HAS_ARCH_FEATURE (Fast_ERMS)
+	jnz	2f
 	LOAD_FUNC_GOT_EAX (__memmove_chk_ia32)
 	HAS_CPU_FEATURE (SSE2)
 	jz	2f
@@ -90,5 +93,17 @@ __memmove_chk_ia32:
 	jmp	__memmove_ia32
 	cfi_endproc
 	.size __memmove_chk_ia32, .-__memmove_chk_ia32
+
+	.type __memmove_chk_erms, @function
+	.p2align 4;
+__memmove_chk_erms:
+	cfi_startproc
+	CALL_MCOUNT
+	movl	12(%esp), %eax
+	cmpl	%eax, 16(%esp)
+	jb	__chk_fail
+	jmp	__memmove_erms
+	cfi_endproc
+	.size __memmove_chk_erms, .-__memmove_chk_erms
 # endif
 #endif
