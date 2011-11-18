@@ -1,0 +1,45 @@
+2011-11-18  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* Makeconfig ($(common-objpfx)gnu/lib-names.stmp): Depend on
+	$(lib-names_awk) instead of scripts/lib-names.awk.
+
+	* Makefile ($(inst_includedir)/gnu/stubs.h): Depend on
+	$(stubs-biarch_h) instead of include/stubs-biarch.h.
+	(data-machine): New.
+	(check-data): Use it.
+
+	* config.make.in (data-machine): New.
+	(stubs-biarch_h): Likewise.
+	(lib-names_awk): Likewise.
+	(use-default-syscall-macros): Likewise.
+
+	* configure.in: Add sysdeps preconfigure fragment support.
+	(data_machine): Substitute.
+	(stubs_biarch_h): Set to include/stubs-biarch.h if not set.
+	Substitute.
+	(lib_names_awk): Set to scripts/lib-names.awk if not set.
+	Substitute.
+	(use_default_syscall_macros): Set to yes if not set.
+	Substitute.
+	* configure: Regenerated.
+
+	* scripts/data/c++-types-x32-linux-gnu.data: New.
+	* sysdeps/unix/sysv/linux/x86_64/stubs-triarch.h: Likewise.
+	* sysdeps/x86_64/lib-names.awk: Likewise.
+	* sysdeps/x86_64/preconfigure: Likewise.
+	* sysdeps/x86_64/stubs-biarch.h: Likewise.
+
+	* sysdeps/unix/sysv/linux/Makefile ($(objpfx)syscall-%.h
+	$(objpfx)syscall-%.d): Defined only if
+	$(use-default-syscall-macros) is set to yes.
+
+	* sysdeps/unix/sysv/linux/configure.in: Require kernel 2.6.35
+	or above for x32.  Check x86_64/x64 instead of x86_64.
+	* sysdeps/unix/sysv/linux/configure: Regenerated.
+
+	* sysdeps/x86_64/preconfigure (stubs_biarch_h): Set to
+	sysdeps/x86_64/stubs-biarch.h.
+
+	* sysdeps/unix/sysv/linux/x86_64/Makefile (64bit-predefine): Add
+	__LP64__.
+	($(objpfx)syscall-%.h $(objpfx)syscall-%.d): New.

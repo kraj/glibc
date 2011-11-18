@@ -1,0 +1,18 @@
+case "$base_machine" in
+x86_64)
+  stubs_biarch_h=sysdeps/x86_64/stubs-biarch.h
+  lib_names_awk=sysdeps/x86_64/lib-names.awk
+  use_default_syscall_macros=no
+  if echo __LP64__ | ${CC-cc} $CFLAGS $CPPFLAGS -E - | grep __LP64__ > /dev/null; then
+    machine=x86_64/x32
+    data_machine=x32
+    libc_cv_slibdir="/libx32"
+    if test "$libdir" = '${exec_prefix}/lib'; then
+      libdir='${exec_prefix}/libx32';
+      # Locale data can be shared.
+      libc_cv_localedir='${exec_prefix}/lib/locale'
+    fi
+  else
+    machine=x86_64/64
+  fi
+esac

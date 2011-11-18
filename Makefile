@@ -164,7 +164,7 @@ installed-stubs = $(inst_includedir)/gnu/stubs.h
 else
 installed-stubs = $(inst_includedir)/gnu/stubs-$(biarch).h
 
-$(inst_includedir)/gnu/stubs.h: include/stubs-biarch.h $(+force)
+$(inst_includedir)/gnu/stubs.h: $(stubs-biarch_h) $(+force)
 	$(make-target-directory)
 	$(INSTALL_DATA) $< $@
 
@@ -246,13 +246,15 @@ tests-clean:
 
 tests: $(objpfx)c++-types-check.out $(objpfx)check-local-headers.out
 ifneq ($(CXX),no)
+ifeq ($(data-machine),)
+data-machine = $(config-machine) $(base-machine)
+endif
 check-data := $(firstword $(wildcard \
-	        $(foreach D,$(add-ons) scripts,\
-	        	  $(patsubst %,$D/data/c++-types-%.data,\
-			   	     $(abi-name) \
-			   	     $(addsuffix -$(config-os),\
-				     		 $(config-machine) \
-						 $(base-machine))))))
+		$(foreach D,$(add-ons) scripts,\
+			  $(patsubst %,$D/data/c++-types-%.data,\
+				     $(abi-name) \
+				     $(addsuffix -$(config-os),\
+						 $(data-machine))))))
 ifneq (,$(check-data))
 $(objpfx)c++-types-check.out: $(check-data) scripts/check-c++-types.sh
 	scripts/check-c++-types.sh $< $(CXX) $(filter-out -std=gnu99 -Wstrict-prototypes,$(CFLAGS)) $(CPPFLAGS) > $@

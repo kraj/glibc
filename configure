@@ -643,6 +643,9 @@ ac_subst_vars='LTLIBOBJS
 LIBOBJS
 RELEASE
 VERSION
+use_default_syscall_macros
+lib_names_awk
+stubs_biarch_h
 mach_interface_list
 DEFINES
 nopic_initfini
@@ -726,6 +729,7 @@ sysdeps_add_ons
 sysnames
 submachine
 multi_arch
+data_machine
 base_machine
 add_on_subdirs
 add_ons
@@ -4237,6 +4241,17 @@ if test "$base_machine" = "i386"; then
 _ACEOF
 
 fi
+
+# Now run sysdeps preconfigure fragment.
+preconfigure=$srcdir/sysdeps/$base_machine/preconfigure
+if test -r $preconfigure; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: running preconfigure fragment for $base_machine" >&5
+$as_echo "running preconfigure fragment for $base_machine" >&6; }
+  . $preconfigure
+fi
+
+# sysdeps preconfigure fragment may set data_machine.
+
 
 # For the multi-arch option we need support in the assembler.
 { $as_echo "$as_me:$LINENO: checking for assembler gnu_indirect_function symbol type support" >&5
@@ -8857,6 +8872,21 @@ $as_echo "$libc_cv_pic_default" >&6; }
 
 
 
+
+
+if test -z "${stubs_biarch_h}"; then
+  stubs_biarch_h=include/stubs-biarch.h
+fi
+
+
+if test -z "${lib_names_awk}"; then
+  lib_names_awk=scripts/lib-names.awk
+fi
+
+
+if test -z "${use_default_syscall_macros}"; then
+  use_default_syscall_macros=yes
+fi
 
 
 if test "`(cd $srcdir; pwd)`" = "`pwd`"; then

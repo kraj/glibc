@@ -883,7 +883,7 @@ postclean-generated += soversions.mk soversions.i \
 before-compile += $(common-objpfx)gnu/lib-names.h
 ifeq ($(soversions.mk-done),t)
 $(common-objpfx)gnu/lib-names.h: $(common-objpfx)gnu/lib-names.stmp; @:
-$(common-objpfx)gnu/lib-names.stmp: $(..)scripts/lib-names.awk \
+$(common-objpfx)gnu/lib-names.stmp: $(..)$(lib-names_awk) \
 				    $(common-objpfx)soversions.i
 	$(make-target-directory)
 	@rm -f ${@:stmp=T} $@

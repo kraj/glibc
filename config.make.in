@@ -28,6 +28,7 @@ ldd-rewrite-script = @ldd_rewrite_script@
 # System configuration.
 config-machine = @host_cpu@
 base-machine = @base_machine@
+data-machine = @data_machine@
 config-vendor = @host_vendor@
 config-os = @host_os@
 config-sysdirs = @sysnames@
@@ -76,6 +77,10 @@ oldest-abi = @oldest_abi@
 no-whole-archive = @no_whole_archive@
 exceptions = @exceptions@
 multi-arch = @multi_arch@
+
+stubs-biarch_h = @stubs_biarch_h@
+lib-names_awk = @lib_names_awk@
+use-default-syscall-macros = @use_default_syscall_macros@
 
 mach-interface-list = @mach_interface_list@
 
