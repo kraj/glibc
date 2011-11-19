@@ -28,7 +28,6 @@
 
 s390x-.*-linux.*        DEFAULT			GLIBC_2.2
 cris-.*-linux.*		DEFAULT			GLIBC_2.2
-x86_64-.*-linux.*       DEFAULT			GLIBC_2.2.5
 powerpc64-.*-linux.*	DEFAULT			GLIBC_2.3
 .*-.*-gnu-gnu.*		DEFAULT			GLIBC_2.2.6
 
@@ -85,7 +84,6 @@ ia64-.*-linux.*		ld=ld-linux-ia64.so.2	GLIBC_2.2
 s390x-.*-linux.*	ld=ld64.so.1		GLIBC_2.2
 powerpc64.*-.*-linux.*	ld=ld64.so.1		GLIBC_2.3
 cris-.*-linux.*		ld=ld.so.1		GLIBC_2.2
-x86_64-.*-linux.*	ld=ld-linux-x86-64.so.2	GLIBC_2.2.5
 # We use the ELF ABI standard name for the default.
 .*-.*-.*		ld=ld.so.1
 

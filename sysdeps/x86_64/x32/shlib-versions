@@ -1,0 +1,2 @@
+x86_64-.*-linux.*       DEFAULT			GLIBC_2.11
+x86_64-.*-linux.*	ld=ld-linux-x32.so.2	GLIBC_2.11

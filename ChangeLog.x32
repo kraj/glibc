@@ -1,5 +1,12 @@
 2011-11-18  H.J. Lu  <hongjiu.lu@intel.com>
 
+	* shlib-versions: Move ld name for x86_64-.*-linux.* to ...
+	* sysdeps/x86_64/64/shlib-versions: Here.  New.
+
+	* sysdeps/x86_64/x32/shlib-versions: New.
+
+2011-11-18  H.J. Lu  <hongjiu.lu@intel.com>
+
 	* Makeconfig ($(common-objpfx)gnu/lib-names.stmp): Depend on
 	$(lib-names_awk) instead of scripts/lib-names.awk.
 
