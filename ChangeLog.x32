@@ -1,5 +1,18 @@
 2011-11-18  H.J. Lu  <hongjiu.lu@intel.com>
 
+	* bits/types.h (__snseconds_t): New.
+	* bits/typesizes.h (__SNSECONDS_T_TYPE): Likewise.
+	* sysdeps/unix/bsd/bsd4.4/freebsd/bits/typesizes.h (__SNSECONDS_T_TYPE):
+	Likewise.
+	* sysdeps/unix/sysv/linux/s390/bits/typesizes.h (__SNSECONDS_T_TYPE):
+	Likewise.
+	* sysdeps/unix/sysv/linux/sparc/bits/typesizes.h (__SNSECONDS_T_TYPE):
+	Likewise.
+
+	* time/time.h (timespec): Use __snseconds_t on tv_nsec.
+
+2011-11-18  H.J. Lu  <hongjiu.lu@intel.com>
+
 	* sysdeps/unix/sysv/linux/x86_64/sysdep.h
 	(VSYSCALL_ADDR_vgettimeofday): New.
 	(VSYSCALL_ADDR_vtime): Likewise.
