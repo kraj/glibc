@@ -169,7 +169,7 @@ ydhms_diff (long int year1, long int yday1, int hour1, int min1, int sec1,
 {
   verify (C99_integer_division, -1 / 2 == 0);
   verify (long_int_year_and_yday_are_wide_enough,
-	  INT_MAX <= LONG_MAX / 2 || TIME_T_MAX <= UINT_MAX);
+	  INT_MAX <= TIME_T_MAX / 2 || TIME_T_MAX <= UINT_MAX);
 
   /* Compute intervening leap days correctly even if year is negative.
      Take care to avoid integer overflow here.  */

@@ -36,6 +36,8 @@ __offtime (t, offset, tp)
   const unsigned short int *ip;
 
   days = *t / SECS_PER_DAY;
+  if (days != *t / SECS_PER_DAY)
+    goto overflow;
   rem = *t % SECS_PER_DAY;
   rem += offset;
   while (rem < 0)
@@ -66,6 +68,9 @@ __offtime (t, offset, tp)
       /* Guess a corrected year, assuming 365 days per year.  */
       long int yg = y + days / 365 - (days % 365 < 0);
 
+      if (yg < 0)
+	goto overflow;
+
       /* Adjust DAYS and Y to match the guessed year.  */
       days -= ((yg - y) * 365
 	       + LEAPS_THRU_END_OF (yg - 1)
@@ -75,6 +80,7 @@ __offtime (t, offset, tp)
   tp->tm_year = y - 1900;
   if (tp->tm_year != y - 1900)
     {
+overflow:
       /* The year cannot be represented due to overflow.  */
       __set_errno (EOVERFLOW);
       return 0;
