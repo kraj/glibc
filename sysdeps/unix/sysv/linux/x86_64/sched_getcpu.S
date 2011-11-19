@@ -21,10 +21,6 @@
 #define _ERRNO_H	1
 #include <bits/errno.h>
 
-/* For the calculation see asm/vsyscall.h.  */
-#define VSYSCALL_ADDR_vgetcpu	0xffffffffff600800
-
-
 ENTRY (sched_getcpu)
 	/* Align stack and create local variable for result.  */
 	sub	$0x8, %rsp

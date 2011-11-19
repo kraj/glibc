@@ -218,6 +218,11 @@
 # define DOARGS_5 DOARGS_4
 # define DOARGS_6 DOARGS_5
 
+/* For the calculation see asm/vsyscall.h.  */
+# define VSYSCALL_ADDR_vgettimeofday	0xffffffffff600000
+# define VSYSCALL_ADDR_vtime		0xffffffffff600400
+# define VSYSCALL_ADDR_vgetcpu		0xffffffffff600800
+
 #else	/* !__ASSEMBLER__ */
 /* Define a macro which expands inline into the wrapper code for a system
    call.  */
@@ -365,6 +370,11 @@
   register long int _a6 asm ("r9") = __arg6;		\
   LOAD_REGS_5
 # define ASM_ARGS_6	ASM_ARGS_5, "r" (_a6)
+
+/* For the calculation see asm/vsyscall.h.  */
+# define VSYSCALL_ADDR_vgettimeofday	0xffffffffff600000ul
+# define VSYSCALL_ADDR_vgetcpu		0xffffffffff600800ul
+# define VSYSCALL_ADDR_vtime		0xffffffffff600400ul
 
 #endif	/* __ASSEMBLER__ */
 

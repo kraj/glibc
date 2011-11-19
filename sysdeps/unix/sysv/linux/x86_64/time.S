@@ -20,9 +20,6 @@
 #define _ERRNO_H	1
 #include <bits/errno.h>
 
-/* For the calculation see asm/vsyscall.h.  */
-#define VSYSCALL_ADDR_vtime	0xffffffffff600400
-
 
 /* Return the current time as a `time_t' and also put it in *T if T is
    not NULL.  Time is represented as seconds from Jan 1 00:00:00 1970.  */

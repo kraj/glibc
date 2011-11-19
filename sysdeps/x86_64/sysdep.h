@@ -111,4 +111,66 @@ lose:									      \
 # endif
 #endif
 
+/* Long and pointer size in bytes.  */
+#define LP_SIZE	8
+
+/* Instruction to move long and pointer.  */
+#define MOVE_LP movq
+
+/* Instruction to add long and pointer.  */
+#define ADD_LP addq
+
+/* Instruction to substract long and pointer.  */
+#define SUB_LP subq
+
+/* Instruction to compare against long and pointer.  */
+#define CMP_LP cmpq
+
+/* Assembler address directive. */
+#define ASM_ADDR .quad
+
+/* Registers to hold long and pointer.  */
+#define RAX_LP	rax
+#define RBP_LP	rbp
+#define RBX_LP	rbx
+#define RCX_LP	rcx
+#define RDI_LP	rdi
+#define RDX_LP	rdx
+#define RSI_LP	rsi
+#define RSP_LP	rsp
+#define R8_LP	r8
+#define R9_LP	r9
+#define R10_LP	r10
+#define R11_LP	r11
+#define R12_LP	r12
+#define R13_LP	r13
+#define R14_LP	r14
+#define R15_LP	r15
+
+#else	/* __ASSEMBLER__ */
+
+/* Long and pointer size in bytes.  */
+#define LP_SIZE "8"
+
+/* Assembler address directive. */
+#define ASM_ADDR ".quad"
+
+/* Registers to hold long and pointer.  */
+#define RAX_LP	"rax"
+#define RBP_LP	"rbp"
+#define RBX_LP	"rbx"
+#define RCX_LP	"rcx"
+#define RDI_LP	"rdi"
+#define RDX_LP	"rdx"
+#define RSI_LP	"rsi"
+#define RSP_LP	"rsp"
+#define R8_LP	"r8"
+#define R9_LP	"r9"
+#define R10_LP	"r10"
+#define R11_LP	"r11"
+#define R12_LP	"r12"
+#define R13_LP	"r13"
+#define R14_LP	"r14"
+#define R15_LP	"r15"
+
 #endif	/* __ASSEMBLER__ */

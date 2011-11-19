@@ -18,10 +18,6 @@
 
 #include <dl-vdso.h>
 
-
-#define VSYSCALL_ADDR_vgettimeofday	0xffffffffff600000ul
-
-
 #ifdef SHARED
 void *gettimeofday_ifunc (void) __asm__ ("__gettimeofday");
 

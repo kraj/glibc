@@ -1,5 +1,45 @@
 2011-11-18  H.J. Lu  <hongjiu.lu@intel.com>
 
+	* sysdeps/unix/sysv/linux/x86_64/sysdep.h
+	(VSYSCALL_ADDR_vgettimeofday): New.
+	(VSYSCALL_ADDR_vtime): Likewise.
+	(VSYSCALL_ADDR_vgetcpu): Likewise.
+
+	* sysdeps/unix/sysv/linux/x86_64/gettimeofday.c
+	(VSYSCALL_ADDR_vgettimeofday): Removed.
+	* sysdeps/unix/sysv/linux/x86_64/sched_getcpu.S
+	(VSYSCALL_ADDR_vgetcpu): Likewise.
+	* sysdeps/unix/sysv/linux/x86_64/time.S (VSYSCALL_ADDR_vtime):
+	Likewise.
+
+	* sysdeps/unix/sysv/linux/x86_64/x32/sysdep.h: New.
+	* sysdeps/x86_64/x32/sysdep.h: Likewise.
+
+	* sysdeps/x86_64/sysdep.h (LP_SIZE): New.
+	(MOVE_LP): Likewise.
+	(ADD_LP): Likewise.
+	(SUB_LP): Likewise.
+	(CMP_LP): Likewise.
+	(ASM_ADDR): Likewise.
+	(RAX_LP): New.
+	(RBP_LP): Likewise.
+	(RBX_LP): Likewise.
+	(RCX_LP): Likewise.
+	(RDI_LP): Likewise.
+	(RSI_LP): Likewise.
+	(RSP_LP): Likewise.
+	(R8_LP): Likewise.
+	(R9_LP): Likewise.
+	(R10_LP): Likewise.
+	(R10_LP): Likewise.
+	(R11_LP): Likewise.
+	(R12_LP): Likewise.
+	(R13_LP): Likewise.
+	(R14_LP): Likewise.
+	(R15_LP): Likewise.
+
+2011-11-18  H.J. Lu  <hongjiu.lu@intel.com>
+
 	* shlib-versions: Move ld name for x86_64-.*-linux.* to ...
 	* sysdeps/x86_64/64/shlib-versions: Here.  New.
 
