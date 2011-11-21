@@ -1,5 +1,9 @@
 2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
 
+	* sysdeps/x86_64/multiarch/memcmp-sse4.S: Use RXX_LP.
+
+2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
+
 	* x86_64/dl-trampoline.h: Use R10_LP to load frame size.
 
 2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
