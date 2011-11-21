@@ -1,5 +1,10 @@
 2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
 
+	* sysdeps/x86_64/dl-irel.h: Replace Elf64_XXX with ElfW(XXX).
+	Replace ELF64_R_TYPE with ELF32_R_TYPE.
+
+2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
+
 	* sysdeps/x86_64/dl-tls.h (dl_tls_index): Replace long with
 	long long.
 

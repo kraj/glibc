@@ -28,14 +28,14 @@
 
 static inline void
 __attribute ((always_inline))
-elf_irela (const Elf64_Rela *reloc)
+elf_irela (const ElfW(Rela) *reloc)
 {
-  Elf64_Addr *const reloc_addr = (void *) reloc->r_offset;
-  const unsigned long int r_type = ELF64_R_TYPE (reloc->r_info);
+  ElfW(Addr) *const reloc_addr = (void *) reloc->r_offset;
+  const unsigned long int r_type = ELF32_R_TYPE (reloc->r_info);
 
   if (__builtin_expect (r_type == R_X86_64_IRELATIVE, 1))
     {
-      Elf64_Addr value = ((Elf64_Addr (*) (void)) reloc->r_addend) ();
+      ElfW(Addr) value = ((ElfW(Addr) (*) (void)) reloc->r_addend) ();
       *reloc_addr = value;
     }
   else
