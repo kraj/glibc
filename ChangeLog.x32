@@ -1,5 +1,9 @@
 2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
 
+	* sysdeps/x86_64/memcpy.S: Use RXX_LP.
+
+2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
+
 	* sysdeps/x86_64/elf/start.S: Include <sysdep.h>.  Simulate
 	popping 4byte argument count for x32.  Use RXX_LP.
 
