@@ -1,5 +1,9 @@
 2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
 
+	* sysdeps/unix/sysv/linux/x86_64/x32/dl-cache.h: New.
+
+2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
+
 	* sysdeps/unix/sysv/linux/x86_64/sigaction.c (RESTORE2): Replace
 	8byte data alignment with LP_SIZE alignment.
 
