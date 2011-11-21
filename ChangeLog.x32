@@ -1,5 +1,14 @@
 2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
 
+	* sysdeps/x86_64/dl-machine.h: Replace Elf64_XXX with ElfW(XXX).
+	Replace ELF64_R_TYPE with ELF32_R_TYPE.
+	(elf_machine_load_address): Use ASM_ADDR.
+	(elf_machine_rela): Handle R_X86_64_RELATIVE64 for x32.  For x32,
+	sign extend relocation result to 64bit for R_X86_64_DTPOFF64
+	and R_X86_64_TPOFF64, and don't process R_X86_64_64.
+
+2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
+
 	* sysdeps/x86_64/dl-irel.h: Replace Elf64_XXX with ElfW(XXX).
 	Replace ELF64_R_TYPE with ELF32_R_TYPE.
 
