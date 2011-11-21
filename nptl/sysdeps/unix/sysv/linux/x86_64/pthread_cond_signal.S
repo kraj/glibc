@@ -56,14 +56,14 @@ __pthread_cond_signal:
 	addl	$1, (%rdi)
 
 	/* Wake up one thread.  */
-	cmpq	$-1, dep_mutex(%r8)
+	CMP_LP	$-1, dep_mutex(%r8)
 	movl	$FUTEX_WAKE_OP, %esi
 	movl	$1, %edx
 	movl	$SYS_futex, %eax
 	je	8f
 
 	/* Get the address of the mutex used.  */
-	movq    dep_mutex(%r8), %rcx
+	mov     dep_mutex(%r8), %RCX_LP
 	movl	MUTEX_KIND(%rcx), %r11d
 	andl	$(ROBUST_BIT|PI_BIT), %r11d
 	cmpl	$PI_BIT, %r11d
@@ -135,7 +135,7 @@ __pthread_cond_signal:
 #if cond_lock != 0
 	addq	$cond_lock, %rdi
 #endif
-	cmpq	$-1, dep_mutex-cond_lock(%rdi)
+	CMP_LP	$-1, dep_mutex-cond_lock(%rdi)
 	movl	$LLL_PRIVATE, %eax
 	movl	$LLL_SHARED, %esi
 	cmovne	%eax, %esi
@@ -151,7 +151,7 @@ __pthread_cond_signal:
 #if cond_lock != 0
 	addq	$cond_lock, %rdi
 #endif
-	cmpq	$-1, dep_mutex-cond_lock(%rdi)
+	CMP_LP	$-1, dep_mutex-cond_lock(%rdi)
 	movl	$LLL_PRIVATE, %eax
 	movl	$LLL_SHARED, %esi
 	cmovne	%eax, %esi

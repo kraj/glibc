@@ -84,7 +84,7 @@ sem_timedwait:
 	movq	%rsi, %r10
 
 	LOCK
-	addq	$1, NWAITERS(%rdi)
+	ADD_LP	$1, NWAITERS(%rdi)
 
 .LcleanupSTART:
 13:	call	__pthread_enable_asynccancel
@@ -135,7 +135,7 @@ sem_timedwait:
 	xorl	%eax, %eax
 
 15:	LOCK
-	subq	$1, NWAITERS(%rdi)
+	SUB_LP	$1, NWAITERS(%rdi)
 
 	leaq	8(%rsp), %rsp
 	cfi_adjust_cfa_offset(-8)
@@ -205,7 +205,7 @@ sem_timedwait:
 	movq	%rsi, %r13
 
 	LOCK
-	addq	$1, NWAITERS(%r12)
+	ADD_LP	$1, NWAITERS(%r12)
 
 7:	xorl	%esi, %esi
 	movq	%rsp,%rdi
@@ -282,7 +282,7 @@ sem_timedwait:
 	xorl	%eax, %eax
 
 45:	LOCK
-	subq	$1, NWAITERS(%r12)
+	SUB_LP	$1, NWAITERS(%r12)
 
 	addq	$STACKFRAME, %rsp
 	cfi_adjust_cfa_offset(-STACKFRAME)
@@ -325,7 +325,7 @@ sem_timedwait_cleanup:
 
 	movq	(%rsp), %rdi
 	LOCK
-	subq	$1, NWAITERS(%rdi)
+	SUB_LP	$1, NWAITERS(%rdi)
 	movq	%rax, %rdi
 .LcallUR:
 	call	_Unwind_Resume@PLT
@@ -345,7 +345,7 @@ sem_timedwait_cleanup2:
 	cfi_rel_offset(%r14, STACKFRAME)
 
 	LOCK
-	subq	$1, NWAITERS(%r12)
+	SUB_LP	$1, NWAITERS(%r12)
 	movq	%rax, %rdi
 	movq	STACKFRAME(%rsp), %r14
 	movq	STACKFRAME+8(%rsp), %r13
@@ -393,9 +393,9 @@ sem_timedwait_cleanup2:
 	.hidden	DW.ref.__gcc_personality_v0
 	.weak	DW.ref.__gcc_personality_v0
 	.section .gnu.linkonce.d.DW.ref.__gcc_personality_v0,"aw",@progbits
-	.align	8
+	.align	LP_SIZE
 	.type	DW.ref.__gcc_personality_v0, @object
-	.size	DW.ref.__gcc_personality_v0, 8
+	.size	DW.ref.__gcc_personality_v0, LP_SIZE
 DW.ref.__gcc_personality_v0:
-	.quad	__gcc_personality_v0
+	ASM_ADDR __gcc_personality_v0
 #endif

@@ -1,0 +1,24 @@
+2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* sysdeps/unix/sysv/linux/x86_64/cancellation.S: Use MOVE_LP
+	and RDI_LP.
+
+	* sysdeps/unix/sysv/linux/x86_64/pthread_cond_broadcast.S: Use
+	RXX_LP and CMP_LP.
+	* sysdeps/unix/sysv/linux/x86_64/pthread_cond_signal.S: Likewise.
+
+	* sysdeps/unix/sysv/linux/x86_64/pthread_cond_timedwait.S: Use
+	 RXX_LP and CMP_LP.  Use LP_SIZE and ASM_ADDR on
+	 __gcc_personality_v0.
+	* sysdeps/unix/sysv/linux/x86_64/pthread_cond_wait.S: Likewise.
+
+	* sysdeps/unix/sysv/linux/x86_64/pthread_once.S: Use LP_SIZE
+	and ASM_ADDR.
+
+	* sysdeps/unix/sysv/linux/x86_64/sem_post.S: Use CMP_LP on
+	NWAITERS.
+
+	* sysdeps/unix/sysv/linux/x86_64/sem_timedwait.S: Use ADD_LP
+	and SUB_LP on NWAITERS.  Use LP_SIZE and ASM_ADDR on
+	__gcc_personality_v0.
+	* sysdeps/unix/sysv/linux/x86_64/sem_wait.S: Likewise.
