@@ -392,8 +392,8 @@ UDItype __umulsidi3 (USItype, USItype);
 	   : "0" ((UDItype) (n0)),					\
 	     "1" ((UDItype) (n1)),					\
 	     "rm" ((UDItype) (dv)))
-#define count_leading_zeros(count, x)	((count) = __builtin_clzl (x))
-#define count_trailing_zeros(count, x)	((count) = __builtin_ctzl (x))
+#define count_leading_zeros(count, x)	((count) = __builtin_clzll (x))
+#define count_trailing_zeros(count, x)	((count) = __builtin_ctzll (x))
 #define UMUL_TIME 40
 #define UDIV_TIME 40
 #endif /* x86_64 */

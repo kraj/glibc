@@ -1,5 +1,11 @@
 2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
 
+	* stdlib/longlong.h (count_leading_zeros): Use long long builtin
+	for x86-64.
+	(count_trailing_zeros): Likewise.
+
+2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
+
 	* elf/elf.h (R_X86_64_RELATIVE64): New.
 	(R_X86_64_NUM): Updated.
 
