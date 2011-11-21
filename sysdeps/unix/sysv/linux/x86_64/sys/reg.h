@@ -18,10 +18,9 @@
 
 #ifndef _SYS_REG_H
 #define _SYS_REG_H	1
-#include <bits/wordsize.h>
 
 
-#if __WORDSIZE == 64
+#ifdef __x86_64__
 /* Index into an array of 8 byte longs returned from ptrace for
    location of the users' stored general purpose registers.  */
 
