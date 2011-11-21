@@ -36,8 +36,18 @@ process_elf_file (const char *file_name, const char *lib, int *flag,
   int ret;
 
   if (elf_header->e_ident [EI_CLASS] == ELFCLASS32)
-    return process_elf32_file (file_name, lib, flag, osversion, soname,
-			       file_contents, file_length);
+    {
+      ret = process_elf32_file (file_name, lib, flag, osversion, soname,
+				file_contents, file_length);
+      /* X32 libraries are always libc.so.6+.  */
+      if (!ret)
+	switch (elf_header->e_machine)
+	  {
+	  case EM_X86_64:
+	    *flag = FLAG_X8664_LIBX32|FLAG_ELF_LIBC6;
+	    break;
+	  }
+    }
   else
     {
       ret = process_elf64_file (file_name, lib, flag, osversion, soname,

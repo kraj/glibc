@@ -91,6 +91,10 @@ print_entry (const char *lib, int flag, unsigned int osversion,
       break;
     case FLAG_MIPS64_LIBN64:
       fputs (",64bit", stdout);
+      break;
+    case FLAG_X8664_LIBX32:
+      fputs (",x32", stdout);
+      break;
     case 0:
       break;
     default:

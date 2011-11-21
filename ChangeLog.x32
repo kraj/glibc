@@ -1,5 +1,22 @@
 2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
 
+	* elf/cache.c (print_entry): Handle FLAG_X8664_LIBX32.
+
+	* sysdeps/generic/ldconfig.h (FLAG_X8664_LIBX32): New.
+
+	* sysdeps/unix/sysv/linux/i386/readelflib.c (process_elf_file):
+	Handle x32 libraries.
+	* sysdeps/unix/sysv/linux/x86_64/readelflib.c (process_elf_file):
+	Likewise.
+
+	* sysdeps/unix/sysv/linux/x86_64/dl-cache.h (add_system_dir): New
+	Don't include <sysdeps/unix/sysv/linux/sparc/dl-cache.h>.
+
+	* sysdeps/unix/sysv/linux/x86_64/ldconfig.h
+	(SYSDEP_KNOWN_INTERPRETER_NAMES): Add /libx32/ld-linux-x32.so.2.
+
+2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
+
 	* stdlib/longlong.h (count_leading_zeros): Use long long builtin
 	for x86-64.
 	(count_trailing_zeros): Likewise.
