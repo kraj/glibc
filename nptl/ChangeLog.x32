@@ -1,5 +1,13 @@
 2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
 
+	* sysdeps/unix/sysv/linux/x86_64/lowlevellock.h (__NR_futex): New.
+	(SYS_futex): Use it.
+	(LLL_STUB_UNWIND_INFO_START): Align label to LP_SIZE instead
+	of 8.
+	(LLL_STUB_UNWIND_INFO_END): Likewise.  Use RDX_LP.
+
+2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
+
 	* unwind.c (unwind_stop): Cast _Unwind_GetCFA return to
 	_Unwind_Ptr first.
 

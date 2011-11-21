@@ -44,7 +44,11 @@
 # endif
 #endif
 
-#define SYS_futex		202
+#ifndef __NR_futex
+# define __NR_futex		202
+#endif
+
+#define SYS_futex		__NR_futex
 #define FUTEX_WAIT		0
 #define FUTEX_WAKE		1
 #define FUTEX_CMP_REQUEUE	4
@@ -120,7 +124,7 @@
 	".byte	0x12	# DW_CFA_def_cfa_sf\n\t" 		\
 	".uleb128 0x7\n\t" 					\
 	".sleb128 16\n\t" 					\
-	".align 8\n" 						\
+	".align " LP_SIZE "\n" 					\
 "9:\t"	".long	23f-10f	# FDE Length\n" 			\
 "10:\t"	".long	10b-7b	# FDE CIE offset\n\t" 			\
 	".long	1b-.	# FDE initial location\n\t" 		\
@@ -167,7 +171,7 @@
 	".uleb128 22f-21f\n" 					\
 "21:\t"	".byte	0x80	# DW_OP_breg16\n\t" 			\
 	".sleb128 4b-5b\n" 					\
-"22:\t"	".align 8\n" 						\
+"22:\t"	".align " LP_SIZE "\n" 					\
 "23:\t"	".previous\n"
 
 /* Unwind info for
@@ -408,7 +412,7 @@ LLL_STUB_UNWIND_INFO_END
 		       ".type _L_timedlock_%=, @function\n"		      \
 		       "_L_timedlock_%=:\n"				      \
 		       "1:\tleaq %4, %%rdi\n"				      \
-		       "0:\tmovq %8, %%rdx\n"				      \
+		       "0:\tmov %8, %%" RDX_LP "\n"			      \
 		       "2:\tsubq $128, %%rsp\n"				      \
 		       "3:\tcallq __lll_timedlock_wait\n"		      \
 		       "4:\taddq $128, %%rsp\n"				      \
@@ -432,7 +436,7 @@ LLL_STUB_UNWIND_INFO_END
 		       ".type _L_robust_timedlock_%=, @function\n"	      \
 		       "_L_robust_timedlock_%=:\n"			      \
 		       "1:\tleaq %4, %%rdi\n"				      \
-		       "0:\tmovq %8, %%rdx\n"				      \
+		       "0:\tmov %8, %%" RDX_LP "\n"			      \
 		       "2:\tsubq $128, %%rsp\n"				      \
 		       "3:\tcallq __lll_robust_timedlock_wait\n"	      \
 		       "4:\taddq $128, %%rsp\n"				      \
