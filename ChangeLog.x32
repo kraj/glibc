@@ -1,5 +1,10 @@
 2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
 
+	* sysdeps/unix/sysv/linux/x86_64/clone.S: Load pointer to TID
+	into R10_LP.
+
+2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
+
 	* sysdeps/unix/sysv/linux/x86_64/Makefile (gen-as-const-headers):
 	Add sigaltstack.sym.
 
