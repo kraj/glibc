@@ -1,5 +1,9 @@
 2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
 
+	* sysdeps/unix/sysv/linux/x86_64/x32/sendfile64.c: New.
+
+2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
+
 	* sysdeps/unix/sysv/linux/x86_64/x32/pselect.c: New.
 
 2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
