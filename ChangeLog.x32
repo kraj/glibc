@@ -1,5 +1,13 @@
 2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
 
+	* sysdeps/unix/sysv/linux/x86_64/x32/Makefile: New.
+	* sysdeps/unix/sysv/linux/x86_64/x32/getcpu.c: Likewise.
+	* sysdeps/unix/sysv/linux/x86_64/x32/sched_getcpu-static.c:
+	Likewise.
+	* sysdeps/unix/sysv/linux/x86_64/x32/sched_getcpu.S: Likewise.
+
+2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
+
 	* sysdeps/unix/sysv/linux/x86_64/x32/fallocate.c: New.
 	* sysdeps/unix/sysv/linux/x86_64/x32/posix_fadvise.c: Likewise.
 	* sysdeps/unix/sysv/linux/x86_64/x32/posix_fallocate.c: Likewise.
