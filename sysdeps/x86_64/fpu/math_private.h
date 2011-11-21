@@ -25,7 +25,7 @@ while (0)
 #undef EXTRACT_WORDS64
 #define EXTRACT_WORDS64(i,d)					\
 do {								\
-  long int i_;							\
+  long long int i_;						\
   asm ("movd %1, %0" : "=rm" (i_) : "x" (d));			\
   (i) = i_;							\
 } while (0)
@@ -34,7 +34,7 @@ do {								\
 #undef INSERT_WORDS64
 #define INSERT_WORDS64(d,i) \
 do {								\
-  long int i_ = i;						\
+  long long int i_ = i;						\
   asm ("movd %1, %0" : "=x" (d) : "rm" (i_));			\
 } while (0)
 
