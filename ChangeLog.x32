@@ -1,5 +1,17 @@
 2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
 
+	* sysdeps/unix/sysv/linux/x86_64/Makefile (gen-as-const-headers):
+	Add sigaltstack.sym.
+
+	* sysdeps/unix/sysv/linux/x86_64/____longjmp_chk.S: Include
+	"sigaltstack.h".
+	(____longjmp_chk): Use RXX_LP, sizeSS, oSS_FLAGS, oSS_SP and
+	oSS_SIZE for alternate signal stack.
+
+	* sysdeps/unix/sysv/linux/x86_64/sigaltstack.sym: New.
+
+2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
+
 	* sysdeps/unix/sysv/linux/x86_64/makecontext.c (__makecontext):
 	Use "unsigned long long int" instead of "unsigned long int".
 
