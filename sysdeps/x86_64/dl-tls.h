@@ -21,8 +21,8 @@
 /* Type used for the representation of TLS information in the GOT.  */
 typedef struct dl_tls_index
 {
-  unsigned long int ti_module;
-  unsigned long int ti_offset;
+  unsigned long long int ti_module;
+  unsigned long long int ti_offset;
 } tls_index;
 
 
