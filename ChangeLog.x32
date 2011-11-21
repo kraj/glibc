@@ -1,5 +1,9 @@
 2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
 
+	* sysdeps/unix/sysv/linux/x86_64/ldd-rewrite.sed: Support x32.
+
+2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
+
 	* sysdeps/x86_64/bits/wordsize.h: Moved to ...
 	* sysdeps/x86_64/64/bits/wordsize.h: Here.
 	(__WORDSIZE_COMPAT32): Removed.
