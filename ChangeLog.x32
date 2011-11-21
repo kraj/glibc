@@ -1,5 +1,10 @@
 2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
 
+	* sysdeps/unix/sysv/linux/x86_64/x32/preadv.c: New.
+	* sysdeps/unix/sysv/linux/x86_64/x32/pwritev.c: Likewise.
+
+2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
+
 	* sysdeps/unix/sysv/linux/x86_64/x32/Makefile: New.
 	* sysdeps/unix/sysv/linux/x86_64/x32/getcpu.c: Likewise.
 	* sysdeps/unix/sysv/linux/x86_64/x32/sched_getcpu-static.c:
