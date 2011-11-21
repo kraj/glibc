@@ -1,5 +1,10 @@
 2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
 
+	* sysdeps/x86_64/dl-tlsdesc.h (tlsdesc): Pad for x32.
+	(dl_tls_index): Replace long with long long.
+
+2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
+
 	* sysdeps/x86_64/dl-trampoline.S: Check if RTLD_SAVESPACE_SSE
 	is 32byte aligned.
 

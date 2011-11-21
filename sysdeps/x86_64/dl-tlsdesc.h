@@ -31,13 +31,19 @@
 struct tlsdesc
 {
   ptrdiff_t (*entry)(struct tlsdesc *on_rax);
+#ifndef __LP64__
+  int pad1;
+#endif
   void *arg;
+#ifndef __LP64__
+  int pad2;
+#endif
 };
 
 typedef struct dl_tls_index
 {
-  unsigned long int ti_module;
-  unsigned long int ti_offset;
+  unsigned long long int ti_module;
+  unsigned long long int ti_offset;
 } tls_index;
 
 /* Type used as the argument in a TLS descriptor for a symbol that
