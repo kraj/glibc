@@ -1,5 +1,12 @@
 2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
 
+	* sysdeps/x86_64/bits/mathdef.h: Don't include <bits/wordsize.h>.
+	Check __x86_64__ instead of __WORDSIZE.
+	* sysdeps/x86_64/bits/setjmp.h: Likewise.
+	* sysdeps/x86_64/fpu/bits/fenv.h: Likewise.
+
+2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
+
 	* sysdeps/x86_64/bits/byteswap.h: Don't include
 	<bits/wordsize.h>.
 	(__bswap_32): Check __x86_64__ instead of __WORDSIZE.  Also
