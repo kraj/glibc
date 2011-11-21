@@ -34,7 +34,7 @@
 
 /* Location of current stack frame.  The frame pointer is not usable.  */
 #define CURRENT_STACK_FRAME \
-  ({ char *frame; asm ("movq %%rsp, %0" : "=r" (frame)); frame; })
+  ({ char *frame; asm ("mov %%" RSP_LP ", %0" : "=r" (frame)); frame; })
 
 
 /* XXX Until we have a better place keep the definitions here.  */
