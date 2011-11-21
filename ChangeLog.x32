@@ -1,5 +1,14 @@
 2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
 
+	* elf/tls-macros.h (TLS_LE): Use mov instead of movq to load
+	thread pointer.
+	(TLS_IE): Use mov/add instead of movq/addq to load thread
+	pointer.
+	(TLS_GD_PREFIX): New.
+	(TLS_GD): Use it.
+
+2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
+
 	* elf/stackguard-macros.h (STACK_CHK_GUARD): Add x32 version.
 
 2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
