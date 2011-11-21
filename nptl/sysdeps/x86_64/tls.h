@@ -28,7 +28,6 @@
 # include <stdlib.h>
 # include <sysdep.h>
 # include <kernel-features.h>
-# include <bits/wordsize.h>
 # include <xmmintrin.h>
 
 
@@ -61,17 +60,22 @@ typedef struct
 # else
   int __unused1;
 # endif
-# if __WORDSIZE == 64
+# ifdef __x86_64__
   int rtld_must_xmm_save;
 # endif
   /* Reservation of some values for the TM ABI.  */
   void *__private_tm[5];
-# if __WORDSIZE == 64
+# ifdef __x86_64__
+#  ifdef __LP64__
   long int __unused2;
+#  else
+  /* Pad rtld_savespace_sse to 32byte aligned.  */
+  void *__padding1[5];
+#  endif
   /* Have space for the post-AVX register size.  */
   __m128 rtld_savespace_sse[8][4];
 
-  void *__padding[8];
+  void *__padding2[8];
 # endif
 } tcbhead_t;
 
@@ -274,7 +278,7 @@ typedef struct
 	   abort ();							      \
 									      \
 	 asm volatile ("movq %q0,%%fs:%P1" :				      \
-		       : IMM_MODE ((unsigned long int) value),		      \
+		       : IMM_MODE ((unsigned long long int) value),	      \
 			 "i" (offsetof (struct pthread, member)));	      \
        }})
 
@@ -299,7 +303,7 @@ typedef struct
 	   abort ();							      \
 									      \
 	 asm volatile ("movq %q0,%%fs:%P1(,%q2,8)" :			      \
-		       : IMM_MODE ((unsigned long int) value),		      \
+		       : IMM_MODE ((unsigned long long int) value),	      \
 			 "i" (offsetof (struct pthread, member[0])),	      \
 			 "r" (idx));					      \
        }})

@@ -22,16 +22,28 @@
 
 #include <bits/wordsize.h>
 
-#if __WORDSIZE == 64
-# define __SIZEOF_PTHREAD_ATTR_T 56
-# define __SIZEOF_PTHREAD_MUTEX_T 40
-# define __SIZEOF_PTHREAD_MUTEXATTR_T 4
-# define __SIZEOF_PTHREAD_COND_T 48
-# define __SIZEOF_PTHREAD_CONDATTR_T 4
-# define __SIZEOF_PTHREAD_RWLOCK_T 56
-# define __SIZEOF_PTHREAD_RWLOCKATTR_T 8
-# define __SIZEOF_PTHREAD_BARRIER_T 32
-# define __SIZEOF_PTHREAD_BARRIERATTR_T 4
+#ifdef __x86_64__
+# if __WORDSIZE == 64
+#  define __SIZEOF_PTHREAD_ATTR_T 56
+#  define __SIZEOF_PTHREAD_MUTEX_T 40
+#  define __SIZEOF_PTHREAD_MUTEXATTR_T 4
+#  define __SIZEOF_PTHREAD_COND_T 48
+#  define __SIZEOF_PTHREAD_CONDATTR_T 4
+#  define __SIZEOF_PTHREAD_RWLOCK_T 56
+#  define __SIZEOF_PTHREAD_RWLOCKATTR_T 8
+#  define __SIZEOF_PTHREAD_BARRIER_T 32
+#  define __SIZEOF_PTHREAD_BARRIERATTR_T 4
+# else
+#  define __SIZEOF_PTHREAD_ATTR_T 32
+#  define __SIZEOF_PTHREAD_MUTEX_T 32
+#  define __SIZEOF_PTHREAD_MUTEXATTR_T 4
+#  define __SIZEOF_PTHREAD_COND_T 48
+#  define __SIZEOF_PTHREAD_CONDATTR_T 4
+#  define __SIZEOF_PTHREAD_RWLOCK_T 44
+#  define __SIZEOF_PTHREAD_RWLOCKATTR_T 8
+#  define __SIZEOF_PTHREAD_BARRIER_T 20
+#  define __SIZEOF_PTHREAD_BARRIERATTR_T 4
+# endif
 #else
 # define __SIZEOF_PTHREAD_ATTR_T 36
 # define __SIZEOF_PTHREAD_MUTEX_T 24
@@ -57,7 +69,7 @@ typedef union
 } pthread_attr_t;
 
 
-#if __WORDSIZE == 64
+#ifdef __x86_64__
 typedef struct __pthread_internal_list
 {
   struct __pthread_internal_list *__prev;
@@ -80,13 +92,13 @@ typedef union
     int __lock;
     unsigned int __count;
     int __owner;
-#if __WORDSIZE == 64
+#ifdef __x86_64__
     unsigned int __nusers;
 #endif
     /* KIND must stay at this position in the structure to maintain
        binary compatibility.  */
     int __kind;
-#if __WORDSIZE == 64
+#ifdef __x86_64__
     int __spins;
     __pthread_list_t __list;
 # define __PTHREAD_MUTEX_HAVE_PREV	1
@@ -149,7 +161,7 @@ typedef int pthread_once_t;
    structure of the attribute type is not exposed on purpose.  */
 typedef union
 {
-# if __WORDSIZE == 64
+# ifdef __x86_64__
   struct
   {
     int __lock;
@@ -165,6 +177,7 @@ typedef union
     /* FLAGS must stay at this position in the structure to maintain
        binary compatibility.  */
     unsigned int __flags;
+# define __PTHREAD_RWLOCK_INT_FLAGS_SHARED	1
   } __data;
 # else
   struct
@@ -217,7 +230,7 @@ typedef union
 #endif
 
 
-#if __WORDSIZE == 32
+#ifndef __x86_64__
 /* Extra attributes for the cleanup functions.  */
 # define __cleanup_fct_attribute __attribute__ ((__regparm__ (1)))
 #endif

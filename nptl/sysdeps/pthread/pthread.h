@@ -85,7 +85,7 @@ enum
 
 
 /* Mutex initializers.  */
-#if __WORDSIZE == 64
+#ifdef __PTHREAD_MUTEX_HAVE_PREV
 # define PTHREAD_MUTEX_INITIALIZER \
   { { 0, 0, 0, 0, 0, 0, { 0, 0 } } }
 # ifdef __USE_GNU
@@ -120,11 +120,17 @@ enum
   PTHREAD_RWLOCK_DEFAULT_NP = PTHREAD_RWLOCK_PREFER_READER_NP
 };
 
+#ifndef __PTHREAD_RWLOCK_INT_FLAGS_SHARED
+# if __WORDSIZE == 64
+#  define __PTHREAD_RWLOCK_INT_FLAGS_SHARED 1
+# endif
+#endif
+
 /* Read-write lock initializers.  */
 # define PTHREAD_RWLOCK_INITIALIZER \
   { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } }
 # ifdef __USE_GNU
-#  if __WORDSIZE == 64
+#  ifdef __PTHREAD_RWLOCK_INT_FLAGS_SHARED
 #   define PTHREAD_RWLOCK_WRITER_NONRECURSIVE_INITIALIZER_NP \
   { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,					      \
 	PTHREAD_RWLOCK_PREFER_WRITER_NONRECURSIVE_NP } }

@@ -1,5 +1,35 @@
 2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
 
+	* pthread_create.c (start_thread): Check __PTHREAD_MUTEX_HAVE_PREV
+	instead of __WORDSIZE.
+
+	* sysdeps/pthread/pthread.h (PTHREAD_MUTEX_INITIALIZER): Check
+	__PTHREAD_MUTEX_HAVE_PREV instead of __WORDSIZE.
+	(PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP): Likewise.
+	(PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP): Likewise.
+	(PTHREAD_ADAPTIVE_MUTEX_INITIALIZER_NP): Likewise.
+	(__PTHREAD_RWLOCK_INT_FLAGS_SHARED): New.
+	(PTHREAD_RWLOCK_WRITER_NONRECURSIVE_INITIALIZER_NP): Check
+	__PTHREAD_RWLOCK_INT_FLAGS_SHARED instead of __WORDSIZE.
+
+	* sysdeps/unix/sysv/linux/x86_64/bits/pthreadtypes.h: Define x32
+	__SIZEOF_PTHREAD_XXX_T.
+	(__pthread_internal_list): Check __x86_64__ instead of __WORDSIZE.
+	(pthread_mutex_t): Likewise.
+	(pthread_rwlock_t): Likewise. 
+	(__PTHREAD_RWLOCK_INT_FLAGS_SHARED): New.  Defined if __x86_64__
+	is defined.
+
+	* sysdeps/x86_64/tls.h: Don't include <bits/wordsize.h>.
+	Check __x86_64__ instead of __WORDSIZE.
+	(tcbhead_t): Pad rtld_savespace_sse to 32byte aligned.
+	(THREAD_SETMEM): Use long long on 64bit integer.
+	(THREAD_SETMEM_NC): Likewise.
+
+	* sysdeps/x86_64/x32/tls.h: New.
+
+2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
+
 	* sysdeps/x86_64/pthreaddef.h (CURRENT_STACK_FRAME): Use
 	RSP_LP.
 
