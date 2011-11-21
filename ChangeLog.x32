@@ -1,5 +1,13 @@
 2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
 
+	* sysdeps/x86_64/bits/wordsize.h: Moved to ...
+	* sysdeps/x86_64/64/bits/wordsize.h: Here.
+	(__WORDSIZE_COMPAT32): Removed.
+
+	* sysdeps/x86_64/x32/bits/wordsize.h: New.
+
+2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
+
 	* sysdeps/unix/sysv/linux/x86_64/Implies: Moved to ...
 	* sysdeps/unix/sysv/linux/x86_64/64/Implies: Here. 
 
