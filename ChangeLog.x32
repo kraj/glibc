@@ -1,5 +1,10 @@
 2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
 
+	* sysdeps/unix/sysv/linux/x86_64/x32/getdents.c: New.
+	* sysdeps/unix/sysv/linux/x86_64/x32/llseek.S: Likewise.
+
+2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
+
 	* sysdeps/unix/sysv/linux/x86_64/x32/gettimeofday.c: New.
 	* sysdeps/unix/sysv/linux/x86_64/x32/time.c: Likewise.
 
