@@ -23,8 +23,6 @@
 # error "Never use <bits/sigcontext.h> directly; include <signal.h> instead."
 #endif
 
-#include <bits/wordsize.h>
-
 struct _fpreg
 {
   unsigned short significand[4];
@@ -45,7 +43,7 @@ struct _xmmreg
 
 
 
-#if __WORDSIZE == 32
+#ifndef __x86_64__
 
 struct _fpstate
 {
@@ -104,7 +102,7 @@ struct sigcontext
   unsigned long cr2;
 };
 
-#else /* __WORDSIZE == 64 */
+#else /* __x86_64__ */
 
 struct _fpstate
 {
@@ -124,36 +122,39 @@ struct _fpstate
 
 struct sigcontext
 {
-  unsigned long r8;
-  unsigned long r9;
-  unsigned long r10;
-  unsigned long r11;
-  unsigned long r12;
-  unsigned long r13;
-  unsigned long r14;
-  unsigned long r15;
-  unsigned long rdi;
-  unsigned long rsi;
-  unsigned long rbp;
-  unsigned long rbx;
-  unsigned long rdx;
-  unsigned long rax;
-  unsigned long rcx;
-  unsigned long rsp;
-  unsigned long rip;
-  unsigned long eflags;
+  unsigned long long r8;
+  unsigned long long r9;
+  unsigned long long r10;
+  unsigned long long r11;
+  unsigned long long r12;
+  unsigned long long r13;
+  unsigned long long r14;
+  unsigned long long r15;
+  unsigned long long rdi;
+  unsigned long long rsi;
+  unsigned long long rbp;
+  unsigned long long rbx;
+  unsigned long long rdx;
+  unsigned long long rax;
+  unsigned long long rcx;
+  unsigned long long rsp;
+  unsigned long long rip;
+  unsigned long long eflags;
   unsigned short cs;
   unsigned short gs;
   unsigned short fs;
   unsigned short __pad0;
-  unsigned long err;
-  unsigned long trapno;
-  unsigned long oldmask;
-  unsigned long cr2;
+  unsigned long long err;
+  unsigned long long trapno;
+  unsigned long long oldmask;
+  unsigned long long cr2;
   struct _fpstate * fpstate;
-  unsigned long __reserved1 [8];
+#ifndef __LP64__
+  unsigned int pad0;
+#endif
+  unsigned long long __reserved1 [8];
 };
 
-#endif /* __WORDSIZE == 64 */
+#endif /* __x86_64__ */
 
 #endif /* _BITS_SIGCONTEXT_H */

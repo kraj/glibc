@@ -40,12 +40,12 @@ struct semid_ds
 {
   struct ipc_perm sem_perm;		/* operation permission struct */
   __time_t sem_otime;			/* last semop() time */
-  unsigned long int __unused1;
+  __UNATIVE_LONG_TYPE __unused1;
   __time_t sem_ctime;			/* last time changed by semctl() */
-  unsigned long int __unused2;
-  unsigned long int sem_nsems;		/* number of semaphores in set */
-  unsigned long int __unused3;
-  unsigned long int __unused4;
+  __UNATIVE_LONG_TYPE __unused2;
+  __UNATIVE_LONG_TYPE sem_nsems;	/* number of semaphores in set */
+  __UNATIVE_LONG_TYPE __unused3;
+  __UNATIVE_LONG_TYPE __unused4;
 };
 
 /* The user should define a union like the following to use it for arguments

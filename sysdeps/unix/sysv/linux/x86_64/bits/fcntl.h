@@ -23,7 +23,6 @@
 #endif
 
 #include <sys/types.h>
-#include <bits/wordsize.h>
 #ifdef __USE_GNU
 # include <bits/uio.h>
 #endif
@@ -65,7 +64,7 @@
 #endif
 
 #ifdef __USE_LARGEFILE64
-# if __WORDSIZE == 64
+# ifdef __x86_64__
 #  define O_LARGEFILE	0
 # else
 #  define O_LARGEFILE	0100000
@@ -78,7 +77,7 @@
 #define F_SETFD		2	/* Set file descriptor flags.  */
 #define F_GETFL		3	/* Get file status flags.  */
 #define F_SETFL		4	/* Set file status flags.  */
-#if __WORDSIZE == 64
+#ifdef __x86_64__
 # define F_GETLK	5	/* Get record locking info.  */
 # define F_SETLK	6	/* Set record locking info (non-blocking).  */
 # define F_SETLKW	7	/* Set record locking info (blocking).	*/

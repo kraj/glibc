@@ -1,5 +1,52 @@
 2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
 
+	* sysdeps/unix/sysv/linux/x86_64/bits/a.out.h: Don't include
+	<bits/wordsize.h>.  Check __x86_64__ instead of __WORDSIZE.
+	* sysdeps/unix/sysv/linux/x86_64/bits/fcntl.h: Likewise.
+
+	* sysdeps/unix/sysv/linux/x86_64/bits/msq.h: Don't include
+	<bits/wordsize.h>.
+	(msgqnum_t): Use __UNATIVE_LONG_TYPE.
+	(msglen_t): Likewise.
+	(msqid_ds): Check __x86_64__ instead of __WORDSIZE.  Use
+	__UNATIVE_LONG_TYPE.
+
+	* sysdeps/unix/sysv/linux/x86_64/bits/sem.h (semid_ds): Use
+	__UNATIVE_LONG_TYPE.
+
+	* sysdeps/unix/sysv/linux/x86_64/bits/shm.h (shmatt_t): Use
+	__UNATIVE_LONG_TYPE.
+	(shmid_ds): Add __unused1 and __unused2 only if __x86_64__ isn't
+	defined.  Use __UNATIVE_LONG_TYPE.
+	(shminfo): Use __UNATIVE_LONG_TYPE.
+	(shm_info): Likewise.
+
+	* sysdeps/unix/sysv/linux/x86_64/bits/sigcontext.h: Don't
+	include <bits/wordsize.h>.  Check __x86_64__ instead of
+	__WORDSIZE.
+	(sigcontext): Use "unsigned long long int" instead of
+	"unsigned long int" if __x86_64__ is defined.  Pad if __LP64__
+	isn't defined.
+
+	* sysdeps/unix/sysv/linux/x86_64/bits/stat.h (_STAT_VER_SVR4):
+	Check __x86_64__ instead of __WORDSIZE.
+	(_STAT_VER_LINUX): Likewise.
+	(stat): Check __x86_64__ instead of __WORDSIZE.  Use
+	__UNATIVE_LONG_TYPE.
+	(stat64): Likewise.
+
+	* sysdeps/unix/sysv/linux/x86_64/bits/ipc.h: New.
+	* sysdeps/unix/sysv/linux/x86_64/bits/ipctypes.h: Likewise.
+	* sysdeps/unix/sysv/linux/x86_64/bits/mqueue.h: Likewise.
+	* sysdeps/unix/sysv/linux/x86_64/bits/resource.h: Likewise.
+	* sysdeps/unix/sysv/linux/x86_64/bits/statfs.h: Likewise.
+	* sysdeps/unix/sysv/linux/x86_64/bits/statvfs.h: Likewise.
+	* sysdeps/unix/sysv/linux/x86_64/bits/timex.h: Likewise.
+	* sysdeps/unix/sysv/linux/x86_64/bits/utmp.h: Likewise.
+	* sysdeps/unix/sysv/linux/x86_64/bits/utmpx.h: Likewise.
+
+2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
+
 	* elf/tls-macros.h (TLS_LE): Use mov instead of movq to load
 	thread pointer.
 	(TLS_IE): Use mov/add instead of movq/addq to load thread
