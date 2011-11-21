@@ -1,5 +1,16 @@
 2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
 
+	* sysdeps/unix/sysv/linux/x86_64/Implies: Moved to ...
+	* sysdeps/unix/sysv/linux/x86_64/64/Implies: Here. 
+
+	* sysdeps/x86_64/Implies: Moved to ...
+	* sysdeps/x86_64/64/Implies: Here.  Prepend x86_64/fpu.
+
+	* sysdeps/unix/sysv/linux/x86_64/x32/Implies: New.
+	* sysdeps/x86_64/x32/Implies: Likewise.
+
+2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
+
 	* sysdeps/unix/sysv/linux/x86_64/bits/a.out.h: Don't include
 	<bits/wordsize.h>.  Check __x86_64__ instead of __WORDSIZE.
 	* sysdeps/unix/sysv/linux/x86_64/bits/fcntl.h: Likewise.
