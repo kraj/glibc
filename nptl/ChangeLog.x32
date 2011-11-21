@@ -1,5 +1,10 @@
 2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
 
+	* unwind.c (unwind_stop): Cast _Unwind_GetCFA return to
+	_Unwind_Ptr first.
+
+2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
+
 	* sysdeps/unix/sysv/linux/x86_64/cancellation.S: Use MOVE_LP
 	and RDI_LP.
 
