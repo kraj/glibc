@@ -1,5 +1,25 @@
 2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
 
+	* elf/tst-auditmod1.c: Support la_x32_gnu_pltenter and
+	la_x32_gnu_pltexit.
+	(pltexit): Cast int_retval to ptrdiff_t.
+	* elf/tst-auditmod3b.c: Likewise.
+	* elf/tst-auditmod4b.c: Likewise.
+	* elf/tst-auditmod5b.c: Likewise.
+	* elf/tst-auditmod6b.c: Likewise.
+	* elf/tst-auditmod6c.c: Likewise.
+	* elf/tst-auditmod7b.c: Likewise.
+
+	* sysdeps/generic/ldsodefs.h (audit_ifaces): Add x32_gnu_pltenter
+	and x32_gnu_pltexit.
+
+	* sysdeps/x86_64/bits/link.h: Check __x86_64__ instead of
+	__ELF_NATIVE_CLASS.
+	(la_x32_gnu_pltenter): New.
+	(la_x32_gnu_pltexit): Likewise.
+
+2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
+
 	* sysdeps/x86_64/dl-machine.h: Replace Elf64_XXX with ElfW(XXX).
 	Replace ELF64_R_TYPE with ELF32_R_TYPE.
 	(elf_machine_load_address): Use ASM_ADDR.
