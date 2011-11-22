@@ -1,5 +1,12 @@
 2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
 
+	* stdio-common/_itoa.c (_itoa_base_table): Don't define if
+	PREFER_LONG_LONG is defined.
+	(_itoa): Use long long if PREFER_LONG_LONG is defined.
+	* stdio-common/_itowa.c (_itowa): Likewise.
+
+2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
+
 	* sysdeps/x86_64/x32/dl-machine.h: New.
 
 2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
