@@ -1,5 +1,21 @@
 2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
 
+	PR libc/12495
+	* malloc/malloc.c (sYSMALLOc): Don't update correction with
+	front_misalign.
+
+2007-11-30  Daniel Jacobowitz  <dan@codesourcery.com>
+
+	PR libc/12495
+	* malloc/malloc.c (MALLOC_ALIGNMENT): Use __alignof__ (long double).
+	(SMALLBIN_CORRECTION): New.
+	(MIN_LARGE_SIZE, smallbin_index): Use it to handle 16-byte alignment.
+	(largebin_index_32_big): New.
+	(largebin_index): Use it for 16-byte alignment.
+	(sYSMALLOc): Handle MALLOC_ALIGNMENT > 2 * SIZE_SZ.
+
+2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
+
 	* stdio-common/_itoa.c (_itoa_base_table): Don't define if
 	PREFER_LONG_LONG is defined.
 	(_itoa): Use long long if PREFER_LONG_LONG is defined.
