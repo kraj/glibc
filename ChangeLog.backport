@@ -1,0 +1,20 @@
+2011-09-06  Andreas Schwab  <schwab@redhat.com>
+
+	* sysdeps/unix/sysv/linux/x86_64/gettimeofday.c [!SHARED]: Include
+	<errno.h>.
+
+2011-09-06  Ulrich Drepper  <drepper@gmail.com>
+
+	* sysdeps/unix/sysv/linux/x86_64/gettimeofday.c [!SHARED]: Use real
+	syscall.
+
+2011-08-21  Ulrich Drepper  <drepper@gmail.com>
+
+	* sysdeps/unix/sysv/linux/x86_64/gettimeofday.S: Removed.
+	* sysdeps/unix/sysv/linux/x86_64/gettimeofday.c: New file.
+	* sysdeps/unix/sysv/linux/x86_64/bits/libc-vdso.h: Remove declaration
+	of __vdso_gettimeofday.
+	* sysdeps/unix/sysv/linux/x86_64/init-first.c: Remove definition of
+	__vdso_gettimeofday.
+	(_libc_vdso_platform_setup): Remove initialization of
+	__vdso_gettimeofday.
