@@ -1,5 +1,12 @@
 2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
 
+	* sysdeps/x86_64/x32/divdi3.c: New.
+	* sysdeps/x86_64/x32/ffs.c: Likewise.
+	* sysdeps/x86_64/x32/gmp-mparam.h: Likewise.
+	* sysdeps/x86_64/x32/symbol-hacks.h: Likewise.
+
+2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
+
 	* sysdeps/x86_64/stackinfo.h (stackinfo_get_sp): Use RSP_LP.
 	(stackinfo_sub_sp): Likewise.
 
