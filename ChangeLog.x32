@@ -1,3 +1,8 @@
+2011-11-22  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* sysdeps/unix/sysv/linux/x86_64/x32/sysdep.h: Support 
+	!USE___THREAD.
+
 2011-11-21  H.J. Lu  <hongjiu.lu@intel.com>
 
 	PR libc/12495

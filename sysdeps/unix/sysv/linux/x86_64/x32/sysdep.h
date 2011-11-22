@@ -43,7 +43,7 @@
   movl %edx, (%rcx);				\
   SYSCALL_SET_ERROR_RETURN;			\
   jmp L(pseudo_end);
-# else
+# elif USE___THREAD
 #  undef SYSCALL_ERROR_HANDLER
 #  define SYSCALL_ERROR_HANDLER			\
 0:						\
@@ -51,6 +51,36 @@
   xorl %edx, %edx;				\
   subl %eax, %edx;				\
   movl %edx, %fs:(%rcx);			\
+  SYSCALL_SET_ERROR_RETURN;			\
+  jmp L(pseudo_end);
+# elif defined _LIBC_REENTRANT
+/* Store (- %eax) into errno through the GOT.
+   Note that errno occupies only 4 bytes.  */
+#  undef SYSCALL_ERROR_HANDLER
+#  define SYSCALL_ERROR_HANDLER			\
+0:						\
+  xorl %edx, %edx;				\
+  subl %eax, %edx;				\
+  pushq %rdx;					\
+  cfi_adjust_cfa_offset(8);			\
+  PUSH_ERRNO_LOCATION_RETURN;			\
+  call BP_SYM (__errno_location)@PLT;		\
+  POP_ERRNO_LOCATION_RETURN;			\
+  popq %rdx;					\
+  cfi_adjust_cfa_offset(-8);			\
+  movl %edx, (%rax);				\
+  SYSCALL_SET_ERROR_RETURN;			\
+  jmp L(pseudo_end);
+
+/* A quick note: it is assumed that the call to `__errno_location' does
+   not modify the stack!  */
+# else /* Not _LIBC_REENTRANT.  */
+#  undef SYSCALL_ERROR_HANDLER
+#  define SYSCALL_ERROR_HANDLER			\
+0:movq errno@GOTPCREL(%rip), %rcx;		\
+  xorl %edx, %edx;				\
+  subl %eax, %edx;				\
+  movl %edx, (%rcx);				\
   SYSCALL_SET_ERROR_RETURN;			\
   jmp L(pseudo_end);
 # endif	/* PIC */
