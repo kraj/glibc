@@ -1,3 +1,11 @@
+2012-02-25  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* sysdeps/unix/sysv/linux/x86_64/sysdep.h (PTR_MANGLE): Remove
+	the `q' suffix from xor/rol instructions.
+	(PTR_DEMANGLE): Likewise.
+	* sysdeps/unix/sysv/linux/x86_64/x32/sysdep.h (PTR_MANGLE): Removed.
+	(PTR_DEMANGLE): Likewise.
+
 2012-01-09  H.J. Lu  <hongjiu.lu@intel.com>
 
 	* malloc/malloc.c (sYSMALLOc): Free the old top chunk with a
