@@ -1,3 +1,8 @@
+2012-03-01  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* sysdeps/unix/sysv/linux/x86_64/sys/ucontext.h (ucontext): Restore
+	unsigned long int on uc_flags.
+
 2012-02-25  H.J. Lu  <hongjiu.lu@intel.com>
 
 	* sysdeps/unix/sysv/linux/x86_64/sysdep.h (PTR_MANGLE): Remove

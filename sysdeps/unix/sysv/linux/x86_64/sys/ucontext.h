@@ -133,7 +133,7 @@ typedef struct
 /* Userlevel context.  */
 typedef struct ucontext
   {
-    unsigned long long int uc_flags;
+    unsigned long int uc_flags;
     struct ucontext *uc_link;
     stack_t uc_stack;
     mcontext_t uc_mcontext;
