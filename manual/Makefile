@@ -105,7 +105,8 @@ $(objpfx)libm-err.texi: $(objpfx)stamp-libm-err
 $(objpfx)stamp-libm-err: libm-err-tab.pl $(wildcard $(foreach dir,$(sysdirs),\
 						     $(dir)/libm-test-ulps))
 	pwd=`pwd`; \
-	$(PERL) $< $$pwd/.. > $(objpfx)libm-err-tmp
+	$(PERL) $< $$pwd/../ports > $(objpfx)libm-err-tmp
+	$(PERL) $< $$pwd/../sysdeps >> $(objpfx)libm-err-tmp
 	$(move-if-change) $(objpfx)libm-err-tmp $(objpfx)libm-err.texi
 	touch $@
 
