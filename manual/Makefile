@@ -103,7 +103,8 @@ $(objpfx)stamp-libm-err: $(..)math/gen-libm-test.py \
 			 $(wildcard $(foreach dir,$(sysdirs),\
 						  $(dir)/libm-test-ulps))
 	pwd=`pwd`; \
-	$(PYTHON) $< -s $$pwd/.. -m $(objpfx)libm-err-tmp
+	$(PYTHON) $< -s $$pwd/../ports -m $(objpfx)libm-err-tmp
+	$(PYTHON) $< -s $$pwd/../sysdeps -m $(objpfx)libm-err-tmp
 	$(move-if-change) $(objpfx)libm-err-tmp $(objpfx)libm-err.texi
 	touch $@
 
