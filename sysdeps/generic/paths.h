@@ -51,7 +51,7 @@
 #define	_PATH_MAN	"/usr/share/man"
 #define	_PATH_MEM	"/dev/mem"
 #define	_PATH_MNTTAB	"/etc/fstab"
-#define	_PATH_MOUNTED	"/var/run/mtab"
+#define	_PATH_MOUNTED	"/etc/mtab"
 #define	_PATH_NOLOGIN	"/etc/nologin"
 #define	_PATH_PRESERVE	"/var/lib"
 #define	_PATH_RWHODIR	"/var/spool/rwho"
