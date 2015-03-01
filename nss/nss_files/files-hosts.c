@@ -22,7 +22,7 @@
 #include <arpa/nameser.h>
 #include <netdb.h>
 #include <resolv.h>
-
+#include <scratch_buffer.h>
 
 /* Get implementation for some internal functions.  */
 #include "../resolv/mapv4v6addr.h"
@@ -145,15 +145,12 @@ _nss_files_gethostbyname3_r (const char *name, int af, struct hostent *result,
 	  && _res_hconf.flags & HCONF_FLAG_MULTI)
 	{
 	  /* We have to get all host entries from the file.  */
-	  size_t tmp_buflen = MIN (buflen, 4096);
-	  char tmp_buffer_stack[tmp_buflen]
-	    __attribute__ ((__aligned__ (__alignof__ (struct hostent_data))));
-	  char *tmp_buffer = tmp_buffer_stack;
 	  struct hostent tmp_result_buf;
 	  int naddrs = 1;
 	  int naliases = 0;
 	  char *bufferend;
-	  bool tmp_buffer_malloced = false;
+	  struct scratch_buffer tmpbuf;
+	  scratch_buffer_init (&tmpbuf);
 
 	  while (result->h_aliases[naliases] != NULL)
 	    ++naliases;
@@ -161,9 +158,9 @@ _nss_files_gethostbyname3_r (const char *name, int af, struct hostent *result,
 	  bufferend = (char *) &result->h_aliases[naliases + 1];
 
 	again:
-	  while ((status = internal_getent (stream, &tmp_result_buf, tmp_buffer,
-					    tmp_buflen, errnop, herrnop, af,
-					    flags))
+	  while ((status = internal_getent (stream, &tmp_result_buf,
+					    tmpbuf.data, tmpbuf.length,
+					    errnop, herrnop, af, flags))
 		 == NSS_STATUS_SUCCESS)
 	    {
 	      int matches = 1;
@@ -287,54 +284,13 @@ _nss_files_gethostbyname3_r (const char *name, int af, struct hostent *result,
 		}
 	    }
 
-	  if (status == NSS_STATUS_TRYAGAIN)
-	    {
-	      size_t newsize = 2 * tmp_buflen;
-	      if (tmp_buffer_malloced)
-		{
-		  char *newp = realloc (tmp_buffer, newsize);
-		  if (newp != NULL)
-		    {
-		      assert ((((uintptr_t) newp)
-			       & (__alignof__ (struct hostent_data) - 1))
-			      == 0);
-		      tmp_buffer = newp;
-		      tmp_buflen = newsize;
-		      goto again;
-		    }
-		}
-	      else if (!__libc_use_alloca (buflen + newsize))
-		{
-		  tmp_buffer = malloc (newsize);
-		  if (tmp_buffer != NULL)
-		    {
-		      assert ((((uintptr_t) tmp_buffer)
-			       & (__alignof__ (struct hostent_data) - 1))
-			      == 0);
-		      tmp_buffer_malloced = true;
-		      tmp_buflen = newsize;
-		      goto again;
-		    }
-		}
-	      else
-		{
-		  tmp_buffer
-		    = extend_alloca (tmp_buffer, tmp_buflen,
-				     newsize
-				     + __alignof__ (struct hostent_data));
-		  tmp_buffer = (char *) (((uintptr_t) tmp_buffer
-					  + __alignof__ (struct hostent_data)
-					  - 1)
-					 & ~(__alignof__ (struct hostent_data)
-					     - 1));
-		  goto again;
-		}
-	    }
+	  if (status == NSS_STATUS_TRYAGAIN
+	      && scratch_buffer_grow (&tmpbuf))
+	    goto again;
 	  else
 	    status = NSS_STATUS_SUCCESS;
 	out:
-	  if (tmp_buffer_malloced)
-	    free (tmp_buffer);
+	  scratch_buffer_free (&tmpbuf);
 	}
 
       internal_endent (&stream);
