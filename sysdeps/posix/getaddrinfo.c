@@ -63,6 +63,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <nscd/nscd-client.h>
 #include <nscd/nscd_proto.h>
 #include <resolv/res_hconf.h>
+#include <scratch_buffer.h>
 
 #ifdef HAVE_LIBIDN
 extern int __idna_to_ascii_lz (const char *input, char **output, int flags);
@@ -138,23 +139,27 @@ gaih_inet_serv (const char *servicename, const struct gaih_typeproto *tp,
 		const struct addrinfo *req, struct gaih_servtuple *st)
 {
   struct servent *s;
-  size_t tmpbuflen = 1024;
   struct servent ts;
-  char *tmpbuf;
   int r;
+  struct scratch_buffer tmpbuf;
+  scratch_buffer_init (&tmpbuf);
 
   do
     {
-      tmpbuf = __alloca (tmpbuflen);
-
-      r = __getservbyname_r (servicename, tp->name, &ts, tmpbuf, tmpbuflen,
-			     &s);
+      r = __getservbyname_r (servicename, tp->name, &ts,
+			     tmpbuf.data, tmpbuf.length, &s);
       if (r != 0 || s == NULL)
 	{
 	  if (r == ERANGE)
-	    tmpbuflen *= 2;
+	    {
+	      if (!scratch_buffer_grow (&tmpbuf))
+		return -EAI_MEMORY;
+	    }
 	  else
-	    return -EAI_SERVICE;
+	    {
+	      scratch_buffer_free (&tmpbuf);
+	      return -EAI_SERVICE;
+	    }
 	}
     }
   while (r);
@@ -164,7 +169,7 @@ gaih_inet_serv (const char *servicename, const struct gaih_typeproto *tp,
   st->protocol = ((tp->protoflag & GAI_PROTO_PROTOANY)
 		  ? req->ai_protocol : tp->protocol);
   st->port = s->s_port;
-
+  scratch_buffer_free (&tmpbuf);
   return 0;
 }
 
@@ -178,25 +183,15 @@ gaih_inet_serv (const char *servicename, const struct gaih_typeproto *tp,
   no_data = 0;								      \
   while (1) {								      \
     rc = 0;								      \
-    status = DL_CALL_FCT (fct, (name, _family, &th, tmpbuf, tmpbuflen,	      \
+    status = DL_CALL_FCT (fct, (name, _family, &th,			      \
+				tmpbuf.data, tmpbuf.length,		      \
 				&rc, &herrno, NULL, &localcanon));	      \
     if (rc != ERANGE || herrno != NETDB_INTERNAL)			      \
       break;								      \
-    if (!malloc_tmpbuf && __libc_use_alloca (alloca_used + 2 * tmpbuflen))    \
-      tmpbuf = extend_alloca_account (tmpbuf, tmpbuflen, 2 * tmpbuflen,	      \
-				      alloca_used);			      \
-    else								      \
+    if (!scratch_buffer_grow (&tmpbuf))					      \
       {									      \
-	char *newp = realloc (malloc_tmpbuf ? tmpbuf : NULL,		      \
-			      2 * tmpbuflen);				      \
-	if (newp == NULL)						      \
-	  {								      \
-	    result = -EAI_MEMORY;					      \
-	    goto free_and_return;					      \
-	  }								      \
-	tmpbuf = newp;							      \
-	malloc_tmpbuf = true;						      \
-	tmpbuflen = 2 * tmpbuflen;					      \
+	result = -EAI_MEMORY;						      \
+	goto free_and_return;						      \
       }									      \
   }									      \
   if (status == NSS_STATUS_SUCCESS && rc == 0)				      \
@@ -280,7 +275,10 @@ gaih_inet (const char *name, const struct gaih_service *service,
   bool got_ipv6 = false;
   const char *canon = NULL;
   const char *orig_name = name;
-  size_t alloca_used = 0;
+
+  /* Reserve stack memory for this function's buffer and the one in
+     gaih_inet_serv.  */
+  size_t alloca_used = 2 * sizeof (struct scratch_buffer);
 
   if (req->ai_protocol || req->ai_socktype)
     {
@@ -401,9 +399,10 @@ gaih_inet (const char *name, const struct gaih_service *service,
   struct gaih_addrtuple *addrmem = NULL;
   bool malloc_canonbuf = false;
   char *canonbuf = NULL;
-  bool malloc_tmpbuf = false;
-  char *tmpbuf = NULL;
   int result = 0;
+  struct scratch_buffer tmpbuf;
+  scratch_buffer_init (&tmpbuf);
+
   if (name != NULL)
     {
       at = alloca_account (sizeof (struct gaih_addrtuple), alloca_used);
@@ -571,11 +570,8 @@ gaih_inet (const char *name, const struct gaih_service *service,
 	  if (req->ai_family == AF_INET
 	      && (req->ai_flags & AI_CANONNAME) == 0)
 	    {
-	      /* Allocate additional room for struct host_data.  */
-	      size_t tmpbuflen = (512 + MAX_NR_ALIASES * sizeof(char*)
-				  + 16 * sizeof(char));
-	      assert (tmpbuf == NULL);
-	      tmpbuf = alloca_account (tmpbuflen, alloca_used);
+	      /* tmpbuf must not have been used so far.  */
+	      assert (tmpbuf.data == tmpbuf.__space);
 	      int rc;
 	      struct hostent th;
 	      struct hostent *h;
@@ -583,28 +579,15 @@ gaih_inet (const char *name, const struct gaih_service *service,
 
 	      while (1)
 		{
-		  rc = __gethostbyname2_r (name, AF_INET, &th, tmpbuf,
-					   tmpbuflen, &h, &herrno);
+		  rc = __gethostbyname2_r (name, AF_INET, &th,
+					   tmpbuf.data, tmpbuf.length,
+					   &h, &herrno);
 		  if (rc != ERANGE || herrno != NETDB_INTERNAL)
 		    break;
-
-		  if (!malloc_tmpbuf
-		      && __libc_use_alloca (alloca_used + 2 * tmpbuflen))
-		    tmpbuf = extend_alloca_account (tmpbuf, tmpbuflen,
-						    2 * tmpbuflen,
-						    alloca_used);
-		  else
+		  if (!scratch_buffer_grow (&tmpbuf))
 		    {
-		      char *newp = realloc (malloc_tmpbuf ? tmpbuf : NULL,
-					    2 * tmpbuflen);
-		      if (newp == NULL)
-			{
-			  result = -EAI_MEMORY;
-			  goto free_and_return;
-			}
-		      tmpbuf = newp;
-		      malloc_tmpbuf = true;
-		      tmpbuflen = 2 * tmpbuflen;
+		      result = -EAI_MEMORY;
+		      goto free_and_return;
 		    }
 		}
 
@@ -826,21 +809,8 @@ gaih_inet (const char *name, const struct gaih_service *service,
 	  old_res_options = _res.options;
 	  _res.options &= ~RES_USE_INET6;
 
-	  size_t tmpbuflen = 1024 + sizeof(struct gaih_addrtuple);
-	  malloc_tmpbuf = !__libc_use_alloca (alloca_used + tmpbuflen);
-	  assert (tmpbuf == NULL);
-	  if (!malloc_tmpbuf)
-	    tmpbuf = alloca_account (tmpbuflen, alloca_used);
-	  else
-	    {
-	      tmpbuf = malloc (tmpbuflen);
-	      if (tmpbuf == NULL)
-		{
-		  _res.options |= old_res_options & RES_USE_INET6;
-		  result = -EAI_MEMORY;
-		  goto free_and_return;
-		}
-	    }
+	  /* tmpbuf has not been used yet.  */
+	  assert (tmpbuf.data == tmpbuf.__space);
 
 	  while (!no_more)
 	    {
@@ -859,8 +829,9 @@ gaih_inet (const char *name, const struct gaih_service *service,
 		  while (1)
 		    {
 		      rc = 0;
-		      status = DL_CALL_FCT (fct4, (name, pat, tmpbuf,
-						   tmpbuflen, &rc, &herrno,
+		      status = DL_CALL_FCT (fct4, (name, pat,
+						   tmpbuf.data, tmpbuf.length,
+						   &rc, &herrno,
 						   NULL));
 		      if (status == NSS_STATUS_SUCCESS)
 			break;
@@ -874,24 +845,11 @@ gaih_inet (const char *name, const struct gaih_service *service,
 			  break;
 			}
 
-		      if (!malloc_tmpbuf
-			  && __libc_use_alloca (alloca_used + 2 * tmpbuflen))
-			tmpbuf = extend_alloca_account (tmpbuf, tmpbuflen,
-							2 * tmpbuflen,
-							alloca_used);
-		      else
+		      if (!scratch_buffer_grow (&tmpbuf))
 			{
-			  char *newp = realloc (malloc_tmpbuf ? tmpbuf : NULL,
-						2 * tmpbuflen);
-			  if (newp == NULL)
-			    {
-			      _res.options |= old_res_options & RES_USE_INET6;
-			      result = -EAI_MEMORY;
-			      goto free_and_return;
-			    }
-			  tmpbuf = newp;
-			  malloc_tmpbuf = true;
-			  tmpbuflen = 2 * tmpbuflen;
+			  _res.options |= old_res_options & RES_USE_INET6;
+			  result = -EAI_MEMORY;
+			  goto free_and_return;
 			}
 		    }
 
@@ -1278,8 +1236,7 @@ gaih_inet (const char *name, const struct gaih_service *service,
     free (addrmem);
   if (malloc_canonbuf)
     free (canonbuf);
-  if (malloc_tmpbuf)
-    free (tmpbuf);
+  scratch_buffer_free (&tmpbuf);
 
   return result;
 }
