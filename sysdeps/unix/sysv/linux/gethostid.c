@@ -63,13 +63,12 @@ sethostid (long int id)
 # include <sys/param.h>
 # include <resolv/netdb.h>
 # include <netinet/in.h>
+# include <scratch_buffer.h>
 
 long int
 gethostid (void)
 {
   char hostname[MAXHOSTNAMELEN + 1];
-  size_t buflen;
-  char *buffer;
   struct hostent hostbuf, *hp;
   int32_t id;
   struct in_addr in;
@@ -94,23 +93,26 @@ gethostid (void)
     /* This also fails.  Return and arbitrary value.  */
     return 0;
 
-  buflen = 1024;
-  buffer = __alloca (buflen);
+  struct scratch_buffer tmpbuf;
+  scratch_buffer_init (&tmpbuf);
 
   /* To get the IP address we need to know the host name.  */
-  while (__gethostbyname_r (hostname, &hostbuf, buffer, buflen, &hp, &herr)
-	 != 0
+  while (__gethostbyname_r (hostname, &hostbuf,
+			    tmpbuf.data, tmpbuf.length, &hp, &herr) != 0
 	 || hp == NULL)
     if (herr != NETDB_INTERNAL || errno != ERANGE)
-      return 0;
+      {
+	scratch_buffer_free (&tmpbuf);
+	return 0;
+      }
     else
-      /* Enlarge buffer.  */
-      buffer = extend_alloca (buffer, buflen, 2 * buflen);
+      if (!scratch_buffer_grow (&tmpbuf))
+	return 0;
 
   in.s_addr = 0;
   memcpy (&in, hp->h_addr,
 	  (int) sizeof (in) < hp->h_length ? (int) sizeof (in) : hp->h_length);
-
+  scratch_buffer_free (&tmpbuf);
   /* For the return value to be not exactly the IP address we do some
      bit fiddling.  */
   return (int32_t) (in.s_addr << 16 | in.s_addr >> 16);
