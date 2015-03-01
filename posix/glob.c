@@ -25,6 +25,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stddef.h>
+#include <scratch_buffer.h>
 
 /* Outcomment the following line for production quality code.  */
 /* #define NDEBUG 1 */
@@ -264,7 +265,7 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
   glob_t dirs;
   int retval = 0;
 #ifdef _LIBC
-  size_t alloca_used = 0;
+  size_t alloca_used = sizeof (struct scratch_buffer);
 #endif
 
   if (pattern == NULL || pglob == NULL || (flags & ~__GLOB_FLAGS) != 0)
@@ -621,33 +622,13 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
 		{
 		  struct passwd *p;
 #   if defined HAVE_GETPWNAM_R || defined _LIBC
-		  long int pwbuflen = GETPW_R_SIZE_MAX ();
-		  char *pwtmpbuf;
 		  struct passwd pwbuf;
-		  int malloc_pwtmpbuf = 0;
 		  int save = errno;
+		  struct scratch_buffer pwtmpbuf;
+		  scratch_buffer_init (&pwtmpbuf);
 
-#    ifndef _LIBC
-		  if (pwbuflen == -1)
-		    /* `sysconf' does not support _SC_GETPW_R_SIZE_MAX.
-		       Try a moderate value.  */
-		    pwbuflen = 1024;
-#    endif
-		  if (__libc_use_alloca (alloca_used + pwbuflen))
-		    pwtmpbuf = alloca_account (pwbuflen, alloca_used);
-		  else
-		    {
-		      pwtmpbuf = malloc (pwbuflen);
-		      if (pwtmpbuf == NULL)
-			{
-			  retval = GLOB_NOSPACE;
-			  goto out;
-			}
-		      malloc_pwtmpbuf = 1;
-		    }
-
-		  while (getpwnam_r (name, &pwbuf, pwtmpbuf, pwbuflen, &p)
-			 != 0)
+		  while (getpwnam_r (name, &pwbuf,
+				     pwtmpbuf.data, pwtmpbuf.length, &p) != 0)
 		    {
 		      if (errno != ERANGE)
 			{
@@ -655,67 +636,37 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
 			  break;
 			}
 
-		      if (!malloc_pwtmpbuf
-			  && __libc_use_alloca (alloca_used
-						+ 2 * pwbuflen))
-			pwtmpbuf = extend_alloca_account (pwtmpbuf, pwbuflen,
-							  2 * pwbuflen,
-							  alloca_used);
-		      else
+		      if (!scratch_buffer_grow (&pwtmpbuf))
 			{
-			  char *newp = realloc (malloc_pwtmpbuf
-						? pwtmpbuf : NULL,
-						2 * pwbuflen);
-			  if (newp == NULL)
-			    {
-			      if (__glibc_unlikely (malloc_pwtmpbuf))
-				free (pwtmpbuf);
-			      retval = GLOB_NOSPACE;
-			      goto out;
-			    }
-			  pwtmpbuf = newp;
-			  pwbuflen = 2 * pwbuflen;
-			  malloc_pwtmpbuf = 1;
+			  retval = GLOB_NOSPACE;
+			  goto out;
 			}
 		      __set_errno (save);
 		    }
 #   else
-		  p = getpwnam (name);
+		  p = getpwnam (namebuf.data);
 #   endif
 		  if (p != NULL)
 		    {
-		      if (!malloc_pwtmpbuf)
-			home_dir = p->pw_dir;
-		      else
+		      home_dir = strdup (p->pw_dir);
+		      malloc_home_dir = 1;
+		      if (home_dir == NULL)
 			{
-			  size_t home_dir_len = strlen (p->pw_dir) + 1;
-			  if (__libc_use_alloca (alloca_used + home_dir_len))
-			    home_dir = alloca_account (home_dir_len,
-						       alloca_used);
-			  else
-			    {
-			      home_dir = malloc (home_dir_len);
-			      if (home_dir == NULL)
-				{
-				  free (pwtmpbuf);
-				  retval = GLOB_NOSPACE;
-				  goto out;
-				}
-			      malloc_home_dir = 1;
-			    }
-			  memcpy (home_dir, p->pw_dir, home_dir_len);
-
-			  free (pwtmpbuf);
+			  scratch_buffer_free (&pwtmpbuf);
+			  retval = GLOB_NOSPACE;
+			  goto out;
 			}
 		    }
+		  scratch_buffer_free (&pwtmpbuf);
 		}
 	    }
 	  if (home_dir == NULL || home_dir[0] == '\0')
 	    {
+	      if (malloc_home_dir)
+		free (home_dir);
+	      malloc_home_dir = 0;
 	      if (flags & GLOB_TILDE_CHECK)
 		{
-		  if (__glibc_unlikely (malloc_home_dir))
-		    free (home_dir);
 		  retval = GLOB_NOMATCH;
 		  goto out;
 		}
@@ -836,57 +787,24 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
 	  {
 	    struct passwd *p;
 #  if defined HAVE_GETPWNAM_R || defined _LIBC
-	    long int buflen = GETPW_R_SIZE_MAX ();
-	    char *pwtmpbuf;
-	    int malloc_pwtmpbuf = 0;
 	    struct passwd pwbuf;
 	    int save = errno;
+	    struct scratch_buffer pwtmpbuf;
+	    scratch_buffer_init (&pwtmpbuf);
 
-#   ifndef _LIBC
-	    if (buflen == -1)
-	      /* `sysconf' does not support _SC_GETPW_R_SIZE_MAX.  Try a
-		 moderate value.  */
-	      buflen = 1024;
-#   endif
-	    if (__libc_use_alloca (alloca_used + buflen))
-	      pwtmpbuf = alloca_account (buflen, alloca_used);
-	    else
-	      {
-		pwtmpbuf = malloc (buflen);
-		if (pwtmpbuf == NULL)
-		  {
-		  nomem_getpw:
-		    if (__glibc_unlikely (malloc_user_name))
-		      free (user_name);
-		    retval = GLOB_NOSPACE;
-		    goto out;
-		  }
-		malloc_pwtmpbuf = 1;
-	      }
-
-	    while (getpwnam_r (user_name, &pwbuf, pwtmpbuf, buflen, &p) != 0)
+	    while (getpwnam_r (user_name, &pwbuf,
+			       pwtmpbuf.data, pwtmpbuf.length, &p) != 0)
 	      {
 		if (errno != ERANGE)
 		  {
 		    p = NULL;
 		    break;
 		  }
-		if (!malloc_pwtmpbuf
-		    && __libc_use_alloca (alloca_used + 2 * buflen))
-		  pwtmpbuf = extend_alloca_account (pwtmpbuf, buflen,
-						    2 * buflen, alloca_used);
-		else
+
+		if (!scratch_buffer_grow (&pwtmpbuf))
 		  {
-		    char *newp = realloc (malloc_pwtmpbuf ? pwtmpbuf : NULL,
-					  2 * buflen);
-		    if (newp == NULL)
-		      {
-			if (__glibc_unlikely (malloc_pwtmpbuf))
-			  free (pwtmpbuf);
-			goto nomem_getpw;
-		      }
-		    pwtmpbuf = newp;
-		    malloc_pwtmpbuf = 1;
+		    retval = GLOB_NOSPACE;
+		    goto out;
 		  }
 		__set_errno (save);
 	      }
@@ -915,8 +833,7 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
 		    dirname = malloc (home_len + rest_len + 1);
 		    if (dirname == NULL)
 		      {
-			if (__glibc_unlikely (malloc_pwtmpbuf))
-			  free (pwtmpbuf);
+			scratch_buffer_free (&pwtmpbuf);
 			retval = GLOB_NOSPACE;
 			goto out;
 		      }
@@ -928,13 +845,11 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
 		dirlen = home_len + rest_len;
 		dirname_modified = 1;
 
-		if (__glibc_unlikely (malloc_pwtmpbuf))
-		  free (pwtmpbuf);
+		scratch_buffer_free (&pwtmpbuf);
 	      }
 	    else
 	      {
-		if (__glibc_unlikely (malloc_pwtmpbuf))
-		  free (pwtmpbuf);
+		scratch_buffer_free (&pwtmpbuf);
 
 		if (flags & GLOB_TILDE_CHECK)
 		  /* We have to regard it as an error if we cannot find the
