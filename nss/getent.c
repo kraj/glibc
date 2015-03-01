@@ -39,6 +39,7 @@
 #include <netinet/ether.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <scratch_buffer.h>
 
 /* Get libc version number.  */
 #include <version.h>
@@ -477,36 +478,42 @@ netgroup_keys (int number, char *key[])
 static int
 initgroups_keys (int number, char *key[])
 {
-  int ngrps = 100;
-  size_t grpslen = ngrps * sizeof (gid_t);
-  gid_t *grps = alloca (grpslen);
-
   if (number == 0)
     {
       fprintf (stderr, _("Enumeration not supported on %s\n"), "initgroups");
       return 3;
     }
 
+  struct scratch_buffer tmpbuf;
+  scratch_buffer_init (&tmpbuf);
+
   for (int i = 0; i < number; ++i)
     {
+      ssize_t ngrps = tmpbuf.length / sizeof (gid_t);
       int no = ngrps;
       int n;
-      while ((n = getgrouplist (key[i], -1, grps, &no)) == -1
+      while ((n = getgrouplist (key[i], -1, tmpbuf.data, &no)) == -1
 	     && no > ngrps)
 	{
-	  grps = extend_alloca (grps, grpslen, no * sizeof (gid_t));
-	  ngrps = no;
+	  if (!scratch_buffer_set_array_size (&tmpbuf, no, sizeof (gid_t)))
+	    {
+	      fprintf (stderr, _("Could not allocate group list: %m\n"));
+	      return 3;
+	    }
 	}
 
       if (n == -1)
 	return 1;
 
+      const gid_t *grps = tmpbuf.data;
       printf ("%-21s", key[i]);
       for (int j = 0; j < n; ++j)
 	if (grps[j] != -1)
 	  printf (" %ld", (long int) grps[j]);
       putchar_unlocked ('\n');
     }
+
+  scratch_buffer_free (&tmpbuf);
 
   return 0;
 }
