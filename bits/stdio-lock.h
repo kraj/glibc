@@ -49,6 +49,8 @@ __libc_lock_define_recursive (typedef, _IO_lock_t)
   _IO_cleanup_region_start ((void (*) (void *)) _IO_funlockfile, (_fp));      \
   _IO_flockfile (_fp)
 
+# define _IO_acquire_lock_clear_flags2(_fp) _IO_acquire_lock (_fp)
+
 # define _IO_release_lock(_fp) \
   _IO_funlockfile (_fp);						      \
   _IO_cleanup_region_end (0)
