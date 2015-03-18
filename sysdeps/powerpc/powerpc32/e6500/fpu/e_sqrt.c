@@ -41,10 +41,10 @@ static const float half = 0.5;
 
 #ifdef __STDC__
 double
-__ieee754_sqrt (double b)
+__slow_ieee754_sqrt (double b)
 #else
 double
-__ieee754_sqrt (b)
+__slow_ieee754_sqrt (b)
      double b;
 #endif
 {
@@ -83,7 +83,7 @@ __ieee754_sqrt (b)
 
           /* Handle small numbers by scaling.  */
           if (__builtin_expect ((u.parts.msw & 0x7ff00000) <= 0x02000000, 0))
-            return __ieee754_sqrt (b * two108) * twom54;
+            return __slow_ieee754_sqrt (b * two108) * twom54;
 
 #define FMADD(a_, c_, b_)                                               \
           ({ double __r;                                                \

@@ -39,10 +39,10 @@ static const float threehalf = 1.5;
 
 #ifdef __STDC__
 float
-__ieee754_sqrtf (float b)
+__slow_ieee754_sqrtf (float b)
 #else
 float
-__ieee754_sqrtf (b)
+__slow_ieee754_sqrtf (b)
      float b;
 #endif
 {
