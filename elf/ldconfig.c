@@ -150,6 +150,8 @@ static struct argp argp =
   options, parse_opt, NULL, doc, NULL, more_help, NULL
 };
 
+extern const char LD_SO_CACHE[4096] __attribute__ ((section (".ldsocache")));
+
 /* Handle program arguments.  */
 static error_t
 parse_opt (int key, char *arg, struct argp_state *state)
