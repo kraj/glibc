@@ -1781,7 +1781,19 @@ open_path (const char *name, size_t namelen, int mode,
        given on the command line when rtld is run directly.  */
     return -1;
 
+  do
+    {
+      struct r_search_path_elem *this_dir = *dirs;
+      if (this_dir->dirnamelen > max_dirnamelen)
+	{
+	  max_dirnamelen = this_dir->dirnamelen;
+	}
+    }
+  while (*++dirs != NULL);
+
   buf = alloca (max_dirnamelen + max_capstrlen + namelen);
+
+  dirs = sps->dirs;
   do
     {
       struct r_search_path_elem *this_dir = *dirs;
