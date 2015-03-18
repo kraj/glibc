@@ -35,7 +35,7 @@ REPORT_BUGS_TO=tz@iana.org
 
 # Specify default values for environment variables if they are unset.
 : ${AWK=awk}
-: ${TZDIR=`pwd`}
+: ${TZDIR=$(pwd)}
 
 # Output one argument as-is to standard output.
 # Safer than 'echo', which can mishandle '\' or leading '-'.
