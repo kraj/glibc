@@ -147,7 +147,7 @@ add_to_global (struct link_map *new)
 	  ns->_ns_main_searchlist->r_list[new_nlist++] = map;
 
 	  /* We modify the global scope.  Report this.  */
-	  if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_SCOPES))
+	  if (__glibc_unlikely (GLRO_dl_debug_mask & DL_DEBUG_SCOPES))
 	    _dl_debug_printf ("\nadd %s [%lu] to global scope\n",
 			      map->l_name, map->l_ns);
 	}
@@ -251,7 +251,7 @@ dl_open_worker (void *a)
   if (__glibc_unlikely (new->l_searchlist.r_list != NULL))
     {
       /* Let the user know about the opencount.  */
-      if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_FILES))
+      if (__glibc_unlikely (GLRO_dl_debug_mask & DL_DEBUG_FILES))
 	_dl_debug_printf ("opening file=%s [%lu]; direct_opencount=%u\n\n",
 			  new->l_name, new->l_ns, new->l_direct_opencount);
 
@@ -302,7 +302,7 @@ dl_open_worker (void *a)
   LIBC_PROBE (map_complete, 3, args->nsid, r, new);
 
   /* Print scope information.  */
-  if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_SCOPES))
+  if (__glibc_unlikely (GLRO_dl_debug_mask & DL_DEBUG_SCOPES))
     _dl_show_scope (new, 0);
 
   /* Only do lazy relocation if `LD_BIND_NOW' is not set.  */
@@ -519,7 +519,7 @@ dl_open_worker (void *a)
 	}
 
       /* Print scope information.  */
-      if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_SCOPES))
+      if (__glibc_unlikely (GLRO_dl_debug_mask & DL_DEBUG_SCOPES))
 	_dl_show_scope (imap, from_scope);
     }
 
@@ -577,7 +577,7 @@ TLS generation counter wrapped!  Please report this."));
 #endif
 
   /* Let the user know about the opencount.  */
-  if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_FILES))
+  if (__glibc_unlikely (GLRO_dl_debug_mask & DL_DEBUG_FILES))
     _dl_debug_printf ("opening file=%s [%lu]; direct_opencount=%u\n\n",
 		      new->l_name, new->l_ns, new->l_direct_opencount);
 }

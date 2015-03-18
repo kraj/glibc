@@ -178,7 +178,7 @@ _dl_relocate_object (struct link_map *l, struct r_scope_elem *scope[],
       && __builtin_expect (l->l_info[DT_BIND_NOW] != NULL, 0))
     lazy = 0;
 
-  if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_RELOC))
+  if (__glibc_unlikely (GLRO_dl_debug_mask & DL_DEBUG_RELOC))
     _dl_debug_printf ("\nrelocation processing: %s%s\n",
 		      DSO_FILENAME (l->l_name), lazy ? " (lazy)" : "");
 

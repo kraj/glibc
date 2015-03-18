@@ -322,7 +322,7 @@ _dl_start_final (void *arg, struct dl_start_final_info *info)
     }
 #endif
 
-  if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_STATISTICS))
+  if (__glibc_unlikely (GLRO_dl_debug_mask & DL_DEBUG_STATISTICS))
     {
 #ifndef HP_TIMING_NONAVAIL
       print_statistics (&rtld_total_time);
@@ -1697,7 +1697,7 @@ ERROR: ld.so: object '%s' cannot be loaded as audit interface: %s; ignored.\n",
 	 after relocation.  */
       struct link_map *l;
 
-      if (GLRO(dl_debug_mask) & DL_DEBUG_PRELINK)
+      if (GLRO_dl_debug_mask & DL_DEBUG_PRELINK)
 	{
 	  struct r_scope_elem *scope = &main_map->l_searchlist;
 
@@ -1727,7 +1727,7 @@ ERROR: ld.so: object '%s' cannot be loaded as audit interface: %s; ignored.\n",
 		_dl_printf ("\n");
 	    }
 	}
-      else if (GLRO(dl_debug_mask) & DL_DEBUG_UNUSED)
+      else if (GLRO_dl_debug_mask & DL_DEBUG_UNUSED)
 	{
 	  /* Look through the dependencies of the main executable
 	     and determine which of them is not actually
@@ -1835,7 +1835,7 @@ ERROR: ld.so: object '%s' cannot be loaded as audit interface: %s; ignored.\n",
 		    }
 		}
 
-	      if ((GLRO(dl_debug_mask) & DL_DEBUG_PRELINK)
+	      if ((GLRO_dl_debug_mask & DL_DEBUG_PRELINK)
 		  && rtld_multiple_ref)
 		{
 		  /* Mark the link map as not yet relocated again.  */
@@ -1968,7 +1968,7 @@ ERROR: ld.so: object '%s' cannot be loaded as audit interface: %s; ignored.\n",
       if (r_list == r_listend && liblist == liblistend)
 	prelinked = true;
 
-      if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_LIBS))
+      if (__glibc_unlikely (GLRO_dl_debug_mask & DL_DEBUG_LIBS))
 	_dl_debug_printf ("\nprelink checking: %s\n",
 			  prelinked ? "ok" : "failed");
     }
@@ -1986,7 +1986,7 @@ ERROR: ld.so: object '%s' cannot be loaded as audit interface: %s; ignored.\n",
   GLRO(dl_init_all_dirs) = GL(dl_all_dirs);
 
   /* Print scope information.  */
-  if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_SCOPES))
+  if (__glibc_unlikely (GLRO_dl_debug_mask & DL_DEBUG_SCOPES))
     {
       _dl_debug_printf ("\nInitial object scopes\n");
 
@@ -2261,7 +2261,7 @@ process_dl_debug (const char *dl_debug)
 	    if (debopts[cnt].len == len
 		&& memcmp (dl_debug, debopts[cnt].name, len) == 0)
 	      {
-		GLRO(dl_debug_mask) |= debopts[cnt].mask;
+		GLRO_dl_debug_mask |= debopts[cnt].mask;
 		any_debug = 1;
 		break;
 	      }
@@ -2282,7 +2282,7 @@ warning: debug option `%s' unknown; try LD_DEBUG=help\n", copy);
       ++dl_debug;
     }
 
-  if (GLRO(dl_debug_mask) & DL_DEBUG_UNUSED)
+  if (GLRO_dl_debug_mask & DL_DEBUG_UNUSED)
     {
       /* In order to get an accurate picture of whether a particular
 	 DT_NEEDED entry is actually used we have to process both
@@ -2290,7 +2290,7 @@ warning: debug option `%s' unknown; try LD_DEBUG=help\n", copy);
       GLRO(dl_lazy) = 0;
     }
 
-  if (GLRO(dl_debug_mask) & DL_DEBUG_HELP)
+  if (GLRO_dl_debug_mask & DL_DEBUG_HELP)
     {
       size_t cnt;
 
@@ -2492,7 +2492,7 @@ process_envvars (enum mode *modep)
 	      mode = trace;
 	      GLRO(dl_verbose) = 1;
 #if __OPTION_EGLIBC_RTLD_DEBUG
-	      GLRO(dl_debug_mask) |= DL_DEBUG_PRELINK;
+	      GLRO_dl_debug_mask |= DL_DEBUG_PRELINK;
 #endif
 	      GLRO(dl_trace_prelink) = &envline[17];
 	    }
@@ -2541,7 +2541,7 @@ process_envvars (enum mode *modep)
 	{
 	  unsetenv ("MALLOC_CHECK_");
 #if __OPTION_EGLIBC_RTLD_DEBUG
-	  GLRO(dl_debug_mask) = 0;
+	  GLRO_dl_debug_mask = 0;
 #endif
 	}
 

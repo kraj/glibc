@@ -139,7 +139,7 @@ internal_function
 _dl_signal_cerror (int errcode, const char *objname, const char *occation,
 		   const char *errstring)
 {
-  if (__builtin_expect (GLRO(dl_debug_mask)
+  if (__builtin_expect (GLRO_dl_debug_mask
 			& ~(DL_DEBUG_STATISTICS|DL_DEBUG_PRELINK), 0))
     _dl_debug_printf ("%s: error: %s: %s (%s)\n", objname, occation,
 		      errstring, receiver ? "continued" : "fatal");

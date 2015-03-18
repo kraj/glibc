@@ -302,7 +302,7 @@ do_lookup_unique (const char *undef_name, uint_fast32_t new_hash,
 	 hash table.  */
       if (__glibc_unlikely (tab->size))
 	{
-	  assert (GLRO(dl_debug_mask) & DL_DEBUG_PRELINK);
+	  assert (GLRO_dl_debug_mask & DL_DEBUG_PRELINK);
 	  goto success;
 	}
 #endif
@@ -378,7 +378,7 @@ do_lookup_x (const char *undef_name, uint_fast32_t new_hash,
 	continue;
 
       /* Print some debugging info if wanted.  */
-      if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_SYMBOLS))
+      if (__glibc_unlikely (GLRO_dl_debug_mask & DL_DEBUG_SYMBOLS))
 	_dl_debug_printf ("symbol=%s;  lookup in file=%s [%lu]\n",
 			  undef_name, DSO_FILENAME (map->l_name),
 			  map->l_ns);
@@ -755,7 +755,7 @@ add_dependency (struct link_map *undef_map, struct link_map *map, int flags)
 	}
 
       /* Display information if we are debugging.  */
-      if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_FILES))
+      if (__glibc_unlikely (GLRO_dl_debug_mask & DL_DEBUG_FILES))
 	_dl_debug_printf ("\
 \nfile=%s [%lu];  needed by %s [%lu] (relocation dependency)\n\n",
 			  DSO_FILENAME (map->l_name),
@@ -859,7 +859,7 @@ _dl_lookup_symbol_x (const char *undef_name, struct link_map *undef_map,
     {
       if ((*ref == NULL || ELFW(ST_BIND) ((*ref)->st_info) != STB_WEAK)
 	  && skip_map == NULL
-	  && !(GLRO(dl_debug_mask) & DL_DEBUG_UNUSED))
+	  && !(GLRO_dl_debug_mask & DL_DEBUG_UNUSED))
 	{
 	  /* We could find no value for a strong reference.  */
 	  const char *reference_name = undef_map ? undef_map->l_name : "";
@@ -935,7 +935,7 @@ _dl_lookup_symbol_x (const char *undef_name, struct link_map *undef_map,
   if (__glibc_unlikely (current_value.m->l_used == 0))
     current_value.m->l_used = 1;
 
-  if (__glibc_unlikely (GLRO(dl_debug_mask)
+  if (__glibc_unlikely (GLRO_dl_debug_mask
 			& (DL_DEBUG_BINDINGS|DL_DEBUG_PRELINK)))
     _dl_debug_bindings (undef_name, undef_map, ref,
 			&current_value, version, type_class, protected);
@@ -1000,7 +1000,7 @@ _dl_debug_bindings (const char *undef_name, struct link_map *undef_map,
 {
   const char *reference_name = undef_map->l_name;
 
-  if (GLRO(dl_debug_mask) & DL_DEBUG_BINDINGS)
+  if (GLRO_dl_debug_mask & DL_DEBUG_BINDINGS)
     {
       _dl_debug_printf ("binding file %s [%lu] to %s [%lu]: %s symbol `%s'",
 			DSO_FILENAME (reference_name),
@@ -1014,7 +1014,7 @@ _dl_debug_bindings (const char *undef_name, struct link_map *undef_map,
 	_dl_debug_printf_c ("\n");
     }
 #ifdef SHARED
-  if (GLRO(dl_debug_mask) & DL_DEBUG_PRELINK)
+  if (GLRO_dl_debug_mask & DL_DEBUG_PRELINK)
     {
 /* ELF_RTYPE_CLASS_XXX must match RTYPE_CLASS_XXX used by prelink with
    LD_TRACE_PRELINKING.  */

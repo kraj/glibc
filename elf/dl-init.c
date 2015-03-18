@@ -46,7 +46,7 @@ call_init (struct link_map *l, int argc, char **argv, char **env)
     return;
 
   /* Print a debug message if wanted.  */
-  if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_IMPCALLS))
+  if (__glibc_unlikely (GLRO_dl_debug_mask & DL_DEBUG_IMPCALLS))
     _dl_debug_printf ("\ncalling init: %s\n\n",
 		      DSO_FILENAME (l->l_name));
 
@@ -96,7 +96,7 @@ _dl_init (struct link_map *main_map, int argc, char **argv, char **env)
       ElfW(Addr) *addrs;
       unsigned int cnt;
 
-      if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_IMPCALLS))
+      if (__glibc_unlikely (GLRO_dl_debug_mask & DL_DEBUG_IMPCALLS))
 	_dl_debug_printf ("\ncalling preinit: %s\n\n",
 			  DSO_FILENAME (main_map->l_name));
 

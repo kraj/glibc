@@ -194,7 +194,7 @@ _dl_load_cache_lookup (const char *name)
   const char *best;
 
   /* Print a message if the loading of libs is traced.  */
-  if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_LIBS))
+  if (__glibc_unlikely (GLRO_dl_debug_mask & DL_DEBUG_LIBS))
     _dl_debug_printf (" search cache=%s\n", LD_SO_CACHE);
 
   if (cache == NULL)
@@ -292,7 +292,7 @@ _dl_load_cache_lookup (const char *name)
     }
 
   /* Print our result if wanted.  */
-  if (__builtin_expect (GLRO(dl_debug_mask) & DL_DEBUG_LIBS, 0)
+  if (__builtin_expect (GLRO_dl_debug_mask & DL_DEBUG_LIBS, 0)
       && best != NULL)
     _dl_debug_printf ("  trying file=%s\n", best);
 

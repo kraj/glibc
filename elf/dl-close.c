@@ -125,7 +125,7 @@ _dl_close_worker (struct link_map *map, bool force)
 	dl_close_state = rerun;
 
       /* There are still references to this object.  Do nothing more.  */
-      if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_FILES))
+      if (__glibc_unlikely (GLRO_dl_debug_mask & DL_DEBUG_FILES))
 	_dl_debug_printf ("\nclosing file=%s; direct_opencount=%u\n",
 			  map->l_name, map->l_direct_opencount);
 
@@ -269,7 +269,7 @@ _dl_close_worker (struct link_map *map, bool force)
 	  if (imap->l_init_called)
 	    {
 	      /* When debugging print a message first.  */
-	      if (__builtin_expect (GLRO(dl_debug_mask) & DL_DEBUG_IMPCALLS,
+	      if (__builtin_expect (GLRO_dl_debug_mask & DL_DEBUG_IMPCALLS,
 				    0))
 		_dl_debug_printf ("\ncalling fini: %s [%lu]\n\n",
 				  imap->l_name, nsid);
@@ -711,7 +711,7 @@ _dl_close_worker (struct link_map *map, bool force)
 	  free (imap->l_reldeps);
 
 	  /* Print debugging message.  */
-	  if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_FILES))
+	  if (__glibc_unlikely (GLRO_dl_debug_mask & DL_DEBUG_FILES))
 	    _dl_debug_printf ("\nfile=%s [%lu];  destroying link map\n",
 			      imap->l_name, imap->l_ns);
 

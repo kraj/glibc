@@ -98,7 +98,7 @@ _dl_new_object (char *realname, const char *libname, int type,
   new->l_type = type;
   /* If we set the bit now since we know it is never used we avoid
      dirtying the cache line later.  */
-  if ((GLRO(dl_debug_mask) & DL_DEBUG_UNUSED) == 0)
+  if ((GLRO_dl_debug_mask & DL_DEBUG_UNUSED) == 0)
     new->l_used = 1;
   new->l_loader = loader;
 #if NO_TLS_OFFSET != 0

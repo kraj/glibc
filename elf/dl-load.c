@@ -944,7 +944,7 @@ _dl_map_object_from_fd (const char *name, int fd, struct filebuf *fbp,
     }
 
   /* Print debugging message.  */
-  if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_FILES))
+  if (__glibc_unlikely (GLRO_dl_debug_mask & DL_DEBUG_FILES))
     _dl_debug_printf ("file=%s [%lu];  generating link map\n", name, nsid);
 
   /* This is the ELF header.  We read it in `open_verify'.  */
@@ -1348,7 +1348,7 @@ cannot enable executable stack as shared object requires");
 
   l->l_entry += l->l_addr;
 
-  if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_FILES))
+  if (__glibc_unlikely (GLRO_dl_debug_mask & DL_DEBUG_FILES))
     _dl_debug_printf ("\
   dynamic: 0x%0*lx  base: 0x%0*lx   size: 0x%0*Zx\n\
     entry: 0x%0*lx  phdr: 0x%0*lx  phnum:   %*u\n\n",
@@ -1805,7 +1805,7 @@ open_path (const char *name, size_t namelen, int mode,
 
       /* If we are debugging the search for libraries print the path
 	 now if it hasn't happened now.  */
-      if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_LIBS)
+      if (__glibc_unlikely (GLRO_dl_debug_mask & DL_DEBUG_LIBS)
 	  && current_what != this_dir->what)
 	{
 	  current_what = this_dir->what;
@@ -1826,7 +1826,7 @@ open_path (const char *name, size_t namelen, int mode,
 	     - buf);
 
 	  /* Print name we try if this is wanted.  */
-	  if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_LIBS))
+	  if (__glibc_unlikely (GLRO_dl_debug_mask & DL_DEBUG_LIBS))
 	    _dl_debug_printf ("  trying file=%s\n", buf);
 
 	  fd = open_verify (buf, -1, fbp, loader, whatcode, mode,
@@ -1971,7 +1971,7 @@ _dl_map_object (struct link_map *loader, const char *name,
     }
 
   /* Display information if we are debugging.  */
-  if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_FILES)
+  if (__glibc_unlikely (GLRO_dl_debug_mask & DL_DEBUG_FILES)
       && loader != NULL)
     _dl_debug_printf ((mode & __RTLD_CALLMAP) == 0
 		      ? "\nfile=%s [%lu];  needed by %s [%lu]\n"
@@ -2013,7 +2013,7 @@ _dl_map_object (struct link_map *loader, const char *name,
 
       size_t namelen = strlen (name) + 1;
 
-      if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_LIBS))
+      if (__glibc_unlikely (GLRO_dl_debug_mask & DL_DEBUG_LIBS))
 	_dl_debug_printf ("find library=%s [%lu]; searching\n", name, nsid);
 
       fd = -1;
@@ -2150,7 +2150,7 @@ _dl_map_object (struct link_map *loader, const char *name,
 #endif
 
       /* Add another newline when we are tracing the library loading.  */
-      if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_LIBS))
+      if (__glibc_unlikely (GLRO_dl_debug_mask & DL_DEBUG_LIBS))
 	_dl_debug_printf ("\n");
     }
   else
@@ -2183,7 +2183,7 @@ _dl_map_object (struct link_map *loader, const char *name,
   if (__glibc_unlikely (fd == -1))
     {
       if (trace_mode
-	  && __glibc_likely ((GLRO(dl_debug_mask) & DL_DEBUG_PRELINK) == 0))
+	  && __glibc_likely ((GLRO_dl_debug_mask & DL_DEBUG_PRELINK) == 0))
 	{
 	  /* We haven't found an appropriate library.  But since we
 	     are only interested in the list of libraries this isn't
