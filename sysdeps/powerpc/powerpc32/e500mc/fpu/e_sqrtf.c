@@ -39,10 +39,10 @@ static const float threehalf = 1.5;
 
 #ifdef __STDC__
 float
-__ieee754_sqrtf (float b)
+__slow_ieee754_sqrtf (float b)
 #else
 float
-__ieee754_sqrtf (b)
+__slow_ieee754_sqrtf (b)
      float b;
 #endif
 {
@@ -99,4 +99,12 @@ __ieee754_sqrtf (b)
     }
   return f_washf (b);
 }
+
+#undef __ieee754_sqrtf
+float
+__ieee754_sqrtf (float x)
+{
+  return __slow_ieee754_sqrtf (x);
+}
+
 strong_alias (__ieee754_sqrtf, __sqrtf_finite)

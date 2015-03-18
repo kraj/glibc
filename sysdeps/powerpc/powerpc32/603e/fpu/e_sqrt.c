@@ -40,7 +40,7 @@ static const float half = 0.5;
    simultaneously.  */
 
 double
-__ieee754_sqrt (double b)
+__slow_ieee754_sqrt (double b)
 {
   if (__builtin_expect (b > 0, 1))
     {
@@ -77,7 +77,7 @@ __ieee754_sqrt (double b)
 
           /* Handle small numbers by scaling.  */
           if (__builtin_expect ((u.parts.msw & 0x7ff00000) <= 0x02000000, 0))
-            return __ieee754_sqrt (b * two108) * twom54;
+            return __slow_ieee754_sqrt (b * two108) * twom54;
 
 #define FMADD(a_, c_, b_)                                               \
           ({ double __r;                                                \
@@ -126,4 +126,12 @@ __ieee754_sqrt (double b)
     }
   return f_wash (b);
 }
+
+#undef __ieee754_sqrt
+double
+__ieee754_sqrt (double x)
+{
+   return __slow_ieee754_sqrt (x);
+}
+
 strong_alias (__ieee754_sqrt, __sqrt_finite)
