@@ -10,8 +10,8 @@ GLIBC_PROVIDES dnl See aclocal.m4 in the top level source directory.
 # the dynamic linker via %ifdef.
 AC_CACHE_CHECK([for big endian],
   [libc_cv_aarch64_be],
-  [AC_EGREP_CPP(yes,[#ifdef __AARCH64EB__
-                      yes
+  [AC_EGREP_CPP(is_aarch64_be,[#ifdef __AARCH64EB__
+                      is_aarch64_be
                      #endif
   ], libc_cv_aarch64_be=yes, libc_cv_aarch64_be=no)])
 if test $libc_cv_aarch64_be = yes; then

@@ -15,8 +15,8 @@ AC_DEFINE(PI_STATIC_AND_HIDDEN)
 # the dynamic linker via %ifdef.
 AC_CACHE_CHECK([whether the compiler is using the ARM hard-float ABI],
   [libc_cv_arm_pcs_vfp],
-  [AC_EGREP_CPP(yes,[#ifdef __ARM_PCS_VFP
-		      yes
+  [AC_EGREP_CPP(use_arm_pcs_vfp,[#ifdef __ARM_PCS_VFP
+		      use_arm_pcs_vfp
 		     #endif
   ], libc_cv_arm_pcs_vfp=yes, libc_cv_arm_pcs_vfp=no)])
 if test $libc_cv_arm_pcs_vfp = yes; then

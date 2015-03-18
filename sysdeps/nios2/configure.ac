@@ -4,8 +4,8 @@ GLIBC_PROVIDES dnl See aclocal.m4 in the top level source directory.
 # Nios II big endian is not yet supported.
 AC_CACHE_CHECK([for big endian],
   [libc_cv_nios2_be],
-  [AC_EGREP_CPP(yes,[#ifdef __nios2_big_endian__
-                      yes
+  [AC_EGREP_CPP(is_nios2_be,[#ifdef __nios2_big_endian__
+                      is_nios2_be
                      #endif
   ], libc_cv_nios2_be=yes, libc_cv_nios2_be=no)])
 if test $libc_cv_nios2_be = yes; then
