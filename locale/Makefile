@@ -30,6 +30,7 @@ headers = \
   locale.h \
   # headers
 routines = \
+	catnames \
   duplocale \
   findlocale \
   freelocale \
