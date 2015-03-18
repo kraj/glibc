@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <gnu/option-groups.h>
 
 
 char const string[] = "";
@@ -64,8 +65,10 @@ do_test (void)
   int result = 0;
 
   result |= test ("C");
+#if __OPTION_EGLIBC_LOCALE_CODE
   result |= test ("en_US.ISO-8859-1");
   result |= test ("de_DE.UTF-8");
+#endif
 
   return result;
 }

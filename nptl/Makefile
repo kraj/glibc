@@ -18,6 +18,8 @@
 #
 #	Sub-makefile for NPTL portion of the library.
 #
+include ../option-groups.mak
+
 subdir	:= nptl
 
 include ../Makeconfig
@@ -118,7 +120,7 @@ libpthread-routines = nptl-init vars events version pt-interp \
 		      pt-raise pt-system \
 		      flockfile ftrylockfile funlockfile \
 		      sigaction \
-		      herrno res pt-allocrtsig \
+		      pt-allocrtsig \
 		      pthread_kill_other_threads \
 		      pthread_getaffinity pthread_setaffinity \
 		      pthread_attr_getaffinity pthread_attr_setaffinity \
@@ -138,8 +140,10 @@ libpthread-routines = nptl-init vars events version pt-interp \
 #		      pthread_setgid pthread_setegid pthread_setregid \
 #		      pthread_setresgid
 
+libpthread-routines-$(OPTION_EGLIBC_INET) := herrno res
 libpthread-shared-only-routines = version pt-interp pt-allocrtsig \
 				  unwind-forcedunwind
+
 libpthread-static-only-routines = pthread_atfork
 
 # Since cancellation handling is in large parts handled using exceptions
@@ -220,7 +224,7 @@ tests = tst-typesizes \
 	tst-mutexpi1 tst-mutexpi2 tst-mutexpi3 tst-mutexpi4 tst-mutexpi5 \
 	tst-mutexpi5a tst-mutexpi6 tst-mutexpi7 tst-mutexpi7a tst-mutexpi8 \
 	tst-mutexpi9 \
-	tst-spin1 tst-spin2 tst-spin3 tst-spin4 \
+	tst-spin1 tst-spin2 tst-spin3 \
 	tst-cond1 tst-cond2 tst-cond3 tst-cond4 tst-cond5 tst-cond6 tst-cond7 \
 	tst-cond8 tst-cond9 tst-cond10 tst-cond11 tst-cond12 tst-cond13 \
 	tst-cond14 tst-cond15 tst-cond16 tst-cond17 tst-cond18 tst-cond19 \
@@ -256,14 +260,14 @@ tests = tst-typesizes \
 	tst-cancel6 tst-cancel7 tst-cancel8 tst-cancel9 tst-cancel10 \
 	tst-cancel11 tst-cancel12 tst-cancel13 tst-cancel14 tst-cancel15 \
 	tst-cancel16 tst-cancel17 tst-cancel18 tst-cancel19 tst-cancel20 \
-	tst-cancel21 tst-cancel22 tst-cancel23 tst-cancel24 tst-cancel25 \
+	tst-cancel21 tst-cancel22 tst-cancel23 tst-cancel25 \
 	tst-cancel-self tst-cancel-self-cancelstate \
 	tst-cancel-self-canceltype tst-cancel-self-testcancel \
 	tst-cleanup0 tst-cleanup1 tst-cleanup2 tst-cleanup3 tst-cleanup4 \
 	tst-flock1 tst-flock2 \
 	tst-signal1 tst-signal2 tst-signal3 tst-signal4 tst-signal5 \
 	tst-signal6 tst-signal7 \
-	tst-exec1 tst-exec2 tst-exec3 tst-exec4 \
+	tst-exec2 tst-exec3 tst-exec4 \
 	tst-exit1 tst-exit2 tst-exit3 \
 	tst-stdio1 tst-stdio2 \
 	tst-stack1 tst-stack2 tst-stack3 tst-stack4 tst-pthread-getattr \
@@ -271,13 +275,12 @@ tests = tst-typesizes \
 	tst-unload \
 	tst-dlsym1 \
 	tst-sysconf \
-	tst-locale1 tst-locale2 \
+	tst-locale2 \
 	tst-umask1 \
 	tst-popen1 \
 	tst-clock1 \
 	tst-context1 \
 	tst-sched1 \
-	tst-backtrace1 \
 	tst-abstime \
 	tst-vfork1 tst-vfork2 tst-vfork1x tst-vfork2x \
 	tst-getpid3 \
@@ -288,9 +291,16 @@ xtests = tst-setuid1 tst-setuid1-static tst-setuid2 \
 	tst-mutexpp1 tst-mutexpp6 tst-mutexpp10
 test-srcs = tst-oddstacklimit
 
-# Test expected to fail on most targets (except x86_64) due to bug
-# 18435 - pthread_once hangs when init routine throws an exception.
-test-xfail-tst-once5 = yes
+# This test uses the posix_spawn functions.
+tests-$(OPTION_EGLIBC_SPAWN) += tst-exec1
+
+# This test uses the 'backtrace' functions.
+tests-$(OPTION_EGLIBC_BACKTRACE) += tst-backtrace1
+
+# This test is written in C++.
+tests-$(OPTION_EGLIBC_CXX_TESTS) += tst-cancel24
+
+tests-$(OPTION_EGLIBC_LOCALE_CODE) += tst-locale1
 
 # Files which must not be linked with libpthread.
 tests-nolibpthread = tst-unload

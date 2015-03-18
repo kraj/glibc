@@ -18,6 +18,8 @@
 #
 #	Sub-makefile for debug portion of the library.
 #
+include ../option-groups.mak
+
 subdir	:= debug
 
 include ../Makeconfig
@@ -27,7 +29,7 @@ headers	:= execinfo.h
 # Note that ptsname_r_chk and getlogin_r are not here, but in
 # login/Makefile instead.  If that subdir is omitted from the
 # build, its _FORTIFY_SOURCE support will be too.
-routines  = backtrace backtracesyms backtracesymsfd noophooks \
+routines  = noophooks \
 	    memcpy_chk memmove_chk mempcpy_chk memset_chk stpcpy_chk \
 	    strcat_chk strcpy_chk strncat_chk strncpy_chk stpncpy_chk \
 	    sprintf_chk vsprintf_chk snprintf_chk vsnprintf_chk \
@@ -36,20 +38,27 @@ routines  = backtrace backtracesyms backtracesymsfd noophooks \
 	    read_chk pread_chk pread64_chk recv_chk recvfrom_chk \
 	    readlink_chk readlinkat_chk getwd_chk getcwd_chk \
 	    realpath_chk fread_chk fread_u_chk \
-	    wctomb_chk wcscpy_chk wmemcpy_chk wmemmove_chk wmempcpy_chk \
-	    wcpcpy_chk wcsncpy_chk wcscat_chk wcsncat_chk wmemset_chk \
-	    wcpncpy_chk \
-	    swprintf_chk vswprintf_chk wprintf_chk fwprintf_chk \
-	    vwprintf_chk vfwprintf_chk fgetws_chk fgetws_u_chk \
 	    confstr_chk getgroups_chk ttyname_r_chk \
-	    gethostname_chk getdomainname_chk wcrtomb_chk mbsnrtowcs_chk \
-	    wcsnrtombs_chk mbsrtowcs_chk wcsrtombs_chk mbstowcs_chk \
-	    wcstombs_chk asprintf_chk vasprintf_chk dprintf_chk \
+	    gethostname_chk getdomainname_chk \
+	    asprintf_chk vasprintf_chk dprintf_chk \
 	    vdprintf_chk obprintf_chk \
 	    longjmp_chk ____longjmp_chk \
 	    fdelt_chk poll_chk ppoll_chk \
 	    stack_chk_fail fortify_fail \
 	    $(static-only-routines)
+routines-$(OPTION_EGLIBC_BACKTRACE) += backtrace backtracesyms backtracesymsfd
+routines-$(OPTION_POSIX_WIDE_CHAR_DEVICE_IO)			\
+	 += wprintf_chk fwprintf_chk				\
+	    vwprintf_chk vfwprintf_chk fgetws_chk fgetws_u_chk
+routines-$(OPTION_POSIX_C_LANG_WIDE_CHAR)				\
+	 += wctomb_chk wcscpy_chk wmemcpy_chk wmemmove_chk wmempcpy_chk	\
+	    wcpcpy_chk wcsncpy_chk wcscat_chk wcsncat_chk wmemset_chk	\
+	    wcpncpy_chk							\
+	    swprintf_chk vswprintf_chk					\
+	    wcrtomb_chk mbsnrtowcs_chk					\
+	    wcsnrtombs_chk mbsrtowcs_chk wcsrtombs_chk mbstowcs_chk	\
+	    wcstombs_chk
+
 static-only-routines := warning-nop stack_chk_fail_local
 
 CFLAGS-backtrace.c = -fno-omit-frame-pointer
@@ -131,11 +140,15 @@ LDFLAGS-tst-backtrace4 = -rdynamic
 LDFLAGS-tst-backtrace5 = -rdynamic
 LDFLAGS-tst-backtrace6 = -rdynamic
 
-tests = backtrace-tst tst-longjmp_chk tst-chk1 tst-chk2 tst-chk3 \
-	tst-lfschk1 tst-lfschk2 tst-lfschk3 test-strcpy_chk test-stpcpy_chk \
-	tst-chk4 tst-chk5 tst-chk6 tst-lfschk4 tst-lfschk5 tst-lfschk6 \
-	tst-longjmp_chk2 tst-backtrace2 tst-backtrace3 tst-backtrace4 \
-	tst-backtrace5 tst-backtrace6
+tests = tst-longjmp_chk test-strcpy_chk test-stpcpy_chk tst-longjmp_chk2
+tests-$(OPTION_EGLIBC_LOCALE_CODE) \
+      += tst-chk1 tst-chk2 tst-chk3 tst-lfschk1 tst-lfschk2 tst-lfschk3
+tests-$(OPTION_EGLIBC_BACKTRACE) \
+      += backtrace-tst tst-backtrace2 tst-backtrace3 tst-backtrace4 \
+         tst-backtrace5 tst-backtrace6
+ifeq (yy,$(OPTION_EGLIBC_LOCALE_CODE)$(OPTION_EGLIBC_CXX_TESTS))
+tests += tst-chk4 tst-chk5 tst-chk6 tst-lfschk4 tst-lfschk5 tst-lfschk6
+endif
 
 ifeq (,$(CXX))
 tests-unsupported = tst-chk4 tst-chk5 tst-chk6 \

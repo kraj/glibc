@@ -18,6 +18,8 @@
 #
 #	Makefile for time routines
 #
+include ../option-groups.mak
+
 subdir	:= time
 
 include ../Makeconfig
@@ -30,14 +32,22 @@ routines := offtime asctime clock ctime ctime_r difftime \
 	    tzfile getitimer setitimer			 \
 	    stime dysize timegm ftime			 \
 	    getdate strptime strptime_l			 \
-	    strftime wcsftime strftime_l wcsftime_l	 \
+	    strftime strftime_l				 \
 	    timespec_get
-aux :=	    era alt_digit lc-time-cleanup
 
-tests	:= test_time clocktest tst-posixtz tst-strptime tst_wcsftime \
-	   tst-getdate tst-mktime tst-mktime2 tst-ftime_l tst-strftime \
+routines-$(OPTION_POSIX_C_LANG_WIDE_CHAR)                \
+	    := wcsftime wcsftime_l
+aux-$(OPTION_EGLIBC_LOCALE_CODE) += alt_digit era lc-time-cleanup
+
+tests	:= test_time clocktest tst-posixtz \
+	   tst-getdate tst-mktime tst-mktime2 tst-strftime \
 	   tst-mktime3 tst-strptime2 bug-asctime bug-asctime_r bug-mktime1 \
 	   tst-strptime3 bug-getdate1 tst-strptime-whitespace tst-ftime
+
+tests-$(OPTION_EGLIBC_LOCALE_CODE) \
+	        += tst-strptime tst-ftime_l
+tests-$(OPTION_POSIX_WIDE_CHAR_DEVICE_IO) \
+	        += tst_wcsftime
 
 include ../Rules
 

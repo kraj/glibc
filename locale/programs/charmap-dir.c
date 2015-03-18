@@ -19,7 +19,9 @@
 #include <error.h>
 #include <fcntl.h>
 #include <libintl.h>
+#ifndef NO_UNCOMPRESS
 #include <spawn.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -156,6 +158,7 @@ charmap_closedir (CHARMAP_DIR *cdir)
   return closedir (dir);
 }
 
+#ifndef NO_UNCOMPRESS
 /* Creates a subprocess decompressing the given pathname, and returns
    a stream reading its output (the decompressed data).  */
 static
@@ -204,6 +207,7 @@ fopen_uncompressed (const char *pathname, const char *compressor)
     }
   return NULL;
 }
+#endif
 
 /* Opens a charmap for reading, given its name (not an alias name).  */
 FILE *
@@ -226,6 +230,7 @@ charmap_open (const char *directory, const char *name)
   if (stream != NULL)
     return stream;
 
+#ifndef NO_UNCOMPRESS
   memcpy (p, ".gz", 4);
   stream = fopen_uncompressed (pathname, "gzip");
   if (stream != NULL)
@@ -235,6 +240,7 @@ charmap_open (const char *directory, const char *name)
   stream = fopen_uncompressed (pathname, "bzip2");
   if (stream != NULL)
     return stream;
+#endif
 
   return NULL;
 }

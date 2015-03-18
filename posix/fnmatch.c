@@ -30,6 +30,10 @@
 #include <ctype.h>
 #include <string.h>
 
+#if defined _LIBC
+# include <gnu/option-groups.h>
+#endif
+
 #if defined STDC_HEADERS || defined _LIBC
 # include <stdlib.h>
 #endif
@@ -131,7 +135,7 @@ extern int fnmatch (const char *pattern, const char *string, int flags);
 #   define ISWCTYPE(WC, WT)	iswctype (WC, WT)
 #  endif
 
-#  if (HAVE_MBSTATE_T && HAVE_MBSRTOWCS) || _LIBC
+#  if (HAVE_MBSTATE_T && HAVE_MBSRTOWCS && _LIBC && __OPTION_EGLIBC_LOCALE_CODE)
 /* In this case we are implementing the multibyte character handling.  */
 #   define HANDLE_MULTIBYTE	1
 #  endif

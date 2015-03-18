@@ -35,6 +35,7 @@
 #endif
 
 #ifdef _LIBC
+# include <gnu/option-groups.h>
 # include <libintl.h>
 # include <stdbool.h>
 # include <stdint.h>
@@ -205,6 +206,7 @@ error_tail (int status, int errnum, const char *message, va_list args)
 #if _LIBC
   if (_IO_fwide (stderr, 0) > 0)
     {
+#if __OPTION_POSIX_WIDE_CHAR_DEVICE_IO
       size_t len = strlen (message) + 1;
       wchar_t *wmessage = NULL;
       mbstate_t st;
@@ -265,6 +267,9 @@ error_tail (int status, int errnum, const char *message, va_list args)
 
       if (use_malloc)
 	free (wmessage);
+#else
+      abort ();
+#endif
     }
   else
 #endif

@@ -18,6 +18,8 @@
 #
 #	Sub-makefile for pwd portion of the library.
 #
+include ../option-groups.mak
+
 subdir	:= pwd
 
 include ../Makeconfig

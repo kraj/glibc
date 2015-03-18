@@ -59,7 +59,8 @@ $(foreach o,$(object-suffixes) $(object-suffixes:=.d),\
 endif
 
 ifeq ($(subdir),login)
-sysdep_routines += setutxent getutxent endutxent getutxid getutxline \
+sysdep_routines-$(OPTION_EGLIBC_UTMPX) \
+		+= setutxent getutxent endutxent getutxid getutxline \
 		   pututxline utmpxname updwtmpx getutmpx getutmp
 
 sysdep_headers += utmpx.h bits/utmpx.h

@@ -22,6 +22,8 @@
 # crtn.o, special "initializer" and "finalizer" files used in the link
 # to make the .init and .fini sections work right.
 
+include ../option-groups.mak
+
 subdir := csu
 
 include ../Makeconfig

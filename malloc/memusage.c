@@ -33,6 +33,7 @@
 #include <stdint.h>
 #include <sys/mman.h>
 #include <sys/time.h>
+#include <gnu/option-groups.h>
 
 #include <memusage.h>
 
@@ -93,7 +94,11 @@ static __thread uintptr_t start_sp;
 #define peak_stack      peak_use[1]
 #define peak_total      peak_use[2]
 
-#define DEFAULT_BUFFER_SIZE     32768
+#ifndef __OPTION_EGLIBC_MEMUSAGE_DEFAULT_BUFFER_SIZE
+# define DEFAULT_BUFFER_SIZE	32768
+#else
+# define DEFAULT_BUFFER_SIZE	__OPTION_EGLIBC_MEMUSAGE_DEFAULT_BUFFER_SIZE
+#endif
 static size_t buffer_size;
 
 static int fd = -1;

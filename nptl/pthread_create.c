@@ -33,6 +33,7 @@
 #include <default-sched.h>
 #include <futex-internal.h>
 
+#include <gnu/option-groups.h>
 #include <shlib-compat.h>
 
 #include <stap-probe.h>
@@ -262,8 +263,10 @@ START_THREAD_DEFN
   THREAD_SETMEM (pd, cpuclock_offset, now);
 #endif
 
+#if __OPTION_EGLIBC_INET
   /* Initialize resolver state pointer.  */
   __resp = &pd->res;
+#endif
 
   /* Initialize pointers to locale data.  */
   __ctype_init ();
@@ -346,8 +349,10 @@ START_THREAD_DEFN
   /* Run the destructor for the thread-local data.  */
   __nptl_deallocate_tsd ();
 
+#if __OPTION_EGLIBC_INET
   /* Clean up any state libc stored in thread-local variables.  */
   __libc_thread_freeres ();
+#endif
 
   /* If this is the last thread we terminate the process now.  We
      do not notify the debugger, it might just irritate it if there

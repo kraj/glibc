@@ -23,6 +23,7 @@
 #include <math.h>
 #include <printf.h>
 #include <libioP.h>
+#include <gnu/option-groups.h>
 
 
 /* This defines make it possible to use the same code for GNU C library and
@@ -116,7 +117,14 @@ __printf_size (FILE *fp, const struct printf_info *info,
 
   struct printf_info fp_info;
   int done = 0;
+#if __OPTION_POSIX_C_LANG_WIDE_CHAR
   int wide = info->wide;
+#else
+  /* This should never be called on a wide-oriented stream when
+     OPTION_POSIX_C_LANG_WIDE_CHAR is disabled, but the compiler can't
+     be trusted to figure that out.  */
+  const int wide = 0;
+#endif
   int res;
 
   /* Fetch the argument value.	*/

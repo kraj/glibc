@@ -3,6 +3,7 @@
 #include <string.h>
 #include <wchar.h>
 #include <libc-internal.h>
+#include <gnu/option-groups.h>
 
 #define FAIL() \
   do {							\
@@ -48,6 +49,7 @@ main (void)
   /* See explanation above.  */
   DIAG_PUSH_NEEDS_COMMENT;
   DIAG_IGNORE_NEEDS_COMMENT (4.9, "-Wformat");
+#if __OPTION_EGLIBC_LOCALE_CODE
   if (sscanf (" 3.25S x", "%4aS%3c", &lsp, c) != 2)
     FAIL ();
   else
@@ -57,6 +59,7 @@ main (void)
       memset (lsp, 'x', sizeof L"3.25");
       free (lsp);
     }
+#endif
   if (sscanf ("4.25[0-9.] x", "%a[0-9.]%8c", &sp, c) != 2)
     FAIL ();
   else

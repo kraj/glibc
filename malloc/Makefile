@@ -18,6 +18,8 @@
 #
 #	Makefile for malloc routines
 #
+include ../option-groups.mak
+
 subdir	:= malloc
 
 include ../Makeconfig
@@ -39,8 +41,14 @@ install-lib := libmcheck.a
 non-lib.a := libmcheck.a
 
 # Additional library.
+ifeq ($(OPTION_EGLIBC_MEMUSAGE),y)
 extra-libs = libmemusage
 extra-libs-others = $(extra-libs)
+
+ifdef OPTION_EGLIBC_MEMUSAGE_DEFAULT_BUFFER_SIZE
+CPPFLAGS-memusage += -D__OPTION_EGLIBC_MEMUSAGE_DEFAULT_BUFFER_SIZE=$(OPTION_EGLIBC_MEMUSAGE_DEFAULT_BUFFER_SIZE)
+endif
+endif
 
 libmemusage-routines = memusage
 libmemusage-inhibit-o = $(filter-out .os,$(object-suffixes))
@@ -71,7 +79,7 @@ endif
 # Unless we get a test for the availability of libgd which also works
 # for cross-compiling we disable the memusagestat generation in this
 # situation.
-ifneq ($(cross-compiling),yes)
+ifeq ($(cross-compiling)$(OPTION_EGLIBC_MEMUSAGE),noy)
 # If the gd library is available we build the `memusagestat' program.
 ifneq ($(LIBGD),no)
 others: $(objpfx)memusage

@@ -23,6 +23,7 @@
 #include <string.h>
 #include <sys/mman.h>
 #include <sys/uio.h>
+#include <gnu/option-groups.h>
 
 static bool
 writev_for_fatal (int fd, const struct iovec *iov, size_t niov, size_t total)
@@ -40,6 +41,7 @@ writev_for_fatal (int fd, const struct iovec *iov, size_t niov, size_t total)
 static void
 backtrace_and_maps (int do_abort, bool written, int fd)
 {
+#if __OPTION_EGLIBC_BACKTRACE
   if (do_abort > 1 && written)
     {
       void *addrs[64];
@@ -62,6 +64,7 @@ backtrace_and_maps (int do_abort, bool written, int fd)
           close_not_cancel_no_status (fd2);
         }
     }
+#endif /* __OPTION_EGLIBC_BACKTRACE */
 }
 #define BEFORE_ABORT		backtrace_and_maps
 

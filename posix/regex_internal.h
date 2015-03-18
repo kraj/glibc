@@ -26,6 +26,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if defined _LIBC
+# include <gnu/option-groups.h>
+#endif
+
 #if defined HAVE_LANGINFO_H || defined HAVE_LANGINFO_CODESET || defined _LIBC
 # include <langinfo.h>
 #endif
@@ -369,6 +373,13 @@ struct re_string_t
 };
 typedef struct re_string_t re_string_t;
 
+/* When OPTION_EGLIBC_LOCALE_CODE is disabled, this is always 1;
+   help the compiler make use of that fact.  */
+#if __OPTION_EGLIBC_LOCALE_CODE
+# define string_mb_cur_max(str) ((str)->mb_cur_max + 0)
+#else
+# define string_mb_cur_max(str) (1)
+#endif
 
 struct re_dfa_t;
 typedef struct re_dfa_t re_dfa_t;
@@ -654,6 +665,14 @@ struct re_dfa_t
   __libc_lock_define (, lock)
 };
 
+/* When OPTION_EGLIBC_LOCALE_CODE is disabled, this is always 1;
+   help the compiler make use of that fact.  */
+#if __OPTION_EGLIBC_LOCALE_CODE
+# define dfa_mb_cur_max(dfa) ((dfa)->mb_cur_max + 0)
+#else
+# define dfa_mb_cur_max(dfa) (1)
+#endif
+
 #define re_node_set_init_empty(set) memset (set, '\0', sizeof (re_node_set))
 #define re_node_set_remove(set,id) \
   (re_node_set_remove_at (set, re_node_set_contains (set, id) - 1))
@@ -714,7 +733,7 @@ internal_function __attribute__ ((pure, unused))
 re_string_char_size_at (const re_string_t *pstr, int idx)
 {
   int byte_idx;
-  if (pstr->mb_cur_max == 1)
+  if (string_mb_cur_max (pstr) == 1)
     return 1;
   for (byte_idx = 1; idx + byte_idx < pstr->valid_len; ++byte_idx)
     if (pstr->wcs[idx + byte_idx] != WEOF)
@@ -726,7 +745,7 @@ static wint_t
 internal_function __attribute__ ((pure, unused))
 re_string_wchar_at (const re_string_t *pstr, int idx)
 {
-  if (pstr->mb_cur_max == 1)
+  if (string_mb_cur_max (pstr) == 1)
     return (wint_t) pstr->mbs[idx];
   return (wint_t) pstr->wcs[idx];
 }

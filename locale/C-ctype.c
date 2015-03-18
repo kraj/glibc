@@ -19,8 +19,11 @@
 #include "localeinfo.h"
 #include <endian.h>
 #include <stdint.h>
+#include <gnu/option-groups.h>
 
+#if __OPTION_EGLIBC_LOCALE_CODE
 #include "C-translit.h"
+#endif
 
 /* This table's entries are taken from POSIX.2 Table 2-6
    ``LC_CTYPE Category Definition in the POSIX Locale''.
@@ -634,6 +637,7 @@ const struct __locale_data _nl_C_LC_CTYPE attribute_hidden =
     { .word = L'7' },
     { .word = L'8' },
     { .word = L'9' },
+#if __OPTION_EGLIBC_LOCALE_CODE
     /* _NL_CTYPE_TRANSLIT_TAB_SIZE */
     { .word = NTRANSLIT },
     /* _NL_CTYPE_TRANSLIT_FROM_IDX */
@@ -644,6 +648,22 @@ const struct __locale_data _nl_C_LC_CTYPE attribute_hidden =
     { .wstr = translit_to_idx },
     /* _NL_CTYPE_TRANSLIT_TO_TBL */
     { .wstr = (uint32_t *) translit_to_tbl },
+#else
+    /* If the locale code isn't enabled, we don't have the
+       transliteration code in iconv/gconv_trans.c anyway, so there's
+       no need for the transliteration tables here.  We'll fall back
+       on the default missing replacement, '?'.  */
+    /* _NL_CTYPE_TRANSLIT_TAB_SIZE */
+    { .word = 0 },
+    /* _NL_CTYPE_TRANSLIT_FROM_IDX */
+    { .wstr = NULL },
+    /* _NL_CTYPE_TRANSLIT_FROM_TBL */
+    { .wstr = NULL },
+    /* _NL_CTYPE_TRANSLIT_TO_IDX */
+    { .wstr = NULL },
+    /* _NL_CTYPE_TRANSLIT_TO_TBL */
+    { .wstr = NULL },
+#endif
     /* _NL_CTYPE_TRANSLIT_DEFAULT_MISSING_LEN */
     { .word = 1 },
     /* _NL_CTYPE_TRANSLIT_DEFAULT_MISSING */

@@ -18,11 +18,14 @@
 #
 #	Makefile for streams.
 #
+include ../option-groups.mak
+
 subdir	:= streams
 
 include ../Makeconfig
 
 headers		= stropts.h sys/stropts.h bits/stropts.h bits/xtitypes.h
-routines	= isastream getmsg getpmsg putmsg putpmsg fattach fdetach
+routines-$(OPTION_EGLIBC_STREAMS) \
+	+= isastream getmsg getpmsg putmsg putpmsg fattach fdetach
 
 include ../Rules

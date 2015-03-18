@@ -215,8 +215,10 @@ No definition for %s category found"), "LC_TIME"));
 	}
       else
 	{
+	  static const uint32_t wt_fmt_ampm[]
+	    = { '%','I',':','%','M',':','%','S',' ','%','p',0 };
 	  time->t_fmt_ampm = "%I:%M:%S %p";
-	  time->wt_fmt_ampm = (const uint32_t *) L"%I:%M:%S %p";
+	  time->wt_fmt_ampm = wt_fmt_ampm;
 	}
     }
 
@@ -226,7 +228,7 @@ No definition for %s category found"), "LC_TIME"));
       const int days_per_month[12] = { 31, 29, 31, 30, 31, 30,
 				       31, 31, 30, 31 ,30, 31 };
       size_t idx;
-      wchar_t *wstr;
+      uint32_t *wstr;
 
       time->era_entries =
 	(struct era_data *) xmalloc (time->num_era
@@ -464,18 +466,18 @@ No definition for %s category found"), "LC_TIME"));
 	    }
 
 	  /* Now generate the wide character name and format.  */
-	  wstr = wcschr ((wchar_t *) time->wera[idx], L':');/* end direction */
-	  wstr = wstr ? wcschr (wstr + 1, L':') : NULL;	/* end offset */
-	  wstr = wstr ? wcschr (wstr + 1, L':') : NULL;	/* end start */
-	  wstr = wstr ? wcschr (wstr + 1, L':') : NULL;	/* end end */
+	  wstr = wcschr_uint32 (time->wera[idx], L':'); /* end direction */
+	  wstr = wstr ? wcschr_uint32 (wstr + 1, L':') : NULL; /* end offset */
+	  wstr = wstr ? wcschr_uint32 (wstr + 1, L':') : NULL; /* end start */
+	  wstr = wstr ? wcschr_uint32 (wstr + 1, L':') : NULL; /* end end */
 	  if (wstr != NULL)
 	    {
-	      time->era_entries[idx].wname = (uint32_t *) wstr + 1;
-	      wstr = wcschr (wstr + 1, L':');	/* end name */
+	      time->era_entries[idx].wname = wstr + 1;
+	      wstr = wcschr_uint32 (wstr + 1, L':'); /* end name */
 	      if (wstr != NULL)
 		{
 		  *wstr = L'\0';
-		  time->era_entries[idx].wformat = (uint32_t *) wstr + 1;
+		  time->era_entries[idx].wformat = wstr + 1;
 		}
 	      else
 		time->era_entries[idx].wname =
@@ -530,7 +532,16 @@ No definition for %s category found"), "LC_TIME"));
   if (time->date_fmt == NULL)
     time->date_fmt = "%a %b %e %H:%M:%S %Z %Y";
   if (time->wdate_fmt == NULL)
-    time->wdate_fmt = (const uint32_t *) L"%a %b %e %H:%M:%S %Z %Y";
+    {
+      static const uint32_t wdate_fmt[] =
+	{ '%','a',' ',
+	  '%','b',' ',
+	  '%','e',' ',
+	  '%','H',':','%','M',':','%','S',' ',
+	  '%','Z',' ',
+	  '%','Y',0 };
+      time->wdate_fmt = wdate_fmt;
+    }
 }
 
 

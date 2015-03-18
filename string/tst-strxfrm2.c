@@ -1,6 +1,7 @@
 #include <locale.h>
 #include <stdio.h>
 #include <string.h>
+#include <gnu/option-groups.h>
 
 static int
 do_test (void)
@@ -40,6 +41,7 @@ do_test (void)
       res = 1;
     }
 
+#if __OPTION_EGLIBC_LOCALE_CODE
   if (setlocale (LC_ALL, test_locale) == NULL)
     {
       printf ("cannot set locale \"%s\"\n", test_locale);
@@ -77,6 +79,7 @@ do_test (void)
 	  res = 1;
 	}
     }
+#endif
 
   return res;
 }

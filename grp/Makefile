@@ -18,6 +18,8 @@
 #
 #	Sub-makefile for grp portion of the library.
 #
+include ../option-groups.mak
+
 subdir	:= grp
 
 include ../Makeconfig
@@ -29,6 +31,9 @@ routines := fgetgrent initgroups setgroups \
 	    getgrent_r getgrgid_r getgrnam_r fgetgrent_r
 
 tests := testgrp
+ifneq (y,$(OPTION_EGLIBC_NSSWITCH))
+LDLIBS-testgrp += $(shell cat $(common-objpfx)nss/fixed-nsswitch-libs)
+endif
 
 ifeq (yes,$(build-shared))
 test-srcs :=  tst_fgetgrent

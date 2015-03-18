@@ -76,10 +76,12 @@
 #undef __argp_fmtstream_wmargin
 #define __argp_fmtstream_wmargin argp_fmtstream_wmargin
 
+#if 0
 #include "mempcpy.h"
 #include "strcase.h"
 #include "strchrnul.h"
 #include "strndup.h"
+#endif
 
 /* normal libc functions we call */
 #undef __flockfile

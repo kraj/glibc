@@ -35,6 +35,10 @@
 # include "../locale/localeinfo.h"
 #endif
 
+#ifdef _LIBC
+# include <gnu/option-groups.h>
+#endif
+
 #if defined emacs && !defined HAVE_BCOPY
 # define HAVE_MEMCPY 1
 #endif
@@ -882,7 +886,7 @@ __strftime_internal (s, maxsize, format, tp, tzset_called ut_argument
 	case L_('C'):
 	  if (modifier == L_('E'))
 	    {
-#if HAVE_STRUCT_ERA_ENTRY
+#if (! _LIBC || __OPTION_EGLIBC_LOCALE_CODE) && HAVE_STRUCT_ERA_ENTRY
 	      struct era_entry *era = _nl_get_era_entry (tp HELPER_LOCALE_ARG);
 	      if (era)
 		{
@@ -955,7 +959,7 @@ __strftime_internal (s, maxsize, format, tp, tzset_called ut_argument
 
 	  if (modifier == L_('O') && 0 <= number_value)
 	    {
-#ifdef _NL_CURRENT
+#if (! _LIBC || __OPTION_EGLIBC_LOCALE_CODE) && defined (_NL_CURRENT)
 	      /* Get the locale specific alternate representation of
 		 the number NUMBER_VALUE.  If none exist NULL is returned.  */
 	      const CHAR_T *cp = nl_get_alt_digit (number_value
@@ -1260,7 +1264,7 @@ __strftime_internal (s, maxsize, format, tp, tzset_called ut_argument
 	case L_('Y'):
 	  if (modifier == 'E')
 	    {
-#if HAVE_STRUCT_ERA_ENTRY
+#if (! _LIBC || __OPTION_EGLIBC_LOCALE_CODE) && HAVE_STRUCT_ERA_ENTRY
 	      struct era_entry *era = _nl_get_era_entry (tp HELPER_LOCALE_ARG);
 	      if (era)
 		{
@@ -1285,7 +1289,7 @@ __strftime_internal (s, maxsize, format, tp, tzset_called ut_argument
 	case L_('y'):
 	  if (modifier == L_('E'))
 	    {
-#if HAVE_STRUCT_ERA_ENTRY
+#if (! _LIBC || __OPTION_EGLIBC_LOCALE_CODE) && HAVE_STRUCT_ERA_ENTRY
 	      struct era_entry *era = _nl_get_era_entry (tp HELPER_LOCALE_ARG);
 	      if (era)
 		{

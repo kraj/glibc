@@ -25,6 +25,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <sys/uio.h>
+#include <gnu/option-groups.h>
 
 #include <assert.h>
 
@@ -124,6 +125,7 @@ No definition for %s category found"), "LC_MESSAGES"));
     }
   else
     {
+#if __OPTION_POSIX_REGEXP
       int result;
       regex_t re;
 
@@ -140,6 +142,7 @@ No definition for %s category found"), "LC_MESSAGES"));
 	}
       else if (result != 0)
 	regfree (&re);
+#endif
     }
 
   if (messages->noexpr == NULL)
@@ -158,6 +161,7 @@ No definition for %s category found"), "LC_MESSAGES"));
     }
   else
     {
+#if __OPTION_POSIX_REGEXP
       int result;
       regex_t re;
 
@@ -174,6 +178,7 @@ No definition for %s category found"), "LC_MESSAGES"));
 	}
       else if (result != 0)
 	regfree (&re);
+#endif
     }
 }
 

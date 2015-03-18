@@ -21,12 +21,22 @@ subdir := localedata
 
 include ../Makeconfig
 
-# List with all available character set descriptions.
-charmaps := $(wildcard charmaps/[A-I]*) $(wildcard charmaps/[J-Z]*)
+include ../option-groups.mak
 
 # List with all available character set descriptions.
-locales := $(wildcard locales/*)
+all-charmaps := $(wildcard charmaps/[A-I]*) $(wildcard charmaps/[J-Z]*)
 
+all-locales := $(wildcard locales/*)
+
+# If the EGLIBC_LOCALES option group is not enabled, trim the
+# list of charmap and locale source files.
+ifeq ($(OPTION_EGLIBC_LOCALES),y)
+charmaps := $(all-charmaps)
+locales  := $(all-locales)
+else
+charmaps :=
+locales  := locales/POSIX
+endif
 
 subdir-dirs = tests-mbwc
 vpath %.c tests-mbwc
@@ -71,14 +81,20 @@ locale_test_suite := tst_iswalnum tst_iswalpha tst_iswcntrl            \
 		     tst_wcsxfrm tst_wctob tst_wctomb tst_wctrans      \
 		     tst_wctype tst_wcwidth
 
-tests = $(locale_test_suite) tst-digits tst-setlocale bug-iconv-trans \
+# Since these tests build their own locale files, they're not
+# dependent on the OPTION_EGLIBC_LOCALES option group.  But they do
+# need the locale functions to be present.
+tests-$(OPTION_EGLIBC_LOCALE_CODE) \
+     += $(locale_test_suite) tst-digits tst-setlocale bug-iconv-trans \
 	tst-leaks tst-mbswcs1 tst-mbswcs2 tst-mbswcs3 tst-mbswcs4 tst-mbswcs5 \
 	tst-mbswcs6 tst-xlocale1 tst-xlocale2 bug-usesetlocale \
 	tst-strfmon1 tst-sscanf bug-setlocale1 tst-setlocale2 tst-setlocale3 \
 	tst-wctype
+ifeq (y,$(OPTION_EGLIBC_LOCALE_CODE))
 tests-static = bug-setlocale1-static
 tests += $(tests-static)
-ifeq (yes,$(build-shared))
+endif
+ifeq (yesy,$(build-shared)$(OPTION_EGLIBC_LOCALE_CODE))
 ifneq (no,$(PERL))
 tests-special += $(objpfx)mtrace-tst-leaks.out
 endif
@@ -95,6 +111,7 @@ tests: $(objdir)/iconvdata/gconv-modules
 tests-static += tst-langinfo-static
 
 ifeq ($(run-built-tests),yes)
+ifeq (y,$(OPTION_EGLIBC_LOCALE_CODE))
 tests-special += $(objpfx)sort-test.out $(objpfx)tst-fmon.out \
 		 $(objpfx)tst-locale.out $(objpfx)tst-rpmatch.out \
 		 $(objpfx)tst-trans.out $(objpfx)tst-ctype.out \
@@ -108,6 +125,7 @@ LOCALES := de_DE.ISO-8859-1 de_DE.UTF-8 en_US.ANSI_X3.4-1968 \
 	   zh_TW.EUC-TW fa_IR.UTF-8 fr_FR.UTF-8 ja_JP.UTF-8 si_LK.UTF-8 \
 	   tr_TR.ISO-8859-9 en_GB.UTF-8 uk_UA.UTF-8
 include ../gen-locales.mk
+endif
 endif
 
 include ../Rules
@@ -190,6 +208,11 @@ $(objpfx)tst-mbswcs6.out: $(addprefix $(objpfx),$(CTYPE_FILES))
 endif
 
 include SUPPORTED
+
+# Only install locale data if OPTION_EGLIBC_LOCALES is selected.
+ifneq ($(OPTION_EGLIBC_LOCALES),y)
+SUPPORTED-LOCALES :=
+endif
 
 INSTALL-SUPPORTED-LOCALES=$(addprefix install-, $(SUPPORTED-LOCALES))
 

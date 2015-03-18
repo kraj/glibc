@@ -33,6 +33,8 @@
 #include <lowlevellock.h>
 #include <tls.h>
 #include <pthread-functions.h>
+#include <errno.h> /* For EBUSY.  */
+#include <gnu/option-groups.h> /* For __OPTION_EGLIBC_BIG_MACROS.  */
 
 #if IS_IN (libpthread)
 /* This gets us the declarations of the __pthread_* internal names,
@@ -171,10 +173,22 @@ typedef pthread_key_t __libc_key_t;
 
 /* Lock the named lock variable.  */
 #if IS_IN (libc) || IS_IN (libpthread)
-# ifndef __libc_lock_lock
-#  define __libc_lock_lock(NAME) \
+# if __OPTION_EGLIBC_BIG_MACROS != 1
+/* EGLIBC: Declare wrapper function for a big macro if either
+   !__OPTION_EGLIBC_BIG_MACROS or we are using a back door from
+   small-macros-fns.c (__OPTION_EGLIBC_BIG_MACROS == 2).  */
+extern void __libc_lock_lock_fn (__libc_lock_t *);
+libc_hidden_proto (__libc_lock_lock_fn);
+# endif /* __OPTION_EGLIBC_BIG_MACROS != 1 */
+# if __OPTION_EGLIBC_BIG_MACROS
+#  ifndef __libc_lock_lock
+#   define __libc_lock_lock(NAME) \
   ({ lll_lock (NAME, LLL_PRIVATE); 0; })
-# endif
+#  endif
+# else
+#  define __libc_lock_lock(NAME)               \
+  __libc_lock_lock_fn (&(NAME))
+# endif /* __OPTION_EGLIBC_BIG_MACROS */
 #else
 # undef __libc_lock_lock
 # define __libc_lock_lock(NAME) \
@@ -187,10 +201,22 @@ typedef pthread_key_t __libc_key_t;
 
 /* Try to lock the named lock variable.  */
 #if IS_IN (libc) || IS_IN (libpthread)
-# ifndef __libc_lock_trylock
-#  define __libc_lock_trylock(NAME) \
+# if __OPTION_EGLIBC_BIG_MACROS != 1
+/* EGLIBC: Declare wrapper function for a big macro if either
+   !__OPTION_EGLIBC_BIG_MACROS or we are using a back door from
+   small-macros-fns.c (__OPTION_EGLIBC_BIG_MACROS == 2).  */
+extern int __libc_lock_trylock_fn (__libc_lock_t *);
+libc_hidden_proto (__libc_lock_trylock_fn);
+# endif /* __OPTION_EGLIBC_BIG_MACROS != 1 */
+# if __OPTION_EGLIBC_BIG_MACROS
+#  ifndef __libc_lock_trylock
+#   define __libc_lock_trylock(NAME) \
   lll_trylock (NAME)
-# endif
+#  endif
+# else
+# define __libc_lock_trylock(NAME) \
+  __libc_lock_trylock_fn (&(NAME))
+# endif /* __OPTION_EGLIBC_BIG_MACROS */
 #else
 # undef __libc_lock_trylock
 # define __libc_lock_trylock(NAME) \
@@ -206,8 +232,20 @@ typedef pthread_key_t __libc_key_t;
 
 /* Unlock the named lock variable.  */
 #if IS_IN (libc) || IS_IN (libpthread)
+# if __OPTION_EGLIBC_BIG_MACROS != 1
+/* EGLIBC: Declare wrapper function for a big macro if either
+   !__OPTION_EGLIBC_BIG_MACROS, or we are using a back door from
+   small-macros-fns.c (__OPTION_EGLIBC_BIG_MACROS == 2).  */
+extern void __libc_lock_unlock_fn (__libc_lock_t *);
+libc_hidden_proto (__libc_lock_unlock_fn);
+# endif /* __OPTION_EGLIBC_BIG_MACROS != 1 */
+# if __OPTION_EGLIBC_BIG_MACROS
 # define __libc_lock_unlock(NAME) \
   lll_unlock (NAME, LLL_PRIVATE)
+# else
+# define __libc_lock_unlock(NAME) \
+  __libc_lock_unlock_fn (&(NAME))
+# endif /* __OPTION_EGLIBC_BIG_MACROS */
 #else
 # define __libc_lock_unlock(NAME) \
   __libc_maybe_call (__pthread_mutex_unlock, (&(NAME)), 0)

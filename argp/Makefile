@@ -18,6 +18,8 @@
 #
 #	Makefile for argp.
 #
+include ../option-groups.mak
+
 subdir	:= argp
 
 include ../Makeconfig

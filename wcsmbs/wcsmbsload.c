@@ -21,6 +21,7 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <string.h>
+#include <gnu/option-groups.h>
 
 #include <locale/localeinfo.h>
 #include <wcsmbsload.h>
@@ -143,6 +144,7 @@ __wcsmbs_getfct (const char *to, const char *from, size_t *nstepsp)
   })
 
 
+#if __OPTION_EGLIBC_LOCALE_CODE
 /* Some of the functions here must not be used while setlocale is called.  */
 __libc_rwlock_define (extern, __libc_setlocale_lock attribute_hidden)
 
@@ -211,6 +213,17 @@ __wcsmbs_load_conv (struct __locale_data *new_category)
 
   __libc_rwlock_unlock (__libc_setlocale_lock);
 }
+#else
+void
+internal_function
+__wcsmbs_load_conv (struct __locale_data *new_category)
+{
+  /* When OPTION_EGLIBC_LOCALE_CODE is disabled, we should never reach
+     this point: there is no way to change locales, so every locale
+     passed to get_gconv_fcts should be _nl_C_LC_CTYPE.  */
+  abort ();
+}
+#endif
 
 
 /* Clone the current conversion function set.  */

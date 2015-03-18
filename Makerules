@@ -456,6 +456,25 @@ define sed-remove-objpfx
 endef
 endif
 
+# Include targets in the selected option groups.
+aux                  += $(aux-y)
+extra-libs           += $(extra-libs-y)
+extra-libs-others    += $(extra-libs-others-y)
+extra-objs           += $(extra-objs-y)
+install-bin          += $(install-bin-y)
+install-others       += $(install-others-y)
+install-sbin         += $(install-sbin-y)
+modules              += $(modules-y)
+others               += $(others-y)
+others-pie           += $(others-pie-y)
+routines             += $(routines-y)
+static-only-routines += $(static-only-routines-y)
+sysdep_routines      += $(sysdep_routines-y)
+test-srcs            += $(test-srcs-y)
+tests                += $(tests-y)
+xtests               += $(xtests-y)
+
+
 # Modify the list of routines we build for different targets
 
 ifeq (yes,$(build-shared))

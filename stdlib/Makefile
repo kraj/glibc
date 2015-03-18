@@ -18,6 +18,8 @@
 #
 #	Makefile for stdlib routines
 #
+include ../option-groups.mak
+
 subdir	:= stdlib
 
 include ../Makeconfig
@@ -30,7 +32,7 @@ headers	:= stdlib.h bits/stdlib.h bits/stdlib-ldbl.h bits/stdlib-float.h      \
 	   alloca.h fmtmsg.h						      \
 	   bits/stdlib-bsearch.h
 
-routines	:=							      \
+routines-y	:=							      \
 	atof atoi atol atoll						      \
 	abort								      \
 	bsearch qsort msort						      \
@@ -39,7 +41,6 @@ routines	:=							      \
 	quick_exit at_quick_exit cxa_at_quick_exit cxa_thread_atexit_impl     \
 	abs labs llabs							      \
 	div ldiv lldiv							      \
-	mblen mbstowcs mbtowc wcstombs wctomb				      \
 	random random_r rand rand_r					      \
 	drand48 erand48 lrand48 nrand48 mrand48 jrand48			      \
 	srand48 seed48 lcong48						      \
@@ -52,9 +53,18 @@ routines	:=							      \
 	strtof_l strtod_l strtold_l					      \
 	system canonicalize						      \
 	a64l l64a							      \
-	rpmatch strfmon strfmon_l getsubopt xpg_basename fmtmsg		      \
-	strtoimax strtoumax wcstoimax wcstoumax				      \
+	getsubopt xpg_basename						      \
+	strtoimax strtoumax						      \
 	getcontext setcontext makecontext swapcontext
+routines-$(OPTION_EGLIBC_LOCALE_CODE) +=				      \
+	strfmon strfmon_l
+routines-$(OPTION_POSIX_C_LANG_WIDE_CHAR) +=				      \
+	mblen mbstowcs mbtowc wcstombs wctomb				      \
+	wcstoimax wcstoumax
+ifeq (yy,$(OPTION_EGLIBC_LOCALE_CODE)$(OPTION_POSIX_REGEXP))
+routines-y += rpmatch
+endif
+routines-$(OPTION_EGLIBC_FMTMSG) += fmtmsg
 aux =	grouping groupingwc tens_in_limb
 
 # These routines will be omitted from the libc shared object.
@@ -62,20 +72,24 @@ aux =	grouping groupingwc tens_in_limb
 # linked against when the shared library will be used.
 static-only-routines = atexit at_quick_exit
 
-test-srcs	:= tst-fmtmsg
-tests		:= tst-strtol tst-strtod testmb testrand testsort testdiv   \
+test-srcs-$(OPTION_EGLIBC_FMTMSG)	:= tst-fmtmsg
+tests		:= tst-strtol tst-strtod testrand testsort testdiv	    \
 		   test-canon test-canon2 tst-strtoll tst-environ	    \
 		   tst-xpg-basename tst-random tst-random2 tst-bsearch	    \
 		   tst-limits tst-rand48 bug-strtod tst-setcontext          \
-		   tst-setcontext2 test-a64l tst-qsort tst-system testmb2   \
-		   bug-strtod2 tst-atof1 tst-atof2 tst-strtod2 tst-strtod3  \
-		   tst-rand48-2 tst-makecontext tst-strtod4 tst-strtod5     \
+		   tst-setcontext2 test-a64l tst-qsort tst-system	    \
+		   bug-strtod2 tst-atof1 tst-atof2 tst-strtod2 		    \
+		   tst-rand48-2 tst-makecontext 			    \
 		   tst-qsort2 tst-makecontext2 tst-strtod6 tst-unsetenv1    \
 		   tst-makecontext3 bug-getcontext bug-fmtmsg1		    \
 		   tst-secure-getenv tst-strtod-overflow tst-strtod-round   \
 		   tst-tininess tst-strtod-underflow tst-tls-atexit	    \
 		   tst-setcontext3 tst-tls-atexit-nodelete
 tests-static	:= tst-secure-getenv
+tests-$(OPTION_EGLIBC_LOCALE_CODE) \
+		+= tst-strtod3 tst-strtod4 tst-strtod5 testmb2
+tests-$(OPTION_POSIX_C_LANG_WIDE_CHAR) \
+		+= testmb
 
 modules-names	= tst-tls-atexit-lib
 
@@ -116,7 +130,9 @@ CFLAGS-tst-makecontext2.c = $(stack-align-test-flags)
 tests-special += $(objpfx)isomac.out
 
 ifeq ($(run-built-tests),yes)
+ifeq (y,$(OPTION_EGLIBC_FMTMSG))
 tests-special += $(objpfx)tst-fmtmsg.out
+endif
 endif
 
 include ../Rules

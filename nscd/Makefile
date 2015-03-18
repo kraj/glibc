@@ -18,14 +18,17 @@
 #
 #	Sub-makefile for nscd portion of the library.
 #
+include ../option-groups.mak
+
 subdir	:= nscd
 
 include ../Makeconfig
 
 ifneq ($(use-nscd),no)
-routines := nscd_getpw_r nscd_getgr_r nscd_gethst_r nscd_getai \
+routines-$(OPTION_EGLIBC_INET) += \
+	     nscd_getpw_r nscd_getgr_r nscd_gethst_r nscd_getai \
 	    nscd_initgroups nscd_getserv_r nscd_netgroup
-aux	:= nscd_helper
+aux-$(OPTION_EGLIBC_INET) += nscd_helper
 endif
 
 # To find xmalloc.c
@@ -37,14 +40,18 @@ nscd-modules := nscd connections pwdcache getpwnam_r getpwuid_r grpcache \
 		dbg_log nscd_conf nscd_stat cache mem nscd_setup_thread \
 		xmalloc xstrdup aicache initgrcache gai res_hconf \
 		netgroupcache
-
+ifneq (y,$(OPTION_EGLIBC_NIS))
+# If we haven't build libnsl.so, then we'll need to include our
+# own copy of nis_hash.
+nscd-modules += nis_hash
+endif
 ifeq ($(build-nscd)$(have-thread-library),yesyes)
 
-others += nscd
-others-pie += nscd
-install-sbin := nscd
+others-$(OPTION_EGLIBC_INET) += nscd
+others-pie-$(OPTION_EGLIBC_INET) += nscd
+install-sbin-$(OPTION_EGLIBC_INET) += nscd
 
-extra-objs = $(nscd-modules:=.o)
+extra-objs-$(OPTION_EGLIBC_INET) += $(nscd-modules:=.o)
 
 endif
 
@@ -100,7 +107,15 @@ include $(patsubst %,$(..)cppflags-iterator.mk,$(cpp-srcs-left))
 $(objpfx)nscd: $(nscd-modules:%=$(objpfx)%.o)
 
 ifeq ($(build-shared),yes)
-$(objpfx)nscd: $(shared-thread-library) $(common-objpfx)nis/libnsl.so
+$(objpfx)nscd: $(shared-thread-library)
 else
-$(objpfx)nscd: $(static-thread-library) $(common-objpfx)nis/libnsl.a
+$(objpfx)nscd: $(static-thread-library)
+endif
+
+ifeq (y,$(OPTION_EGLIBC_NIS))
+ifeq ($(build-shared),yes)
+$(objpfx)nscd: $(common-objpfx)nis/libnsl.so
+else
+$(objpfx)nscd: $(common-objpfx)nis/libnsl.a
+endif
 endif

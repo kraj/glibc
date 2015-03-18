@@ -59,7 +59,7 @@ static testcase ecvt_tests[] =
   { 123.01, -4, 3, "" },
   { 126.71, -4, 3, "" },
   { 0.0, 4, 1, "0000" },
-#if DBL_MANT_DIG == 53
+#if DBL_MANT_DIG == 53 && !(defined __powerpc__ && defined __NO_FPRS__ && !defined _SOFT_FLOAT && !defined _SOFT_DOUBLE)
   { 0x1p-1074, 3, -323, "494" },
   { -0x1p-1074, 3, -323, "494" },
 #endif

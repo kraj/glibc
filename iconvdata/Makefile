@@ -18,12 +18,15 @@
 #
 #	Makefile for iconv data and code.
 #
+include ../option-groups.mak
+
 subdir	:= iconvdata
 
 include ../Makeconfig
 
 # Names of all the shared objects which implement the transformations.
-modules	:= ISO8859-1 ISO8859-2 ISO8859-3 ISO8859-4 ISO8859-5		 \
+modules-$(OPTION_EGLIBC_CHARSETS)					 \
+	:= ISO8859-1 ISO8859-2 ISO8859-3 ISO8859-4 ISO8859-5		 \
 	   ISO8859-6 ISO8859-7 ISO8859-8 ISO8859-9 ISO8859-10		 \
 	   ISO8859-11 ISO8859-13 ISO8859-14 ISO8859-15 ISO8859-16	 \
 	   T.61 ISO_6937 SJIS KOI-8 HP-ROMAN8 HP-ROMAN9 EBCDIC-AT-DE	 \
@@ -63,11 +66,13 @@ modules	:= ISO8859-1 ISO8859-2 ISO8859-3 ISO8859-4 ISO8859-5		 \
 	   MAC-CENTRALEUROPE KOI8-RU ISO8859-9E				 \
 	   CP770 CP771 CP772 CP773 CP774
 
-modules.so := $(addsuffix .so, $(modules))
+modules.so := $(addsuffix .so, $(modules-y))
 
 ifeq (yes,$(build-shared))
 tests = bug-iconv1 bug-iconv2 tst-loading tst-e2big tst-iconv4 bug-iconv4 \
-	tst-iconv6 bug-iconv5 bug-iconv6 tst-iconv7 bug-iconv8 bug-iconv9
+	tst-iconv6 bug-iconv5 bug-iconv8 bug-iconv9
+tests-$(OPTION_EGLIBC_LOCALE_CODE) += bug-iconv6 tst-iconv7
+
 ifeq ($(have-thread-library),yes)
 tests += bug-iconv3
 endif
@@ -127,13 +132,13 @@ ifeq (yes,$(build-shared))
 # Rule to generate the shared objects.
 charmaps = ../localedata/charmaps
 -include $(objpfx)iconv-rules
-extra-modules-left := $(modules)
+extra-modules-left := $(modules-y)
 include extra-module.mk
 
 
 extra-objs	+= $(modules.so)
-install-others	= $(addprefix $(inst_gconvdir)/, $(modules.so))	\
-		  $(inst_gconvdir)/gconv-modules
+install-others-y += $(addprefix $(inst_gconvdir)/, $(modules.so))
+install-others-$(OPTION_EGLIBC_CHARSETS) += $(inst_gconvdir)/gconv-modules
 
 # We can build the conversion tables for numerous charsets automatically.
 
@@ -201,7 +206,7 @@ before-compile += $(addprefix $(objpfx),$(generated-modules:=.h))
 ifndef avoid-generated
 $(objpfx)iconv-rules: Makefile
 	$(make-target-directory)
-	{ echo $(filter-out lib%, $(modules)); \
+	{ echo $(filter-out lib%, $(modules-y)); \
 	  echo 8bit $(gen-8bit-modules); \
 	  echo 8bit-gap $(gen-8bit-gap-modules); } | \
 	LC_ALL=C \
@@ -245,7 +250,7 @@ $(addprefix $(inst_gconvdir)/, $(modules.so)): \
 	$(do-install-program)
 $(inst_gconvdir)/gconv-modules: gconv-modules $(+force)
 	$(do-install)
-ifeq (no,$(cross-compiling))
+# eglibc: ifeq (no,$(cross-compiling))
 # Update the $(prefix)/lib/gconv/gconv-modules.cache file. This is necessary
 # if this libc has more gconv modules than the previously installed one.
 	if test -f "$(inst_gconvdir)/gconv-modules.cache"; then \
@@ -254,9 +259,9 @@ ifeq (no,$(cross-compiling))
 	   $(common-objpfx)iconv/iconvconfig \
 	     $(addprefix --prefix=,$(install_root)); \
 	fi
-else
-	@echo '*@*@*@ You should recreate $(inst_gconvdir)/gconv-modules.cache'
-endif
+# eglibc: else
+# eglibc:	@echo '*@*@*@ You should recreate $(inst_gconvdir)/gconv-modules.cache'
+# eglibc: endif
 
 endif # build-shared = yes
 

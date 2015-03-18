@@ -30,6 +30,7 @@
 #include <unistd.h>
 #include <_itoa.h>
 #include <ldsodefs.h>
+#include <gnu/option-groups.h>
 
 /* This file defines macros to access the content of the sigcontext element
    passed up by the signal handler.  */
@@ -68,11 +69,13 @@ write_strsignal (int fd, int signal)
 static void
 catch_segfault (int signal, SIGCONTEXT ctx)
 {
-  int fd, cnt, i;
-  void **arr;
+  int fd;
   struct sigaction sa;
+#if __OPTION_EGLIBC_BACKTRACE
+  int cnt, i;
+  void **arr;
   uintptr_t pc;
-
+#endif
   /* This is the name of the file we are writing to.  If none is given
      or we cannot write to this file write to stderr.  */
   fd = 2;
@@ -91,6 +94,7 @@ catch_segfault (int signal, SIGCONTEXT ctx)
   REGISTER_DUMP;
 #endif
 
+#if __OPTION_EGLIBC_BACKTRACE
   WRITE_STRING ("\nBacktrace:\n");
 
   /* Get the backtrace.  */
@@ -113,6 +117,7 @@ catch_segfault (int signal, SIGCONTEXT ctx)
 
   /* Now generate nicely formatted output.  */
   __backtrace_symbols_fd (arr + i, cnt - i, fd);
+#endif
 
 #ifdef HAVE_PROC_SELF
   /* Now the link map.  */

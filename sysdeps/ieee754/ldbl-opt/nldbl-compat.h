@@ -30,6 +30,7 @@
 #include <math.h>
 #include <monetary.h>
 #include <sys/syslog.h>
+#include <gnu/option-groups.h>
 
 
 /* Declare the __nldbl_NAME function the wrappers call that's in libc.so.  */
@@ -37,19 +38,15 @@
 
 NLDBL_DECL (_IO_vfscanf);
 NLDBL_DECL (vfscanf);
-NLDBL_DECL (vfwscanf);
 NLDBL_DECL (obstack_vprintf);
 NLDBL_DECL (vasprintf);
 NLDBL_DECL (dprintf);
 NLDBL_DECL (vdprintf);
 NLDBL_DECL (fprintf);
 NLDBL_DECL (vfprintf);
-NLDBL_DECL (vfwprintf);
 NLDBL_DECL (vsnprintf);
 NLDBL_DECL (vsprintf);
 NLDBL_DECL (vsscanf);
-NLDBL_DECL (vswprintf);
-NLDBL_DECL (vswscanf);
 NLDBL_DECL (__asprintf);
 NLDBL_DECL (asprintf);
 NLDBL_DECL (__printf_fp);
@@ -66,12 +63,18 @@ NLDBL_DECL (__isoc99_sscanf);
 NLDBL_DECL (__isoc99_vscanf);
 NLDBL_DECL (__isoc99_vfscanf);
 NLDBL_DECL (__isoc99_vsscanf);
+#if __OPTION_POSIX_WIDE_CHAR_DEVICE_IO
+NLDBL_DECL (vfwscanf);
+NLDBL_DECL (vfwprintf);
+NLDBL_DECL (vswprintf);
+NLDBL_DECL (vswscanf);
 NLDBL_DECL (__isoc99_wscanf);
 NLDBL_DECL (__isoc99_fwscanf);
 NLDBL_DECL (__isoc99_swscanf);
 NLDBL_DECL (__isoc99_vwscanf);
 NLDBL_DECL (__isoc99_vfwscanf);
 NLDBL_DECL (__isoc99_vswscanf);
+#endif
 
 /* This one does not exist in the normal interface, only
    __nldbl___vstrfmon really exists.  */
@@ -82,15 +85,10 @@ extern ssize_t __nldbl___vstrfmon (char *, size_t, const char *, va_list)
    since we don't compile with _FORTIFY_SOURCE.  */
 extern int __nldbl___vfprintf_chk (FILE *__restrict, int,
 				   const char *__restrict, _G_va_list);
-extern int __nldbl___vfwprintf_chk (FILE *__restrict, int,
-				    const wchar_t *__restrict, __gnuc_va_list);
 extern int __nldbl___vsprintf_chk (char *__restrict, int, size_t,
 				   const char *__restrict, _G_va_list) __THROW;
 extern int __nldbl___vsnprintf_chk (char *__restrict, size_t, int, size_t,
 				    const char *__restrict, _G_va_list)
-  __THROW;
-extern int __nldbl___vswprintf_chk (wchar_t *__restrict, size_t, int, size_t,
-				    const wchar_t *__restrict, __gnuc_va_list)
   __THROW;
 extern int __nldbl___vasprintf_chk (char **, int, const char *, _G_va_list)
   __THROW;
@@ -98,6 +96,12 @@ extern int __nldbl___vdprintf_chk (int, int, const char *, _G_va_list);
 extern int __nldbl___obstack_vprintf_chk (struct obstack *, int, const char *,
 					  _G_va_list) __THROW;
 extern void __nldbl___vsyslog_chk (int, int, const char *, va_list);
-
+#if __OPTION_POSIX_WIDE_CHAR_DEVICE_IO
+extern int __nldbl___vfwprintf_chk (FILE *__restrict, int,
+				    const wchar_t *__restrict, __gnuc_va_list);
+extern int __nldbl___vswprintf_chk (wchar_t *__restrict, size_t, int, size_t,
+				    const wchar_t *__restrict, __gnuc_va_list)
+  __THROW;
+#endif
 
 #endif /* __NLDBL_COMPAT_H */

@@ -16,6 +16,7 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
+#include <gnu/option-groups.h>
 #include <errno.h>
 #include <dlfcn.h>
 #include <fcntl.h>
@@ -2197,6 +2198,7 @@ print_missing_version (int errcode __attribute__ ((unused)),
 		    objname, errstring);
 }
 
+#if __OPTION_EGLIBC_RTLD_DEBUG
 /* Nonzero if any of the debugging options is enabled.  */
 static int any_debug attribute_relro;
 
@@ -2306,6 +2308,7 @@ a filename can be specified using the LD_DEBUG_OUTPUT environment variable.\n");
       _exit (0);
     }
 }
+#endif /* __OPTION_EGLIBC_RTLD_DEBUG */
 
 static void
 process_dl_audit (char *str)
@@ -2345,8 +2348,9 @@ process_envvars (enum mode *modep)
   char **runp = _environ;
   char *envline;
   enum mode mode = normal;
+#if __OPTION_EGLIBC_RTLD_DEBUG
   char *debug_output = NULL;
-
+#endif
   /* This is the default place for profiling data file.  */
   GLRO(dl_profile_output)
     = &"/var/tmp\0/var/profile"[__libc_enable_secure ? 9 : 0];
@@ -2373,12 +2377,14 @@ process_envvars (enum mode *modep)
 	  break;
 
 	case 5:
+#if __OPTION_EGLIBC_RTLD_DEBUG
 	  /* Debugging of the dynamic linker?  */
 	  if (memcmp (envline, "DEBUG", 5) == 0)
 	    {
 	      process_dl_debug (&envline[6]);
 	      break;
 	    }
+#endif
 	  if (memcmp (envline, "AUDIT", 5) == 0)
 	    process_dl_audit (&envline[6]);
 	  break;
@@ -2444,13 +2450,14 @@ process_envvars (enum mode *modep)
 	      break;
 	    }
 
+#if __OPTION_EGLIBC_RTLD_DEBUG
 	  /* Where to place the profiling data file.  */
 	  if (memcmp (envline, "DEBUG_OUTPUT", 12) == 0)
 	    {
 	      debug_output = &envline[13];
 	      break;
 	    }
-
+#endif
 	  if (!__libc_enable_secure
 	      && memcmp (envline, "DYNAMIC_WEAK", 12) == 0)
 	    GLRO(dl_dynamic_weak) = 1;
@@ -2484,7 +2491,9 @@ process_envvars (enum mode *modep)
 	    {
 	      mode = trace;
 	      GLRO(dl_verbose) = 1;
+#if __OPTION_EGLIBC_RTLD_DEBUG
 	      GLRO(dl_debug_mask) |= DL_DEBUG_PRELINK;
+#endif
 	      GLRO(dl_trace_prelink) = &envline[17];
 	    }
 	  break;
@@ -2531,12 +2540,15 @@ process_envvars (enum mode *modep)
       if (__access ("/etc/suid-debug", F_OK) != 0)
 	{
 	  unsetenv ("MALLOC_CHECK_");
+#if __OPTION_EGLIBC_RTLD_DEBUG
 	  GLRO(dl_debug_mask) = 0;
+#endif
 	}
 
       if (mode != normal)
 	_exit (5);
     }
+#if __OPTION_EGLIBC_RTLD_DEBUG
   /* If we have to run the dynamic linker in debugging mode and the
      LD_DEBUG_OUTPUT environment variable is given, we write the debug
      messages to this file.  */
@@ -2561,6 +2573,7 @@ process_envvars (enum mode *modep)
 	/* We use standard output if opening the file failed.  */
 	GLRO(dl_debug_fd) = STDOUT_FILENO;
     }
+#endif /* __OPTION_EGLIBC_RTLD_DEBUG */
 }
 
 

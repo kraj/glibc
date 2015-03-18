@@ -35,7 +35,7 @@ _IO_seekpos_unlocked (fp, pos, mode)
   /* If we have a backup buffer, get rid of it, since the __seekoff
      callback may not know to do the right thing about it.
      This may be over-kill, but it'll do for now. TODO */
-  if (_IO_fwide (fp, 0) <= 0)
+  if (! _IO_is_wide (fp))
     {
       if (_IO_have_backup (fp))
 	_IO_free_backup_area (fp);

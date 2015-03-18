@@ -23,6 +23,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
+#include <gnu/option-groups.h>
 
 #include <bits/libc-lock.h>
 #include "gconv_int.h"
@@ -38,15 +39,19 @@ __gconv_transliterate (struct __gconv_step *step,
 		       unsigned char **outbufstart, size_t *irreversible)
 {
   /* Find out about the locale's transliteration.  */
+#if __OPTION_EGLIBC_LOCALE_CODE
   uint_fast32_t size;
   const uint32_t *from_idx;
   const uint32_t *from_tbl;
   const uint32_t *to_idx;
   const uint32_t *to_tbl;
+#endif
   const uint32_t *winbuf;
   const uint32_t *winbufend;
+#if __OPTION_EGLIBC_LOCALE_CODE
   uint_fast32_t low;
   uint_fast32_t high;
+#endif
 
   /* The input buffer.  There are actually 4-byte values.  */
   winbuf = (const uint32_t *) *inbufp;
@@ -58,6 +63,7 @@ __gconv_transliterate (struct __gconv_step *step,
     PTR_DEMANGLE (fct);
 #endif
 
+#if __OPTION_EGLIBC_LOCALE_CODE
   /* If there is no transliteration information in the locale don't do
      anything and return the error.  */
   size = _NL_CURRENT_WORD (LC_CTYPE, _NL_CTYPE_TRANSLIT_TAB_SIZE);
@@ -193,6 +199,7 @@ __gconv_transliterate (struct __gconv_step *step,
              sorted.  */
 	  break;
     }
+#endif
 
   /* One last chance: use the default replacement.  */
   if (_NL_CURRENT_WORD (LC_CTYPE, _NL_CTYPE_TRANSLIT_DEFAULT_MISSING_LEN) != 0)

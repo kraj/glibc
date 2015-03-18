@@ -22,20 +22,23 @@ subdir	:= catgets
 
 include ../Makeconfig
 
+include ../option-groups.mak
+
 headers		= nl_types.h
-routines	= catgets open_catalog
-others		= gencat
-install-bin	= gencat
-extra-objs	= $(gencat-modules:=.o)
+routines-$(OPTION_EGLIBC_CATGETS)    := catgets open_catalog
+others-$(OPTION_EGLIBC_CATGETS)      := gencat
+install-bin-$(OPTION_EGLIBC_CATGETS) := gencat
+extra-objs-$(OPTION_EGLIBC_CATGETS)  := $(gencat-modules:=.o)
 
-tests = tst-catgets
-test-srcs = test-gencat
+tests-$(OPTION_EGLIBC_CATGETS)       := tst-catgets
+test-srcs-$(OPTION_EGLIBC_CATGETS)   := test-gencat
 
+ifeq (y,$(OPTION_EGLIBC_CATGETS))
 ifeq ($(run-built-tests),yes)
 tests-special += $(objpfx)de/libc.cat $(objpfx)test1.cat $(objpfx)test2.cat \
 		 $(objpfx)sample.SJIS.cat $(objpfx)test-gencat.out
 endif
-
+endif
 gencat-modules	= xmalloc
 
 # To find xmalloc.c

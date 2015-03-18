@@ -18,6 +18,8 @@
 #
 #	Sub-makefile for I/O portion of the library.
 #
+include ../option-groups.mak
+
 subdir	:= io
 
 include ../Makeconfig
@@ -36,7 +38,7 @@ routines :=								\
 	fxstatat fxstatat64						\
 	statfs fstatfs statfs64 fstatfs64				\
 	statvfs fstatvfs statvfs64 fstatvfs64				\
-	umask chmod fchmod lchmod fchmodat				\
+	umask chmod fchmod fchmodat					\
 	mkdir mkdirat							\
 	open open_2 open64 open64_2 openat openat_2 openat64 openat64_2	\
 	read write lseek lseek64 access euidaccess faccessat		\
@@ -49,11 +51,13 @@ routines :=								\
 	ttyname ttyname_r isatty					\
 	link linkat symlink symlinkat readlink readlinkat		\
 	unlink unlinkat rmdir						\
-	ftw ftw64 fts poll ppoll					\
+	poll ppoll							\
 	posix_fadvise posix_fadvise64					\
 	posix_fallocate posix_fallocate64				\
 	sendfile sendfile64 \
 	utimensat futimens
+routines-$(OPTION_EGLIBC_BSD) += lchmod
+routines-$(OPTION_EGLIBC_FTRAVERSE) += ftw ftw64 fts
 
 aux := have_o_cloexec
 
@@ -64,17 +68,21 @@ static-only-routines = stat fstat lstat stat64 fstat64 lstat64	\
 		       fstatat fstatat64 mknod mknodat
 
 others		:= pwd
-test-srcs	:= ftwtest
+test-srcs-$(OPTION_EGLIBC_FTRAVERSE) := ftwtest
 tests		:= test-utime test-stat test-stat2 test-lfs tst-getcwd \
-		   tst-fcntl bug-ftw1 bug-ftw2 bug-ftw3 bug-ftw4 tst-statvfs \
+		   tst-fcntl tst-statvfs \
 		   tst-openat tst-unlinkat tst-fstatat tst-futimesat \
 		   tst-renameat tst-fchownat tst-fchmodat tst-faccessat \
 		   tst-symlinkat tst-linkat tst-readlinkat tst-mkdirat \
-		   tst-mknodat tst-mkfifoat tst-ttyname_r bug-ftw5 \
+		   tst-mknodat tst-mkfifoat tst-ttyname_r \
 		   tst-posix_fallocate
+tests-$(OPTION_EGLIBC_FTRAVERSE) += bug-ftw1 bug-ftw2 bug-ftw3 bug-ftw4 \
+				    bug-ftw5
 
 ifeq ($(run-built-tests),yes)
+ifeq (y,$(OPTION_EGLIBC_FTRAVERSE))
 tests-special += $(objpfx)ftwtest.out
+endif
 endif
 
 include ../Rules

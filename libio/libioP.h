@@ -44,6 +44,10 @@
 /*# include <comthread.h>*/
 #endif
 
+#if defined _LIBC
+# include <gnu/option-groups.h>
+#endif
+
 #include <math_ldbl_opt.h>
 
 #include "iolibio.h"
@@ -523,8 +527,20 @@ extern void _IO_old_init (_IO_FILE *fp, int flags) __THROW;
 
 
 #if defined _LIBC || defined _GLIBCPP_USE_WCHAR_T
+
+/* _IO_is_wide (fp) is roughly equivalent to '_IO_fwide (fp, 0) > 0',
+   except that when OPTION_POSIX_C_LANG_WIDE_CHAR is disabled, it
+   expands to a constant, allowing the compiler to realize that it can
+   eliminate code that references wide stream handling functions.
+   This, in turn, allows us to omit them.  */
+#if __OPTION_POSIX_C_LANG_WIDE_CHAR
+# define _IO_is_wide(_f) ((_f)->_mode > 0)
+#else
+# define _IO_is_wide(_f) (0)
+#endif
+
 # define _IO_do_flush(_f) \
-  ((_f)->_mode <= 0							      \
+  (! _IO_is_wide (_f)                                                         \
    ? _IO_do_write(_f, (_f)->_IO_write_base,				      \
 		  (_f)->_IO_write_ptr-(_f)->_IO_write_base)		      \
    : _IO_wdo_write(_f, (_f)->_wide_data->_IO_write_base,		      \

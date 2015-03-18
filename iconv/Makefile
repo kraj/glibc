@@ -18,6 +18,8 @@
 #
 #	Makefile for iconv.
 #
+include ../option-groups.mak
+
 subdir	:= iconv
 
 include ../Makeconfig
@@ -39,6 +41,11 @@ CFLAGS-iconv_charmap.c = -I../locale/programs
 CFLAGS-dummy-repertoire.c = -I../locale/programs
 CFLAGS-charmap.c = -DCHARMAP_PATH='"$(i18ndir)/charmaps"' \
 		   -DDEFAULT_CHARMAP=null_pointer -DNEED_NULL_POINTER
+
+ifneq (y,$(OPTION_EGLIBC_SPAWN))
+CFLAGS-charmap-dir.c += -DNO_UNCOMPRESS
+endif
+
 CFLAGS-linereader.c = -DNO_TRANSLITERATION
 CFLAGS-simple-hash.c = -I../locale
 

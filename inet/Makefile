@@ -18,6 +18,8 @@
 #
 #	Sub-makefile for inet portion of the library.
 #
+include ../option-groups.mak
+
 subdir	:= inet
 
 include ../Makeconfig
@@ -27,7 +29,8 @@ headers	:= netinet/ether.h netinet/in.h netinet/in_systm.h \
 	   netinet/tcp.h netinet/ip.h $(wildcard arpa/*.h protocols/*.h) \
 	   aliases.h ifaddrs.h netinet/ip6.h netinet/icmp6.h bits/in.h
 
-routines := htonl htons		\
+routines-$(OPTION_EGLIBC_INET) \
+	 += htonl htons \
 	    inet_lnaof inet_mkadr	\
 	    inet_netof inet_ntoa inet_net herrno herrno-loc \
 	    gethstbyad gethstbyad_r gethstbynm gethstbynm2 gethstbynm2_r \
@@ -39,18 +42,23 @@ routines := htonl htons		\
 	    getservent_r	\
 	    ether_aton ether_aton_r ether_hton ether_line \
 	    ether_ntoa ether_ntoa_r ether_ntoh \
-	    rcmd rexec ruserpass \
 	    getnetgrent_r getnetgrent \
-	    getaliasent_r getaliasent getaliasname getaliasname_r \
-	    in6_addr getnameinfo if_index ifaddrs inet6_option \
+	    in6_addr getnameinfo if_index ifaddrs \
 	    getipv4sourcefilter setipv4sourcefilter \
-	    getsourcefilter setsourcefilter inet6_opt inet6_rth
+	    getsourcefilter setsourcefilter
+routines-$(OPTION_EGLIBC_RCMD) \
+	 += rcmd rexec ruserpass
+routines-$(OPTION_EGLIBC_DB_ALIASES) \
+	 += getaliasent_r getaliasent getaliasname getaliasname_r
+routines-$(OPTION_EGLIBC_ADVANCED_INET6) \
+	 += inet6_option inet6_opt inet6_rth
 
-aux := check_pf check_native ifreq
+aux-$(OPTION_EGLIBC_INET) += check_pf check_native ifreq
 
 tests := htontest test_ifindex tst-ntoa tst-ether_aton tst-network \
-	 tst-gethnm test-ifaddrs bug-if1 test-inet6_opt tst-ether_line \
+	 tst-gethnm test-ifaddrs bug-if1 tst-ether_line \
 	 tst-getni1 tst-getni2 tst-inet6_rth tst-checks
+tests-$(OPTION_EGLIBC_ADVANCED_INET6) += test-inet6_opt
 
 include ../Rules
 

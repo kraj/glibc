@@ -609,7 +609,7 @@ elf-objpfx = $(common-objpfx)elf/
 # and run on the build system, causes that program with those
 # arguments to be run on the host for which the library is built.
 ifndef test-wrapper
-test-wrapper =
+test-wrapper = $(cross-test-wrapper)
 endif
 # Likewise, but the name of the program is preceded by
 # <variable>=<value> assignments for environment variables.
@@ -1088,6 +1088,24 @@ else
 libm = $(common-objpfx)math/libm.a
 libmvec = $(common-objpfx)mathvec/libmvec.a
 endif
+
+# Generate a header file that #defines preprocessor symbols indicating
+# which option groups are enabled.  Note that the option-groups.config file
+# may not exist at all.
+before-compile += $(common-objpfx)gnu/option-groups.h
+common-generated += gnu/option-groups.h gnu/option-groups.stmp
+headers += gnu/option-groups.h
+$(common-objpfx)gnu/option-groups.h: $(common-objpfx)gnu/option-groups.stmp; @:
+$(common-objpfx)gnu/option-groups.stmp:					\
+		$(..)scripts/option-groups.awk				\
+		$(..)option-groups.defaults				\
+		$(wildcard $(common-objpfx)option-groups.config)
+	$(make-target-directory)
+	@rm -f ${@:stmp=T} $@
+	LC_ALL=C $(AWK) -f $^ > ${@:stmp=T}
+	$(move-if-change) ${@:stmp=T} ${@:stmp=h}
+	touch $@
+
 
 # These are the subdirectories containing the library source.  The order
 # is more or less arbitrary.  The sorting step will take care of the

@@ -18,6 +18,8 @@
 #
 #	Sub-makefile for resolv portion of the library.
 #
+include ../option-groups.mak
+
 subdir	:= resolv
 
 include ../Makeconfig
@@ -27,21 +29,22 @@ headers	:= resolv.h \
 	   arpa/nameser.h arpa/nameser_compat.h \
 	   sys/bitypes.h
 
-routines := herror inet_addr inet_ntop inet_pton nsap_addr res_init \
-	    res_hconf res_libc res-state
+routines-$(OPTION_EGLIBC_INET) \
+	+= herror inet_addr inet_ntop inet_pton nsap_addr res_init \
+	   res_hconf res_libc res-state
 
-tests = tst-aton tst-leaks tst-inet_ntop
-xtests = tst-leaks2
+tests-$(OPTION_EGLIBC_INET) += tst-aton tst-leaks tst-inet_ntop
+xtests-$(OPTION_EGLIBC_INET) += tst-leaks2
 
 generate := mtrace-tst-leaks.out tst-leaks.mtrace tst-leaks2.mtrace
 
-extra-libs := libresolv libnss_dns
+extra-libs-$(OPTION_EGLIBC_INET) += libresolv libnss_dns
 ifeq ($(have-thread-library),yes)
-extra-libs += libanl
-routines += gai_sigqueue
+extra-libs-$(OPTION_EGLIBC_INET_ANL) += libanl
+routines-$(OPTION_EGLIBC_INET) += gai_sigqueue
 tests += tst-res_hconf_reorder
 endif
-extra-libs-others = $(extra-libs)
+extra-libs-others-y += $(extra-libs-y)
 libresolv-routines := gethnamaddr res_comp res_debug	\
 		      res_data res_mkquery res_query res_send		\
 		      inet_net_ntop inet_net_pton inet_neta base64	\
@@ -61,7 +64,7 @@ routines                += $(libnss_dns-routines) $(libresolv-routines)
 static-only-routines    += $(libnss_dns-routines) $(libresolv-routines)
 endif
 
-ifeq (yesyes,$(build-shared)$(have-thread-library))
+ifeq (yesyesy,$(build-shared)$(have-thread-library)$(OPTION_EGLIBC_INET_ANL))
 tests: $(objpfx)ga_test
 endif
 

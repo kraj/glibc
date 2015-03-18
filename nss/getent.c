@@ -39,6 +39,7 @@
 #include <netinet/ether.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <gnu/option-groups.h>
 
 /* Get libc version number.  */
 #include <version.h>
@@ -91,6 +92,7 @@ warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\
   fprintf (stream, gettext ("Written by %s.\n"), "Thorsten Kukuk");
 }
 
+#if __OPTION_EGLIBC_DB_ALIASES
 /* This is for aliases */
 static void
 print_aliases (struct aliasent *alias)
@@ -135,7 +137,9 @@ aliases_keys (int number, char *key[])
 
   return result;
 }
+#endif /* __OPTION_EGLIBC_DB_ALIASES */
 
+#if __OPTION_EGLIBC_INET
 /* This is for ethers */
 static int
 ethers_keys (int number, char *key[])
@@ -179,6 +183,7 @@ ethers_keys (int number, char *key[])
 
   return result;
 }
+#endif /* __OPTION_EGLIBC_INET */
 
 /* This is for group */
 static void
@@ -301,6 +306,7 @@ gshadow_keys (int number, char *key[])
   return result;
 }
 
+#if __OPTION_EGLIBC_INET
 /* This is for hosts */
 static void
 print_hosts (struct hostent *host)
@@ -598,6 +604,7 @@ networks_keys (int number, char *key[])
 
   return result;
 }
+#endif /* __OPTION_EGLIBC_INET */
 
 /* Now is all for passwd */
 static void
@@ -650,6 +657,7 @@ passwd_keys (int number, char *key[])
   return result;
 }
 
+#if __OPTION_EGLIBC_INET
 /* This is for protocols */
 static void
 print_protocols (struct protoent *proto)
@@ -807,6 +815,7 @@ services_keys (int number, char *key[])
 
   return result;
 }
+#endif /* __OPTION_EGLIBC_INET */
 
 /* This is for shadow */
 static void
@@ -873,23 +882,36 @@ struct
   } databases[] =
   {
 #define D(name) { #name, name ## _keys },
-D(ahosts)
-D(ahostsv4)
-D(ahostsv6)
-D(aliases)
-D(ethers)
+
+#if __OPTION_EGLIBC_INET
+# define DN(name) D(name)
+#else
+# define DN(name)
+#endif
+
+#if __OPTION_EGLIBC_DB_ALIASES
+# define DA(name) D(name)
+#else
+# define DA(name)
+#endif
+
+DN(ahosts)
+DN(ahostsv4)
+DN(ahostsv6)
+DA(aliases)
+DN(ethers)
 D(group)
 D(gshadow)
-D(hosts)
-D(initgroups)
-D(netgroup)
-D(networks)
+DN(hosts)
+DN(initgroups)
+DN(netgroup)
+DN(networks)
 D(passwd)
-D(protocols)
+DN(protocols)
 #if HAVE_SUNRPC
-D(rpc)
+DN(rpc)
 #endif
-D(services)
+DN(services)
 D(shadow)
 #undef D
     { NULL, NULL }

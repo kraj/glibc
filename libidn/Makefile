@@ -16,6 +16,7 @@
 # <http://www.gnu.org/licenses/>.
 
 # Makefile for libidn subdirectory of GNU C Library.
+include ../option-groups.mak
 
 subdir	:= libidn
 
@@ -23,8 +24,8 @@ include ../Makeconfig
 
 routines = idn-stub
 
-extra-libs		= libcidn
-extra-libs-others	= $(extra-libs)
+extra-libs-$(OPTION_EGLIBC_IDN) = libcidn
+extra-libs-others-y = $(extra-libs-y)
 
 libcidn-routines := punycode toutf8 nfkc stringprep rfc3454 profiles idna \
 		    iconvme

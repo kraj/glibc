@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <wchar.h>
+#include <gnu/option-groups.h>
 
 static int
 do_test (void)
@@ -34,12 +35,14 @@ do_test (void)
       return 1;
     }
 
+#if __OPTION_POSIX_WIDE_CHAR_DEVICE_IO
   /* POSIX says that pipe streams are byte-oriented.  */
   if (fwide (f, 0) >= 0)
     {
       puts ("popen did not return byte-oriented stream");
       result = 1;
     }
+#endif
 
   if (getline (&line, &len, f) != 5)
     {

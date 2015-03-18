@@ -21,7 +21,7 @@
 void
 __fpurge (FILE *fp)
 {
-  if (fp->_mode > 0)
+  if (_IO_is_wide (fp))
     {
       /* Wide-char stream.  */
       if (_IO_in_backup (fp))

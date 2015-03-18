@@ -39,6 +39,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <wchar.h>
+#include <gnu/option-groups.h>
 #include <stdbool.h>
 #include <rounding-mode.h>
 
@@ -142,6 +143,10 @@ extern mp_size_t __mpn_extract_long_double (mp_ptr res_ptr, mp_size_t size,
 extern unsigned int __guess_grouping (unsigned int intdig_max,
 				      const char *grouping);
 
+/* Ideally, when OPTION_EGLIBC_LOCALE_CODE is disabled, this should do
+   all its work in ordinary characters, rather than doing it in wide
+   characters and then converting at the end.  But that is a challenge
+   for another day.  */
 
 static wchar_t *group_number (wchar_t *buf, wchar_t *bufend,
 			      unsigned int intdig_no, const char *grouping,
@@ -251,7 +256,14 @@ ___printf_fp (FILE *fp,
   mp_limb_t cy;
 
   /* Nonzero if this is output on a wide character stream.  */
+#if __OPTION_POSIX_C_LANG_WIDE_CHAR
   int wide = info->wide;
+#else
+  /* This should never be called on a wide-oriented stream when
+     OPTION_POSIX_C_LANG_WIDE_CHAR is disabled, but the compiler can't
+     be trusted to figure that out.  */
+  const int wide = 0;
+#endif
 
   /* Buffer in which we produce the output.  */
   wchar_t *wbuffer = NULL;
@@ -261,6 +273,7 @@ ___printf_fp (FILE *fp,
   p.expsign = 0;
 
   /* Figure out the decimal point character.  */
+#if __OPTION_EGLIBC_LOCALE_CODE
   if (info->extra == 0)
     {
       decimal = _NL_CURRENT (LC_NUMERIC, DECIMAL_POINT);
@@ -280,7 +293,13 @@ ___printf_fp (FILE *fp,
   /* The decimal point character must not be zero.  */
   assert (*decimal != '\0');
   assert (decimalwc != L'\0');
+#else
+  /* Hard-code values from 'C' locale.  */
+  decimal = ".";
+  decimalwc = L'.';
+#endif
 
+#if __OPTION_EGLIBC_LOCALE_CODE
   if (info->group)
     {
       if (info->extra == 0)
@@ -324,6 +343,9 @@ ___printf_fp (FILE *fp,
     }
   else
     grouping = NULL;
+#else
+  grouping = NULL;
+#endif
 
   /* Fetch the argument value.	*/
 #ifndef __NO_LONG_DOUBLE_MATH

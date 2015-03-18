@@ -232,6 +232,10 @@ extern enum nss_status _nss_ ## service ## _gethostbyname2_r		      \
 		       (const char *name, int af, struct hostent *host,	      \
 			char *buffer, size_t buflen, int *errnop,	      \
 			int *h_errnop);					      \
+extern enum nss_status _nss_ ## service ## _gethostbyname3_r		      \
+		       (const char *name, int af, struct hostent *result,     \
+			char *buffer, size_t buflen, int *errnop,	      \
+			int *h_errnop, int32_t *ttlp, char **canonp);         \
 extern enum nss_status _nss_ ## service ## _gethostbyname_r		      \
 		       (const char *name, struct hostent *host, char *buffer, \
 			size_t buflen, int *errnop, int *h_errnop);	      \

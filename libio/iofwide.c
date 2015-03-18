@@ -26,6 +26,7 @@
 
 #include <libioP.h>
 #ifdef _LIBC
+# include <gnu/option-groups.h>
 # include <dlfcn.h>
 # include <wchar.h>
 #endif
@@ -42,6 +43,8 @@
 # include <sysdep.h>
 #endif
 
+
+#if ! defined _LIBC || __OPTION_POSIX_C_LANG_WIDE_CHAR
 
 /* Prototypes of libio's codecvt functions.  */
 static enum __codecvt_result do_out (struct _IO_codecvt *codecvt,
@@ -499,3 +502,26 @@ do_max_length (struct _IO_codecvt *codecvt)
   return MB_CUR_MAX;
 #endif
 }
+
+#else
+/* OPTION_POSIX_C_LANG_WIDE_CHAR is disabled.  */
+
+#undef _IO_fwide
+int
+_IO_fwide (fp, mode)
+     _IO_FILE *fp;
+     int mode;
+{
+  /* Die helpfully if the user tries to create a wide stream; I
+     disbelieve that most users check the return value from
+     'fwide (fp, 1)'.  */
+  assert (mode <= 0);
+
+  /* We can only make streams byte-oriented, which is trivial.  */
+  if (mode < 0)
+    fp->_mode = -1;
+
+  return fp->_mode;
+}
+
+#endif

@@ -4,6 +4,7 @@
 #include <string.h>
 #include <regex.h>
 #include <wchar.h>
+#include <gnu/option-groups.h>
 
 int
 main (void)
@@ -17,7 +18,9 @@ main (void)
   memset (&regex, '\0', sizeof (regex));
 
   setlocale (LC_ALL, "de_DE.ISO-8859-1");
+#if __OPTION_POSIX_WIDE_CHAR_DEVICE_IO
   fwide (stdout, -1);
+#endif
 
   re_set_syntax (RE_SYNTAX_POSIX_EGREP | RE_DEBUG);
 

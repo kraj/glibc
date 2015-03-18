@@ -22,6 +22,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <regex.h>
+#include <gnu/option-groups.h>
 
 
 int
@@ -30,7 +31,12 @@ main (int argc, char *argv[])
   regex_t re;
   regmatch_t mat[10];
   int i, j, ret = 0;
-  const char *locales[] = { "C", "de_DE.UTF-8" };
+  const char *locales[] = {
+    "C",
+#if __OPTION_EGLIBC_LOCALE_CODE
+    "de_DE.UTF-8"
+#endif
+  };
   const char *string = "http://www.regex.com/pattern/matching.html#intro";
   regmatch_t expect[10] = {
     { 0, 48 }, { 0, 5 }, { 0, 4 }, { 5, 20 }, { 7, 20 }, { 20, 42 },

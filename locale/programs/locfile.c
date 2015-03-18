@@ -544,6 +544,9 @@ compare_files (const char *filename1, const char *filename2, size_t size,
    machine running localedef.  */
 bool swap_endianness_p;
 
+/* The target's value of __align__(uint32_t) - 1.  */
+unsigned int uint32_align_mask = 3;
+
 /* When called outside a start_locale_structure/end_locale_structure
    or start_locale_prelude/end_locale_prelude block, record that the
    next byte in FILE's obstack will be the first byte of a new element.
@@ -621,7 +624,7 @@ add_locale_string (struct locale_file *file, const char *string)
 void
 add_locale_wstring (struct locale_file *file, const uint32_t *string)
 {
-  add_locale_uint32_array (file, string, wcslen ((const wchar_t *) string) + 1);
+  add_locale_uint32_array (file, string, wcslen_uint32 (string) + 1);
 }
 
 /* Record that FILE's next element is the 32-bit integer VALUE.  */

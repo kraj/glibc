@@ -64,36 +64,6 @@ static char *const _nl_current_used[] =
 #endif
 
 
-/* Define an array of category names (also the environment variable names).  */
-const union catnamestr_t _nl_category_names attribute_hidden =
-  {
-    {
-#define DEFINE_CATEGORY(category, category_name, items, a) \
-      category_name,
-#include "categories.def"
-#undef DEFINE_CATEGORY
-    }
-  };
-
-const uint8_t _nl_category_name_idxs[__LC_LAST] attribute_hidden =
-  {
-#define DEFINE_CATEGORY(category, category_name, items, a) \
-    [category] = offsetof (union catnamestr_t, CATNAMEMF (__LINE__)),
-#include "categories.def"
-#undef DEFINE_CATEGORY
-  };
-
-/* An array of their lengths, for convenience.  */
-const uint8_t _nl_category_name_sizes[] attribute_hidden =
-  {
-#define DEFINE_CATEGORY(category, category_name, items, a) \
-    [category] = sizeof (category_name) - 1,
-#include "categories.def"
-#undef	DEFINE_CATEGORY
-    [LC_ALL] = sizeof ("LC_ALL") - 1
-  };
-
-
 #ifdef NL_CURRENT_INDIRECT
 # define WEAK_POSTLOAD(postload) weak_extern (postload)
 #else

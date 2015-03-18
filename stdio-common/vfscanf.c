@@ -29,6 +29,7 @@
 #include <wctype.h>
 #include <bits/libc-lock.h>
 #include <locale/localeinfo.h>
+#include <gnu/option-groups.h>
 
 #ifdef	__GNUC__
 # define HAVE_LONGLONG
@@ -131,6 +132,12 @@
 # define CHAR_T		char
 # define UCHAR_T	unsigned char
 # define WINT_T		int
+#endif
+
+#if __OPTION_POSIX_C_LANG_WIDE_CHAR
+# define MULTIBYTE_SUPPORT (1)
+#else
+# define MULTIBYTE_SUPPORT (0)
 #endif
 
 #define encode_error() do {						      \
@@ -316,24 +323,35 @@ _IO_vfscanf_internal (_IO_FILE *s, const char *format, _IO_va_list argptr,
   ARGCHECK (s, format);
 
  {
-#ifndef COMPILE_WSCANF
+#if __OPTION_EGLIBC_LOCALE_CODE && !defined (COMPILE_WSCANF)
    struct __locale_data *const curnumeric = loc->__locales[LC_NUMERIC];
 #endif
 
+#if __OPTION_EGLIBC_LOCALE_CODE
    /* Figure out the decimal point character.  */
-#ifdef COMPILE_WSCANF
+# ifdef COMPILE_WSCANF
    decimal = _NL_CURRENT_WORD (LC_NUMERIC, _NL_NUMERIC_DECIMAL_POINT_WC);
-#else
+# else
    decimal = curnumeric->values[_NL_ITEM_INDEX (DECIMAL_POINT)].string;
-#endif
+# endif
    /* Figure out the thousands separator character.  */
-#ifdef COMPILE_WSCANF
+# ifdef COMPILE_WSCANF
    thousands = _NL_CURRENT_WORD (LC_NUMERIC, _NL_NUMERIC_THOUSANDS_SEP_WC);
-#else
+# else
    thousands = curnumeric->values[_NL_ITEM_INDEX (THOUSANDS_SEP)].string;
    if (*thousands == '\0')
      thousands = NULL;
-#endif
+# endif
+#else /* if ! __OPTION_EGLIBC_LOCALE_CODE */
+   /* Hard-code values from the C locale.  */
+# ifdef COMPILE_WSCANF
+   decimal = L'.';
+   thousands = L'\0';
+# else
+   decimal = ".";
+   thousands = NULL;
+# endif
+#endif /* __OPTION_EGLIBC_LOCALE_CODE */
  }
 
   /* Lock the stream.  */
@@ -385,6 +403,8 @@ _IO_vfscanf_internal (_IO_FILE *s, const char *format, _IO_va_list argptr,
 #ifndef COMPILE_WSCANF
       if (!isascii ((unsigned char) *f))
 	{
+          assert (MULTIBYTE_SUPPORT);
+
 	  /* Non-ASCII, may be a multibyte.  */
 	  int len = __mbrlen (f, strlen (f), &state);
 	  if (len > 0)
@@ -830,6 +850,8 @@ _IO_vfscanf_internal (_IO_FILE *s, const char *format, _IO_va_list argptr,
 	    }
 	  /* FALLTHROUGH */
 	case L_('C'):
+          assert (MULTIBYTE_SUPPORT);
+
 	  if (width == -1)
 	    width = 1;
 
@@ -1172,6 +1194,8 @@ _IO_vfscanf_internal (_IO_FILE *s, const char *format, _IO_va_list argptr,
 	  /* FALLTHROUGH */
 
 	case L_('S'):
+          assert (MULTIBYTE_SUPPORT);
+
 	  {
 #ifndef COMPILE_WSCANF
 	    mbstate_t cstate;
@@ -1419,10 +1443,17 @@ _IO_vfscanf_internal (_IO_FILE *s, const char *format, _IO_va_list argptr,
 	      const char *mbdigits[10];
 	      const char *mbdigits_extended[10];
 #endif
+#if __OPTION_EGLIBC_LOCALE_CODE
 	      /*  "to_inpunct" is a map from ASCII digits to their
 		  equivalent in locale. This is defined for locales
 		  which use an extra digits set.  */
 	      wctrans_t map = __wctrans ("to_inpunct");
+#else
+              /* This will always be the case when
+                 OPTION_EGLIBC_LOCALE_CODE is disabled, but the
+                 compiler can't figure that out.  */
+              wctrans_t map = NULL;
+#endif
 	      int n;
 
 	      from_level = 0;
@@ -2088,6 +2119,7 @@ _IO_vfscanf_internal (_IO_FILE *s, const char *format, _IO_va_list argptr,
 		--width;
 	    }
 
+#if __OPTION_EGLIBC_LOCALE_CODE
 	  wctrans_t map;
 	  if (__builtin_expect ((flags & I18N) != 0, 0)
 	      /* Hexadecimal floats make no sense, fixing localized
@@ -2304,6 +2336,7 @@ _IO_vfscanf_internal (_IO_FILE *s, const char *format, _IO_va_list argptr,
 	      ;
 #endif
 	    }
+#endif /* __OPTION_EGLIBC_LOCALE_CODE */
 
 	  /* Have we read any character?  If we try to read a number
 	     in hexadecimal notation and we have read only the `0x'
@@ -2343,7 +2376,10 @@ _IO_vfscanf_internal (_IO_FILE *s, const char *format, _IO_va_list argptr,
 
 	case L_('['):	/* Character class.  */
 	  if (flags & LONG)
-	    STRING_ARG (wstr, wchar_t, 100);
+            {
+              assert (MULTIBYTE_SUPPORT);
+              STRING_ARG (wstr, wchar_t, 100);
+            }
 	  else
 	    STRING_ARG (str, char, 100);
 
@@ -2417,6 +2453,7 @@ _IO_vfscanf_internal (_IO_FILE *s, const char *format, _IO_va_list argptr,
 	  if (flags & LONG)
 	    {
 	      size_t now = read_in;
+              assert (MULTIBYTE_SUPPORT);
 #ifdef COMPILE_WSCANF
 	      if (__glibc_unlikely (inchar () == WEOF))
 		input_error ();

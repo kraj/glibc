@@ -19,6 +19,7 @@
 /* This file defines some things that for the dynamic linker are defined in
    rtld.c and dl-sysdep.c in ways appropriate to bootstrap dynamic linking.  */
 
+#include <gnu/option-groups.h>
 #include <errno.h>
 #include <libintl.h>
 #include <stdlib.h>
@@ -42,7 +43,9 @@ char **_dl_argv = &__progname;	/* This is checked for some error messages.  */
 const char *_dl_platform;
 size_t _dl_platformlen;
 
+#if __OPTION_EGLIBC_RTLD_DEBUG
 int _dl_debug_mask;
+#endif
 int _dl_lazy;
 ElfW(Addr) _dl_use_load_bias = -2;
 int _dl_dynamic_weak;

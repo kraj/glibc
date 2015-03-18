@@ -18,6 +18,7 @@
 #
 #	Sub-makefile for login portion of the library.
 #
+include ../option-groups.mak
 
 subdir	:= login
 
@@ -25,14 +26,16 @@ include ../Makeconfig
 
 headers	:= utmp.h bits/utmp.h lastlog.h pty.h
 
-routines := getlogin getlogin_r setlogin getlogin_r_chk \
-	    getutent getutent_r getutid getutline getutid_r getutline_r \
-	    utmp_file utmpname updwtmp getpt grantpt unlockpt ptsname \
-	    ptsname_r_chk
+routines := getpt grantpt unlockpt ptsname ptsname_r_chk
+routines-$(OPTION_EGLIBC_UTMP) \
+	 += getutent getutent_r getutid getutline getutid_r getutline_r \
+	    utmp_file utmpname updwtmp
+routines-$(OPTION_EGLIBC_GETLOGIN) += getlogin getlogin_r getlogin_r_chk
+routines-$(OPTION_EGLIBC_BSD) += setlogin
 
 CFLAGS-grantpt.c = -DLIBEXECDIR='"$(libexecdir)"'
 
-others = utmpdump
+others-$(OPTION_EGLIBC_UTMP) += utmpdump
 
 ifeq (yes,$(build-pt-chown))
 others += pt_chown
@@ -46,8 +49,8 @@ vpath %.c programs
 tests := tst-utmp tst-utmpx tst-grantpt tst-ptsname tst-getlogin
 
 # Build the -lutil library with these extra functions.
-extra-libs      := libutil
-extra-libs-others := $(extra-libs)
+extra-libs-$(OPTION_EGLIBC_UTMP) := libutil
+extra-libs-others := $(extra-libs-y)
 
 libutil-routines:= login login_tty logout logwtmp openpty forkpty
 

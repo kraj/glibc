@@ -29,6 +29,7 @@
 
 #ifdef _LIBC
 # define HAVE_LOCALTIME_R 0
+# include <gnu/option-groups.h>
 # include "../locale/localeinfo.h"
 #endif
 
@@ -84,7 +85,7 @@ localtime_r (t, tp)
     if (val < from || val > to)						      \
       return NULL;							      \
   } while (0)
-#ifdef _NL_CURRENT
+#if (! _LIBC || __OPTION_EGLIBC_LOCALE_CODE) && defined (_NL_CURRENT)
 # define get_alt_number(from, to, n) \
   ({									      \
      __label__ do_normal;						      \
@@ -257,8 +258,10 @@ __strptime_internal (rp, fmt, tmp, statep LOCALE_PARAM)
   int cnt;
   int cnt_longest;
   size_t val;
+#if ! _LIBC || __OPTION_EGLIBC_LOCALE_CODE
   size_t num_eras;
   struct era_entry *era = NULL;
+#endif
   enum ptime_locale_status { not, loc, raw } decided_longest;
   struct __strptime_state
   {
@@ -820,6 +823,7 @@ __strptime_internal (rp, fmt, tmp, statep LOCALE_PARAM)
 	      s.want_xday = 1;
 	      break;
 	    case 'C':
+#if ! _LIBC || __OPTION_EGLIBC_LOCALE_CODE
 	      if (s.decided != raw)
 		{
 		  if (s.era_cnt >= 0)
@@ -856,10 +860,12 @@ __strptime_internal (rp, fmt, tmp, statep LOCALE_PARAM)
 
 		  s.decided = raw;
 		}
+#endif
 	      /* The C locale has no era information, so use the
 		 normal representation.  */
 	      goto match_century;
  	    case 'y':
+#if ! _LIBC || __OPTION_EGLIBC_LOCALE_CODE
 	      if (s.decided != raw)
 		{
 		  get_number(0, 9999, 4);
@@ -918,9 +924,10 @@ __strptime_internal (rp, fmt, tmp, statep LOCALE_PARAM)
 
 		  s.decided = raw;
 		}
-
+#endif
 	      goto match_year_in_century;
 	    case 'Y':
+#if ! _LIBC || __OPTION_EGLIBC_LOCALE_CODE
 	      if (s.decided != raw)
 		{
 		  num_eras = _NL_CURRENT_WORD (LC_TIME,
@@ -948,6 +955,7 @@ __strptime_internal (rp, fmt, tmp, statep LOCALE_PARAM)
 
 		  s.decided = raw;
 		}
+#endif
 	      get_number (0, 9999, 4);
 	      tm->tm_year = val - 1900;
 	      s.want_century = 0;
@@ -1118,6 +1126,7 @@ __strptime_internal (rp, fmt, tmp, statep LOCALE_PARAM)
 	tm->tm_year = (s.century - 19) * 100;
     }
 
+#if ! _LIBC || __OPTION_EGLIBC_LOCALE_CODE
   if (s.era_cnt != -1)
     {
       era = _nl_select_era_entry (s.era_cnt HELPER_LOCALE_ARG);
@@ -1132,6 +1141,7 @@ __strptime_internal (rp, fmt, tmp, statep LOCALE_PARAM)
 	tm->tm_year = era->start_date[0];
     }
   else
+#endif
     if (s.want_era)
       {
 	/* No era found but we have seen an E modifier.  Rectify some

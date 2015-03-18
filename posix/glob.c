@@ -25,6 +25,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stddef.h>
+#ifdef _LIBC
+# include <gnu/option-groups.h>
+#endif
 
 /* Outcomment the following line for production quality code.  */
 /* #define NDEBUG 1 */
@@ -607,6 +610,7 @@ glob (pattern, flags, errfunc, pglob)
 	  if (home_dir == NULL || home_dir[0] == '\0')
 	    home_dir = "c:/users/default"; /* poor default */
 #  else
+#   if ! _LIBC || __OPTION_EGLIBC_GETLOGIN
 	  if (home_dir == NULL || home_dir[0] == '\0')
 	    {
 	      int success;
@@ -623,19 +627,19 @@ glob (pattern, flags, errfunc, pglob)
 	      if (success)
 		{
 		  struct passwd *p;
-#   if defined HAVE_GETPWNAM_R || defined _LIBC
+#    if defined HAVE_GETPWNAM_R || defined _LIBC
 		  long int pwbuflen = GETPW_R_SIZE_MAX ();
 		  char *pwtmpbuf;
 		  struct passwd pwbuf;
 		  int malloc_pwtmpbuf = 0;
 		  int save = errno;
 
-#    ifndef _LIBC
+#     ifndef _LIBC
 		  if (pwbuflen == -1)
 		    /* `sysconf' does not support _SC_GETPW_R_SIZE_MAX.
 		       Try a moderate value.  */
 		    pwbuflen = 1024;
-#    endif
+#     endif
 		  if (__libc_use_alloca (alloca_used + pwbuflen))
 		    pwtmpbuf = alloca_account (pwbuflen, alloca_used);
 		  else
@@ -682,9 +686,9 @@ glob (pattern, flags, errfunc, pglob)
 			}
 		      __set_errno (save);
 		    }
-#   else
+#    else
 		  p = getpwnam (name);
-#   endif
+#    endif
 		  if (p != NULL)
 		    {
 		      if (!malloc_pwtmpbuf)
@@ -713,6 +717,7 @@ glob (pattern, flags, errfunc, pglob)
 		    }
 		}
 	    }
+#   endif /* ! _LIBC || __OPTION_EGLIBC_GETLOGIN */
 	  if (home_dir == NULL || home_dir[0] == '\0')
 	    {
 	      if (flags & GLOB_TILDE_CHECK)

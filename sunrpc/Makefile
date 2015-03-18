@@ -18,6 +18,8 @@
 #
 #	Sub-makefile for sunrpc portion of the library.
 #
+include ../option-groups.mak
+
 subdir	:= sunrpc
 
 include ../Makeconfig
@@ -55,7 +57,6 @@ headers-in-tirpc = $(addprefix rpc/,auth.h auth_unix.h clnt.h pmap_clnt.h \
 headers-not-in-tirpc = $(addprefix rpc/,key_prot.h rpc_des.h) \
 		       $(rpcsvc:%=rpcsvc/%) rpcsvc/bootparam.h
 headers = rpc/netdb.h
-install-others = $(inst_sysconfdir)/rpc
 generated += $(rpcsvc:%.x=rpcsvc/%.h) $(rpcsvc:%.x=x%.c) $(rpcsvc:%.x=x%.stmp) \
 	     $(rpcsvc:%.x=rpcsvc/%.stmp) rpcgen
 generated-dirs += rpcsvc
@@ -65,20 +66,28 @@ headers += $(headers-in-tirpc) $(headers-not-in-tirpc)
 endif
 
 ifeq ($(build-shared),yes)
-need-export-routines := auth_des auth_unix clnt_gen clnt_perr clnt_tcp \
+need-export-routines-$(OPTION_EGLIBC_SUNRPC) := \
+			auth_des auth_unix clnt_gen clnt_perr clnt_tcp \
 			clnt_udp get_myaddr key_call netname pm_getport \
-			rpc_thread svc svc_tcp svc_udp xcrypt xdr_array xdr \
+			rpc_thread svc svc_tcp svc_udp xdr_array xdr \
 			xdr_intXX_t xdr_mem xdr_ref xdr_sizeof xdr_stdio \
 			svc_run
+need-export-routines-y += xcrypt
+need-export-routines := $(need-export-routines-y)
 
-routines := auth_none authuxprot bindrsvprt clnt_raw clnt_simp \
+routines-$(OPTION_EGLIBC_SUNRPC) := \
+	    auth_none authuxprot bindrsvprt clnt_raw clnt_simp \
 	    rpc_dtable getrpcport pmap_clnt pm_getmaps pmap_prot pmap_prot2 \
 	    pmap_rmt rpc_prot rpc_common rpc_cmsg svc_auth svc_authux svc_raw \
 	    svc_simple xdr_float xdr_rec publickey authdes_prot \
-	    des_crypt des_impl des_soft key_prot openchild rtime svcauth_des \
+	    key_prot openchild rtime svcauth_des \
 	    getrpcent getrpcbyname getrpcbynumber \
 	    getrpcent_r getrpcbyname_r getrpcbynumber_r \
-	    clnt_unix svc_unix create_xid $(need-export-routines)
+	    clnt_unix svc_unix create_xid
+
+# xdecrypt is also used by nss/nss_files/files-key.c.
+routines-y += des_crypt des_impl des_soft $(need-export-routines)
+
 ifneq ($(link-obsolete-rpc),yes)
 # We only add the RPC for compatibility to libc.so.
 shared-only-routines = $(routines)
@@ -87,25 +96,28 @@ endif
 
 # We do not build rpcinfo anymore.  It is not needed for a bootstrap
 # and not wanted on complete systems.
-# others := rpcinfo
-# install-sbin := rpcinfo
-install-bin := rpcgen
+# others-$(OPTION_EGLIBC_SUNRPC) += rpcinfo
+# install-sbin-$(OPTION_EGLIBC_SUNRPC) += rpcinfo
+install-bin-$(OPTION_EGLIBC_SUNRPC) += rpcgen
 rpcgen-objs = rpc_main.o rpc_hout.o rpc_cout.o rpc_parse.o \
 	      rpc_scan.o rpc_util.o rpc_svcout.o rpc_clntout.o \
 	      rpc_tblout.o rpc_sample.o
-extra-objs = $(rpcgen-objs) $(addprefix cross-,$(rpcgen-objs))
-others += rpcgen
+extra-objs-$(OPTION_EGLIBC_SUNRPC) = $(rpcgen-objs) $(addprefix cross-,$(rpcgen-objs))
+others-$(OPTION_EGLIBC_SUNRPC) += rpcgen
 
-tests = tst-xdrmem tst-xdrmem2 test-rpcent
-xtests := tst-getmyaddr
+install-others-$(OPTION_EGLIBC_SUNRPC) += $(inst_sysconfdir)/rpc
+
+tests-$(OPTION_EGLIBC_SUNRPC) = tst-xdrmem tst-xdrmem2 test-rpcent
+xtests-$(OPTION_EGLIBC_SUNRPC) := tst-getmyaddr
 
 ifeq ($(have-thread-library),yes)
-xtests += thrsvc
+xtests-$(OPTION_EGLIBC_SUNRPC) += thrsvc
 endif
 
 headers += $(rpcsvc:%.x=rpcsvc/%.h)
-extra-libs := librpcsvc
-extra-libs-others := librpcsvc # Make it in `others' pass, not `lib' pass.
+extra-libs-$(OPTION_EGLIBC_SUNRPC) += librpcsvc
+# Make it in `others' pass, not `lib' pass.
+extra-libs-others-y += $(extra-libs-y)
 librpcsvc-routines = $(rpcsvc:%.x=x%)
 librpcsvc-inhibit-o = .os # Build no shared rpcsvc library.
 omit-deps = $(librpcsvc-routines)

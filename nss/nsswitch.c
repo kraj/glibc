@@ -26,6 +26,7 @@
 #include <stdio_ext.h>
 #include <stdlib.h>
 #include <string.h>
+#include <gnu/option-groups.h>
 
 #include <aliases.h>
 #include <grp.h>
@@ -40,6 +41,15 @@
 #include "nsswitch.h"
 #include "../nscd/nscd_proto.h"
 #include <sysdep.h>
+
+/* When OPTION_EGLIBC_NSSWITCH is disabled, we use fixed tables of
+   databases and services, generated at library build time.  Thus:
+   - We can't reconfigure individual databases, so we don't need a
+     name-to-database map.
+   - We never add databases or service libraries, or look up functions
+     at runtime, so there's no need for a lock to protect our tables.
+   See ../option-groups.def for the details.  */
+#if __OPTION_EGLIBC_NSSWITCH
 
 /* Prototypes for the local functions.  */
 static name_database *nss_parse_file (const char *fname) internal_function;
@@ -79,6 +89,9 @@ bool __nss_database_custom[NSS_DBSIDX_max];
 
 __libc_lock_define_initialized (static, lock)
 
+#define lock_nsswitch __libc_lock_lock (lock)
+#define unlock_nsswitch __libc_lock_unlock (lock)
+
 #if !defined DO_STATIC_NSS || defined SHARED
 /* String with revision number of the shared object files.  */
 static const char *const __nss_shlib_revision = LIBNSS_FILES_SO + 15;
@@ -92,6 +105,20 @@ static name_database *service_table;
    The list is only maintained so we can free such service lists in
    __libc_freeres.  */
 static name_database_entry *defconfig_entries;
+
+#else /* __OPTION_EGLIBC_NSSWITCH */
+
+/* Bring in the statically initialized service table we generated at
+   build time.  */
+#include "fixed-nsswitch.h"
+
+const static name_database *service_table = &fixed_name_database;
+
+/* Nothing ever changes, so there's no need to lock anything.  */
+#define lock_nsswitch (0)
+#define unlock_nsswitch (0)
+
+#endif /* __OPTION_EGLIBC_NSSWITCH */
 
 
 #ifdef USE_NSCD
@@ -109,20 +136,22 @@ __nss_database_lookup (const char *database, const char *alternate_name,
 		       const char *defconfig, service_user **ni)
 {
   /* Prevent multiple threads to change the service table.  */
-  __libc_lock_lock (lock);
+  lock_nsswitch;
 
   /* Reconsider database variable in case some other thread called
      `__nss_configure_lookup' while we waited for the lock.  */
   if (*ni != NULL)
     {
-      __libc_lock_unlock (lock);
+      unlock_nsswitch;
       return 0;
     }
 
+#if __OPTION_EGLIBC_NSSWITCH
   /* Are we initialized yet?  */
   if (service_table == NULL)
     /* Read config file.  */
     service_table = nss_parse_file (_PATH_NSSWITCH_CONF);
+#endif
 
   /* Test whether configuration data is available.  */
   if (service_table != NULL)
@@ -144,6 +173,7 @@ __nss_database_lookup (const char *database, const char *alternate_name,
 	    *ni = entry->service;
     }
 
+#if __OPTION_EGLIBC_NSSWITCH
   /* No configuration data is available, either because nsswitch.conf
      doesn't exist or because it doesn't have a line for this database.
 
@@ -166,13 +196,23 @@ __nss_database_lookup (const char *database, const char *alternate_name,
 	    {
 	      entry->next = defconfig_entries;
 	      entry->service = *ni;
-	      entry->name[0] = '\0';
+	      entry->name = "";
 	      defconfig_entries = entry;
 	    }
 	}
     }
+#else
+  /* Without the dynamic behavior, we can't process defconfig.  The
+     databases the user specified at library build time are all you
+     get.  */
+  if (*ni == NULL)
+    {
+      unlock_nsswitch;
+      return -1;
+    }
+#endif
 
-  __libc_lock_unlock (lock);
+  unlock_nsswitch;
 
   return *ni != NULL ? 0 : -1;
 }
@@ -252,6 +292,7 @@ __nss_next2 (service_user **ni, const char *fct_name, const char *fct2_name,
 libc_hidden_def (__nss_next2)
 
 
+#if __OPTION_EGLIBC_NSSWITCH
 int
 attribute_compat_text_section
 __nss_next (service_user **ni, const char *fct_name, void **fctp, int status,
@@ -300,13 +341,13 @@ __nss_configure_lookup (const char *dbname, const char *service_line)
     }
 
   /* Prevent multiple threads to change the service table.  */
-  __libc_lock_lock (lock);
+  lock_nsswitch;
 
   /* Install new rules.  */
   *databases[cnt].dbp = new_db;
   __nss_database_custom[cnt] = true;
 
-  __libc_lock_unlock (lock);
+  unlock_nsswitch;
 
   return 0;
 }
@@ -402,7 +443,7 @@ __nss_lookup_function (service_user *ni, const char *fct_name)
   void **found, *result;
 
   /* We now modify global data.  Protect it.  */
-  __libc_lock_lock (lock);
+  lock_nsswitch;
 
   /* Search the tree of functions previously requested.  Data in the
      tree are `known_function' structures, whose first member is a
@@ -413,7 +454,7 @@ __nss_lookup_function (service_user *ni, const char *fct_name)
      enough to a pointer to our structure to use as a lookup key that
      will be passed to `known_compare' (above).  */
 
-  found = __tsearch (&fct_name, &ni->known, &known_compare);
+  found = __tsearch (&fct_name, &ni->known.tree, &known_compare);
   if (found == NULL)
     /* This means out-of-memory.  */
     result = NULL;
@@ -440,7 +481,7 @@ __nss_lookup_function (service_user *ni, const char *fct_name)
 #endif
 	  /* Oops.  We can't instantiate this node properly.
 	     Remove it from the tree.  */
-	  __tdelete (&fct_name, &ni->known, &known_compare);
+	  __tdelete (&fct_name, &ni->known.tree, &known_compare);
 	  free (known);
 	  result = NULL;
 	}
@@ -520,13 +561,43 @@ __nss_lookup_function (service_user *ni, const char *fct_name)
     }
 
   /* Remove the lock.  */
-  __libc_lock_unlock (lock);
+  unlock_nsswitch;
 
   return result;
 }
 libc_hidden_def (__nss_lookup_function)
 
 
+#else /* below if ! __OPTION_EGLIBC_NSSWITCH */
+
+
+int
+__nss_configure_lookup (const char *dbname, const char *service_line)
+{
+  /* We can't dynamically configure lookup without
+     OPTION_EGLIBC_NSSWITCH.  */
+  __set_errno (EINVAL);
+  return -1;
+}
+
+
+void *
+__nss_lookup_function (service_user *ni, const char *fct_name)
+{
+  int i;
+  const known_function **known = ni->known.array;
+
+  for (i = 0; known[i]; i++)
+    if (strcmp (fct_name, known[i]->fct_name) == 0)
+      return known[i]->fct_ptr;
+
+  return NULL;
+}
+libc_hidden_def (__nss_lookup_function)
+#endif
+
+
+#if __OPTION_EGLIBC_NSSWITCH
 static name_database *
 internal_function
 nss_parse_file (const char *fname)
@@ -632,8 +703,10 @@ nss_parse_service_list (const char *line)
 					     + (line - name + 1));
       if (new_service == NULL)
 	return result;
+      new_service->name = (char *) (new_service + 1);
 
-      *((char *) __mempcpy (new_service->name, name, line - name)) = '\0';
+      *((char *) __mempcpy ((char *) new_service->name, name, line - name))
+        = '\0';
 
       /* Set default actions.  */
       new_service->actions[2 + NSS_STATUS_TRYAGAIN] = NSS_ACTION_CONTINUE;
@@ -642,7 +715,7 @@ nss_parse_service_list (const char *line)
       new_service->actions[2 + NSS_STATUS_SUCCESS] = NSS_ACTION_RETURN;
       new_service->actions[2 + NSS_STATUS_RETURN] = NSS_ACTION_RETURN;
       new_service->library = NULL;
-      new_service->known = NULL;
+      new_service->known.tree = NULL;
       new_service->next = NULL;
 
       while (isspace (line[0]))
@@ -778,9 +851,10 @@ nss_getline (char *line)
   result = (name_database_entry *) malloc (sizeof (name_database_entry) + len);
   if (result == NULL)
     return NULL;
+  result->name = (char *) (result + 1);
 
   /* Save the database name.  */
-  memcpy (result->name, name, len);
+  memcpy ((char *) result->name, name, len);
 
   /* Parse the list of services.  */
   result->service = nss_parse_service_list (line);
@@ -816,6 +890,7 @@ nss_new_service (name_database *database, const char *name)
   return *currentp;
 }
 #endif
+#endif /* __OPTION_EGLIBC_NSSWITCH */
 
 
 #if defined SHARED && defined USE_NSCD
@@ -834,6 +909,7 @@ nss_load_all_libraries (const char *service, const char *def)
 }
 
 
+#if __OPTION_EGLIBC_INET
 /* Called by nscd and nscd alone.  */
 void
 __nss_disable_nscd (void (*cb) (size_t, struct traced_file *))
@@ -857,8 +933,10 @@ __nss_disable_nscd (void (*cb) (size_t, struct traced_file *))
   __nss_not_use_nscd_services = -1;
   __nss_not_use_nscd_netgroup = -1;
 }
+#endif /* __OPTION_EGLIBC_INET */
 #endif
 
+#if __OPTION_EGLIBC_NSSWITCH
 static void
 free_database_entries (name_database_entry *entry)
 {
@@ -871,8 +949,8 @@ free_database_entries (name_database_entry *entry)
 	{
 	  service_user *olds = service;
 
-	  if (service->known != NULL)
-	    __tdestroy (service->known, free);
+	  if (service->known.tree != NULL)
+	    __tdestroy (service->known.tree, free);
 
 	  service = service->next;
 	  free (olds);
@@ -926,3 +1004,4 @@ libc_freeres_fn (free_mem)
 
   free (top);
 }
+#endif /* __OPTION_EGLIBC_NSSWITCH */

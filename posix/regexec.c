@@ -18,6 +18,7 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include <stdint.h>
+#include <gnu/option-groups.h>
 
 static reg_errcode_t match_ctx_init (re_match_context_t *cache, int eflags,
 				     int n) internal_function;
@@ -186,11 +187,11 @@ static int build_trtable (const re_dfa_t *dfa,
 static int check_node_accept_bytes (const re_dfa_t *dfa, int node_idx,
 				    const re_string_t *input, int idx)
      internal_function;
-# ifdef _LIBC
+# if defined _LIBC && __OPTION_EGLIBC_LOCALE_CODE
 static unsigned int find_collation_sequence_value (const unsigned char *mbs,
 						   size_t name_len)
      internal_function;
-# endif /* _LIBC */
+# endif /* _LIBC && __OPTION_EGLIBC_LOCALE_CODE */
 #endif /* RE_ENABLE_I18N */
 static int group_nodes_into_DFAstates (const re_dfa_t *dfa,
 				       const re_dfastate_t *state,
@@ -255,25 +256,9 @@ regexec (preg, string, nmatch, pmatch, eflags)
   return err != REG_NOERROR;
 }
 
-#ifdef _LIBC
-# include <shlib-compat.h>
-versioned_symbol (libc, __regexec, regexec, GLIBC_2_3_4);
-
-# if SHLIB_COMPAT (libc, GLIBC_2_0, GLIBC_2_3_4)
-__typeof__ (__regexec) __compat_regexec;
-
-int
-attribute_compat_text_section
-__compat_regexec (const regex_t *__restrict preg,
-		  const char *__restrict string, size_t nmatch,
-		  regmatch_t pmatch[], int eflags)
-{
-  return regexec (preg, string, nmatch, pmatch,
-		  eflags & (REG_NOTBOL | REG_NOTEOL));
-}
-compat_symbol (libc, __compat_regexec, regexec, GLIBC_2_0);
-# endif
-#endif
+/* EGLIBC: The code that used to be here was move to a separate file
+   so that it can be shared with xregex.c.  */
+#include "regexec-compat.c"
 
 /* Entry points for GNU code.  */
 
@@ -728,7 +713,7 @@ re_search_internal (preg, string, length, start, range, stop, nmatch, pmatch,
   incr = (range < 0) ? -1 : 1;
   left_lim = (range < 0) ? start + range : start;
   right_lim = (range < 0) ? start : start + range;
-  sb = dfa->mb_cur_max == 1;
+  sb = dfa_mb_cur_max (dfa) == 1;
   match_kind =
     (fastmap
      ? ((sb || !(preg->syntax & RE_ICASE || t) ? 4 : 0)
@@ -3448,7 +3433,7 @@ out_free:
 	  if (BE (dest_states_word[i] == NULL && err != REG_NOERROR, 0))
 	    goto out_free;
 
-	  if (dest_states[i] != dest_states_word[i] && dfa->mb_cur_max > 1)
+	  if (dest_states[i] != dest_states_word[i] && dfa_mb_cur_max (dfa) > 1)
 	    need_word_trtable = 1;
 
 	  dest_states_nl[i] = re_acquire_state_context (&err, dfa, &follows,
@@ -3590,7 +3575,7 @@ group_nodes_into_DFAstates (const re_dfa_t *dfa, const re_dfastate_t *state,
       else if (type == OP_PERIOD)
 	{
 #ifdef RE_ENABLE_I18N
-	  if (dfa->mb_cur_max > 1)
+	  if (dfa_mb_cur_max (dfa) > 1)
 	    bitset_merge (accepts, dfa->sb_char);
 	  else
 #endif
@@ -3641,7 +3626,7 @@ group_nodes_into_DFAstates (const re_dfa_t *dfa, const re_dfastate_t *state,
 		  continue;
 		}
 #ifdef RE_ENABLE_I18N
-	      if (dfa->mb_cur_max > 1)
+	      if (dfa_mb_cur_max (dfa) > 1)
 		for (j = 0; j < BITSET_WORDS; ++j)
 		  any_set |= (accepts[j] &= (dfa->word_char[j] | ~dfa->sb_char[j]));
 	      else
@@ -3660,7 +3645,7 @@ group_nodes_into_DFAstates (const re_dfa_t *dfa, const re_dfastate_t *state,
 		  continue;
 		}
 #ifdef RE_ENABLE_I18N
-	      if (dfa->mb_cur_max > 1)
+	      if (dfa_mb_cur_max (dfa) > 1)
 		for (j = 0; j < BITSET_WORDS; ++j)
 		  any_set |= (accepts[j] &= ~(dfa->word_char[j] & dfa->sb_char[j]));
 	      else
@@ -3836,12 +3821,6 @@ check_node_accept_bytes (const re_dfa_t *dfa, int node_idx,
   if (node->type == COMPLEX_BRACKET)
     {
       const re_charset_t *cset = node->opr.mbcset;
-# ifdef _LIBC
-      const unsigned char *pin
-	= ((const unsigned char *) re_string_get_buffer (input) + str_idx);
-      int j;
-      uint32_t nrules;
-# endif /* _LIBC */
       int match_len = 0;
       wchar_t wc = ((cset->nranges || cset->nchar_classes || cset->nmbchars)
 		    ? re_string_wchar_at (input, str_idx) : 0);
@@ -3853,6 +3832,7 @@ check_node_accept_bytes (const re_dfa_t *dfa, int node_idx,
 	    match_len = char_len;
 	    goto check_node_accept_bytes_match;
 	  }
+#if __OPTION_EGLIBC_LOCALE_CODE
       /* match with character_class?  */
       for (i = 0; i < cset->nchar_classes; ++i)
 	{
@@ -3863,14 +3843,22 @@ check_node_accept_bytes (const re_dfa_t *dfa, int node_idx,
 	      goto check_node_accept_bytes_match;
 	    }
 	}
+#endif
 
-# ifdef _LIBC
+      /* When __OPTION_EGLIBC_LOCALE_CODE is disabled, only the C
+         locale is supported; it has no collation rules.  */
+# if defined _LIBC && __OPTION_EGLIBC_LOCALE_CODE
+      const unsigned char *pin
+	= ((const unsigned char *) re_string_get_buffer (input) + str_idx);
+      int j;
+      uint32_t nrules;
+
       nrules = _NL_CURRENT_WORD (LC_COLLATE, _NL_COLLATE_NRULES);
       if (nrules != 0)
 	{
 	  unsigned int in_collseq = 0;
 	  const int32_t *table, *indirect;
-	  const unsigned char *weights, *extra;
+	  const unsigned char *weights, *extra = NULL;
 	  const char *collseqwc;
 
 	  /* match with collating_symbol?  */
@@ -3955,8 +3943,12 @@ check_node_accept_bytes (const re_dfa_t *dfa, int node_idx,
 	    }
 	}
       else
-# endif /* _LIBC */
+# endif /* _LIBC && __OPTION_EGLIBC_LOCALE_CODE */
 	{
+          /* In the _LIBC version, if OPTION_EGLIBC_LOCALE_CODE is
+             disabled, there can be no multibyte range endpoints, and
+             cset->nranges is always zero.  */
+#if __OPTION_EGLIBC_LOCALE_CODE
 	  /* match with range expression?  */
 #if __GNUC__ >= 2
 	  wchar_t cmp_buf[] = {L'\0', L'\0', wc, L'\0', L'\0', L'\0'};
@@ -3975,6 +3967,7 @@ check_node_accept_bytes (const re_dfa_t *dfa, int node_idx,
 		  goto check_node_accept_bytes_match;
 		}
 	    }
+#endif /* __OPTION_EGLIBC_LOCALE_CODE */
 	}
     check_node_accept_bytes_match:
       if (!cset->non_match)
@@ -3990,7 +3983,7 @@ check_node_accept_bytes (const re_dfa_t *dfa, int node_idx,
   return 0;
 }
 
-# ifdef _LIBC
+# if defined _LIBC && __OPTION_EGLIBC_LOCALE_CODE
 static unsigned int
 internal_function
 find_collation_sequence_value (const unsigned char *mbs, size_t mbs_len)
@@ -4048,7 +4041,7 @@ find_collation_sequence_value (const unsigned char *mbs, size_t mbs_len)
       return UINT_MAX;
     }
 }
-# endif /* _LIBC */
+# endif /* _LIBC && __OPTION_EGLIBC_LOCALE_CODE */
 #endif /* RE_ENABLE_I18N */
 
 /* Check whether the node accepts the byte which is IDX-th
@@ -4139,7 +4132,7 @@ extend_buffers (re_match_context_t *mctx, int min_len)
   if (pstr->icase)
     {
 #ifdef RE_ENABLE_I18N
-      if (pstr->mb_cur_max > 1)
+      if (string_mb_cur_max (pstr) > 1)
 	{
 	  ret = build_wcs_upper_buffer (pstr);
 	  if (BE (ret != REG_NOERROR, 0))
@@ -4152,7 +4145,7 @@ extend_buffers (re_match_context_t *mctx, int min_len)
   else
     {
 #ifdef RE_ENABLE_I18N
-      if (pstr->mb_cur_max > 1)
+      if (string_mb_cur_max (pstr) > 1)
 	build_wcs_buffer (pstr);
       else
 #endif /* RE_ENABLE_I18N  */

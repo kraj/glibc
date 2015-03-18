@@ -19,6 +19,10 @@
 #	Sub-makefile for misc portion of the library.
 #
 
+# Some system-dependent implementations of these functions use option
+# groups (see sysdeps/unix/sysv/linux/Makefile, for example).
+include ../option-groups.mak
+
 subdir	:= misc
 
 include ../Makeconfig
@@ -46,28 +50,31 @@ routines := brk sbrk sstk ioctl \
 	    select pselect \
 	    acct chroot fsync sync fdatasync syncfs reboot \
 	    gethostid sethostid \
-	    revoke vhangup \
+	    vhangup \
 	    swapon swapoff mktemp mkstemp mkstemp64 mkdtemp \
 	    mkostemp mkostemp64 mkstemps mkstemps64 mkostemps mkostemps64 \
 	    ualarm usleep \
 	    gtty stty \
 	    ptrace \
-	    fstab mntent mntent_r \
+	    mntent mntent_r \
 	    utimes lutimes futimes futimesat \
 	    truncate ftruncate truncate64 ftruncate64 \
-	    chflags fchflags \
 	    insremque getttyent getusershell getpass ttyslot \
 	    syslog syscall daemon \
 	    mmap mmap64 munmap mprotect msync madvise mincore remap_file_pages\
 	    mlock munlock mlockall munlockall \
-	    efgcvt efgcvt_r qefgcvt qefgcvt_r \
 	    hsearch hsearch_r tsearch lsearch \
 	    err error ustat \
-	    getsysstats dirname regexp \
+	    getsysstats dirname \
 	    getloadavg getclktck \
 	    fgetxattr flistxattr fremovexattr fsetxattr getxattr \
 	    listxattr lgetxattr llistxattr lremovexattr lsetxattr \
 	    removexattr setxattr getauxval ifunc-impl-list
+
+routines-$(OPTION_POSIX_REGEXP) += regexp
+routines-$(OPTION_EGLIBC_FSTAB) += fstab
+routines-$(OPTION_EGLIBC_BSD) += chflags fchflags revoke
+routines-$(OPTION_EGLIBC_FCVT) += efgcvt efgcvt_r qefgcvt qefgcvt_r
 
 generated += tst-error1.mtrace tst-error1-mem.out
 
@@ -75,11 +82,15 @@ aux := init-misc
 install-lib := libg.a
 gpl2lgpl := error.c error.h
 
-tests := tst-dirname tst-tsearch tst-fdset tst-efgcvt tst-mntent tst-hsearch \
-	 tst-error1 tst-pselect tst-insremque tst-mntent2 bug-hsearch1 \
+tests := tst-dirname tst-tsearch tst-fdset tst-mntent tst-hsearch \
+	 tst-pselect tst-insremque tst-mntent2 bug-hsearch1 \
 	 tst-mntent-blank-corrupt tst-mntent-blank-passno
+tests-$(OPTION_POSIX_WIDE_CHAR_DEVICE_IO) += tst-error1
+tests-$(OPTION_EGLIBC_FCVT) += tst-efgcvt
 ifeq ($(run-built-tests),yes)
+ifeq (y,$(OPTION_POSIX_WIDE_CHAR_DEVICE_IO))
 tests-special += $(objpfx)tst-error1-mem.out
+endif
 endif
 
 CFLAGS-select.c = -fexceptions -fasynchronous-unwind-tables

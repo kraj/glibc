@@ -3,7 +3,7 @@
 #include <locale.h>
 #include <string.h>
 #include <libc-internal.h>
-
+#include <gnu/option-groups.h>
 
 static int
 do_test (void)
@@ -11,12 +11,14 @@ do_test (void)
   char buf[100];
   int result = 0;
 
+#if __OPTION_POSIX_C_LANG_WIDE_CHAR
   if (sprintf (buf, "%.0ls", L"foo") != 0
       || strlen (buf) != 0)
     {
       puts ("sprintf (buf, \"%.0ls\", L\"foo\") produced some output");
       result = 1;
     }
+#endif /* __OPTION_POSIX_C_LANG_WIDE_CHAR */
 
 #define SIZE (1024*70000)
 #define STR(x) #x

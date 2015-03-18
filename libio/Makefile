@@ -18,6 +18,8 @@
 #
 #	Specific makefile for libio.
 #
+include ../option-groups.mak
+
 subdir	:= libio
 
 include ../Makeconfig
@@ -27,16 +29,13 @@ headers	:= stdio.h libio.h _G_config.h bits/stdio.h bits/stdio-lock.h \
 
 routines	:=							      \
 	filedoalloc iofclose iofdopen iofflush iofgetpos iofgets iofopen      \
-	iofopncook iofputs iofread iofsetpos ioftell wfiledoalloc	      \
+	iofopncook iofputs iofread iofsetpos ioftell			      \
 	iofwrite iogetdelim iogetline iogets iopadn iopopen ioputs	      \
 	ioseekoff ioseekpos iosetbuffer iosetvbuf ioungetc		      \
 	iovsprintf iovsscanf						      \
 	iofgetpos64 iofopen64 iofsetpos64				      \
-	fputwc fputwc_u getwc getwc_u getwchar getwchar_u iofgetws iofgetws_u \
-	iofputws iofputws_u iogetwline iowpadn ioungetwc putwc putwc_u	      \
-	putwchar putwchar_u putchar putchar_u fwprintf swprintf vwprintf      \
-	wprintf wscanf fwscanf vwscanf vswprintf iovswscanf swscanf wgenops   \
-	wstrops wfileops iofwide fwide wmemstream			      \
+	putchar putchar_u						      \
+	iofwide								      \
 									      \
 	clearerr feof ferror fileno fputc freopen fseek getc getchar	      \
 	memstream pclose putc putchar rewind setbuf setlinebuf vasprintf      \
@@ -48,24 +47,49 @@ routines	:=							      \
 									      \
 	libc_fatal fmemopen oldfmemopen
 
-tests = tst_swprintf tst_wprintf tst_swscanf tst_wscanf tst_getwc tst_putwc   \
-	tst_wprintf2 tst-widetext test-fmemopen tst-ext tst-ext2 \
-	tst-fgetws tst-ungetwc1 tst-ungetwc2 tst-swscanf tst-sscanf	      \
-	tst-mmap-setvbuf bug-ungetwc1 bug-ungetwc2 tst-atime tst-eof          \
-	tst-freopen bug-rewind bug-rewind2 bug-ungetc bug-fseek \
+routines-$(OPTION_POSIX_C_LANG_WIDE_CHAR) +=				      \
+	wfiledoalloc                                                          \
+	iowpadn                                                               \
+	swprintf                                                              \
+	vswprintf iovswscanf swscanf wgenops                                  \
+	wstrops wfileops wmemstream
+routines-$(call option-disabled, OPTION_POSIX_C_LANG_WIDE_CHAR) +=	      \
+	wdummyfileops
+routines-$(OPTION_POSIX_WIDE_CHAR_DEVICE_IO) +=				      \
+	fputwc fputwc_u getwc getwc_u getwchar getwchar_u iofgetws iofgetws_u \
+	iofputws iofputws_u iogetwline ioungetwc putwc putwc_u                \
+	putwchar putwchar_u fwprintf vwprintf                                 \
+	wprintf wscanf fwscanf vwscanf                                        \
+	fwide
+
+tests = test-fmemopen tst-ext tst-ext2 \
+	tst-mmap-setvbuf tst-atime tst-eof \
+	tst-freopen bug-ungetc bug-fseek \
 	tst-mmap-eofsync tst-mmap-fflushsync bug-mmap-fflush \
-	tst-mmap2-eofsync tst-mmap-offend bug-fopena+ bug-wfflush \
-	bug-ungetc2 bug-ftell bug-ungetc3 bug-ungetc4 tst-fopenloc2 \
+	tst-mmap2-eofsync tst-mmap-offend bug-fopena+ \
+	bug-ungetc2 bug-ungetc3 bug-ungetc4 \
 	tst-memstream1 tst-memstream2 \
-	tst-wmemstream1 tst-wmemstream2 \
-	bug-memstream1 bug-wmemstream1 \
-	tst-setvbuf1 tst-popen1 tst-fgetwc bug-wsetpos tst-fseek \
-	tst-fwrite-error tst-ftell-partial-wide tst-ftell-active-handler \
-	tst-ftell-append tst-fputws
+	bug-memstream1 tst-popen1 tst-fwrite-error \
+	tst-ftell-active-handler tst-ftell-append
+tests-$(OPTION_EGLIBC_LOCALE_CODE) \
+	+= tst-swscanf tst-fgetws tst-setvbuf1 \
+	tst-ungetwc1 tst-ungetwc2 bug-ftell bug-ungetwc2 \
+	tst-widetext tst-fputws
+tests-$(OPTION_POSIX_WIDE_CHAR_DEVICE_IO) \
+	+= bug-rewind bug-rewind2 bug-ungetwc1 \
+	bug-wfflush bug-wmemstream1 tst-fopenloc2 \
+	tst_getwc \
+	tst_putwc tst_wprintf tst_wprintf2 tst_wscanf \
+	tst-fgetwc bug-wsetpos tst-fseek tst-ftell-partial-wide
+tests-$(OPTION_POSIX_C_LANG_WIDE_CHAR) \
+	+= tst_swprintf tst_swscanf \
+	tst-sscanf \
+	tst-wmemstream1 tst-wmemstream2
+
 ifeq (yes,$(build-shared))
 # Add test-fopenloc only if shared library is enabled since it depends on
 # shared localedata objects.
-tests += tst-fopenloc
+tests-$(OPTION_EGLIBC_LOCALE_CODE) += tst-fopenloc
 endif
 test-srcs = test-freopen
 
@@ -164,11 +188,15 @@ shared-only-routines = oldiofopen oldiofdopen oldiofclose oldfileops	\
 		       oldiofsetpos64
 
 ifeq ($(run-built-tests),yes)
+ifeq (y,$(OPTION_POSIX_WIDE_CHAR_DEVICE_IO))
 tests-special += $(objpfx)test-freopen.out
+endif
+ifeq (y,$(OPTION_EGLIBC_LOCALE_CODE))
 ifeq (yes,$(build-shared))
 # Run tst-fopenloc-cmp.out and tst-openloc-mem.out only if shared
 # library is enabled since they depend on tst-fopenloc.out.
 tests-special += $(objpfx)tst-fopenloc-cmp.out $(objpfx)tst-fopenloc-mem.out
+endif
 endif
 endif
 

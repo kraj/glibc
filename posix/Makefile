@@ -18,6 +18,8 @@
 #
 #	Sub-makefile for POSIX portion of the library.
 #
+include ../option-groups.mak
+
 subdir	:= posix
 
 include ../Makeconfig
@@ -43,13 +45,24 @@ routines :=								      \
 	getpgid setpgid getpgrp bsd-getpgrp setpgrp getsid setsid	      \
 	getresuid getresgid setresuid setresgid				      \
 	pathconf sysconf fpathconf					      \
-	glob glob64 fnmatch regex					      \
+	glob glob64 fnmatch						      \
 	confstr								      \
 	getopt getopt1 getopt_init					      \
 	sched_setp sched_getp sched_sets sched_gets sched_yield sched_primax  \
 	sched_primin sched_rr_gi sched_getaffinity sched_setaffinity	      \
-	getaddrinfo gai_strerror wordexp				      \
 	pread pwrite pread64 pwrite64					      \
+	posix_madvise							      \
+	get_child_max sched_cpucount sched_cpualloc sched_cpufree
+
+routines-$(OPTION_EGLIBC_INET) += getaddrinfo gai_strerror
+
+ifeq (y,$(OPTION_POSIX_REGEXP_GLIBC))
+routines-$(OPTION_POSIX_REGEXP) += regex
+else
+routines-$(OPTION_POSIX_REGEXP) += xregex
+endif
+
+routines-$(OPTION_EGLIBC_SPAWN) +=					      \
 	spawn_faction_init spawn_faction_destroy spawn_faction_addclose	      \
 	spawn_faction_addopen spawn_faction_adddup2			      \
 	spawnattr_init spawnattr_destroy				      \
@@ -61,37 +74,54 @@ routines :=								      \
 	posix_madvise							      \
 	get_child_max sched_cpucount sched_cpualloc sched_cpufree
 
+routines-$(OPTION_EGLIBC_WORDEXP) += wordexp
+
 aux		:= init-posix environ
-tests		:= tstgetopt testfnm runtests runptests	     \
+tests		:= tstgetopt testfnm runtests \
 		   tst-preadwrite tst-preadwrite64 test-vfork regexbug1 \
-		   tst-mmap tst-getaddrinfo tst-truncate \
-		   tst-truncate64 tst-fork tst-fnmatch tst-regexloc tst-dir \
-		   tst-chmod bug-regex1 bug-regex2 bug-regex3 bug-regex4 \
-		   tst-gnuglob tst-regex bug-regex5 bug-regex6 bug-regex7 \
-		   bug-regex8 bug-regex9 bug-regex10 bug-regex11 bug-regex12 \
-		   bug-regex13 bug-regex14 bug-regex15 bug-regex16 \
-		   bug-regex17 bug-regex18 bug-regex19 bug-regex20 \
-		   bug-regex21 bug-regex22 bug-regex23 bug-regex24 \
-		   bug-regex25 bug-regex26 bug-regex27 bug-regex28 \
+		   tst-mmap tst-truncate \
+		   tst-truncate64 tst-fork tst-dir \
+		   tst-chmod bug-regex2 bug-regex3 bug-regex4 \
+		   tst-gnuglob bug-regex6 bug-regex7 \
+		   bug-regex8 bug-regex9 bug-regex10 bug-regex12 \
+		   bug-regex14 bug-regex15 \
+		   bug-regex21 bug-regex24 \
+		   bug-regex27 bug-regex28 \
 		   bug-regex29 bug-regex30 bug-regex31 bug-regex32 \
-		   bug-regex33 tst-nice tst-nanosleep tst-regex2 \
-		   transbug tst-rxspencer tst-pcre tst-boost \
-		   bug-ga1 tst-vfork1 tst-vfork2 tst-vfork3 tst-waitid \
-		   tst-getaddrinfo2 bug-glob1 bug-glob2 bug-glob3 tst-sysconf \
+		   tst-nice tst-nanosleep \
+		   transbug \
+		   tst-vfork1 tst-vfork2 tst-vfork3 tst-waitid \
+		   bug-glob1 bug-glob2 bug-glob3 tst-sysconf \
 		   tst-execvp1 tst-execvp2 tst-execlp1 tst-execlp2 \
 		   tst-execv1 tst-execv2 tst-execl1 tst-execl2 \
 		   tst-execve1 tst-execve2 tst-execle1 tst-execle2 \
-		   tst-execvp3 tst-execvp4 tst-rfc3484 tst-rfc3484-2 \
-		   tst-rfc3484-3 \
-		   tst-getaddrinfo3 tst-fnmatch2 tst-cpucount tst-cpuset \
+		   tst-execvp3 tst-execvp4 \
+		   tst-fnmatch2 tst-cpucount tst-cpuset \
 		   bug-getopt1 bug-getopt2 bug-getopt3 bug-getopt4 \
 		   bug-getopt5 tst-getopt_long1 bug-regex34 bug-regex35 \
 		   tst-pathconf tst-getaddrinfo4 tst-rxspencer-no-utf8 \
 		   tst-fnmatch3 bug-regex36 tst-getaddrinfo5
-xtests		:= bug-ga2
+
+tests-$(OPTION_EGLIBC_LOCALE_CODE) \
+		+= tst-fnmatch tst-regexloc bug-regex1 bug-regex5 \
+		   bug-regex23 bug-regex25 bug-regex32 bug-regex33
+tests-$(OPTION_EGLIBC_INET) \
+		+= tst-getaddrinfo bug-ga1 tst-getaddrinfo2 \
+		   tst-rfc3484 tst-rfc3484-2 tst-rfc3484-3 tst-getaddrinfo3
+tests-$(OPTION_POSIX_REGEXP_GLIBC) \
+		+= runptests bug-regex11 bug-regex13 bug-regex16 \
+		   tst-regex2 tst-rxspencer tst-pcre tst-boost
+ifeq (yy,$(OPTION_EGLIBC_LOCALE_CODE)$(OPTION_POSIX_REGEXP_GLIBC))
+tests		+= tst-regex bug-regex17 bug-regex18 bug-regex19 bug-regex20 \
+		   bug-regex22 bug-regex26
+endif
+xtests-$(OPTION_EGLIBC_INET) += bug-ga2
+
 ifeq (yes,$(build-shared))
 test-srcs	:= globtest
-tests           += wordexp-test tst-exec tst-spawn
+tests		+= tst-exec
+tests-$(OPTION_EGLIBC_SPAWN) += tst-spawn
+tests-$(OPTION_EGLIBC_WORDEXP) += wordexp-test
 endif
 tests-static	= tst-exec-static tst-spawn-static
 tests		+= $(tests-static)
@@ -117,7 +147,10 @@ generated += $(addprefix wordexp-test-result, 1 2 3 4 5 6 7 8 9 10) \
 
 ifeq ($(run-built-tests),yes)
 ifeq (yes,$(build-shared))
-tests-special += $(objpfx)globtest.out $(objpfx)wordexp-tst.out
+tests-special += $(objpfx)globtest.out
+ifeq (y,$(OPTION_EGLIBC_WORDEXP))
+tests-special += $(objpfx)wordexp-tst.out
+endif
 endif
 endif
 
@@ -125,12 +158,16 @@ endif
 # XXX Please note that for now we ignore the result of this test.
 tests-special += $(objpfx)annexc.out
 ifeq ($(run-built-tests),yes)
-tests-special += $(objpfx)bug-regex2-mem.out $(objpfx)bug-regex14-mem.out \
+tests-special += $(objpfx)bug-regex2-mem.out \
 		 $(objpfx)bug-regex21-mem.out $(objpfx)bug-regex31-mem.out \
-		 $(objpfx)tst-rxspencer-no-utf8-mem.out $(objpfx)tst-pcre-mem.out \
-		 $(objpfx)tst-boost-mem.out $(objpfx)tst-getconf.out \
+		 $(objpfx)tst-getconf.out \
 		 $(objpfx)bug-glob2-mem.out $(objpfx)tst-vfork3-mem.out \
 		 $(objpfx)tst-fnmatch-mem.out $(objpfx)bug-regex36-mem.out
+ifeq (y,$(OPTION_POSIX_REGEXP_GLIBC))
+tests-special += $(objpfx)bug-regex14-mem.out $(objpfx)tst-rxspencer-no-utf8-mem.out \
+  		 $(objpfx)tst-pcre-mem.out $(objpfx)tst-boost-mem.out
+endif
+
 xtests-special += $(objpfx)bug-ga2-mem.out
 endif
 
@@ -143,6 +180,8 @@ $(objpfx)globtest.out: globtest.sh $(objpfx)globtest
 	$(SHELL) $< $(common-objpfx) '$(test-via-rtld-prefix)' \
 		'$(test-program-prefix)' '$(test-wrapper-env)'; \
 	$(evaluate-test)
+LDLIBS-globtest += $(shell cat $(common-objpfx)nss/fixed-nsswitch-libs)
+
 $(objpfx)wordexp-tst.out: wordexp-tst.sh $(objpfx)wordexp-test
 	$(SHELL) $< $(common-objpfx) '$(test-program-prefix-before-env)' \
 		 '$(run-program-env)' '$(test-program-prefix-after-env)'; \
@@ -205,7 +244,10 @@ tst-dir-ARGS = `pwd` `cd $(common-objdir)/$(subdir); pwd` `cd $(common-objdir); 
 tst-chmod-ARGS = $(objdir)
 tst-vfork3-ARGS = --test-dir=$(objpfx)
 
-tst-rxspencer-ARGS = --utf8 rxspencer/tests
+tst-rxspencer-ARGS = rxspencer/tests
+ifeq (y,$(OPTION_EGLIBC_LOCALE_CODE))
+tst-rxspencer-ARGS += --utf8
+endif
 tst-rxspencer-no-utf8-ARGS = rxspencer/tests
 tst-pcre-ARGS = PCRE.tests
 tst-boost-ARGS = BOOST.tests

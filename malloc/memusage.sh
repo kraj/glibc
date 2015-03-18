@@ -35,7 +35,7 @@ do_missing_arg() {
 
 # Print help message
 do_help() {
-  echo $"Usage: memusage [OPTION]... PROGRAM [PROGRAMOPTION]...
+  printf $"Usage: memusage [OPTION]... PROGRAM [PROGRAMOPTION]...
 Profile memory usage of PROGRAM.
 
    -n,--progname=NAME     Name of the program file to profile

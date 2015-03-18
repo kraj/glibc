@@ -18,6 +18,8 @@
 #
 #	Sub-makefile for string portion of library.
 #
+include ../option-groups.mak
+
 subdir	:= string
 
 include ../Makeconfig
@@ -39,9 +41,11 @@ routines	:= strcat strchr strcmp strcoll strcpy strcspn		\
 		   $(addprefix argz-,append count create ctsep next	\
 				     delete extract insert stringify	\
 				     addsep replace)			\
-		   envz basename					\
+		   basename						\
 		   strcoll_l strxfrm_l string-inlines memrchr		\
 		   xpg-strerror strerror_l
+
+routines-$(OPTION_EGLIBC_ENVZ) += envz
 
 strop-tests	:= memchr memcmp memcpy memmove mempcpy memset memccpy	\
 		   stpcpy stpncpy strcat strchr strcmp strcpy strcspn	\
@@ -51,10 +55,12 @@ strop-tests	:= memchr memcmp memcpy memmove mempcpy memset memccpy	\
 tests		:= tester inl-tester noinl-tester testcopy test-ffs	\
 		   tst-strlen stratcliff tst-svc tst-inlcall		\
 		   bug-strncat1 bug-strspn1 bug-strpbrk1 tst-bswap	\
-		   tst-strtok tst-strxfrm bug-strcoll1 tst-strfry	\
+		   tst-strtok tst-strfry	\
 		   bug-strtok1 $(addprefix test-,$(strop-tests))	\
-		   bug-envz1 tst-strxfrm2 tst-endian tst-svc2		\
-		   tst-strtok_r bug-strcoll2
+		   tst-strxfrm2 tst-endian tst-svc2 tst-strtok_r
+tests-$(OPTION_EGLIBC_ENVZ) += bug-envz1
+tests-$(OPTION_EGLIBC_LOCALE_CODE) \
+		+= tst-strxfrm bug-strcoll1 bug-strcoll2
 
 xtests = tst-strcoll-overflow
 

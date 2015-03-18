@@ -18,12 +18,14 @@
 #
 #	Sub-makefile for hesiod portion of the library.
 #
+include ../option-groups.mak
+
 subdir	:= hesiod
 
 include ../Makeconfig
 
-extra-libs := libnss_hesiod
-extra-libs-others = $(extra-libs)
+extra-libs-$(OPTION_EGLIBC_INET) += libnss_hesiod
+extra-libs-others-y += $(extra-libs-y)
 
 subdir-dirs = nss_hesiod
 vpath %.c nss_hesiod

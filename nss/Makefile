@@ -18,28 +18,35 @@
 #
 #	Makefile for name service switch.
 #
+include ../option-groups.mak
+
 subdir	:= nss
 
 include ../Makeconfig
 
 headers			:= nss.h
 
-# This is the trivial part which goes into libc itself.
-routines		= nsswitch getnssent getnssent_r digits_dots \
-			  $(addsuffix -lookup,$(databases))
-
 # These are the databases that go through nss dispatch.
 # Caution: if you add a database here, you must add its real name
 # in databases.def, too.
-databases		= proto service hosts network grp pwd ethers \
-			  spwd netgrp alias sgrp
+databases-y		= grp pwd spwd sgrp
+databases-$(OPTION_EGLIBC_INET) \
+			+= proto service hosts network ethers \
+			   netgrp
+databases-$(OPTION_EGLIBC_DB_ALIASES) += alias
+
+routines-$(OPTION_EGLIBC_INET) += digits_dots
 
 ifneq (,$(filter sunrpc,$(subdirs)))
-databases		+= key rpc
+databases-$(OPTION_EGLIBC_INET)	+= key rpc
 have-sunrpc		:= 1
 else
 have-sunrpc		:= 0
 endif
+# This is the trivial part which goes into libc itself.
+routines-y		+= nsswitch getnssent getnssent_r \
+			  $(addsuffix -lookup,$(databases-y))
+
 CPPFLAGS-getent.c	= -DHAVE_SUNRPC=$(have-sunrpc)
 
 others                  := getent makedb
@@ -47,8 +54,9 @@ install-bin             := getent makedb
 makedb-modules = xmalloc hash-string
 extra-objs		+= $(makedb-modules:=.o)
 
-tests			= test-netdb tst-nss-test1 test-digits-dots tst-nss-getpwent
-xtests			= bug-erange
+tests			= tst-nss-test1 tst-nss-getpwent
+tests-$(OPTION_EGLIBC_INET)	+= test-netdb test-digits-dots
+xtests-$(OPTION_EGLIBC_INET)	+= bug-erange
 
 # Specify rules for the nss_* modules.  We have some services.
 services		:= files db
@@ -63,7 +71,7 @@ subdir-dirs = $(services:%=nss_%)
 vpath %.c $(subdir-dirs) ../locale/programs ../intl
 
 
-libnss_files-routines	:= $(addprefix files-,$(databases)) \
+libnss_files-routines	:= $(addprefix files-,$(databases-y)) \
 			   files-initgroups files-have_o_cloexec files-init
 
 libnss_db-dbs		:= $(addprefix db-,\
@@ -84,6 +92,45 @@ routines                += $(libnss_files-routines)
 static-only-routines    += $(libnss_files-routines)
 tests-static		= tst-nss-static
 tests			+= $(tests-static)
+endif
+
+ifneq ($(OPTION_EGLIBC_NSSWITCH),y)
+
+ifndef OPTION_EGLIBC_NSSWITCH_FIXED_CONFIG
+$(error OPTION_EGLIBC_NSSWITCH_FIXED_CONFIG variable left unset)
+endif
+
+ifndef OPTION_EGLIBC_NSSWITCH_FIXED_FUNCTIONS
+$(error OPTION_EGLIBC_NSSWITCH_FIXED_FUNCTIONS variable left unset)
+endif
+
+ifeq (,$(wildcard $(OPTION_EGLIBC_NSSWITCH_FIXED_CONFIG)))
+$(warning OPTION_EGLIBC_NSSWITCH is disabled, but fixed config file)
+$(error does not exist: $(OPTION_EGLIBC_NSSWITCH_FIXED_CONFIG))
+endif
+
+ifeq (,$(wildcard $(OPTION_EGLIBC_NSSWITCH_FIXED_FUNCTIONS)))
+$(warning OPTION_EGLIBC_NSSWITCH is disabled, but fixed functions file)
+$(error does not exist: $(OPTION_EGLIBC_NSSWITCH_FIXED_FUNCTIONS))
+endif
+
+before-compile := $(objpfx)fixed-nsswitch.h
+generated := fixed-nsswitch.h
+$(objpfx)fixed-nsswitch.h $(objfpx)fixed-nsswitch-libs:	\
+    $(objpfx)gen-fixed-nsswitch				\
+    $(OPTION_EGLIBC_NSSWITCH_FIXED_CONFIG)
+	$< $(objpfx)fixed-nsswitch.h			\
+	   $(objpfx)fixed-nsswitch-libs			\
+	   $(OPTION_EGLIBC_NSSWITCH_FIXED_CONFIG)
+
+$(objpfx)gen-fixed-nsswitch: gen-fixed-nsswitch.c	\
+    $(common-objpfx)option-groups.config		\
+    $(OPTION_EGLIBC_NSSWITCH_FIXED_FUNCTIONS)
+	$(native-compile)
+gen-fixed-nsswitch-CFLAGS =						\
+	-g3 -O -Wall							\
+	-I $(objpfx)							\
+	-DFIXED_FUNCTIONS='"$(OPTION_EGLIBC_NSSWITCH_FIXED_FUNCTIONS)"'
 endif
 
 include ../Rules

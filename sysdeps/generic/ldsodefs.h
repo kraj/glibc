@@ -435,6 +435,12 @@ extern struct rtld_global _rtld_global __rtld_global_attribute__;
 # undef __rtld_global_attribute__
 #endif
 
+#if __OPTION_EGLIBC_RTLD_DEBUG
+# define GLRO_dl_debug_mask GLRO(dl_debug_mask)
+#else
+# define GLRO_dl_debug_mask 0
+#endif
+
 #ifndef SHARED
 # define GLRO(name) _##name
 #else
@@ -447,8 +453,10 @@ struct rtld_global_ro
 {
 #endif
 
+#if __OPTION_EGLIBC_RTLD_DEBUG
   /* If nonzero the appropriate debug information is printed.  */
   EXTERN int _dl_debug_mask;
+#endif
 #define DL_DEBUG_LIBS	    (1 << 0)
 #define DL_DEBUG_IMPCALLS   (1 << 1)
 #define DL_DEBUG_BINDINGS   (1 << 2)

@@ -65,10 +65,20 @@ typedef struct service_user
   lookup_actions actions[5];
   /* Link to the underlying library object.  */
   service_library *library;
-  /* Collection of known functions.  */
-  void *known;
+  /* Collection of known functions.
+
+     With OPTION_EGLIBC_NSSWITCH enabled, this is the root of a
+     'tsearch'-style tree.
+
+     With OPTION_EGLIBC_NSSWITCH disabled, this is an array of
+     pointers to known_function structures, NULL-terminated.  */
+  union
+  {
+    void *tree;
+    const known_function **array;
+  } known;
   /* Name of the service (`files', `dns', `nis', ...).  */
-  char name[0];
+  const char *name;
 } service_user;
 
 /* To access the action based on the status value use this macro.  */
@@ -82,7 +92,7 @@ typedef struct name_database_entry
   /* List of service to be used.  */
   service_user *service;
   /* Name of the database.  */
-  char name[0];
+  const char *name;
 } name_database_entry;
 
 

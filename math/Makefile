@@ -21,6 +21,8 @@ subdir		:= math
 
 include ../Makeconfig
 
+include ../option-groups.mak
+
 # Installed header files.
 headers		:= math.h bits/mathcalls.h bits/mathinline.h bits/huge_val.h \
 		   bits/huge_valf.h bits/huge_vall.h bits/inf.h bits/nan.h \
@@ -34,8 +36,8 @@ aux		:= setfpucw fpu_control
 
 # Build the -lm library.
 
-extra-libs	:= libm
-extra-libs-others = $(extra-libs)
+extra-libs-$(OPTION_EGLIBC_LIBM) := libm
+extra-libs-others-$(OPTION_EGLIBC_LIBM) = $(extra-libs-$(OPTION_EGLIBC_LIBM))
 
 libm-support = s_lib_version s_matherr s_signgam			\
 	       fclrexcpt fgetexcptflg fraiseexcpt fsetexcptflg		\

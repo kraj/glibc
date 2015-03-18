@@ -100,11 +100,15 @@ extern int errno;
 # include "libgnuintl.h"
 #endif
 #include "hash-string.h"
+#ifdef _LIBC
+# include <gnu/option-groups.h>
+#endif
 
 /* Handle multi-threaded applications.  */
 #ifdef _LIBC
 # include <bits/libc-lock.h>
 # define gl_rwlock_define_initialized __libc_rwlock_define_initialized
+# define gl_rwlock_define __libc_rwlock_define
 # define gl_rwlock_rdlock __libc_rwlock_rdlock
 # define gl_rwlock_wrlock __libc_rwlock_wrlock
 # define gl_rwlock_unlock __libc_rwlock_unlock
@@ -523,8 +527,10 @@ DCIGETTEXT (const char *domainname, const char *msgid1, const char *msgid2,
   saved_errno = errno;
 
 #ifdef _LIBC
-  __libc_rwlock_define (extern, __libc_setlocale_lock attribute_hidden)
-  __libc_rwlock_rdlock (__libc_setlocale_lock);
+# if __OPTION_EGLIBC_LOCALE_CODE
+  gl_rwlock_define (extern, __libc_setlocale_lock attribute_hidden)
+  gl_rwlock_rdlock (__libc_setlocale_lock);
+# endif
 #endif
 
   gl_rwlock_rdlock (_nl_state_lock);
@@ -550,7 +556,11 @@ DCIGETTEXT (const char *domainname, const char *msgid1, const char *msgid2,
 #ifdef HAVE_PER_THREAD_LOCALE
 # ifndef IN_LIBGLOCALE
 #  ifdef _LIBC
-  localename = strdupa (__current_locale_name (category));
+#   if __OPTION_EGLIBC_LOCALE_CODE
+      localename = strdupa (__current_locale_name (category));
+#   else
+      localename = "C";
+#   endif
 #  else
   categoryname = category_to_name (category);
 #   define CATEGORYNAME_INITIALIZED
@@ -581,10 +591,12 @@ DCIGETTEXT (const char *domainname, const char *msgid1, const char *msgid2,
       else
 	retval = (char *) (*foundp)->translation;
 
-      gl_rwlock_unlock (_nl_state_lock);
 # ifdef _LIBC
-      __libc_rwlock_unlock (__libc_setlocale_lock);
+#  if __OPTION_EGLIBC_LOCALE_CODE
+      gl_rwlock_unlock (__libc_setlocale_lock);
+#  endif
 # endif
+      gl_rwlock_unlock (_nl_state_lock);
       __set_errno (saved_errno);
       return retval;
     }
@@ -838,10 +850,13 @@ DCIGETTEXT (const char *domainname, const char *msgid1, const char *msgid2,
 	      if (plural)
 		retval = plural_lookup (domain, n, retval, retlen);
 
-	      gl_rwlock_unlock (_nl_state_lock);
 #ifdef _LIBC
-	      __libc_rwlock_unlock (__libc_setlocale_lock);
+# if __OPTION_EGLIBC_LOCALE_CODE
+
+	      gl_rwlock_unlock (__libc_setlocale_lock);
+# endif
 #endif
+	      gl_rwlock_unlock (_nl_state_lock);
 	      return retval;
 	    }
 	}
@@ -850,10 +865,12 @@ DCIGETTEXT (const char *domainname, const char *msgid1, const char *msgid2,
  return_untranslated:
   /* Return the untranslated MSGID.  */
   FREE_BLOCKS (block_list);
-  gl_rwlock_unlock (_nl_state_lock);
 #ifdef _LIBC
-  __libc_rwlock_unlock (__libc_setlocale_lock);
+# if __OPTION_EGLIBC_LOCALE_CODE
+   gl_rwlock_unlock (__libc_setlocale_lock);
+# endif
 #endif
+  gl_rwlock_unlock (_nl_state_lock);
 #ifndef _LIBC
   if (!ENABLE_SECURE)
     {
@@ -1550,7 +1567,11 @@ guess_category_value (int category, const char *categoryname)
      `LC_xxx', and `LANG'.  On some systems this can be done by the
      `setlocale' function itself.  */
 # ifdef _LIBC
+#  if __OPTION_EGLIBC_LOCALE_CODE
   locale = __current_locale_name (category);
+#  else
+  locale = "C";
+#  endif
 # else
   locale_defaulted = 0;
 #  if HAVE_USELOCALE

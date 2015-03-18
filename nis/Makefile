@@ -18,6 +18,8 @@
 #
 #	Makefile for NIS/NIS+ part.
 #
+include ../option-groups.mak
+
 subdir	:= nis
 
 include ../Makeconfig
@@ -30,19 +32,26 @@ endif
 
 # These are the databases available for the nis (and perhaps later nisplus)
 # service.  This must be a superset of the services in nss.
-databases		= proto service hosts network grp pwd rpc ethers \
-			  spwd netgrp alias publickey
+databases-y		:= proto service hosts network grp pwd rpc ethers \
+			   spwd netgrp publickey
+databases-$(OPTION_EGLIBC_DB_ALIASES) += alias
 
 # Specify rules for the nss_* modules.
-services		:= nis nisplus compat
+# The 'compat' module includes nis support, and the 'nss' directory
+# includes a bare-bones "files" library, so we'll include 'compat' in
+# OPTION_EGLIBC_NIS.
+services-y		:=
+services-$(OPTION_EGLIBC_NIS) += nis nisplus compat
 
-extra-libs		= libnsl $(services:%=libnss_%)
+extra-libs-$(OPTION_EGLIBC_NIS) += libnsl
+extra-libs-y		+= $(services-y:%=libnss_%)
+
 # These libraries will be built in the `others' pass rather than
 # the `lib' pass, because they depend on libc.so being built already.
-extra-libs-others	= $(extra-libs)
+extra-libs-others-y	+= $(extra-libs-y)
 
 # The sources are found in the appropriate subdir.
-subdir-dirs = $(services:%=nss_%)
+subdir-dirs = $(services-y:%=nss_%)
 vpath %.c $(subdir-dirs)
 
 libnsl-routines = yp_xdr ypclnt ypupdate_xdr \
@@ -60,11 +69,11 @@ libnsl-routines = yp_xdr ypclnt ypupdate_xdr \
 libnss_compat-routines	:= $(addprefix compat-,grp pwd spwd initgroups)
 libnss_compat-inhibit-o	= $(filter-out .os,$(object-suffixes))
 
-libnss_nis-routines	:= $(addprefix nis-,$(databases)) nis-initgroups \
+libnss_nis-routines	:= $(addprefix nis-,$(databases-y)) nis-initgroups \
 			   nss-nis
 libnss_nis-inhibit-o	= $(filter-out .os,$(object-suffixes))
 
-libnss_nisplus-routines	:= $(addprefix nisplus-,$(databases)) nisplus-parser \
+libnss_nisplus-routines	:= $(addprefix nisplus-,$(databases-y)) nisplus-parser \
 			   nss-nisplus nisplus-initgroups
 libnss_nisplus-inhibit-o = $(filter-out .os,$(object-suffixes))
 
@@ -80,12 +89,12 @@ libnsl-libc = $(common-objpfx)linkobj/libc.so
 # Target-specific variable setting to link objects using deprecated
 # RPC interfaces with the version of libc.so that makes them available
 # for new links:
-$(services:%=$(objpfx)libnss_%.so) $(objpfx)libnsl.so: \
+$(services-y:%=$(objpfx)libnss_%.so) $(objpfx)libnsl.so: \
   libc-for-link = $(libnsl-libc)
 
 
 ifeq ($(build-shared),yes)
-$(others:%=$(objpfx)%): $(objpfx)libnsl.so$(libnsl.so-version)
+$(others-y:%=$(objpfx)%): $(objpfx)libnsl.so$(libnsl.so-version)
 else
-$(others:%=$(objpfx)%): $(objpfx)libnsl.a
+$(others-y:%=$(objpfx)%): $(objpfx)libnsl.a
 endif

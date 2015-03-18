@@ -4,6 +4,7 @@
 #include <string.h>
 #include <wchar.h>
 #include <libc-internal.h>
+#include <gnu/option-groups.h>
 
 static int
 t1 (void)
@@ -134,6 +135,7 @@ F (void)
   printf ("expected \"-inf -INF -inf -INF -inf -INF -inf -INF\", got \"%s\"\n",
 	  buf);
 
+#if __OPTION_POSIX_C_LANG_WIDE_CHAR
   swprintf (wbuf, sizeof wbuf / sizeof (wbuf[0]), L"%a %A %e %E %f %F %g %G",
 	    qnanval, qnanval, qnanval, qnanval,
 	    qnanval, qnanval, qnanval, qnanval);
@@ -171,6 +173,7 @@ F (void)
   result |= wcscmp (wbuf, L"-inf -INF -inf -INF -inf -INF -inf -INF") != 0;
   printf ("expected L\"-inf -INF -inf -INF -inf -INF -inf -INF\", got L\"%S\"\n",
 	  wbuf);
+#endif /* __OPTION_POSIX_C_LANG_WIDE_CHAR */
 
   lqnanval = NAN;
 
@@ -215,6 +218,7 @@ F (void)
   printf ("expected \"-inf -INF -inf -INF -inf -INF -inf -INF\", got \"%s\"\n",
 	  buf);
 
+#if __OPTION_POSIX_C_LANG_WIDE_CHAR
   swprintf (wbuf, sizeof wbuf / sizeof (wbuf[0]),
 	    L"%La %LA %Le %LE %Lf %LF %Lg %LG",
 	    lqnanval, lqnanval, lqnanval, lqnanval,
@@ -259,6 +263,7 @@ F (void)
   result |= wcscmp (wbuf, L"-inf -INF -inf -INF -inf -INF -inf -INF") != 0;
   printf ("expected L\"-inf -INF -inf -INF -inf -INF -inf -INF\", got L\"%S\"\n",
 	  wbuf);
+#endif /* __OPTION_POSIX_C_LANG_WIDE_CHAR */
 
   return result;
 }

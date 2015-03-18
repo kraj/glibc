@@ -16,6 +16,7 @@
 # <http://www.gnu.org/licenses/>.
 
 # Makefile for intl subdirectory: message handling code from GNU gettext.
+include ../option-groups.mak
 
 subdir = intl
 
@@ -48,7 +49,7 @@ endif
 $(objpfx)plural.o: plural.c
 
 ifeq ($(run-built-tests),yes)
-ifeq (yes,$(build-shared))
+ifeq (yyyes,$(OPTION_EGLIBC_LOCALES)$(OPTION_EGLIBC_LOCALE_CODE)$(build-shared))
 ifneq ($(strip $(MSGFMT)),:)
 tests-special += $(objpfx)tst-translit.out $(objpfx)tst-gettext.out \
 		 $(objpfx)tst-gettext2.out $(objpfx)tst-codeset.out \
