@@ -38,7 +38,7 @@ static const float threehalf = 1.5;
    square root.  */
 
 float
-__ieee754_sqrtf (float b)
+__slow_ieee754_sqrtf (float b)
 {
   if (__builtin_expect (b > 0, 1))
     {
@@ -92,5 +92,11 @@ __ieee754_sqrtf (float b)
       b = a_nan.value;
     }
   return f_washf (b);
+}
+#undef __ieee754_sqrtf
+float
+__ieee754_sqrtf (float x)
+{
+  return __slow_ieee754_sqrtf (x);
 }
 strong_alias (__ieee754_sqrtf, __sqrtf_finite)
