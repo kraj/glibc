@@ -6,9 +6,9 @@ dnl position independent way.
 dnl AC_DEFINE(PI_STATIC_AND_HIDDEN)
 
 AC_CACHE_CHECK([whether the compiler is using the 2008 NaN encoding],
-  libc_cv_mips_nan2008, [AC_EGREP_CPP(yes, [dnl
+  libc_cv_mips_nan2008, [AC_EGREP_CPP(use_mips_nan2008, [dnl
 #ifdef __mips_nan2008
-yes
+use_mips_nan2008
 #endif], libc_cv_mips_nan2008=yes, libc_cv_mips_nan2008=no)])
 if test x$libc_cv_mips_nan2008 = xyes; then
   AC_DEFINE(HAVE_MIPS_NAN2008)
