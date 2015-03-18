@@ -69,8 +69,17 @@ subdir-dirs = include
 vpath %.h $(subdir-dirs)
 
 # What to install.
-install-others = $(inst_includedir)/gnu/stubs.h
 install-bin-script =
+
+# If we're bootstrapping, install a dummy gnu/stubs.h along with the
+# other headers, so 'make install-headers' produces a useable include
+# tree.  Otherwise, install gnu/stubs.h later, after the rest of the
+# build is done.
+ifeq ($(install-bootstrap-headers),yes)
+install-headers: $(inst_includedir)/gnu/stubs.h
+else
+install-others = $(inst_includedir)/gnu/stubs.h
+endif
 
 ifeq (yes,$(build-shared))
 headers += gnu/lib-names.h
@@ -151,6 +160,16 @@ others: $(common-objpfx)testrun.sh
 
 subdir-stubs := $(foreach dir,$(subdirs),$(common-objpfx)$(dir)/stubs)
 
+# gnu/stubs.h depends (via the subdir 'stubs' targets) on all the .o
+# files in EGLIBC.  For bootstrapping a GCC/EGLIBC pair, an empty
+# gnu/stubs.h is good enough.
+ifeq ($(install-bootstrap-headers),yes)
+$(inst_includedir)/gnu/stubs.h: include/stubs-bootstrap.h $(+force)
+	$(make-target-directory)
+	$(INSTALL_DATA) $< $@
+
+installed-stubs =
+else
 ifndef abi-variants
 installed-stubs = $(inst_includedir)/gnu/stubs.h
 else
@@ -176,6 +195,7 @@ $(inst_includedir)/gnu/stubs.h: $(+force)
 	mv -f $(@:.d=.h).new $(@:.d=.h)
 
 install-others-nosubdir: $(installed-stubs)
+endif
 endif
 
 
