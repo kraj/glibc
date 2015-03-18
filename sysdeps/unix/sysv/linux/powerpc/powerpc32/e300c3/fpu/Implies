@@ -1,0 +1,2 @@
+# e300c3 is a variant of 603e so use the same optimizations for sqrt
+powerpc/powerpc32/603e/fpu
