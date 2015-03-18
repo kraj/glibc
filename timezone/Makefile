@@ -120,7 +120,7 @@ $(testdata)/XT%: testdata/XT%
 	cp $< $@
 
 $(objpfx)tzselect: tzselect.ksh $(common-objpfx)config.make
-	sed -e 's|/bin/bash|$(BASH)|' \
+	sed -e 's|/bin/bash|/bin/sh|' \
 	    -e 's|TZDIR=[^}]*|TZDIR=$(zonedir)|' \
 	    -e '/TZVERSION=/s|see_Makefile|"$(version)"|' \
 	    -e '/PKGVERSION=/s|=.*|="$(PKGVERSION)"|' \
