@@ -99,3 +99,4 @@ __ieee754_sqrtf (b)
     }
   return f_washf (b);
 }
+strong_alias (__ieee754_sqrtf, __sqrtf_finite)

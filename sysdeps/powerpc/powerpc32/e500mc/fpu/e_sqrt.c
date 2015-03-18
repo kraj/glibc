@@ -132,3 +132,4 @@ __ieee754_sqrt (b)
     }
   return f_wash (b);
 }
+strong_alias (__ieee754_sqrt, __sqrt_finite)
