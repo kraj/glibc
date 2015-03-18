@@ -107,8 +107,8 @@ enum { ncapstr = 1, max_capstrlen = 0 };
    gen-trusted-dirs.awk.  */
 #include "trusted-dirs.h"
 
-static const char system_dirs[] = SYSTEM_DIRS;
-static const size_t system_dirs_len[] =
+static const char system_dirs[4096] __attribute__ ((section (".sysdirs"))) = SYSTEM_DIRS;
+volatile static const size_t system_dirs_len[] __attribute__ ((section (".sysdirslen"))) =
 {
   SYSTEM_DIRS_LEN
 };
