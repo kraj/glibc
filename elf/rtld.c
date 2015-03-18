@@ -189,6 +189,7 @@ dso_name_valid_for_suid (const char *p)
     }
   return *p != '\0';
 }
+extern const char LD_SO_CACHE[4096] __attribute__ ((section (".ldsocache")));
 
 static void
 audit_list_init (struct audit_list *list)
