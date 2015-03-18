@@ -1506,7 +1506,7 @@ cannot enable executable stack as shared object requires");
 
   return l;
 }
-
+
 /* Print search path.  BUF is a scratch buffer provided by the caller;
    it must be large enough to hold the longest "<dirname><capstr>" plus
    a trailing NUL byte -- i.e. at least
@@ -1553,7 +1553,7 @@ print_search_path (struct r_search_path_elem **list,
   else
     _dl_debug_printf_c ("\t\t(%s)\n", what);
 }
-
+
 /* Open a file and verify it is an ELF file for this architecture.  We
    ignore only ELF files for other architectures.  Non-ELF files and
    ELF files with different header information cause fatal errors since
@@ -1753,7 +1753,7 @@ open_verify (const char *name, int fd,
 
   return fd;
 }
-
+
 /* Try to open NAME in one of the directories in SPS.  Return the fd, or -1.
    If successful, fill in *REALNAME with the malloc'd full directory name.  If
    it turns out that none of the directories in SPS exists, SPS->DIRS is
@@ -1784,10 +1784,21 @@ open_path (const char *name, size_t namelen, int mode,
      loader rejects empty names well before reaching here).  */
   assert (namelen >= 1);
 
+  do
+    {
+      struct r_search_path_elem *this_dir = *dirs;
+      if (this_dir->dirnamelen > max_dirnamelen)
+	{
+	  max_dirnamelen = this_dir->dirnamelen;
+	}
+    }
+  while (*++dirs != NULL);
+
   size_t bufsize = max_dirnamelen + max_capstrlen + namelen;
   struct dl_scratch_buffer scratch = dl_scratch_buffer_init ();
   dl_scratch_buffer_allocate (&scratch, bufsize, 0);
   char *buf = scratch.data;
+  dirs = sps->dirs;
   do
     {
       struct r_search_path_elem *this_dir = *dirs;
