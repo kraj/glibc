@@ -335,6 +335,10 @@ search_cache (const char *string_table, uint32_t string_table_size,
   return best;
 }
 
+const char LD_SO_CACHE[4096] __attribute__ ((section (".ldsocache"))) =
+		SYSCONFDIR "/ld.so.cache";
+
+
 int
 _dl_cache_libcmp (const char *p1, const char *p2)
 {
