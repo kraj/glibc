@@ -245,7 +245,7 @@ extern __thread locale_t __libc_tsd_LOCALE
    unused.  We can manage this playing some tricks with weak references.
    But with thread-local locale settings, it becomes quite ungainly unless
    we can use __thread variables.  So only in that case do we attempt this.  */
-#ifndef SHARED
+#if !defined SHARED && !defined IN_GLIBC_LOCALEDEF
 # include <tls.h>
 # define NL_CURRENT_INDIRECT	1
 #endif
