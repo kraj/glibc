@@ -30,3 +30,14 @@ ENTRY (__syscall_error)
 
 #define __syscall_error __syscall_error_1
 #include <sysdeps/unix/sh/sysdep.S>
+
+       .data
+       .align 3
+       .globl ___fpscr_values
+       .type ___fpscr_values, @object
+       .size ___fpscr_values, 8
+___fpscr_values:
+       .long 0
+       .long 0x80000
+weak_alias (___fpscr_values, __fpscr_values)
+
