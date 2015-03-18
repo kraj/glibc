@@ -32,6 +32,6 @@ case "$prefix" in
   else
     libc_cv_localstatedir=$localstatedir
    fi
-  libc_cv_rootsbindir=/sbin
+  test -n "$libc_cv_rootsbindir" || libc_cv_rootsbindir=/sbin
   ;;
 esac
