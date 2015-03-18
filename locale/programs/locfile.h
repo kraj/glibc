@@ -71,6 +71,8 @@ extern void write_all_categories (struct localedef_t *definitions,
 
 extern bool swap_endianness_p;
 
+extern unsigned int uint32_align_mask;
+
 /* Change the output to be big-endian if BIG_ENDIAN is true and
    little-endian otherwise.  */
 static inline void
@@ -89,7 +91,8 @@ maybe_swap_uint32 (uint32_t value)
 }
 
 /* Likewise, but munge an array of N uint32_ts starting at ARRAY.  */
-static inline void
+static void
+__attribute__ ((unused))
 maybe_swap_uint32_array (uint32_t *array, size_t n)
 {
   if (swap_endianness_p)
@@ -99,7 +102,8 @@ maybe_swap_uint32_array (uint32_t *array, size_t n)
 
 /* Like maybe_swap_uint32_array, but the array of N elements is at
    the end of OBSTACK's current object.  */
-static inline void
+static void
+__attribute__ ((unused))
 maybe_swap_uint32_obstack (struct obstack *obstack, size_t n)
 {
   maybe_swap_uint32_array ((uint32_t *) obstack_next_free (obstack) - n, n);
@@ -275,5 +279,56 @@ extern void identification_finish (struct localedef_t *locale,
 extern void identification_output (struct localedef_t *locale,
 				   const struct charmap_t *charmap,
 				   const char *output_path);
+
+static size_t wcslen_uint32 (const uint32_t *str) __attribute__ ((unused));
+static uint32_t * wmemcpy_uint32 (uint32_t *s1, const uint32_t *s2, size_t n) __attribute__ ((unused));
+static uint32_t * wcschr_uint32 (const uint32_t *s, uint32_t ch) __attribute__ ((unused));
+static int wcscmp_uint32 (const uint32_t *s1, const uint32_t *s2) __attribute__ ((unused));
+static int wmemcmp_uint32 (const uint32_t *s1, const uint32_t *s2, size_t n) __attribute__ ((unused));
+
+static size_t
+wcslen_uint32 (const uint32_t *str)
+{
+  size_t len = 0;
+  while (str[len] != 0)
+    len++;
+  return len;
+}
+
+static  int
+wmemcmp_uint32 (const uint32_t *s1, const uint32_t *s2, size_t n)
+{
+  while (n-- != 0)
+    {
+      int diff = *s1++ - *s2++;
+      if (diff != 0)
+	return diff;
+    }
+  return 0;
+}
+
+static int
+wcscmp_uint32 (const uint32_t *s1, const uint32_t *s2)
+{
+  while (*s1 != 0 && *s1 == *s2)
+    s1++, s2++;
+  return *s1 - *s2;
+}
+
+static uint32_t *
+wmemcpy_uint32 (uint32_t *s1, const uint32_t *s2, size_t n)
+{
+  return memcpy (s1, s2, n * sizeof (uint32_t));
+}
+
+static uint32_t *
+wcschr_uint32 (const uint32_t *s, uint32_t ch)
+{
+  do
+    if (*s == ch)
+      return (uint32_t *) s;
+  while (*s++ != 0);
+  return 0;
+}
 
 #endif /* locfile.h */

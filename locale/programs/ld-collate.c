@@ -350,7 +350,7 @@ new_element (struct locale_collate_t *collate, const char *mbs, size_t mbslen,
     }
   if (wcs != NULL)
     {
-      size_t nwcs = wcslen ((wchar_t *) wcs);
+      size_t nwcs = wcslen_uint32 (wcs);
       uint32_t zero = 0;
       /* Handle <U0000> as a single character.  */
       if (nwcs == 0)
@@ -1776,8 +1776,7 @@ symbol `%s' has the same encoding as"), (*eptr)->name);
 
 	      if ((*eptr)->nwcs == runp->nwcs)
 		{
-		  int c = wmemcmp ((wchar_t *) (*eptr)->wcs,
-				   (wchar_t *) runp->wcs, runp->nwcs);
+		  int c = wmemcmp_uint32 ((*eptr)->wcs, runp->wcs, runp->nwcs);
 
 		  if (c == 0)
 		    {
@@ -2010,9 +2009,9 @@ add_to_tablewc (uint32_t ch, struct element_t *runp)
 	     one consecutive entry.  */
 	  if (runp->wcnext != NULL
 	      && runp->nwcs == runp->wcnext->nwcs
-	      && wmemcmp ((wchar_t *) runp->wcs,
-			  (wchar_t *)runp->wcnext->wcs,
-			  runp->nwcs - 1) == 0
+	      && wmemcmp_uint32 (runp->wcs,
+				 runp->wcnext->wcs,
+				 runp->nwcs - 1) == 0
 	      && (runp->wcs[runp->nwcs - 1]
 		  == runp->wcnext->wcs[runp->nwcs - 1] + 1))
 	    {
@@ -2036,9 +2035,9 @@ add_to_tablewc (uint32_t ch, struct element_t *runp)
 		runp = runp->wcnext;
 	      while (runp->wcnext != NULL
 		     && runp->nwcs == runp->wcnext->nwcs
-		     && wmemcmp ((wchar_t *) runp->wcs,
-				 (wchar_t *)runp->wcnext->wcs,
-				 runp->nwcs - 1) == 0
+		     && wmemcmp_uint32 (runp->wcs,
+					runp->wcnext->wcs,
+					runp->nwcs - 1) == 0
 		     && (runp->wcs[runp->nwcs - 1]
 			 == runp->wcnext->wcs[runp->nwcs - 1] + 1));
 
