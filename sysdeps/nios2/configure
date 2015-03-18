@@ -142,12 +142,12 @@ else
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 #ifdef __nios2_big_endian__
-                      yes
+                      is_nios2_be
                      #endif
 
 _ACEOF
 if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
-  $EGREP "yes" >/dev/null 2>&1; then :
+  $EGREP "is_nios2_be" >/dev/null 2>&1; then :
   libc_cv_nios2_be=yes
 else
   libc_cv_nios2_be=no
