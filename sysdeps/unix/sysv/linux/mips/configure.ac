@@ -105,9 +105,9 @@ AC_COMPILE_IFELSE(
 LIBC_CONFIG_VAR([mips-mode-switch],[${libc_mips_mode_switch}])
 
 AC_CACHE_CHECK([whether the compiler is using the 2008 NaN encoding],
-  libc_cv_mips_nan2008, [AC_EGREP_CPP(yes, [dnl
+  libc_cv_mips_nan2008, [AC_EGREP_CPP(use_mips_nan2008, [dnl
 #ifdef __mips_nan2008
-yes
+use_mips_nan2008
 #endif], libc_cv_mips_nan2008=yes, libc_cv_mips_nan2008=no)])
 
 libc_mips_nan=
