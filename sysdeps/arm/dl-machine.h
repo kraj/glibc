@@ -499,7 +499,7 @@ elf_machine_rel (struct link_map *map, const Elf32_Rel *reloc,
 
 	case R_ARM_TLS_DTPOFF32:
 	  if (sym != NULL)
-	    *reloc_addr += sym->st_value;
+	    *reloc_addr = sym->st_value;
 	  break;
 
 	case R_ARM_TLS_TPOFF32:
