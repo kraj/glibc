@@ -47,6 +47,8 @@ c++-sysincludes = @CXX_SYSINCLUDES@
 all-warnings = @all_warnings@
 enable-werror = @enable_werror@
 
+kconfig_tools = @KCONFIG_TOOLS@
+
 have-z-combreloc = @libc_cv_z_combreloc@
 have-z-execstack = @libc_cv_z_execstack@
 have-Bgroup = @libc_cv_Bgroup@

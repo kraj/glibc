@@ -642,6 +642,7 @@ INSTALL_INFO
 PERL
 BASH_SHELL
 libc_cv_gcc_static_libgcc
+KCONFIG_TOOLS
 CXX_SYSINCLUDES
 SYSINCLUDES
 AUTOCONF
@@ -756,6 +757,7 @@ with_fp
 with_binutils
 with_selinux
 with_headers
+with_kconfig
 with_default_link
 enable_sanity_checks
 enable_shared
@@ -1460,6 +1462,9 @@ Optional Packages:
   --with-selinux          if building with SELinux support
   --with-headers=PATH     location of system headers to use (for example
                           /usr/src/linux/include) [default=compiler default]
+  --with-kconfig=PATH     location of kconfig tools to use (from Linux kernel
+                          builds) to re-use for configuring EGLIBC option
+                          groups
   --with-default-link     do not use explicit linker scripts
   --with-cpu=CPU          select code for CPU variant
 
@@ -3516,6 +3521,14 @@ else
 fi
 
 
+
+
+# Check whether --with-kconfig was given.
+if test "${with_kconfig+set}" = set; then
+  withval=$with_kconfig; KCONFIG_TOOLS=$withval
+else
+  KCONFIG_TOOLS=''
+fi
 
 
 

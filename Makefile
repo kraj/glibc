@@ -24,6 +24,7 @@ endif
 
 include Makeconfig
 
+include options-config/Makefile
 
 # This is the default target; it makes everything except the tests.
 .PHONY: all
