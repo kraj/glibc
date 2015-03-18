@@ -21,7 +21,7 @@
 #include <locale.h>
 
 
-static void
+static void __attribute__ ((unused))
 strip (char *wp, const char *s)
 {
   int slash_count = 0;
