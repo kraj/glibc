@@ -27,10 +27,6 @@
   ((flags) == 1 || (flags) == _DL_CACHE_DEFAULT_ID)
 #endif
 
-#ifndef LD_SO_CACHE
-# define LD_SO_CACHE SYSCONFDIR "/ld.so.cache"
-#endif
-
 #ifndef add_system_dir
 # define add_system_dir(dir) add_dir (dir)
 #endif
