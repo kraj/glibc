@@ -51,6 +51,7 @@ static struct known_names interpreters[] =
 #ifdef SYSDEP_KNOWN_INTERPRETER_NAMES
   SYSDEP_KNOWN_INTERPRETER_NAMES
 #endif
+  OECORE_KNOWN_INTERPRETER_NAMES
 };
 
 static struct known_names known_libs[] =
