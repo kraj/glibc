@@ -443,11 +443,11 @@ else case e in #(
 /* end confdefs.h.  */
 dnl
 #ifdef __mips_nan2008
-yes
+use_mips_nan2008
 #endif
 _ACEOF
 if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
-  $EGREP_TRADITIONAL "yes" >/dev/null 2>&1
+  $EGREP_TRADITIONAL "use_mips_nan2008" >/dev/null 2>&1
 then :
   libc_cv_mips_nan2008=yes
 else case e in #(
