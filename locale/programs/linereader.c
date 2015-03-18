@@ -776,7 +776,7 @@ get_string (struct linereader *lr, const struct charmap_t *charmap,
 {
   int return_widestr = lr->return_widestr;
   struct lr_buffer lrb;
-  wchar_t *buf2 = NULL;
+  uint32_t *buf2 = NULL;
 
   lr_buffer_init (&lrb);
 
