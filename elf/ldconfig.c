@@ -168,6 +168,9 @@ static struct argp argp =
   options, parse_opt, NULL, doc, NULL, more_help, NULL
 };
 
+
+extern const char LD_SO_CACHE[4096] __attribute__ ((section (".ldsocache")));
+
 /* Check if string corresponds to an important hardware capability or
    a platform.  */
 static int

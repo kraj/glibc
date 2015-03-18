@@ -132,6 +132,10 @@ do									      \
 while (0)
 
 
+const char LD_SO_CACHE[4096] __attribute__ ((section (".ldsocache"))) =
+		SYSCONFDIR "/ld.so.cache";
+
+
 int
 internal_function
 _dl_cache_libcmp (const char *p1, const char *p2)
