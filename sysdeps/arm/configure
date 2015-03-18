@@ -161,12 +161,12 @@ else $as_nop
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 #ifdef __ARM_PCS_VFP
-		      yes
+		      use_arm_pcs_vfp
 		     #endif
 
 _ACEOF
 if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
-  $EGREP "yes" >/dev/null 2>&1
+  $EGREP "use_arm_pcs_vfp" >/dev/null 2>&1
 then :
   libc_cv_arm_pcs_vfp=yes
 else $as_nop
