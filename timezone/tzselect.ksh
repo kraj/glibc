@@ -35,7 +35,7 @@ REPORT_BUGS_TO=tz@iana.org
 
 # Specify default values for environment variables if they are unset.
 : ${AWK=awk}
-: ${TZDIR=`pwd`}
+: ${TZDIR=$(pwd)}
 
 # Check for awk Posix compliance.
 ($AWK -v x=y 'BEGIN { exit 123 }') </dev/null >/dev/null 2>&1
