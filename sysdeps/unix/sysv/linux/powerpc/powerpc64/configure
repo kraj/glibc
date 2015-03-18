@@ -160,12 +160,12 @@ else case e in #(
   e) cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 #if _CALL_ELF == 2
-                      yes
+                      use_ppc_elfv2_abi
                      #endif
 
 _ACEOF
 if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
-  $EGREP_TRADITIONAL "yes" >/dev/null 2>&1
+  $EGREP_TRADITIONAL "use_ppc_elfv2_abi" >/dev/null 2>&1
 then :
   libc_cv_ppc64_elfv2_abi=yes
 else case e in #(
@@ -197,12 +197,12 @@ else case e in #(
   e) cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 #ifdef _CALL_ELF
-                         yes
+                         is_def_call_elf
                        #endif
 
 _ACEOF
 if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
-  $EGREP_TRADITIONAL "yes" >/dev/null 2>&1
+  $EGREP_TRADITIONAL "is_def_call_elf" >/dev/null 2>&1
 then :
   libc_cv_ppc64_def_call_elf=yes
 else case e in #(
