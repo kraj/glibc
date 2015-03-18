@@ -24,6 +24,8 @@
 
 #include <dl-hwcaps.h>
 
+extern const char LD_SO_CACHE[4096] __attribute__ ((section (".ldsocache")));
+
 void
 _dl_usage (const char *argv0, const char *wrong_option)
 {
@@ -184,7 +186,7 @@ setting environment variables (which would be inherited by subprocesses).\n\
   --list                list all dependencies and how they are resolved\n\
   --verify              verify that given object really is a dynamically linked\n\
                         object we can handle\n\
-  --inhibit-cache       Do not use " LD_SO_CACHE "\n\
+  --inhibit-cache       Do not use %s\n\
   --library-path PATH   use given PATH instead of content of the environment\n\
                         variable LD_LIBRARY_PATH\n\
   --glibc-hwcaps-prepend LIST\n\
@@ -203,7 +205,7 @@ setting environment variables (which would be inherited by subprocesses).\n\
 \n\
 This program interpreter self-identifies as: " RTLD "\n\
 ",
-              argv0);
+              argv0, LD_SO_CACHE);
   print_search_path_for_help (state);
   print_hwcaps_subdirectories (state);
   _exit (EXIT_SUCCESS);

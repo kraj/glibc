@@ -35,7 +35,7 @@
 #include <gconv_parseconfdir.h>
 
 /* This is the default path where we look for module lists.  */
-static const char default_gconv_path[] = GCONV_PATH;
+static char default_gconv_path[4096] __attribute__ ((section (".gccrelocprefix"))) = GCONV_PATH;
 
 /* Type to represent search path.  */
 struct path_elem
