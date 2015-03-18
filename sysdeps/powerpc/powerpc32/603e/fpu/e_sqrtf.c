@@ -37,14 +37,8 @@ static const float threehalf = 1.5;
    We find the reciprocal square root and use that to compute the actual
    square root.  */
 
-#ifdef __STDC__
 float
 __ieee754_sqrtf (float b)
-#else
-float
-__ieee754_sqrtf (b)
-     float b;
-#endif
 {
   if (__builtin_expect (b > 0, 1))
     {
@@ -99,3 +93,4 @@ __ieee754_sqrtf (b)
     }
   return f_washf (b);
 }
+strong_alias (__ieee754_sqrtf, __sqrtf_finite)

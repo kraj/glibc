@@ -39,14 +39,8 @@ static const float half = 0.5;
    We find the actual square root and half of its reciprocal
    simultaneously.  */
 
-#ifdef __STDC__
 double
 __ieee754_sqrt (double b)
-#else
-double
-__ieee754_sqrt (b)
-     double b;
-#endif
 {
   if (__builtin_expect (b > 0, 1))
     {
@@ -132,3 +126,4 @@ __ieee754_sqrt (b)
     }
   return f_wash (b);
 }
+strong_alias (__ieee754_sqrt, __sqrt_finite)
