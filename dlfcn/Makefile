@@ -39,15 +39,19 @@ ifeq (yes,$(build-shared))
 tests = glrefmain failtest tst-dladdr default errmsg1 tstcxaatexit \
 	bug-dlopen1 bug-dlsym1 tst-dlinfo bug-atexit1 bug-atexit2 \
 	tstatexit bug-dl-leaf tst-rec-dlopen
-endif
-
 tests-$(OPTION_EGLIBC_CXX_TESTS) += bug-atexit3
+
+endif
 
 modules-names = glreflib1 glreflib2 glreflib3 failtestmod defaultmod1 \
 		defaultmod2 errmsg1mod modatexit modcxaatexit \
 		bug-dlsym1-lib1 bug-dlsym1-lib2 bug-atexit1-lib \
 		bug-atexit2-lib bug-dl-leaf-lib \
 		bug-dl-leaf-lib-cb moddummy1 moddummy2
+
+ifeq (y,$(OPTION_EGLIBC_CXX_TESTS))
+modules-names += bug-atexit3-lib
+endif
 
 failtestmod.so-no-z-defs = yes
 glreflib2.so-no-z-defs = yes

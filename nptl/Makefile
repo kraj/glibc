@@ -390,12 +390,20 @@ link-libc-static := $(common-objpfx)libc.a $(static-gnulib) \
 		    $(common-objpfx)libc.a
 
 tests-static += tst-locale1 tst-locale2 tst-stackguard1-static \
-		tst-cancel21-static tst-cancel24-static tst-cond8-static \
+		tst-cancel21-static tst-cond8-static \
 		tst-mutex8-static tst-mutexpi8-static tst-sem11-static \
 		tst-sem12-static
-tests += tst-stackguard1-static tst-cancel21-static tst-cancel24-static \
+
+ifeq (y,$(OPTION_EGLIBC_CXX_TESTS))
+tests-static += tst-cancel24-static
+endif
+
+tests += tst-stackguard1-static tst-cancel21-static \
 	 tst-cond8-static tst-mutex8-static tst-mutexpi8-static \
 	 tst-sem11-static tst-sem12-static
+
+tests-$(OPTION_EGLIBC_CXX_TESTS) += tst-cancel24-static
+
 xtests-static += tst-setuid1-static
 
 # These tests are linked with libc before libpthread

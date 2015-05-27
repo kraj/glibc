@@ -17,6 +17,8 @@
 
 # Makefile for elf subdirectory of GNU C Library.
 
+include ../option-groups.mak
+
 subdir		:= elf
 
 include ../Makeconfig
@@ -145,12 +147,15 @@ tests += loadtest restest1 preloadtest loadfail multiload origtest resolvfail \
 	 unload3 unload4 unload5 unload6 unload7 unload8 tst-global1 order2 \
 	 tst-audit1 tst-audit2 tst-audit8 tst-audit9 \
 	 tst-stackguard1 tst-addr1 tst-thrlock \
-	 tst-unique1 tst-unique2 $(if $(CXX),tst-unique3 tst-unique4 \
-	 tst-nodelete) \
+	 tst-unique1 tst-unique2 \
 	 tst-initorder tst-initorder2 tst-relsort1 tst-null-argv \
 	 tst-ptrguard1 tst-tlsalign tst-tlsalign-extern tst-nodelete-opened \
 	 tst-nodelete2
 #	 reldep9
+ifeq (y,$(OPTION_EGLIBC_CXX_TESTS))
+tests += $(if $(CXX),tst-unique3 tst-unique4 tst-nodelete)
+endif
+
 ifeq ($(build-hardcoded-path-in-tests),yes)
 tests += tst-dlopen-aout
 LDFLAGS-tst-dlopen-aout = $(no-pie-ldflag)
@@ -209,9 +214,6 @@ modules-names = testobj1 testobj2 testobj3 testobj4 testobj5 testobj6 \
 		tst-unique1mod1 tst-unique1mod2 \
 		tst-unique2mod1 tst-unique2mod2 \
 		tst-auditmod9a tst-auditmod9b \
-		$(if $(CXX),tst-unique3lib tst-unique3lib2 tst-unique4lib \
-		  tst-nodelete-uniquemod tst-nodelete-rtldmod \
-		  tst-nodelete-zmod) \
 		tst-initordera1 tst-initorderb1 \
 		tst-initordera2 tst-initorderb2 \
 		tst-initordera3 tst-initordera4 \
@@ -220,6 +222,13 @@ modules-names = testobj1 testobj2 testobj3 testobj4 testobj5 testobj6 \
 		tst-relsort1mod1 tst-relsort1mod2 tst-array2dep \
 		tst-array5dep tst-null-argv-lib \
 		tst-tlsalign-lib tst-nodelete-opened-lib tst-nodelete2mod
+
+ifeq (y,$(OPTION_EGLIBC_CXX_TESTS))
+modules-names += $(if $(CXX),tst-unique3lib tst-unique3lib2 tst-unique4lib \
+		  tst-nodelete-uniquemod tst-nodelete-rtldmod \
+		  tst-nodelete-zmod)
+endif
+
 ifeq (yes,$(have-protected-data))
 modules-names += tst-protected1moda tst-protected1modb
 tests += tst-protected1a tst-protected1b
