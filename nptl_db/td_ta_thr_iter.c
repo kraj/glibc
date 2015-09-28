@@ -38,15 +38,22 @@ iterate_thread_list (td_thragent_t *ta, td_thr_iter_f *callback,
   if (err != TD_OK)
     return err;
 
-  if (next == 0 && fake_empty)
+  if (next == 0)
     {
       /* __pthread_initialize_minimal has not run.  There is just the main
 	 thread to return.  We cannot rely on its thread register.  They
 	 sometimes contain garbage that would confuse us, left by the
 	 kernel at exec.  So if it looks like initialization is incomplete,
 	 we only fake a special descriptor for the initial thread.  */
-      td_thrhandle_t th = { ta, 0 };
-      return callback (&th, cbdata_p) != 0 ? TD_DBERR : TD_OK;
+      if (fake_empty)
+	{
+	  td_thrhandle_t th = { ta, 0 };
+
+	  if (callback (&th, cbdata_p) != 0)
+	    return TD_DBERR;
+	}
+
+      return TD_OK;
     }
 
   /* Cache the offset from struct pthread to its list_t member.  */
@@ -161,7 +168,7 @@ td_ta_thr_iter (const td_thragent_t *ta_arg, td_thr_iter_f *callback,
 
   /* And the threads with stacks allocated by the implementation.  */
   if (err == TD_OK)
-    err = DB_GET_SYMBOL (list, ta, stack_used);
+    err = DB_GET_SYMBOL (list, ta, __stack_used);
   if (err == TD_OK)
     err = iterate_thread_list (ta, callback, cbdata_p, state, ti_pri,
 			       list, false, pid);

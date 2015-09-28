@@ -87,7 +87,7 @@ __find_in_stack_list (struct pthread *pd)
 
   lll_lock (stack_cache_lock, LLL_PRIVATE);
 
-  list_for_each (entry, &stack_used)
+  list_for_each (entry, &__stack_used)
     {
       struct pthread *curp;
 

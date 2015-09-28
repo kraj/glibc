@@ -113,7 +113,8 @@ static int stack_cache_lock = LLL_LOCK_INITIALIZER;
 static LIST_HEAD (stack_cache);
 
 /* List of the stacks in use.  */
-static LIST_HEAD (stack_used);
+list_t (__stack_used) __attribute__ ((nocommon));
+hidden_data_def (__stack_used)
 
 /* We need to record what list operations we are going to do so that,
    in case of an asynchronous interruption due to a fork() call, we
@@ -223,7 +224,7 @@ get_cached_stack (size_t *sizep, void **memp)
   stack_list_del (&result->list);
 
   /* And add to the list of stacks in use.  */
-  stack_list_add (&result->list, &stack_used);
+  stack_list_add (&result->list, &__stack_used);
 
   /* And decrease the cache size.  */
   stack_cache_actsize -= result->stackblock_size;
@@ -592,7 +593,7 @@ allocate_stack (const struct pthread_attr *attr, struct pthread **pdp,
 	  lll_lock (stack_cache_lock, LLL_PRIVATE);
 
 	  /* And add to the list of stacks in use.  */
-	  stack_list_add (&pd->list, &stack_used);
+	  stack_list_add (&pd->list, &__stack_used);
 
 	  lll_unlock (stack_cache_lock, LLL_PRIVATE);
 
@@ -781,7 +782,7 @@ __make_stacks_executable (void **stack_endp)
   lll_lock (stack_cache_lock, LLL_PRIVATE);
 
   list_t *runp;
-  list_for_each (runp, &stack_used)
+  list_for_each (runp, &__stack_used)
     {
       err = change_stack_perm (list_entry (runp, struct pthread, list)
 #ifdef NEED_SEPARATE_REGISTER_STACK
@@ -838,8 +839,8 @@ __reclaim_stacks (void)
 	     pointers at the head of the list are inconsistent.  */
 	  list_t *l = NULL;
 
-	  if (stack_used.next->prev != &stack_used)
-	    l = &stack_used;
+	  if (__stack_used.next->prev != &__stack_used)
+	    l = &__stack_used;
 	  else if (stack_cache.next->prev != &stack_cache)
 	    l = &stack_cache;
 
@@ -861,7 +862,7 @@ __reclaim_stacks (void)
 
   /* Mark all stacks except the still running one as free.  */
   list_t *runp;
-  list_for_each (runp, &stack_used)
+  list_for_each (runp, &__stack_used)
     {
       struct pthread *curp = list_entry (runp, struct pthread, list);
       if (curp != self)
@@ -905,7 +906,7 @@ __reclaim_stacks (void)
     }
 
   /* Add the stack of all running threads to the cache.  */
-  list_splice (&stack_used, &stack_cache);
+  list_splice (&__stack_used, &stack_cache);
 
   /* Remove the entry for the current thread to from the cache list
      and add it to the list of running threads.  Which of the two
@@ -913,13 +914,13 @@ __reclaim_stacks (void)
   stack_list_del (&self->list);
 
   /* Re-initialize the lists for all the threads.  */
-  INIT_LIST_HEAD (&stack_used);
+  INIT_LIST_HEAD (&__stack_used);
   INIT_LIST_HEAD (&__stack_user);
 
   if (__glibc_unlikely (THREAD_GETMEM (self, user_stack)))
     list_add (&self->list, &__stack_user);
   else
-    list_add (&self->list, &stack_used);
+    list_add (&self->list, &__stack_used);
 
   /* There is one thread running.  */
   __nptl_nthreads = 1;
@@ -945,7 +946,7 @@ __find_thread_by_id (pid_t tid)
 
   /* Iterate over the list with system-allocated threads first.  */
   list_t *runp;
-  list_for_each (runp, &stack_used)
+  list_for_each (runp, &__stack_used)
     {
       struct pthread *curp;
 
@@ -1098,7 +1099,7 @@ __nptl_setxid (struct xid_command *cmdp)
 
   /* Iterate over the list with system-allocated threads first.  */
   list_t *runp;
-  list_for_each (runp, &stack_used)
+  list_for_each (runp, &__stack_used)
     {
       struct pthread *t = list_entry (runp, struct pthread, list);
       if (t == self)
@@ -1124,7 +1125,7 @@ __nptl_setxid (struct xid_command *cmdp)
     {
       signalled = 0;
 
-      list_for_each (runp, &stack_used)
+      list_for_each (runp, &__stack_used)
 	{
 	  struct pthread *t = list_entry (runp, struct pthread, list);
 	  if (t == self)
@@ -1154,7 +1155,7 @@ __nptl_setxid (struct xid_command *cmdp)
 
   /* Clean up flags, so that no thread blocks during exit waiting
      for a signal which will never come.  */
-  list_for_each (runp, &stack_used)
+  list_for_each (runp, &__stack_used)
     {
       struct pthread *t = list_entry (runp, struct pthread, list);
       if (t == self)
@@ -1218,7 +1219,7 @@ __pthread_init_static_tls (struct link_map *map)
 
   /* Iterate over the list with system-allocated threads first.  */
   list_t *runp;
-  list_for_each (runp, &stack_used)
+  list_for_each (runp, &__stack_used)
     init_one_static_tls (list_entry (runp, struct pthread, list), map);
 
   /* Now the list with threads using user-allocated stacks.  */
@@ -1239,7 +1240,7 @@ __wait_lookup_done (void)
 
   /* Iterate over the list with system-allocated threads first.  */
   list_t *runp;
-  list_for_each (runp, &stack_used)
+  list_for_each (runp, &__stack_used)
     {
       struct pthread *t = list_entry (runp, struct pthread, list);
       if (t == self || t->header.gscope_flag == THREAD_GSCOPE_FLAG_UNUSED)

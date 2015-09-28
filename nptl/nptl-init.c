@@ -384,6 +384,7 @@ __pthread_initialize_minimal_internal (void)
   THREAD_SETMEM (pd, stackblock_size, (size_t) __libc_stack_end);
 
   /* Initialize the list of all running threads with the main thread.  */
+  INIT_LIST_HEAD (&__stack_used);
   INIT_LIST_HEAD (&__stack_user);
   list_add (&pd->list, &__stack_user);
 

@@ -70,7 +70,7 @@ td_thr_validate (const td_thrhandle_t *th)
      using implementation allocated stacks.  */
   if (err == TD_NOTHR)
     {
-      err = DB_GET_SYMBOL (list, th->th_ta_p, stack_used);
+      err = DB_GET_SYMBOL (list, th->th_ta_p, __stack_used);
       if (err == TD_OK)
 	err = check_thread_list (th, list, &uninit);
 

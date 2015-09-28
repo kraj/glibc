@@ -183,7 +183,9 @@ extern int __is_smp attribute_hidden;
 
 /* Thread descriptor handling.  */
 extern list_t __stack_user;
+extern list_t __stack_used;
 hidden_proto (__stack_user)
+hidden_proto (__stack_used)
 
 /* Attribute handling.  */
 extern struct pthread_attr *__attr_list attribute_hidden;

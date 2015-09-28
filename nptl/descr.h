@@ -160,7 +160,7 @@ struct pthread
     void *__padding[24];
   };
 
-  /* This descriptor's link on the `stack_used' or `__stack_user' list.  */
+  /* This descriptor's link on the `__stack_used' or `__stack_user' list.  */
   list_t list;
 
   /* Thread ID - which is also a 'is this thread descriptor (and
