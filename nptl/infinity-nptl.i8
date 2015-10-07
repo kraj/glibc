@@ -34,6 +34,20 @@ typedef s32 ps_err_e
 /* XXX.  */
 typedef ptr th_unique_t
 
+/* Possible thread states.  */
+typedef s32 td_thr_state_e
+
+/* XXX.  */
+#if TD_SIGNO_MASK == 0
+# undef TD_SIGNO_MASK
+# define TD_SIGNO_MASK NULL
+#else
+# error "TD_SIGNO_MASK != 0"
+#endif
+
+/* Callback for iteration over threads.  */
+typedef func int (th_unique_t, opaque) thr_iter_f
+
 /* XXX.  */
 extern ptr __stack_user
 extern ptr __stack_used

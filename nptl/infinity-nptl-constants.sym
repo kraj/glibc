@@ -2,4 +2,15 @@
 
 -- structure offsets
 
-LIST_T_NEXT_OFFSET	offsetof (list_t, next)
+LIST_T_NEXT_OFFSET		offsetof (list_t, next)
+PTHREAD_LIST_OFFSET		offsetof (struct pthread, list)
+PTHREAD_PID_OFFSET		offsetof (struct pthread, pid)
+PTHREAD_TID_OFFSET		offsetof (struct pthread, tid)
+PTHREAD_SCHEDPARAM_SCHED_PRIORITY_OFFSET offsetof (struct pthread, schedparam) + offsetof (struct sched_param, __sched_priority)
+PTHREAD_SCHEDPOLICY_OFFSET	offsetof (struct pthread, schedpolicy)
+
+-- scheduling algorithms
+
+SCHED_OTHER
+SCHED_FIFO
+SCHED_RR

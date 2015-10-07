@@ -1,0 +1,219 @@
+/* Iterate over a process's threads.
+   Copyright (C) 2003-2015 Free Software Foundation, Inc.
+   This file is part of the GNU C Library.
+
+   The GNU C Library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Lesser General Public
+   License as published by the Free Software Foundation; either
+   version 2.1 of the License, or (at your option) any later version.
+
+   The GNU C Library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
+   License along with the GNU C Library; if not, see
+   <http://www.gnu.org/licenses/>.  */
+
+#include "infinity-nptl.i8"
+
+/* Call CALLBACK (TD, CBDATA_P) for each thread in the list starting
+   at HEAD.  Our first return value will be TD_OK on success, or a
+   non-TD_OK td_err_e code indicating the reason for failure.  If our
+   first return value was TD_OK then our second return value will be
+   TRUE if the list is uninitialized or empty; FALSE otherwise.  If
+   our first return value was not TD_OK then our second return value
+   is undefined.  */
+
+define libpthread::__iterate_thread_list returns td_err_e, bool
+	argument thr_iter_f callback
+	argument opaque cbdata_p
+	argument int ti_pri
+	argument ptr head
+	argument pid_t match_pid
+	argument bool fake_if_empty
+
+  /* Load the first descriptor in the list.  If it's NULL then
+     __pthread_initialize_minimal has not gotten far enough and
+     we may need to fake a descriptor for the main thread.  */
+	deref LIST_T_NEXT_OFFSET(head), ptr
+	dup
+	beq NULL, libpthread_maybe_uninitialized
+	dup
+	beq head, libpthread_maybe_uninitialized
+
+  /* Load our second return value (FALSE, to indicate that the supplied
+     list was not uninitialized or empty).  */
+	load FALSE
+	swap
+
+  /* Main loop.  ToS is a pointer to a list_t, either the list field
+     of a struct pthread, or to the list head if we're at the end.  */
+loop:
+	dup
+	beq head, end_of_list
+	sub PTHREAD_LIST_OFFSET
+	name 0, descr
+
+  /* Verify that this thread's pid field matches the child PID.  If
+     its pid field is negative, it's about to do a fork or it's the
+     sole thread in a fork child. */
+	deref PTHREAD_PID_OFFSET(descr), pid_t
+	dup
+	bge 0, test_pid
+
+  /* If pid == -match_pid it's about to do a fork, but it's really
+     still the parent PID.  */
+	neg
+	beq match_pid, pid_matches /* It's about to fork. */
+
+  /* It must be a fork child, whose new PID is in the tid field.  */
+	deref PTHREAD_TID_OFFSET(descr), pid_t
+
+test_pid:
+	bne match_pid, continue_loop
+
+pid_matches:
+  /* Now test whether this thread matches the specified conditions.  */
+	deref PTHREAD_SCHEDPOLICY_OFFSET(descr), s32
+	bne SCHED_OTHER, load_priority
+	load 0
+	goto test_priority
+
+load_priority:
+	deref PTHREAD_SCHEDPARAM_SCHED_PRIORITY_OFFSET(descr), s32
+
+test_priority:
+	blt ti_pri, continue_loop
+
+  /* It matches, call the callback function.  */
+        load descr
+	load cbdata_p
+	call callback
+	bne 0, main_loop_callback_failed
+
+continue_loop:
+  /* ToS is descr.  */
+	add PTHREAD_LIST_OFFSET
+	add LIST_T_NEXT_OFFSET
+	deref ptr
+	goto loop
+
+end_of_list:
+  /* ToS is head.  */
+	drop
+	load TD_OK
+	return
+
+libpthread_maybe_uninitialized:
+	load TRUE  /* The supplied list was uninitialized or empty).  */
+	load fake_if_empty
+	beq TRUE, fake_main_thread
+  /* We do not need to fake the main thread.  */
+	load TD_OK
+	return
+
+fake_main_thread:
+  /* __pthread_initialize_minimal has not gotten far enough.  We
+     need to call the callback for the main thread, but we can't
+     rely on its thread register as they sometimes contain garbage
+     that would confuse us (left by the kernel at exec).   We fake
+     a special descriptor of NULL for the initial thread; other
+     routines in this library recognise this special descriptor
+     and act accordingly.  */
+	load NULL
+	load cbdata_p
+	call callback
+	bne 0, fake_main_callback_failed
+	load TD_OK
+	return
+
+fake_main_callback_failed:
+	load TD_DBERR
+	return
+
+main_loop_callback_failed:
+  /* ToS is descr.  */
+	drop
+	load TD_DBERR
+	return
+
+/* Call CALLBACK (TD, CBDATA_P) for each of a process's threads, with
+   TD being a thread descriptor for the thread.  Thread descriptors
+   are opaque pointers and should not be dereferenced outside of this
+   library.  Return TD_OK on success, or a non-TD_OK td_err_e code
+   indicating the reason for failure.  The callback should return 0
+   to indicate success; if the callback returns otherwise then this
+   iteration will stop and this function will return TD_DBERR.  */
+
+define libpthread::thr_iter returns td_err_e
+	argument thr_iter_f callback
+	argument opaque cbdata_p
+	argument td_thr_state_e state
+	argument int ti_pri
+	argument ptr ti_sigmask_p
+	argument u32 ti_user_flags
+
+  /* We don't support ti_user_flags != TD_THR_ANY_USER_FLAGS.
+     libthread_db ignores this argument but we can be more
+     explicit.  */
+	bne TD_THR_ANY_USER_FLAGS, not_implemented_1
+
+  /* We don't support ti_sigmask_p != TD_SIGNO_MASK.  Again,
+     libthread_db ignores this argument but we can be more
+     explicit.  */
+	bne TD_SIGNO_MASK, not_implemented_2
+
+  /* We don't support state != TD_THR_ANY_STATE.  libthread_db
+     passes this through to its __iterate_thread_list which
+     then returns TD_OK without iterating the thread list but
+     this is very misleading so we're going to bail.  */
+	swap
+	bne TD_THR_ANY_STATE, not_implemented_3
+
+  /* The thread library keeps two lists for the running threads.
+     One list (__stack_user) contains the thread which are using
+     user-provided stacks and the other (__stack_used) includes the
+     threads for which the thread library allocated the stacks.  We
+     have to iterate over both lists separately.  We're going to
+     start with __stack_user, but we're going to set up the stack
+     for the second call (to iterate __stack_used) first.  */
+	load __stack_used
+
+  /* Get the PID of the main thread.  */
+	call procservice::getpid
+	name 0, main_pid
+
+  /* Process the list of threads with user-provided stacks.  */
+	load callback
+	load cbdata_p
+	load ti_pri
+	load __stack_user
+	load main_pid
+	load FALSE
+	call __iterate_thread_list
+
+	dup  /* Save code in case it's not TD_OK.  */
+	bne TD_OK, first_call_failed
+	drop /* It was TD_OK, we can drop it now.  */
+
+  /* Process the list of threads with library-allocated stacks.  */
+	call __iterate_thread_list
+	return
+
+first_call_failed:
+  /* ToS is td_err_e error code from __iterate_thread_list.  */
+	return
+
+not_implemented_1:
+	load TD_NOCAPAB
+	return
+
+not_implemented_2:
+	load TD_NOCAPAB
+	return
+
+not_implemented_3:
+	load TD_NOCAPAB
+	return
