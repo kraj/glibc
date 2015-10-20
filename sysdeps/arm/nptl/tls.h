@@ -99,6 +99,10 @@ typedef struct
 # define DB_THREAD_SELF \
   CONST_THREAD_AREA (32, sizeof (struct pthread))
 
+/* Magic for Infinity to know how to do THREAD_SELF.  */
+# define I8_THREAD_SELF I8_TS_CONST_THREAD_AREA
+# define I8_TS_CTA_VALUE sizeof (struct pthread)
+
 /* Access to data in the thread descriptor is easy.  */
 #define THREAD_GETMEM(descr, member) \
   descr->member
