@@ -125,6 +125,17 @@ register struct pthread *__thread_self __asm__("%g7");
   REGISTER (32, 32, 10 * 4, 0) \
   REGISTER (64, __WORDSIZE, (6 * 8) + (__WORDSIZE==64?0:4), 0)
 
+/* Magic for Infinity to know how to do THREAD_SELF.  */
+# define I8_THREAD_SELF I8_TS_REGISTER
+# if __WORDSIZE == 32
+#  define I8_TS_REG_SIZE 32
+#  define I8_TS_REG_OFFSET 10 * 4
+# else
+#  define I8_TS_REG_SIZE __WORDSIZE
+#  define I8_TS_REG_OFFSET (6 * 8) + (__WORDSIZE==64?0:4)
+# endif
+# define I8_TS_REG_BIAS 0
+
 /* Access to data in the thread descriptor is easy.  */
 #define THREAD_GETMEM(descr, member) \
   descr->member
