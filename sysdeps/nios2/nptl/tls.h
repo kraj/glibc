@@ -122,6 +122,12 @@ register struct pthread *__thread_self __asm__("r23");
 # define DB_THREAD_SELF \
   REGISTER (32, 32, 23 * 4, -TLS_PRE_TCB_SIZE - TLS_TCB_OFFSET)
 
+/* Magic for Infinity to know how to do THREAD_SELF.  */
+# define I8_THREAD_SELF I8_TS_REGISTER
+# define I8_TS_REG_SIZE 32
+# define I8_TS_REG_OFFSET 23 * 4
+# define I8_TS_REG_BIAS -TLS_PRE_TCB_SIZE - TLS_TCB_OFFSET
+
 /* Access to data in the thread descriptor is easy.  */
 # define THREAD_GETMEM(descr, member) \
   descr->member
