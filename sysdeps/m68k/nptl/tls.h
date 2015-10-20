@@ -129,6 +129,10 @@ extern void * __m68k_read_tp (void);
 # define DB_THREAD_SELF \
   CONST_THREAD_AREA (32, TLS_TCB_OFFSET + TLS_PRE_TCB_SIZE)
 
+/* Magic for Infinity to know how to do THREAD_SELF.  */
+# define I8_THREAD_SELF I8_TS_CONST_THREAD_AREA
+# define I8_TS_CTA_VALUE TLS_TCB_OFFSET + TLS_PRE_TCB_SIZE
+
 /* Access to data in the thread descriptor is easy.  */
 # define THREAD_GETMEM(descr, member) \
   descr->member
