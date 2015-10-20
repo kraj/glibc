@@ -1,0 +1,74 @@
+#include <tls.h>
+
+-- Each machine's tls.h should define I8_THREAD_SELF to one of these.
+#define I8_TS_CONST_THREAD_AREA         1
+#define I8_TS_REGISTER                  2
+#define I8_TS_REGISTER_THREAD_AREA      3
+
+#ifndef I8_THREAD_SELF
+# error "tls.h must #define I8_THREAD_SELF"
+#endif
+
+-- If tls.h defined DB_THREAD_SELF_INCLUDE then we need to include it.
+#ifdef DB_THREAD_SELF_INCLUDE
+# include DB_THREAD_SELF_INCLUDE
+#endif
+
+#if I8_THREAD_SELF == I8_TS_CONST_THREAD_AREA
+# ifndef I8_TS_CTA_VALUE
+#  error "I8_TS_CONST_THREAD_AREA machines must #define I8_TS_CTA_VALUE"
+# endif
+#else
+# define I8_TS_CTA_VALUE -1
+#endif
+
+#if I8_THREAD_SELF == I8_TS_REGISTER
+# ifndef I8_TS_REG_SIZE
+#  error "I8_TS_REGISTER machines must #define I8_TS_REG_SIZE"
+# endif
+# ifndef I8_TS_REG_OFFSET
+#  error "I8_TS_REGISTER machines must #define I8_TS_REG_OFFSET"
+# endif
+# ifndef I8_TS_REG_BIAS
+#  error "I8_TS_REGISTER machines must #define I8_TS_REG_BIAS"
+# endif
+#else
+# define I8_TS_REG_SIZE -1
+# define I8_TS_REG_OFFSET -1
+# define I8_TS_REG_BIAS -1
+#endif
+
+#if I8_THREAD_SELF == I8_TS_REGISTER_THREAD_AREA
+# ifndef I8_TS_RTA_SIZE
+#  error "I8_TS_REGISTER_THREAD_AREA machines must #define I8_TS_RTA_SIZE"
+# endif
+# ifndef I8_TS_RTA_OFFSET
+#  error "I8_TS_REGISTER_THREAD_AREA machines must #define I8_TS_RTA_OFFSET"
+# endif
+# ifndef I8_TS_RTA_SCALE
+#  error "I8_TS_REGISTER_THREAD_AREA machines must #define I8_TS_RTA_SCALE"
+# endif
+#else
+# define I8_TS_RTA_SIZE -1
+# define I8_TS_RTA_OFFSET -1
+# define I8_TS_RTA_SCALE -1
+#endif
+
+
+-- Constants to export
+
+I8_THREAD_SELF
+
+I8_TS_CONST_THREAD_AREA
+I8_TS_REGISTER
+I8_TS_REGISTER_THREAD_AREA
+
+I8_TS_CTA_VALUE
+
+I8_TS_REG_SIZE
+I8_TS_REG_OFFSET
+I8_TS_REG_BIAS
+
+I8_TS_RTA_SIZE
+I8_TS_RTA_OFFSET
+I8_TS_RTA_SCALE

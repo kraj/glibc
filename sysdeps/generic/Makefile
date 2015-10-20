@@ -26,3 +26,5 @@ sysdep_routines += framestate unwind-pe
 shared-only-routines += framestate unwind-pe
 endif
 endif
+
+gen-as-const-headers += infinity-thread_self.sym
