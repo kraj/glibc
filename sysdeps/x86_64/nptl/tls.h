@@ -190,6 +190,10 @@ typedef struct
 # define DB_THREAD_SELF_INCLUDE  <sys/reg.h> /* For the FS constant.  */
 # define DB_THREAD_SELF CONST_THREAD_AREA (64, FS)
 
+/* Magic for Infinity to know how to do THREAD_SELF.  */
+# define I8_THREAD_SELF I8_TS_CONST_THREAD_AREA
+# define I8_TS_CTA_VALUE FS
+
 /* Read member of the thread descriptor directly.  */
 # define THREAD_GETMEM(descr, member) \
   ({ __typeof (descr->member) __value;					      \
