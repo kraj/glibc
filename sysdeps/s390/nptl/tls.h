@@ -151,6 +151,16 @@ typedef struct
 # define DB_THREAD_SELF REGISTER (32, 32, 18 * 4, 0) \
 			REGISTER (64, __WORDSIZE, 18 * 8, 0)
 
+/* Magic for Infinity to know how to do THREAD_SELF.  */
+# define I8_THREAD_SELF I8_TS_REGISTER
+# if defined __s390x__
+#  define I8_TS_REG_SIZE __WORDSIZE
+#  define I8_TS_REG_OFFSET 18 * 8
+# else
+#  define I8_TS_REG_SIZE 32
+#  define I8_TS_REG_OFFSET 18 * 4
+# define I8_TS_REG_BIAS 0
+
 /* Access to data in the thread descriptor is easy.  */
 #define THREAD_GETMEM(descr, member) \
   descr->member
