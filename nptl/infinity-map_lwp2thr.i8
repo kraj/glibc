@@ -1,0 +1,121 @@
+/* Which thread is running on an LWP?
+   Copyright (C) 2003-2015 Free Software Foundation, Inc.
+   This file is part of the GNU C Library.
+
+   The GNU C Library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Lesser General Public
+   License as published by the Free Software Foundation; either
+   version 2.1 of the License, or (at your option) any later version.
+
+   The GNU C Library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
+   License along with the GNU C Library; if not, see
+   <http://www.gnu.org/licenses/>.  */
+
+#include "infinity-nptl.i8"
+#include "infinity-thread_self.h"
+
+#if I8_THREAD_SELF == I8_TS_CONST_THREAD_AREA
+# include "infinity-lookup_th_unique_cta.i8"
+#endif
+#if I8_THREAD_SELF == I8_TS_REGISTER
+# include "infinity-lookup_th_unique_reg.i8"
+#endif
+#if I8_THREAD_SELF == I8_TS_REGISTER_THREAD_AREA
+# include "infinity-lookup_th_unique_rta.i8"
+#endif
+
+/* Given an lwpid_t identifying an LWP, return TD_OK and the
+   descriptor of the thread running on it, or a non-TD_OK
+   td_err_e code indicating the reason for failure and an
+   undefined value that must be ignored.  Thread descriptors
+   are opaque pointers and should not be dereferenced outside
+   of this library.  */
+
+define libpthread::map_lwp2thr returns td_err_e, ptr
+	argument lwpid_t lwpid
+	extern func td_err_e, ptr (lwpid_t) __lookup_th_unique
+	extern func pid_t () i8core::getpid
+	extern ptr __stack_user
+
+  /* We cannot rely on thread registers and such information at all
+     before __pthread_initialize_minimal has gotten far enough: they
+     sometimes contain garbage left by the kernel at exec that would
+     confuse us.  If it looks like initialization is incomplete we
+     fake a special descriptor of NULL to indicate the initial thread.
+     Other routines in this library recognise this special descriptor
+     and act accordingly.  */
+
+     		// stack 0: __stack_user
+		// stack 1: i8core::getpid
+		// stack 2: __lookup_th_unique
+		// stack 3: lwpid
+	load LIST_T_NEXT_OFFSET
+		// stack 0: LIST_T_NEXT_OFFSET
+		// stack 1: __stack_user
+		// stack 2: i8core::getpid
+		// stack 3: __lookup_th_unique
+		// stack 4: lwpid
+	add
+		// stack 0: __stack_user + LIST_T_NEXT_OFFSET
+		// stack 1: i8core::getpid
+		// stack 2: __lookup_th_unique
+		// stack 3: lwpid
+	deref ptr
+		// stack 0: __stack_user->next
+		// stack 1: i8core::getpid
+		// stack 2: __lookup_th_unique
+		// stack 3: lwpid
+	load NULL
+	bne libpthread_is_initialized
+
+initialization_is_incomplete:
+		// stack 0: i8core::getpid
+		// stack 1: __lookup_th_unique
+		// stack 2: lwpid
+	swap
+		// stack 0: __lookup_th_unique
+		// stack 1: i8core::getpid
+		// stack 2: lwpid
+	drop
+		// stack 0: i8core::getpid
+		// stack 1: lwpid
+	load NULL
+		// stack 0: NULL
+		// stack 1: i8core::getpid
+		// stack 2: lwpid
+	rot
+		// stack 0: i8core::getpid
+		// stack 1: lwpid
+		// stack 2: NULL
+	call
+		// stack 0: main pid
+		// stack 1: lwpid
+		// stack 2: NULL
+	beq is_main_thread
+
+not_main_thread:
+		// stack 0: NULL
+	load TD_ERR
+	return
+
+is_main_thread:
+		// stack 0: NULL
+	load TD_OK
+	return
+
+libpthread_is_initialized:
+		// stack 0: i8core::getpid
+		// stack 1: __lookup_th_unique
+		// stack 2: lwpid
+	drop
+		// stack 0: __lookup_th_unique
+		// stack 1: lwpid
+	call
+		// stack 0: TD_OK (or not)
+		// stack 1: descriptor (or junk)
+	return

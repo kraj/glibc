@@ -138,6 +138,12 @@ libpthread-routines = nptl-init vars events version pt-interp \
 #		      pthread_setgid pthread_setegid pthread_setregid \
 #		      pthread_setresgid
 
+ifneq ($(I8C),no)
+infinity-routines = infinity-map_lwp2thr
+
+libpthread-routines += $(infinity-routines)
+endif
+
 libpthread-shared-only-routines = version pt-interp pt-allocrtsig \
 				  unwind-forcedunwind
 libpthread-static-only-routines = pthread_atfork
@@ -411,6 +417,26 @@ endif
 # These tests require a C++ compiler and runtime with thread_local support.
 ifneq ($(have-cxx-thread_local),yes)
 tests-unsupported += tst-thread_local1
+endif
+
+tests += tst-infinity
+ifneq ($(I8C),no)
+ifneq ($(I8X),no)
+infinity-tests = $(addprefix tst-,$(addsuffix .py,$(infinity-routines)))
+
+$(objpfx)tst-infinity.out: $(objpfx)libpthread.so$(libpthread.so-version) \
+			   $(infinity-tests)
+	$(I8X) -i $< -I$(common-objpfx) $(infinity-tests) > $@; \
+	$(evaluate-test)
+
+tests-special += $(objpfx)tst-infinity.out
+else
+# I8X is not installed; the tests cannot be run.
+tests-unsupported += tst-infinity
+endif
+else
+# I8C is not installed; libpthread.so will not contain notes.
+tests-unsupported += tst-infinity
 endif
 
 include ../Rules

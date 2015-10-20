@@ -1,0 +1,76 @@
+/* Which thread is running on an LWP?
+   Copyright (C) 2003-2015 Free Software Foundation, Inc.
+   This file is part of the GNU C Library.
+
+   The GNU C Library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Lesser General Public
+   License as published by the Free Software Foundation; either
+   version 2.1 of the License, or (at your option) any later version.
+
+   The GNU C Library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
+   License along with the GNU C Library; if not, see
+   <http://www.gnu.org/licenses/>.  */
+
+
+/* Given an lwpid_t identifying an LWP, return TD_OK and the
+   descriptor of the thread running on it, or a non-TD_OK
+   td_err_e code indicating the reason for failure and an
+   undefined value that must be ignored.  The caller must
+   ensure that __pthread_initialize_minimal has gotten far
+   enough; see the comments in infinity_map_lwp2thr.i8 for
+   specifics.  */
+
+define libpthread::__lookup_th_unique returns td_err_e, ptr
+	argument lwpid_t lwpid
+	extern ps_getreg_f procservice::get_register
+
+		// stack 0: procservice::get_register
+		// stack 1: lwpid
+	load I8_TS_REG_OFFSET
+		// stack 0: I8_TS_REG_OFFSET
+		// stack 1: procservice::get_thread_area
+		// stack 2: lwpid
+	swap
+		// stack 0: procservice::get_thread_area
+		// stack 1: I8_TS_REG_OFFSET
+		// stack 2: lwpid
+	load I8_TS_REG_SIZE
+		// stack 0: I8_TS_REG_SIZE
+		// stack 1: procservice::get_thread_area
+		// stack 2: I8_TS_REG_OFFSET
+		// stack 3: lwpid
+	swap
+		// stack 1: procservice::get_thread_area
+		// stack 0: I8_TS_REG_SIZE
+		// stack 2: I8_TS_REG_OFFSET
+		// stack 3: lwpid
+	call
+		// stack 0: PS_OK (hopefully) or something else
+		// stack 1: contents of register (hopefully) or junk
+	load PS_OK
+		// stack 0: PS_OK
+		// stack 1: PS_OK (hopefully) or something else
+		// stack 2: contents of register (hopefully) or junk
+	bne get_register_failed
+		// stack 0: contents of register
+	load I8_TS_REG_BIAS
+		// stack 0: I8_TS_REG_BIAS
+		// stack 1: contents of register
+	add
+		// stack 0: biased contents of register
+	load TD_OK
+		// stack 0: TD_OK
+		// stack 1: biased contents of register
+	return
+
+get_register_failed:
+		// stack 0: junk
+	load TD_ERR
+		// stack 0: TD_OK
+		// stack 1: junk
+	return
