@@ -1539,6 +1539,22 @@ $(gpl2lgpl): %: $(..)gpl2lgpl.sed /home/gd/gnu/lib/%
 	mv -f $@-tmp $@
 endif
 endif
+
+$(objpfx)infinity-%.i8p: infinity-%.i8
+	$(CPP) -x c $(CFLAGS) $(CPPFLAGS) $^ -o $@
+
+$(objpfx)infinity-%.S: $(objpfx)infinity-%.i8p
+	$(I8C) -S -fpreprocessed $^ -o $@
+
+$(objpfx)infinity-%.o: $(objpfx)infinity-%.S
+	$(CC) -c $(CFLAGS) $(CPPFLAGS) $^ -o $@
+
+ifeq ($(build-shared),yes)
+$(objpfx)infinity-%.os: $(objpfx)infinity-%.o
+	cp -f $^ $@
+endif
+
+.PRECIOUS: $(addprefix $(objpfx)infinity-%,.i8p .S .o)
 
 # Local Variables:
 # mode: makefile
