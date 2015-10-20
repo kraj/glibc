@@ -184,6 +184,17 @@ register void *__thread_register __asm__ ("r13");
   REGISTER (64, 64, PT_THREAD_POINTER * 8,				      \
 	    - TLS_TCB_OFFSET - TLS_PRE_TCB_SIZE)
 
+/* Magic for Infinity to know how to do THREAD_SELF.  */
+# define I8_THREAD_SELF I8_TS_REGISTER
+# if defined __powerpc64__
+#   define I8_TS_REG_SIZE 64
+#   define I8_TS_REG_OFFSET PT_THREAD_POINTER * 8
+# else
+#   define I8_TS_REG_SIZE 32
+#   define I8_TS_REG_OFFSET PT_THREAD_POINTER * 4
+# endif
+# define I8_TS_REG_BIAS - TLS_TCB_OFFSET - TLS_PRE_TCB_SIZE
+
 /* Read member of the thread descriptor directly.  */
 # define THREAD_GETMEM(descr, member) ((void)(descr), (THREAD_SELF)->member)
 
