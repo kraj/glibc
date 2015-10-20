@@ -140,6 +140,12 @@ register struct pthread *__thread_self __asm__("r13");
 /* Magic for libthread_db to know how to do THREAD_SELF.  */
 # define DB_THREAD_SELF REGISTER (64, 64, 13 * 8, -TLS_PRE_TCB_SIZE)
 
+/* Magic for Infinity to know how to do THREAD_SELF.  */
+# define I8_THREAD_SELF I8_TS_REGISTER
+# define I8_TS_REG_SIZE 64
+# define I8_TS_REG_OFFSET 13 * 8
+# define I8_TS_REG_BIAS -TLS_PRE_TCB_SIZE
+
 /* Access to data in the thread descriptor is easy.  */
 #define THREAD_GETMEM(descr, member) \
   descr->member
