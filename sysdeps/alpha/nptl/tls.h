@@ -102,6 +102,12 @@ typedef struct
 # define DB_THREAD_SELF \
   REGISTER (64, 64, 32 * 8, -sizeof (struct pthread))
 
+/* Magic for Infinity to know how to do THREAD_SELF.  */
+# define I8_THREAD_SELF I8_TS_REGISTER
+# define I8_TS_REG_SIZE 64
+# define I8_TS_REG_OFFSET 32 * 8
+# define I8_TS_REG_BIAS -sizeof (struct pthread)
+
 /* Access to data in the thread descriptor is easy.  */
 #define THREAD_GETMEM(descr, member) \
   descr->member
