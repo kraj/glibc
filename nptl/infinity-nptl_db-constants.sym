@@ -1,0 +1,12 @@
+#include <thread_db.h>
+#include <proc_service.h>
+
+-- td_err_e values
+
+TD_OK
+TD_ERR
+
+-- ps_err_e values
+
+PS_OK
+PS_ERR

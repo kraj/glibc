@@ -303,7 +303,9 @@ tests-nolibpthread = tst-unload
 gen-as-const-headers = pthread-errnos.sym \
 		       lowlevelcond.sym lowlevelrwlock.sym \
 		       unwindbuf.sym \
-		       lowlevelrobustlock.sym pthread-pi-defines.sym
+		       lowlevelrobustlock.sym pthread-pi-defines.sym \
+		       infinity-nptl-constants.sym \
+		       infinity-nptl_db-constants.sym
 
 
 LDFLAGS-pthread.so = -Wl,--enable-new-dtags,-z,nodelete,-z,initfirst

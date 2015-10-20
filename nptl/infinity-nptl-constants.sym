@@ -1,0 +1,5 @@
+#include <list.h>
+
+-- structure offsets
+
+LIST_T_NEXT_OFFSET	offsetof (list_t, next)
