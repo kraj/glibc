@@ -1807,6 +1807,10 @@ AC_SUBST(DEFINES)
 dnl See sysdeps/mach/configure.ac for this variable.
 AC_SUBST(mach_interface_list)
 
+# XXX
+AC_CHECK_PROGS(I8C, i8c, no)
+AC_CHECK_PROGS(I8X, i8x, no)
+
 VERSION=`sed -n -e 's/^#define VERSION "\([^"]*\)"/\1/p' < $srcdir/version.h`
 RELEASE=`sed -n -e 's/^#define RELEASE "\([^"]*\)"/\1/p' < $srcdir/version.h`
 AC_SUBST(VERSION)
