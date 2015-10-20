@@ -259,6 +259,17 @@ tls_fill_user_desc (union user_desc_init *desc,
   REGISTER_THREAD_AREA (32, offsetof (struct user_regs_struct, xgs), 3) \
   REGISTER_THREAD_AREA (64, 26 * 8, 3) /* x86-64's user_regs_struct->gs */
 
+/* Magic for Infinity to know how to do THREAD_SELF.  */
+# define I8_THREAD_SELF I8_TS_REGISTER_THREAD_AREA
+# ifdef __LP64__
+#  define I8_TS_RTA_SIZE 64
+#  define I8_TS_RTA_OFFSET 26 * 8 /* x86-64's user_regs_struct->gs */
+# else
+#  define I8_TS_RTA_SIZE 32
+#  define I8_TS_RTA_OFFSET offsetof (struct user_regs_struct, xgs)
+# endif
+# define I8_TS_RTA_SCALE 3
+
 
 /* Read member of the thread descriptor directly.  */
 # define THREAD_GETMEM(descr, member) \
