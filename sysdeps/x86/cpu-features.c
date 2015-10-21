@@ -39,6 +39,37 @@ get_common_indeces (struct cpu_features *cpu_features,
     }
 }
 
+/* Prefer_MAP_32BIT_EXEC reduces bits available for address space layout
+   randomization (ASLR).  Prefer_MAP_32BIT_EXEC is always disabled for
+   SUID programs and can be enabled by setting environment variable,
+   LD_ENABLE_PREFER_MAP_32BIT_EXEC.  */
+
+static inline unsigned int
+get_prefer_map_32bit_exec (void)
+{
+#if defined __LP64__ && IS_IN (rtld)
+  extern char **__environ attribute_hidden;
+  extern int __libc_enable_secure;
+  if (__builtin_expect (__libc_enable_secure, 0))
+    return 0;
+  for (char **current = __environ; *current != NULL; ++current)
+    {
+      /* Check LD_ENABLE_PREFER_MAP_32BIT_EXEC=.  */
+      static const char *enable = "LD_ENABLE_PREFER_MAP_32BIT_EXEC=";
+      for (size_t i = 0; ; i++)
+	{
+	  if (enable[i] != (*current)[i])
+	    break;
+	  if ((*current)[i] == '=')
+	    return bit_Prefer_MAP_32BIT_EXEC;
+	}
+    }
+  return 0;
+#else
+  return 0;
+#endif
+}
+
 static inline void
 init_cpu_features (struct cpu_features *cpu_features)
 {
@@ -78,15 +109,27 @@ init_cpu_features (struct cpu_features *cpu_features)
 	      cpu_features->feature[index_Slow_BSF] |= bit_Slow_BSF;
 	      break;
 
+	    case 0x57:
+	      /* Knights Landing.  Enable Silvermont optimizations.  */
+
 	    case 0x37:
 	    case 0x4a:
 	    case 0x4d:
 	    case 0x5a:
 	    case 0x5d:
-	      /* Unaligned load versions are faster than SSSE3
-		 on Silvermont.  */
+	      /* Unaligned load versions are faster than SSSE3 on
+		 Silvermont.  For 64-bit applications, branch
+		 prediction performance can be negatively impacted
+		 when the target of a branch is more than 4GB away
+		 from the branch.  Set the Prefer_MAP_32BIT_EXEC bit
+		 so that mmap will try to map executable pages with
+		 MAP_32BIT first.  NB: MAP_32BIT will map to lower
+		 2GB, not lower 4GB, address.  */
 #if index_Fast_Unaligned_Load != index_Prefer_PMINUB_for_stringop
 # error index_Fast_Unaligned_Load != index_Prefer_PMINUB_for_stringop
+#endif
+#if index_Fast_Unaligned_Load != index_Prefer_MAP_32BIT_EXEC
+# error index_Fast_Unaligned_Load != index_Prefer_MAP_32BIT_EXEC
 #endif
 #if index_Fast_Unaligned_Load != index_Slow_SSE4_2
 # error index_Fast_Unaligned_Load != index_Slow_SSE4_2
@@ -94,6 +137,7 @@ init_cpu_features (struct cpu_features *cpu_features)
 	      cpu_features->feature[index_Fast_Unaligned_Load]
 		|= (bit_Fast_Unaligned_Load
 		    | bit_Prefer_PMINUB_for_stringop
+		    | get_prefer_map_32bit_exec ()
 		    | bit_Slow_SSE4_2);
 	      break;
 
