@@ -10,22 +10,21 @@ class TestMapLwp2Thr(TestCase):
     MAIN_PID = 30000
 
     def setUp(self):
-        # Create flags
+        # Set up the test address space for the __stack_user.next
+        # dereference.
+        with self.memory.builder() as mem:
+            stack_user = mem.alloc("__stack_user")
+            if self.STACK_USER_SETUP:
+                stack_user_next = mem.alloc()
+            else:
+                stack_user_next = NULL
+            stack_user.store_ptr(LIST_T_NEXT_OFFSET, stack_user_next)
+        # Initialize flags so we can see what was called.
         self.ps_get_register_called = False
         self.ps_get_thread_area_called = False
-        # Store the address of __stack_user
-        note = self.i8ctx.get_function(self.TESTFUNC)
-        symbols = note.external_pointers
-        self.assertEqual(len(symbols), 1)
-        self.stack_user_p = symbols[0]
 
-    def read_memory(self, fmt, addr):
-        # The only dereference we do is __stack_user.next
-        self.assertEqual(addr, self.stack_user_p + LIST_T_NEXT_OFFSET)
-        return struct.pack(fmt, self.STACK_USER_NEXT)
-
-    def call_i8core_getpid(self):
-        """Implementation of i8core::getpid."""
+    def call_procservice_getpid(self):
+        """Implementation of procservice::getpid."""
         return self.MAIN_PID
 
     def call_procservice_get_register(self, lwpid, offset, size):
@@ -62,7 +61,7 @@ class TestMapLwp2Thr(TestCase):
         return result
 
     def check_I8_TS_CONST_THREAD_AREA_result(self, result):
-        # The result is whatever ps_get_thread_area returned
+        # The result is whatever ps_get_thread_area returned.
         self.assertTrue(self.ps_get_thread_area_called)
         self.assertEqual(result[0], TD_OK)
         self.assertNotEqual(result[1], 0)
@@ -75,10 +74,10 @@ class TestMapLwp2Thr(TestCase):
         self.assertEqual(result[0], TD_OK)
         self.assertNotEqual(result[1], 0)
         bias = result[1] - self.PS_GETREG_RESULT[1]
-        self.assertLess(abs(bias), 16384)
+        self.assertLess(abs(bias), 0x10000)
 
     def check_I8_TS_REGISTER_THREAD_AREA_result(self, result):
-        # The result is whatever ps_get_thread_area returned
+        # The result is whatever ps_get_thread_area returned.
         self.assertTrue(self.ps_get_register_called)
         self.assertTrue(self.ps_get_thread_area_called)
         self.assertEqual(result[0], TD_OK)
@@ -86,63 +85,63 @@ class TestMapLwp2Thr(TestCase):
         self.assertEqual(result[1], self.PS_GET_TA_RESULT[1])
 
 class TestMapLwp2Thr_uninit(TestMapLwp2Thr):
-    STACK_USER_NEXT = NULL
+    STACK_USER_SETUP = False
 
-    def test_map_lwp2thr(self):
-        """map_lwp2thr (nptl uninitialized, lwpid == main PID)"""
+    def test_uninit(self):
+        """Test map_lwp2thr with NPTL uninitialized"""
         result = self.i8ctx.call(self.TESTFUNC, self.MAIN_PID)
         self.assertEqual(len(result), 2)
         self.assertEqual(result[0], TD_OK)
         self.assertEqual(result[1], NULL)
 
 class TestMapLwp2Thr_uninit_wrongpid(TestMapLwp2Thr):
-    STACK_USER_NEXT = NULL
+    STACK_USER_SETUP = False
 
-    def test_map_lwp2thr(self):
-        """map_lwp2thr (nptl uninitialized, lwpid != main PID)"""
+    def test_uninit_wrongpid(self):
+        """Test map_lwp2thr with NPTL uninitialized and lwpid != main pid"""
         result = self.i8ctx.call(self.TESTFUNC, self.MAIN_PID + 1)
         self.assertEqual(len(result), 2)
         self.assertEqual(result[0], TD_ERR)
 
-class TestMapLwp2Thr_init_getreg_fail(TestMapLwp2Thr):
-    STACK_USER_NEXT = 0x1fff
+class TestMapLwp2Thr_getreg_fail(TestMapLwp2Thr):
+    STACK_USER_SETUP = True
     PS_GETREG_RESULT = PS_ERR, 0x23ff00fa
     PS_GET_TA_RESULT = PS_OK, 0x89ab1234
 
-    def test_map_lwp2thr(self):
-        """map_lwp2thr (nptl initialized, ps_get_register fails)"""
+    def test_ps_getreg_fail(self):
+        """Check map_lwp2thr handles ps_get_register failures"""
         self.lwpid = self.MAIN_PID + 1
         result = self.i8ctx.call(self.TESTFUNC, self.lwpid)
         self.assertEqual(len(result), 2)
         if self.ps_get_register_called:
             self.assertEqual(result[0], TD_ERR)
         else:
-            # This failure isn't a problem for this platform
+            # This failure isn't a problem for this platform.
             self.check_I8_TS_CONST_THREAD_AREA_result(result)
 
-class TestMapLwp2Thr_init_gta_fail(TestMapLwp2Thr):
-    STACK_USER_NEXT = 0x1fff
+class TestMapLwp2Thr_gta_fail(TestMapLwp2Thr):
+    STACK_USER_SETUP = True
     PS_GETREG_RESULT = PS_OK, 0x23ff00fa
     PS_GET_TA_RESULT = PS_ERR, 0x89ab1234
 
-    def test_map_lwp2thr(self):
-        """map_lwp2thr (nptl initialized, ps_get_thread_area fails)"""
+    def test_ps_gta_fail(self):
+        """Check map_lwp2thr handles ps_get_thread_area failures"""
         self.lwpid = self.MAIN_PID + 1
         result = self.i8ctx.call(self.TESTFUNC, self.lwpid)
         self.assertEqual(len(result), 2)
         if self.ps_get_thread_area_called:
             self.assertEqual(result[0], TD_ERR)
         else:
-            # This failure isn't a problem for this platform
+            # This failure isn't a problem for this platform.
             self.check_I8_TS_REGISTER_result(result)
 
-class TestMapLwp2Thr_init_gta_ok(TestMapLwp2Thr):
-    STACK_USER_NEXT = 0x1fff
+class TestMapLwp2Thr_mainpath(TestMapLwp2Thr):
+    STACK_USER_SETUP = True
     PS_GETREG_RESULT = PS_OK, 0x23ff00fa
     PS_GET_TA_RESULT = PS_OK, 0x89ab1234
 
-    def test_map_lwp2thr(self):
-        """map_lwp2thr (nptl initialized, everything worked)"""
+    def test_mainpath(self):
+        """Test the main path through map_lwp2thr"""
         self.lwpid = self.MAIN_PID + 1
         result = self.i8ctx.call(self.TESTFUNC, self.lwpid)
         self.assertEqual(len(result), 2)

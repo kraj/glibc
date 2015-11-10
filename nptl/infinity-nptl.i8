@@ -32,5 +32,13 @@ typedef s32 td_err_e
 typedef s32 ps_err_e
 
 /* XXX.  */
-typedef func ps_err_e, ptr (lwpid_t, int, int) ps_getreg_f
-typedef func ps_err_e, ptr (lwpid_t, int) ps_get_ta_f
+typedef ptr th_unique_t
+
+/* XXX.  */
+extern ptr __stack_user
+extern ptr __stack_used
+
+/* XXX.  */
+extern func pid_t () procservice::getpid
+extern func ps_err_e, ptr (lwpid_t, int, int) procservice::get_register
+extern func ps_err_e, ptr (lwpid_t, int) procservice::get_thread_area
