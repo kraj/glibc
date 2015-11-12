@@ -1,4 +1,4 @@
-/* Copyright (C) 2002-2017 Free Software Foundation, Inc.
+/* Copyright (C) 2002-2015 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
    Contributed by Jakub Jelinek <jakub@redhat.com>, 2002.
 
@@ -18,30 +18,13 @@
 
 #include <sysdep.h>
 #include <tls.h>
-#ifndef __ASSEMBLER__
-# include <nptl/pthreadP.h>
-#endif
+#include <nptl/pthreadP.h>
 
 #if IS_IN (libc) || IS_IN (libpthread) || IS_IN (librt)
 
-# if IS_IN (libpthread)
-#  define __local_multiple_threads __pthread_multiple_threads
-# elif IS_IN (libc)
-#  define __local_multiple_threads __libc_multiple_threads
-# elif IS_IN (librt)
-# else
-#  error Unsupported library
-# endif
-
-# if IS_IN (libpthread) || IS_IN (libc)
-extern int __local_multiple_threads attribute_hidden;
-#  define SINGLE_THREAD_P \
-  __builtin_expect (__local_multiple_threads == 0, 1)
-# else
-#  define SINGLE_THREAD_P \
-  __builtin_expect (THREAD_GETMEM (THREAD_SELF, \
+# define SINGLE_THREAD_P \
+  __builtin_expect (THREAD_GETMEM (THREAD_SELF,				      \
 				   header.multiple_threads) == 0, 1)
-# endif
 
 #else
 

@@ -27,7 +27,6 @@
 	SYSCALL_NAME		syscall name
 	SYSCALL_NARGS		number of arguments this call takes
 	SYSCALL_SYMBOL		primary symbol name
-	SYSCALL_CANCELLABLE	1 if the call is a cancelation point
 	SYSCALL_NOERRNO		1 to define a no-errno version (see below)
 	SYSCALL_ERRVAL		1 to define an error-value version (see below)
 
@@ -41,11 +40,7 @@
    instructions long and the untrained eye might not distinguish them from
    some compiled code that inexplicably lacks source line information.  */
 
-#if SYSCALL_CANCELLABLE
-# include <sysdep-cancel.h>
-#else
-# include <sysdep.h>
-#endif
+#include <sysdep.h>
 
 /* This indirection is needed so that SYMBOL gets macro-expanded.  */
 #define syscall_hidden_def(SYMBOL)		hidden_def (SYMBOL)
