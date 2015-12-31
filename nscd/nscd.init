@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # nscd:		Starts the Name Switch Cache Daemon
 #
@@ -49,16 +49,16 @@ prog=nscd
 start () {
     [ -d /var/run/nscd ] || mkdir /var/run/nscd
     [ -d /var/db/nscd ] || mkdir /var/db/nscd
-    echo -n $"Starting $prog: "
+    printf "Starting $prog: "
     daemon /usr/sbin/nscd
     RETVAL=$?
-    echo
+    printf "\n"
     [ $RETVAL -eq 0 ] && touch /var/lock/subsys/nscd
     return $RETVAL
 }
 
 stop () {
-    echo -n $"Stopping $prog: "
+    printf "Stopping $prog: "
     /usr/sbin/nscd -K
     RETVAL=$?
     if [ $RETVAL -eq 0 ]; then
@@ -67,11 +67,11 @@ stop () {
 	# a non-privileged user
 	rm -f /var/run/nscd/nscd.pid
 	rm -f /var/run/nscd/socket
-       	success $"$prog shutdown"
+	success "$prog shutdown"
     else
-       	failure $"$prog shutdown"
+	failure "$prog shutdown"
     fi
-    echo
+    printf "\n"
     return $RETVAL
 }
 
@@ -103,13 +103,13 @@ case "$1" in
 	RETVAL=$?
 	;;
     force-reload | reload)
-    	echo -n $"Reloading $prog: "
+	printf "Reloading $prog: "
 	killproc /usr/sbin/nscd -HUP
 	RETVAL=$?
-	echo
+	printf "\n"
 	;;
     *)
-	echo $"Usage: $0 {start|stop|status|restart|reload|condrestart}"
+	printf "Usage: $0 {start|stop|status|restart|reload|condrestart}\n"
 	RETVAL=1
 	;;
 esac
