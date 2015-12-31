@@ -52,15 +52,14 @@ typedef uintmax_t uatomic_max_t;
 #define LOCK_PREFIX "lock;"
 
 #define USE_ATOMIC_COMPILER_BUILTINS	1
+# define __HAVE_64B_ATOMICS		1
 
 #ifdef __x86_64__
-# define __HAVE_64B_ATOMICS		1
 # define SP_REG				"rsp"
 # define SEG_REG			"fs"
 # define BR_CONSTRAINT			"q"
 # define IBR_CONSTRAINT			"iq"
 #else
-# define __HAVE_64B_ATOMICS		0
 # define SP_REG				"esp"
 # define SEG_REG			"gs"
 # define BR_CONSTRAINT			"r"
