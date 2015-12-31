@@ -54,7 +54,7 @@ typedef uintmax_t uatomic_max_t;
 # endif
 #endif
 
-#define __HAVE_64B_ATOMICS 0
+#define __HAVE_64B_ATOMICS 1
 #define USE_ATOMIC_COMPILER_BUILTINS 0
 
 
