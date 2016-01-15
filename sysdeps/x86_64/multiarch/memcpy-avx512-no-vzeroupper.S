@@ -345,13 +345,13 @@ L(preloop_large):
 	prefetcht1 0x80(%rsi)
 	prefetcht1 0xC0(%rsi)
 L(gobble_256bytes_nt_loop):
-	vmovups	(%rsi), %zmm0
+	vmovdqu64	(%rsi), %zmm0
 	prefetcht1 0x100(%rsi)
-	vmovups	0x40(%rsi), %zmm1
+	vmovdqu64	0x40(%rsi), %zmm1
 	prefetcht1 0x140(%rsi)
-	vmovups	0x80(%rsi), %zmm2
+	vmovdqu64	0x80(%rsi), %zmm2
 	prefetcht1 0x180(%rsi)
-	vmovups	0xC0(%rsi), %zmm3
+	vmovdqu64	0xC0(%rsi), %zmm3
 	prefetcht1 0x1C0(%rsi)
 	vmovntdq %zmm0, (%rdi)
 	vmovntdq %zmm1, 0x40(%rdi)
@@ -383,13 +383,13 @@ L(preloop_large_bkw):
 	prefetcht1 -0x80(%rcx)
 	prefetcht1 -0x40(%rcx)
 L(gobble_256bytes_nt_loop_bkw):
-	vmovups	-0x100(%rcx), %zmm0
+	vmovdqu64	-0x100(%rcx), %zmm0
 	prefetcht1 -0x200(%rcx)
-	vmovups	-0xC0(%rcx), %zmm1
+	vmovdqu64	-0xC0(%rcx), %zmm1
 	prefetcht1 -0x1C0(%rcx)
-	vmovups	-0x80(%rcx), %zmm2
+	vmovdqu64	-0x80(%rcx), %zmm2
 	prefetcht1 -0x180(%rcx)
-	vmovups	-0x40(%rcx), %zmm3
+	vmovdqu64	-0x40(%rcx), %zmm3
 	prefetcht1 -0x140(%rcx)
 	vmovntdq %zmm0,	-0x100(%r9)
 	vmovntdq %zmm1,	-0xC0(%r9)
