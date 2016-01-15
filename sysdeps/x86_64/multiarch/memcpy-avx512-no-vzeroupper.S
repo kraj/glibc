@@ -340,15 +340,15 @@ L(preloop_large):
 	sub	%rdi, %r8	
 	sub	%r8, %rsi
 	add	%r8, %rdx
-	prefetcht1 (%rsi)
-	prefetcht1 0x40(%rsi)
-	prefetcht1 0x80(%rsi)
-	prefetcht1 0xC0(%rsi)
+	prefetchnta (%rsi)
+	prefetchnta 0x40(%rsi)
+	prefetchnta 0x80(%rsi)
+	prefetchnta 0xC0(%rsi)
 L(gobble_256bytes_nt_loop):
-	prefetcht1 0x100(%rsi)
-	prefetcht1 0x140(%rsi)
-	prefetcht1 0x180(%rsi)
-	prefetcht1 0x1C0(%rsi)
+	prefetchnta 0x100(%rsi)
+	prefetchnta 0x140(%rsi)
+	prefetchnta 0x180(%rsi)
+	prefetchnta 0x1C0(%rsi)
 	vmovdqu64	(%rsi), %zmm0
 	vmovdqu64	0x40(%rsi), %zmm1
 	vmovdqu64	0x80(%rsi), %zmm2
@@ -378,15 +378,15 @@ L(preloop_large_bkw):
 	sub	%r8, %rcx
 	sub	%r8, %rdx
 	add	%r9, %r8
- 	prefetcht1 -0x100(%rcx)
-	prefetcht1 -0xC0(%rcx)
-	prefetcht1 -0x80(%rcx)
-	prefetcht1 -0x40(%rcx)
+	prefetchnta -0x100(%rcx)
+	prefetchnta -0xC0(%rcx)
+	prefetchnta -0x80(%rcx)
+	prefetchnta -0x40(%rcx)
 L(gobble_256bytes_nt_loop_bkw):
-	prefetcht1 -0x200(%rcx)
-	prefetcht1 -0x1C0(%rcx)
-	prefetcht1 -0x180(%rcx)
-	prefetcht1 -0x140(%rcx)
+	prefetchnta -0x200(%rcx)
+	prefetchnta -0x1C0(%rcx)
+	prefetchnta -0x180(%rcx)
+	prefetchnta -0x140(%rcx)
 	vmovdqu64	-0x100(%rcx), %zmm0
 	vmovdqu64	-0xC0(%rcx), %zmm1
 	vmovdqu64	-0x80(%rcx), %zmm2
