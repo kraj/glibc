@@ -340,15 +340,15 @@ L(preloop_large):
 	sub	%rdi, %r8
 	sub	%r8, %rsi
 	add	%r8, %rdx
-	prefetcht1 (%rsi)
-	prefetcht1 0x40(%rsi)
-	prefetcht1 0x80(%rsi)
-	prefetcht1 0xC0(%rsi)
+	prefetchnta (%rsi)
+	prefetchnta 0x40(%rsi)
+	prefetchnta 0x80(%rsi)
+	prefetchnta 0xC0(%rsi)
 L(gobble_256bytes_nt_loop):
-	prefetcht1 0x200(%rsi)
-	prefetcht1 0x240(%rsi)
-	prefetcht1 0x280(%rsi)
-	prefetcht1 0x2C0(%rsi)
+	prefetchnta 0x200(%rsi)
+	prefetchnta 0x240(%rsi)
+	prefetchnta 0x280(%rsi)
+	prefetchnta 0x2C0(%rsi)
 	prefetchnta 0x300(%rsi)
 	prefetchnta 0x340(%rsi)
 	prefetchnta 0x380(%rsi)
@@ -383,10 +383,10 @@ L(preloop_large_bkw):
 	sub	%r8, %rdx
 	add	%r9, %r8
 L(gobble_256bytes_nt_loop_bkw):
-	prefetcht1 -0x300(%rcx)
-	prefetcht1 -0x2C0(%rcx)
-	prefetcht1 -0x280(%rcx)
-	prefetcht1 -0x240(%rcx)
+	prefetchnta -0x300(%rcx)
+	prefetchnta -0x2C0(%rcx)
+	prefetchnta -0x280(%rcx)
+	prefetchnta -0x240(%rcx)
 	prefetchnta -0x400(%rcx)
 	prefetchnta -0x3C0(%rcx)
 	prefetchnta -0x380(%rcx)
