@@ -353,10 +353,10 @@ L(gobble_256bytes_nt_loop):
 	prefetchnta 0x340(%rsi)
 	prefetchnta 0x380(%rsi)
 	prefetchnta 0x3C0(%rsi)
-	vmovups	(%rsi), %zmm0
-	vmovups	0x40(%rsi), %zmm1
-	vmovups	0x80(%rsi), %zmm2
-	vmovups	0xC0(%rsi), %zmm3
+	vmovdqu64	(%rsi), %zmm0
+	vmovdqu64	0x40(%rsi), %zmm1
+	vmovdqu64	0x80(%rsi), %zmm2
+	vmovdqu64	0xC0(%rsi), %zmm3
 	vmovntdq %zmm0, (%rdi)
 	vmovntdq %zmm1, 0x40(%rdi)
 	vmovntdq %zmm2, 0x80(%rdi)
@@ -391,10 +391,10 @@ L(gobble_256bytes_nt_loop_bkw):
 	prefetchnta -0x3C0(%rcx)
 	prefetchnta -0x380(%rcx)
 	prefetchnta -0x340(%rcx)
-	vmovups	-0x100(%rcx), %zmm0
-	vmovups	-0xC0(%rcx), %zmm1
-	vmovups	-0x80(%rcx), %zmm2
-	vmovups	-0x40(%rcx), %zmm3
+	vmovdqu64	-0x100(%rcx), %zmm0
+	vmovdqu64	-0xC0(%rcx), %zmm1
+	vmovdqu64	-0x80(%rcx), %zmm2
+	vmovdqu64	-0x40(%rcx), %zmm3
 	vmovntdq %zmm0,	-0x100(%r9)
 	vmovntdq %zmm1,	-0xC0(%r9)
 	vmovntdq %zmm2,	-0x80(%r9)
