@@ -7,6 +7,8 @@ TD_OK
 TD_ERR
 TD_DBERR
 TD_NOCAPAB
+TD_TLSDEFER
+TD_NOTLS
 
 -- ps_err_e values
 

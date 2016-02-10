@@ -47,6 +47,9 @@ typedef i32 td_thr_state_e
 # error "TD_SIGNO_MASK != 0"
 #endif
 
+/* XXX.  */
+typedef u32 tls_modid_t
+
 /* Callback for iteration over threads.  */
 typedef func int (th_unique_t, opaque) thr_iter_f
 

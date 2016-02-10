@@ -1,0 +1,96 @@
+/* Locate TLS data for a thread.
+   Copyright (C) 2003-2016 Free Software Foundation, Inc.
+   This file is part of the GNU C Library.
+
+   The GNU C Library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Lesser General Public
+   License as published by the Free Software Foundation; either
+   version 2.1 of the License, or (at your option) any later version.
+
+   The GNU C Library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
+   License along with the GNU C Library; if not, see
+   <http://www.gnu.org/licenses/>.  */
+
+#include "infinity-nptl.i8"
+
+/* Get the address of the DTV slotinfo entry for MODID.  */
+
+define libpthread::__dtv_slotinfo returns td_err_e, ptr
+	argument tls_modid_t modid
+
+	load NULL
+	load TD_ERR
+
+/* Return the base address of the TLS block for MODID within DESCR.
+
+   It should return success and yield the correct pointer in any
+   circumstance where the TLS block for the module and thread
+   requested has already been initialized.
+
+   It should fail with TD_TLSDEFER only when the thread could not
+   possibly have observed any values in that TLS block.  That way, the
+   debugger can fall back to showing initial values from the PT_TLS
+   segment (and refusing attempts to mutate) for the TD_TLSDEFER case,
+   and never fail to make the values the program will actually see
+   available to the user of the debugger.  */
+
+define libpthread::thr_tlsbase returns td_err_e, ptr
+	argument th_unique_t descr
+	argument tls_modid_t modid
+	extern func td_err_e, th_unique_t (lwpid_t) __lookup_th_unique
+
+  /* Ensure the TLS module ID is good.  */
+	load modid
+	blt 1, fail_NOTLS
+
+  /* Ensure the descriptor is not NULL.  */
+	load descr
+	beq NULL, handle_faked_descriptor
+got_good_descriptor:
+
+  /* Get the address of the DTV slotinfo entry for MODID.  */
+	load modid
+	call __dtv_slotinfo
+	dup
+	bne TD_OK, fail_code_at_ToS
+	drop  /* TD_OK.  */
+	name 0, slot
+
+  /* XXX.  */
+	load TD_NOCAPAB // XXX
+	return
+
+handle_faked_descriptor:
+  /* This is the fake handle for the main thread before libpthread
+     initialization.  We are using 0 for its th_unique because we
+     can't trust that its thread register has been initialized.  But
+     we need a real pointer to have any TLS access work.  In case of
+     dlopen'd libpthread, initialization might not be for quite some
+     time.  So try looking up the thread register now.  Worst case,
+     it's nonzero uninitialized garbage and we get bogus results for
+     TLS access attempted too early.  Tough.  */
+	swap
+	drop  /* descr == NULL.  */
+	call procservice::getpid
+	call __lookup_th_unique
+	bne TD_OK, fail_TLSDEFER
+	name 0, descr
+	swap
+	goto got_good_descriptor
+
+fail_code_at_ToS:
+	return
+
+fail_NOTLS:
+	drop  /* modid.  */
+	load TD_NOTLS
+	return
+
+fail_TLSDEFER:
+	load TD_TLSDEFER
+	return

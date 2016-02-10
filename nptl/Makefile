@@ -139,7 +139,9 @@ libpthread-routines = nptl-init vars events version pt-interp \
 #		      pthread_setresgid
 
 ifneq ($(I8C),no)
-infinity-routines = infinity-map_lwp2thr infinity-thr_iter
+infinity-routines = infinity-map_lwp2thr \
+		    infinity-thr_iter \
+		    infinity-thr_tlsbase
 
 libpthread-routines += $(infinity-routines)
 endif
