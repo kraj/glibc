@@ -30,9 +30,11 @@ ifeq ($(subdir),math)
 ifeq ($(build-mathvec),yes)
 libmvec-tests += double-vlen2 double-vlen4 double-vlen4-avx2 \
 		 float-vlen4 float-vlen8 float-vlen8-avx2
+libmvec-alias-tests = libmvec-alias
 
 ifeq (yes,$(config-cflags-avx512))
 libmvec-tests += double-vlen8 float-vlen16
+libmvec-alias-tests += libmvec-alias-avx512
 endif
 
 double-vlen4-arch-ext-cflags = -mavx
@@ -42,6 +44,11 @@ double-vlen8-arch-ext-cflags = -mavx512f
 float-vlen8-arch-ext-cflags = -mavx
 float-vlen8-arch-ext2-cflags = -mavx2
 float-vlen16-arch-ext-cflags = -mavx512f
+
+CFLAGS-test-libmvec-alias.c = -fPIC -Wl,-shared $(double-vlen4-arch-ext2-cflags)
+LDFLAGS-test-libmvec-alias.so = -shared
+CFLAGS-test-libmvec-alias-avx512.c = -fPIC -Wl,-shared $(double-vlen8-arch-ext-cflags)
+LDFLAGS-test-libmvec-alias-avx512.so = -shared
 
 CFLAGS-test-double-vlen4-avx2.c = $(libm-test-vec-cflags)
 CFLAGS-test-double-vlen4-avx2-wrappers.c = $(double-vlen4-arch-ext2-cflags)

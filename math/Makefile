@@ -126,14 +126,16 @@ test-longdouble-yes = test-ldouble test-ildoubl test-ldouble-finite
 
 ifneq (no,$(PERL))
 libm-vec-tests = $(addprefix test-,$(libmvec-tests))
+libm-vec-alias-tests = $(addprefix test-,$(libmvec-alias-tests))
 libm-tests = test-float test-double $(test-longdouble-$(long-double-fcts)) \
 	test-ifloat test-idouble test-float-finite test-double-finite \
-	$(libm-vec-tests)
+	$(libm-vec-tests) $(libm-vec-alias-tests)
 libm-tests.o = $(addsuffix .o,$(libm-tests))
 
 tests += $(libm-tests)
 libm-tests-generated = libm-test-ulps.h libm-have-vector-test.h libm-test.c
 generated += $(libm-tests-generated) libm-test.stmp
+
 
 # This is needed for dependencies
 before-compile += $(objpfx)libm-test.c
@@ -234,6 +236,7 @@ include ../Rules
 ifneq (no,$(PERL))
 # This must come after the inclusion of sysdeps Makefiles via Rules.
 $(addprefix $(objpfx), $(addsuffix .o, $(libm-vec-tests))): $(objpfx)libm-test.stmp
+$(addprefix $(objpfx), $(addsuffix .os, $(libmvec-alias-tests))): $(objpfx)libm-test.stmp
 
 # Run the math programs to automatically generate ULPs files.
 .PHONY: regen-ulps
@@ -300,6 +303,13 @@ $(addprefix $(objpfx),$(filter-out $(tests-static) $(libm-vec-tests),$(tests))):
 $(addprefix $(objpfx),$(tests-static)): $(objpfx)libm.a
 $(addprefix $(objpfx), $(libm-vec-tests)): $(objpfx)%: $(objpfx)%-wrappers.o $(libm) \
 					   $(libmvec)
+
+# $(objpfx)$(libm-vec-alias-tests): $($(addprefix $(objpfx),$(libm-vec-alias-tests)):%=%.os) $(objpfx)../mathvec/libmvec_nonshared.a $(libmvec)
+
+$(addprefix $(objpfx), $(libm-vec-alias-tests)): $(addprefix $(objpfx), $(addsuffix -main.o, $(libm-vec-alias-tests))) $(objpfx)../mathvec/libmvec_nonshared.a $(libmvec)
+
+# $(objpfx)test-libmvec-alias.so: $(addprefix $(objpfx),addsuffix .os, $(libm-vec-alias-tests)) $(objpfx)../mathvec/libmvec_nonshared.a $(libmvec)
+
 
 gmp-objs = $(patsubst %,$(common-objpfx)stdlib/%.o,\
 		      add_n sub_n cmp addmul_1 mul_1 mul_n divmod_1 \
