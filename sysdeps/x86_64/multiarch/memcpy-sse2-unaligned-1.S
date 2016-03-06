@@ -90,8 +90,6 @@ L(loop):
 	jne	L(loop)
 	jmp	L(return)
 L(overlapping):
-	cmpq	%rsi, %rdi
-	jae	.L3
 	testq	%rdx, %rdx
 	.p2align 4,,5
 	je	L(return)
@@ -146,15 +144,6 @@ L(less_16):
 	movzwl	-2(%rsi,%rdx), %eax
 	movw	%ax, -2(%rdi,%rdx)
 	jmp	L(return)
-.L3:
-	leaq	-1(%rdx), %rax
-	.p2align 4,,10
-	.p2align 4
-.L11:
-	movzbl	(%rsi,%rax), %edx
-	movb	%dl, (%rdi,%rax)
-	subq	$1, %rax
-	jmp	.L11
 L(between_9_16):
 	movq	(%rsi), %rax
 	movq	%rax, (%rdi)
