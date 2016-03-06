@@ -20,7 +20,7 @@ sysdep_routines += strncat-c stpncpy-c strncpy-c strcmp-ssse3 \
 		   strcat-sse2-unaligned strncat-sse2-unaligned \
 		   strchr-sse2-no-bsf memcmp-ssse3 strstr-sse2-unaligned \
 		   strcspn-c strpbrk-c strspn-c varshift memset-avx2 \
-		   memset-avx512-no-vzeroupper
+		   memset-avx512-no-vzeroupper memcpy-sse2-unaligned-1
 CFLAGS-varshift.c += -msse4
 CFLAGS-strcspn-c.c += -msse4
 CFLAGS-strpbrk-c.c += -msse4
