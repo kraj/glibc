@@ -24,11 +24,12 @@
 
 
 ENTRY(__memcpy_sse2_unaligned)
-	movq	%rsi, %rax
+	movq	%rdi, %rax
+	movq	%rsi, %r11
 	leaq	(%rdx,%rdx), %rcx
-	subq	%rdi, %rax
-	subq	%rdx, %rax
-	cmpq	%rcx, %rax
+	subq	%rdi, %r11
+	subq	%rdx, %r11
+	cmpq	%rcx, %r11
 	jb	L(overlapping)
 	cmpq	$16, %rdx
 	jbe	L(less_16)
@@ -39,7 +40,6 @@ ENTRY(__memcpy_sse2_unaligned)
 	movdqu	%xmm8, -16(%rdi,%rdx)
 	ja	.L31
 L(return):
-	movq	%rdi, %rax
 	ret
 	.p2align 4,,10
 	.p2align 4
@@ -64,16 +64,16 @@ L(return):
 	addq	%rdi, %rdx
 	andq	$-64, %rdx
 	andq	$-64, %rcx
-	movq	%rcx, %rax
-	subq	%rdi, %rax
-	addq	%rax, %rsi
+	movq	%rcx, %r11
+	subq	%rdi, %r11
+	addq	%r11, %rsi
 	cmpq	%rdx, %rcx
 	je	L(return)
 	movq	%rsi, %r10
 	subq	%rcx, %r10
 	leaq	16(%r10), %r9
 	leaq	32(%r10), %r8
-	leaq	48(%r10), %rax
+	leaq	48(%r10), %r11
 	.p2align 4,,10
 	.p2align 4
 L(loop):
@@ -83,12 +83,12 @@ L(loop):
 	movdqa	%xmm8, 16(%rcx)
 	movdqu	(%rcx,%r8), %xmm8
 	movdqa	%xmm8, 32(%rcx)
-	movdqu	(%rcx,%rax), %xmm8
+	movdqu	(%rcx,%r11), %xmm8
 	movdqa	%xmm8, 48(%rcx)
 	addq	$64, %rcx
 	cmpq	%rcx, %rdx
 	jne	L(loop)
-	jmp	L(return)
+	ret
 L(overlapping):
 	testq	%rdx, %rdx
 	.p2align 4,,5
@@ -97,8 +97,8 @@ L(overlapping):
 	leaq	16(%rsi), %rcx
 	leaq	16(%rdi), %r8
 	shrq	$4, %r9
-	movq	%r9, %rax
-	salq	$4, %rax
+	movq	%r9, %r11
+	salq	$4, %r11
 	cmpq	%rcx, %rdi
 	setae	%cl
 	cmpq	%r8, %rsi
@@ -107,9 +107,9 @@ L(overlapping):
 	cmpq	$15, %rdx
 	seta	%r8b
 	testb	%r8b, %cl
-	je	.L16
-	testq	%rax, %rax
-	je	.L16
+	je	.L21
+	testq	%r11, %r11
+	je	.L21
 	xorl	%ecx, %ecx
 	xorl	%r8d, %r8d
 .L7:
@@ -119,15 +119,15 @@ L(overlapping):
 	addq	$16, %rcx
 	cmpq	%r8, %r9
 	ja	.L7
-	cmpq	%rax, %rdx
+	cmpq	%r11, %rdx
 	je	L(return)
 .L21:
-	movzbl	(%rsi,%rax), %ecx
-	movb	%cl, (%rdi,%rax)
-	addq	$1, %rax
-	cmpq	%rax, %rdx
+	movzbl	(%rsi,%r11), %ecx
+	movb	%cl, (%rdi,%r11)
+	addq	$1, %r11
+	cmpq	%r11, %rdx
 	ja	.L21
-	jmp	L(return)
+	ret
 L(less_16):
 	testb	$24, %dl
 	jne	L(between_9_16)
@@ -137,28 +137,25 @@ L(less_16):
 	testq	%rdx, %rdx
 	.p2align 4,,2
 	je	L(return)
-	movzbl	(%rsi), %eax
+	movzbl	(%rsi), %ecx
 	testb	$2, %dl
-	movb	%al, (%rdi)
+	movb	%cl, (%rdi)
 	je	L(return)
-	movzwl	-2(%rsi,%rdx), %eax
-	movw	%ax, -2(%rdi,%rdx)
-	jmp	L(return)
+	movzwl	-2(%rsi,%rdx), %ecx
+	movw	%cx, -2(%rdi,%rdx)
+	ret
 L(between_9_16):
-	movq	(%rsi), %rax
-	movq	%rax, (%rdi)
-	movq	-8(%rsi,%rdx), %rax
-	movq	%rax, -8(%rdi,%rdx)
-	jmp	L(return)
-.L16:
-	xorl	%eax, %eax
-	jmp	.L21
+	movq	(%rsi), %rcx
+	movq	%rcx, (%rdi)
+	movq	-8(%rsi,%rdx), %rcx
+	movq	%rcx, -8(%rdi,%rdx)
+	ret
 L(between_5_8):
-	movl	(%rsi), %eax
-	movl	%eax, (%rdi)
-	movl	-4(%rsi,%rdx), %eax
-	movl	%eax, -4(%rdi,%rdx)
-	jmp	L(return)
+	movl	(%rsi), %ecx
+	movl	%ecx, (%rdi)
+	movl	-4(%rsi,%rdx), %ecx
+	movl	%ecx, -4(%rdi,%rdx)
+	ret
 END(__memcpy_sse2_unaligned)
 
 #endif
