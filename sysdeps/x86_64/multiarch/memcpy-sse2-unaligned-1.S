@@ -45,12 +45,8 @@ END (__memcpy_chk_sse2_unaligned_1)
 ENTRY(__memcpy_sse2_unaligned_1)
 	movq	%rdi, %rax
 L(start):
-	movq	%rsi, %r11
-	leaq	(%rdx,%rdx), %rcx
-	subq	%rdi, %r11
-	subq	%rdx, %r11
-	cmpq	%rcx, %r11
-	jb	L(overlapping)
+	testq	%rdx, %rdx
+	je	L(return)
 	cmpq	$16, %rdx
 	jbe	L(less_16)
 	movdqu	(%rsi), %xmm8
@@ -108,45 +104,6 @@ L(loop):
 	addq	$64, %rcx
 	cmpq	%rcx, %rdx
 	jne	L(loop)
-	ret
-L(overlapping):
-	testq	%rdx, %rdx
-	.p2align 4,,5
-	je	L(return)
-	movq	%rdx, %r9
-	leaq	16(%rsi), %rcx
-	leaq	16(%rdi), %r8
-	shrq	$4, %r9
-	movq	%r9, %r11
-	salq	$4, %r11
-	cmpq	%rcx, %rdi
-	setae	%cl
-	cmpq	%r8, %rsi
-	setae	%r8b
-	orl	%r8d, %ecx
-	cmpq	$15, %rdx
-	seta	%r8b
-	testb	%r8b, %cl
-	je	.L21
-	testq	%r11, %r11
-	je	.L21
-	xorl	%ecx, %ecx
-	xorl	%r8d, %r8d
-.L7:
-	movdqu	(%rsi,%rcx), %xmm8
-	addq	$1, %r8
-	movdqu	%xmm8, (%rdi,%rcx)
-	addq	$16, %rcx
-	cmpq	%r8, %r9
-	ja	.L7
-	cmpq	%r11, %rdx
-	je	L(return)
-.L21:
-	movzbl	(%rsi,%r11), %ecx
-	movb	%cl, (%rdi,%r11)
-	addq	$1, %r11
-	cmpq	%r11, %rdx
-	ja	.L21
 	ret
 L(less_16):
 	testb	$24, %dl
