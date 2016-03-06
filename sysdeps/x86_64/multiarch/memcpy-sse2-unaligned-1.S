@@ -22,9 +22,29 @@
 
 #include "asm-syntax.h"
 
+ENTRY (__mempcpy_chk_sse2_unaligned_1)
+	cmpq	%rdx, %rcx
+	jb	HIDDEN_JUMPTARGET (__chk_fail)
+END (__mempcpy_chk_sse2_unaligned_1)
+
+ENTRY (__mempcpy_sse2_unaligned_1)
+#if 0
+	lea	(%rdi, %rdx), %rax
+#else
+	mov	%rdi, %rax
+	add	%rdx, %rax
+#endif
+	jmp	L(start)
+END (__mempcpy_sse2_unaligned_1)
+
+ENTRY (__memcpy_chk_sse2_unaligned_1)
+	cmpq	%rdx, %rcx
+	jb	HIDDEN_JUMPTARGET (__chk_fail)
+END (__memcpy_chk_sse2_unaligned_1)
 
 ENTRY(__memcpy_sse2_unaligned_1)
 	movq	%rdi, %rax
+L(start):
 	movq	%rsi, %r11
 	leaq	(%rdx,%rdx), %rcx
 	subq	%rdi, %r11
