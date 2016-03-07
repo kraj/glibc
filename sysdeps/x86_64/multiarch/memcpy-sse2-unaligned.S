@@ -22,9 +22,29 @@
 
 #include "asm-syntax.h"
 
+# ifdef SHARED
+ENTRY (__mempcpy_chk_sse2_unaligned)
+	cmpq	%rdx, %rcx
+	jb	HIDDEN_JUMPTARGET (__chk_fail)
+END (__mempcpy_chk_sse2_unaligned)
+# endif
+
+ENTRY (__mempcpy_sse2_unaligned)
+	mov	%rdi, %rax
+	add	%rdx, %rax
+	jmp	L(start)
+END (__mempcpy_sse2_unaligned)
+
+# ifdef SHARED
+ENTRY (__memcpy_chk_sse2_unaligned)
+	cmpq	%rdx, %rcx
+	jb	HIDDEN_JUMPTARGET (__chk_fail)
+END (__memcpy_chk_sse2_unaligned)
+# endif
 
 ENTRY(__memcpy_sse2_unaligned)
 	movq	%rdi, %rax
+L(start):
 	testq	%rdx, %rdx
 	je	L(return)
 	cmpq	$16, %rdx
