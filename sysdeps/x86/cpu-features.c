@@ -192,6 +192,12 @@ init_cpu_features (struct cpu_features *cpu_features)
 	    }
 	}
 
+      /* Enable optimization of hybrid Enhanced REP MOVSB/STOSB with
+	 SSE/AVX.  */
+	if (CPU_FEATURES_CPU_P (cpu_features, ERMS))
+	  cpu_features->feature[index_arch_Hybrid_ERMS]
+	    |= bit_arch_Hybrid_ERMS;
+
       /* Unaligned load with 256-bit AVX registers are faster on
 	 Intel processors with AVX2.  */
       if (CPU_FEATURES_ARCH_P (cpu_features, AVX2_Usable))

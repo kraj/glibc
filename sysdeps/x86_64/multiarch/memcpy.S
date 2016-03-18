@@ -38,12 +38,22 @@ ENTRY(__new_memcpy)
 	lea    __memcpy_avx512_no_vzeroupper(%rip), %RAX_LP
 	ret
 #endif
-1:	lea	__memcpy_avx_unaligned(%rip), %RAX_LP
+1:	lea	__memcpy_avx_unaligned_erms(%rip), %RAX_LP
 	HAS_ARCH_FEATURE (AVX_Fast_Unaligned_Load)
+	jz	L(Fast_Unaligned_Load)
+	HAS_ARCH_FEATURE (Hybrid_ERMS)
+	jnz	2f
+	lea	__memcpy_avx_unaligned(%rip), %RAX_LP
+	ret
+L(Fast_Unaligned_Load):
+	lea	__memcpy_sse2_unaligned_erms(%rip), %RAX_LP
+	HAS_ARCH_FEATURE (Fast_Unaligned_Load)
+	jz	L(SSE2)
+	HAS_ARCH_FEATURE (Hybrid_ERMS)
 	jnz	2f
 	lea	__memcpy_sse2_unaligned(%rip), %RAX_LP
-	HAS_ARCH_FEATURE (Fast_Unaligned_Load)
-	jnz	2f
+	ret
+L(SSE2):
 	lea	__memcpy_sse2(%rip), %RAX_LP
 	HAS_CPU_FEATURE (SSSE3)
 	jz	2f
