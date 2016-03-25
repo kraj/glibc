@@ -26,10 +26,18 @@
 ENTRY(memset)
 	.type	memset, @gnu_indirect_function
 	LOAD_RTLD_GLOBAL_RO_RDX
+	leaq	__memset_sse2_unaligned_erms(%rip), %rax
+	HAS_ARCH_FEATURE (Hybrid_ERMS)
+	jnz	1f
 	leaq	__memset_sse2(%rip), %rax
+1:
 	HAS_ARCH_FEATURE (AVX2_Usable)
 	jz	2f
+	leaq	__memset_avx2_unaligned_erms(%rip), %rax
+	HAS_ARCH_FEATURE (Hybrid_ERMS)
+	jnz	L(AVX512F)
 	leaq	__memset_avx2(%rip), %rax
+L(AVX512F):
 #ifdef HAVE_AVX512_ASM_SUPPORT
 	HAS_ARCH_FEATURE (AVX512F_Usable)
 	jz	2f
