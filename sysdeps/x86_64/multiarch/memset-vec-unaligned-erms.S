@@ -122,7 +122,8 @@ ENTRY (MEMSET_SYMBOL (__memset, unaligned_erms))
 	.p2align 4
 L(stosb_more_2x_vec):
 	cmpq	$REP_STOSB_THRESHOLD, %rdx
-	ja	L(stosb)
+	/* Force 32-bit displacement to avoid long nop.  */
+	ja.d32	L(stosb)
 	.p2align 4
 L(more_2x_vec):
 	cmpq  $(VEC_SIZE * 4), %rdx
@@ -150,7 +151,12 @@ L(loop_start):
 	addq	%rdi, %rdx
 	andq	$-(VEC_SIZE * 4), %rdx
 	cmpq	%rdx, %rcx
+# if VEC_SIZE == 32 || VEC_SIZE == 64
+	/* Force 32-bit displacement to avoid long nop.  */
+	je.d32	L(return)
+# else
 	je	L(return)
+# endif
 	.p2align 4
 L(loop):
 	VMOVA	%VEC(0), (%rcx)
