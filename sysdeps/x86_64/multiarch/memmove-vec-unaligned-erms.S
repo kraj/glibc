@@ -112,7 +112,7 @@ END (MEMMOVE_SYMBOL (__memmove_chk, unaligned_erms))
 # endif
 
 # if VEC_SIZE == 16
-/* Only used to measure performance of REP STOSB.  */
+/* Only used to measure performance of REP MOVSB.  */
 #  ifdef SHARED
 ENTRY (__mempcpy_erms)
 	movq	%rdi, %rax
@@ -148,10 +148,8 @@ ENTRY (MEMMOVE_SYMBOL (__memmove, unaligned_erms))
 L(start_erms):
 	cmpq	$VEC_SIZE, %rdx
 	jb	L(less_vec)
-	cmpq	$REP_MOVSB_THRESHOLD, %rdx
-	ja	L(movsb)
 	cmpq	$(VEC_SIZE * 2), %rdx
-	ja	L(more_2x_vec)
+	ja	L(movsb_more_2x_vec)
 L(last_2x_vec):
 	/* From VEC and to 2 * VEC.  No branch when size == VEC_SIZE. */
 	VMOVU	(%rsi), %VEC(0)
@@ -177,7 +175,10 @@ L(movsb):
 	rep movsb
 	ret
 
-	.p2align 4,,10
+	.p2align 4
+L(movsb_more_2x_vec):
+	cmpq	$REP_MOVSB_THRESHOLD, %rdx
+	ja	L(movsb)
 	.p2align 4
 L(more_2x_vec):
 	/* More than 2 * VEC.  */
@@ -224,7 +225,6 @@ L(copy_forward):
 	leaq	VEC_SIZE(%r10), %r9
 	leaq	(VEC_SIZE * 2)(%r10), %r8
 	leaq	(VEC_SIZE * 3)(%r10), %r11
-	.p2align 4,,10
 	.p2align 4
 L(loop):
 	VMOVU	(%rcx,%r10), %VEC(0)
@@ -358,7 +358,6 @@ L(more_8x_vec):
 	cmpq	%rsi, %rdi
 	ja	L(more_8x_vec_backward)
 
-	.p2align 4,,10
 	.p2align 4
 L(loop_8x_vec_forward):
 	/* Copy 8 * VEC a time forward.  */
@@ -393,7 +392,6 @@ L(more_8x_vec_backward):
 	leaq	-VEC_SIZE(%rsi, %rdx), %rcx
 	leaq	-VEC_SIZE(%rdi, %rdx), %r9
 
-	.p2align 4,,10
 	.p2align 4
 L(loop_8x_vec_backward):
 	/* Copy 8 * VEC a time backward.  */
