@@ -80,6 +80,26 @@ L(entry_from_bzero):
 	ret
 END (MEMSET_SYMBOL (__memset, unaligned))
 
+#if VEC_SIZE == 16
+/* Only used to measure performance of REP STOSB.  */
+ENTRY (__memset_erms)
+#else
+/* Provide a symbol to debugger.  */
+ENTRY (MEMSET_SYMBOL (__memset, erms))
+#endif
+L(stosb):
+	movq	%rdx, %rcx
+	movzbl	%sil, %eax
+	movq	%rdi, %rdx
+	rep stosb
+	movq	%rdx, %rax
+	ret
+#if VEC_SIZE == 16
+END (__memset_erms)
+#else
+END (MEMSET_SYMBOL (__memset, erms))
+#endif
+
 #if defined SHARED && IS_IN (libc)
 ENTRY_CHK (MEMSET_SYMBOL (__memset_chk, unaligned_erms))
 	cmpq	%rdx, %rcx
@@ -88,24 +108,21 @@ END_CHK (MEMSET_SYMBOL (__memset_chk, unaligned_erms))
 #endif
 
 ENTRY (MEMSET_SYMBOL (__memset, unaligned_erms))
-	cmpq	$REP_STOSB_THRESHOLD, %rdx
-	jbe	L(memset_entry)
-#if VEC_SIZE == 16 && IS_IN (libc)
-	/* Only used to measure performance of REP STOSB.  */
-	.globl __memset_erms
-	.type __memset_erms,@function
-__memset_erms:
-#endif
-	movq	%rdx, %rcx
-	movzbl	%sil, %eax
-	movq	%rdi, %rdx
-	rep stosb
-	movq	%rdx, %rax
+	VDUP_TO_VEC0_AND_SET_RETURN (%esi, %rdi)
+	cmpq	$VEC_SIZE, %rdx
+	jb	L(less_vec)
+	cmpq	$(VEC_SIZE * 2), %rdx
+	ja	L(stosb_more_2x_vec)
+	/* From VEC and to 2 * VEC.  No branch when size == VEC_SIZE.  */
+	VMOVU	%VEC(0), -VEC_SIZE(%rdi,%rdx)
+	VMOVU	%VEC(0), (%rdi)
+	VZEROUPPER
 	ret
-#if VEC_SIZE == 16 && IS_IN (libc)
-	.size __memset_erms, . - __memset_erms
-#endif
 
+	.p2align 4
+L(stosb_more_2x_vec):
+	cmpq	$REP_STOSB_THRESHOLD, %rdx
+	ja	L(stosb)
 	.p2align 4
 L(more_2x_vec):
 	cmpq  $(VEC_SIZE * 4), %rdx
