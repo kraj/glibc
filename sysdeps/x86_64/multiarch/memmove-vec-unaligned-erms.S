@@ -178,7 +178,8 @@ L(movsb):
 	.p2align 4
 L(movsb_more_2x_vec):
 	cmpq	$REP_MOVSB_THRESHOLD, %rdx
-	ja	L(movsb)
+	/* Force 32-bit displacement to avoid long nop.  */
+	ja.d32	L(movsb)
 	.p2align 4
 L(more_2x_vec):
 	/* More than 2 * VEC.  */
