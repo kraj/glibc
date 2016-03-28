@@ -178,7 +178,8 @@ L(movsb):
 	.p2align 4
 L(movsb_more_2x_vec):
 	cmpq	$REP_MOVSB_THRESHOLD, %rdx
-	/* Force 32-bit displacement to avoid long nop.  */
+	/* Force 32-bit displacement to avoid long nop between
+	   instructions.  */
 	ja.d32	L(movsb)
 	.p2align 4
 L(more_2x_vec):
@@ -201,7 +202,9 @@ L(copy_forward):
 	VMOVU	%VEC(2), -VEC_SIZE(%rdi,%rdx)
 	VMOVU	%VEC(3), -(VEC_SIZE * 2)(%rdi,%rdx)
 	cmpq	$(VEC_SIZE * 4), %rdx
-	jbe	L(return)
+	/* Force 32-bit displacement to avoid long nop between
+	   instructions.  */
+	jbe.d32	L(return)
 	VMOVU	(VEC_SIZE * 2)(%rsi), %VEC(0)
 	VMOVU	(VEC_SIZE * 3)(%rsi), %VEC(1)
 	VMOVU	-(VEC_SIZE * 3)(%rsi,%rdx), %VEC(2)
@@ -211,7 +214,13 @@ L(copy_forward):
 	VMOVU	%VEC(2), -(VEC_SIZE * 3)(%rdi,%rdx)
 	VMOVU	%VEC(3), -(VEC_SIZE * 4)(%rdi,%rdx)
 	cmpq	$(VEC_SIZE * 8), %rdx
+# if  VEC_SIZE == 16
 	jbe	L(return)
+# else
+	/* Use 8-bit displacement to avoid long nop between
+	   instructions.  */
+	jbe	L(return_disp8)
+# endif
 	leaq	(VEC_SIZE * 4)(%rdi), %rcx
 	addq	%rdi, %rdx
 	andq	$-(VEC_SIZE * 4), %rdx
@@ -220,7 +229,13 @@ L(copy_forward):
 	subq	%rdi, %r11
 	addq	%r11, %rsi
 	cmpq	%rdx, %rcx
+# if  VEC_SIZE == 16
 	je	L(return)
+# else
+	/* Use 8-bit displacement to avoid long nop between
+	   instructions.  */
+	je	L(return_disp8)
+# endif
 	movq	%rsi, %r10
 	subq	%rcx, %r10
 	leaq	VEC_SIZE(%r10), %r9
@@ -239,6 +254,7 @@ L(loop):
 	addq	$(VEC_SIZE * 4), %rcx
 	cmpq	%rcx, %rdx
 	jne	L(loop)
+L(return_disp8):
 	VZEROUPPER
 	ret
 L(less_vec):
@@ -306,6 +322,10 @@ L(between_2_3):
 	movw	%si, (%rdi)
 	ret
 
+# if VEC_SIZE > 16
+	/* Align to 16 bytes to avoid long nop between instructions.  */
+	.p2align 4
+# endif
 L(more_2x_vec_overlap):
 	/* More than 2 * VEC and there is overlap bewteen destination
 	   and source.  */
@@ -389,6 +409,7 @@ L(loop_8x_vec_forward):
 	jb	L(between_0_and_4x_vec)
 	jmp	L(between_4x_vec_and_8x_vec)
 
+	.p2align 4
 L(more_8x_vec_backward):
 	leaq	-VEC_SIZE(%rsi, %rdx), %rcx
 	leaq	-VEC_SIZE(%rdi, %rdx), %r9
