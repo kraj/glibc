@@ -19,6 +19,9 @@
 #ifndef _LD_CONFIG_H
 #define _LD_CONFIG_H	1
 
+#ifndef DUMMY_LOCALE_T
+#define DUMMY_LOCALE_T
+#endif
 /* Use the internal textdomain used for libc messages.  */
 #define PACKAGE _libc_intl_domainname
 #ifndef VERSION
