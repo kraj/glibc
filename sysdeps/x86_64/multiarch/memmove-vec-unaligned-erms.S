@@ -376,6 +376,27 @@ L(more_8x_vec):
 	subq	%r8, %rdi
 	/* Adjust length.  */
 	addq	%r8, %rdx
+#if CACHELINE_SIZE != VEC_SIZE
+	movl	%edi, %r8d
+	andl	$(CACHELINE_SIZE - 1), %r8d
+	je	L(loop_4x_vec_forward_pre)
+# if CACHELINE_SIZE == (VEC_SIZE * 4)
+	/* Cacheline misaligned by VEC_SIZE, 2 * VEC_SIZE, or
+	   3 * VEC_SIZE.  */
+	cmpl	$(VEC_SIZE * 2), %r8d
+	je	L(misaligned_by_2x_vec_forward)
+	jb	L(misaligned_by_3x_vec_forward)
+# elif CACHELINE_SIZE != (VEC_SIZE * 2)
+#  error Unsupported CACHELINE_SIZE!
+# endif
+	/* Cacheline misaligned by VEC_SIZE.  */
+	VMOVU	(%rsi), %VEC(0)
+	addq	$VEC_SIZE, %rsi
+	subq	$VEC_SIZE, %rdx
+	VMOVA	%VEC(0), (%rdi)
+	addq	$VEC_SIZE, %rdi
+#endif
+L(loop_4x_vec_forward_pre):
 #if (defined USE_MULTIARCH || VEC_SIZE == 16) && IS_IN (libc)
 	/* Check non-temporal store threshold.  */
 	cmpq	__x86_shared_non_temporal_threshold(%rip), %rdx
@@ -406,6 +427,32 @@ L(loop_4x_vec_forward):
 	VZEROUPPER
 	ret
 
+#if CACHELINE_SIZE == (VEC_SIZE * 4)
+L(misaligned_by_2x_vec_forward):
+	/* Cacheline misaligned by 2 * VEC_SIZE.  */
+	VMOVU	(%rsi), %VEC(0)
+	VMOVU	VEC_SIZE(%rsi), %VEC(1)
+	addq	$(VEC_SIZE * 2), %rsi
+	subq	$(VEC_SIZE * 2), %rdx
+	VMOVA	%VEC(0), (%rdi)
+	VMOVA	%VEC(1), VEC_SIZE(%rdi)
+	addq	$(VEC_SIZE * 2), %rdi
+	jmp	L(loop_4x_vec_forward_pre)
+
+L(misaligned_by_3x_vec_forward):
+	/* Cacheline misaligned by 3 * VEC_SIZE.  */
+	VMOVU	(%rsi), %VEC(0)
+	VMOVU	VEC_SIZE(%rsi), %VEC(1)
+	VMOVU	(VEC_SIZE * 2)(%rsi), %VEC(2)
+	addq	$(VEC_SIZE * 3), %rsi
+	subq	$(VEC_SIZE * 3), %rdx
+	VMOVA	%VEC(0), (%rdi)
+	VMOVA	%VEC(1), VEC_SIZE(%rdi)
+	VMOVA	%VEC(2), (VEC_SIZE * 2)(%rdi)
+	addq	$(VEC_SIZE * 3), %rdi
+	jmp	L(loop_4x_vec_forward_pre)
+#endif
+
 L(more_8x_vec_backward):
 	/* Load the first 4 * VEC and last VEC to support overlapping
 	   addresses.  */
@@ -428,6 +475,27 @@ L(more_8x_vec_backward):
 	subq	%r8, %r9
 	/* Adjust length.  */
 	subq	%r8, %rdx
+#if CACHELINE_SIZE != VEC_SIZE
+	movl	%r9d, %r8d
+	andl	$(CACHELINE_SIZE - 1), %r8d
+	je	L(loop_4x_vec_backward_pre)
+# if CACHELINE_SIZE == (VEC_SIZE * 4)
+	/* Cacheline misaligned by VEC_SIZE, 2 * VEC_SIZE, or
+	   3 * VEC_SIZE.  */
+	cmpl	$(VEC_SIZE * 2), %r8d
+	je	L(misaligned_by_2x_vec_backward)
+	jb	L(misaligned_by_3x_vec_backward)
+# elif CACHELINE_SIZE != (VEC_SIZE * 2)
+#  error Unsupported CACHELINE_SIZE!
+# endif
+	/* Cacheline misaligned by VEC_SIZE.  */
+	VMOVU	(%rcx), %VEC(0)
+	subq	$VEC_SIZE, %rcx
+	subq	$VEC_SIZE, %rdx
+	VMOVA	%VEC(0), (%r9)
+	subq	$VEC_SIZE, %r9
+#endif
+L(loop_4x_vec_backward_pre):
 #if (defined USE_MULTIARCH || VEC_SIZE == 16) && IS_IN (libc)
 	/* Check non-temporal store threshold.  */
 	cmpq	__x86_shared_non_temporal_threshold(%rip), %rdx
@@ -457,6 +525,32 @@ L(loop_4x_vec_backward):
 	VMOVU	%VEC(8), (%r11)
 	VZEROUPPER
 	ret
+
+#if CACHELINE_SIZE == (VEC_SIZE * 4)
+L(misaligned_by_2x_vec_backward):
+	/* Cacheline misaligned by 2 * VEC_SIZE.  */
+	VMOVU	(%rcx), %VEC(0)
+	VMOVU	-VEC_SIZE(%rcx), %VEC(1)
+	subq	$(VEC_SIZE * 2), %rcx
+	subq	$(VEC_SIZE * 2), %rdx
+	VMOVA	%VEC(0), (%r9)
+	VMOVA	%VEC(1), -VEC_SIZE(%r9)
+	subq	$(VEC_SIZE * 2), %r9
+	jmp	L(loop_4x_vec_backward_pre)
+
+L(misaligned_by_3x_vec_backward):
+	/* Cacheline misaligned by 3 * VEC_SIZE.  */
+	VMOVU	(%rcx), %VEC(0)
+	VMOVU	-VEC_SIZE(%rcx), %VEC(1)
+	VMOVU	-(VEC_SIZE * 2)(%rcx), %VEC(2)
+	subq	$(VEC_SIZE * 3), %rcx
+	subq	$(VEC_SIZE * 3), %rdx
+	VMOVA	%VEC(0), (%r9)
+	VMOVA	%VEC(1), -VEC_SIZE(%r9)
+	VMOVA	%VEC(2), -(VEC_SIZE * 2)(%r9)
+	subq	$(VEC_SIZE * 3), %r9
+	jmp	L(loop_4x_vec_backward_pre)
+#endif
 
 #if (defined USE_MULTIARCH || VEC_SIZE == 16) && IS_IN (libc)
 L(large_forward):
