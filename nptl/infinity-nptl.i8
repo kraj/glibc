@@ -20,6 +20,8 @@
 #include "infinity-nptl-constants.h"
 #include "infinity-nptl_db-constants.h"
 
+wordsize __WORDSIZE
+
 /* XXX.  */
 typedef int size_t
 
