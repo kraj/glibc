@@ -146,6 +146,7 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 
   /* Support sysdeps/x86_64/multiarch/memset.S.  */
   IFUNC_IMPL (i, name, memset,
+	      IFUNC_IMPL_ADD (array, i, memset, 1, __memset_2_17)
 	      IFUNC_IMPL_ADD (array, i, memset, 1, __memset_sse2)
 	      IFUNC_IMPL_ADD (array, i, memset, 1,
 			      __memset_sse2_unaligned)

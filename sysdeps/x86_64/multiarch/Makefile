@@ -23,6 +23,7 @@ sysdep_routines += strncat-c stpncpy-c strncpy-c strcmp-ssse3 \
 		   memmove-sse2-unaligned-erms \
 		   memmove-avx-unaligned-erms \
 		   memmove-avx512-unaligned-erms \
+		   memset-2.17 \
 		   memset-sse2-unaligned-erms \
 		   memset-avx2-unaligned-erms \
 		   memset-avx512-unaligned-erms
