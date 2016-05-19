@@ -26,18 +26,18 @@ wordsize __WORDSIZE
 typedef int size_t
 
 /* XXX.  */
-typedef s32 pid_t
+typedef i32 pid_t
 typedef pid_t lwpid_t
 
 /* XXX.  */
-typedef s32 td_err_e
-typedef s32 ps_err_e
+typedef i32 td_err_e
+typedef i32 ps_err_e
 
 /* XXX.  */
 typedef ptr th_unique_t
 
 /* Possible thread states.  */
-typedef s32 td_thr_state_e
+typedef i32 td_thr_state_e
 
 /* XXX.  */
 #if TD_SIGNO_MASK == 0
