@@ -76,13 +76,13 @@ test_pid:
 
 pid_matches:
   /* Now test whether this thread matches the specified conditions.  */
-	deref PTHREAD_SCHEDPOLICY_OFFSET(descr), s32
+	deref PTHREAD_SCHEDPOLICY_OFFSET(descr), i32
 	bne SCHED_OTHER, load_priority
 	load 0
 	goto test_priority
 
 load_priority:
-	deref PTHREAD_SCHEDPARAM_SCHED_PRIORITY_OFFSET(descr), s32
+	deref PTHREAD_SCHEDPARAM_SCHED_PRIORITY_OFFSET(descr), i32
 
 test_priority:
 	blt ti_pri, continue_loop
