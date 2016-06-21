@@ -19,6 +19,10 @@
 #include <hp-timing.h>
 #include <stdint.h>
 
+/* Force to use clock_gettime.  */
+#undef USE_CLOCK_GETTIME
+#define USE_CLOCK_GETTIME
+
 #if HP_TIMING_AVAIL && !defined USE_CLOCK_GETTIME
 # define GL(x) _##x
 # define GLRO(x) _##x
