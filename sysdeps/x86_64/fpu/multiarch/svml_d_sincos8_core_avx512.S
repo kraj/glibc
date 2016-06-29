@@ -37,7 +37,7 @@
 
 	.text
 ENTRY (_ZGVeN8vvv_sincos_knl)
-#ifndef HAVE_AVX512_ASM_SUPPORT
+#ifndef HAVE_AVX512DQ_ASM_SUPPORT
 WRAPPER_IMPL_AVX512_fFF _ZGVdN4vvv_sincos
 #else
         pushq     %rbp
@@ -307,7 +307,7 @@ WRAPPER_IMPL_AVX512_fFF _ZGVdN4vvv_sincos
 END (_ZGVeN8vvv_sincos_knl)
 
 ENTRY (_ZGVeN8vvv_sincos_skx)
-#ifndef HAVE_AVX512_ASM_SUPPORT
+#ifndef HAVE_AVX512DQ_ASM_SUPPORT
 WRAPPER_IMPL_AVX512_fFF _ZGVdN4vvv_sincos
 #else
         pushq     %rbp
