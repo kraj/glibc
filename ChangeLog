@@ -1,5 +1,9 @@
 2015-07-08  Zack Weinberg  <zackw@panix.com>
 
+	* include/features.h (__glibc_clang_prereq): New macro.
+	* misc/sys/cdefs.h (__glibc_clang_has_extension)
+	(__attribute_deprecated_msg__): New macros.
+
 	* misc/sys/sysmacros.h: New file with generic inline-function-based
 	implementation of major, minor, makedev, derived from the old
 	sysdeps/unix/sysv/linux/sys/sysmacros.h.
