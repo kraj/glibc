@@ -50,6 +50,21 @@ Version 2.24
 * Initial support is added for pretty printing of pthread variables in gdb.
   See pretty-printers/README for details on how to use it.
 
+* The inclusion of <sys/sysmacros.h> by <sys/types.h> is deprecated.  This
+  means that in a future release, the macros âmajorâ, âminorâ, and âmakedevâ
+  will only be available from <sys/sysmacros.h>.
+
+  The macros defined by <sys/sysmacros.h> are not part of POSIX nor XSI,
+  and their names have been found frequently to collide with user code;
+  see for instance glibc bug 19239 and Red Hat bug 130601.  <stdlib.h>
+  includes <sys/types.h> under _GNU_SOURCE, and C++ code presently cannot
+  avoid being compiled under _GNU_SOURCE, exacerbating the problem.
+
+  Code that does not need these macros should #undef them after including
+  <sys/types.h>; this will also improve portability to BSD-derived systems.
+  Code that *does* need these macros should include <sys/types.h>, and then
+  include <sys/sysmacros.h> if __GLIBC__ is defined.
+
 Security related changes:
 
 * An unnecessary stack copy in _nss_dns_getnetbyname_r was removed.  It
