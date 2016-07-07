@@ -1,5 +1,5 @@
-/* Definitions of macros to access `dev_t' values.
-   Copyright (C) 1996-2016 Free Software Foundation, Inc.
+/* Definitions of functions to access `dev_t' values.
+   Copyright (C) 2003-2016 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -16,15 +16,25 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef _SYS_SYSMACROS_H
-#define _SYS_SYSMACROS_H	1
+#include <features.h>
+#undef __USE_EXTERN_INLINES
+#include <sys/sysmacros.h>
+#include <sys/types.h>
 
-/* For compatibility we provide alternative names.
+unsigned int
+gnu_dev_major (dev_t dev)
+{
+  __major_body (dev);
+}
 
-   The problem here is that compilers other than GCC probably don't
-   have the `long long' type and so `dev_t' is actually an array.  */
-#define major(dev) ((int)(((unsigned int) (dev) >> 8) & 0xff))
-#define minor(dev) ((int)((dev) & 0xff))
-#define makedev(major, minor) (((major) << 8) | (minor))
+unsigned int
+gnu_dev_minor (dev_t dev)
+{
+  __minor_body (dev);
+}
 
-#endif /* sys/sysmacros.h */
+dev_t
+gnu_dev_makedev (unsigned int major, unsigned int minor)
+{
+  __makedev_body (major, minor);
+}

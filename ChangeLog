@@ -1,3 +1,30 @@
+2015-07-08  Zack Weinberg  <zackw@panix.com>
+
+	* misc/sys/sysmacros.h: New file with generic inline-function-based
+	implementation of major, minor, makedev, derived from the old
+	sysdeps/unix/sysv/linux/sys/sysmacros.h.
+	* include/sys/sysmacros.h: New wrapper.
+
+	* sysdeps/unix/sysv/linux/sys/sysmacros.h: Move ...
+	* bits/sysmacros.h: ... here; only define __makedev_body,
+	__major_body, __minor_body.
+	* sysdeps/generic/sys/sysmacros.h: Deleted.
+
+	* sysdeps/unix/sysv/linux/makedev.c: Move ...
+	* misc/makedev.c: ... here; make generic.
+	* misc/tst-makedev.c: New test.
+
+	* misc/Makefile (headers): Add sys/sysmacros.h, bits/sysmacros.h.
+	(routines): Add makedev.
+	(tests): Add tst-makedev.
+	* misc/Versions [GLIBC_2.24]: Add gnu_dev_major, gnu_dev_minor,
+	gnu_dev_makedev.
+	* posix/Makefile (headers): Remove sys/sysmacros.h.
+	* sysdeps/unix/sysv/linux/Makefile (sysdep_routines): Remove makedev.
+
+	* sysdeps/arm/nacl/libc.abilist: Add GLIBC_2.24,
+	gnu_dev_major, gnu_dev_makedev, gnu_dev_minor.
+
 2016-07-08  Martin Galvan  <martin.galvan@tallertechnologies.com>
 
 	* Makeconfig (build-hardcoded-path-in-tests): Set to 'yes'
