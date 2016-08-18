@@ -73,13 +73,19 @@ _dl_build_local_scope (struct link_map **list, struct link_map *map)
 {
   struct link_map **p = list;
   struct link_map **q;
+  struct link_map **r;
 
   *p++ = map;
   map->l_reserved = 1;
-  if (map->l_initfini)
-    for (q = map->l_initfini + 1; *q; ++q)
-      if (! (*q)->l_reserved)
-	p += _dl_build_local_scope (p, *q);
+
+  for (r = list; r < p; ++r)
+    if ((*r)->l_initfini)
+      for (q = (*r)->l_initfini + 1; *q; ++q)
+	if (! (*q)->l_reserved)
+	  {
+	    *p++ = *q;
+	    (*q)->l_reserved = 1;
+	  }
   return p - list;
 }
 
