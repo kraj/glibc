@@ -47,12 +47,16 @@ libc_hidden_proto (__res_iclose)
 libc_hidden_proto (__res_randomid)
 libc_hidden_proto (__res_state)
 
-int __libc_res_nquery (res_state, const char *, int, int, unsigned char *, int,
-		       unsigned char **, unsigned char **, int *, int *, int *);
-int __libc_res_nsearch (res_state, const char *, int, int, unsigned char *, int,
-			unsigned char **, unsigned char **, int *, int *, int *);
-int __libc_res_nsend (res_state, const unsigned char *, int, const unsigned char *, int,
-		      unsigned char *, int, unsigned char **, unsigned char **, int *, int *, int *)
+int __libc_res_nquery (res_state, const char *, int, int,
+		       unsigned char *, int, unsigned char **,
+		       unsigned char **, int *, int *, int *);
+int __libc_res_nsearch (res_state, const char *, int, int,
+			unsigned char *, int, unsigned char **,
+			unsigned char **, int *, int *, int *);
+int __libc_res_nsend (res_state, const unsigned char *, int,
+		      const unsigned char *, int, unsigned char *,
+		      int, unsigned char **, unsigned char **,
+		      int *, int *, int *)
   attribute_hidden;
 
 libresolv_hidden_proto (_sethtent)

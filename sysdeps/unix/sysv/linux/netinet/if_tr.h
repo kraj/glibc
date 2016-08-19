@@ -39,7 +39,7 @@ struct trh_hdr
   uint8_t  fc;			/* frame control field */
   uint8_t  daddr[TR_ALEN];	/* destination address */
   uint8_t  saddr[TR_ALEN];	/* source address */
-  uint16_t rcf;		/* route control field */
+  uint16_t rcf;			/* route control field */
   uint16_t rseg[8];		/* routing registers */
 };
 
@@ -48,7 +48,7 @@ struct trllc
 {
   uint8_t  dsap;		/* destination SAP */
   uint8_t  ssap;		/* source SAP */
-  uint8_t  llc;		/* LLC control field */
+  uint8_t  llc;			/* LLC control field */
   uint8_t  protid[3];		/* protocol id */
   uint16_t ethertype;		/* ether type field */
 };

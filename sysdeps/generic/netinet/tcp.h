@@ -43,17 +43,17 @@ typedef	unsigned int	tcp_seq;
  * Per RFC 793, September, 1981.
  */
 struct tcphdr {
-	unsigned short	th_sport;		/* source port */
-	unsigned short	th_dport;		/* destination port */
-	tcp_seq	th_seq;			/* sequence number */
-	tcp_seq	th_ack;			/* acknowledgement number */
+	unsigned short	th_sport;	/* source port */
+	unsigned short	th_dport;	/* destination port */
+	tcp_seq		th_seq;		/* sequence number */
+	tcp_seq		th_ack;		/* acknowledgement number */
 #if __BYTE_ORDER == __LITTLE_ENDIAN
-	unsigned char	th_x2:4,		/* (unused) */
-		th_off:4;		/* data offset */
+	unsigned char	th_x2:4,	/* (unused) */
+			th_off:4;	/* data offset */
 #endif
 #if __BYTE_ORDER == __BIG_ENDIAN
-	unsigned char	th_off:4,		/* data offset */
-		th_x2:4;		/* (unused) */
+	unsigned char	th_off:4,	/* data offset */
+			th_x2:4;	/* (unused) */
 #endif
 	unsigned char	th_flags;
 #define	TH_FIN	0x01
@@ -62,23 +62,23 @@ struct tcphdr {
 #define	TH_PUSH	0x08
 #define	TH_ACK	0x10
 #define	TH_URG	0x20
-	unsigned short	th_win;			/* window */
-	unsigned short	th_sum;			/* checksum */
-	unsigned short	th_urp;			/* urgent pointer */
+	unsigned short	th_win;		/* window */
+	unsigned short	th_sum;		/* checksum */
+	unsigned short	th_urp;		/* urgent pointer */
 };
 
 #define	TCPOPT_EOL		0
 #define	TCPOPT_NOP		1
 #define	TCPOPT_MAXSEG		2
-#define    TCPOLEN_MAXSEG		4
+#define TCPOLEN_MAXSEG		4
 #define TCPOPT_WINDOW		3
-#define    TCPOLEN_WINDOW		3
+#define TCPOLEN_WINDOW		3
 #define TCPOPT_SACK_PERMITTED	4		/* Experimental */
-#define    TCPOLEN_SACK_PERMITTED	2
+#define TCPOLEN_SACK_PERMITTED	2
 #define TCPOPT_SACK		5		/* Experimental */
 #define TCPOPT_TIMESTAMP	8
-#define    TCPOLEN_TIMESTAMP		10
-#define    TCPOLEN_TSTAMP_APPA		(TCPOLEN_TIMESTAMP+2) /* appendix A */
+#define TCPOLEN_TIMESTAMP	10
+#define TCPOLEN_TSTAMP_APPA	(TCPOLEN_TIMESTAMP+2) /* appendix A */
 
 #define TCPOPT_TSTAMP_HDR	\
     (TCPOPT_NOP<<24|TCPOPT_NOP<<16|TCPOPT_TIMESTAMP<<8|TCPOLEN_TIMESTAMP)

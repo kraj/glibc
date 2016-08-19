@@ -116,7 +116,7 @@ struct npioctl {
 struct ppp_option_data {
 	uint8_t  *ptr;
 	uint32_t length;
-	int	  transmit;
+	int	 transmit;
 };
 
 struct ifpppstatsreq {

@@ -145,8 +145,8 @@
 #define	B_TYPEMASK		0xff
 #define	B_TYPE(val)		(((val) >> B_TYPESHIFT) & B_TYPEMASK)
 
-#define	B_MAGICMASK	((unsigned int)0xf0000000U)
-#define	B_DEVMAGIC	((unsigned int)0xa0000000U)
+#define	B_MAGICMASK	0xf0000000U
+#define	B_DEVMAGIC	0xa0000000U
 
 #define MAKEBOOTDEV(type, adaptor, controller, unit, partition) \
 	(((type) << B_TYPESHIFT) | ((adaptor) << B_ADAPTORSHIFT) | \

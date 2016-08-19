@@ -53,7 +53,7 @@ struct acct
   comp_t ac_minflt;		/* Minor pagefaults.  */
   comp_t ac_majflt;		/* Major pagefaults.  */
   comp_t ac_swaps;		/* Number of swaps.  */
-  uint32_t ac_exitcode;	/* Process exitcode.  */
+  uint32_t ac_exitcode;		/* Process exitcode.  */
   char ac_comm[ACCT_COMM+1];	/* Command name.  */
   char ac_pad[10];		/* Padding bytes.  */
 };
@@ -64,7 +64,7 @@ struct acct_v3
   char ac_flag;			/* Flags */
   char ac_version;		/* Always set to ACCT_VERSION */
   uint16_t ac_tty;		/* Control Terminal */
-  uint32_t ac_exitcode;	/* Exitcode */
+  uint32_t ac_exitcode;		/* Exitcode */
   uint32_t ac_uid;		/* Real User ID */
   uint32_t ac_gid;		/* Real Group ID */
   uint32_t ac_pid;		/* Process ID */

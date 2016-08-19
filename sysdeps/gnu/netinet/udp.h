@@ -59,8 +59,8 @@ struct udphdr
   {
     struct
     {
-      uint16_t uh_sport;		/* source port */
-      uint16_t uh_dport;		/* destination port */
+      uint16_t uh_sport;	/* source port */
+      uint16_t uh_dport;	/* destination port */
       uint16_t uh_ulen;		/* udp length */
       uint16_t uh_sum;		/* udp checksum */
     };

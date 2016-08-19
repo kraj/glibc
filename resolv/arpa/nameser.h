@@ -109,10 +109,10 @@ typedef enum __ns_sect {
  */
 typedef struct __ns_msg {
 	const unsigned char	*_msg, *_eom;
-	uint16_t	_id, _flags, _counts[ns_s_max];
+	uint16_t		_id, _flags, _counts[ns_s_max];
 	const unsigned char	*_sections[ns_s_max];
-	ns_sect		_sect;
-	int		_rrnum;
+	ns_sect			_sect;
+	int			_rrnum;
 	const unsigned char	*_msg_ptr;
 } ns_msg;
 
@@ -132,11 +132,11 @@ extern const struct _ns_flagdata _ns_flagdata[];
  * This is a parsed record.  It is caller allocated and has no dynamic data.
  */
 typedef	struct __ns_rr {
-	char		name[NS_MAXDNAME];
-	uint16_t	type;
-	uint16_t	rr_class;
-	uint32_t	ttl;
-	uint16_t	rdlength;
+	char			name[NS_MAXDNAME];
+	uint16_t		type;
+	uint16_t		rr_class;
+	uint32_t		ttl;
+	uint16_t		rdlength;
 	const unsigned char *	rdata;
 } ns_rr;
 
@@ -466,43 +466,53 @@ typedef enum __ns_cert_types {
 
 __BEGIN_DECLS
 int		ns_msg_getflag (ns_msg, int) __THROW;
-unsigned int		ns_get16 (const unsigned char *) __THROW;
-unsigned long		ns_get32 (const unsigned char *) __THROW;
+unsigned int	ns_get16 (const unsigned char *) __THROW;
+unsigned long	ns_get32 (const unsigned char *) __THROW;
 void		ns_put16 (unsigned int, unsigned char *) __THROW;
 void		ns_put32 (unsigned long, unsigned char *) __THROW;
 int		ns_initparse (const unsigned char *, int, ns_msg *) __THROW;
-int		ns_skiprr (const unsigned char *, const unsigned char *, ns_sect, int)
-     __THROW;
+int		ns_skiprr (const unsigned char *, const unsigned char *,
+			   ns_sect, int) __THROW;
 int		ns_parserr (ns_msg *, ns_sect, int, ns_rr *) __THROW;
 int		ns_sprintrr (const ns_msg *, const ns_rr *,
 			     const char *, const char *, char *, size_t)
      __THROW;
 int		ns_sprintrrf (const unsigned char *, size_t, const char *,
-			      ns_class, ns_type, unsigned long, const unsigned char *,
-			      size_t, const char *, const char *,
-			      char *, size_t) __THROW;
+			      ns_class, ns_type, unsigned long,
+			      const unsigned char *, size_t, const char *,
+			      const char *, char *, size_t) __THROW;
 int		ns_format_ttl (unsigned long, char *, size_t) __THROW;
 int		ns_parse_ttl (const char *, unsigned long *) __THROW;
 uint32_t	ns_datetosecs (const char *, int *) __THROW;
-int		ns_name_ntol (const unsigned char *, unsigned char *, size_t) __THROW;
+int		ns_name_ntol (const unsigned char *, unsigned char *, size_t)
+     __THROW;
 int		ns_name_ntop (const unsigned char *, char *, size_t) __THROW;
 int		ns_name_pton (const char *, unsigned char *, size_t) __THROW;
 int		ns_name_unpack (const unsigned char *, const unsigned char *,
-				const unsigned char *, unsigned char *, size_t) __THROW;
+				const unsigned char *, unsigned char *, size_t)
+     __THROW;
 int		ns_name_pack (const unsigned char *, unsigned char *, int,
-			      const unsigned char **, const unsigned char **) __THROW;
-int		ns_name_uncompress (const unsigned char *, const unsigned char *,
-				    const unsigned char *, char *, size_t) __THROW;
+			      const unsigned char **, const unsigned char **)
+     __THROW;
+int		ns_name_uncompress (const unsigned char *,
+				    const unsigned char *,
+				    const unsigned char *,
+				    char *, size_t) __THROW;
 int		ns_name_compress (const char *, unsigned char *, size_t,
-				  const unsigned char **, const unsigned char **) __THROW;
-int		ns_name_skip (const unsigned char **, const unsigned char *) __THROW;
-void		ns_name_rollback (const unsigned char *, const unsigned char **,
+				  const unsigned char **,
+				  const unsigned char **) __THROW;
+int		ns_name_skip (const unsigned char **, const unsigned char *)
+     __THROW;
+void		ns_name_rollback (const unsigned char *,
+				  const unsigned char **,
 				  const unsigned char **) __THROW;
 int		ns_sign (unsigned char *, int *, int, int, void *,
-			 const unsigned char *, int, unsigned char *, int *, time_t) __THROW;
+			 const unsigned char *, int, unsigned char *,
+			 int *, time_t) __THROW;
 int		ns_sign2 (unsigned char *, int *, int, int, void *,
-			  const unsigned char *, int, unsigned char *, int *, time_t,
-			  unsigned char **, unsigned char **) __THROW;
+			  const unsigned char *, int, unsigned char *,
+			  int *, time_t, unsigned char **,
+			  unsigned char **) __THROW;
 int		ns_sign_tcp (unsigned char *, int *, int, int,
 			     ns_tcp_tsig_state *, int) __THROW;
 int		ns_sign_tcp2 (unsigned char *, int *, int, int,
@@ -510,11 +520,12 @@ int		ns_sign_tcp2 (unsigned char *, int *, int, int,
 			      unsigned char **, unsigned char **) __THROW;
 int		ns_sign_tcp_init (void *, const unsigned char *, int,
 				  ns_tcp_tsig_state *) __THROW;
-unsigned char		*ns_find_tsig (unsigned char *, unsigned char *) __THROW;
-int		ns_verify (unsigned char *, int *, void *, const unsigned char *, int,
-			   unsigned char *, int *, time_t *, int) __THROW;
-int		ns_verify_tcp (unsigned char *, int *, ns_tcp_tsig_state *, int)
-     __THROW;
+unsigned char	*ns_find_tsig (unsigned char *, unsigned char *) __THROW;
+int		ns_verify (unsigned char *, int *, void *,
+			   const unsigned char *, int, unsigned char *, int *,
+			   time_t *, int) __THROW;
+int		ns_verify_tcp (unsigned char *, int *, ns_tcp_tsig_state *,
+			       int) __THROW;
 int		ns_verify_tcp_init (void *, const unsigned char *, int,
 				    ns_tcp_tsig_state *) __THROW;
 int		ns_samedomain (const char *, const char *) __THROW;

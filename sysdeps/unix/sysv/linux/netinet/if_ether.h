@@ -88,7 +88,7 @@ struct	ether_arp {
  */
 #define ETHER_MAP_IP_MULTICAST(ipaddr, enaddr) \
 	/* struct in_addr *ipaddr; */ \
-	/* unsigned char enaddr[ETH_ALEN];	   */ \
+	/* uint8_t enaddr[ETH_ALEN]; */ \
 { \
 	(enaddr)[0] = 0x01; \
 	(enaddr)[1] = 0x00; \

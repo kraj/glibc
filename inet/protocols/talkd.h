@@ -57,9 +57,9 @@
  * Client->server request message format.
  */
 typedef struct {
-	unsigned char	vers;		/* protocol version */
-	unsigned char	type;		/* request type, see below */
-	unsigned char	answer;		/* not used */
+	unsigned char	vers;	/* protocol version */
+	unsigned char	type;	/* request type, see below */
+	unsigned char	answer;	/* not used */
 	unsigned char	pad;
 	uint32_t id_num;	/* message id */
 	struct	osockaddr addr;		/* old (4.3) style */
@@ -76,11 +76,11 @@ typedef struct {
  * Server->client response message format.
  */
 typedef struct {
-	unsigned char	vers;		/* protocol version */
-	unsigned char	type;		/* type of request message, see below */
-	unsigned char	answer;		/* response to request message, see below */
+	unsigned char	vers;	/* protocol version */
+	unsigned char	type;	/* type of request message, see below */
+	unsigned char	answer;	/* response to request message, see below */
 	unsigned char	pad;
-	uint32_t id_num;	/* message id */
+	uint32_t	id_num;	/* message id */
 	struct	osockaddr addr;	/* address for establishing conversation */
 } CTL_RESPONSE;
 

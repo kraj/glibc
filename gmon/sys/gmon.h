@@ -130,7 +130,7 @@ extern struct __bb *__bb_head;
 #define MAXARCS		(1 << 20)
 
 struct tostruct {
-	unsigned long		selfpc;
+	unsigned long	selfpc;
 	long		count;
 	ARCINDEX	link;
 };
@@ -142,7 +142,7 @@ struct tostruct {
 struct rawarc {
 	unsigned long	raw_frompc;
 	unsigned long	raw_selfpc;
-	long	raw_count;
+	long		raw_count;
 };
 
 /*
@@ -156,17 +156,17 @@ struct rawarc {
  */
 struct gmonparam {
 	long int	state;
-	unsigned short		*kcount;
-	unsigned long		kcountsize;
+	unsigned short	*kcount;
+	unsigned long	kcountsize;
 	ARCINDEX	*froms;
-	unsigned long		fromssize;
+	unsigned long	fromssize;
 	struct tostruct	*tos;
-	unsigned long		tossize;
+	unsigned long	tossize;
 	long		tolimit;
-	unsigned long		lowpc;
-	unsigned long		highpc;
-	unsigned long		textsize;
-	unsigned long		hashfraction;
+	unsigned long	lowpc;
+	unsigned long	highpc;
+	unsigned long	textsize;
+	unsigned long	hashfraction;
 	long		log_hashfraction;
 };
 

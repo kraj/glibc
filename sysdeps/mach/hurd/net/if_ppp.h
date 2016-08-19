@@ -115,7 +115,7 @@ struct npioctl {
 /* Structure describing a CCP configuration option, for PPPIOCSCOMPRESS */
 struct ppp_option_data {
 	uint8_t  *ptr;
-	uint32_t length;
+	uint32_t  length;
 	int	  transmit;
 };
 

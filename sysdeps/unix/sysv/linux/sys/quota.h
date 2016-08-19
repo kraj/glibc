@@ -161,9 +161,9 @@ struct dqblk
     uint64_t dqb_ihardlimit;	/* maximum # allocated inodes */
     uint64_t dqb_isoftlimit;	/* preferred inode limit */
     uint64_t dqb_curinodes;	/* current # allocated inodes */
-    uint64_t dqb_btime;	/* time limit for excessive disk use */
-    uint64_t dqb_itime;	/* time limit for excessive files */
-    uint32_t dqb_valid;	/* bitmask of QIF_* constants */
+    uint64_t dqb_btime;		/* time limit for excessive disk use */
+    uint64_t dqb_itime;		/* time limit for excessive files */
+    uint32_t dqb_valid;		/* bitmask of QIF_* constants */
   };
 #endif
 

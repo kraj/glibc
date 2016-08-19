@@ -141,7 +141,7 @@ struct icmp
   uint16_t icmp_cksum;	/* ones complement checksum of struct */
   union
   {
-    unsigned char ih_pptr;		/* ICMP_PARAMPROB */
+    unsigned char ih_pptr;	/* ICMP_PARAMPROB */
     struct in_addr ih_gwaddr;	/* gateway address */
     struct ih_idseq		/* echo datagram */
     {
