@@ -130,12 +130,12 @@
 #if _LINUX_QUOTA_VERSION < 2
 struct dqblk
   {
-    u_int32_t dqb_bhardlimit;	/* absolute limit on disk blks alloc */
-    u_int32_t dqb_bsoftlimit;	/* preferred limit on disk blks */
-    u_int32_t dqb_curblocks;	/* current block count */
-    u_int32_t dqb_ihardlimit;	/* maximum # allocated inodes */
-    u_int32_t dqb_isoftlimit;	/* preferred inode limit */
-    u_int32_t dqb_curinodes;	/* current # allocated inodes */
+    uint32_t dqb_bhardlimit;	/* absolute limit on disk blks alloc */
+    uint32_t dqb_bsoftlimit;	/* preferred limit on disk blks */
+    uint32_t dqb_curblocks;	/* current block count */
+    uint32_t dqb_ihardlimit;	/* maximum # allocated inodes */
+    uint32_t dqb_isoftlimit;	/* preferred inode limit */
+    uint32_t dqb_curinodes;	/* current # allocated inodes */
     time_t dqb_btime;		/* time limit for excessive disk use */
     time_t dqb_itime;		/* time limit for excessive files */
   };
@@ -155,15 +155,15 @@ struct dqblk
 
 struct dqblk
   {
-    u_int64_t dqb_bhardlimit;	/* absolute limit on disk quota blocks alloc */
-    u_int64_t dqb_bsoftlimit;	/* preferred limit on disk quota blocks */
-    u_int64_t dqb_curspace;	/* current quota block count */
-    u_int64_t dqb_ihardlimit;	/* maximum # allocated inodes */
-    u_int64_t dqb_isoftlimit;	/* preferred inode limit */
-    u_int64_t dqb_curinodes;	/* current # allocated inodes */
-    u_int64_t dqb_btime;	/* time limit for excessive disk use */
-    u_int64_t dqb_itime;	/* time limit for excessive files */
-    u_int32_t dqb_valid;	/* bitmask of QIF_* constants */
+    uint64_t dqb_bhardlimit;	/* absolute limit on disk quota blocks alloc */
+    uint64_t dqb_bsoftlimit;	/* preferred limit on disk quota blocks */
+    uint64_t dqb_curspace;	/* current quota block count */
+    uint64_t dqb_ihardlimit;	/* maximum # allocated inodes */
+    uint64_t dqb_isoftlimit;	/* preferred inode limit */
+    uint64_t dqb_curinodes;	/* current # allocated inodes */
+    uint64_t dqb_btime;	/* time limit for excessive disk use */
+    uint64_t dqb_itime;	/* time limit for excessive files */
+    uint32_t dqb_valid;	/* bitmask of QIF_* constants */
   };
 #endif
 
@@ -189,15 +189,15 @@ struct dqblk
 #if _LINUX_QUOTA_VERSION < 2
 struct dqstats
   {
-    u_int32_t lookups;
-    u_int32_t drops;
-    u_int32_t reads;
-    u_int32_t writes;
-    u_int32_t cache_hits;
-    u_int32_t pages_allocated;
-    u_int32_t allocated_dquots;
-    u_int32_t free_dquots;
-    u_int32_t syncs;
+    uint32_t lookups;
+    uint32_t drops;
+    uint32_t reads;
+    uint32_t writes;
+    uint32_t cache_hits;
+    uint32_t pages_allocated;
+    uint32_t allocated_dquots;
+    uint32_t free_dquots;
+    uint32_t syncs;
   };
 #else
 
@@ -209,10 +209,10 @@ struct dqstats
 
 struct dqinfo
   {
-    u_int64_t dqi_bgrace;
-    u_int64_t dqi_igrace;
-    u_int32_t dqi_flags;
-    u_int32_t dqi_valid;
+    uint64_t dqi_bgrace;
+    uint64_t dqi_igrace;
+    uint32_t dqi_flags;
+    uint32_t dqi_valid;
   };
 #endif
 

@@ -43,11 +43,11 @@ __BEGIN_DECLS
 
 struct shaperconf
 {
-  u_int16_t ss_cmd;
+  uint16_t ss_cmd;
   union
   {
     char ssu_name[14];
-    u_int32_t ssu_speed;
+    uint32_t ssu_speed;
   } ss_u;
 #define ss_speed ss_u.ssu_speed
 #define ss_name ss_u.ssu_name

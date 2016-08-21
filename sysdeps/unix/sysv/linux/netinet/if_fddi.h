@@ -27,9 +27,9 @@
 #ifdef __USE_MISC
 
 struct fddi_header {
-  u_int8_t fddi_fc;                    /* Frame Control (FC) value */
-  u_int8_t fddi_dhost[FDDI_K_ALEN];    /* Destination host */
-  u_int8_t fddi_shost[FDDI_K_ALEN];    /* Source host */
+  uint8_t fddi_fc;                    /* Frame Control (FC) value */
+  uint8_t fddi_dhost[FDDI_K_ALEN];    /* Destination host */
+  uint8_t fddi_shost[FDDI_K_ALEN];    /* Source host */
 };
 #endif
 

@@ -171,7 +171,7 @@ struct arpreq_old
 struct arpd_request
   {
     unsigned short int req;		/* Request type.  */
-    u_int32_t ip;			/* IP address of entry.  */
+    uint32_t ip;			/* IP address of entry.  */
     unsigned long int dev;		/* Device entry is tied to.  */
     unsigned long int stamp;
     unsigned long int updated;
