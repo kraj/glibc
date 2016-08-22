@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-open F, "cat C-translit.h.in | gcc -E - |" || die "Cannot preprocess input file";
+open F, 'cat C-translit.h.in | ${CPP:-gcc -E} - |' || die "Cannot preprocess input file";
 
 
 sub cstrlen {
