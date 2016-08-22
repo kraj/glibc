@@ -35,8 +35,8 @@
 #ifndef _SYS_QUOTA_H
 #define _SYS_QUOTA_H 1
 
-#include <features.h>
 #include <sys/types.h>
+#include <stdint.h>
 
 /*
  * Select between different incompatible quota versions.

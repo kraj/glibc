@@ -18,12 +18,11 @@
 #ifndef _SYS_ACCT_H
 #define _SYS_ACCT_H	1
 
-#include <features.h>
-
+#include <sys/types.h>
+#include <stdint.h>
 #include <endian.h>
 #define	__need_time_t
 #include <time.h>
-#include <sys/types.h>
 
 __BEGIN_DECLS
 

@@ -49,8 +49,7 @@
 #define __NET_IF_PPP_H 1
 
 #include <sys/types.h>
-#include <sys/cdefs.h>
-
+#include <stdint.h>
 #include <net/if.h>
 #include <sys/ioctl.h>
 #include <net/ppp_defs.h>

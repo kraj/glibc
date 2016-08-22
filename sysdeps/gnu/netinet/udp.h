@@ -47,9 +47,8 @@
 #ifndef __NETINET_UDP_H
 #define __NETINET_UDP_H    1
 
-#include <features.h>
 #include <sys/types.h>
-
+#include <stdint.h>
 
 /* UDP header as specified by RFC 768, August 1980. */
 

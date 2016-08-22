@@ -73,6 +73,7 @@
 #ifdef __USE_MISC
 # include <sys/types.h>
 # include <sys/socket.h>
+# include <stdint.h>
 
 typedef	uint32_t tcp_seq;
 /*

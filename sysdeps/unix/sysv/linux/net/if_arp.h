@@ -20,12 +20,11 @@
 /* Based on the 4.4BSD and Linux version of this file.  */
 
 #ifndef _NET_IF_ARP_H
-
 #define _NET_IF_ARP_H 1
-#include <sys/cdefs.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <stdint.h>
 
 __BEGIN_DECLS
 

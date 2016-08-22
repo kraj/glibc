@@ -58,7 +58,7 @@
 
 #include <sys/param.h>
 #include <sys/types.h>
-#include <sys/cdefs.h>
+#include <stdint.h>
 
 /*%
  * Revision information.  This is the release date in YYYYMMDD format.

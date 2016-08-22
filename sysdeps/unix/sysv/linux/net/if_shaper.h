@@ -18,8 +18,8 @@
 #ifndef _NET_IF_SHAPER_H
 #define _NET_IF_SHAPER_H 1
 
-#include <features.h>
 #include <sys/types.h>
+#include <stdint.h>
 #include <net/if.h>
 #include <sys/ioctl.h>
 

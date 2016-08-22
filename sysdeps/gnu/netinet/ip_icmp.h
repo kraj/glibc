@@ -18,8 +18,8 @@
 #ifndef __NETINET_IP_ICMP_H
 #define __NETINET_IP_ICMP_H    1
 
-#include <sys/cdefs.h>
 #include <sys/types.h>
+#include <stdint.h>
 
 __BEGIN_DECLS
 

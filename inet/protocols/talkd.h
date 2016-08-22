@@ -52,6 +52,7 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <stdint.h>
 
 /*
  * Client->server request message format.

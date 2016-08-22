@@ -18,9 +18,8 @@
 #ifndef __NETIPX_IPX_H
 #define __NETIPX_IPX_H 1
 
-#include <features.h>
-
 #include <sys/types.h>
+#include <stdint.h>
 #include <bits/sockaddr.h>
 
 __BEGIN_DECLS
