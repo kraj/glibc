@@ -203,7 +203,23 @@ Use this option to disable the vector math library.
 @item --enable-tunables
 Tunables support allows additional library parameters to be customized at
 runtime.  This is an experimental feature and affects startup time and is thus
-disabled by default.
+disabled by default.  This option can take the following values:
+
+@itemize @bullet
+@item @var{no}
+This is the default if the option is not passed to configure. This disables
+tunables.
+
+@item @var{yes}
+This is the default if the option is passed to configure. This enables tunables
+and selects the default frontend (currently @var{valstring}).
+
+@item @var{valstring}
+This enables tunables and selects the @var{valstring} frontend for tunables.
+This frontend allows users to specify tunables as a colon-separated list in a
+single environment variable @var{GLIBC_TUNABLES}.
+
+@end itemize
 
 @item --build=@var{build-system}
 @itemx --host=@var{host-system}
