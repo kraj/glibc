@@ -21,6 +21,7 @@
 #include <unistd.h>
 #include <ldsodefs.h>
 #include <exit-thread.h>
+#include <elf/dl-keysetup.h>
 
 extern void __libc_init_first (int argc, char **argv, char **envp);
 
@@ -192,21 +193,21 @@ LIBC_START_MAIN (int (*main) (int, char **, char ** MAIN_AUXVEC_DECL),
      we need to setup errno.  */
   __pthread_initialize_minimal ();
 
+  struct key_setup keys;
+  __compute_keys (_dl_random, &keys);
+
   /* Set up the stack checker's canary.  */
-  uintptr_t stack_chk_guard = _dl_setup_stack_chk_guard (_dl_random);
 # ifdef THREAD_SET_STACK_GUARD
-  THREAD_SET_STACK_GUARD (stack_chk_guard);
+  THREAD_SET_STACK_GUARD (keys.stack);
 # else
-  __stack_chk_guard = stack_chk_guard;
+  __stack_chk_guard = keys.stack;
 # endif
 
   /* Set up the pointer guard value.  */
-  uintptr_t pointer_chk_guard = _dl_setup_pointer_guard (_dl_random,
-							 stack_chk_guard);
 # ifdef THREAD_SET_POINTER_GUARD
-  THREAD_SET_POINTER_GUARD (pointer_chk_guard);
+  THREAD_SET_POINTER_GUARD (keys.pointer);
 # else
-  __pointer_chk_guard_local = pointer_chk_guard;
+  __pointer_chk_guard_local = keys.pointer;
 # endif
 
 #endif

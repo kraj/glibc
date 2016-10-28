@@ -46,34 +46,3 @@
     else if (__LINUX_KERNEL_VERSION > 0)				      \
       FATAL ("FATAL: cannot determine kernel version\n");		      \
   } while (0)
-
-static inline uintptr_t __attribute__ ((always_inline))
-_dl_setup_stack_chk_guard (void *dl_random)
-{
-  union
-  {
-    uintptr_t num;
-    unsigned char bytes[sizeof (uintptr_t)];
-  } ret;
-
-  /* We need in the moment only 8 bytes on 32-bit platforms and 16
-     bytes on 64-bit platforms.  Therefore we can use the data
-     directly and not use the kernel-provided data to seed a PRNG.  */
-  memcpy (ret.bytes, dl_random, sizeof (ret));
-#if BYTE_ORDER == LITTLE_ENDIAN
-  ret.num &= ~(uintptr_t) 0xff;
-#elif BYTE_ORDER == BIG_ENDIAN
-  ret.num &= ~((uintptr_t) 0xff << (8 * (sizeof (ret) - 1)));
-#else
-# error "BYTE_ORDER unknown"
-#endif
-  return ret.num;
-}
-
-static inline uintptr_t __attribute__ ((always_inline))
-_dl_setup_pointer_guard (void *dl_random, uintptr_t stack_chk_guard)
-{
-  uintptr_t ret;
-  memcpy (&ret, (char *) dl_random + sizeof (ret), sizeof (ret));
-  return ret;
-}

@@ -41,6 +41,7 @@
 #include <tls.h>
 #include <stap-probe.h>
 #include <stackinfo.h>
+#include <dl-keysetup.h>
 
 #include <assert.h>
 
@@ -699,21 +700,21 @@ rtld_lock_default_unlock_recursive (void *lock)
 static void
 security_init (void)
 {
+  struct key_setup keys;
+  __compute_keys (_dl_random, &keys);
+
   /* Set up the stack checker's canary.  */
-  uintptr_t stack_chk_guard = _dl_setup_stack_chk_guard (_dl_random);
 #ifdef THREAD_SET_STACK_GUARD
-  THREAD_SET_STACK_GUARD (stack_chk_guard);
+  THREAD_SET_STACK_GUARD (keys.stack);
 #else
-  __stack_chk_guard = stack_chk_guard;
+  __stack_chk_guard = keys.stack;
 #endif
 
   /* Set up the pointer guard as well, if necessary.  */
-  uintptr_t pointer_chk_guard
-    = _dl_setup_pointer_guard (_dl_random, stack_chk_guard);
 #ifdef THREAD_SET_POINTER_GUARD
-  THREAD_SET_POINTER_GUARD (pointer_chk_guard);
+  THREAD_SET_POINTER_GUARD (keys.pointer);
 #endif
-  __pointer_chk_guard_local = pointer_chk_guard;
+  __pointer_chk_guard_local = keys.pointer;
 
   /* We do not need the _dl_random value anymore.  The less
      information we leave behind, the better, so clear the

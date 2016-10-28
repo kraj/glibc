@@ -211,4 +211,4 @@ __sha256_process_bytes (const void *buffer, size_t len, struct sha256_ctx *ctx)
     }
 }
 
-#include <sha256-block.c>
+#include "sha256-block.c"
