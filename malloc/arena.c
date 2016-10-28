@@ -340,6 +340,19 @@ ptmalloc_init (void)
       if (check_action != 0)
         __malloc_check_init ();
     }
+
+#ifdef SHARED
+  /* For a shared library, elf/rtld.c performed key setup in
+     security_init, and we copy the keys.  In static builds, the guard
+     cookies have already been initialized in csu/libc-start.c.  */
+  __malloc_header_guard = GLRO (dl_malloc_header_guard);
+  __malloc_footer_guard = GLRO (dl_malloc_footer_guard);
+#endif
+
+  /* Initialize the top chunk, based on the heap protector guards.  */
+  malloc_init_state (&main_arena);
+  set_head (main_arena.top, 0);
+
 #if HAVE_MALLOC_INIT_HOOK
   void (*hook) (void) = atomic_forced_read (__malloc_initialize_hook);
   if (hook != NULL)

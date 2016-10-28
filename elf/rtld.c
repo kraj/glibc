@@ -42,6 +42,7 @@
 #include <stap-probe.h>
 #include <stackinfo.h>
 #include <dl-keysetup.h>
+#include <malloc/malloc-internal.h>
 
 #include <assert.h>
 
@@ -715,6 +716,11 @@ security_init (void)
   THREAD_SET_POINTER_GUARD (keys.pointer);
 #endif
   __pointer_chk_guard_local = keys.pointer;
+
+  /* Keep a copy of the computed keys, so that they can be obtained
+     during malloc initialization in libc.so.  */
+  GLRO (dl_malloc_header_guard) = keys.heap_header;
+  GLRO (dl_malloc_footer_guard) = keys.heap_footer;
 
   /* We do not need the _dl_random value anymore.  The less
      information we leave behind, the better, so clear the

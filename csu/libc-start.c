@@ -22,6 +22,7 @@
 #include <ldsodefs.h>
 #include <exit-thread.h>
 #include <elf/dl-keysetup.h>
+#include <malloc/malloc-internal.h>
 
 extern void __libc_init_first (int argc, char **argv, char **envp);
 
@@ -209,6 +210,11 @@ LIBC_START_MAIN (int (*main) (int, char **, char ** MAIN_AUXVEC_DECL),
 # else
   __pointer_chk_guard_local = keys.pointer;
 # endif
+
+  /* In the non-shared case, we initialize the heap guard
+     directly.  */
+  __malloc_header_guard = keys.heap_header;
+  __malloc_footer_guard = keys.heap_footer;
 
 #endif
 

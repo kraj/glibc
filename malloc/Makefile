@@ -41,7 +41,7 @@ tests-static := \
 tests += $(tests-static)
 test-srcs = tst-mtrace
 
-routines = malloc morecore mcheck mtrace obstack \
+routines = malloc morecore mcheck mtrace obstack malloc-guard \
   scratch_buffer_grow scratch_buffer_grow_preserve \
   scratch_buffer_set_array_size
 

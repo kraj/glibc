@@ -81,5 +81,8 @@ void __malloc_fork_unlock_parent (void) internal_function attribute_hidden;
 /* Called in the child process after a fork.  */
 void __malloc_fork_unlock_child (void) internal_function attribute_hidden;
 
+/* Random values for the heap protector.  */
+extern INTERNAL_SIZE_T __malloc_header_guard attribute_hidden;
+extern INTERNAL_SIZE_T __malloc_footer_guard attribute_hidden;
 
 #endif /* _MALLOC_INTERNAL_H */

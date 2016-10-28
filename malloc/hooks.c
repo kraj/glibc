@@ -537,35 +537,38 @@ malloc_set_state (void *msptr)
      dumped_main_arena_end, realloc and free will recognize these
      chunks as dumped fake mmapped chunks and never free them.  */
 
-  /* Find the chunk with the lowest address with the heap.  */
-  mchunkptr chunk = NULL;
+  /* Find the chunk with the lowest address with the heap.  If
+     successful, size_header will point to the mchunk_size member (not
+     the chunk start, i.e. the mchunck_prev_size member).  */
+  size_t *size_header = NULL;
   {
     size_t *candidate = (size_t *) ms->sbrk_base;
     size_t *end = (size_t *) (ms->sbrk_base + ms->sbrked_mem_bytes);
     while (candidate < end)
       if (*candidate != 0)
 	{
-	  chunk = mem2chunk ((void *) (candidate + 1));
+	  size_header = candidate;
 	  break;
 	}
       else
 	++candidate;
   }
-  if (chunk == NULL)
+  if (size_header == NULL)
     return 0;
 
   /* Iterate over the dumped heap and patch the chunks so that they
-     are treated as fake mmapped chunks.  */
+     are treated as fake mmapped chunks.  We cannot use the regular
+     accessors because the chunks we read are not yet encrypted.  */
   mchunkptr top = ms->av[2];
-  while (chunk < top)
+  size_t *top_size_header = ((size_t *) top) + 1;
+  while (size_header < top_size_header)
     {
-      if (inuse (chunk))
-	{
-	  /* Mark chunk as mmapped, to trigger the fallback path.  */
-	  size_t size = chunksize (chunk);
-	  set_head (chunk, size | IS_MMAPPED);
-	}
-      chunk = next_chunk (chunk);
+      size_t size = *size_header & ~SIZE_BITS;
+      /* We treat all chunks as allocated.  The heap consistency
+	 checks do not trigger because they are not active for the
+	 dumped heap.  */
+      *size_header = HEAP_CRYPT_SIZE (size) | IS_MMAPPED;
+      size_header += size / sizeof (*size_header);
     }
 
   /* The dumped fake mmapped chunks all lie in this address range.  */

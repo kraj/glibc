@@ -607,6 +607,10 @@ struct rtld_global_ro
   /* List of auditing interfaces.  */
   struct audit_ifaces *_dl_audit;
   unsigned int _dl_naudit;
+
+  /* malloc protection keys. */
+  uintptr_t _dl_malloc_header_guard;
+  uintptr_t _dl_malloc_footer_guard;
 };
 # define __rtld_global_attribute__
 # if IS_IN (rtld)

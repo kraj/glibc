@@ -1,3 +1,28 @@
+2016-10-27  Florian Weimer  <fweimer@redhat.com>
+
+	* malloc/mallc-internal.h (__malloc_header_guard)
+	(__malloc_footer_guard): Declare.
+	* malloc/malloc-guard.c: New file.
+	* malloc/Makefile (routines): Add it.
+	* malloc/malloc.c (HEAP_CRYPT_SIZE, HEAP_CRYPT_PREVSIZE): Define.
+	(chunksize_nomask, prev_size, set_prev_size, set_head_size)
+	(set_head, set_foot): Add encryption.
+	* malloc/arena.c (ptmalloc_init): For shared builds, initialize
+	the heap guard variables.  Initialize the top chunk.
+	* malloc/hooks.c (malloc_set_state): Apply the heap guard to the
+	dumped heap.
+	* malloc/tst-mallocstate.c (malloc_usable_size_valid): New
+	variable.
+	(check_allocation): Check malloc_usable_size result if
+	malloc_usable_size_valid.
+	(init_heap): Set malloc_usable_size_valid.
+	* csu/libc-start.c (LIBC_START_MAIN): Initialize heap guard
+	variables.
+	* sysdeps/generic/ldsodefs.h (struct rtld_global_ro): Add members
+	_dl_malloc_header_guard, _dl_malloc_footer_guard.
+	* elf/rtld.c (security_init): Initialize temporary copy of the
+	heap guard variables.
+
 2016-10-28  Florian Weimer  <fweimer@redhat.com>
 
 	* elf/dl-keysetup.h: New file.

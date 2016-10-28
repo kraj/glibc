@@ -1221,6 +1221,10 @@ nextchunk-> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 /* Mark a chunk as not being on the main arena.  */
 #define set_non_main_arena(p) ((p)->mchunk_size |= NON_MAIN_ARENA)
 
+/* Decrypt a heap header chunk.  */
+#define HEAP_CRYPT_SIZE(val) (__malloc_header_guard ^ ((INTERNAL_SIZE_T) val))
+#define HEAP_CRYPT_PREVSIZE(val) \
+  (__malloc_footer_guard ^ ((INTERNAL_SIZE_T) val))
 
 /*
    Bits to mask off when extracting size
@@ -1236,16 +1240,16 @@ nextchunk-> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 #define chunksize(p) (chunksize_nomask (p) & ~(SIZE_BITS))
 
 /* Like chunksize, but do not mask SIZE_BITS.  */
-#define chunksize_nomask(p)         ((p)->mchunk_size)
+#define chunksize_nomask(p) HEAP_CRYPT_SIZE ((p)->mchunk_size)
 
 /* Ptr to next physical malloc_chunk. */
 #define next_chunk(p) ((mchunkptr) (((char *) (p)) + chunksize (p)))
 
 /* Size of the chunk below P.  Only valid if prev_inuse (P).  */
-#define prev_size(p) ((p)->mchunk_prev_size)
+#define prev_size(p) HEAP_CRYPT_PREVSIZE ((p)->mchunk_prev_size)
 
 /* Set the size of the chunk below P.  Only valid if prev_inuse (P).  */
-#define set_prev_size(p, sz) ((p)->mchunk_prev_size = (sz))
+#define set_prev_size(p, sz) ((p)->mchunk_prev_size = HEAP_CRYPT_PREVSIZE (sz))
 
 /* Ptr to previous physical malloc_chunk.  Only valid if prev_inuse (P).  */
 #define prev_chunk(p) ((mchunkptr) (((char *) (p)) - prev_size (p)))
@@ -1277,13 +1281,16 @@ nextchunk-> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
 
 /* Set size at head, without disturbing its use bit */
-#define set_head_size(p, s)  ((p)->mchunk_size = (((p)->mchunk_size & SIZE_BITS) | (s)))
+#define set_head_size(p, s) \
+  ((p)->mchunk_size = ((p)->mchunk_size & SIZE_BITS) | HEAP_CRYPT_SIZE (s))
 
 /* Set size/use field */
-#define set_head(p, s)       ((p)->mchunk_size = (s))
+#define set_head(p, s) ((p)->mchunk_size = HEAP_CRYPT_SIZE (s))
 
 /* Set size at footer (only when chunk is not in use) */
-#define set_foot(p, s)       (((mchunkptr) ((char *) (p) + (s)))->mchunk_prev_size = (s))
+#define set_foot(p, s) \
+  (((mchunkptr) ((char *) (p) + (s)))->mchunk_prev_size \
+    = HEAP_CRYPT_PREVSIZE (s))
 
 
 #pragma GCC poison mchunk_size

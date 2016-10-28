@@ -186,6 +186,10 @@ struct allocation
   unsigned int seed;
 };
 
+/* After heap initialization, we can call malloc_usable_size to check
+   if it gives valid results.  */
+static bool malloc_usable_size_valid;
+
 /* Check that the allocation task allocation has the expected
    contents.  */
 static void
@@ -220,6 +224,23 @@ check_allocation (const struct allocation *alloc, int index)
       dump_hex (alloc->data, size);
       putc ('\n', stdout);
       errors = true;
+    }
+
+  if (malloc_usable_size_valid)
+    {
+      size_t usable = malloc_usable_size (alloc->data);
+      if (usable < size)
+        {
+          printf ("error: allocation %d has reported size %zu (expected %zu)\n",
+                  index, usable, size);
+          errors = true;
+        }
+      else if (usable > size + 4096)
+        {
+          printf ("error: allocation %d reported as %zu bytes (requested %zu)\n",
+                  index, usable, size);
+          errors = true;
+        }
     }
 }
 
@@ -317,6 +338,10 @@ init_heap (void)
       write_message ("error: malloc_set_state failed\n");
       _exit (1);
     }
+
+  /* The heap has been initialized.  We may now call
+     malloc_usable_size.  */
+  malloc_usable_size_valid = true;
 }
 
 /* Interpose the initialization callback.  */
