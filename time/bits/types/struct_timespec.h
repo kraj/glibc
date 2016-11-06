@@ -11,4 +11,11 @@ struct timespec
   __syscall_slong_t tv_nsec;	/* Nanoseconds.  */
 };
 
+/* This one is for holding a Y2038-safe time value.  */
+struct timespec64
+{
+  __time64_t tv_sec;			/* Seconds.  */
+  __syscall_squad_t tv_nsec;	/* Nanoseconds.  */
+};
+
 #endif

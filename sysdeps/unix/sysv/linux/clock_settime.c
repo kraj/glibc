@@ -23,6 +23,11 @@
 
 
 /* The REALTIME clock is definitely supported in the kernel.  */
+#define SYSDEP_SETTIME64 \
+  case CLOCK_REALTIME:							      \
+    retval = INLINE_SYSCALL (clock_settime64, 2, clock_id, tp);		      \
+    break
+
 #define SYSDEP_SETTIME \
   case CLOCK_REALTIME:							      \
     retval = INLINE_SYSCALL (clock_settime, 2, clock_id, tp);		      \
@@ -32,6 +37,9 @@
 #define HANDLED_REALTIME	1
 
 #define HANDLED_CPUTIME 1
+#define SYSDEP_SETTIME64_CPU \
+  retval = INLINE_SYSCALL (clock_settime64, 2, clock_id, tp)
+
 #define SYSDEP_SETTIME_CPU \
   retval = INLINE_SYSCALL (clock_settime, 2, clock_id, tp)
 

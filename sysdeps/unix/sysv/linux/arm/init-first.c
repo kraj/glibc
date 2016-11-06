@@ -23,6 +23,7 @@
 
 int (*VDSO_SYMBOL(gettimeofday)) (struct timeval *, void *) attribute_hidden;
 int (*VDSO_SYMBOL(clock_gettime)) (clockid_t, struct timespec *);
+int (*VDSO_SYMBOL(clock_gettime64)) (clockid_t, struct timespec64 *);
 
 static inline void
 _libc_vdso_platform_setup (void)
@@ -36,6 +37,11 @@ _libc_vdso_platform_setup (void)
   p = _dl_vdso_vsym ("__vdso_clock_gettime", &linux26);
   PTR_MANGLE (p);
   VDSO_SYMBOL (clock_gettime) = p;
+
+  /* (aaribaud) TODO: map to version where clock_gettime64 officially appears */
+  p = _dl_vdso_vsym ("__vdso_clock_gettime64", NULL);
+  PTR_MANGLE (p);
+  VDSO_SYMBOL (clock_gettime64) = p;
 }
 
 # define VDSO_SETUP _libc_vdso_platform_setup

@@ -134,3 +134,51 @@ __clock_gettime (clockid_t clock_id, struct timespec *tp)
 }
 weak_alias (__clock_gettime, clock_gettime)
 libc_hidden_def (__clock_gettime)
+
+/* Get current value of CLOCK and store it in TP, 64-bit version.  */
+int
+__clock_gettime64 (clockid_t clock_id, struct timespec64 *tp)
+{
+  int retval = -1;
+
+  switch (clock_id)
+    {
+#ifdef SYSDEP_GETTIME
+      SYSDEP_GETTIME64;
+#endif
+
+#ifndef HANDLED_REALTIME
+    case CLOCK_REALTIME:
+      {
+	struct timeval tv;
+	retval = gettimeofday (&tv, NULL);
+	if (retval == 0)
+	  TIMEVAL_TO_TIMESPEC (&tv, tp);
+      }
+      break;
+#endif
+
+    default:
+#ifdef SYSDEP_GETTIME64_CPU
+      SYSDEP_GETTIME64_CPU (clock_id, tp);
+#endif
+#if HP_TIMING_AVAIL
+      if ((clock_id & ((1 << CLOCK_IDFIELD_SIZE) - 1))
+	  == CLOCK_THREAD_CPUTIME_ID)
+	retval = hp_timing_gettime (clock_id, tp);
+      else
+#endif
+	__set_errno (EINVAL);
+      break;
+
+#if HP_TIMING_AVAIL && !defined HANDLED_CPUTIME
+    case CLOCK_PROCESS_CPUTIME_ID:
+      retval = hp_timing_gettime (clock_id, tp);
+      break;
+#endif
+    }
+
+  return retval;
+}
+weak_alias (__clock_gettime64, clock_gettime64)
+libc_hidden_def (__clock_gettime64)

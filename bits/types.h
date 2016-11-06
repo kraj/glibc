@@ -145,7 +145,8 @@ __STD_TYPE __CLOCK_T_TYPE __clock_t;	/* Type of CPU usage counts.  */
 __STD_TYPE __RLIM_T_TYPE __rlim_t;	/* Type for resource measurement.  */
 __STD_TYPE __RLIM64_T_TYPE __rlim64_t;	/* Type for resource measurement (LFS).  */
 __STD_TYPE __ID_T_TYPE __id_t;		/* General type for IDs.  */
-__STD_TYPE __TIME_T_TYPE __time_t;	/* Seconds since the Epoch.  */
+__STD_TYPE __TIME_T_TYPE __time_t;	/* Seconds since the Epoch, Y2038-unsafe.  */
+__STD_TYPE __TIME64_T_TYPE __time64_t;	/* Seconds since the Epoch, Y2038-safe.  */
 __STD_TYPE __USECONDS_T_TYPE __useconds_t; /* Count of microseconds.  */
 __STD_TYPE __SUSECONDS_T_TYPE __suseconds_t; /* Signed count of microseconds.  */
 
@@ -184,6 +185,8 @@ __STD_TYPE __SSIZE_T_TYPE __ssize_t; /* Type of a byte count, or error.  */
 __STD_TYPE __SYSCALL_SLONG_TYPE __syscall_slong_t;
 /* Unsigned long type used in system calls.  */
 __STD_TYPE __SYSCALL_ULONG_TYPE __syscall_ulong_t;
+/* Signed quad type used in system calls.  */
+__STD_TYPE __SYSCALL_SQUAD_TYPE __syscall_squad_t;
 
 /* These few don't really vary by system, they always correspond
    to one of the other defined types.  */

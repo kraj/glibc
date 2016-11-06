@@ -27,6 +27,7 @@
 extern int (*VDSO_SYMBOL(gettimeofday)) (struct timeval *, void *)
    attribute_hidden;
 extern int (*VDSO_SYMBOL(clock_gettime)) (clockid_t, struct timespec *);
+extern int (*VDSO_SYMBOL(clock_gettime64)) (clockid_t, struct timespec64 *);
 
 #endif
 

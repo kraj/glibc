@@ -69,8 +69,77 @@ hp_timing_settime (clockid_t clock_id, const struct timespec *tp)
 }
 #endif
 
+/*
+ * We define the 64- and 32-bit versions of clock_gettime. The client
+ * code determines which one is called:
+ *
+ * - if client code defines ___USE_TIME_BITS64, then GLIBC defines
+ *   _TIME_BITS equal to 64, and the 64-bit version of clock_gettime
+ *   gets declared and used.
+ *
+ * - if client code does not define ___USE_TIME_BITS64, then GLIBC does
+ *   not define _TIME_BITS and the 32-bit version of clock_gettime gets
+ *   declared and used.
+ */
 
-/* Set CLOCK to value TP.  */
+
+/* Set CLOCK to value TP, 64-bit Y2038-safe version.  */
+int
+__clock_settime64 (clockid_t clock_id, const struct timespec64 *tp)
+{
+  int retval;
+
+  /* Make sure the time cvalue is OK.  */
+  if (tp->tv_nsec < 0 || tp->tv_nsec >= 1000000000)
+    {
+      __set_errno (EINVAL);
+      return -1;
+    }
+
+  switch (clock_id)
+    {
+#define HANDLE_REALTIME \
+      do {								      \
+	struct timeval tv;						      \
+	TIMESPEC_TO_TIMEVAL (&tv, tp);					      \
+									      \
+	retval = settimeofday (&tv, NULL);				      \
+      } while (0)
+
+#ifdef SYSDEP_SETTIME64
+      SYSDEP_SETTIME64;
+#endif
+
+#ifndef HANDLED_REALTIME
+    case CLOCK_REALTIME:
+      HANDLE_REALTIME;
+      break;
+#endif
+
+    default:
+#ifdef SYSDEP_SETTIME64_CPU
+      SYSDEP_SETTIME64_CPU;
+#endif
+#ifndef HANDLED_CPUTIME
+# if HP_TIMING_AVAIL
+      if (CPUCLOCK_WHICH (clock_id) == CLOCK_PROCESS_CPUTIME_ID
+	  || CPUCLOCK_WHICH (clock_id) == CLOCK_THREAD_CPUTIME_ID)
+	retval = hp_timing_settime (clock_id, tp);
+      else
+# endif
+	{
+	  __set_errno (EINVAL);
+	  retval = -1;
+	}
+#endif
+      break;
+    }
+
+  return retval;
+}
+weak_alias (__clock_settime64, clock_settime64)
+
+/* Set CLOCK to value TP, 64-bit Y2038-safe version.  */
 int
 __clock_settime (clockid_t clock_id, const struct timespec *tp)
 {

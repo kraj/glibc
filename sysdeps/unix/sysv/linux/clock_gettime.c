@@ -44,4 +44,24 @@
   break
 #define SYSDEP_GETTIME_CPUTIME	/* Default catches them too.  */
 
+/* 64-bit versions */
+
+/* The REALTIME and MONOTONIC clock are definitely supported in the
+   kernel.  */
+#define SYSDEP_GETTIME64 \
+  SYSDEP_GETTIME64_CPUTIME;						      \
+  case CLOCK_REALTIME:							      \
+  case CLOCK_MONOTONIC:							      \
+    retval = INLINE_VSYSCALL (clock_gettime64, 2, clock_id, tp);		      \
+    break
+
+/* We handled the REALTIME clock here.  */
+#define HANDLED_REALTIME	1
+#define HANDLED_CPUTIME	1
+
+#define SYSDEP_GETTIME64_CPU(clock_id, tp) \
+  retval = INLINE_VSYSCALL (clock_gettime64, 2, clock_id, tp); \
+  break
+#define SYSDEP_GETTIME64_CPUTIME	/* Default catches them too.  */
+
 #include <sysdeps/unix/clock_gettime.c>

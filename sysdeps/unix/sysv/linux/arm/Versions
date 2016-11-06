@@ -9,11 +9,16 @@ libc {
   }
   GLIBC_2.24 {
     recvmsg; sendmsg;
+    clock_gettime64; clock_settime64;
   }
   GLIBC_PRIVATE {
     # A copy of sigaction lives in libpthread, and needs these.
     __default_sa_restorer; __default_rt_sa_restorer;
     # nptl/pthread_cond_timedwait.c uses INTERNAL_VSYSCALL(clock_gettime).
     __vdso_clock_gettime;
+    # (aaribaud) do we need this?
+    __clock_gettime64;
+    __clock_settime64;
+    __vdso_clock_gettime64;
   }
 }

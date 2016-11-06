@@ -223,10 +223,19 @@ extern int clock_getres (clockid_t __clock_id, struct timespec *__res) __THROW;
 
 /* Get current value of clock CLOCK_ID and store it in TP.  */
 extern int clock_gettime (clockid_t __clock_id, struct timespec *__tp) __THROW;
+extern int clock_gettime64 (clockid_t __clock_id, struct timespec64 *__tp) __THROW;
 
 /* Set clock CLOCK_ID to value TP.  */
 extern int clock_settime (clockid_t __clock_id, const struct timespec *__tp)
      __THROW;
+extern int clock_settime64 (clockid_t __clock_id, const struct timespec64 *__tp)
+     __THROW;
+
+#ifdef __USE_TIME_BITS64
+#define timespec timespec64
+#define clock_gettime clock_gettime64
+#define clock_settime clock_settime64
+#endif
 
 # ifdef __USE_XOPEN2K
 /* High-resolution sleep with the specified clock.
