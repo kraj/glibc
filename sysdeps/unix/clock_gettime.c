@@ -143,7 +143,7 @@ __clock_gettime64 (clockid_t clock_id, struct timespec64 *tp)
 
   switch (clock_id)
     {
-#ifdef SYSDEP_GETTIME
+#ifdef SYSDEP_GETTIME64
       SYSDEP_GETTIME64;
 #endif
 
