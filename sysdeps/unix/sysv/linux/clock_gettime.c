@@ -29,10 +29,23 @@
 /* The REALTIME and MONOTONIC clock are definitely supported in the
    kernel.  */
 #define SYSDEP_GETTIME \
-  SYSDEP_GETTIME_CPUTIME;						      \
-  case CLOCK_REALTIME:							      \
-  case CLOCK_MONOTONIC:							      \
-    retval = INLINE_VSYSCALL (clock_gettime, 2, clock_id, tp);		      \
+  SYSDEP_GETTIME_CPUTIME;						                      \
+  case CLOCK_REALTIME:							                      \
+  case CLOCK_MONOTONIC:							                      \
+    retval = INLINE_VSYSCALL (clock_gettime, 2, clock_id, tp);        \
+    if (retval == ENOSYS)                                             \
+    {                                                                 \
+      struct timespec64 tp64;                                         \
+      retval = INLINE_VSYSCALL (clock_gettime64, 2, clock_id, &tp64); \
+      if (retval >= 0)                                                \
+      {                                                               \
+        if (tp64.tv_sec < 0x80000000)                                 \
+        {                                                             \
+          tp->tv_sec = (__time_t) tp64.tv_sec;                        \
+          tp->tv_nsec = (__syscall_slong_t) tp64.tv_nsec;             \
+        }                                                             \
+      }                                                               \
+    }                                                                 \
     break
 
 /* We handled the REALTIME clock here.  */
@@ -40,7 +53,20 @@
 #define HANDLED_CPUTIME	1
 
 #define SYSDEP_GETTIME_CPU(clock_id, tp) \
-  retval = INLINE_VSYSCALL (clock_gettime, 2, clock_id, tp); \
+  retval = INLINE_VSYSCALL (clock_gettime, 2, clock_id, tp);        \
+  if (retval == ENOSYS)                                             \
+  {                                                                 \
+    struct timespec64 tp64;                                         \
+    retval = INLINE_VSYSCALL (clock_gettime64, 2, clock_id, &tp64); \
+    if (retval >= 0)                                                \
+    {                                                               \
+      if (tp64.tv_sec < 0x80000000)                                 \
+      {                                                             \
+        tp->tv_sec = (__time_t) tp64.tv_sec;                        \
+        tp->tv_nsec = (__syscall_slong_t) tp64.tv_nsec;             \
+      }                                                             \
+    }                                                               \
+  }                                                                 \
   break
 #define SYSDEP_GETTIME_CPUTIME	/* Default catches them too.  */
 
@@ -49,10 +75,21 @@
 /* The REALTIME and MONOTONIC clock are definitely supported in the
    kernel.  */
 #define SYSDEP_GETTIME64 \
-  SYSDEP_GETTIME64_CPUTIME;						      \
-  case CLOCK_REALTIME:							      \
-  case CLOCK_MONOTONIC:							      \
-    retval = INLINE_VSYSCALL (clock_gettime64, 2, clock_id, tp);		      \
+  SYSDEP_GETTIME64_CPUTIME;						                    \
+  case CLOCK_REALTIME:							                    \
+  case CLOCK_MONOTONIC:							                    \
+    retval = INLINE_VSYSCALL (clock_gettime64, 2, clock_id, tp);    \
+    if (retval == ENOSYS)                                           \
+    {                                                               \
+      struct timespec tp32;                                         \
+      retval = INLINE_VSYSCALL (clock_gettime, 2, clock_id, &tp32); \
+      if (retval >= 0)                                              \
+      {                                                             \
+        tp->tv_sec = tp32.tv_sec;                                   \
+        if (tp->tv_sec < 0) tp->tv_sec += 0x100000000;              \
+        tp->tv_nsec = tp32.tv_nsec;                                 \
+      }                                                             \
+    }                                                               \
     break
 
 /* We handled the REALTIME clock here.  */
@@ -60,7 +97,18 @@
 #define HANDLED_CPUTIME	1
 
 #define SYSDEP_GETTIME64_CPU(clock_id, tp) \
-  retval = INLINE_VSYSCALL (clock_gettime64, 2, clock_id, tp); \
+  retval = INLINE_VSYSCALL (clock_gettime64, 2, clock_id, tp);    \
+  if (retval == ENOSYS)                                           \
+  {                                                               \
+    struct timespec tp32;                                         \
+    retval = INLINE_VSYSCALL (clock_gettime, 2, clock_id, &tp32); \
+    if (retval >= 0)                                              \
+    {                                                             \
+      tp->tv_sec = tp32.tv_sec;                                   \
+      if (tp->tv_sec < 0) tp->tv_sec += 0x100000000;              \
+      tp->tv_nsec = tp32.tv_nsec;                                 \
+    }                                                             \
+  }                                                               \
   break
 #define SYSDEP_GETTIME64_CPUTIME	/* Default catches them too.  */
 
