@@ -26,6 +26,7 @@
 #if defined __cplusplus && __GNUC_PREREQ (4, 4)
 # define __CORRECT_ISO_CPP_STRINGS_H_PROTO
 #endif
+#include <bits/const-covariance.h>
 
 __BEGIN_DECLS
 
@@ -41,61 +42,19 @@ extern void bcopy (const void *__src, void *__dest, size_t __n)
 /* Set N bytes of S to 0.  */
 extern void bzero (void *__s, size_t __n) __THROW __nonnull ((1));
 
-/* Find the first occurrence of C in S (same as strchr).  */
-# ifdef __CORRECT_ISO_CPP_STRINGS_H_PROTO
-extern "C++"
-{
-extern char *index (char *__s, int __c)
-     __THROW __asm ("index") __attribute_pure__ __nonnull ((1));
-extern const char *index (const char *__s, int __c)
-     __THROW __asm ("index") __attribute_pure__ __nonnull ((1));
+/* Find the first occurrence of C in S (same as strchr).
+   [C]    extern char *index (const char *s, int c);
+   [C++]  extern char *index (char *s, int c);
+          extern const char *index (const char *s, int c);  */
+__CONST_COV_BUILTIN (index, __attribute_pure__ __nonnull ((1)),
+                     char *, __s, int, __c);
 
-#  if defined __OPTIMIZE__
-__extern_always_inline char *
-index (char *__s, int __c) __THROW
-{
-  return __builtin_index (__s, __c);
-}
-
-__extern_always_inline const char *
-index (const char *__s, int __c) __THROW
-{
-  return __builtin_index (__s, __c);
-}
-#  endif
-}
-# else
-extern char *index (const char *__s, int __c)
-     __THROW __attribute_pure__ __nonnull ((1));
-# endif
-
-/* Find the last occurrence of C in S (same as strrchr).  */
-# ifdef __CORRECT_ISO_CPP_STRINGS_H_PROTO
-extern "C++"
-{
-extern char *rindex (char *__s, int __c)
-     __THROW __asm ("rindex") __attribute_pure__ __nonnull ((1));
-extern const char *rindex (const char *__s, int __c)
-     __THROW __asm ("rindex") __attribute_pure__ __nonnull ((1));
-
-#  if defined __OPTIMIZE__
-__extern_always_inline char *
-rindex (char *__s, int __c) __THROW
-{
-  return __builtin_rindex (__s, __c);
-}
-
-__extern_always_inline const char *
-rindex (const char *__s, int __c) __THROW
-{
-  return __builtin_rindex (__s, __c);
-}
-#  endif
-}
-# else
-extern char *rindex (const char *__s, int __c)
-     __THROW __attribute_pure__ __nonnull ((1));
-# endif
+/* Find the last occurrence of C in S (same as strrchr).
+   [C]    extern char *rindex (const char *s, int c);
+   [C++]  extern char *rindex (char *s, int c);
+          extern const char *rindex (const char *s, int c);  */
+__CONST_COV_BUILTIN (rindex, __attribute_pure__ __nonnull ((1)),
+                     char *, __s, int, __c);
 #endif
 
 #if defined __USE_MISC || !defined __USE_XOPEN2K8 || defined __USE_XOPEN2K8XSI
@@ -106,11 +65,11 @@ extern int ffs (int __i) __THROW __attribute_const__;
 
 /* The following two functions are non-standard but necessary for non-32 bit
    platforms.  */
-# ifdef	__USE_GNU
+#ifdef	__USE_GNU
 extern int ffsl (long int __l) __THROW __attribute_const__;
 __extension__ extern int ffsll (long long int __ll)
      __THROW __attribute_const__;
-# endif
+#endif
 
 /* Compare S1 and S2, ignoring case.  */
 extern int strcasecmp (const char *__s1, const char *__s2)

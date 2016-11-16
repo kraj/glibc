@@ -36,7 +36,7 @@ __BEGIN_DECLS
 #if defined __cplusplus && __GNUC_PREREQ (4, 4)
 # define __CORRECT_ISO_CPP_STRING_H_PROTO
 #endif
-
+#include <bits/const-covariance.h>
 
 __BEGIN_NAMESPACE_STD
 /* Copy N bytes of SRC to DEST.  */
@@ -66,60 +66,30 @@ extern void *memset (void *__s, int __c, size_t __n) __THROW __nonnull ((1));
 extern int memcmp (const void *__s1, const void *__s2, size_t __n)
      __THROW __attribute_pure__ __nonnull ((1, 2));
 
-/* Search N bytes of S for C.  */
-#ifdef __CORRECT_ISO_CPP_STRING_H_PROTO
-extern "C++"
-{
-extern void *memchr (void *__s, int __c, size_t __n)
-      __THROW __asm ("memchr") __attribute_pure__ __nonnull ((1));
-extern const void *memchr (const void *__s, int __c, size_t __n)
-      __THROW __asm ("memchr") __attribute_pure__ __nonnull ((1));
-
-# ifdef __OPTIMIZE__
-__extern_always_inline void *
-memchr (void *__s, int __c, size_t __n) __THROW
-{
-  return __builtin_memchr (__s, __c, __n);
-}
-
-__extern_always_inline const void *
-memchr (const void *__s, int __c, size_t __n) __THROW
-{
-  return __builtin_memchr (__s, __c, __n);
-}
-# endif
-}
-#else
-extern void *memchr (const void *__s, int __c, size_t __n)
-      __THROW __attribute_pure__ __nonnull ((1));
-#endif
+/* Search N bytes of S for C.
+   [C]    extern void *memchr (const void *s, int c, size_t n);
+   [C++]  extern void *memchr (void *s, int c, size_t n);
+          extern const void *memchr (const void *s, int c, size_t n);  */
+__CONST_COV_BUILTIN (memchr, __attribute_pure__ __nonnull ((1)),
+                     void *, __s, int, __c, size_t, __n);
 __END_NAMESPACE_STD
 
 #ifdef __USE_GNU
-/* Search in S for C.  This is similar to `memchr' but there is no
-   length limit.  */
-# ifdef __CORRECT_ISO_CPP_STRING_H_PROTO
-extern "C++" void *rawmemchr (void *__s, int __c)
-     __THROW __asm ("rawmemchr") __attribute_pure__ __nonnull ((1));
-extern "C++" const void *rawmemchr (const void *__s, int __c)
-     __THROW __asm ("rawmemchr") __attribute_pure__ __nonnull ((1));
-# else
-extern void *rawmemchr (const void *__s, int __c)
-     __THROW __attribute_pure__ __nonnull ((1));
-# endif
+/* Search in S for C.  This is similar to 'memchr' but there is no
+   length limit.
+   [C]    extern void *rawmemchr (const void *s, int c);
+   [C++]  extern void *rawmemchr (void *s, int c);
+          extern const void *rawmemchr (const void *s, int c);  */
+__CONST_COV_PROTO (rawmemchr, __attribute_pure__ __nonnull ((1)),
+                   void *, __s, int, __c);
 
-/* Search N bytes of S for the final occurrence of C.  */
-# ifdef __CORRECT_ISO_CPP_STRING_H_PROTO
-extern "C++" void *memrchr (void *__s, int __c, size_t __n)
-      __THROW __asm ("memrchr") __attribute_pure__ __nonnull ((1));
-extern "C++" const void *memrchr (const void *__s, int __c, size_t __n)
-      __THROW __asm ("memrchr") __attribute_pure__ __nonnull ((1));
-# else
-extern void *memrchr (const void *__s, int __c, size_t __n)
-      __THROW __attribute_pure__ __nonnull ((1));
-# endif
+/* Search N bytes of S for the final occurrence of C.
+   [C]    extern void *memrchr (const void *s, int c, size_t n);
+   [C++]  extern void *memrchr (void *s, int c, size_t n);
+          extern const void *memrchr (const void *s, int c, size_t n);  */
+__CONST_COV_PROTO (memrchr, __attribute_pure__ __nonnull ((1)),
+                   void *, __s, int, __c, size_t, __n);
 #endif
-
 
 __BEGIN_NAMESPACE_STD
 /* Copy SRC to DEST.  */
@@ -204,74 +174,30 @@ extern char *strndup (const char *__string, size_t __n)
 #endif
 
 __BEGIN_NAMESPACE_STD
-/* Find the first occurrence of C in S.  */
-#ifdef __CORRECT_ISO_CPP_STRING_H_PROTO
-extern "C++"
-{
-extern char *strchr (char *__s, int __c)
-     __THROW __asm ("strchr") __attribute_pure__ __nonnull ((1));
-extern const char *strchr (const char *__s, int __c)
-     __THROW __asm ("strchr") __attribute_pure__ __nonnull ((1));
+/* Find the first occurrence of C in S.
+   [C]    extern char *strchr (const char *s, int c);
+   [C++]  extern char *strchr (char *s, int c);
+          extern const char *strchr (const char *s, int c);  */
+__CONST_COV_BUILTIN (strchr, __attribute_pure__ __nonnull ((1)),
+                   char *, __s, int, __c);
 
-# ifdef __OPTIMIZE__
-__extern_always_inline char *
-strchr (char *__s, int __c) __THROW
-{
-  return __builtin_strchr (__s, __c);
-}
+/* Find the last occurrence of C in S.
+   [C]    extern char *strrchr (const char *s, int c);
+   [C++]  extern char *strrchr (char *s, int c);
+          extern const char *strrchr (const char *s, int c);  */
+__CONST_COV_BUILTIN (strrchr, __attribute_pure__ __nonnull ((1)),
+                     char *, __s, int, __c);
 
-__extern_always_inline const char *
-strchr (const char *__s, int __c) __THROW
-{
-  return __builtin_strchr (__s, __c);
-}
-# endif
-}
-#else
-extern char *strchr (const char *__s, int __c)
-     __THROW __attribute_pure__ __nonnull ((1));
-#endif
-/* Find the last occurrence of C in S.  */
-#ifdef __CORRECT_ISO_CPP_STRING_H_PROTO
-extern "C++"
-{
-extern char *strrchr (char *__s, int __c)
-     __THROW __asm ("strrchr") __attribute_pure__ __nonnull ((1));
-extern const char *strrchr (const char *__s, int __c)
-     __THROW __asm ("strrchr") __attribute_pure__ __nonnull ((1));
-
-# ifdef __OPTIMIZE__
-__extern_always_inline char *
-strrchr (char *__s, int __c) __THROW
-{
-  return __builtin_strrchr (__s, __c);
-}
-
-__extern_always_inline const char *
-strrchr (const char *__s, int __c) __THROW
-{
-  return __builtin_strrchr (__s, __c);
-}
-# endif
-}
-#else
-extern char *strrchr (const char *__s, int __c)
-     __THROW __attribute_pure__ __nonnull ((1));
-#endif
 __END_NAMESPACE_STD
 
 #ifdef __USE_GNU
 /* This function is similar to `strchr'.  But it returns a pointer to
-   the closing NUL byte in case C is not found in S.  */
-# ifdef __CORRECT_ISO_CPP_STRING_H_PROTO
-extern "C++" char *strchrnul (char *__s, int __c)
-     __THROW __asm ("strchrnul") __attribute_pure__ __nonnull ((1));
-extern "C++" const char *strchrnul (const char *__s, int __c)
-     __THROW __asm ("strchrnul") __attribute_pure__ __nonnull ((1));
-# else
-extern char *strchrnul (const char *__s, int __c)
-     __THROW __attribute_pure__ __nonnull ((1));
-# endif
+   the closing NUL byte in case C is not found in S.
+   [C]    extern char *strchrnul (const char *s, int c);
+   [C++]  extern char *strchrnul (char *s, int c);
+          extern const char *strchrnul (const char *s, int c);  */
+__CONST_COV_PROTO (strchrnul, __attribute_pure__ __nonnull ((1)),
+                   char *, __s, int, __c);
 #endif
 
 __BEGIN_NAMESPACE_STD
@@ -279,65 +205,26 @@ __BEGIN_NAMESPACE_STD
    consists entirely of characters not in REJECT.  */
 extern size_t strcspn (const char *__s, const char *__reject)
      __THROW __attribute_pure__ __nonnull ((1, 2));
+
 /* Return the length of the initial segment of S which
    consists entirely of characters in ACCEPT.  */
 extern size_t strspn (const char *__s, const char *__accept)
      __THROW __attribute_pure__ __nonnull ((1, 2));
-/* Find the first occurrence in S of any character in ACCEPT.  */
-#ifdef __CORRECT_ISO_CPP_STRING_H_PROTO
-extern "C++"
-{
-extern char *strpbrk (char *__s, const char *__accept)
-     __THROW __asm ("strpbrk") __attribute_pure__ __nonnull ((1, 2));
-extern const char *strpbrk (const char *__s, const char *__accept)
-     __THROW __asm ("strpbrk") __attribute_pure__ __nonnull ((1, 2));
 
-# ifdef __OPTIMIZE__
-__extern_always_inline char *
-strpbrk (char *__s, const char *__accept) __THROW
-{
-  return __builtin_strpbrk (__s, __accept);
-}
+/* Find the first occurrence in S of any character in ACCEPT.
+   [C]   extern char *strpbrk (const char *s, const char *accept);
+   [C++] extern char *strpbrk (char *s, const char *accept);
+         extern const char *strpbrk (const char *s, const char *accept); */
+__CONST_COV_BUILTIN (strpbrk, __attribute_pure__ __nonnull ((1, 2)),
+                     char *, __s, const char *, __accept);
 
-__extern_always_inline const char *
-strpbrk (const char *__s, const char *__accept) __THROW
-{
-  return __builtin_strpbrk (__s, __accept);
-}
-# endif
-}
-#else
-extern char *strpbrk (const char *__s, const char *__accept)
-     __THROW __attribute_pure__ __nonnull ((1, 2));
-#endif
-/* Find the first occurrence of NEEDLE in HAYSTACK.  */
-#ifdef __CORRECT_ISO_CPP_STRING_H_PROTO
-extern "C++"
-{
-extern char *strstr (char *__haystack, const char *__needle)
-     __THROW __asm ("strstr") __attribute_pure__ __nonnull ((1, 2));
-extern const char *strstr (const char *__haystack, const char *__needle)
-     __THROW __asm ("strstr") __attribute_pure__ __nonnull ((1, 2));
-
-# ifdef __OPTIMIZE__
-__extern_always_inline char *
-strstr (char *__haystack, const char *__needle) __THROW
-{
-  return __builtin_strstr (__haystack, __needle);
-}
-
-__extern_always_inline const char *
-strstr (const char *__haystack, const char *__needle) __THROW
-{
-  return __builtin_strstr (__haystack, __needle);
-}
-# endif
-}
-#else
-extern char *strstr (const char *__haystack, const char *__needle)
-     __THROW __attribute_pure__ __nonnull ((1, 2));
-#endif
-
+/* Find the first occurrence of NEEDLE in HAYSTACK.
+   [C]   extern char *strstr (const char *haystack, const char *needle);
+   [C++] extern char *strstr (char *haystack, const char *needle);
+         extern const char *strstr (const char *haystack, const char *needle);
+ */
+__CONST_COV_BUILTIN (strstr, __attribute_pure__ __nonnull ((1, 2)),
+                     char *, __haystack, const char *, __needle);
 
 /* Divide S into tokens separated by characters in DELIM.  */
 extern char *strtok (char *__restrict __s, const char *__restrict __delim)
@@ -357,26 +244,26 @@ extern char *strtok_r (char *__restrict __s, const char *__restrict __delim,
 #endif
 
 #ifdef __USE_GNU
-/* Similar to `strstr' but this function ignores the case of both strings.  */
-# ifdef __CORRECT_ISO_CPP_STRING_H_PROTO
-extern "C++" char *strcasestr (char *__haystack, const char *__needle)
-     __THROW __asm ("strcasestr") __attribute_pure__ __nonnull ((1, 2));
-extern "C++" const char *strcasestr (const char *__haystack,
-				     const char *__needle)
-     __THROW __asm ("strcasestr") __attribute_pure__ __nonnull ((1, 2));
-# else
-extern char *strcasestr (const char *__haystack, const char *__needle)
-     __THROW __attribute_pure__ __nonnull ((1, 2));
-# endif
-#endif
+/* Similar to 'strstr', but ignores the case of both strings.
+   [C]   extern char *strcasestr (const char *haystack, const char *needle);
+   [C++] extern char *strcasestr (char *haystack, const char *needle);
+         extern const char *strcasestr (const char *haystack,
+                                        const char *needle);  */
+__CONST_COV_PROTO (strcasestr, __attribute_pure__ __nonnull ((1, 2)),
+                   char *, __haystack, const char *, __needle);
 
-#ifdef __USE_GNU
 /* Find the first occurrence of NEEDLE in HAYSTACK.
    NEEDLE is NEEDLELEN bytes long;
-   HAYSTACK is HAYSTACKLEN bytes long.  */
-extern void *memmem (const void *__haystack, size_t __haystacklen,
-		     const void *__needle, size_t __needlelen)
-     __THROW __attribute_pure__ __nonnull ((1, 3));
+   HAYSTACK is HAYSTACKLEN bytes long.
+   [C]   extern void *memmem (const void *haystack, size_t haystacklen,
+                              const void *needle, size_t needlelen);
+   [C++] extern void *memmem (void *haystack, size_t haystacklen,
+                              const void *needle, size_t needlelen);
+         extern const void *memmem (const void *haystack, size_t haystacklen,
+                                    const void *needle, size_t needlelen);  */
+__CONST_COV_PROTO (memmem, __attribute_pure__ __nonnull ((1, 3)),
+                   void *, __haystack, size_t, __haystacklen,
+                   const void *, __needle, size_t, __needlelen);
 
 /* Copy N bytes of SRC to DEST, return pointer to bytes after the
    last written byte.  */
@@ -487,15 +374,12 @@ extern void *memfrob (void *__s, size_t __n) __THROW __nonnull ((1));
 /* Return the file name within directory of FILENAME.  We don't
    declare the function if the `basename' macro is available (defined
    in <libgen.h>) which makes the XPG version of this function
-   available.  */
-#  ifdef __CORRECT_ISO_CPP_STRING_H_PROTO
-extern "C++" char *basename (char *__filename)
-     __THROW __asm ("basename") __nonnull ((1));
-extern "C++" const char *basename (const char *__filename)
-     __THROW __asm ("basename") __nonnull ((1));
-#  else
-extern char *basename (const char *__filename) __THROW __nonnull ((1));
-#  endif
+   available.
+   [C]   char *basename (const char *filename);
+   [C++] char *basename (char *filename);
+         const char *basename (const char *filename);  */
+__CONST_COV_PROTO (basename, __nonnull ((1)),
+                   char *, __filename);
 # endif
 #endif
 
