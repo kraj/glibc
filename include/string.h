@@ -44,7 +44,9 @@ extern void *__memchr (const void *__s, int __c, size_t __n)
      __attribute_pure__;
 
 extern void __bzero (void *__s, size_t __n) __THROW __nonnull ((1));
-#define __bzero(s, n) __builtin_memset (s, '\0', n)
+#ifndef __NO_STRING_INLINES
+# define __bzero(s, n) __builtin_memset (s, '\0', n)
+#endif
 
 extern int __ffs (int __i) __attribute__ ((const));
 
@@ -77,13 +79,20 @@ extern __typeof (strncasecmp_l) __strncasecmp_l;
 #endif
 
 libc_hidden_proto (__mempcpy)
+#ifndef __NO_STRING_INLINES
+# define __mempcpy(dest, src, n) __builtin_mempcpy (dest, src, n)
+#endif
 libc_hidden_proto (__stpcpy)
-#define __stpcpy(dest, src) __builtin_stpcpy (dest, src)
+#ifndef __NO_STRING_INLINES
+# define __stpcpy(dest, src) __builtin_stpcpy (dest, src)
+#endif
 libc_hidden_proto (__stpncpy)
 libc_hidden_proto (__rawmemchr)
 libc_hidden_proto (__strcasecmp)
 libc_hidden_proto (__strcasecmp_l)
 libc_hidden_proto (__strncasecmp_l)
+extern __typeof (strncat) __strncat;
+libc_hidden_proto (__strncat)
 libc_hidden_proto (__strdup)
 libc_hidden_proto (__strndup)
 libc_hidden_proto (__strerror_r)
