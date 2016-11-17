@@ -22,10 +22,10 @@ subdir	:= string
 
 include ../Makeconfig
 
-headers	:= string.h strings.h memory.h endian.h bits/endian.h \
-	   argz.h envz.h byteswap.h bits/byteswap.h bits/byteswap-16.h \
-	   bits/string.h bits/string2.h bits/string3.h \
-	   bits/strings_fortified.h bits/uintn-identity.h
+headers := string.h strings.h memory.h argz.h envz.h byteswap.h		\
+	   endian.h bits/byteswap.h bits/byteswap-16.h bits/endian.h	\
+	   bits/string.h bits/string3.h bits/strings_fortified.h	\
+	   bits/uintn-identity.h
 
 routines	:= strcat strchr strcmp strcoll strcpy strcspn		\
 		   strverscmp strdup strndup				\

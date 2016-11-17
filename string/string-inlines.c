@@ -31,7 +31,6 @@
 
 #undef __NO_INLINE__
 #include <bits/string.h>
-#include <bits/string2.h>
 
 #include "shlib-compat.h"
 

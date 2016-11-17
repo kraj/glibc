@@ -1073,7 +1073,7 @@ _nl_find_msg (struct loaded_l10nfile *domain_file,
 	    domain->conversions = new_conversions;
 
 	    /* Copy the 'encoding' string to permanent storage.  */
-	    encoding = strdup (encoding);
+	    encoding = __strdup (encoding);
 	    if (__builtin_expect (encoding == NULL, 0))
 	      /* Nothing we can do, no more memory.  We cannot use the
 		 translation because it might be encoded incorrectly.  */
