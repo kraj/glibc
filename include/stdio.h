@@ -1,7 +1,6 @@
 #ifndef _STDIO_H
-# if defined __need_FILE || defined __need___FILE || defined _ISOMAC
-#  include <libio/stdio.h>
-# else
+# include <libio/stdio.h>
+# ifndef _ISOMAC
 /* Force gets to be declared, since we may be compiling gets itself,
    or tests that use it.  */
 #  include <features.h>
@@ -76,11 +75,11 @@ libc_hidden_proto (__isoc99_vfscanf)
 extern FILE *__new_tmpfile (void);
 extern FILE *__old_tmpfile (void);
 
-
-
 #  define __need_size_t
-#  define __need_wint_t
 #  include <stddef.h>
+
+#  include <bits/types/wint_t.h>
+
 /* Generate a unique file name (and possibly open it).  */
 extern int __path_search (char *__tmpl, size_t __tmpl_len,
 			  const char *__dir, const char *__pfx,

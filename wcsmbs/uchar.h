@@ -27,17 +27,7 @@
 
 #define __need_size_t
 #include <stddef.h>
-#define __need_mbstate_t
-#include <wchar.h>
-
-#ifndef __mbstate_t_defined
-__BEGIN_NAMESPACE_C99
-/* Public type.  */
-typedef __mbstate_t mbstate_t;
-__END_NAMESPACE_C99
-# define __mbstate_t_defined 1
-#endif
-
+#include <bits/types/mbstate_t.h>
 
 #if defined __GNUC__ && !defined __USE_ISOCXX11
 /* Define the 16-bit and 32-bit character types.  Use the information

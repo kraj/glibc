@@ -21,55 +21,21 @@
  */
 
 #ifndef _STDIO_H
+#define _STDIO_H	1
 
-#if !defined __need_FILE && !defined __need___FILE
-# define _STDIO_H	1
-# define __GLIBC_INTERNAL_STARTING_HEADER_IMPLEMENTATION
-# include <bits/libc-header-start.h>
+#define __GLIBC_INTERNAL_STARTING_HEADER_IMPLEMENTATION
+#include <bits/libc-header-start.h>
 
 __BEGIN_DECLS
 
-# define __need_size_t
-# define __need_NULL
-# include <stddef.h>
+#define __need_size_t
+#define __need_NULL
+#include <stddef.h>
 
-# include <bits/types.h>
-# define __need_FILE
-# define __need___FILE
-#endif /* Don't need FILE.  */
+#include <bits/types.h>
+#include <bits/types/__FILE.h>
+#include <bits/types/FILE.h>
 
-
-#if !defined __FILE_defined && defined __need_FILE
-
-/* Define outside of namespace so the C++ is happy.  */
-struct _IO_FILE;
-
-__BEGIN_NAMESPACE_STD
-/* The opaque type of streams.  This is the definition used elsewhere.  */
-typedef struct _IO_FILE FILE;
-__END_NAMESPACE_STD
-#if defined __USE_LARGEFILE64 || defined __USE_POSIX \
-    || defined __USE_ISOC99 || defined __USE_XOPEN \
-    || defined __USE_POSIX2
-__USING_NAMESPACE_STD(FILE)
-#endif
-
-# define __FILE_defined	1
-#endif /* FILE not defined.  */
-#undef	__need_FILE
-
-
-#if !defined ____FILE_defined && defined __need___FILE
-
-/* The opaque type of streams.  This is the definition used elsewhere.  */
-typedef struct _IO_FILE __FILE;
-
-# define ____FILE_defined	1
-#endif /* __FILE not defined.  */
-#undef	__need___FILE
-
-
-#ifdef	_STDIO_H
 #define _STDIO_USES_IOSTREAM
 
 #include <libio.h>
@@ -942,5 +908,3 @@ extern void funlockfile (FILE *__stream) __THROW;
 __END_DECLS
 
 #endif /* <stdio.h> included.  */
-
-#endif /* !_STDIO_H */
