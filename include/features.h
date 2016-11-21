@@ -370,6 +370,15 @@
 # define __USE_FORTIFY_LEVEL 0
 #endif
 
+/* The function 'gets' existed in C89, but is impossible to use safely.
+   It has been removed from ISO C11, ISO C++14, and _GNU_SOURCE.  */
+#if !defined __USE_ISOC11 \
+    || (defined __cplusplus && __cplusplus <= 201103L)
+# define __GLIBC_USE_DEPRECATED_GETS 1
+#else
+# define __GLIBC_USE_DEPRECATED_GETS 0
+#endif
+
 /* Get definitions of __STDC_* predefined macros, if the compiler has
    not preincluded this header automatically.  */
 #include <stdc-predef.h>

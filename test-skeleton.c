@@ -611,6 +611,7 @@ main (int argc, char *argv[])
 /* The following functionality is only available if <pthread.h> was
    included before this file.  */
 #ifdef _PTHREAD_H
+#include <stdint.h>
 
 /* Call pthread_sigmask with error checking.  */
 static void

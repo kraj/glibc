@@ -76,6 +76,15 @@
 #define HAVE_ISWCTYPE	1
 #define ENABLE_NLS	1
 
+/* As C++ is only used in tests, and the internal-use declarations
+   found in wrapper headers in include/ are not always C++-safe,
+   instruct those headers not to provide any of those declarations
+   when compiling C++.  */
+
+#ifdef __cplusplus
+# define _ISOMAC 1
+#endif
+
 /* The symbols in all the user (non-_) macros are C symbols.  */
 
 #ifndef __SYMBOL_PREFIX

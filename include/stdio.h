@@ -2,10 +2,14 @@
 # if defined __need_FILE || defined __need___FILE || defined _ISOMAC
 #  include <libio/stdio.h>
 # else
+/* Force gets to be declared, since we may be compiling gets itself,
+   or tests that use it.  */
+#  include <features.h>
+#  undef __GLIBC_USE_DEPRECATED_GETS
+#  define __GLIBC_USE_DEPRECATED_GETS 1
 #  include <libio/stdio.h>
 
 /* Now define the internal interfaces.  */
-__BEGIN_DECLS
 
 extern int __fcloseall (void);
 extern int __snprintf (char *__restrict __s, size_t __maxlen,
@@ -30,7 +34,6 @@ extern int __vsscanf (const char *__restrict __s,
 		      _G_va_list __arg)
      __attribute__ ((__format__ (__scanf__, 2, 0)));
 
-#  ifndef __cplusplus
 extern int __sprintf_chk (char *, int, size_t, const char *, ...) __THROW;
 extern int __snprintf_chk (char *, size_t, int, size_t, const char *, ...)
      __THROW;
@@ -52,7 +55,6 @@ extern int __obstack_printf_chk (struct obstack *, int, const char *, ...)
      __THROW;
 extern int __obstack_vprintf_chk (struct obstack *, int, const char *,
 				  _G_va_list) __THROW;
-#  endif
 
 extern int __isoc99_fscanf (FILE *__restrict __stream,
 			    const char *__restrict __format, ...) __wur;
@@ -181,28 +183,8 @@ libc_hidden_proto (__vasprintf_chk)
 libc_hidden_proto (__vdprintf_chk)
 libc_hidden_proto (__obstack_vprintf_chk)
 
-/* The <stdio.h> header does not include the declaration for gets
-   anymore when compiling with _GNU_SOURCE.  Provide a copy here.  */
-extern char *gets (char *__s);
-#  if __USE_FORTIFY_LEVEL > 0
-extern char *__gets_chk (char *__str, size_t) __wur;
-extern char *__REDIRECT (__gets_warn, (char *__str), gets)
-     __wur __warnattr ("please use fgets or getline instead, gets can't "
-		       "specify buffer size");
-
-__fortify_function __wur char *
-gets (char *__str)
-{
-  if (__bos (__str) != (size_t) -1)
-    return __gets_chk (__str, __bos (__str));
-  return __gets_warn (__str);
-}
-#  endif
-
 extern FILE * __fmemopen (void *buf, size_t len, const char *mode);
 libc_hidden_proto (__fmemopen)
 
-__END_DECLS
 # endif
-
 #endif
