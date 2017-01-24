@@ -1,3 +1,20 @@
+2017-08-17  Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+
+	* sysdeps/aarch64/Makefile [$(subdir) = elf] (sysdeps-dl-routines):
+	Add tcb-version.
+	* sysdeps/aarch64/Versions [ld] (GLIBC_2.27): Add
+	__libc_tcb_private_ss.
+	* sysdeps/aarch64/nptl/tls.h (tcbprehead_t): New struct.
+	(TLS_PRE_TCB_SIZE): Take tcbprehead_t in consideration.
+	(TLS_DEFINE_INIT_TP): Likewise.
+	(THREAD_SELF): Likewise.
+	(DB_THREAD_SELF): Likewise.
+	* sysdeps/aarch64/tcb-version.c: New file.
+	* sysdeps/unix/sysv/linux/aarch64/ld.abilist (GLIBC_2.27): Add.
+	(__libc_tcb_private_ss): Likewise.
+	* sysdeps/aarch64/nptl/tcb-offsets.sym (PTHREAD_SIZEOF): Rename to
+	PTHREAD_PRE_TCB_SIZE.
+
 2018-01-16  Joseph Myers  <joseph@codesourcery.com>
 
 	* sysdeps/x86_64/backtrace.c: Include <gnu/lib-names.h>.

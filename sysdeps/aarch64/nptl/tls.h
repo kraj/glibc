@@ -26,6 +26,7 @@
 # include <stddef.h>
 # include <stdint.h>
 # include <dl-dtv.h>
+# include <libc-pointer-arith.h>
 
 #else /* __ASSEMBLER__ */
 # include <tcb-offsets.h>
@@ -49,6 +50,12 @@ typedef struct
   void *private;
 } tcbhead_t;
 
+typedef struct
+{
+  /* GCC split stack support.  */
+  void *__private_ss;
+} tcbprehead_t;
+
 /* This is the size of the initial TCB.  */
 # define TLS_INIT_TCB_SIZE	sizeof (tcbhead_t)
 
@@ -58,8 +65,14 @@ typedef struct
 /* This is the size of the TCB.  */
 # define TLS_TCB_SIZE		sizeof (tcbhead_t)
 
-/* This is the size we need before TCB.  */
-# define TLS_PRE_TCB_SIZE	sizeof (struct pthread)
+/* This is the size we need before TCB.  Check if there is room for
+   tcbprehead_t in struct pthread's final padding and if not add it on
+   required pre-tcb size.  */
+# define TLS_PRE_TCB_SIZE \
+  (sizeof (struct pthread)						\
+   + (PTHREAD_STRUCT_END_PADDING < sizeof (tcbprehead_t)		\
+      ? ALIGN_UP (sizeof (tcbprehead_t), __alignof__ (struct pthread))	\
+      : 0))
 
 /* Alignment requirements for the TCB.  */
 # define TLS_TCB_ALIGN		__alignof__ (struct pthread)
@@ -84,7 +97,8 @@ typedef struct
   ({ __asm __volatile ("msr tpidr_el0, %0" : : "r" (tcbp)); NULL; })
 
 /* Value passed to 'clone' for initialization of the thread register.  */
-# define TLS_DEFINE_INIT_TP(tp, pd) void *tp = (pd) + 1
+# define TLS_DEFINE_INIT_TP(tp, pd) \
+  void *tp = (void*)((uintptr_t) (pd) + TLS_PRE_TCB_SIZE)
 
 /* Return the address of the dtv for the current thread.  */
 # define THREAD_DTV() \
@@ -92,11 +106,12 @@ typedef struct
 
 /* Return the thread descriptor for the current thread.  */
 # define THREAD_SELF \
- ((struct pthread *)__builtin_thread_pointer () - 1)
+  ((struct pthread *)((uintptr_t) __builtin_thread_pointer () \
+		      - TLS_PRE_TCB_SIZE))
 
 /* Magic for libthread_db to know how to do THREAD_SELF.  */
 # define DB_THREAD_SELF \
-  CONST_THREAD_AREA (64, sizeof (struct pthread))
+  CONST_THREAD_AREA (64, TLS_PRE_TCB_SIZE)
 
 /* Access to data in the thread descriptor is easy.  */
 # define THREAD_GETMEM(descr, member) \

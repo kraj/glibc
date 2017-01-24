@@ -1,7 +1,7 @@
 long-double-fcts = yes
 
 ifeq ($(subdir),elf)
-sysdep-dl-routines += tlsdesc dl-tlsdesc
+sysdep-dl-routines += tlsdesc dl-tlsdesc tcb-version
 gen-as-const-headers += dl-link.sym
 endif
 

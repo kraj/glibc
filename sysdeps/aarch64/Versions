@@ -3,3 +3,11 @@ libc {
     _mcount;
   }
 }
+
+ld {
+  GLIBC_2.27 {
+    # Symbol used to version control the private GLIBC TCB split-stack
+    # field.
+    __libc_tcb_private_ss;
+  }
+}
