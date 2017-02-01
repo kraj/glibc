@@ -26,3 +26,13 @@ ctime (const time_t *t)
      In particular, ctime and asctime must yield the same pointer.  */
   return asctime (localtime (t));
 }
+
+/* Return a string as returned by asctime which
+   is the representation of *T in that form.  */
+char *
+ctime64 (const time64_t *t)
+{
+  /* Apply the same rule as ctime:
+     make ctime64 (t) is equivalent to asctime (localtime64 (t)).  */
+  return asctime (localtime64 (t));
+}

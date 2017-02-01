@@ -637,7 +637,7 @@ __tzfile_default (const char *std, const char *dst,
 }
 
 void
-__tzfile_compute (time_t timer, int use_localtime,
+__tzfile_compute (time64_t timer, int use_localtime,
 		  long int *leap_correct, int *leap_hit,
 		  struct tm *tp)
 {
@@ -692,7 +692,7 @@ __tzfile_compute (time_t timer, int use_localtime,
 
 	  /* Convert to broken down structure.  If this fails do not
 	     use the string.  */
-	  if (__glibc_unlikely (! __offtime (&timer, 0, tp)))
+	  if (__glibc_unlikely (! __offtime64 (&timer, 0, tp)))
 	    goto use_last;
 
 	  /* Use the rules from the TZ string to compute the change.  */

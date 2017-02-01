@@ -119,3 +119,14 @@ __difftime (time_t time1, time_t time0)
   return time1 < time0 ? - subtract (time0, time1) : subtract (time1, time0);
 }
 strong_alias (__difftime, difftime)
+
+/* Return the difference between 64-bit TIME1 and TIME0.  */
+double
+__difftime64 (time64_t time1, time64_t time0)
+{
+  /* Subtract the smaller integer from the larger, convert the difference to
+     double, and then negate if needed.  */
+
+  return time1 < time0 ? - (time0 - time1) : (time1 - time0);
+}
+strong_alias (__difftime64, difftime64)

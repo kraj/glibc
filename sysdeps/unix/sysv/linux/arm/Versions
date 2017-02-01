@@ -9,7 +9,12 @@ libc {
   }
   GLIBC_2.24 {
     recvmsg; sendmsg;
+  }
+  GLIBC_2.25 {
     clock_gettime64; clock_settime64;
+    ctime64; difftime64;
+    gmtime64; gmtime64_r; 
+    localtime64; localtime64_r; 
   }
   GLIBC_PRIVATE {
     # A copy of sigaction lives in libpthread, and needs these.

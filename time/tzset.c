@@ -61,7 +61,7 @@ typedef struct
 
     /* We cache the computed time of change for a
        given year so we don't have to recompute it.  */
-    time_t change;	/* When to change to this zone.  */
+    time64_t change;	/* When to change to this zone.  */
     int computed_for;	/* Year above is computed for.  */
   } tz_rule;
 
@@ -451,7 +451,7 @@ tzset_internal (int always, int explicit)
       tz_rules[0].name = tz_rules[1].name = "UTC";
       if (J0 != 0)
 	tz_rules[0].type = tz_rules[1].type = J0;
-      tz_rules[0].change = tz_rules[1].change = (time_t) -1;
+      tz_rules[0].change = tz_rules[1].change = (time64_t) -1;
       update_vars ();
       return;
     }
@@ -550,10 +550,11 @@ compute_change (tz_rule *rule, int year)
 
 
 /* Figure out the correct timezone for TM and set `__tzname',
-   `__timezone', and `__daylight' accordingly.  */
+   `__timezone', and `__daylight' accordingly.
+   NOTE: this takes a time64_t value, so passing a time_t value is OK. */
 void
 internal_function
-__tz_compute (time_t timer, struct tm *tm, int use_localtime)
+__tz_compute (time64_t timer, struct tm *tm, int use_localtime)
 {
   compute_change (&tz_rules[0], 1900 + tm->tm_year);
   compute_change (&tz_rules[1], 1900 + tm->tm_year);
@@ -645,6 +646,61 @@ __tz_convert (const time_t *timer, int use_localtime, struct tm *tp)
 	}
 
       if (__offtime (timer, tp->tm_gmtoff - leap_correction, tp))
+        tp->tm_sec += leap_extra_secs;
+      else
+	tp = NULL;
+    }
+
+  return tp;
+}
+
+
+/* Return the `struct tm' representation of *TIMER in the local timezone.
+   Use local time if USE_LOCALTIME is nonzero, UTC otherwise.  */
+struct tm *
+__tz64_convert (const time64_t *timer, int use_localtime, struct tm *tp)
+{
+  long int leap_correction;
+  int leap_extra_secs;
+
+  if (timer == NULL)
+    {
+      __set_errno (EINVAL);
+      return NULL;
+    }
+
+  __libc_lock_lock (tzset_lock);
+
+  /* Update internal database according to current TZ setting.
+     POSIX.1 8.3.7.2 says that localtime_r is not required to set tzname.
+     This is a good idea since this allows at least a bit more parallelism.  */
+  tzset_internal (tp == &_tmbuf && use_localtime, 1);
+
+  if (__use_tzfile)
+    __tzfile_compute (*timer, use_localtime, &leap_correction,
+		      &leap_extra_secs, tp);
+  else
+    {
+      if (! __offtime64 (timer, 0, tp))
+	tp = NULL;
+      else
+	__tz_compute (*timer, tp, use_localtime);
+      leap_correction = 0L;
+      leap_extra_secs = 0;
+    }
+
+  __libc_lock_unlock (tzset_lock);
+
+  if (tp)
+    {
+      if (! use_localtime)
+	{
+	  tp->tm_isdst = 0;
+	  tp->tm_zone = "GMT";
+	  tp->tm_gmtoff = 0L;
+	}
+
+      if (__offtime64 (timer, tp->tm_gmtoff - leap_correction, tp))
         tp->tm_sec += leap_extra_secs;
       else
 	tp = NULL;
