@@ -63,6 +63,15 @@ extern time_t __mktime_internal (struct tm *__tp,
 				 struct tm *(*__func) (const time_t *,
 						       struct tm *),
 				 time_t *__offset);
+
+/* Subroutine of `__mktime64'.  Return the `__time64_t' representation of TP and
+   normalize TP, given that a `struct tm *' maps to a `__time64_t' as performed
+   by FUNC.  Keep track of next guess for __time64_t offset in *OFFSET.  */
+extern __time64_t __mktime64_internal (struct tm *__tp,
+				 struct tm *(*__func) (const __time64_t *,
+						       struct tm *),
+				 __time64_t *__offset);
+
 extern struct tm *__localtime_r (const time_t *__timer,
 				 struct tm *__tp) attribute_hidden;
 

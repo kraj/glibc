@@ -88,8 +88,14 @@ extern double difftime (time_t __time1, time_t __time0)
      __THROW __attribute__ ((__const__));
 
 /* Return the `time_t' representation of TP and normalize TP.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern time_t __REDIRECT (mktime, (struct tm *__tp), __mktime64) __THROW;
+# else
+# define mktime __mktime64
+# endif
+#endif
 extern time_t mktime (struct tm *__tp) __THROW;
-
 
 /* Format TP into S according to FORMAT.
    Write no more than MAXSIZE characters and return the number
@@ -262,6 +268,13 @@ extern int stime (const time_t *__when) __THROW;
 extern time_t timegm (struct tm *__tp) __THROW;
 
 /* Another name for `mktime'.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern time_t __REDIRECT (timelocal, (struct tm *__tp), __timelocal64) __THROW;
+# else
+# define timelocal __timelocal64
+# endif
+#endif
 extern time_t timelocal (struct tm *__tp) __THROW;
 
 /* Return the number of days in YEAR.  */
