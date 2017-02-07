@@ -90,6 +90,8 @@ extern double difftime64 (time64_t __time1, time64_t __time0)
 /* Return the `time_t' representation of TP and normalize TP.  */
 extern time_t mktime (struct tm *__tp) __THROW;
 
+/* Return the `time64_t' representation of TP and normalize TP.  */
+extern time64_t mktime64 (struct tm *__tp) __THROW;
 
 /* Format TP into S according to FORMAT.
    Write no more than MAXSIZE characters and return the number
@@ -254,6 +256,9 @@ extern time_t timegm (struct tm *__tp) __THROW;
 
 /* Another name for `mktime'.  */
 extern time_t timelocal (struct tm *__tp) __THROW;
+
+/* Another name for `mktime64'.  */
+extern time64_t timelocal64 (struct tm *__tp) __THROW;
 
 /* Return the number of days in YEAR.  */
 extern int dysize (int __year) __THROW  __attribute__ ((__const__));

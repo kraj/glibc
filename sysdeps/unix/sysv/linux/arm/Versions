@@ -14,7 +14,9 @@ libc {
     clock_gettime64; clock_settime64;
     ctime64; difftime64;
     gmtime64; gmtime64_r; 
-    localtime64; localtime64_r; 
+    localtime64; localtime64_r;
+    mktime64;
+    timelocal64;
   }
   GLIBC_PRIVATE {
     # A copy of sigaction lives in libpthread, and needs these.

@@ -13,7 +13,9 @@ extern __typeof (strptime_l) __strptime_l;
 libc_hidden_proto (time)
 libc_hidden_proto (asctime)
 libc_hidden_proto (mktime)
+libc_hidden_proto (mktime64)
 libc_hidden_proto (timelocal)
+libc_hidden_proto (timelocal64)
 libc_hidden_proto (localtime)
 libc_hidden_proto (localtime64)
 libc_hidden_proto (strftime)
@@ -65,6 +67,15 @@ extern time_t __mktime_internal (struct tm *__tp,
 				 struct tm *(*__func) (const time_t *,
 						       struct tm *),
 				 time_t *__offset);
+
+/* Subroutine of `mktime64'.  Return the `time64_t' representation of TP and
+   normalize TP, given that a `struct tm *' maps to a `time64_t' as performed
+   by FUNC.  Keep track of next guess for time64_t offset in *OFFSET.  */
+extern time64_t __mktime64_internal (struct tm *__tp,
+				 struct tm *(*__func) (const time64_t *,
+						       struct tm *),
+				 time64_t *__offset);
+
 extern struct tm *__localtime_r (const time_t *__timer,
 				 struct tm *__tp) attribute_hidden;
 

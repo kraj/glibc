@@ -599,6 +599,421 @@ weak_alias (mktime, timelocal)
 libc_hidden_def (mktime)
 libc_hidden_weak (timelocal)
 #endif
+
+/* Return an integer value measuring (YEAR1-YDAY1 HOUR1:MIN1:SEC1) -
+   (YEAR0-YDAY0 HOUR0:MIN0:SEC0) in seconds, assuming that the clocks
+   were not adjusted between the time stamps.
+
+   The YEAR values uses the same numbering as TP->tm_year.  Values
+   need not be in the usual range.  However, YEAR1 must not be less
+   than 2 * INT_MIN or greater than 2 * INT_MAX.
+
+   The result may overflow.  It is the caller's responsibility to
+   detect overflow.  */
+
+static time64_t
+ydhms64_diff (long_int year1, long_int yday1, int hour1, int min1, int sec1,
+	    int year0, int yday0, int hour0, int min0, int sec0)
+{
+  verify (C99_integer_division, -1 / 2 == 0);
+
+  /* Compute intervening leap days correctly even if year is negative.
+     Take care to avoid integer overflow here.  */
+  int a4 = SHR (year1, 2) + SHR (TM_YEAR_BASE, 2) - ! (year1 & 3);
+  int b4 = SHR (year0, 2) + SHR (TM_YEAR_BASE, 2) - ! (year0 & 3);
+  int a100 = a4 / 25 - (a4 % 25 < 0);
+  int b100 = b4 / 25 - (b4 % 25 < 0);
+  int a400 = SHR (a100, 2);
+  int b400 = SHR (b100, 2);
+  int intervening_leap_days = (a4 - b4) - (a100 - b100) + (a400 - b400);
+
+  /* Compute the desired time in time64_t precision.  Overflow might
+     occur here.  */
+  time64_t tyear1 = year1;
+  time64_t years = tyear1 - year0;
+  time64_t days = 365 * years + yday1 - yday0 + intervening_leap_days;
+  time64_t hours = 24 * days + hour1 - hour0;
+  time64_t minutes = 60 * hours + min1 - min0;
+  time64_t seconds = 60 * minutes + sec1 - sec0;
+  return seconds;
+}
+
+/* Return the average of A and B, even if A + B would overflow.  */
+static time64_t
+time64_t_avg (time64_t a, time64_t b)
+{
+  return SHR (a, 1) + SHR (b, 1) + (a & b & 1);
+}
+
+/* Return 1 if A + B does not overflow.  If time64_t is unsigned and if
+   B's top bit is set, assume that the sum represents A - -B, and
+   return 1 if the subtraction does not wrap around.  */
+static int
+time64_t_add_ok (time64_t a, time64_t b)
+{
+  if (! TYPE_SIGNED (time64_t))
+    {
+      time64_t sum = a + b;
+      return (sum < a) == (TIME_T_MIDPOINT <= b);
+    }
+  else if (WRAPV)
+    {
+      time64_t sum = a + b;
+      return (sum < a) == (b < 0);
+    }
+  else
+    {
+      time64_t avg = time64_t_avg (a, b);
+      return TIME_T_MIN / 2 <= avg && avg <= TIME_T_MAX / 2;
+    }
+}
+
+/* Return 1 if A + B does not overflow.  */
+static int
+time64_t_int_add_ok (time64_t a, int b)
+{
+  verify (int_no_wider_than_time64_t, INT_MAX <= TIME_T_MAX);
+  if (WRAPV)
+    {
+      time64_t sum = a + b;
+      return (sum < a) == (b < 0);
+    }
+  else
+    {
+      int a_odd = a & 1;
+      time64_t avg = SHR (a, 1) + (SHR (b, 1) + (a_odd & b));
+      return TIME_T_MIN / 2 <= avg && avg <= TIME_T_MAX / 2;
+    }
+}
+
+/* Return a time64_t value corresponding to (YEAR-YDAY HOUR:MIN:SEC),
+   assuming that *T corresponds to *TP and that no clock adjustments
+   occurred between *TP and the desired time.
+   If TP is null, return a value not equal to *T; this avoids false matches.
+   If overflow occurs, yield the minimal or maximal value, except do not
+   yield a value equal to *T.  */
+static time64_t
+guess_time64_tm (long_int year, long_int yday, int hour, int min, int sec,
+	       const time64_t *t, const struct tm *tp)
+{
+  if (tp)
+    {
+      time64_t d = ydhms64_diff (year, yday, hour, min, sec,
+			     tp->tm_year, tp->tm_yday,
+			     tp->tm_hour, tp->tm_min, tp->tm_sec);
+      if (time64_t_add_ok (*t, d))
+	return *t + d;
+    }
+
+  /* Overflow occurred one way or another.  Return the nearest result
+     that is actually in range, except don't report a zero difference
+     if the actual difference is nonzero, as that would cause a false
+     match; and don't oscillate between two values, as that would
+     confuse the spring-forward gap detector.  */
+  return (*t < TIME_T_MIDPOINT
+	  ? (*t <= TIME_T_MIN + 1 ? *t + 1 : TIME_T_MIN)
+	  : (TIME_T_MAX - 1 <= *t ? *t - 1 : TIME_T_MAX));
+}
+
+/* Use CONVERT to convert *T to a broken down time in *TP.
+   If *T is out of range for conversion, adjust it so that
+   it is the nearest in-range value and then convert that.  */
+static struct tm *
+ranged64_convert (struct tm *(*convert) (const time64_t *, struct tm *),
+		time64_t *t, struct tm *tp)
+{
+  struct tm *r = convert (t, tp);
+
+  if (!r && *t)
+    {
+      time64_t bad = *t;
+      time64_t ok = 0;
+
+      /* BAD is a known unconvertible time64_t, and OK is a known good one.
+	 Use binary search to narrow the range between BAD and OK until
+	 they differ by 1.  */
+      while (bad != ok + (bad < 0 ? -1 : 1))
+	{
+	  time64_t mid = *t = time64_t_avg (ok, bad);
+	  r = convert (t, tp);
+	  if (r)
+	    ok = mid;
+	  else
+	    bad = mid;
+	}
+
+      if (!r && ok)
+	{
+	  /* The last conversion attempt failed;
+	     revert to the most recent successful attempt.  */
+	  *t = ok;
+	  r = convert (t, tp);
+	}
+    }
+
+  return r;
+}
+
+
+/* Convert *TP to a time64_t value, inverting
+   the monotonic and mostly-unit-linear conversion function CONVERT.
+   Use *OFFSET to keep track of a guess at the offset of the result,
+   compared to what the result would be for UTC without leap seconds.
+   If *OFFSET's guess is correct, only one CONVERT call is needed.
+   This function is external because it is used also by timegm.c.  */
+time64_t
+__mktime64_internal (struct tm *tp,
+		   struct tm *(*convert) (const time64_t *, struct tm *),
+		   time64_t *offset)
+{
+  time64_t t, gt, t0, t1, t2;
+  struct tm tm;
+
+  /* The maximum number of probes (calls to CONVERT) should be enough
+     to handle any combinations of time zone rule changes, solar time,
+     leap seconds, and oscillations around a spring-forward gap.
+     POSIX.1 prohibits leap seconds, but some hosts have them anyway.  */
+  int remaining_probes = 6;
+
+  /* Time requested.  Copy it in case CONVERT modifies *TP; this can
+     occur if TP is localtime's returned value and CONVERT is localtime.  */
+  int sec = tp->tm_sec;
+  int min = tp->tm_min;
+  int hour = tp->tm_hour;
+  int mday = tp->tm_mday;
+  int mon = tp->tm_mon;
+  int year_requested = tp->tm_year;
+  int isdst = tp->tm_isdst;
+
+  /* 1 if the previous probe was DST.  */
+  int dst2;
+
+  /* Ensure that mon is in range, and set year accordingly.  */
+  int mon_remainder = mon % 12;
+  int negative_mon_remainder = mon_remainder < 0;
+  int mon_years = mon / 12 - negative_mon_remainder;
+  long_int lyear_requested = year_requested;
+  long_int year = lyear_requested + mon_years;
+
+  /* The other values need not be in range:
+     the remaining code handles minor overflows correctly,
+     assuming int and time64_t arithmetic wraps around.
+     Major overflows are caught at the end.  */
+
+  /* Calculate day of year from year, month, and day of month.
+     The result need not be in range.  */
+  int mon_yday = ((__mon_yday[leapyear (year)]
+		   [mon_remainder + 12 * negative_mon_remainder])
+		  - 1);
+  long_int lmday = mday;
+  long_int yday = mon_yday + lmday;
+
+  time64_t guessed_offset = *offset;
+
+  int sec_requested = sec;
+
+  if (LEAP_SECONDS_POSSIBLE)
+    {
+      /* Handle out-of-range seconds specially,
+	 since ydhms_tm_diff assumes every minute has 60 seconds.  */
+      if (sec < 0)
+	sec = 0;
+      if (59 < sec)
+	sec = 59;
+    }
+
+  /* Invert CONVERT by probing.  First assume the same offset as last
+     time.  */
+
+  t0 = ydhms64_diff (year, yday, hour, min, sec,
+		   EPOCH_YEAR - TM_YEAR_BASE, 0, 0, 0, - guessed_offset);
+
+  if (TIME_T_MAX / INT_MAX / 366 / 24 / 60 / 60 < 3)
+    {
+      /* time64_t isn't large enough to rule out overflows, so check
+	 for major overflows.  A gross check suffices, since if t0
+	 has overflowed, it is off by a multiple of TIME_T_MAX -
+	 TIME_T_MIN + 1.  So ignore any component of the difference
+	 that is bounded by a small value.  */
+
+      /* Approximate log base 2 of the number of time units per
+	 biennium.  A biennium is 2 years; use this unit instead of
+	 years to avoid integer overflow.  For example, 2 average
+	 Gregorian years are 2 * 365.2425 * 24 * 60 * 60 seconds,
+	 which is 63113904 seconds, and rint (log2 (63113904)) is
+	 26.  */
+      int ALOG2_SECONDS_PER_BIENNIUM = 26;
+      int ALOG2_MINUTES_PER_BIENNIUM = 20;
+      int ALOG2_HOURS_PER_BIENNIUM = 14;
+      int ALOG2_DAYS_PER_BIENNIUM = 10;
+      int LOG2_YEARS_PER_BIENNIUM = 1;
+
+      int approx_requested_biennia =
+	(SHR (year_requested, LOG2_YEARS_PER_BIENNIUM)
+	 - SHR (EPOCH_YEAR - TM_YEAR_BASE, LOG2_YEARS_PER_BIENNIUM)
+	 + SHR (mday, ALOG2_DAYS_PER_BIENNIUM)
+	 + SHR (hour, ALOG2_HOURS_PER_BIENNIUM)
+	 + SHR (min, ALOG2_MINUTES_PER_BIENNIUM)
+	 + (LEAP_SECONDS_POSSIBLE
+	    ? 0
+	    : SHR (sec, ALOG2_SECONDS_PER_BIENNIUM)));
+
+      int approx_biennia = SHR (t0, ALOG2_SECONDS_PER_BIENNIUM);
+      int diff = approx_biennia - approx_requested_biennia;
+      int approx_abs_diff = diff < 0 ? -1 - diff : diff;
+
+      /* IRIX 4.0.5 cc miscalculates TIME_T_MIN / 3: it erroneously
+	 gives a positive value of 715827882.  Setting a variable
+	 first then doing math on it seems to work.
+	 (ghazi@caip.rutgers.edu) */
+      time64_t time64_t_max = TIME_T_MAX;
+      time64_t time64_t_min = TIME_T_MIN;
+      time64_t overflow_threshold =
+	(time64_t_max / 3 - time64_t_min / 3) >> ALOG2_SECONDS_PER_BIENNIUM;
+
+      if (overflow_threshold < approx_abs_diff)
+	{
+	  /* Overflow occurred.  Try repairing it; this might work if
+	     the time zone offset is enough to undo the overflow.  */
+	  time64_t repaired_t0 = -1 - t0;
+	  approx_biennia = SHR (repaired_t0, ALOG2_SECONDS_PER_BIENNIUM);
+	  diff = approx_biennia - approx_requested_biennia;
+	  approx_abs_diff = diff < 0 ? -1 - diff : diff;
+	  if (overflow_threshold < approx_abs_diff)
+	    return -1;
+	  guessed_offset += repaired_t0 - t0;
+	  t0 = repaired_t0;
+	}
+    }
+
+  /* Repeatedly use the error to improve the guess.  */
+
+  for (t = t1 = t2 = t0, dst2 = 0;
+       (gt = guess_time64_tm (year, yday, hour, min, sec, &t,
+			    ranged64_convert (convert, &t, &tm)),
+	t != gt);
+       t1 = t2, t2 = t, t = gt, dst2 = tm.tm_isdst != 0)
+    if (t == t1 && t != t2
+	&& (tm.tm_isdst < 0
+	    || (isdst < 0
+		? dst2 <= (tm.tm_isdst != 0)
+		: (isdst != 0) != (tm.tm_isdst != 0))))
+      /* We can't possibly find a match, as we are oscillating
+	 between two values.  The requested time probably falls
+	 within a spring-forward gap of size GT - T.  Follow the common
+	 practice in this case, which is to return a time that is GT - T
+	 away from the requested time, preferring a time whose
+	 tm_isdst differs from the requested value.  (If no tm_isdst
+	 was requested and only one of the two values has a nonzero
+	 tm_isdst, prefer that value.)  In practice, this is more
+	 useful than returning -1.  */
+      goto offset_found;
+    else if (--remaining_probes == 0)
+      return -1;
+
+  /* We have a match.  Check whether tm.tm_isdst has the requested
+     value, if any.  */
+  if (isdst_differ (isdst, tm.tm_isdst))
+    {
+      /* tm.tm_isdst has the wrong value.  Look for a neighboring
+	 time with the right value, and use its UTC offset.
+
+	 Heuristic: probe the adjacent timestamps in both directions,
+	 looking for the desired isdst.  This should work for all real
+	 time zone histories in the tz database.  */
+
+      /* Distance between probes when looking for a DST boundary.  In
+	 tzdata2003a, the shortest period of DST is 601200 seconds
+	 (e.g., America/Recife starting 2000-10-08 01:00), and the
+	 shortest period of non-DST surrounded by DST is 694800
+	 seconds (Africa/Tunis starting 1943-04-17 01:00).  Use the
+	 minimum of these two values, so we don't miss these short
+	 periods when probing.  */
+      int stride = 601200;
+
+      /* The longest period of DST in tzdata2003a is 536454000 seconds
+	 (e.g., America/Jujuy starting 1946-10-01 01:00).  The longest
+	 period of non-DST is much longer, but it makes no real sense
+	 to search for more than a year of non-DST, so use the DST
+	 max.  */
+      int duration_max = 536454000;
+
+      /* Search in both directions, so the maximum distance is half
+	 the duration; add the stride to avoid off-by-1 problems.  */
+      int delta_bound = duration_max / 2 + stride;
+
+      int delta, direction;
+
+      for (delta = stride; delta < delta_bound; delta += stride)
+	for (direction = -1; direction <= 1; direction += 2)
+	  if (time64_t_int_add_ok (t, delta * direction))
+	    {
+	      time64_t ot = t + delta * direction;
+	      struct tm otm;
+	      ranged64_convert (convert, &ot, &otm);
+	      if (! isdst_differ (isdst, otm.tm_isdst))
+		{
+		  /* We found the desired tm_isdst.
+		     Extrapolate back to the desired time.  */
+		  t = guess_time64_tm (year, yday, hour, min, sec, &ot, &otm);
+		  ranged64_convert (convert, &t, &tm);
+		  goto offset_found;
+		}
+	    }
+    }
+
+ offset_found:
+  *offset = guessed_offset + t - t0;
+
+  if (LEAP_SECONDS_POSSIBLE && sec_requested != tm.tm_sec)
+    {
+      /* Adjust time to reflect the tm_sec requested, not the normalized value.
+	 Also, repair any damage from a false match due to a leap second.  */
+      int sec_adjustment = (sec == 0 && tm.tm_sec == 60) - sec;
+      if (! time64_t_int_add_ok (t, sec_requested))
+	return -1;
+      t1 = t + sec_requested;
+      if (! time64_t_int_add_ok (t1, sec_adjustment))
+	return -1;
+      t2 = t1 + sec_adjustment;
+      if (! convert (&t2, &tm))
+	return -1;
+      t = t2;
+    }
+
+  *tp = tm;
+  return t;
+}
+
+
+/* FIXME: This should use a signed type wide enough to hold any UTC
+   offset in seconds.  'int' should be good enough for GNU code.  We
+   can't fix this unilaterally though, as other modules invoke
+   __mktime_internal.  */
+static time64_t localtime64_offset;
+
+/* Convert *TP to a time64_t value.  */
+time64_t
+mktime64 (struct tm *tp)
+{
+#ifdef _LIBC
+  /* POSIX.1 8.1.1 requires that whenever mktime() is called, the
+     time zone names contained in the external variable 'tzname' shall
+     be set as if the tzset() function had been called.  */
+  __tzset ();
+#endif
+
+  return __mktime64_internal (tp, __localtime64_r, &localtime64_offset);
+}
+
+#ifdef weak_alias
+weak_alias (mktime64, timelocal64)
+#endif
+
+#ifdef _LIBC
+libc_hidden_def (mktime64)
+libc_hidden_weak (timelocal64)
+#endif
 
 #if defined DEBUG_MKTIME && DEBUG_MKTIME
 
