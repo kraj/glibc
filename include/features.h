@@ -356,6 +356,10 @@
 # define __USE_FILE_OFFSET64	1
 #endif
 
+#if defined _TIME_BITS && _TIME_BITS == 64
+# define __USE_TIME_BITS64	1
+#endif
+
 #if defined _DEFAULT_SOURCE
 # define __USE_MISC	1
 #endif
