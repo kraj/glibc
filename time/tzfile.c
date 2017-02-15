@@ -637,7 +637,7 @@ __tzfile_default (const char *std, const char *dst,
 }
 
 void
-__tzfile_compute (time64_t timer, int use_localtime,
+__tzfile_compute (__time64_t timer, int use_localtime,
 		  long int *leap_correct, int *leap_hit,
 		  struct tm *tp)
 {

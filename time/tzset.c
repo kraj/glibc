@@ -61,7 +61,7 @@ typedef struct
 
     /* We cache the computed time of change for a
        given year so we don't have to recompute it.  */
-    time64_t change;	/* When to change to this zone.  */
+    __time64_t change;	/* When to change to this zone.  */
     int computed_for;	/* Year above is computed for.  */
   } tz_rule;
 
@@ -451,7 +451,7 @@ tzset_internal (int always, int explicit)
       tz_rules[0].name = tz_rules[1].name = "UTC";
       if (J0 != 0)
 	tz_rules[0].type = tz_rules[1].type = J0;
-      tz_rules[0].change = tz_rules[1].change = (time64_t) -1;
+      tz_rules[0].change = tz_rules[1].change = (__time64_t) -1;
       update_vars ();
       return;
     }
@@ -551,10 +551,11 @@ compute_change (tz_rule *rule, int year)
 
 /* Figure out the correct timezone for TM and set `__tzname',
    `__timezone', and `__daylight' accordingly.
-   NOTE: this takes a time64_t value, so passing a time_t value is OK. */
+   NOTE: this takes a __time64_t value, so passing a __time_t value
+   is OK. */
 void
 internal_function
-__tz_compute (time64_t timer, struct tm *tm, int use_localtime)
+__tz_compute (__time64_t timer, struct tm *tm, int use_localtime)
 {
   compute_change (&tz_rules[0], 1900 + tm->tm_year);
   compute_change (&tz_rules[1], 1900 + tm->tm_year);
@@ -658,7 +659,7 @@ __tz_convert (const time_t *timer, int use_localtime, struct tm *tp)
 /* Return the `struct tm' representation of *TIMER in the local timezone.
    Use local time if USE_LOCALTIME is nonzero, UTC otherwise.  */
 struct tm *
-__tz64_convert (const time64_t *timer, int use_localtime, struct tm *tp)
+__tz64_convert (const __time64_t *timer, int use_localtime, struct tm *tp)
 {
   long int leap_correction;
   int leap_extra_secs;

@@ -5,17 +5,14 @@
 
 __BEGIN_NAMESPACE_STD
 /* Returned by `time'.  */
+#ifdef __USE_TIME_BITS64
+typedef __time64_t time_t;
+#else
 typedef __time_t time_t;
 __END_NAMESPACE_STD
-#ifdef __USE_POSIX
+# ifdef __USE_POSIX
 __USING_NAMESPACE_STD(time_t)
-#endif
-
-/* Returned by `time64'.  */
-typedef __time64_t time64_t;
-__END_NAMESPACE_STD
-#ifdef __USE_POSIX
-__USING_NAMESPACE_STD(time64_t)
+# endif
 #endif
 
 #endif

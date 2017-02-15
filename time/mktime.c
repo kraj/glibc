@@ -611,7 +611,7 @@ libc_hidden_weak (timelocal)
    The result may overflow.  It is the caller's responsibility to
    detect overflow.  */
 
-static time64_t
+static __time64_t
 ydhms64_diff (long_int year1, long_int yday1, int hour1, int min1, int sec1,
 	    int year0, int yday0, int hour0, int min0, int sec0)
 {
@@ -627,78 +627,78 @@ ydhms64_diff (long_int year1, long_int yday1, int hour1, int min1, int sec1,
   int b400 = SHR (b100, 2);
   int intervening_leap_days = (a4 - b4) - (a100 - b100) + (a400 - b400);
 
-  /* Compute the desired time in time64_t precision.  Overflow might
+  /* Compute the desired time in __time64_t precision.  Overflow might
      occur here.  */
-  time64_t tyear1 = year1;
-  time64_t years = tyear1 - year0;
-  time64_t days = 365 * years + yday1 - yday0 + intervening_leap_days;
-  time64_t hours = 24 * days + hour1 - hour0;
-  time64_t minutes = 60 * hours + min1 - min0;
-  time64_t seconds = 60 * minutes + sec1 - sec0;
+  __time64_t tyear1 = year1;
+  __time64_t years = tyear1 - year0;
+  __time64_t days = 365 * years + yday1 - yday0 + intervening_leap_days;
+  __time64_t hours = 24 * days + hour1 - hour0;
+  __time64_t minutes = 60 * hours + min1 - min0;
+  __time64_t seconds = 60 * minutes + sec1 - sec0;
   return seconds;
 }
 
 /* Return the average of A and B, even if A + B would overflow.  */
-static time64_t
-time64_t_avg (time64_t a, time64_t b)
+static __time64_t
+time64_t_avg (__time64_t a, __time64_t b)
 {
   return SHR (a, 1) + SHR (b, 1) + (a & b & 1);
 }
 
-/* Return 1 if A + B does not overflow.  If time64_t is unsigned and if
-   B's top bit is set, assume that the sum represents A - -B, and
+/* Return 1 if A + B does not overflow.  If __time64_t is unsigned and
+   if B's top bit is set, assume that the sum represents A - -B, and
    return 1 if the subtraction does not wrap around.  */
 static int
-time64_t_add_ok (time64_t a, time64_t b)
+time64_t_add_ok (__time64_t a, __time64_t b)
 {
-  if (! TYPE_SIGNED (time64_t))
+  if (! TYPE_SIGNED (__time64_t))
     {
-      time64_t sum = a + b;
+      __time64_t sum = a + b;
       return (sum < a) == (TIME_T_MIDPOINT <= b);
     }
   else if (WRAPV)
     {
-      time64_t sum = a + b;
+      __time64_t sum = a + b;
       return (sum < a) == (b < 0);
     }
   else
     {
-      time64_t avg = time64_t_avg (a, b);
+      __time64_t avg = time64_t_avg (a, b);
       return TIME_T_MIN / 2 <= avg && avg <= TIME_T_MAX / 2;
     }
 }
 
 /* Return 1 if A + B does not overflow.  */
 static int
-time64_t_int_add_ok (time64_t a, int b)
+time64_t_int_add_ok (__time64_t a, int b)
 {
   verify (int_no_wider_than_time64_t, INT_MAX <= TIME_T_MAX);
   if (WRAPV)
     {
-      time64_t sum = a + b;
+      __time64_t sum = a + b;
       return (sum < a) == (b < 0);
     }
   else
     {
       int a_odd = a & 1;
-      time64_t avg = SHR (a, 1) + (SHR (b, 1) + (a_odd & b));
+      __time64_t avg = SHR (a, 1) + (SHR (b, 1) + (a_odd & b));
       return TIME_T_MIN / 2 <= avg && avg <= TIME_T_MAX / 2;
     }
 }
 
-/* Return a time64_t value corresponding to (YEAR-YDAY HOUR:MIN:SEC),
+/* Return a __time64_t value corresponding to (YEAR-YDAY HOUR:MIN:SEC),
    assuming that *T corresponds to *TP and that no clock adjustments
    occurred between *TP and the desired time.
    If TP is null, return a value not equal to *T; this avoids false matches.
    If overflow occurs, yield the minimal or maximal value, except do not
    yield a value equal to *T.  */
-static time64_t
+static __time64_t
 guess_time64_tm (long_int year, long_int yday, int hour, int min, int sec,
-	       const time64_t *t, const struct tm *tp)
+	       const __time64_t *t, const struct tm *tp)
 {
   if (tp)
     {
-      time64_t d = ydhms64_diff (year, yday, hour, min, sec,
+      __time64_t d = ydhms64_diff (year, yday, hour, min, sec,
 			     tp->tm_year, tp->tm_yday,
 			     tp->tm_hour, tp->tm_min, tp->tm_sec);
       if (time64_t_add_ok (*t, d))
@@ -719,22 +719,22 @@ guess_time64_tm (long_int year, long_int yday, int hour, int min, int sec,
    If *T is out of range for conversion, adjust it so that
    it is the nearest in-range value and then convert that.  */
 static struct tm *
-ranged64_convert (struct tm *(*convert) (const time64_t *, struct tm *),
-		time64_t *t, struct tm *tp)
+ranged64_convert (struct tm *(*convert) (const __time64_t *, struct tm *),
+		__time64_t *t, struct tm *tp)
 {
   struct tm *r = convert (t, tp);
 
   if (!r && *t)
     {
-      time64_t bad = *t;
-      time64_t ok = 0;
+      __time64_t bad = *t;
+      __time64_t ok = 0;
 
-      /* BAD is a known unconvertible time64_t, and OK is a known good one.
-	 Use binary search to narrow the range between BAD and OK until
-	 they differ by 1.  */
+      /* BAD is a known unconvertible __time64_t, and OK is a known good
+         one. Use binary search to narrow the range between BAD and OK
+         until they differ by 1.  */
       while (bad != ok + (bad < 0 ? -1 : 1))
 	{
-	  time64_t mid = *t = time64_t_avg (ok, bad);
+	  __time64_t mid = *t = time64_t_avg (ok, bad);
 	  r = convert (t, tp);
 	  if (r)
 	    ok = mid;
@@ -755,18 +755,18 @@ ranged64_convert (struct tm *(*convert) (const time64_t *, struct tm *),
 }
 
 
-/* Convert *TP to a time64_t value, inverting
+/* Convert *TP to a __time64_t value, inverting
    the monotonic and mostly-unit-linear conversion function CONVERT.
    Use *OFFSET to keep track of a guess at the offset of the result,
    compared to what the result would be for UTC without leap seconds.
    If *OFFSET's guess is correct, only one CONVERT call is needed.
    This function is external because it is used also by timegm.c.  */
-time64_t
+__time64_t
 __mktime64_internal (struct tm *tp,
-		   struct tm *(*convert) (const time64_t *, struct tm *),
-		   time64_t *offset)
+		   struct tm *(*convert) (const __time64_t *, struct tm *),
+		   __time64_t *offset)
 {
-  time64_t t, gt, t0, t1, t2;
+  __time64_t t, gt, t0, t1, t2;
   struct tm tm;
 
   /* The maximum number of probes (calls to CONVERT) should be enough
@@ -797,7 +797,7 @@ __mktime64_internal (struct tm *tp,
 
   /* The other values need not be in range:
      the remaining code handles minor overflows correctly,
-     assuming int and time64_t arithmetic wraps around.
+     assuming int and __time64_t arithmetic wraps around.
      Major overflows are caught at the end.  */
 
   /* Calculate day of year from year, month, and day of month.
@@ -808,7 +808,7 @@ __mktime64_internal (struct tm *tp,
   long_int lmday = mday;
   long_int yday = mon_yday + lmday;
 
-  time64_t guessed_offset = *offset;
+  __time64_t guessed_offset = *offset;
 
   int sec_requested = sec;
 
@@ -830,7 +830,7 @@ __mktime64_internal (struct tm *tp,
 
   if (TIME_T_MAX / INT_MAX / 366 / 24 / 60 / 60 < 3)
     {
-      /* time64_t isn't large enough to rule out overflows, so check
+      /* __time64_t isn't large enough to rule out overflows, so check
 	 for major overflows.  A gross check suffices, since if t0
 	 has overflowed, it is off by a multiple of TIME_T_MAX -
 	 TIME_T_MIN + 1.  So ignore any component of the difference
@@ -866,16 +866,16 @@ __mktime64_internal (struct tm *tp,
 	 gives a positive value of 715827882.  Setting a variable
 	 first then doing math on it seems to work.
 	 (ghazi@caip.rutgers.edu) */
-      time64_t time64_t_max = TIME_T_MAX;
-      time64_t time64_t_min = TIME_T_MIN;
-      time64_t overflow_threshold =
+      __time64_t time64_t_max = TIME_T_MAX;
+      __time64_t time64_t_min = TIME_T_MIN;
+      __time64_t overflow_threshold =
 	(time64_t_max / 3 - time64_t_min / 3) >> ALOG2_SECONDS_PER_BIENNIUM;
 
       if (overflow_threshold < approx_abs_diff)
 	{
 	  /* Overflow occurred.  Try repairing it; this might work if
 	     the time zone offset is enough to undo the overflow.  */
-	  time64_t repaired_t0 = -1 - t0;
+	  __time64_t repaired_t0 = -1 - t0;
 	  approx_biennia = SHR (repaired_t0, ALOG2_SECONDS_PER_BIENNIUM);
 	  diff = approx_biennia - approx_requested_biennia;
 	  approx_abs_diff = diff < 0 ? -1 - diff : diff;
@@ -948,7 +948,7 @@ __mktime64_internal (struct tm *tp,
 	for (direction = -1; direction <= 1; direction += 2)
 	  if (time64_t_int_add_ok (t, delta * direction))
 	    {
-	      time64_t ot = t + delta * direction;
+	      __time64_t ot = t + delta * direction;
 	      struct tm otm;
 	      ranged64_convert (convert, &ot, &otm);
 	      if (! isdst_differ (isdst, otm.tm_isdst))
@@ -990,10 +990,10 @@ __mktime64_internal (struct tm *tp,
    offset in seconds.  'int' should be good enough for GNU code.  We
    can't fix this unilaterally though, as other modules invoke
    __mktime_internal.  */
-static time64_t localtime64_offset;
+static __time64_t localtime64_offset;
 
-/* Convert *TP to a time64_t value.  */
-time64_t
+/* Convert *TP to a __time64_t value.  */
+__time64_t
 mktime64 (struct tm *tp)
 {
 #ifdef _LIBC

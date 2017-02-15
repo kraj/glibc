@@ -90,9 +90,9 @@ __offtime (const time_t *t, long int offset, struct tm *tp)
    and store year, yday, mon, mday, wday, hour, min, sec into *TP.
    Return nonzero if successful.  */
 int
-__offtime64 (const time64_t *t, long int offset, struct tm *tp)
+__offtime64 (const __time64_t *t, long int offset, struct tm *tp)
 {
-  time64_t days, rem, y;
+  __time64_t days, rem, y;
   const unsigned short int *ip;
 
   days = *t / SECS_PER_DAY;
@@ -124,7 +124,7 @@ __offtime64 (const time64_t *t, long int offset, struct tm *tp)
   while (days < 0 || days >= (__isleap (y) ? 366 : 365))
     {
       /* Guess a corrected year, assuming 365 days per year.  */
-      time64_t yg = y + days / 365 - (days % 365 < 0);
+      __time64_t yg = y + days / 365 - (days % 365 < 0);
 
       /* Adjust DAYS and Y to match the guessed year.  */
       days -= ((yg - y) * 365

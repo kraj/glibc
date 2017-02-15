@@ -73,14 +73,14 @@ __BEGIN_NAMESPACE_STD
 extern clock_t clock (void) __THROW;
 
 /* Return the current time and put it in *TIMER if TIMER is not NULL.  */
-extern time_t time (time_t *__timer) __THROW;
+extern __time_t time (__time_t *__timer) __THROW;
 
 /* Return the difference between TIME1 and TIME0.  */
-extern double difftime (time_t __time1, time_t __time0)
+extern double difftime (__time_t __time1,__time_t __time0)
      __THROW __attribute__ ((__const__));
 
 /* Return the difference between TIME1 and TIME0.  */
-extern double difftime64 (time64_t __time1, time64_t __time0)
+extern double difftime64 (__time64_t __time1, __time64_t __time0)
      __THROW __attribute__ ((__const__));
 
 #ifdef __USE_TIME_BITS64
@@ -88,10 +88,10 @@ extern double difftime64 (time64_t __time1, time64_t __time0)
 #endif
 
 /* Return the `time_t' representation of TP and normalize TP.  */
-extern time_t mktime (struct tm *__tp) __THROW;
+extern __time_t mktime (struct tm *__tp) __THROW;
 
-/* Return the `time64_t' representation of TP and normalize TP.  */
-extern time64_t mktime64 (struct tm *__tp) __THROW;
+/* Return the `__time64_t' representation of TP and normalize TP.  */
+extern __time64_t mktime64 (struct tm *__tp) __THROW;
 
 /* Format TP into S according to FORMAT.
    Write no more than MAXSIZE characters and return the number
@@ -129,11 +129,11 @@ extern char *strptime_l (const char *__restrict __s,
 __BEGIN_NAMESPACE_STD
 /* Return the `struct tm' representation of *TIMER
    in Universal Coordinated Time (aka Greenwich Mean Time).  */
-extern struct tm *gmtime (const time_t *__timer) __THROW;
+extern struct tm *gmtime (const __time_t *__timer) __THROW;
 
 /* Return the `struct tm' representation of 64-bit-time *TIMER
    in Universal Coordinated Time (aka Greenwich Mean Time).  */
-extern struct tm *gmtime64 (const time64_t *__timer) __THROW;
+extern struct tm *gmtime64 (const __time64_t *__timer) __THROW;
 
 #ifdef __USE_TIME_BITS64
 #define gmtime gmtime64
@@ -141,11 +141,11 @@ extern struct tm *gmtime64 (const time64_t *__timer) __THROW;
 
 /* Return the `struct tm' representation
    of *TIMER in the local timezone.  */
-extern struct tm *localtime (const time_t *__timer) __THROW;
+extern struct tm *localtime (const __time_t *__timer) __THROW;
 
 /* Return the `struct tm' representation
    of the 64-bit-time *TIMER in the local timezone.  */
-extern struct tm *localtime64 (const time64_t *__timer) __THROW;
+extern struct tm *localtime64 (const __time64_t *__timer) __THROW;
 
 #ifdef __USE_TIME_BITS64
 #define localtime localtime64
@@ -155,12 +155,12 @@ __END_NAMESPACE_STD
 #ifdef __USE_POSIX
 /* Return the `struct tm' representation of *TIMER in UTC,
    using *TP to store the result.  */
-extern struct tm *gmtime_r (const time_t *__restrict __timer,
+extern struct tm *gmtime_r (const __time_t *__restrict __timer,
 			    struct tm *__restrict __tp) __THROW;
 
 /* Return the `struct tm' representation of 64-bit-time *TIMER
    in UTC, using *TP to store the result.  */
-extern struct tm *gmtime64_r (const time64_t *__restrict __timer,
+extern struct tm *gmtime64_r (const __time64_t *__restrict __timer,
 			    struct tm *__restrict __tp) __THROW;
 
 #ifdef __USE_TIME_BITS64
@@ -169,12 +169,12 @@ extern struct tm *gmtime64_r (const time64_t *__restrict __timer,
 
 /* Return the `struct tm' representation of *TIMER in local time,
    using *TP to store the result.  */
-extern struct tm *localtime_r (const time_t *__restrict __timer,
+extern struct tm *localtime_r (const __time_t *__restrict __timer,
 			       struct tm *__restrict __tp) __THROW;
 
 /* Return the `struct tm' representation of the 64-bit-time *TIMER
    in local time, using *TP to store the result.  */
-extern struct tm *localtime64_r (const time64_t *__restrict __timer,
+extern struct tm *localtime64_r (const __time64_t *__restrict __timer,
 			       struct tm *__restrict __tp) __THROW;
 
 #ifdef __USE_TIME_BITS64
@@ -184,16 +184,18 @@ extern struct tm *localtime64_r (const time64_t *__restrict __timer,
 #endif	/* POSIX */
 
 __BEGIN_NAMESPACE_STD
+
 /* Return a string of the form "Day Mon dd hh:mm:ss yyyy\n"
    that is the representation of TP in this format.  */
 extern char *asctime (const struct tm *__tp) __THROW;
 
 /* Equivalent to `asctime (localtime (timer))'.  */
-extern char *ctime (const time_t *__timer) __THROW;
+extern char *ctime (const __time_t *__timer) __THROW;
 
 /* Equivalent to `asctime (localtime64 (timer))'.  */
-extern char *ctime64 (const time64_t *__timer) __THROW;
+extern char *ctime64 (const __time64_t *__timer) __THROW;
 
+/* If defaulting to 64-bit time, override 32-bit symbols */
 #ifdef __USE_TIME_BITS64
 #define ctime ctime64
 #endif
@@ -209,7 +211,7 @@ extern char *asctime_r (const struct tm *__restrict __tp,
 			char *__restrict __buf) __THROW;
 
 /* Equivalent to `asctime_r (localtime_r (timer, *TMP*), buf)'.  */
-extern char *ctime_r (const time_t *__restrict __timer,
+extern char *ctime_r (const __time_t *__restrict __timer,
 		      char *__restrict __buf) __THROW;
 #endif	/* POSIX */
 
@@ -237,7 +239,7 @@ extern long int timezone;
 #ifdef __USE_MISC
 /* Set the system time to *WHEN.
    This call is restricted to the superuser.  */
-extern int stime (const time_t *__when) __THROW;
+extern int stime (const __time_t *__when) __THROW;
 #endif
 
 
@@ -252,13 +254,13 @@ extern int stime (const time_t *__when) __THROW;
    localtime package.  These are included only for compatibility.  */
 
 /* Like `mktime', but for TP represents Universal Time, not local time.  */
-extern time_t timegm (struct tm *__tp) __THROW;
+extern __time_t timegm (struct tm *__tp) __THROW;
 
 /* Another name for `mktime'.  */
-extern time_t timelocal (struct tm *__tp) __THROW;
+extern __time_t timelocal (struct tm *__tp) __THROW;
 
 /* Another name for `mktime64'.  */
-extern time64_t timelocal64 (struct tm *__tp) __THROW;
+extern __time64_t timelocal64 (struct tm *__tp) __THROW;
 
 /* Return the number of days in YEAR.  */
 extern int dysize (int __year) __THROW  __attribute__ ((__const__));

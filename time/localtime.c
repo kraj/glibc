@@ -25,7 +25,7 @@ struct tm _tmbuf;
 /* Return the `struct tm' representation of *T in local time,
    using *TP to store the result.  */
 struct tm *
-__localtime_r (const time_t *t, struct tm *tp)
+__localtime_r (const __time_t *t, struct tm *tp)
 {
   return __tz_convert (t, 1, tp);
 }
@@ -34,7 +34,7 @@ weak_alias (__localtime_r, localtime_r)
 
 /* Return the `struct tm' representation of *T in local time.  */
 struct tm *
-localtime (const time_t *t)
+localtime (const __time_t *t)
 {
   return __tz_convert (t, 1, &_tmbuf);
 }
@@ -45,7 +45,7 @@ libc_hidden_def (localtime)
 /* Return the `struct tm' representation of *T in local time,
    using *TP to store the result.  */
 struct tm *
-__localtime64_r (const time64_t *t, struct tm *tp)
+__localtime64_r (const __time64_t *t, struct tm *tp)
 {
   return __tz64_convert (t, 1, tp);
 }
@@ -54,7 +54,7 @@ weak_alias (__localtime64_r, localtime64_r)
 
 /* Return the `struct tm' representation of *T in local time.  */
 struct tm *
-localtime64 (const time64_t *t)
+localtime64 (const __time64_t *t)
 {
   return __tz64_convert (t, 1, &_tmbuf);
 }
