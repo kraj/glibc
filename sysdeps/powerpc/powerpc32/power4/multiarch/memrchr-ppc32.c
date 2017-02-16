@@ -18,6 +18,8 @@
 
 #if IS_IN (libc)
 # define MEMRCHR  __memrchr_ppc
+# undef weak_alias
+# define weak_alias(a,b)
 # include <string.h>
 extern void *__memrchr_ppc (const void *, int, size_t);
 #endif

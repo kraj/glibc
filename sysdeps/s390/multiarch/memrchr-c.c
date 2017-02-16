@@ -18,6 +18,8 @@
 
 #if defined HAVE_S390_VX_ASM_SUPPORT && IS_IN (libc)
 # define MEMRCHR  __memrchr_c
+# undef weak_alias
+# define weak_alias(a,b)
 
 # include <string.h>
 extern __typeof (__memrchr) __memrchr_c;
