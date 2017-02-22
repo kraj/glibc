@@ -213,6 +213,14 @@ extern char *asctime_r (const struct tm *__restrict __tp,
 /* Equivalent to `asctime_r (localtime_r (timer, *TMP*), buf)'.  */
 extern char *ctime_r (const __time_t *__restrict __timer,
 		      char *__restrict __buf) __THROW;
+
+/* Equivalent to `asctime_r (localtime64_r (timer, *TMP*), buf)'.  */
+extern char *ctime64_r (const __time64_t *__restrict __timer,
+		      char *__restrict __buf) __THROW;
+
+#ifdef __USE_TIME_BITS64
+#define ctime_r ctime64_r
+#endif
 #endif	/* POSIX */
 
 

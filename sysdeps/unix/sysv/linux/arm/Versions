@@ -17,6 +17,7 @@ libc {
     localtime64; localtime64_r;
     mktime64;
     timelocal64;
+    ctime64_r;
   }
   GLIBC_PRIVATE {
     # A copy of sigaction lives in libpthread, and needs these.

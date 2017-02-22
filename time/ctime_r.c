@@ -22,8 +22,17 @@
 /* Return a string as returned by asctime which is the representation
    of *T in that form.  Reentrant version.  */
 char *
-ctime_r (const time_t *t, char *buf)
+ctime_r (const __time_t *t, char *buf)
 {
   struct tm tm;
   return __asctime_r (__localtime_r (t, &tm), buf);
+}
+
+/* Return a string as returned by asctime which is the representation
+   of 64-bit-time *T in that form.  Reentrant version.  */
+char *
+ctime64_r (const __time64_t *t, char *buf)
+{
+  struct tm tm;
+  return __asctime_r (__localtime64_r (t, &tm), buf);
 }
