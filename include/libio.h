@@ -21,16 +21,27 @@ libc_hidden_proto (_IO_sgetn)
 libc_hidden_proto (_IO_vfprintf)
 libc_hidden_proto (_IO_vfscanf)
 
-#if defined _IO_MTSAFE_IO && _IO_lock_inexpensive
-# undef _IO_flockfile
-# define _IO_flockfile(_fp) \
-  if (((_fp)->_flags & _IO_USER_LOCK) == 0)				      \
-     _IO_lock_lock (*(_fp)->_lock)
-# undef _IO_funlockfile
-# define _IO_funlockfile(_fp) \
-  if (((_fp)->_flags & _IO_USER_LOCK) == 0)				      \
-    _IO_lock_unlock (*(_fp)->_lock)
-#endif
+#ifdef _IO_MTSAFE_IO
+# define _IO_peekc(_fp) _IO_peekc_locked (_fp)
+# if _IO_lock_inexpensive
+#  define _IO_flockfile(_fp) \
+  if (((_fp)->_flags & _IO_USER_LOCK) == 0) _IO_lock_lock (*(_fp)->_lock)
+#  define _IO_funlockfile(_fp) \
+  if (((_fp)->_flags & _IO_USER_LOCK) == 0) _IO_lock_unlock (*(_fp)->_lock)
+# else
+#  define _IO_flockfile(_fp) \
+  if (((_fp)->_flags & _IO_USER_LOCK) == 0) _IO_flockfile (_fp)
+#  define _IO_funlockfile(_fp) \
+  if (((_fp)->_flags & _IO_USER_LOCK) == 0) _IO_funlockfile (_fp)
+# endif
+#else
+# define _IO_peekc(_fp) _IO_peekc_unlocked (_fp)
+# define _IO_flockfile(_fp) /**/
+# define _IO_funlockfile(_fp) /**/
+# define _IO_ftrylockfile(_fp) /**/
+# define _IO_cleanup_region_start(_fct, _fp) /**/
+# define _IO_cleanup_region_end(_Doit) /**/
+#endif /* !_IO_MTSAFE_IO */
 
 #endif
 #endif

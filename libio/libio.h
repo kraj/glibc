@@ -143,10 +143,9 @@
 
 struct _IO_jump_t;  struct _IO_FILE;
 
-/* Handle lock.  */
-#ifdef _IO_MTSAFE_IO
-/* _IO_lock_t defined in internal headers during the glibc build.  */
-#else
+/* During the build of glibc itself, _IO_lock_t will already have been
+   defined by internal headers.  */
+#ifndef _IO_lock_t_defined
 typedef void _IO_lock_t;
 #endif
 
@@ -440,21 +439,6 @@ extern int _IO_peekc_locked (_IO_FILE *__fp);
 extern void _IO_flockfile (_IO_FILE *) __THROW;
 extern void _IO_funlockfile (_IO_FILE *) __THROW;
 extern int _IO_ftrylockfile (_IO_FILE *) __THROW;
-
-#ifdef _IO_MTSAFE_IO
-# define _IO_peekc(_fp) _IO_peekc_locked (_fp)
-# define _IO_flockfile(_fp) \
-  if (((_fp)->_flags & _IO_USER_LOCK) == 0) _IO_flockfile (_fp)
-# define _IO_funlockfile(_fp) \
-  if (((_fp)->_flags & _IO_USER_LOCK) == 0) _IO_funlockfile (_fp)
-#else
-# define _IO_peekc(_fp) _IO_peekc_unlocked (_fp)
-# define _IO_flockfile(_fp) /**/
-# define _IO_funlockfile(_fp) /**/
-# define _IO_ftrylockfile(_fp) /**/
-# define _IO_cleanup_region_start(_fct, _fp) /**/
-# define _IO_cleanup_region_end(_Doit) /**/
-#endif /* !_IO_MTSAFE_IO */
 
 extern int _IO_vfscanf (_IO_FILE * __restrict, const char * __restrict,
 			_IO_va_list, int *__restrict);
