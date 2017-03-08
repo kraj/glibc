@@ -207,7 +207,7 @@ do_random_tests (void)
 int
 test_main (void)
 {
-  size_t i;
+  size_t i, j;
 
   test_init ();
 
@@ -222,12 +222,26 @@ test_main (void)
       do_test (0, 0, i, BIG_CHAR);
       do_test (0, i, i, SMALL_CHAR);
       do_test (i, 0, i, BIG_CHAR);
+
+      for (j = 1; j < 16; ++j)
+	{
+	  do_test (0, 0, i + j, SMALL_CHAR);
+	  do_test (0, 0, i + j, BIG_CHAR);
+	  do_test (0, i, i + j, SMALL_CHAR);
+	  do_test (i, 0, i + j, BIG_CHAR);
+	}
     }
 
   for (i = 1; i < 8; ++i)
     {
       do_test (0, 0, 8 << i, SMALL_CHAR);
       do_test (8 - i, 2 * i, 8 << i, SMALL_CHAR);
+
+      for (j = 1; j < 8; ++j)
+	{
+	  do_test (0, 0, (8 << i) + j, SMALL_CHAR);
+	  do_test (8 - i, 2 * i, (8 << i) + j, SMALL_CHAR);
+	}
     }
 
   for (i = 1; i < 8; ++i)
@@ -236,6 +250,14 @@ test_main (void)
       do_test (2 * i, i, 8 << i, BIG_CHAR);
       do_test (i, i, 8 << i, SMALL_CHAR);
       do_test (i, i, 8 << i, BIG_CHAR);
+
+      for (j = 1; j < 8; ++j)
+	{
+	  do_test (i, 2 * i, (8 << i) + j, SMALL_CHAR);
+	  do_test (2 * i, i, (8 << i) + j, BIG_CHAR);
+	  do_test (i, i, (8 << i) + j, SMALL_CHAR);
+	  do_test (i, i, (8 << i) + j, BIG_CHAR);
+	}
     }
 
   do_random_tests ();
