@@ -66,6 +66,9 @@
 
 #include "nsswitch.h"
 #include <arpa/inet.h>
+#include <arpa/nameser.h>
+#include <out_buffer.h>
+#include <resolv/resolv-internal.h>
 
 /* Maximum number of aliases we allow.  */
 #define MAX_NR_ALIASES	48
@@ -92,17 +95,10 @@ typedef union querybuf
   u_char buf[MAXPACKET];
 } querybuf;
 
-/* These functions are defined in res_comp.c.  */
-#define NS_MAXCDNAME	255	/* maximum compressed domain name */
-extern int __ns_name_ntop (const u_char *, char *, size_t) __THROW;
-extern int __ns_name_unpack (const u_char *, const u_char *,
-			     const u_char *, u_char *, size_t) __THROW;
-
-
 /* Prototypes for local functions.  */
 static enum nss_status getanswer_r (const querybuf *answer, int anslen,
-				    struct netent *result, char *buffer,
-				    size_t buflen, int *errnop, int *h_errnop,
+				    struct netent *result, struct out_buffer,
+				    int *errnop, int *h_errnop,
 				    lookup_method net_i);
 
 
@@ -140,7 +136,9 @@ _nss_dns_getnetbyname_r (const char *name, struct netent *result,
 	? NSS_STATUS_UNAVAIL : NSS_STATUS_NOTFOUND;
     }
 
-  status = getanswer_r (net_buffer.buf, anslen, result, buffer, buflen,
+  struct out_buffer outbuf;
+  out_buffer_init (&outbuf, buffer, buflen);
+  status = getanswer_r (net_buffer.buf, anslen, result, outbuf,
 			errnop, herrnop, BYNAME);
   if (net_buffer.buf != orig_net_buffer)
     free (net_buffer.buf);
@@ -217,7 +215,9 @@ _nss_dns_getnetbyaddr_r (uint32_t net, int type, struct netent *result,
 	? NSS_STATUS_UNAVAIL : NSS_STATUS_NOTFOUND;
     }
 
-  status = getanswer_r (net_buffer.buf, anslen, result, buffer, buflen,
+  struct out_buffer outbuf;
+  out_buffer_init (&outbuf, buffer, buflen);
+  status = getanswer_r (net_buffer.buf, anslen, result, outbuf,
 			errnop, herrnop, BYADDR);
   if (net_buffer.buf != orig_net_buffer)
     free (net_buffer.buf);
@@ -237,7 +237,7 @@ _nss_dns_getnetbyaddr_r (uint32_t net, int type, struct netent *result,
 
 static enum nss_status
 getanswer_r (const querybuf *answer, int anslen, struct netent *result,
-	     char *buffer, size_t buflen, int *errnop, int *h_errnop,
+	     struct out_buffer buf, int *errnop, int *h_errnop,
 	     lookup_method net_i)
 {
   /*
@@ -254,16 +254,9 @@ getanswer_r (const querybuf *answer, int anslen, struct netent *result,
    *                 | Additional | RRs holding additional information
    *                 +------------+
    */
-  struct net_data
-  {
-    char *aliases[MAX_NR_ALIASES];
-    char linebuffer[0];
-  } *net_data;
 
-  uintptr_t pad = -(uintptr_t) buffer % __alignof__ (struct net_data);
-  buffer += pad;
-
-  if (__glibc_unlikely (buflen < sizeof (*net_data) + pad))
+  char **aliases = out_buffer_get_array (&buf, char *, MAX_NR_ALIASES);
+  if (__glibc_unlikely (aliases == NULL))
     {
       /* The buffer is too small.  */
     too_small:
@@ -271,21 +264,15 @@ getanswer_r (const querybuf *answer, int anslen, struct netent *result,
       *h_errnop = NETDB_INTERNAL;
       return NSS_STATUS_TRYAGAIN;
     }
-  buflen -= pad;
+  int alias_count = 0;
 
-  net_data = (struct net_data *) buffer;
-  int linebuflen = buflen - offsetof (struct net_data, linebuffer);
-  if (buflen - offsetof (struct net_data, linebuffer) != linebuflen)
-    linebuflen = INT_MAX;
   const unsigned char *end_of_message = &answer->buf[anslen];
   const HEADER *header_pointer = &answer->hdr;
   /* #/records in the answer section.  */
   int answer_count =  ntohs (header_pointer->ancount);
   /* #/entries in the question section.  */
   int question_count = ntohs (header_pointer->qdcount);
-  char *bp = net_data->linebuffer;
   const unsigned char *cp = &answer->buf[HFIXEDSZ];
-  char **alias_pointer;
   int have_answer;
   u_char packtmp[NS_MAXCDNAME];
 
@@ -318,32 +305,17 @@ getanswer_r (const querybuf *answer, int anslen, struct netent *result,
       cp += n + QFIXEDSZ;
     }
 
-  alias_pointer = result->n_aliases = &net_data->aliases[0];
-  *alias_pointer = NULL;
   have_answer = 0;
 
   while (--answer_count >= 0 && cp < end_of_message)
     {
-      int n = dn_expand (answer->buf, end_of_message, cp, bp, linebuflen);
       int type, class;
-
-      n = __ns_name_unpack (answer->buf, end_of_message, cp,
-			    packtmp, sizeof packtmp);
-      if (n != -1 && __ns_name_ntop (packtmp, bp, linebuflen) == -1)
-	{
-	  if (errno == EMSGSIZE)
-	    goto too_small;
-
-	  n = -1;
-	}
-
-      if (n > 0 && bp[0] == '.')
-	bp[0] = '\0';
-
-      if (n < 0 || res_dnok (bp) == 0)
+      int n = __ns_name_unpack (answer->buf, end_of_message, cp,
+				packtmp, sizeof packtmp);
+      if (n == -1)
 	break;
-      cp += n;
 
+      cp += n;
       if (end_of_message - cp < 10)
 	{
 	  __set_h_errno (NO_RECOVERY);
@@ -365,7 +337,9 @@ getanswer_r (const querybuf *answer, int anslen, struct netent *result,
 	{
 	  n = __ns_name_unpack (answer->buf, end_of_message, cp,
 				packtmp, sizeof packtmp);
-	  if (n != -1 && __ns_name_ntop (packtmp, bp, linebuflen) == -1)
+	  char *alias = NULL;
+	  if (n != -1
+	      && (alias = __ns_name_ntop_buffer (&buf, packtmp)) == NULL)
 	    {
 	      if (errno == EMSGSIZE)
 		goto too_small;
@@ -373,7 +347,7 @@ getanswer_r (const querybuf *answer, int anslen, struct netent *result,
 	      n = -1;
 	    }
 
-	  if (n < 0 || !res_hnok (bp))
+	  if (n < 0 || !res_hnok (alias))
 	    {
 	      /* XXX What does this mean?  The original form from bind
 		 returns NULL. Incrementing cp has no effect in any case.
@@ -382,12 +356,9 @@ getanswer_r (const querybuf *answer, int anslen, struct netent *result,
 	      return NSS_STATUS_UNAVAIL;
 	    }
 	  cp += rdatalen;
-         if (alias_pointer + 2 < &net_data->aliases[MAX_NR_ALIASES])
+         if (alias_count + 1 < MAX_NR_ALIASES)
            {
-             *alias_pointer++ = bp;
-             n = strlen (bp) + 1;
-             bp += n;
-             linebuflen -= n;
+             aliases[alias_count++] = alias;
              result->n_addrtype = class == C_IN ? AF_INET : AF_UNSPEC;
              ++have_answer;
            }
@@ -399,7 +370,7 @@ getanswer_r (const querybuf *answer, int anslen, struct netent *result,
 
   if (have_answer)
     {
-      *alias_pointer = NULL;
+      aliases[alias_count] = NULL;
       switch (net_i)
 	{
 	case BYADDR:

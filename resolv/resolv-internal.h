@@ -32,4 +32,16 @@ res_use_inet6 (void)
   return _res.options & DEPRECATED_RES_USE_INET6;
 }
 
+struct out_buffer;
+
+/* Convert the expanded domain name at SRC from wire format to text
+   format.  Use storage in *DST.  Return a pointer to data in *DST, or
+   NULL on error (and sets errno to EMSGSIZE).  */
+char *__ns_name_ntop_buffer (struct out_buffer *, const u_char *)
+  __THROW internal_function;
+libresolv_hidden_proto (__ns_name_ntop_buffer)
+
+int __ns_name_unpack (const u_char *, const u_char *,
+                      const u_char *, u_char *, size_t) __THROW;
+
 #endif  /* _RESOLV_INTERNAL_H */

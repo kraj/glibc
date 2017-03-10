@@ -72,5 +72,8 @@ libc {
     __libc_scratch_buffer_grow;
     __libc_scratch_buffer_grow_preserve;
     __libc_scratch_buffer_set_array_size;
+
+    # struct out_buffer support
+    __libc_out_buffer_get_array;
   }
 }

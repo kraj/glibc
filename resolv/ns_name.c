@@ -19,6 +19,7 @@
 
 #include <netinet/in.h>
 #include <arpa/nameser.h>
+#include <resolv/resolv-internal.h>
 
 #include <errno.h>
 #include <resolv.h>
@@ -26,6 +27,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <out_buffer.h>
 
 # define SPRINTF(x) ((size_t)sprintf x)
 
@@ -44,90 +46,90 @@ static int		labellen(const u_char *);
 
 /* Public. */
 
-/*%
- *	Convert an encoded domain name to printable ascii as per RFC1035.
-
- * return:
- *\li	Number of bytes written to buffer, or -1 (with errno set)
- *
- * notes:
- *\li	The root is returned as "."
- *\li	All other domains are returned in non absolute form
- */
-int
-ns_name_ntop(const u_char *src, char *dst, size_t dstsiz)
+char *
+internal_function
+__ns_name_ntop_buffer (struct out_buffer *pdst,
+		       const unsigned char *src)
 {
-	const u_char *cp;
-	char *dn, *eom;
-	u_char c;
-	u_int n;
-	int l;
+  /* Make copy to help with aliasing analysis.  */
+  struct out_buffer dst = *pdst;
+  bool first = true;
+  while (true)
+    {
+      unsigned char n = *src;
+      ++src;
+      if (n == 0)
+	break;
+      if (n > 63)
+	{
+	  /* Some kind of compression pointer. */
+	  out_buffer_mark_failed (&dst);
+	  break;
+	}
 
-	cp = src;
-	dn = dst;
-	eom = dst + dstsiz;
+      if (first)
+	first = false;
+      else
+	out_buffer_add_byte (&dst, '.');
 
-	while ((n = *cp++) != 0) {
-		if ((n & NS_CMPRSFLGS) == NS_CMPRSFLGS) {
-			/* Some kind of compression pointer. */
-			__set_errno (EMSGSIZE);
-			return (-1);
+      for (int i = 0; i < n; ++i)
+	{
+	  unsigned char c = *src;
+	  ++src;
+	  if (special(c))
+	    {
+	      char *p = out_buffer_get_bytes (&dst, 2);
+	      if (p == NULL)
+		{
+		  out_buffer_mark_failed (&dst);
+		  break;
 		}
-		if (dn != dst) {
-			if (dn >= eom) {
-				__set_errno (EMSGSIZE);
-				return (-1);
-			}
-			*dn++ = '.';
+	      p[0] = '\\';
+	      p[1] = c;
+	    }
+	  else if (!printable(c))
+	    {
+	      char *p = out_buffer_get_bytes (&dst, 4);
+	      if (p == NULL)
+		{
+		  out_buffer_mark_failed (pdst);
+		  break;
 		}
-		if ((l = labellen(cp - 1)) < 0) {
-			__set_errno (EMSGSIZE);
-			return(-1);
-		}
-		if (dn + l >= eom) {
-			__set_errno (EMSGSIZE);
-			return (-1);
-		}
-		for ((void)NULL; l > 0; l--) {
-			c = *cp++;
-			if (special(c)) {
-				if (dn + 1 >= eom) {
-					__set_errno (EMSGSIZE);
-					return (-1);
-				}
-				*dn++ = '\\';
-				*dn++ = (char)c;
-			} else if (!printable(c)) {
-				if (dn + 3 >= eom) {
-					__set_errno (EMSGSIZE);
-					return (-1);
-				}
-				*dn++ = '\\';
-				*dn++ = digits[c / 100];
-				*dn++ = digits[(c % 100) / 10];
-				*dn++ = digits[c % 10];
-			} else {
-				if (dn >= eom) {
-					__set_errno (EMSGSIZE);
-					return (-1);
-				}
-				*dn++ = (char)c;
-			}
-		}
+	      p[0] = '\\';
+	      p[1] = '0' + (c / 100);
+	      p[2] = '0' + ((c % 100) / 10);
+	      p[3] = '0' + (c % 10);
+	    }
+	  else
+	    out_buffer_add_byte (&dst, c);
 	}
-	if (dn == dst) {
-		if (dn >= eom) {
-			__set_errno (EMSGSIZE);
-			return (-1);
-		}
-		*dn++ = '.';
-	}
-	if (dn >= eom) {
-		__set_errno (EMSGSIZE);
-		return (-1);
-	}
-	*dn++ = '\0';
-	return (dn - dst);
+    }
+  if (first)
+    /* Root domain.  */
+    out_buffer_add_byte (&dst, '.');
+  out_buffer_add_byte (&dst, '\0');
+  if (out_buffer_has_failed (&dst))
+    {
+      out_buffer_mark_failed (pdst);
+      return NULL;
+    }
+  char *start = out_buffer_current (pdst);
+  *pdst = dst;
+  return start;
+}
+libresolv_hidden_def (__ns_name_ntop_buffer)
+
+int
+ns_name_ntop (const u_char *src, char *dst, size_t dstsiz)
+{
+  struct out_buffer buf;
+  out_buffer_init (&buf, dst, dstsiz);
+  if (__ns_name_ntop_buffer (&buf, src) == NULL)
+    {
+      __set_errno (EMSGSIZE);
+      return -1;
+    }
+  return out_buffer_current (&buf) - (void *) dst;
 }
 libresolv_hidden_def (ns_name_ntop)
 strong_alias (ns_name_ntop, __ns_name_ntop)

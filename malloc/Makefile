@@ -33,6 +33,7 @@ tests := mallocbug tst-malloc tst-valloc tst-calloc tst-obstack \
 	 tst-mallocfork2 \
 	 tst-interpose-nothread \
 	 tst-interpose-thread \
+	 tst-out_buffer \
 
 tests-static := \
 	 tst-interpose-static-nothread \
@@ -49,7 +50,7 @@ test-srcs = tst-mtrace
 
 routines = malloc morecore mcheck mtrace obstack \
   scratch_buffer_grow scratch_buffer_grow_preserve \
-  scratch_buffer_set_array_size
+  scratch_buffer_set_array_size out_buffer_get_array
 
 install-lib := libmcheck.a
 non-lib.a := libmcheck.a

@@ -76,7 +76,7 @@ libresolv {
   }
   GLIBC_PRIVATE {
     # Needed in libnss_dns.
-    __ns_name_unpack; __ns_name_ntop;
+    __ns_name_unpack; __ns_name_ntop; __ns_name_ntop_buffer;
     __ns_get16; __ns_get32;
     __libc_res_nquery; __libc_res_nsearch;
   }
