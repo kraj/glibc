@@ -20,15 +20,8 @@
 #define _ARGZ_H	1
 
 #include <features.h>
-
-#define __need_error_t
-#include <errno.h>
 #include <string.h>		/* Need size_t, and strchr is called below.  */
-
-#ifndef __error_t_defined
-typedef int error_t;
-#endif
-
+#include <bits/types/error_t.h>
 
 __BEGIN_DECLS
 

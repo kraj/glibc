@@ -24,15 +24,9 @@
 #include <ctype.h>
 #include <getopt.h>
 #include <limits.h>
-
-#define __need_error_t
 #include <errno.h>
+#include <bits/types/error_t.h>
 
-#ifndef __error_t_defined
-typedef int error_t;
-# define __error_t_defined
-#endif
-
 __BEGIN_DECLS
 
 /* A description of a particular option.  A pointer to an array of
