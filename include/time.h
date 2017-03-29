@@ -98,6 +98,8 @@ extern char * __strptime_internal (const char *rp, const char *fmt,
 
 extern double __difftime (time_t time1, time_t time0);
 
+extern double __difftime64 (__time64_t time1, __time64_t time0);
+
 /* Use in the clock_* functions.  Size of the field representing the
    actual clock ID.  */
 #define CLOCK_IDFIELD_SIZE	3
