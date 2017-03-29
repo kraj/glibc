@@ -10,6 +10,8 @@ extern __typeof (strftime_l) __strftime_l;
 libc_hidden_proto (__strftime_l)
 extern __typeof (strptime_l) __strptime_l;
 
+extern struct tm *__localtime64 (const __time64_t *__timer);
+
 libc_hidden_proto (time)
 libc_hidden_proto (asctime)
 libc_hidden_proto (mktime)
@@ -45,13 +47,13 @@ extern int __use_tzfile attribute_hidden;
 
 extern void __tzfile_read (const char *file, size_t extra,
 			   char **extrap);
-extern void __tzfile_compute (time_t timer, int use_localtime,
+extern void __tzfile_compute (__time64_t timer, int use_localtime,
 			      long int *leap_correct, int *leap_hit,
 			      struct tm *tp);
 extern void __tzfile_default (const char *std, const char *dst,
 			      long int stdoff, long int dstoff);
 extern void __tzset_parse_tz (const char *tz);
-extern void __tz_compute (time_t timer, struct tm *tm, int use_localtime)
+extern void __tz_compute (__time64_t timer, struct tm *tm, int use_localtime)
      __THROW internal_function;
 
 /* Subroutine of `mktime'.  Return the `time_t' representation of TP and
@@ -64,15 +66,25 @@ extern time_t __mktime_internal (struct tm *__tp,
 extern struct tm *__localtime_r (const time_t *__timer,
 				 struct tm *__tp) attribute_hidden;
 
-extern struct tm *__gmtime_r (const time_t *__restrict __timer,
+extern struct tm *__localtime64_r (const __time64_t *__timer,
+				 struct tm *__tp) attribute_hidden;
+
+extern struct tm *__gmtime_r (const __time_t *__restrict __timer,
 			      struct tm *__restrict __tp);
 libc_hidden_proto (__gmtime_r)
+
+extern struct tm *__gmtime64_r (const __time64_t *__restrict __timer,
+			      struct tm *__restrict __tp);
 
 /* Compute the `struct tm' representation of *T,
    offset OFFSET seconds east of UTC,
    and store year, yday, mon, mday, wday, hour, min, sec into *TP.
    Return nonzero if successful.  */
-extern int __offtime (const time_t *__timer,
+extern int __offtime (const __time_t *__timer,
+		      long int __offset,
+		      struct tm *__tp);
+
+extern int __offtime64 (const __time64_t *__timer,
 		      long int __offset,
 		      struct tm *__tp);
 
@@ -80,7 +92,9 @@ extern char *__asctime_r (const struct tm *__tp, char *__buf);
 extern void __tzset (void);
 
 /* Prototype for the internal function to get information based on TZ.  */
-extern struct tm *__tz_convert (const time_t *timer, int use_localtime, struct tm *tp);
+extern struct tm *__tz_convert (const __time_t *timer, int use_localtime, struct tm *tp);
+
+extern struct tm *__tz_convert64 (const __time64_t *timer, int use_localtime, struct tm *tp);
 
 /* Return the maximum length of a timezone name.
    This is what `sysconf (_SC_TZNAME_MAX)' does.  */

@@ -27,3 +27,12 @@ ctime_r (const time_t *t, char *buf)
   struct tm tm;
   return __asctime_r (__localtime_r (t, &tm), buf);
 }
+
+/* Return a string as returned by asctime which is the representation
+   of *T in that form.  Reentrant Y2038-proof version.  */
+char *
+__ctime64_r (const __time64_t *t, char *buf)
+{
+  struct tm tm;
+  return __asctime_r (__localtime64_r (t, &tm), buf);
+}

@@ -125,34 +125,78 @@ extern char *strptime_l (const char *__restrict __s,
 
 
 __BEGIN_NAMESPACE_STD
+
 /* Return the `struct tm' representation of *TIMER
    in Universal Coordinated Time (aka Greenwich Mean Time).  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern struct tm * __REDIRECT (gmtime, (const time_t *__timer),
+       __gmtime64) __THROW;
+# else
+# define gmtime __gmtime64
+# endif
+#endif
 extern struct tm *gmtime (const time_t *__timer) __THROW;
 
 /* Return the `struct tm' representation
    of *TIMER in the local timezone.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern struct tm * __REDIRECT (localtime, (const time_t *__timer),
+       __localtime64) __THROW;
+# else
+# define localtime __localtime64
+# endif
+#endif
 extern struct tm *localtime (const time_t *__timer) __THROW;
+
 __END_NAMESPACE_STD
 
 #ifdef __USE_POSIX
 /* Return the `struct tm' representation of *TIMER in UTC,
    using *TP to store the result.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern struct tm * __REDIRECT (gmtime_r, (const time_t *__restrict
+       __timer, struct tm *__restrict __tp), __gmtime64_r) __THROW;
+# else
+# define gmtime_r __gmtime64_r
+# endif
+#endif
 extern struct tm *gmtime_r (const time_t *__restrict __timer,
 			    struct tm *__restrict __tp) __THROW;
 
 /* Return the `struct tm' representation of *TIMER in local time,
    using *TP to store the result.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern struct tm * __REDIRECT (localtime_r, (const time_t *__restrict
+       __timer, struct tm *__restrict __tp), __localtime64_r) __THROW;
+# else
+# define localtime_r __localtime64_r
+# endif
+#endif
 extern struct tm *localtime_r (const time_t *__restrict __timer,
 			       struct tm *__restrict __tp) __THROW;
 #endif	/* POSIX */
 
 __BEGIN_NAMESPACE_STD
+
 /* Return a string of the form "Day Mon dd hh:mm:ss yyyy\n"
    that is the representation of TP in this format.  */
 extern char *asctime (const struct tm *__tp) __THROW;
 
 /* Equivalent to `asctime (localtime (timer))'.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern char * __REDIRECT (ctime, (const time_t *__timer),
+       __ctime64) __THROW;
+# else
+# define ctime __ctime64
+# endif
+#endif
 extern char *ctime (const time_t *__timer) __THROW;
+
 __END_NAMESPACE_STD
 
 #ifdef __USE_POSIX
@@ -164,6 +208,14 @@ extern char *asctime_r (const struct tm *__restrict __tp,
 			char *__restrict __buf) __THROW;
 
 /* Equivalent to `asctime_r (localtime_r (timer, *TMP*), buf)'.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern char * __REDIRECT (ctime_r, (const time_t *__restrict __timer,
+       char *__restrict __buf), __ctime64_r) __THROW;
+# else
+# define ctime_r __ctime64_r
+# endif
+#endif
 extern char *ctime_r (const time_t *__restrict __timer,
 		      char *__restrict __buf) __THROW;
 #endif	/* POSIX */
