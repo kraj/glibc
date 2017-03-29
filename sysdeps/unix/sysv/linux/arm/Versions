@@ -18,5 +18,7 @@ libc {
     __clock_gettime64; __clock_settime64; __clock_getres64;
     # Y2038 clock_gettime/__clock_gettime64 use INTERNAL_VSYSCALL(clock_gettime64).
     __vdso_clock_gettime64;
+    # Y2038-proof difftime is actually __difftime64
+    __difftime64;
   }
 }
