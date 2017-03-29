@@ -35,3 +35,18 @@ gmtime (const time_t *t)
 {
   return __tz_convert (t, 0, &_tmbuf);
 }
+
+/* Return the `struct tm' representation of 64-bit-time *T
+   in UTC, using *TP to store the result.  */
+struct tm *
+__gmtime64_r (const __time64_t *t, struct tm *tp)
+{
+  return __tz_convert64 (t, 0, tp);
+}
+
+/* Return the `struct tm' representation of 64-bit-time *T in UTC.	*/
+struct tm *
+__gmtime64 (const __time64_t *t)
+{
+  return __tz_convert64 (t, 0, &_tmbuf);
+}
