@@ -76,6 +76,14 @@ extern clock_t clock (void) __THROW;
 extern time_t time (time_t *__timer) __THROW;
 
 /* Return the difference between TIME1 and TIME0.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern double __REDIRECT (difftime, (time_t __time1, time_t __time0),
+     __difftime64) __THROW;
+# else
+# define difftime __difftime64
+# endif
+#endif
 extern double difftime (time_t __time1, time_t __time0)
      __THROW __attribute__ ((__const__));
 
