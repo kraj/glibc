@@ -5,6 +5,8 @@
 # include <time/time.h>
 # include <xlocale.h>
 
+#include <endian.h>
+
 __BEGIN_DECLS
 
 extern __typeof (strftime_l) __strftime_l;
@@ -19,10 +21,30 @@ libc_hidden_proto (localtime)
 libc_hidden_proto (strftime)
 libc_hidden_proto (strptime)
 
+/* Used by __clock_gettime64, __clock_settime64, __clock_getres64.  */
+#if BYTE_ORDER == BIG_ENDIAN
+struct __timespec64
+{
+  __time64_t tv_sec;		/* Seconds */
+  int tv_pad: 32;		/* Padding named for checking/setting */
+  __syscall_slong_t tv_nsec;	/* Nanoseconds */
+};
+#else
+struct __timespec64
+{
+  __time64_t tv_sec;		/* Seconds */
+  __syscall_slong_t tv_nsec;	/* Nanoseconds */
+  int tv_pad: 32;		/* Padding named for checking/setting */
+};
+#endif
+
 extern __typeof (clock_getres) __clock_getres;
 extern __typeof (clock_gettime) __clock_gettime;
+extern int __clock_getres64 (clockid_t __clock_id, struct __timespec64 *__res) __THROW;
 libc_hidden_proto (__clock_gettime)
+extern int __clock_gettime64 (clockid_t __clock_id, struct __timespec64 *__tp) __THROW;
 extern __typeof (clock_settime) __clock_settime;
+extern int __clock_settime64 (clockid_t __clock_id, const struct __timespec64 *__tp) __THROW;
 extern __typeof (clock_nanosleep) __clock_nanosleep;
 extern __typeof (clock_getcpuclockid) __clock_getcpuclockid;
 

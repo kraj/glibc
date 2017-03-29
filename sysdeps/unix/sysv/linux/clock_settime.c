@@ -18,11 +18,34 @@
 #include <errno.h>
 #include <sysdep.h>
 #include <time.h>
+#include <kernel_timespec.h>
 
 #include "kernel-posix-cpu-timers.h"
 
 
 /* The REALTIME clock is definitely supported in the kernel.  */
+#define SYSDEP_SETTIME64 \
+  case CLOCK_REALTIME:							      \
+    {                                                                         \
+      struct kernel_timespec64 ts64;                                          \
+      ts64.tv_sec = tp->tv_sec;                                               \
+      ts64.tv_nsec = tp->tv_nsec;                                             \
+      retval = INLINE_SYSCALL (clock_settime64, 2, clock_id, &ts64);          \
+      if (retval == ENOSYS) {                                                 \
+        if (tp->tv_sec > LONG_MAX) {                                          \
+          retval = EOVERFLOW;                                                 \
+        }                                                                     \
+        else                                                                  \
+        {                                                                     \
+          struct kernel_timespec32 ts32;                                      \
+          ts32.tv_sec = tp->tv_sec;                                           \
+          ts32.tv_nsec = tp->tv_nsec;                                         \
+          retval = INLINE_SYSCALL (clock_settime, 2, clock_id, &ts32);        \
+        }                                                                     \
+      }                                                                       \
+    }                                                                         \
+    break
+
 #define SYSDEP_SETTIME \
   case CLOCK_REALTIME:							      \
     retval = INLINE_SYSCALL (clock_settime, 2, clock_id, tp);		      \
@@ -32,6 +55,9 @@
 #define HANDLED_REALTIME	1
 
 #define HANDLED_CPUTIME 1
+#define SYSDEP_SETTIME64_CPU \
+  retval = INLINE_SYSCALL (clock_settime64, 2, clock_id, tp)
+
 #define SYSDEP_SETTIME_CPU \
   retval = INLINE_SYSCALL (clock_settime, 2, clock_id, tp)
 

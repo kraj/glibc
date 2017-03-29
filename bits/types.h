@@ -176,6 +176,8 @@ __STD_TYPE __SSIZE_T_TYPE __ssize_t; /* Type of a byte count, or error.  */
 __STD_TYPE __SYSCALL_SLONG_TYPE __syscall_slong_t;
 /* Unsigned long type used in system calls.  */
 __STD_TYPE __SYSCALL_ULONG_TYPE __syscall_ulong_t;
+/* Unsigned long type used in system calls.  */
+__STD_TYPE __SYSCALL_SQUAD_TYPE __syscall_squad_t;
 
 /* These few don't really vary by system, they always correspond
    to one of the other defined types.  */

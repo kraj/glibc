@@ -12,5 +12,11 @@ libc {
     __default_sa_restorer; __default_rt_sa_restorer;
     # nptl/pthread_cond_timedwait.c uses INTERNAL_VSYSCALL(clock_gettime).
     __vdso_clock_gettime;
+    # Y2038-proof clock_gettime is actually __clock_gettime64
+    # Y2038-proof clock_settime is actually __clock_settime64
+    # TODO: move to the actual version where the symbol is introduced?
+    __clock_gettime64; __clock_settime64; __clock_getres64;
+    # Y2038 clock_gettime/__clock_gettime64 use INTERNAL_VSYSCALL(clock_gettime64).
+    __vdso_clock_gettime64;
   }
 }

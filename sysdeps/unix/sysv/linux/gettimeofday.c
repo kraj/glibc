@@ -24,6 +24,7 @@
 #ifdef HAVE_GETTIMEOFDAY_VSYSCALL
 # define HAVE_VSYSCALL
 #endif
+#include <kernel_timespec.h>
 #include <sysdep-vdso.h>
 
 /* Get the current time of day and timezone information,

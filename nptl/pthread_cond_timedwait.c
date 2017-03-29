@@ -24,6 +24,7 @@
 #include <pthreadP.h>
 #include <sys/time.h>
 #include <kernel-features.h>
+#include <kernel_timespec.h>
 
 #include <shlib-compat.h>
 

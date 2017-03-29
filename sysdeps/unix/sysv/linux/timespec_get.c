@@ -22,7 +22,10 @@
 #ifdef HAVE_CLOCK_GETTIME_VSYSCALL
 # define HAVE_VSYSCALL
 #endif
+#include <kernel_timespec.h>
 #include <sysdep-vdso.h>
+
+struct kernel_timespec32 ts32 = { 1, 2 };
 
 /* Set TS to calendar time based in time base BASE.  */
 int
@@ -30,12 +33,29 @@ timespec_get (struct timespec *ts, int base)
 {
   switch (base)
     {
+      struct kernel_timespec64 ts64;
+      struct kernel_timespec32 ts32;
       int res;
       INTERNAL_SYSCALL_DECL (err);
     case TIME_UTC:
-      res = INTERNAL_VSYSCALL (clock_gettime, err, 2, CLOCK_REALTIME, ts);
-      if (INTERNAL_SYSCALL_ERROR_P (res, err))
-	return 0;
+      res = INTERNAL_VSYSCALL (clock_gettime64, err, 2, CLOCK_REALTIME, &ts64);
+      if (res == ENOSYS)
+      {
+        res = INTERNAL_VSYSCALL (clock_gettime, err, 2, CLOCK_REALTIME, &ts32);
+        if (INTERNAL_SYSCALL_ERROR_P (res, err))
+	  return 0;
+        ts->tv_sec = ts32.tv_sec;
+        ts->tv_nsec = ts32.tv_nsec;
+      }
+      else
+      {
+        if (INTERNAL_SYSCALL_ERROR_P (res, err))
+	  return 0;
+        if (ts64.tv_sec > LONG_MAX)
+          return 0;
+        ts->tv_sec = ts64.tv_sec;
+        ts->tv_nsec = ts64.tv_nsec;
+      }
       break;
 
     default:

@@ -118,14 +118,34 @@ typedef __timer_t timer_t;
 # define __timespec_defined	1
 
 # include <bits/types.h>	/* This defines __time_t for us.  */
+# include <endian.h>
 
 /* POSIX.1b structure for a time value.  This is like a `struct timeval' but
    has nanoseconds instead of microseconds.  */
+# ifndef __USE_TIME_BITS64
 struct timespec
   {
     __time_t tv_sec;		/* Seconds.  */
     __syscall_slong_t tv_nsec;	/* Nanoseconds.  */
   };
+# else
+/* 64-bit time -- we must pad the 32-bit Posix-mandated long tv_nsec to 64 bit */
+#  if BYTE_ORDER == BIG_ENDIAN
+struct timespec
+{
+  __time64_t tv_sec;		/* Seconds.  */
+  int: 32;
+  __syscall_slong_t tv_nsec;	/* Nanoseconds.  */
+};
+#  else
+struct timespec
+{
+  __time64_t tv_sec;		/* Seconds.  */
+  __syscall_slong_t tv_nsec;	/* Nanoseconds.  */
+  int: 32;
+};
+#  endif
+# endif
 
 #endif /* timespec not defined and <time.h> or need timespec.  */
 #undef	__need_timespec
@@ -340,12 +360,36 @@ extern int nanosleep (const struct timespec *__requested_time,
 
 
 /* Get resolution of clock CLOCK_ID.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern int __REDIRECT (clock_getres, (clockid_t __clock_id, struct
+     timespec *__res), __clock_getres64) __THROW;
+# else
+# define clock_getres __clock_getres64
+# endif
+#endif
 extern int clock_getres (clockid_t __clock_id, struct timespec *__res) __THROW;
 
 /* Get current value of clock CLOCK_ID and store it in TP.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern int __REDIRECT (clock_gettime, (clockid_t __clock_id, struct
+     timespec *__tp), __clock_gettime64) __THROW;
+# else
+# define clock_gettime __clock_gettime64
+# endif
+#endif
 extern int clock_gettime (clockid_t __clock_id, struct timespec *__tp) __THROW;
 
 /* Set clock CLOCK_ID to value TP.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern int __REDIRECT (clock_settime, (clockid_t __clock_id, const struct
+     timespec *__tp), __clock_settime64) __THROW;
+# else
+# define clock_settime __clock_settime64
+# endif
+#endif
 extern int clock_settime (clockid_t __clock_id, const struct timespec *__tp)
      __THROW;
 

@@ -24,6 +24,7 @@
 #ifdef HAVE_CLOCK_GETTIME_VSYSCALL
 # define HAVE_VSYSCALL
 #endif
+#include <kernel_timespec.h>
 #include <sysdep-vdso.h>
 
 /* The REALTIME and MONOTONIC clock are definitely supported in the
@@ -32,7 +33,26 @@
   SYSDEP_GETTIME_CPUTIME;						      \
   case CLOCK_REALTIME:							      \
   case CLOCK_MONOTONIC:							      \
-    retval = INLINE_VSYSCALL (clock_gettime, 2, clock_id, tp);		      \
+    retval = INLINE_VSYSCALL (clock_gettime64, 2, clock_id, &ts64);	      \
+    if (retval==0)							      \
+    {									      \
+      if (ts64.tv_sec > LONG_MAX)					      \
+        retval = EOVERFLOW;						      \
+      else								      \
+      {									      \
+        tp->tv_sec = ts64.tv_sec;					      \
+        tp->tv_nsec = ts64.tv_nsec;					      \
+      }									      \
+    }									      \
+    else								      \
+    {									      \
+      retval = INLINE_VSYSCALL (clock_gettime, 2, clock_id, &ts32);	      \
+      if (retval==0)							      \
+      {									      \
+        tp->tv_sec = ts32.tv_sec;					      \
+        tp->tv_nsec = ts32.tv_nsec;					      \
+      }									      \
+    }									      \
     break
 
 /* We handled the REALTIME clock here.  */
@@ -40,8 +60,89 @@
 #define HANDLED_CPUTIME	1
 
 #define SYSDEP_GETTIME_CPU(clock_id, tp) \
-  retval = INLINE_VSYSCALL (clock_gettime, 2, clock_id, tp); \
+  retval = INLINE_VSYSCALL (clock_gettime64, 2, clock_id, &ts64);	      \
+  if (retval==0)							      \
+  {									      \
+    if (ts64.tv_sec > LONG_MAX)						      \
+      retval = EOVERFLOW;						      \
+    else								      \
+    {									      \
+      tp->tv_sec = ts64.tv_sec;						      \
+      tp->tv_nsec = ts64.tv_nsec;					      \
+    }									      \
+  }									      \
+  else									      \
+  {									      \
+    retval = INLINE_VSYSCALL (clock_gettime, 2, clock_id, &ts32);	      \
+    if (retval==0)							      \
+    {									      \
+      tp->tv_sec = ts32.tv_sec;						      \
+      tp->tv_nsec = ts32.tv_nsec;					      \
+    }									      \
+  }									      \
   break
-#define SYSDEP_GETTIME_CPUTIME	/* Default catches them too.  */
+#define SYSDEP_GETTIME_CPUTIME \
+  struct kernel_timespec64 ts64;                                              \
+  struct kernel_timespec32 ts32;                                              \
+
+/* 64-bit versions */
+
+/* The REALTIME and MONOTONIC clock are definitely supported in the
+   kernel.  */
+#define SYSDEP_GETTIME64 \
+  SYSDEP_GETTIME64_CPUTIME;						      \
+  case CLOCK_REALTIME:							      \
+  case CLOCK_MONOTONIC:							      \
+    retval = INLINE_VSYSCALL (clock_gettime64, 2, clock_id, &ts64);	      \
+    if (retval==0)							      \
+    {									      \
+      if (ts64.tv_sec > LONG_MAX)					      \
+        retval = EOVERFLOW;						      \
+      else								      \
+      {									      \
+        tp->tv_sec = ts64.tv_sec;					      \
+        tp->tv_nsec = ts64.tv_nsec;					      \
+      }									      \
+    }									      \
+    else								      \
+    {									      \
+      retval = INLINE_VSYSCALL (clock_gettime, 2, clock_id, &ts32);	      \
+      if (retval==0)							      \
+      {									      \
+        tp->tv_sec = ts32.tv_sec;					      \
+        tp->tv_nsec = ts32.tv_nsec;					      \
+      }									      \
+    }									      \
+    break
+
+/* We handled the REALTIME clock here.  */
+#define HANDLED_REALTIME	1
+#define HANDLED_CPUTIME	1
+
+#define SYSDEP_GETTIME64_CPU(clock_id, tp) \
+  retval = INLINE_VSYSCALL (clock_gettime64, 2, clock_id, &ts64);	      \
+  if (retval==0)							      \
+  {									      \
+    if (ts64.tv_sec > LONG_MAX)						      \
+      retval = EOVERFLOW;						      \
+    else								      \
+    {									      \
+      tp->tv_sec = ts64.tv_sec;						      \
+      tp->tv_nsec = ts64.tv_nsec;					      \
+    }									      \
+  }									      \
+  else									      \
+  {									      \
+    retval = INLINE_VSYSCALL (clock_gettime, 2, clock_id, &ts32);	      \
+    if (retval==0)							      \
+    {									      \
+      tp->tv_sec = ts32.tv_sec;						      \
+      tp->tv_nsec = ts32.tv_nsec;					      \
+    }									      \
+  }									      \
+  break
+#define SYSDEP_GETTIME64_CPUTIME \
+  struct kernel_timespec64 ts64;                                              \
+  struct kernel_timespec32 ts32;                                              \
 
 #include <sysdeps/unix/clock_gettime.c>
