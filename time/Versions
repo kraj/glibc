@@ -71,5 +71,6 @@ libc {
     __gmtime64; __gmtime64_r;
     __localtime64; __localtime64_r;
     __mktime64; __timelocal64_r;
+    __timegm64;
   }
 }

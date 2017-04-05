@@ -36,6 +36,9 @@
 time_t __mktime_internal (struct tm *,
 			  struct tm * (*) (time_t const *, struct tm *),
 			  time_t *);
+__time64_t __mktime64_internal (struct tm *,
+				struct tm * (*) (__time64_t const *, struct tm *),
+				__time64_t *);
 #endif
 
 time_t
@@ -44,4 +47,12 @@ timegm (struct tm *tmp)
   static time_t gmtime_offset;
   tmp->tm_isdst = 0;
   return __mktime_internal (tmp, __gmtime_r, &gmtime_offset);
+}
+
+__time64_t
+__timegm64 (struct tm *tmp)
+{
+  static __time64_t gmtime64_offset;
+  tmp->tm_isdst = 0;
+  return __mktime64_internal (tmp, __gmtime64_r, &gmtime64_offset);
 }
