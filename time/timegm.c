@@ -33,20 +33,25 @@
 # include <time_r.h>
 # undef __gmtime_r
 # define __gmtime_r gmtime_r
-time_t __mktime_internal (struct tm *,
-			  struct tm * (*) (time_t const *, struct tm *),
-			  time_t *);
+time64_t __mktime_internal (struct tm *,
+			  struct tm * (*) (__time64_t const *, struct tm *),
+			  __time64_t *);
 #endif
 # include <limits.h>
 # include <errno.h>
 
+__time64_t
+timegm64 (struct tm *tmp)
+{
+  static __time64_t gmtime_offset;
+  tmp->tm_isdst = 0;
+  return __mktime_internal (tmp, __gmtime64_r, &gmtime_offset);
+}
+
 time_t
 timegm (struct tm *tmp)
 {
-  static __time64_t gmtime_offset;
-  __time64_t result;
-  tmp->tm_isdst = 0;
-  result = __mktime_internal (tmp, __gmtime64_r, &gmtime_offset);
+  __time64_t result = timegm64(tmp);
   /* Result may be correct for __mktime_internal() which handles 64-bit
      time, but still beyond 32-bit time_t */
   if ( (result < INT32_MIN) || (result > INT32_MAX) )
