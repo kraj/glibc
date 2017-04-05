@@ -1,3 +1,19 @@
+2017-04-05  Florian Weimer  <fweimer@redhat.com>
+
+	Store supported list of SYS_* system calls in the source tree.
+	* sysdeps/unix/sysv/linux/Makefile (bits/syscall.h): Generate from
+	list file.
+	[$(subdir) = misc] (tests): Add tst-syscall-list.
+	[$(subdir) = misc] (tests-special): Add tst-syscall-list.out
+	[$(subdir) = misc] (tst-syscall-list-macros.list)
+	(tst-syscall-list-nr.list, tst-syscall-list-sys.list): Helper
+	targets for new tst-syscall-list test.
+	(tst-syscall-list.out): Run test script tst-syscall-list.sh.
+	* sysdeps/unix/sysv/linux/syscall-names.list: New file.
+	* sysdeps/unix/sysv/linux/gen-syscall-h.awk: Likewise.
+	* sysdeps/unix/sysv/linux/filter-nr-syscalls.awk: Likewise.
+	* sysdeps/unix/sysv/linux/tst-syscall-list.sh: Likewise.
+
 2017-04-28  Tulio Magno Quites Machado Filho  <tuliom@linux.vnet.ibm.com>
 
 	[BZ #21280]
