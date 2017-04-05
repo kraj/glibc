@@ -265,6 +265,13 @@ extern int stime (const time_t *__when) __THROW;
    localtime package.  These are included only for compatibility.  */
 
 /* Like `mktime', but for TP represents Universal Time, not local time.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern time_t __REDIRECT (timegm, (struct tm *__tp), __timegm64) __THROW;
+# else
+# define timegm __timegm64
+# endif
+#endif
 extern time_t timegm (struct tm *__tp) __THROW;
 
 /* Another name for `mktime'.  */
