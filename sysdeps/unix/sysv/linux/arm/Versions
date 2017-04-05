@@ -26,5 +26,7 @@ libc {
     __localtime64; __localtime64_r;
     # Y2038-proof mktime and timelocal APIs
     __mktime64; __timelocal64_r;
+    # Y2038-proof timegm API
+    __timegm64;
   }
 }
