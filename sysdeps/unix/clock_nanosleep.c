@@ -99,3 +99,4 @@ __clock_nanosleep (clockid_t clock_id, int flags, const struct timespec *req,
   return __builtin_expect (nanosleep (req, rem), 0) ? errno : 0;
 }
 weak_alias (__clock_nanosleep, clock_nanosleep)
+

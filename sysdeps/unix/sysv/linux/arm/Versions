@@ -28,5 +28,7 @@ libc {
     __mktime64; __timelocal64_r;
     # Y2038-proof timegm API
     __timegm64;
+    # Y2038-proof clock_nanosleep API
+    __clock_nanosleep64;
   }
 }

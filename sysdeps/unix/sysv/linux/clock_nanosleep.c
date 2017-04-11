@@ -20,7 +20,7 @@
 
 #include <sysdep-cancel.h>
 #include "kernel-posix-cpu-timers.h"
-
+#include <kernel_timespec.h>
 
 /* We can simply use the syscall.  The CPU clocks are not supported
    with this function.  */
@@ -52,3 +52,51 @@ __clock_nanosleep (clockid_t clock_id, int flags, const struct timespec *req,
 	  ? INTERNAL_SYSCALL_ERRNO (r, err) : 0);
 }
 weak_alias (__clock_nanosleep, clock_nanosleep)
+
+int
+__clock_nanosleep64 (clockid_t clock_id, int flags,
+		   const struct __timespec64 *req,
+                   struct __timespec64 *rem)
+{
+  INTERNAL_SYSCALL_DECL (err);
+  int r;
+  struct kernel_timespec64 kreq, krem;
+
+  if (clock_id == CLOCK_THREAD_CPUTIME_ID)
+    return EINVAL;
+  if (clock_id == CLOCK_PROCESS_CPUTIME_ID)
+    clock_id = MAKE_PROCESS_CPUCLOCK (0, CPUCLOCK_SCHED);
+
+  kreq.tv_sec = req->tv_sec;
+  kreq.tv_nsec = req->tv_nsec;
+
+  if (SINGLE_THREAD_P)
+  {
+    r = INTERNAL_SYSCALL (clock_nanosleep64, err, 4, clock_id, flags, &kreq,
+                          &krem);
+  }
+  else
+    {
+      int oldstate = LIBC_CANCEL_ASYNC ();
+
+      r = INTERNAL_SYSCALL (clock_nanosleep64, err, 4, clock_id, flags,
+                            &kreq, &krem);
+
+      LIBC_CANCEL_RESET (oldstate);
+    }
+
+  if (INTERNAL_SYSCALL_ERROR_P (r, err))
+  {
+    if (r == EINTR && rem)
+    {
+      rem->tv_sec = krem.tv_sec;
+      rem->tv_nsec = krem.tv_nsec;
+    }
+    return INTERNAL_SYSCALL_ERRNO (r, err);
+
+  }
+  else
+  {
+    return 0;
+  }
+}
