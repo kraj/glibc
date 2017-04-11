@@ -337,6 +337,15 @@ extern int clock_settime (clockid_t __clock_id, const struct timespec *__tp)
 
    This function is a cancellation point and therefore not marked with
    __THROW.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern int __REDIRECT (clock_nanosleep, (clockid_t __clock_id, int __flags,
+     const struct timespec *__req, struct timespec *__rem),
+     __clock_nanosleep64) __THROW;
+# else
+# define clock_nanosleep __clock_nanosleep64
+# endif
+#endif
 extern int clock_nanosleep (clockid_t __clock_id, int __flags,
 			    const struct timespec *__req,
 			    struct timespec *__rem);

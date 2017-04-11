@@ -51,6 +51,9 @@ extern int __clock_gettime64 (clockid_t __clock_id, struct __timespec64 *__tp) _
 extern __typeof (clock_settime) __clock_settime;
 extern int __clock_settime64 (clockid_t __clock_id, const struct __timespec64 *__tp) __THROW;
 extern __typeof (clock_nanosleep) __clock_nanosleep;
+extern int __clock_nanosleep64 (clockid_t __clock_id, int __flags,
+			    const struct __timespec64 *__req,
+			    struct __timespec64 *__rem);
 extern __typeof (clock_getcpuclockid) __clock_getcpuclockid;
 
 /* Now define the internal interfaces.  */
