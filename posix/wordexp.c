@@ -833,12 +833,8 @@ exec_comm_child (char *comm, int *fildes, int showerr, int noexec)
       __close (fildes[1]);
     }
   else
-    {
-#ifdef O_CLOEXEC
-      /* Reset the close-on-exec flag (if necessary).  */
-      __fcntl (fildes[1], F_SETFD, 0);
-#endif
-    }
+    /* Reset the close-on-exec flag (if necessary).  */
+    __fcntl (fildes[1], F_SETFD, 0);
 
   /* Redirect stderr to /dev/null if we have to.  */
   if (showerr == 0)
@@ -902,14 +898,12 @@ exec_comm (char *comm, char **word, size_t *word_length, size_t *max_length,
   if (!comm || !*comm)
     return 0;
 
-#ifdef O_CLOEXEC
   {
     int r = __pipe2 (fildes, O_CLOEXEC);
     if (r < 0)
       /* Bad */
       return WRDE_NOSPACE;
   }
-#endif
 
  again:
   if ((pid = __fork ()) < 0)
