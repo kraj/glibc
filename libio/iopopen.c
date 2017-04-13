@@ -141,27 +141,11 @@ _IO_new_proc_open (_IO_FILE *fp, const char *command, const char *mode)
     return NULL;
 
 #ifdef O_CLOEXEC
-# ifndef __ASSUME_PIPE2
-  if (__have_pipe2 >= 0)
-# endif
     {
       int r = __pipe2 (pipe_fds, O_CLOEXEC);
-# ifndef __ASSUME_PIPE2
-      if (__have_pipe2 == 0)
-	__have_pipe2 = r != -1 || errno != ENOSYS ? 1 : -1;
-
-      if (__have_pipe2 > 0)
-# endif
 	if (r < 0)
 	  return NULL;
     }
-#endif
-#ifndef __ASSUME_PIPE2
-# ifdef O_CLOEXEC
-  if (__have_pipe2 < 0)
-# endif
-    if (__pipe (pipe_fds) < 0)
-      return NULL;
 #endif
 
   if (do_read)
@@ -183,27 +167,13 @@ _IO_new_proc_open (_IO_FILE *fp, const char *command, const char *mode)
       int child_std_end = do_read ? 1 : 0;
       struct _IO_proc_file *p;
 
-#ifndef __ASSUME_PIPE2
-      /* If we have pipe2 the descriptor is marked for close-on-exec.  */
-      _IO_close (parent_end);
-#endif
       if (child_end != child_std_end)
-	{
-	  _IO_dup2 (child_end, child_std_end);
-#ifndef __ASSUME_PIPE2
-	  _IO_close (child_end);
-#endif
-	}
+	_IO_dup2 (child_end, child_std_end);
 #ifdef O_CLOEXEC
       else
-	{
-	  /* The descriptor is already the one we will use.  But it must
-	     not be marked close-on-exec.  Undo the effects.  */
-# ifndef __ASSUME_PIPE2
-	  if (__have_pipe2 > 0)
-# endif
-	    __fcntl (child_end, F_SETFD, 0);
-	}
+	/* The descriptor is already the one we will use.  But it must
+	   not be marked close-on-exec.  Undo the effects.  */
+	__fcntl (child_end, F_SETFD, 0);
 #endif
       /* POSIX.2:  "popen() shall ensure that any streams from previous
          popen() calls that remain open in the parent process are closed
@@ -229,26 +199,12 @@ _IO_new_proc_open (_IO_FILE *fp, const char *command, const char *mode)
       return NULL;
     }
 
-  if (do_cloexec)
-    {
-#ifndef __ASSUME_PIPE2
-# ifdef O_CLOEXEC
-      if (__have_pipe2 < 0)
-# endif
-	__fcntl (parent_end, F_SETFD, FD_CLOEXEC);
-#endif
-    }
-  else
-    {
+  if (!do_cloexec)
 #ifdef O_CLOEXEC
-      /* Undo the effects of the pipe2 call which set the
-	 close-on-exec flag.  */
-# ifndef __ASSUME_PIPE2
-      if (__have_pipe2 > 0)
-# endif
-	__fcntl (parent_end, F_SETFD, 0);
+    /* Undo the effects of the pipe2 call which set the
+       close-on-exec flag.  */
+    __fcntl (parent_end, F_SETFD, 0);
 #endif
-    }
 
   _IO_fileno (fp) = parent_end;
 
