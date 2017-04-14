@@ -564,22 +564,24 @@ patches, although we try to avoid this.
 @appendixsec Specific advice for @gnulinuxsystems{}
 @cindex kernel header files
 
-If you are installing @theglibc{} on @gnulinuxsystems{}, you need to have
-the header files from a 3.2 or newer kernel around for reference.
-These headers must be installed using @samp{make headers_install}; the
-headers present in the kernel source directory are not suitable for
-direct use by @theglibc{}.  You do not need to use that kernel, just have
-its headers installed where @theglibc{} can access them, referred to here as
-@var{install-directory}.  The easiest way to do this is to unpack it
-in a directory such as @file{/usr/src/linux-@var{version}}.  In that
+If you are installing @theglibc{} on @gnulinuxsystems{}, you need to
+have the header files from a 3.2 or newer kernel (a 3.2.18 or newer
+kernel for the ia64 architecture) around for reference.  These headers
+must be installed using @samp{make headers_install}; the headers present
+in the kernel source directory are not suitable for direct use by
+@theglibc{}.  You do not need to use that kernel, just have its headers
+installed where @theglibc{} can access them, referred to here as
+@var{install-directory}.  The easiest way to do this is to unpack it in
+a directory such as @file{/usr/src/linux-@var{version}}.  In that
 directory, run @samp{make headers_install
-INSTALL_HDR_PATH=@var{install-directory}}.  Finally, configure @theglibc{}
-with the option @samp{--with-headers=@var{install-directory}/include}.
-Use the most recent kernel you can get your hands on.  (If you are
-cross-compiling @theglibc{}, you need to specify
-@samp{ARCH=@var{architecture}} in the @samp{make headers_install}
-command, where @var{architecture} is the architecture name used by the
-Linux kernel, such as @samp{x86} or @samp{powerpc}.)
+INSTALL_HDR_PATH=@var{install-directory}}.  Finally, configure
+@theglibc{} with the option
+@samp{--with-headers=@var{install-directory}/include}.  Use the most
+recent kernel you can get your hands on.  (If you are cross-compiling
+@theglibc{}, you need to specify @samp{ARCH=@var{architecture}} in the
+@samp{make headers_install} command, where @var{architecture} is the
+architecture name used by the Linux kernel, such as @samp{x86} or
+@samp{powerpc}.)
 
 After installing @theglibc{}, you may need to remove or rename
 directories such as @file{/usr/include/linux} and
