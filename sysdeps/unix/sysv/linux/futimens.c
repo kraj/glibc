@@ -36,3 +36,41 @@ futimens (int fd, const struct timespec tsp[2])
   /* Avoid implicit array coercion in syscall macros.  */
   return INLINE_SYSCALL (utimensat, 4, fd, NULL, &tsp[0], 0);
 }
+
+/* 64-bit time version */
+
+extern int __y2038_linux_support;
+
+int
+__futimens64 (int fd, const struct __timespec64 tsp[2])
+{
+  struct __timespec64 ts64[2];
+  struct timespec ts32[2];
+
+  if (fd < 0)
+    return INLINE_SYSCALL_ERROR_RETURN_VALUE (EBADF);
+
+  if (__y2038_linux_support)
+  {
+    if (fd < 0)
+      return INLINE_SYSCALL_ERROR_RETURN_VALUE (EBADF);
+    ts64[0].tv_sec = tsp[0].tv_sec;
+    ts64[0].tv_nsec = tsp[0].tv_nsec;
+    ts64[0].tv_pad = 0;
+    ts64[1].tv_sec = tsp[1].tv_sec;
+    ts64[1].tv_nsec = tsp[1].tv_nsec;
+    ts64[1].tv_pad = 0;
+    return INLINE_SYSCALL (utimensat64, 4, fd, NULL, &ts64[0], 0);
+  }
+
+  if (tsp[0].tv_sec > INT_MAX || tsp[1].tv_sec > INT_MAX)
+  {
+    return EOVERFLOW;
+  }
+
+  ts32[0].tv_sec = tsp[0].tv_sec;
+  ts32[0].tv_nsec = tsp[0].tv_nsec;
+  ts32[1].tv_sec = tsp[1].tv_sec;
+  ts32[1].tv_nsec = tsp[1].tv_nsec;
+  return INLINE_SYSCALL (utimensat, 4, fd, NULL, &ts32[0], 0);
+}

@@ -365,6 +365,14 @@ extern int utimensat (int __fd, const char *__path,
 
 #ifdef __USE_XOPEN2K8
 /* Set file access and modification times of the file associated with FD.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern int __REDIRECT (futimens, (int __fd, const struct timespec __times[2]),
+           __futimens64) __THROW;
+# else
+# define futimens __futimens64
+# endif
+#endif
 extern int futimens (int __fd, const struct timespec __times[2]) __THROW;
 #endif
 
