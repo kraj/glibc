@@ -21,6 +21,7 @@
 #include <string.h>
 #include <time.h>
 #include <sysdep.h>
+#include <kernel_timespec.h>
 
 
 /* Change the access time of the file associated with FD to TSP[0] and
@@ -43,3 +44,17 @@ futimens (int fd, const struct timespec tsp[2])
 #ifndef __NR_utimensat
 stub_warning (futimens)
 #endif
+
+int
+__futimens64 (int fd, const struct __timespec64 tsp[2])
+{
+  struct kernel_timespec64 kt[2];
+  if (fd < 0)
+    return INLINE_SYSCALL_ERROR_RETURN_VALUE (EBADF);
+  kt[0].tv_sec = tsp[0].tv_sec;
+  kt[0].tv_nsec = tsp[0].tv_nsec;
+  kt[1].tv_sec = tsp[1].tv_sec;
+  kt[1].tv_nsec = tsp[1].tv_nsec;
+  /* Avoid implicit array coercion in syscall macros.  */
+  return INLINE_SYSCALL (utimensat64, 4, fd, NULL, &kt[0], 0);
+}

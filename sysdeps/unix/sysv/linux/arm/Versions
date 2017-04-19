@@ -30,5 +30,7 @@ libc {
     __timegm64;
     # Y2038-proof clock_nanosleep API
     __clock_nanosleep64;
+    # Y2038-proof futimens API
+    __futimens64;
   }
 }
