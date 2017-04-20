@@ -19,6 +19,8 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <sysdep.h>
+#include <kernel_timespec.h>
+#include <stdio.h>
 
 
 /* Change the access time of FILE to TSP[0] and
@@ -41,3 +43,25 @@ utimensat (int fd, const char *file, const struct timespec tsp[2],
 #ifndef __NR_utimensat
 stub_warning (utimensat)
 #endif
+
+int
+__utimensat64 (int fd, const char *file, const struct __timespec64 tsp[2],
+	   int flags)
+{
+  struct kernel_timespec64 ks[2], *ksp;
+  if (file == NULL)
+    return INLINE_SYSCALL_ERROR_RETURN_VALUE (EINVAL);
+  if (tsp)
+  {
+    ks[0].tv_sec = tsp[0].tv_sec;
+    ks[0].tv_nsec = tsp[0].tv_nsec;
+    ks[1].tv_sec = tsp[1].tv_sec;
+    ks[1].tv_nsec = tsp[1].tv_nsec;
+    ksp = ks;
+  }
+  else
+  {
+    ksp = NULL;
+  }
+  return INLINE_SYSCALL (utimensat64, 4, fd, file, ksp, flags);
+}
