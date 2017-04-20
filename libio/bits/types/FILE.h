@@ -1,9 +1,12 @@
 #ifndef __FILE_defined
 #define __FILE_defined 1
 
-struct _IO_FILE;
+/* Note: the struct tag is _IO_FILE rather than __FILE for historical
+   reasons.  It potentially appears in C++ mangled names and therefore
+   cannot be changed.  This file must be kept in sync with __FILE.h and
+   FILE_internals.h.  */
 
-/* The opaque type of streams.  This is the definition used elsewhere.  */
+struct _IO_FILE;
 typedef struct _IO_FILE FILE;
 
 #endif

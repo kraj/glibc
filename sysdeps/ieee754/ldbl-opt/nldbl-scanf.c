@@ -8,7 +8,7 @@ scanf (const char *fmt, ...)
   int done;
 
   va_start (arg, fmt);
-  done = __nldbl__IO_vfscanf (stdin, fmt, arg, NULL);
+  done = __nldbl_vfscanf (stdin, fmt, arg);
   va_end (arg);
 
   return done;

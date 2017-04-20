@@ -1370,7 +1370,6 @@ a.out.h
 semget.c
 posix_fallocate.c
 getpid.c
-_G_config.h
 getsockopt.S
 pthread_setaffinity.c
 setipv4sourcefilter.c
@@ -3407,7 +3406,6 @@ a.out.h
 libBrokenLocale.abilist
 machine-gmon.h
 _itoa.h
-_G_config.h
 local-setxid.h
 dl-osinfo.h
 dl-dtprocnum.h

@@ -22,10 +22,8 @@
 #include <errno.h>
 #include <string.h>
 #include <stdio.h>
-
+#include <libio.h>
 #include <wchar.h>
-#define flockfile(s) _IO_flockfile (s)
-#define funlockfile(s) _IO_funlockfile (s)
 
 extern char *__progname;
 

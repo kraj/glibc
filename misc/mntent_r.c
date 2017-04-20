@@ -23,9 +23,6 @@
 #include <string.h>
 #include <sys/types.h>
 
-#define flockfile(s) _IO_flockfile (s)
-#define funlockfile(s) _IO_funlockfile (s)
-
 #undef __setmntent
 #undef __endmntent
 #undef __getmntent_r

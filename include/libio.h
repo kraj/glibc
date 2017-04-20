@@ -1,11 +1,9 @@
-#if !defined _ISOMAC && defined _IO_MTSAFE_IO
-# include <stdio-lock.h>
-#endif
-#include <libio/libio.h>
-
-#ifndef _ISOMAC
-#ifndef _LIBC_LIBIO_H
-#define _LIBC_LIBIO_H
+#ifndef _IO_STDIO_H
+# if !defined _ISOMAC && defined _IO_MTSAFE_IO
+#  include <stdio-lock.h>
+# endif
+# include <libio/libio.h>
+# ifndef _ISOMAC
 
 libc_hidden_proto (__overflow)
 libc_hidden_proto (__underflow)
@@ -41,5 +39,5 @@ libc_hidden_proto (_IO_vfscanf)
 # endif
 #endif /* _IO_MTSAFE_IO */
 
-#endif
-#endif
+# endif /* !_ISOMAC */
+#endif /* libio.h */

@@ -114,7 +114,7 @@ extern int errno;
 
 void
 attribute_compat_text_section
-_IO_old_file_init_internal (struct _IO_FILE_plus *fp)
+_IO_old_file_init_internal (struct _IO_FILE_old_plus *fp)
 {
   /* POSIX.1 allows another file handle to be used to change the position
      of our file descriptor.  Hence we actually don't know the actual
@@ -122,25 +122,25 @@ _IO_old_file_init_internal (struct _IO_FILE_plus *fp)
   fp->file._old_offset = _IO_pos_BAD;
   fp->file._IO_file_flags |= CLOSED_FILEBUF_FLAGS;
 
-  _IO_link_in (fp);
-  fp->file._vtable_offset = ((int) sizeof (struct _IO_FILE)
-			     - (int) sizeof (struct _IO_FILE_complete));
+  _IO_link_in ((struct _IO_FILE_plus *)fp);
+  fp->file._vtable_offset = ((int) sizeof (struct _IO_FILE_old)
+			     - (int) sizeof (struct _IO_FILE));
   fp->file._fileno = -1;
 
 #if defined SHARED && defined _LIBC
   if (__builtin_expect (&_IO_stdin_used != NULL, 1)
-      || (fp != (struct _IO_FILE_plus *) _IO_stdin
-	  && fp != (struct _IO_FILE_plus *) _IO_stdout
-	  && fp != (struct _IO_FILE_plus *) _IO_stderr))
+      || (fp != (struct _IO_FILE_old_plus *) _IO_stdin
+	  && fp != (struct _IO_FILE_old_plus *) _IO_stdout
+	  && fp != (struct _IO_FILE_old_plus *) _IO_stderr))
     /* The object is dynamically allocated and large enough.  Initialize
        the _mode element as well.  */
-    ((struct _IO_FILE_complete *) fp)->_mode = -1;
+    ((struct _IO_FILE *) fp)->_mode = -1;
 #endif
 }
 
 void
 attribute_compat_text_section
-_IO_old_file_init (struct _IO_FILE_plus *fp)
+_IO_old_file_init (struct _IO_FILE_old_plus *fp)
 {
   IO_set_accept_foreign_vtables (&_IO_vtable_check);
   _IO_old_file_init_internal (fp);
@@ -189,7 +189,8 @@ _IO_old_file_finish (_IO_FILE *fp, int dummy)
 
 _IO_FILE *
 attribute_compat_text_section
-_IO_old_file_fopen (_IO_FILE *fp, const char *filename, const char *mode)
+_IO_old_file_fopen (_IO_FILE *fp,
+                    const char *filename, const char *mode)
 {
   int oflags = 0, omode;
   int read_write, fdesc;

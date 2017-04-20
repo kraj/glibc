@@ -16,9 +16,17 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
+#ifndef _BITS_STDIO_H
+#define _BITS_STDIO_H 1
+
 #ifndef _STDIO_H
 # error "Never include <bits/stdio.h> directly; use <stdio.h> instead."
 #endif
+
+#include <bits/types/FILE_internals.h>
+
+extern int __uflow (FILE *);
+extern int __overflow (FILE *, int);
 
 #ifndef __extern_inline
 # define __STDIO_INLINE inline
@@ -26,14 +34,12 @@
 # define __STDIO_INLINE __extern_inline
 #endif
 
-
-#ifdef __USE_EXTERN_INLINES
 /* For -D_FORTIFY_SOURCE{,=2} bits/stdio2.h will define a different
    inline.  */
 # if !(__USE_FORTIFY_LEVEL > 0 && defined __fortify_function)
 /* Write formatted output to stdout from argument list ARG.  */
 __STDIO_INLINE int
-vprintf (const char *__restrict __fmt, _G_va_list __arg)
+vprintf (const char *__restrict __fmt, __gnuc_va_list __arg)
 {
   return vfprintf (stdout, __fmt, __arg);
 }
@@ -43,8 +49,22 @@ vprintf (const char *__restrict __fmt, _G_va_list __arg)
 __STDIO_INLINE int
 getchar (void)
 {
-  return _IO_getc (stdin);
+  return getc (stdin);
 }
+
+#if defined __USE_MISC || defined __USE_POSIX
+__STDIO_INLINE int
+__getc_unlocked (FILE *__fp)
+{
+  char __c;
+
+  if (__glibc_unlikely (__fp->_IO_read_ptr >= __fp->_IO_read_end))
+    return __uflow (__fp);
+
+  __c = *__fp->_IO_read_ptr++;
+  return (unsigned char) __c;
+}
+#endif
 
 
 # ifdef __USE_MISC
@@ -52,24 +72,23 @@ getchar (void)
 __STDIO_INLINE int
 fgetc_unlocked (FILE *__fp)
 {
-  return _IO_getc_unlocked (__fp);
+  return __getc_unlocked (__fp);
 }
 # endif /* misc */
-
 
 # ifdef __USE_POSIX
 /* This is defined in POSIX.1:1996.  */
 __STDIO_INLINE int
 getc_unlocked (FILE *__fp)
 {
-  return _IO_getc_unlocked (__fp);
+  return __getc_unlocked (__fp);
 }
 
 /* This is defined in POSIX.1:1996.  */
 __STDIO_INLINE int
 getchar_unlocked (void)
 {
-  return _IO_getc_unlocked (stdin);
+  return __getc_unlocked (stdin);
 }
 # endif	/* POSIX */
 
@@ -78,16 +97,28 @@ getchar_unlocked (void)
 __STDIO_INLINE int
 putchar (int __c)
 {
-  return _IO_putc (__c, stdout);
+  return putc (__c, stdout);
 }
 
+#if defined __USE_MISC || defined __USE_POSIX
+__STDIO_INLINE int
+__putc_unlocked (int __c, FILE *__stream)
+{
+  unsigned char __cc = __c;
+  if (__glibc_unlikely (__stream->_IO_write_ptr >= __stream->_IO_write_end))
+    return __overflow (__stream, __cc);
+
+  *__stream->_IO_write_ptr++ = __cc;
+  return __cc;
+}
+#endif
 
 # ifdef __USE_MISC
 /* Faster version when locking is not necessary.  */
 __STDIO_INLINE int
 fputc_unlocked (int __c, FILE *__stream)
 {
-  return _IO_putc_unlocked (__c, __stream);
+  return __putc_unlocked (__c, __stream);
 }
 # endif /* misc */
 
@@ -97,21 +128,21 @@ fputc_unlocked (int __c, FILE *__stream)
 __STDIO_INLINE int
 putc_unlocked (int __c, FILE *__stream)
 {
-  return _IO_putc_unlocked (__c, __stream);
+  return __putc_unlocked (__c, __stream);
 }
 
 /* This is defined in POSIX.1:1996.  */
 __STDIO_INLINE int
 putchar_unlocked (int __c)
 {
-  return _IO_putc_unlocked (__c, stdout);
+  return __putc_unlocked (__c, stdout);
 }
 # endif	/* POSIX */
 
 
 # ifdef	__USE_GNU
 /* Like `getdelim', but reads up to a newline.  */
-__STDIO_INLINE _IO_ssize_t
+__STDIO_INLINE __ssize_t
 getline (char **__lineptr, size_t *__n, FILE *__stream)
 {
   return __getdelim (__lineptr, __n, '\n', __stream);
@@ -124,19 +155,16 @@ getline (char **__lineptr, size_t *__n, FILE *__stream)
 __STDIO_INLINE int
 __NTH (feof_unlocked (FILE *__stream))
 {
-  return _IO_feof_unlocked (__stream);
+  return (__stream->_flags & _IO_EOF_SEEN) != 0;
 }
 
 /* Faster versions when locking is not required.  */
 __STDIO_INLINE int
 __NTH (ferror_unlocked (FILE *__stream))
 {
-  return _IO_ferror_unlocked (__stream);
+  return (__stream->_flags & _IO_ERR_SEEN) != 0;
 }
 # endif /* misc */
-
-#endif /* Use extern inlines.  */
-
 
 #if defined __USE_MISC && defined __GNUC__ && defined __OPTIMIZE__ \
     && !defined __cplusplus
@@ -151,7 +179,7 @@ __NTH (ferror_unlocked (FILE *__stream))
 		       for (__cnt = (size_t) (size) * (size_t) (n);	      \
 			    __cnt > 0; --__cnt)				      \
 			 {						      \
-			   int __c = _IO_getc_unlocked (__stream);	      \
+			   int __c = __getc_unlocked (__stream);	      \
 			   if (__c == EOF)				      \
 			     break;					      \
 			   *__ptr++ = __c;				      \
@@ -174,7 +202,7 @@ __NTH (ferror_unlocked (FILE *__stream))
 		       size_t __cnt;					      \
 		       for (__cnt = (size_t) (size) * (size_t) (n);	      \
 			    __cnt > 0; --__cnt)				      \
-			 if (_IO_putc_unlocked (*__ptr++, __stream) == EOF)   \
+			 if (__putc_unlocked (*__ptr++, __stream) == EOF)     \
 			   break;					      \
 		       ((size_t) (size) * (size_t) (n) - __cnt)		      \
 			/ (size_t) (size); })				      \
@@ -186,5 +214,6 @@ __NTH (ferror_unlocked (FILE *__stream))
 		     : fwrite_unlocked (ptr, size, n, stream))))
 #endif
 
-/* Define helper macro.  */
 #undef __STDIO_INLINE
+
+#endif /* bits/stdio.h */

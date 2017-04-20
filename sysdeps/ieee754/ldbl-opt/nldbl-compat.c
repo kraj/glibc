@@ -176,7 +176,7 @@ strong_alias (__nldbl_vfprintf, __nldbl__IO_vfprintf)
 
 int
 attribute_compat_text_section
-__nldbl__IO_vsprintf (char *string, const char *fmt, va_list ap)
+__nldbl_vsprintf (char *string, const char *fmt, va_list ap)
 {
   int done;
   __no_long_double = 1;
@@ -184,8 +184,8 @@ __nldbl__IO_vsprintf (char *string, const char *fmt, va_list ap)
   __no_long_double = 0;
   return done;
 }
-weak_alias (__nldbl__IO_vsprintf, __nldbl_vsprintf)
 libc_hidden_def (__nldbl_vsprintf)
+strong_alias (__nldbl_vsprintf, __nldbl__IO_vsprintf)
 
 int
 attribute_compat_text_section

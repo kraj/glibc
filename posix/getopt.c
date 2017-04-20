@@ -29,17 +29,13 @@
 #include <unistd.h>
 
 #ifdef _LIBC
-/* When used as part of glibc, error printing must be done differently
-   for standards compliance.  getopt is not a cancellation point, so
-   it must not call functions that are, and it is specified by an
-   older standard than stdio locking, so it must not refer to
-   functions in the "user namespace" related to stdio locking.
-   Finally, it must use glibc's internal message translation so that
-   the messages are looked up in the proper text domain.  */
+/* When used as part of glibc, error printing must be done
+   differently: getopt is not a cancellation point, so it must not
+   call functions that are, and it must use glibc's internal message
+   translation so that the messages are looked up in the proper text
+   domain.  */
 # include <libintl.h>
 # define fprintf __fxprintf_nocancel
-# define flockfile(fp) _IO_flockfile (fp)
-# define funlockfile(fp) _IO_funlockfile (fp)
 #else
 # include "gettext.h"
 # define _(msgid) gettext (msgid)

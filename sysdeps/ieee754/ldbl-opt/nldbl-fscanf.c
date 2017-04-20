@@ -8,7 +8,7 @@ fscanf (FILE *stream, const char *fmt, ...)
   int done;
 
   va_start (arg, fmt);
-  done = __nldbl__IO_vfscanf (stream, fmt, arg, NULL);
+  done = __nldbl_vfscanf (stream, fmt, arg);
   va_end (arg);
 
   return done;

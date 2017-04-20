@@ -94,7 +94,7 @@ extern int _IO_dup2 (int fd, int fd2) __THROW;
 
 struct _IO_proc_file
 {
-  struct _IO_FILE_complete_plus file;
+  struct _IO_FILE_plus file;
   /* Following fields must match those in class procbuf (procbuf.h) */
   _IO_pid_t pid;
   struct _IO_proc_file *next;
@@ -206,18 +206,18 @@ _IO_old_popen (const char *command, const char *mode)
   if (new_f == NULL)
     return NULL;
 #ifdef _IO_MTSAFE_IO
-  new_f->fpx.file.file._file._lock = &new_f->lock;
+  new_f->fpx.file.file._lock = &new_f->lock;
 #endif
-  fp = &new_f->fpx.file.file._file;
+  fp = &new_f->fpx.file.file;
   _IO_old_init (fp, 0);
-  _IO_JUMPS_FILE_plus (&new_f->fpx.file) = &_IO_old_proc_jumps;
-  _IO_old_file_init_internal ((struct _IO_FILE_plus *) &new_f->fpx.file);
+  _IO_JUMPS_FILE_plus (&new_f->fpx.file.file) = &_IO_old_proc_jumps;
+  _IO_old_file_init_internal ((struct _IO_FILE_old_plus *) &new_f->fpx.file);
 #if  !_IO_UNIFIED_JUMPTABLES
   new_f->fpx.file.vtable = NULL;
 #endif
   if (_IO_old_proc_open (fp, command, mode) != NULL)
     return fp;
-  _IO_un_link ((struct _IO_FILE_plus *) &new_f->fpx.file);
+  _IO_un_link (&new_f->fpx.file);
   free (new_f);
   return NULL;
 }
