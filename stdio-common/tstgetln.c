@@ -15,9 +15,8 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
+#include <sys/types.h>
 #include <stdio.h>
-#undef ssize_t
-#define ssize_t _IO_ssize_t
 
 int
 main (int argc, char *argv[])

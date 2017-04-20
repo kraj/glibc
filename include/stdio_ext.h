@@ -2,6 +2,7 @@
 #include <stdio-common/stdio_ext.h>
 
 # ifndef _ISOMAC
+# include <libio/bits/types/FILE_internals.h>
 
 libc_hidden_proto (__fsetlocking)
 
