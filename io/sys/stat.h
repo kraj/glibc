@@ -357,6 +357,15 @@ extern int mkfifoat (int __fd, const char *__path, __mode_t __mode)
 #ifdef __USE_ATFILE
 /* Set file access and modification times relative to directory file
    descriptor.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern int __REDIRECT (utimensat, (int __fd, const char *__path,
+           const struct timespec __times[2], int __flags),
+           __utimensat64) __THROW __nonnull((2));
+# else
+# define utimensat __utimensat64
+# endif
+#endif
 extern int utimensat (int __fd, const char *__path,
 		      const struct timespec __times[2],
 		      int __flags)
