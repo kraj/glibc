@@ -347,12 +347,9 @@ struct _IO_FILE_plus
 };
 
 #ifdef _IO_USE_OLD_IO_FILE
-/* This structure is used by the compatibility code as if it were an
-   _IO_FILE_plus, but has enough space to initialize the _mode argument
-   of an _IO_FILE_complete.  */
-struct _IO_FILE_complete_plus
+struct _IO_FILE_old_plus
 {
-  struct _IO_FILE_complete file;
+  struct _IO_FILE_old file;
   const struct _IO_jump_t *vtable;
 };
 #endif
@@ -623,13 +620,15 @@ extern _IO_off64_t _IO_new_file_seekoff (_IO_FILE *, _IO_off64_t, int, int);
 extern _IO_ssize_t _IO_new_file_write (_IO_FILE *, const void *, _IO_ssize_t);
 extern _IO_size_t _IO_new_file_xsputn (_IO_FILE *, const void *, _IO_size_t);
 
+#ifdef _IO_USE_OLD_IO_FILE
+extern void _IO_old_file_init_internal (struct _IO_FILE_old_plus *)
+  __THROW attribute_hidden;
+#endif
 extern _IO_FILE* _IO_old_file_setbuf (_IO_FILE *, char *, _IO_ssize_t);
 extern _IO_off64_t _IO_old_file_seekoff (_IO_FILE *, _IO_off64_t, int, int);
 extern _IO_size_t _IO_old_file_xsputn (_IO_FILE *, const void *, _IO_size_t);
 extern int _IO_old_file_underflow (_IO_FILE *);
 extern int _IO_old_file_overflow (_IO_FILE *, int);
-extern void _IO_old_file_init_internal (struct _IO_FILE_plus *)
-  __THROW attribute_hidden;
 extern _IO_FILE* _IO_old_file_attach (_IO_FILE *, int);
 extern _IO_FILE* _IO_old_file_fopen (_IO_FILE *, const char *, const char *);
 extern _IO_ssize_t _IO_old_file_write (_IO_FILE *, const void *, _IO_ssize_t);

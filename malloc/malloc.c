@@ -222,6 +222,7 @@
 
 #include <unistd.h>
 #include <stdio.h>    /* needed for malloc_stats */
+#include <libio.h>    /* needed for FILE internals in malloc_stats */
 #include <errno.h>
 
 #include <shlib-compat.h>

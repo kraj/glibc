@@ -16,6 +16,7 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include <stdio_ext.h>
+#include <libio.h>
 
 int
 __flbf (FILE *fp)

@@ -39,11 +39,11 @@
 #ifdef _IO_MTSAFE_IO
 #define DEF_STDFILE(NAME, FD, CHAIN, FLAGS) \
   static _IO_lock_t _IO_stdfile_##FD##_lock = _IO_lock_initializer; \
-  struct _IO_FILE_plus NAME \
+  struct _IO_FILE_old_plus NAME \
     = {FILEBUF_LITERAL(CHAIN, FLAGS, FD, NULL), &_IO_old_file_jumps};
 #else
 #define DEF_STDFILE(NAME, FD, CHAIN, FLAGS) \
-  struct _IO_FILE_plus NAME \
+  struct _IO_FILE_old_plus NAME \
     = {FILEBUF_LITERAL(CHAIN, FLAGS, FD, NULL), &_IO_old_file_jumps};
 #endif
 
@@ -81,12 +81,12 @@ _IO_check_libio (void)
       _IO_stdin = stdin = (_IO_FILE *) &_IO_stdin_;
       _IO_stdout = stdout = (_IO_FILE *) &_IO_stdout_;
       _IO_stderr = stderr = (_IO_FILE *) &_IO_stderr_;
-      _IO_list_all = &_IO_stderr_;
+      _IO_list_all = (struct _IO_FILE_plus *) &_IO_stderr_;
       _IO_stdin->_vtable_offset = _IO_stdout->_vtable_offset =
 	_IO_stderr->_vtable_offset = stdin->_vtable_offset =
 	stdout->_vtable_offset = stderr->_vtable_offset =
-	((int) sizeof (struct _IO_FILE)
-	 - (int) sizeof (struct _IO_FILE_complete));
+	((int) sizeof (struct _IO_FILE_old)
+	 - (int) sizeof (struct _IO_FILE));
     }
 }
 

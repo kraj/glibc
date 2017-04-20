@@ -20,8 +20,6 @@
 #include <shadow.h>
 #include <stdio.h>
 
-#define flockfile(s) _IO_flockfile (s)
-#define funlockfile(s) _IO_funlockfile (s)
 
 /* Define a line parsing function using the common code
    used in the nss_files module.  */

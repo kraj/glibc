@@ -38,21 +38,21 @@ __fgetsgent_r (FILE *stream, struct sgrp *resbuf, char *buffer, size_t buflen,
 {
   char *p;
 
-  _IO_flockfile (stream);
+  flockfile (stream);
   do
     {
       buffer[buflen - 1] = '\xff';
       p = fgets_unlocked (buffer, buflen, stream);
       if (p == NULL && feof_unlocked (stream))
 	{
-	  _IO_funlockfile (stream);
+	  funlockfile (stream);
 	  *result = NULL;
 	  __set_errno (ENOENT);
 	  return errno;
 	}
       if (p == NULL || buffer[buflen - 1] != '\xff')
 	{
-	  _IO_funlockfile (stream);
+	  funlockfile (stream);
 	  *result = NULL;
 	  __set_errno (ERANGE);
 	  return errno;
@@ -67,7 +67,7 @@ __fgetsgent_r (FILE *stream, struct sgrp *resbuf, char *buffer, size_t buflen,
 	     ! parse_line (buffer, (void *) resbuf, (void *) buffer, buflen,
 			   &errno));
 
-  _IO_funlockfile (stream);
+  funlockfile (stream);
 
   *result = resbuf;
   return 0;

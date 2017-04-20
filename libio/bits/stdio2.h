@@ -24,7 +24,7 @@ extern int __sprintf_chk (char *__restrict __s, int __flag, size_t __slen,
 			  const char *__restrict __format, ...) __THROW;
 extern int __vsprintf_chk (char *__restrict __s, int __flag, size_t __slen,
 			   const char *__restrict __format,
-			   _G_va_list __ap) __THROW;
+			   __gnuc_va_list __ap) __THROW;
 
 #ifdef __va_arg_pack
 __fortify_function int
@@ -41,7 +41,7 @@ __NTH (sprintf (char *__restrict __s, const char *__restrict __fmt, ...))
 
 __fortify_function int
 __NTH (vsprintf (char *__restrict __s, const char *__restrict __fmt,
-		 _G_va_list __ap))
+		 __gnuc_va_list __ap))
 {
   return __builtin___vsprintf_chk (__s, __USE_FORTIFY_LEVEL - 1,
 				   __bos (__s), __fmt, __ap);
@@ -54,7 +54,7 @@ extern int __snprintf_chk (char *__restrict __s, size_t __n, int __flag,
 			   ...) __THROW;
 extern int __vsnprintf_chk (char *__restrict __s, size_t __n, int __flag,
 			    size_t __slen, const char *__restrict __format,
-			    _G_va_list __ap) __THROW;
+			    __gnuc_va_list __ap) __THROW;
 
 # ifdef __va_arg_pack
 __fortify_function int
@@ -72,7 +72,7 @@ __NTH (snprintf (char *__restrict __s, size_t __n,
 
 __fortify_function int
 __NTH (vsnprintf (char *__restrict __s, size_t __n,
-		  const char *__restrict __fmt, _G_va_list __ap))
+		  const char *__restrict __fmt, __gnuc_va_list __ap))
 {
   return __builtin___vsnprintf_chk (__s, __n, __USE_FORTIFY_LEVEL - 1,
 				    __bos (__s), __fmt, __ap);
@@ -86,9 +86,10 @@ extern int __fprintf_chk (FILE *__restrict __stream, int __flag,
 			  const char *__restrict __format, ...);
 extern int __printf_chk (int __flag, const char *__restrict __format, ...);
 extern int __vfprintf_chk (FILE *__restrict __stream, int __flag,
-			   const char *__restrict __format, _G_va_list __ap);
+			   const char *__restrict __format,
+			   __gnuc_va_list __ap);
 extern int __vprintf_chk (int __flag, const char *__restrict __format,
-			  _G_va_list __ap);
+			  __gnuc_va_list __ap);
 
 # ifdef __va_arg_pack
 __fortify_function int
@@ -111,7 +112,7 @@ printf (const char *__restrict __fmt, ...)
 # endif
 
 __fortify_function int
-vprintf (const char *__restrict __fmt, _G_va_list __ap)
+vprintf (const char *__restrict __fmt, __gnuc_va_list __ap)
 {
 #ifdef __USE_EXTERN_INLINES
   return __vfprintf_chk (stdout, __USE_FORTIFY_LEVEL - 1, __fmt, __ap);
@@ -122,7 +123,7 @@ vprintf (const char *__restrict __fmt, _G_va_list __ap)
 
 __fortify_function int
 vfprintf (FILE *__restrict __stream,
-	  const char *__restrict __fmt, _G_va_list __ap)
+	  const char *__restrict __fmt, __gnuc_va_list __ap)
 {
   return __vfprintf_chk (__stream, __USE_FORTIFY_LEVEL - 1, __fmt, __ap);
 }
@@ -131,7 +132,7 @@ vfprintf (FILE *__restrict __stream,
 extern int __dprintf_chk (int __fd, int __flag, const char *__restrict __fmt,
 			  ...) __attribute__ ((__format__ (__printf__, 3, 4)));
 extern int __vdprintf_chk (int __fd, int __flag,
-			   const char *__restrict __fmt, _G_va_list __arg)
+			   const char *__restrict __fmt, __gnuc_va_list __arg)
      __attribute__ ((__format__ (__printf__, 3, 0)));
 
 #  ifdef __va_arg_pack
@@ -147,7 +148,7 @@ dprintf (int __fd, const char *__restrict __fmt, ...)
 #  endif
 
 __fortify_function int
-vdprintf (int __fd, const char *__restrict __fmt, _G_va_list __ap)
+vdprintf (int __fd, const char *__restrict __fmt, __gnuc_va_list __ap)
 {
   return __vdprintf_chk (__fd, __USE_FORTIFY_LEVEL - 1, __fmt, __ap);
 }
@@ -159,7 +160,7 @@ extern int __asprintf_chk (char **__restrict __ptr, int __flag,
 			   const char *__restrict __fmt, ...)
      __THROW __attribute__ ((__format__ (__printf__, 3, 4))) __wur;
 extern int __vasprintf_chk (char **__restrict __ptr, int __flag,
-			    const char *__restrict __fmt, _G_va_list __arg)
+			    const char *__restrict __fmt, __gnuc_va_list __arg)
      __THROW __attribute__ ((__format__ (__printf__, 3, 0))) __wur;
 extern int __obstack_printf_chk (struct obstack *__restrict __obstack,
 				 int __flag, const char *__restrict __format,
@@ -168,7 +169,7 @@ extern int __obstack_printf_chk (struct obstack *__restrict __obstack,
 extern int __obstack_vprintf_chk (struct obstack *__restrict __obstack,
 				  int __flag,
 				  const char *__restrict __format,
-				  _G_va_list __args)
+				  __gnuc_va_list __args)
      __THROW __attribute__ ((__format__ (__printf__, 3, 0)));
 
 #  ifdef __va_arg_pack
@@ -205,14 +206,14 @@ __NTH (obstack_printf (struct obstack *__restrict __obstack,
 
 __fortify_function int
 __NTH (vasprintf (char **__restrict __ptr, const char *__restrict __fmt,
-		  _G_va_list __ap))
+		  __gnuc_va_list __ap))
 {
   return __vasprintf_chk (__ptr, __USE_FORTIFY_LEVEL - 1, __fmt, __ap);
 }
 
 __fortify_function int
 __NTH (obstack_vprintf (struct obstack *__restrict __obstack,
-			const char *__restrict __fmt, _G_va_list __ap))
+			const char *__restrict __fmt, __gnuc_va_list __ap))
 {
   return __obstack_vprintf_chk (__obstack, __USE_FORTIFY_LEVEL - 1, __fmt,
 				__ap);
@@ -368,7 +369,7 @@ fread_unlocked (void *__restrict __ptr, size_t __size, size_t __n,
 
       for (; __cnt > 0; --__cnt)
 	{
-	  int __c = _IO_getc_unlocked (__stream);
+	  int __c = __getc_unlocked (__stream);
 	  if (__c == EOF)
 	    break;
 	  *__cptr++ = __c;

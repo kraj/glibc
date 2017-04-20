@@ -20,8 +20,6 @@
 #include <stdio.h>
 #include <shadow.h>
 
-#define flockfile(s) _IO_flockfile (s)
-#define funlockfile(s) _IO_funlockfile (s)
 
 #define _S(x)	x ? x : ""
 

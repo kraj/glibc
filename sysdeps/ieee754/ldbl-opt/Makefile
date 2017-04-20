@@ -11,7 +11,7 @@ libm-routines += s_nexttowardfd
 routines += math_ldbl_opt nldbl-compat
 
 extra-libs += libnldbl
-libnldbl-calls = asprintf dprintf fprintf fscanf fwprintf fwscanf iovfscanf \
+libnldbl-calls = asprintf dprintf fprintf fscanf fwprintf fwscanf \
 		 obstack_printf obstack_vprintf printf scanf snprintf \
 		 sprintf sscanf swprintf swscanf vasprintf vdprintf vfprintf \
 		 vfscanf vfwprintf vfwscanf vprintf vscanf vsnprintf \

@@ -22,8 +22,6 @@
 #include <unistd.h>
 
 #include <wchar.h>
-#define flockfile(s) _IO_flockfile (s)
-#define funlockfile(s) _IO_funlockfile (s)
 #include <libc-lock.h>
 
 /* It is desirable to use this bit on systems that have it.
