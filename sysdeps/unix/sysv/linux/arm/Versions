@@ -34,5 +34,7 @@ libc {
     __futimens64;
     # Y2038-proof utimensat API
     __utimensat64;
+    # Y2038-proof sigtmedwait API
+    __sigtimedwait64;
   }
 }
