@@ -137,6 +137,14 @@ extern int utimes (const char *__file, const struct timeval __tvp[2])
 
 #ifdef __USE_MISC
 /* Same as `utimes', but does not follow symbolic links.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern int __REDIRECT (lutimes, (const char *__file,
+       const struct timeval __tvp[2]), __lutimes64) __THROW;
+# else
+# define lutimes __lutimes64
+# endif
+#endif
 extern int lutimes (const char *__file, const struct timeval __tvp[2])
      __THROW __nonnull ((1));
 

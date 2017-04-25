@@ -42,3 +42,56 @@ lutimes (const char *file, const struct timeval tvp[2])
   return INLINE_SYSCALL (utimensat, 4, AT_FDCWD, file, tvp ? ts : NULL,
 			 AT_SYMLINK_NOFOLLOW);
 }
+
+/* 64-bit time version */
+
+extern int __y2038_linux_support;
+
+int
+__lutimes64 (const char *file, const struct __timeval64 tvp[2])
+{
+  /* The system call expects timespec, not timeval.  */
+  struct __timespec64 ts64[2];
+  struct timespec ts32[2];
+
+  if (__y2038_linux_support)
+  {
+    if (tvp != NULL)
+    {
+      if (tvp[0].tv_usec < 0 || tvp[0].tv_usec >= 1000000
+          || tvp[1].tv_usec < 0 || tvp[1].tv_usec >= 1000000)
+	return INLINE_SYSCALL_ERROR_RETURN_VALUE (EINVAL);
+
+      ts64[0].tv_sec = tvp[0].tv_sec;
+      ts64[0].tv_nsec = tvp[0].tv_usec * 1000;
+      ts64[0].tv_pad = 0;
+      ts64[1].tv_sec = tvp[1].tv_sec;
+      ts64[1].tv_nsec = tvp[1].tv_usec * 1000;
+      ts64[1].tv_pad = 0;
+
+      return INLINE_SYSCALL (utimensat64, 4, AT_FDCWD, file, &ts64,
+			     AT_SYMLINK_NOFOLLOW);
+    }
+
+    return INLINE_SYSCALL (utimensat64, 4, AT_FDCWD, file, NULL,
+			   AT_SYMLINK_NOFOLLOW);
+  }
+
+  if (tvp != NULL)
+  {
+    if (tvp[0].tv_usec < 0 || tvp[0].tv_usec >= 1000000
+        || tvp[1].tv_usec < 0 || tvp[1].tv_usec >= 1000000)
+      return INLINE_SYSCALL_ERROR_RETURN_VALUE (EINVAL);
+
+    ts32[0].tv_sec = tvp[0].tv_sec;
+    ts32[0].tv_nsec = tvp[0].tv_usec * 1000;
+    ts32[1].tv_sec = tvp[1].tv_sec;
+    ts32[1].tv_nsec = tvp[1].tv_usec * 1000;
+
+    return INLINE_SYSCALL (utimensat, 4, AT_FDCWD, file, &ts32,
+                           AT_SYMLINK_NOFOLLOW);
+  }
+
+  return INLINE_SYSCALL (utimensat, 4, AT_FDCWD, file, NULL,
+                         AT_SYMLINK_NOFOLLOW);
+}
