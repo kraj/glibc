@@ -34,5 +34,6 @@ libc {
     __clock_nanosleep64;
     __futimens64;
     __utimensat64;
+    __sigtimedwait64;
   }
 }
