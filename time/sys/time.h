@@ -141,6 +141,14 @@ extern int lutimes (const char *__file, const struct timeval __tvp[2])
      __THROW __nonnull ((1));
 
 /* Same as `utimes', but takes an open file descriptor instead of a name.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern int __REDIRECT (futimes, (int __fd, const struct timeval __tvp[2]),
+     __futimes64) __THROW;
+# else
+# define futimes __futimes64
+# endif
+#endif
 extern int futimes (int __fd, const struct timeval __tvp[2]) __THROW;
 #endif
 
