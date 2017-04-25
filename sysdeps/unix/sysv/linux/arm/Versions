@@ -38,5 +38,7 @@ libc {
     __sigtimedwait64;
     # Y2038-proof futimes API
     __futimes64;
+    # Y2038-proof lutimes API
+    __lutimes64;
   }
 }
