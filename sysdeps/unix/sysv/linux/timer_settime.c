@@ -41,3 +41,46 @@ timer_settime (timer_t timerid, int flags, const struct itimerspec *value,
 
   return res;
 }
+
+int
+__timer_settime64 (timer_t timerid, int flags, const struct itimerspec *value,
+	       struct itimerspec *ovalue)
+{
+  struct timer *kt = (struct timer *) timerid;
+
+  /* Try the 64-bit variant directly with the argument */
+  int res = INLINE_SYSCALL (timer_settime64, 4, kt->ktimerid, flags,
+			    value, ovalue);
+
+  if (res == -1 && errno == ENOSYS)
+  {
+    if (value == NULL)
+    {
+      errno = EFAULT;
+    }
+    else if (value->it_value.tv_sec > INT_MAX
+          || value->it_interval.tv_sec > INT_MAX)
+    {
+      errno = EOVERFLOW;
+    }
+    else
+    {
+      struct itimerspec value32, ovalue32;
+      value32.it_value.tv_sec = value->it_value.tv_sec;
+      value32.it_value.tv_nsec = value->it_value.tv_nsec;
+      value32.it_interval.tv_sec = value->it_interval.tv_sec;
+      value32.it_interval.tv_nsec = value->it_interval.tv_nsec;
+      res = INLINE_SYSCALL (timer_settime, 4, kt->ktimerid, flags,
+        &value32, &ovalue32);
+      if (res == 0 && ovalue != NULL)
+      {
+        ovalue->it_value.tv_sec = ovalue32.it_value.tv_sec;
+        ovalue->it_value.tv_nsec = ovalue32.it_value.tv_nsec;
+        ovalue->it_interval.tv_sec = ovalue32.it_interval.tv_sec;
+        ovalue->it_interval.tv_nsec = ovalue32.it_interval.tv_nsec;
+      }
+    }
+  }
+
+  return res;
+}

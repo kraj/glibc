@@ -37,4 +37,9 @@ librt {
   GLIBC_2.7 {
    __mq_open_2;
   }
+  GLIBC_Y2038 {
+    # TODO: move to the actual GLIBC version where the symbols are introduced
+    # Y2038-proof timer_gettime / timer_settime APIs
+    __timer_gettime64; __timer_settime64;
+  }
 }

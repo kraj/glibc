@@ -46,6 +46,14 @@ struct __timeval64
   __int64_t tv_usec;		/* Microseconds */
 };
 
+/* Used by __timer_gettime64, __timer_settime64, __timerfd_gettime64,
+   __timerfd_settime64,  */
+struct __itimerspec64
+{
+  struct __timespec64 it_interval;
+  struct __timespec64 it_value;
+};
+
 extern __typeof (clock_getres) __clock_getres;
 extern __typeof (clock_gettime) __clock_gettime;
 extern int __clock_getres64 (clockid_t __clock_id, struct __timespec64 *__res) __THROW;
