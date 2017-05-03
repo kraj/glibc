@@ -364,11 +364,29 @@ extern int timer_create (clockid_t __clock_id,
 extern int timer_delete (timer_t __timerid) __THROW;
 
 /* Set timer TIMERID to VALUE, returning old value in OVALUE.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern int __REDIRECT (timer_settime, (timer_t __timerid, int __flags,
+			  const struct itimerspec *__restrict __value,
+			  struct itimerspec *__restrict __ovalue),
+                          __timer_settime64) __THROW;
+# else
+# define timer_settime __timer_settime64
+# endif
+#endif
 extern int timer_settime (timer_t __timerid, int __flags,
 			  const struct itimerspec *__restrict __value,
 			  struct itimerspec *__restrict __ovalue) __THROW;
 
 /* Get current value of timer TIMERID and store it in VALUE.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern int __REDIRECT (timer_gettime, (timer_t __timerid, struct
+     itimerspec *__value), __timer_gettime64) __THROW __nonnull ((1));
+# else
+# define timer_gettime __timer_gettime64
+# endif
+#endif
 extern int timer_gettime (timer_t __timerid, struct itimerspec *__value)
      __THROW;
 

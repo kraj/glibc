@@ -41,3 +41,52 @@ timer_settime (timer_t timerid, int flags, const struct itimerspec *value,
 
   return res;
 }
+
+/* 64-bit time version */
+
+int
+__timer_settime64 (timer_t timerid, int flags, const struct itimerspec *value,
+	       struct itimerspec *ovalue)
+{
+  struct timer *kt = (struct timer *) timerid;
+  struct __itimerspec64 value64;
+  struct itimerspec value32, ovalue32;
+
+  if (value == NULL)
+    return EFAULT;
+
+  if (__y2038_kernel_support())
+  {
+    value64.it_value.tv_sec = value->it_value.tv_sec;
+    value64.it_value.tv_nsec = value->it_value.tv_nsec;
+    value64.it_value.tv_pad = 0;
+    value64.it_interval.tv_sec = value->it_interval.tv_sec;
+    value64.it_interval.tv_nsec = value->it_interval.tv_nsec;
+    value64.it_interval.tv_pad = 0;
+
+    return INLINE_SYSCALL (timer_settime64, 4, kt->ktimerid, flags,
+			    &value64, ovalue);
+  }
+
+  if (value->it_value.tv_sec > INT_MAX
+      || value->it_interval.tv_sec > INT_MAX)
+    return EOVERFLOW;
+
+  value32.it_value.tv_sec = value->it_value.tv_sec;
+  value32.it_value.tv_nsec = value->it_value.tv_nsec;
+  value32.it_interval.tv_sec = value->it_interval.tv_sec;
+  value32.it_interval.tv_nsec = value->it_interval.tv_nsec;
+
+  int res = INLINE_SYSCALL (timer_settime, 4, kt->ktimerid, flags,
+        &value32, &ovalue32);
+
+  if (res == 0 && ovalue != NULL)
+  {
+    ovalue->it_value.tv_sec = ovalue32.it_value.tv_sec;
+    ovalue->it_value.tv_nsec = ovalue32.it_value.tv_nsec;
+    ovalue->it_interval.tv_sec = ovalue32.it_interval.tv_sec;
+    ovalue->it_interval.tv_nsec = ovalue32.it_interval.tv_nsec;
+  }
+
+  return res;
+}
