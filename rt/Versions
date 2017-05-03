@@ -41,5 +41,7 @@ librt {
     # TODO: move to the actual GLIBC version where the symbols are introduced
     # Y2038-proof timer_gettime / timer_settime APIs
     __timer_gettime64; __timer_settime64;
+    # Y2038-proof timerfd_gettime, timerfd_settime APIs
+    __timerfd_gettime64; __timerfd_settime64;
   }
 }
