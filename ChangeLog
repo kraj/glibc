@@ -1,3 +1,18 @@
+2017-05-08  Zack Weinberg  <zackw@panix.com>
+
+	* extra-modules.mk: Delete file.
+	* cppflags-iterator.mk: Rename to ...
+	* libof-iterator.mk: ...this.  Adjust comments.
+
+	* Makerules, extra-lib.mk, benchtests/Makefile, elf/Makefile
+	* elf/rtld-Rules, iconv/Makefile, locale/Makefile, malloc/Makefile
+	* nscd/Makefile, sunrpc/Makefile, sysdeps/s390/Makefile:
+	Use libof-iterator.mk instead of cppflags-iterator.mk or
+	extra-modules.mk.
+
+	* benchtests/strcoll-inputs/filelist#en_US.UTF-8: Remove
+	extra-modules.mk and cppflags-iterator.mk, add libof-iterator.mk.
+
 2017-05-08  Joseph Myers  <joseph@codesourcery.com>
 
 	* sysdeps/unix/sysv/linux/kernel-features.h
