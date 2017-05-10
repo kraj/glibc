@@ -22,6 +22,8 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+__BEGIN_DECLS
+
 struct libc_ifunc_impl
 {
   /* The name of function to be tested.  */
@@ -32,25 +34,32 @@ struct libc_ifunc_impl
   bool usable;
 };
 
+#ifndef __cplusplus
+/* NB: IFUNC_IMPL_ADD and IFUNC_IMPL are used internally in libc.  They
+   shouldn't be used in any programs.  */
+
 /* Add an IFUNC implementation, IMPL, for function FUNC, to ARRAY with
    USABLE at index I and advance I by one.  */
-#define IFUNC_IMPL_ADD(array, i, func, usable, impl) \
+# define IFUNC_IMPL_ADD(array, i, func, usable, impl) \
   extern __typeof (func) impl attribute_hidden; \
   (array)[i++] = (struct libc_ifunc_impl) { #impl, (void (*) (void)) impl, (usable) };
 
 /* Return the number of IFUNC implementations, N, for function FUNC if
    string NAME matches FUNC.  */
-#define IFUNC_IMPL(n, name, func, ...) \
+# define IFUNC_IMPL(n, name, func, ...) \
   if (strcmp (name, #func) == 0) \
     { \
       __VA_ARGS__; \
       return n; \
     }
+#endif /* __cplusplus  */
 
 /* Fill ARRAY of MAX elements with IFUNC implementations for function
    NAME and return the number of valid entries.  */
 extern size_t __libc_ifunc_impl_list (const char *name,
 				      struct libc_ifunc_impl *array,
 				      size_t max);
+
+__END_DECLS
 
 #endif /* ifunc-impl-list.h */
