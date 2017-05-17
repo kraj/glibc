@@ -114,5 +114,8 @@ main (int argc, char *argv[])
 		g.gl_pathv[i] ? g.gl_pathv[i] : "(null)",
 		quotes ? "'" : "");
     }
+
+  globfree (&g);
+
   return 0;
 }

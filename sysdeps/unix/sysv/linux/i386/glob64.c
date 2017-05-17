@@ -70,6 +70,8 @@ int __old_glob64 (const char *__pattern, int __flags,
 
 #define GLOB_ONLY_P 1
 
+#define GLOB_COMPAT_BUILD 1
+
 #include <posix/glob.c>
 
 compat_symbol (libc, __old_glob64, glob64, GLIBC_2_1);
