@@ -13,6 +13,7 @@ sysdep_routines += strncat-c stpncpy-c strncpy-c strcmp-ssse3 \
 		   memcpy-ssse3-back \
 		   memmove-ssse3-back \
 		   memmove-avx512-no-vzeroupper strcasecmp_l-ssse3 \
+		   strlen-sse2 strnlen-sse2 strlen-avx2 strnlen-avx2 \
 		   strncase_l-ssse3 strcat-ssse3 strncat-ssse3\
 		   strcpy-ssse3 strncpy-ssse3 stpcpy-ssse3 stpncpy-ssse3 \
 		   strcpy-sse2-unaligned strncpy-sse2-unaligned \
@@ -35,7 +36,8 @@ ifeq ($(subdir),wcsmbs)
 sysdep_routines += wmemcmp-sse4 wmemcmp-ssse3 wmemcmp-c \
 		   wmemchr-sse2 wmemchr-avx2 \
 		   wmemcmp-avx2-movbe \
-		   wcscpy-ssse3 wcscpy-c
+		   wcscpy-ssse3 wcscpy-c \
+		   wcslen-sse2 wcsnlen-sse2 wcslen-avx2 wcsnlen-avx2
 endif
 
 ifeq ($(subdir),debug)
