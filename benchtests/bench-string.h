@@ -53,7 +53,9 @@ extern impl_t __start_impls[], __stop_impls[];
 # include <ifunc-impl-list.h>
 # define GL(x) _##x
 # define GLRO(x) _##x
-# include "bench-timing.h"
+# ifndef _ISOMAC
+#  include "bench-timing.h"
+# endif
 
 
 # define TEST_FUNCTION test_main
