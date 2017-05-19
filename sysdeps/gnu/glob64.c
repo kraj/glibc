@@ -12,8 +12,8 @@
 
 #undef stat
 #define stat stat64
-#undef __stat
-#define __stat(file, buf) __xstat64 (_STAT_VER, file, buf)
+#undef __lstat
+#define __lstat(file, buf) __lxstat64 (_STAT_VER, file, buf)
 
 #define NO_GLOB_PATTERN_P 1
 

@@ -69,7 +69,7 @@ tests		:= test-errno tstgetopt testfnm runtests runptests \
 		   tst-mmap tst-mmap-offset tst-getaddrinfo tst-truncate \
 		   tst-truncate64 tst-fork tst-fnmatch tst-regexloc tst-dir \
 		   tst-chmod bug-regex1 bug-regex2 bug-regex3 bug-regex4 \
-		   tst-gnuglob tst-regex bug-regex6 bug-regex7 \
+		   tst-gnuglob tst-glob_symlinks tst-regex bug-regex6 bug-regex7 \
 		   bug-regex8 bug-regex9 bug-regex10 bug-regex11 bug-regex12 \
 		   bug-regex13 bug-regex14 bug-regex15 bug-regex16 \
 		   bug-regex17 bug-regex18 bug-regex19 \
@@ -79,7 +79,7 @@ tests		:= test-errno tstgetopt testfnm runtests runptests \
 		   tst-nice tst-nanosleep tst-regex2 \
 		   transbug tst-rxspencer tst-pcre tst-boost \
 		   bug-ga1 tst-vfork1 tst-vfork2 tst-vfork3 tst-waitid \
-		   tst-getaddrinfo2 bug-glob1 bug-glob2 bug-glob3 tst-sysconf \
+		   tst-getaddrinfo2 bug-glob2 bug-glob3 tst-sysconf \
 		   tst-execvp1 tst-execvp2 tst-execlp1 tst-execlp2 \
 		   tst-execv1 tst-execv2 tst-execl1 tst-execl2 \
 		   tst-execve1 tst-execve2 tst-execle1 tst-execle2 \
@@ -250,7 +250,6 @@ tst-rxspencer-ARGS = --utf8 rxspencer/tests
 tst-rxspencer-no-utf8-ARGS = rxspencer/tests
 tst-pcre-ARGS = PCRE.tests
 tst-boost-ARGS = BOOST.tests
-bug-glob1-ARGS = "$(objpfx)"
 tst-execvp3-ARGS = --test-dir=$(objpfx)
 
 testcases.h: TESTS TESTS2C.sed

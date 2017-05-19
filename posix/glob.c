@@ -71,8 +71,8 @@
 # define readdir(str) __readdir64 (str)
 # define getpwnam_r(name, bufp, buf, len, res) \
    __getpwnam_r (name, bufp, buf, len, res)
-# ifndef __stat64
-#  define __stat64(fname, buf) __xstat64 (_STAT_VER, fname, buf)
+# ifndef __lstat64
+#  define __lstat64(fname, buf) __lxstat64 (_STAT_VER, fname, buf)
 # endif
 # define struct_stat64		struct stat64
 #else /* !_LIBC */
@@ -1049,9 +1049,9 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
       /* Return the directory if we don't check for error or if it exists.  */
       if ((flags & GLOB_NOCHECK)
 	  || (((__builtin_expect (flags & GLOB_ALTDIRFUNC, 0))
-	       ? ((*pglob->gl_stat) (dirname, &st) == 0
+	       ? ((*pglob->gl_lstat) (dirname, &st) == 0
 		  && S_ISDIR (st.st_mode))
-	       : (__stat64 (dirname, &st64) == 0 && S_ISDIR (st64.st_mode)))))
+	       : (__lstat64 (dirname, &st64) == 0 && S_ISDIR (st64.st_mode)))))
 	{
 	  size_t newcount = pglob->gl_pathc + pglob->gl_offs;
 	  char **new_gl_pathv;
@@ -1318,10 +1318,10 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
 
       for (i = oldcount; i < pglob->gl_pathc + pglob->gl_offs; ++i)
 	if ((__builtin_expect (flags & GLOB_ALTDIRFUNC, 0)
-	     ? ((*pglob->gl_stat) (pglob->gl_pathv[i], &st) == 0
-		&& S_ISDIR (st.st_mode))
-	     : (__stat64 (pglob->gl_pathv[i], &st64) == 0
-		&& S_ISDIR (st64.st_mode))))
+	     ? ((*pglob->gl_lstat) (pglob->gl_pathv[i], &st) == 0
+		&& (S_ISDIR (st.st_mode) || S_ISLNK (st.st_mode)))
+	     : (__lstat64 (pglob->gl_pathv[i], &st64) == 0
+		&& (S_ISDIR (st64.st_mode) || S_ISLNK (st64.st_mode)))))
 	  {
 	    size_t len = strlen (pglob->gl_pathv[i]) + 2;
 	    char *new = realloc (pglob->gl_pathv[i], len);
@@ -1500,54 +1500,6 @@ weak_alias (__glob_pattern_p, glob_pattern_p)
 # endif
 #endif
 
-
-/* We put this in a separate function mainly to allow the memory
-   allocated with alloca to be recycled.  */
-static int
-__attribute_noinline__
-link_exists2_p (const char *dir, size_t dirlen, const char *fname,
-	       glob_t *pglob
-# if !defined _LIBC && !HAVE_FSTATAT
-		, int flags
-# endif
-		)
-{
-  size_t fnamelen = strlen (fname);
-  char *fullname = __alloca (dirlen + 1 + fnamelen + 1);
-  struct stat st;
-
-  mempcpy (mempcpy (mempcpy (fullname, dir, dirlen), "/", 1),
-	   fname, fnamelen + 1);
-
-# if !defined _LIBC && !HAVE_FSTATAT
-  if (__builtin_expect ((flags & GLOB_ALTDIRFUNC) == 0, 1))
-    {
-      struct_stat64 st64;
-      return __stat64 (fullname, &st64) == 0;
-    }
-# endif
-  return (*pglob->gl_stat) (fullname, &st) == 0;
-}
-
-/* Return true if DIR/FNAME exists.  */
-static int
-link_exists_p (int dfd, const char *dir, size_t dirlen, const char *fname,
-               glob_t *pglob, int flags)
-{
-# if defined _LIBC || HAVE_FSTATAT
-  if (__builtin_expect (flags & GLOB_ALTDIRFUNC, 0))
-    return link_exists2_p (dir, dirlen, fname, pglob);
-  else
-    {
-      /* dfd cannot be -1 here, because dirfd never returns -1 on
-         glibc, or on hosts that have fstatat.  */
-      struct_stat64 st64;
-      return __fxstatat64 (_STAT_VER, dfd, fname, &st64, 0) == 0;
-    }
-# else
-  return link_exists2_p (dir, dirlen, fname, pglob, flags);
-# endif
-}
 #endif /* !defined GLOB_ONLY_P */
 
 
@@ -1619,8 +1571,8 @@ glob_in_dir (const char *pattern, const char *directory, int flags,
 			"/", 1),
 	       pattern, patlen + 1);
       if ((__builtin_expect (flags & GLOB_ALTDIRFUNC, 0)
-	   ? (*pglob->gl_stat) (fullname, &ust.st)
-	   : __stat64 (fullname, &ust.st64)) == 0)
+	   ? (*pglob->gl_lstat) (fullname, &ust.st)
+	   : __lstat64 (fullname, &ust.st64)) == 0)
 	/* We found this file to be existing.  Now tell the rest
 	   of the function to copy this name into the result.  */
 	flags |= GLOB_NOCHECK;
@@ -1642,8 +1594,6 @@ glob_in_dir (const char *pattern, const char *directory, int flags,
 	}
       else
 	{
-	  int dfd = (__builtin_expect (flags & GLOB_ALTDIRFUNC, 0)
-		     ? -1 : dirfd ((DIR *) stream));
 	  int fnm_flags = ((!(flags & GLOB_PERIOD) ? FNM_PERIOD : 0)
 			   | ((flags & GLOB_NOESCAPE) ? FNM_NOESCAPE : 0)
 #if defined _AMIGA || defined VMS
@@ -1679,38 +1629,30 @@ glob_in_dir (const char *pattern, const char *directory, int flags,
 
 	      if (fnmatch (pattern, d.name, fnm_flags) == 0)
 		{
-		  /* If the file we found is a symlink we have to
-		     make sure the target file exists.  */
-		  if (!readdir_result_might_be_symlink (d)
-		      || link_exists_p (dfd, directory, dirlen, d.name,
-					pglob, flags))
+		  if (cur == names->count)
 		    {
-		      if (cur == names->count)
-			{
-			  struct globnames *newnames;
-			  size_t count = names->count * 2;
-			  size_t size = (sizeof (struct globnames)
-					 + ((count - INITIAL_COUNT)
-					    * sizeof (char *)));
-			  if (glob_use_alloca (alloca_used, size))
-			    newnames = names_alloca
-			      = alloca_account (size, alloca_used);
-			  else if ((newnames = malloc (size))
-				   == NULL)
-			    goto memory_error;
-			  newnames->count = count;
-			  newnames->next = names;
-			  names = newnames;
-			  cur = 0;
-			}
-		      names->name[cur] = strdup (d.name);
-		      if (names->name[cur] == NULL)
+		      struct globnames *newnames;
+		      size_t count = names->count * 2;
+		      size_t size = (sizeof (struct globnames)
+				     + ((count - INITIAL_COUNT)
+				     * sizeof (char *)));
+		      if (glob_use_alloca (alloca_used, size))
+			newnames = names_alloca
+			  = alloca_account (size, alloca_used);
+		      else if ((newnames = malloc (size)) == NULL)
 			goto memory_error;
-		      ++cur;
-		      ++nfound;
-		      if (SIZE_MAX - pglob->gl_offs <= nfound)
-			goto memory_error;
-		    }
+		      newnames->count = count;
+		      newnames->next = names;
+		      names = newnames;
+		      cur = 0;
+		   }
+		   names->name[cur] = strdup (d.name);
+		   if (names->name[cur] == NULL)
+		     goto memory_error;
+		   ++cur;
+		   ++nfound;
+		   if (SIZE_MAX - pglob->gl_offs <= nfound)
+		     goto memory_error;
 		}
 	    }
 	}
