@@ -1,4 +1,4 @@
-/* Multiple versions of strchr
+/* strchr optimized with SSE2.
    Copyright (C) 2009-2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -16,42 +16,20 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <sysdep.h>
-#include <init-arch.h>
-
-
-/* Define multiple versions only for the definition in libc.  */
 #if IS_IN (libc)
-	.text
-ENTRY(strchr)
-	.type	strchr, @gnu_indirect_function
-	LOAD_RTLD_GLOBAL_RO_RDX
-	leaq	__strchr_sse2(%rip), %rax
-2:	HAS_ARCH_FEATURE (Slow_BSF)
-	jz	3f
-	leaq    __strchr_sse2_no_bsf(%rip), %rax
-3:	ret
-END(strchr)
+# define strchr __strchr_sse2
 
-
-
-# undef ENTRY
-# define ENTRY(name) \
-	.type __strchr_sse2, @function; \
-	.align 16; \
-	.globl __strchr_sse2; \
-	.hidden __strchr_sse2; \
-	__strchr_sse2: cfi_startproc; \
-	CALL_MCOUNT
-# undef END
-# define END(name) \
-	cfi_endproc; .size __strchr_sse2, .-__strchr_sse2
-# undef libc_hidden_builtin_def
+# ifdef SHARED
+#  undef libc_hidden_builtin_def
 /* It doesn't make sense to send libc-internal strchr calls through a PLT.
    The speedup we get from using SSE4.2 instruction is likely eaten away
    by the indirect call in the PLT.  */
-# define libc_hidden_builtin_def(name) \
+#  define libc_hidden_builtin_def(name) \
 	.globl __GI_strchr; __GI_strchr = __strchr_sse2
+# endif
+
+# undef weak_alias
+# define weak_alias(strchr, index)
 #endif
 
 #include "../strchr.S"
