@@ -21,6 +21,8 @@ extern int __xstat_conv (int vers, struct kernel_stat *kbuf, void *ubuf)
   attribute_hidden;
 extern int __xstat64_conv (int vers, struct kernel_stat *kbuf, void *ubuf)
   attribute_hidden;
+extern int __xstat64_conv_t64 (int vers, struct kernel_stat *kbuf, void *ubuf)
+  attribute_hidden;
 #endif
 extern int __xstat32_conv (int vers, struct stat64 *kbuf, struct stat *buf)
   attribute_hidden;

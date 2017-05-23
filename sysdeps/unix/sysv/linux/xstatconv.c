@@ -21,6 +21,9 @@
 #include <kernel_stat.h>
 #include <kernel-features.h>
 
+#include <sysdep.h>
+#include <sys/syscall.h>
+
 #ifdef STAT_IS_KERNEL_STAT
 
 /* Dummy.  */
@@ -265,6 +268,82 @@ __xstat32_conv (int vers, struct stat64 *kbuf, struct stat *buf)
     }
 
   return 0;
+}
+
+int
+__xstat64_conv_t64 (int vers, struct kernel_stat *kbuf, void *ubuf)
+{
+#if XSTAT_IS_XSTAT64
+  return __xstat_conv (vers, kbuf, ubuf);
+#else
+  switch (vers)
+    {
+    case _STAT_VER_LINUX:
+      {
+	struct __stat64_t64 *buf = ubuf;
+
+	/* Convert to current kernel version of `struct stat64'.  */
+	buf->st_dev = kbuf->st_dev;
+#ifdef _HAVE_STAT64___PAD1
+	buf->__pad1 = 0;
+#endif
+	buf->st_ino = kbuf->st_ino;
+#ifdef _HAVE_STAT64___ST_INO
+	buf->__st_ino = kbuf->st_ino;
+#endif
+	buf->st_mode = kbuf->st_mode;
+	buf->st_nlink = kbuf->st_nlink;
+	buf->st_uid = kbuf->st_uid;
+	buf->st_gid = kbuf->st_gid;
+	buf->st_rdev = kbuf->st_rdev;
+#ifdef _HAVE_STAT64___PAD2
+	buf->__pad2 = 0;
+#endif
+	buf->st_size = kbuf->st_size;
+	buf->st_blksize = kbuf->st_blksize;
+	buf->st_blocks = kbuf->st_blocks;
+#ifdef _HAVE_STAT64_NSEC
+	buf->st_atim.tv_sec = kbuf->st_atim.tv_sec;
+	buf->st_atim.tv_nsec = kbuf->st_atim.tv_nsec;
+	buf->st_mtim.tv_sec = kbuf->st_mtim.tv_sec;
+	buf->st_mtim.tv_nsec = kbuf->st_mtim.tv_nsec;
+	buf->st_ctim.tv_sec = kbuf->st_ctim.tv_sec;
+	buf->st_ctim.tv_nsec = kbuf->st_ctim.tv_nsec;
+#else
+	buf->st_atime.tv_sec = kbuf->st_atime.tv_sec;
+	buf->st_atime.tv_nsec = kbuf->st_atime.tv_nsec;
+	buf->st_mtime.tv_sec = kbuf->st_mtime.tv_sec;
+	buf->st_mtime.tv_nsec = kbuf->st_mtime.tv_nsec;
+	buf->st_ctime.tv_sec = kbuf->st_ctime.tv_sec;
+	buf->st_ctime.tv_nsec = kbuf->st_ctime.tv_nsec;
+#endif
+#ifdef _HAVE_STAT64___UNUSED1
+	buf->__glibc_reserved1 = 0;
+#endif
+#ifdef _HAVE_STAT64___UNUSED2
+	buf->__glibc_reserved2 = 0;
+#endif
+#ifdef _HAVE_STAT64___UNUSED3
+	buf->__glibc_reserved3 = 0;
+#endif
+#ifdef _HAVE_STAT64___UNUSED4
+	buf->__glibc_reserved4 = 0;
+#endif
+#ifdef _HAVE_STAT64___UNUSED5
+	buf->__glibc_reserved5 = 0;
+#endif
+      }
+      break;
+
+      /* If struct stat64 is different from struct stat then
+	 _STAT_VER_KERNEL does not make sense.  */
+    case _STAT_VER_KERNEL:
+    default:
+      return INLINE_SYSCALL_ERROR_RETURN_VALUE (EINVAL);
+    }
+
+  return 0;
+#endif
 }
 
 #endif
