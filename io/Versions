@@ -125,4 +125,12 @@ libc {
   GLIBC_2.23 {
     fts64_children; fts64_close; fts64_open; fts64_read; fts64_set;
   }
+
+  # Y2038 symbols are given their own version until they can be put in
+  # the right place
+
+  GLIBC_Y2038 {
+    __xstat64_t64;
+    __fxstat64_t64;
+  }
 }
