@@ -24,6 +24,8 @@
 #include <sysdep.h>
 #include <sys/syscall.h>
 
+#include <xstatconv.h>
+
 #include <kernel-features.h>
 
 /* Get information about the file NAME in BUF.  */
@@ -52,3 +54,20 @@ hidden_ver (___xstat64, __xstat64)
 strong_alias (___xstat64, __xstat64)
 hidden_def (__xstat64)
 #endif
+
+int
+__xstat64_t64 (int vers, const char *name, struct __stat64_t64 *buf)
+{
+  int result;
+  struct kernel_stat st64;
+  result = INLINE_SYSCALL (stat64, 2, name, buf);
+#if defined _HAVE_STAT64___ST_INO && !__ASSUME_ST_INO_64_BIT
+  if (__builtin_expect (!result, 1) && st64.__st_ino != (__ino_t) st64.st_ino)
+    st64.st_ino = st64.__st_ino;
+#endif
+  if (!result)
+  {
+    return __xstat64_conv_t64 (vers, &st64, buf);
+  }
+  return result;
+}

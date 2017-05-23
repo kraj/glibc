@@ -125,4 +125,8 @@ libc {
   GLIBC_2.23 {
     fts64_children; fts64_close; fts64_open; fts64_read; fts64_set;
   }
+  GLIBC_PRIVATE {
+    __xstat64_t64;
+    __fxstat64_t64;
+  }
 }
