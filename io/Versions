@@ -128,5 +128,6 @@ libc {
   GLIBC_PRIVATE {
     __xstat64_t64;
     __fxstat64_t64;
+    __lxstat64_t64;
   }
 }

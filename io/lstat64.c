@@ -50,3 +50,10 @@ lstat64 (const char *file, struct stat64 *buf)
 {
   return __lxstat64 (_STAT_VER, file, buf);
 }
+
+int
+attribute_hidden
+__lstat64_t64 (const char *file, struct __stat64_t64 *buf)
+{
+  return __lxstat64_t64 (_STAT_VER, file, buf);
+}
