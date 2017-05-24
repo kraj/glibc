@@ -132,5 +132,6 @@ libc {
   GLIBC_Y2038 {
     __xstat64_t64;
     __fxstat64_t64;
+    __lxstat64_t64;
   }
 }

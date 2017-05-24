@@ -440,6 +440,9 @@ extern int __REDIRECT_NTH (__fxstat, (int __ver, int __fildes,
 extern int __REDIRECT_NTH (__xstat, (int __ver, const char *__filename,
 				     struct stat *__stat_buf), __xstat64_t64)
      __nonnull ((2, 3));
+extern int __REDIRECT_NTH (__lxstat, (int __ver, const char *__filename,
+				      struct stat *__stat_buf), __lxstat64_t64)
+     __nonnull ((2, 3));
 #  else
 extern int __REDIRECT_NTH (__fxstat, (int __ver, int __fildes,
 				      struct stat *__stat_buf), __fxstat64)
@@ -447,10 +450,10 @@ extern int __REDIRECT_NTH (__fxstat, (int __ver, int __fildes,
 extern int __REDIRECT_NTH (__xstat, (int __ver, const char *__filename,
 				     struct stat *__stat_buf), __xstat64)
      __nonnull ((2, 3));
-#  endif
 extern int __REDIRECT_NTH (__lxstat, (int __ver, const char *__filename,
 				      struct stat *__stat_buf), __lxstat64)
      __nonnull ((2, 3));
+#  endif
 extern int __REDIRECT_NTH (__fxstatat, (int __ver, int __fildes,
 					const char *__filename,
 					struct stat *__stat_buf, int __flag),
@@ -460,11 +463,12 @@ extern int __REDIRECT_NTH (__fxstatat, (int __ver, int __fildes,
 #  ifdef __USE_TIME_BITS64
 #   define __fxstat __fxstat64_t64
 #   define __xstat __xstat64_t64
+#   define __lxstat __lxstat64_t64
 #  else
 #   define __fxstat __fxstat64
 #   define __xstat __xstat64
+#   define __lxstat __lxstat64
 #  endif
-#  define __lxstat __lxstat64
 # endif
 #endif
 
@@ -479,6 +483,8 @@ extern int __xstat64_t64 (int __ver, const char *__filename,
 		      struct __stat64_t64 *__stat_buf) __THROW __nonnull ((2, 3));
 extern int __lxstat64 (int __ver, const char *__filename,
 		       struct stat64 *__stat_buf) __THROW __nonnull ((2, 3));
+extern int __lxstat64_t64 (int __ver, const char *__filename,
+		       struct __stat64_t64 *__stat_buf) __THROW __nonnull ((2, 3));
 extern int __fxstatat64 (int __ver, int __fildes, const char *__filename,
 			 struct stat64 *__stat_buf, int __flag)
      __THROW __nonnull ((3, 4));
