@@ -79,7 +79,7 @@ tests		:= test-errno tstgetopt testfnm runtests runptests \
 		   tst-nice tst-nanosleep tst-regex2 \
 		   transbug tst-rxspencer tst-pcre tst-boost \
 		   bug-ga1 tst-vfork1 tst-vfork2 tst-vfork3 tst-waitid \
-		   tst-getaddrinfo2 bug-glob2 bug-glob3 tst-sysconf \
+		   tst-getaddrinfo2 tst-glob_memory tst-glob_basic tst-sysconf \
 		   tst-execvp1 tst-execvp2 tst-execlp1 tst-execlp2 \
 		   tst-execv1 tst-execv2 tst-execl1 tst-execl2 \
 		   tst-execve1 tst-execve2 tst-execle1 tst-execle2 \
@@ -122,7 +122,7 @@ generated += $(addprefix wordexp-test-result, 1 2 3 4 5 6 7 8 9 10) \
 	     tst-getconf.out \
 	     tst-pcre-mem.out tst-pcre.mtrace tst-boost-mem.out \
 	     tst-boost.mtrace bug-ga2.mtrace bug-ga2-mem.out \
-	     bug-glob2.mtrace bug-glob2-mem.out tst-vfork3-mem.out \
+	     tst-glob_memory.mtrace tst-glob_memory-mem.out tst-vfork3-mem.out \
 	     tst-vfork3.mtrace getconf.speclist tst-fnmatch-mem.out \
 	     tst-fnmatch.mtrace bug-regex36.mtrace
 
@@ -140,7 +140,7 @@ tests-special += $(objpfx)bug-regex2-mem.out $(objpfx)bug-regex14-mem.out \
 		 $(objpfx)bug-regex21-mem.out $(objpfx)bug-regex31-mem.out \
 		 $(objpfx)tst-rxspencer-no-utf8-mem.out $(objpfx)tst-pcre-mem.out \
 		 $(objpfx)tst-boost-mem.out $(objpfx)tst-getconf.out \
-		 $(objpfx)bug-glob2-mem.out $(objpfx)tst-vfork3-mem.out \
+		 $(objpfx)tst-glob_memory-mem.out $(objpfx)tst-vfork3-mem.out \
 		 $(objpfx)tst-fnmatch-mem.out $(objpfx)bug-regex36-mem.out
 xtests-special += $(objpfx)bug-ga2-mem.out
 endif
@@ -343,10 +343,10 @@ $(objpfx)bug-ga2-mem.out: $(objpfx)bug-ga2.out
 
 bug-ga2-ENV = MALLOC_TRACE=$(objpfx)bug-ga2.mtrace
 
-bug-glob2-ENV = MALLOC_TRACE=$(objpfx)bug-glob2.mtrace
+tst-glob_memory-ENV = MALLOC_TRACE=$(objpfx)tst-glob_memory.mtrace
 
-$(objpfx)bug-glob2-mem.out: $(objpfx)bug-glob2.out
-	$(common-objpfx)malloc/mtrace $(objpfx)bug-glob2.mtrace > $@; \
+$(objpfx)tst-glob_memory-mem.out: $(objpfx)tst-glob_memory.out
+	$(common-objpfx)malloc/mtrace $(objpfx)tst-glob_memory.mtrace > $@; \
 	$(evaluate-test)
 
 $(inst_libexecdir)/getconf: $(inst_bindir)/getconf \

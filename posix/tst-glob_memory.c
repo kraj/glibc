@@ -27,18 +27,10 @@
 #include <string.h>
 #include <sys/stat.h>
 
-// #define DEBUG
-#ifdef DEBUG
-# define PRINTF(fmt, args...) \
-  do					\
-    {					\
-      int save_errno = errno;		\
-      printf (fmt, ##args);		\
-      errno = save_errno;		\
-    } while (0)
-#else
-# define PRINTF(fmt, args...)
-#endif
+#include <support/check.h>
+
+#include "tst-glob_common.c"
+
 
 #define LONG_NAME \
   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" \
@@ -52,13 +44,7 @@
   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" \
   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 
-static struct
-{
-  const char *name;
-  int level;
-  int type;
-  mode_t mode;
-} filesystem[] =
+struct filesystem_t filesystem[] =
 {
   { ".", 1, DT_DIR, 0755 },
   { "..", 1, DT_DIR, 0755 },
@@ -79,7 +65,7 @@ static struct
       { "..", 3, DT_DIR, 0755 },
       { "a", 3, DT_REG, 0644 }
 };
-#define nfiles (sizeof (filesystem) / sizeof (filesystem[0]))
+static const size_t nfiles = sizeof (filesystem) / sizeof (filesystem[0]);
 
 
 typedef struct
@@ -91,65 +77,10 @@ typedef struct
 } my_DIR;
 
 
-static long int
-find_file (const char *s)
-{
-  int level = 1;
-  long int idx = 0;
-
-  if (strcmp (s, ".") == 0)
-    return 0;
-
-  if (s[0] == '.' && s[1] == '/')
-    s += 2;
-
-  while (*s != '\0')
-    {
-      char *endp = strchrnul (s, '/');
-
-      PRINTF ("looking for %.*s, level %d\n", (int) (endp - s), s, level);
-
-      while (idx < nfiles && filesystem[idx].level >= level)
-	{
-	  if (filesystem[idx].level == level
-	      && memcmp (s, filesystem[idx].name, endp - s) == 0
-	      && filesystem[idx].name[endp - s] == '\0')
-	    break;
-	  ++idx;
-	}
-
-      if (idx == nfiles || filesystem[idx].level < level)
-	{
-	  errno = ENOENT;
-	  return -1;
-	}
-
-      if (*endp == '\0')
-	return idx + 1;
-
-      if (filesystem[idx].type != DT_DIR
-	  && (idx + 1 >= nfiles
-	      || filesystem[idx].level >= filesystem[idx + 1].level))
-	{
-	  errno = ENOTDIR;
-	  return -1;
-	}
-
-      ++idx;
-
-      s = endp + 1;
-      ++level;
-    }
-
-  errno = ENOENT;
-  return -1;
-}
-
-
 static void *
 my_opendir (const char *s)
 {
-  long int idx = find_file (s);
+  long int idx = find_file (s, filesystem, nfiles);
   my_DIR *dir;
 
   if (idx == -1)
@@ -241,7 +172,7 @@ my_closedir (void *dir)
 static int
 my_stat (const char *name, struct stat *st)
 {
-  long int idx = find_file (name);
+  long int idx = find_file (name, filesystem, nfiles);
 
   if (idx == -1)
     {
@@ -275,7 +206,7 @@ init_glob_altdirfuncs (glob_t *pglob)
 }
 
 
-int
+static int
 do_test (void)
 {
   mtrace ();
@@ -286,10 +217,7 @@ do_test (void)
 
   if (glob ("dir/*able/*", GLOB_ERR | GLOB_ALTDIRFUNC, NULL, &gl)
       != GLOB_ABORTED)
-    {
-      puts ("glob did not fail with GLOB_ABORTED");
-      exit (EXIT_FAILURE);
-    }
+    FAIL_EXIT1 ("glob did not fail with GLOB_ABORTED");
 
   globfree (&gl);
 
@@ -298,10 +226,7 @@ do_test (void)
 
   gl.gl_offs = 3;
   if (glob ("dir2/*", GLOB_DOOFFS, NULL, &gl) != GLOB_NOMATCH)
-    {
-      puts ("glob did not fail with GLOB_NOMATCH");
-      exit (EXIT_FAILURE);
-    }
+    FAIL_EXIT1 ("glot dit not fail with GLOB_NOMATCH");
 
   globfree (&gl);
 
@@ -310,5 +235,4 @@ do_test (void)
   return 0;
 }
 
-#define TEST_FUNCTION do_test ()
-#include "../test-skeleton.c"
+#include <support/test-driver.c>

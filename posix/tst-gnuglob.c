@@ -20,7 +20,6 @@
 
 #include <dirent.h>
 #include <errno.h>
-#include <error.h>
 #include <glob.h>
 #include <mcheck.h>
 #include <stdio.h>
@@ -28,21 +27,11 @@
 #include <string.h>
 #include <sys/stat.h>
 
+#include <support/check.h>
 
-// #define DEBUG
-#ifdef DEBUG
-# define PRINTF(fmt, args...) printf (fmt, ##args)
-#else
-# define PRINTF(fmt, args...)
-#endif
+#include "tst-glob_common.c"
 
-
-static struct
-{
-  const char *name;
-  int level;
-  int type;
-} filesystem[] =
+struct filesystem_t filesystem[] =
 {
   { ".", 1, DT_DIR },
   { "..", 1, DT_DIR },
@@ -84,7 +73,7 @@ static struct
 	{ "..", 4, DT_DIR },
 	{ "hidden", 4, DT_REG }
 };
-#define nfiles (sizeof (filesystem) / sizeof (filesystem[0]))
+static const size_t nfiles = sizeof (filesystem) / sizeof (filesystem[0]);
 
 
 typedef struct
@@ -96,75 +85,10 @@ typedef struct
 } my_DIR;
 
 
-static long int
-find_file (const char *s)
-{
-  int level = 1;
-  long int idx = 0;
-
-  while (s[0] == '/')
-    {
-      if (s[1] == '\0')
-	{
-	  s = ".";
-	  break;
-	}
-      ++s;
-    }
-
-  if (strcmp (s, ".") == 0)
-    return 0;
-
-  if (s[0] == '.' && s[1] == '/')
-    s += 2;
-
-  while (*s != '\0')
-    {
-      char *endp = strchrnul (s, '/');
-
-      PRINTF ("looking for %.*s, level %d\n", (int) (endp - s), s, level);
-
-      while (idx < nfiles && filesystem[idx].level >= level)
-	{
-	  if (filesystem[idx].level == level
-	      && memcmp (s, filesystem[idx].name, endp - s) == 0
-	      && filesystem[idx].name[endp - s] == '\0')
-	    break;
-	  ++idx;
-	}
-
-      if (idx == nfiles || filesystem[idx].level < level)
-	{
-	  errno = ENOENT;
-	  return -1;
-	}
-
-      if (*endp == '\0')
-	return idx + 1;
-
-      if (filesystem[idx].type != DT_DIR
-	  && (idx + 1 >= nfiles
-	      || filesystem[idx].level >= filesystem[idx + 1].level))
-	{
-	  errno = ENOTDIR;
-	  return -1;
-	}
-
-      ++idx;
-
-      s = endp + 1;
-      ++level;
-    }
-
-  errno = ENOENT;
-  return -1;
-}
-
-
 static void *
 my_opendir (const char *s)
 {
-  long int idx = find_file (s);
+  long int idx = find_file (s, filesystem, nfiles);
   my_DIR *dir;
 
 
@@ -176,7 +100,7 @@ my_opendir (const char *s)
 
   dir = (my_DIR *) malloc (sizeof (my_DIR));
   if (dir == NULL)
-    error (EXIT_FAILURE, errno, "cannot allocate directory handle");
+    FAIL_EXIT1 ("cannot allocate directory handle");
 
   dir->level = filesystem[idx].level;
   dir->idx = idx;
@@ -247,13 +171,11 @@ my_closedir (void *dir)
 static int
 my_stat (const char *name, struct stat *st)
 {
-  long int idx = find_file (name);
+  long int idx = find_file (name, filesystem, nfiles);
 
   if (idx == -1)
-    {
-      PRINTF ("my_stat (\"%s\", ...) = -1 (%s)\n", name, strerror (errno));
-      return -1;
-    }
+    FAIL_EXIT1 ("%s (\"%s\", ...) == -1 (%s)", __func__, name,
+		strerror (errno));
 
   memset (st, '\0', sizeof (*st));
 
@@ -276,7 +198,8 @@ static const char *glob_errstring[] =
   [GLOB_ABORTED] = "read error",
   [GLOB_NOMATCH] = "no matches found"
 };
-#define nglob_errstring (sizeof (glob_errstring) / sizeof (glob_errstring[0]))
+static const size_t nglob_errstring = (sizeof (glob_errstring)
+				       / sizeof (glob_errstring[0]));
 
 
 static const char *
@@ -289,7 +212,7 @@ flagstr (int flags)
     "GLOB_ALTDIRFUNC", "GLOB_BRACE", "GLOB_NOMAGIC", "GLOB_TILDE",
     "GLOB_ONLYDIR", "GLOB_TILDECHECK"
   };
-#define nstrs (sizeof (strs) / sizeof (strs[0]))
+  static const size_t nstrs = (sizeof (strs) / sizeof (strs[0]));
   static char buf[100];
   char *cp = buf;
   int cnt;
@@ -311,7 +234,6 @@ flagstr (int flags)
     }
 
   return buf;
-#undef nstrs
 }
 
 
@@ -378,7 +300,6 @@ test_result (const char *fmt, int flags, glob_t *gl, const char *str[])
   return result;
 }
 
-
 static int
 do_test (void)
 {
@@ -416,7 +337,8 @@ do_test (void)
     result |= test_result (fmt, flags, &gl, (const char *[]) { c, NULL });    \
   else									      \
     printf ("result for glob (\"%s\", %s) = %s\n\n", fmt, flagstr (flags),    \
-	    errstr (errval))
+	    errstr (errval));						      \
+  globfree (&gl)
 
   test ("*/*/*", 0, 0,
 	"dir1lev1/dir2lev2/dir1lev3",
@@ -498,5 +420,4 @@ do_test (void)
   return result;
 }
 
-#define TEST_FUNCTION do_test ()
-#include "../test-skeleton.c"
+#include <support/test-driver.c>

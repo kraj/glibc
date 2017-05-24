@@ -1,4 +1,5 @@
-/* Copyright (C) 1997-2017 Free Software Foundation, Inc.
+/* Basic glob tests.  It uses an extenal driver script (tst-glob.sh).
+   Copyright (C) 1997-2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -21,77 +22,97 @@
 #include <unistd.h>
 #include <glob.h>
 
-int
-main (int argc, char *argv[])
+#include <support/check.h>
+
+#define OPT_BRACE		'b'
+#define OPT_NOCHECK		'c'
+#define OPT_ONLYDIR		'd'
+#define OPT_NOESCAPE		'e'
+#define OPT_ERR			'E'
+#define OPT_NOMAGIC		'g'
+#define OPT_MARK		'm'
+#define OPT_DOOFFS		'o'
+#define OPT_PERIOD		'p'
+#define OPT_QUOTES		'q'
+#define OPT_NOSORT		's'
+#define OPT_TILDE		't'
+#define OPT_TILDE_CHECK		'T'
+
+#define CMDLINE_OPTSTRING "bcdeEgmopqstT"
+
+static int glob_flags = 0;
+static int quotes = 1;
+
+static void
+cmdline_process_function (int c)
+{
+  switch (c)
+    {
+    case OPT_BRACE:
+      glob_flags |= GLOB_BRACE;
+      break;
+    case OPT_NOCHECK:
+      glob_flags |= GLOB_NOCHECK;
+      break;
+    case OPT_ONLYDIR:
+      glob_flags |= GLOB_ONLYDIR;
+      break;
+    case OPT_NOESCAPE:
+      glob_flags |= GLOB_NOESCAPE;
+      break;
+    case OPT_ERR:
+      glob_flags |= GLOB_ERR;
+      break;
+    case OPT_NOMAGIC:
+      glob_flags |= GLOB_NOMAGIC;
+      break;
+    case OPT_MARK:
+      glob_flags |= GLOB_MARK;
+      break;
+    case OPT_DOOFFS:
+      glob_flags |= GLOB_DOOFFS;
+      break;
+    case OPT_PERIOD:
+      glob_flags |= GLOB_PERIOD;
+      break;
+    case OPT_QUOTES:
+      quotes = 0;
+      break;
+    case OPT_NOSORT:
+      glob_flags |= GLOB_NOSORT;
+      break;
+    case OPT_TILDE:
+      glob_flags |= GLOB_TILDE;
+      break;
+    case OPT_TILDE_CHECK:
+      glob_flags |= GLOB_TILDE_CHECK;
+      break;
+    }
+}
+
+#define CMDLINE_PROCESS	cmdline_process_function
+
+static int
+do_test_argv (int argc, char *argv[])
 {
   int i, j;
-  int glob_flags = 0;
   glob_t g;
-  int quotes = 1;
 
-  g.gl_offs = 0;
+  g.gl_offs = glob_flags & GLOB_DOOFFS ? 1 : 0;
 
-  while ((i = getopt (argc, argv, "bcdeEgmopqstT")) != -1)
-    switch(i)
-      {
-      case 'b':
-	glob_flags |= GLOB_BRACE;
-	break;
-      case 'c':
-	glob_flags |= GLOB_NOCHECK;
-	break;
-      case 'd':
-	glob_flags |= GLOB_ONLYDIR;
-	break;
-      case 'e':
-	glob_flags |= GLOB_NOESCAPE;
-	break;
-      case 'E':
-	glob_flags |= GLOB_ERR;
-	break;
-      case 'g':
-	glob_flags |= GLOB_NOMAGIC;
-	break;
-      case 'm':
-	glob_flags |= GLOB_MARK;
-	break;
-      case 'o':
-	glob_flags |= GLOB_DOOFFS;
-	g.gl_offs = 1;
-	break;
-      case 'p':
-	glob_flags |= GLOB_PERIOD;
-	break;
-      case 'q':
-	quotes = 0;
-	break;
-      case 's':
-	glob_flags |= GLOB_NOSORT;
-	break;
-      case 't':
-	glob_flags |= GLOB_TILDE;
-	break;
-      case 'T':
-	glob_flags |= GLOB_TILDE_CHECK;
-	break;
-      default:
-	exit (-1);
-      }
+  if (argc < 2)
+    FAIL_EXIT1 ("invalid arguments (expecting path for glob)");
+  if (chdir (argv[1]) != 0)
+    FAIL_EXIT1 ("chmod (%s): %m", argv[1]);
 
-  if (optind >= argc || chdir (argv[optind]))
-    exit(1);
-
-  j = optind + 1;
-  if (optind + 1 >= argc)
-    exit (1);
-
-  /* Do a glob on each remaining argument.  */
-  for (j = optind + 1; j < argc; j++) {
-    i = glob (argv[j], glob_flags, NULL, &g);
-    if (i != 0)
-      break;
-    glob_flags |= GLOB_APPEND;
-  }
+  /* Do a glob on each argument.  */
+  for (j = 2; j < argc; j++)
+    {
+      i = glob (argv[j], glob_flags, NULL, &g);
+      if (i != 0)
+	break;
+      glob_flags |= GLOB_APPEND;
+    }
 
   /* Was there an error? */
   if (i == GLOB_NOSPACE)
@@ -106,16 +127,18 @@ main (int argc, char *argv[])
   if ((glob_flags & GLOB_DOOFFS) && g.gl_pathv[0] == NULL)
     g.gl_pathv[0] = (char *) "abc";
 
-  /* Print out the names.  Unless otherwise specified, qoute them.  */
+  /* Print out the names.  Unless otherwise specified, quote them.  */
   if (g.gl_pathv)
     {
       for (i = 0; i < g.gl_offs + g.gl_pathc; ++i)
-        printf ("%s%s%s\n", quotes ? "`" : "",
-		g.gl_pathv[i] ? g.gl_pathv[i] : "(null)",
-		quotes ? "'" : "");
+	printf ("%s%s%s\n", quotes ? "`" : "",
+		g.gl_pathv[i] ? g.gl_pathv[i] : "(null)", quotes ? "'" : "");
     }
 
   globfree (&g);
 
   return 0;
 }
+
+#define TEST_FUNCTION_ARGV do_test_argv
+#include <support/test-driver.c>
