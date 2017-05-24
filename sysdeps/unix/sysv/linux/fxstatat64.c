@@ -26,6 +26,8 @@
 #include <sysdep.h>
 #include <sys/syscall.h>
 
+#include <xstatconv.h>
+
 /* Get information about the file NAME in BUF.  */
 
 int
@@ -45,3 +47,21 @@ __fxstatat64 (int vers, int fd, const char *file, struct stat64 *st, int flag)
 								      err));
 }
 libc_hidden_def (__fxstatat64)
+
+int
+__fxstatat64_t64 (int vers, int fd, const char *file, struct __stat64_t64 *st, int flag)
+{
+  if (__glibc_unlikely (vers != _STAT_VER_LINUX))
+    return INLINE_SYSCALL_ERROR_RETURN_VALUE (EINVAL);
+
+  int result;
+  struct kernel_stat st64;
+  INTERNAL_SYSCALL_DECL (err);
+
+  result = INTERNAL_SYSCALL (fstatat64, err, 4, fd, file, &st64, flag);
+  if (!__builtin_expect (INTERNAL_SYSCALL_ERROR_P (result, err), 1))
+    return __xstat64_conv_t64 (vers, &st64, st);
+  else
+    return INLINE_SYSCALL_ERROR_RETURN_VALUE (INTERNAL_SYSCALL_ERRNO (result,
+								      err));
+}
