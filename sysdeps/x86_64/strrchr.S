@@ -19,23 +19,40 @@
 
 #include <sysdep.h>
 
+#ifdef USE_AS_WCSRCHR
+# define PCMPEQ	pcmpeqd
+# define PMINU	pminud
+#else
+# define PCMPEQ	pcmpeqb
+# define PMINU	pminub
+#endif
+
 	.text
 ENTRY (strrchr)
 	movd	%esi, %xmm1
 	movq	%rdi, %rax
 	andl	$4095, %eax
+#ifdef USE_AS_WCSRCHR
+	movabsq	$0x1111111111111111, %r11
+	cmpq	$4032, %rax
+#else
 	punpcklbw	%xmm1, %xmm1
 	cmpq	$4032, %rax
 	punpcklwd	%xmm1, %xmm1
+#endif
 	pshufd	$0, %xmm1, %xmm1
 	ja	L(cross_page)
 	movdqu	(%rdi), %xmm0
 	pxor	%xmm2, %xmm2
 	movdqa	%xmm0, %xmm3
-	pcmpeqb	%xmm1, %xmm0
-	pcmpeqb	%xmm2, %xmm3
+	PCMPEQ	%xmm1, %xmm0
+	PCMPEQ	%xmm2, %xmm3
 	pmovmskb	%xmm0, %ecx
 	pmovmskb	%xmm3, %edx
+#ifdef USE_AS_WCSRCHR
+	andl	%r11d, %ecx
+	andl	%r11d, %edx
+#endif
 	testq	%rdx, %rdx
 	je	L(next_48_bytes)
 	leaq	-1(%rdx), %rax
@@ -51,22 +68,25 @@ L(next_48_bytes):
 	movdqu	16(%rdi), %xmm4
 	movdqa	%xmm4, %xmm5
 	movdqu	32(%rdi), %xmm3
-	pcmpeqb	%xmm1, %xmm4
-	pcmpeqb	%xmm2, %xmm5
+	PCMPEQ	%xmm1, %xmm4
+	PCMPEQ	%xmm2, %xmm5
 	movdqu	48(%rdi), %xmm0
 	pmovmskb	%xmm5, %edx
 	movdqa	%xmm3, %xmm5
-	pcmpeqb	%xmm1, %xmm3
-	pcmpeqb	%xmm2, %xmm5
-	pcmpeqb	%xmm0, %xmm2
+	PCMPEQ	%xmm1, %xmm3
+	PCMPEQ	%xmm2, %xmm5
+	PCMPEQ	%xmm0, %xmm2
 	salq	$16, %rdx
 	pmovmskb	%xmm3, %r8d
 	pmovmskb	%xmm5, %eax
 	pmovmskb	%xmm2, %esi
 	salq	$32, %r8
 	salq	$32, %rax
-	pcmpeqb	%xmm1, %xmm0
+	PCMPEQ	%xmm1, %xmm0
 	orq	%rdx, %rax
+#ifdef USE_AS_WCSRCHR
+	andq	%r11, %rax
+#endif
 	movq	%rsi, %rdx
 	pmovmskb	%xmm4, %esi
 	salq	$48, %rdx
@@ -76,6 +96,9 @@ L(next_48_bytes):
 	pmovmskb	%xmm0, %ecx
 	salq	$48, %rcx
 	orq	%rcx, %rsi
+#ifdef USE_AS_WCSRCHR
+	andq	%r11, %rsi
+#endif
 	orq	%rdx, %rax
 	je	L(loop_header2)
 	leaq	-1(%rax), %rcx
@@ -109,38 +132,41 @@ L(loop_entry):
 	movdqa	48(%rdi), %xmm2
 	movdqa	%xmm3, %xmm0
 	movdqa	16(%rdi), %xmm4
-	pminub	%xmm2, %xmm0
+	PMINU	%xmm2, %xmm0
 	movdqa	(%rdi), %xmm5
-	pminub	%xmm4, %xmm0
-	pminub	%xmm5, %xmm0
-	pcmpeqb	%xmm7, %xmm0
+	PMINU	%xmm4, %xmm0
+	PMINU	%xmm5, %xmm0
+	PCMPEQ	%xmm7, %xmm0
 	pmovmskb	%xmm0, %eax
 	movdqa	%xmm5, %xmm0
-	pcmpeqb	%xmm1, %xmm0
+	PCMPEQ	%xmm1, %xmm0
 	pmovmskb	%xmm0, %r9d
 	movdqa	%xmm4, %xmm0
-	pcmpeqb	%xmm1, %xmm0
+	PCMPEQ	%xmm1, %xmm0
 	pmovmskb	%xmm0, %edx
 	movdqa	%xmm3, %xmm0
-	pcmpeqb	%xmm1, %xmm0
+	PCMPEQ	%xmm1, %xmm0
 	salq	$16, %rdx
 	pmovmskb	%xmm0, %r10d
 	movdqa	%xmm2, %xmm0
-	pcmpeqb	%xmm1, %xmm0
+	PCMPEQ	%xmm1, %xmm0
 	salq	$32, %r10
 	orq	%r10, %rdx
 	pmovmskb	%xmm0, %r8d
 	orq	%r9, %rdx
 	salq	$48, %r8
 	orq	%r8, %rdx
+#ifdef USE_AS_WCSRCHR
+	andq	%r11, %rdx
+#endif
 	testl	%eax, %eax
 	je	L(loop64)
-	pcmpeqb	%xmm6, %xmm4
-	pcmpeqb	%xmm6, %xmm3
-	pcmpeqb	%xmm6, %xmm5
+	PCMPEQ	%xmm6, %xmm4
+	PCMPEQ	%xmm6, %xmm3
+	PCMPEQ	%xmm6, %xmm5
 	pmovmskb	%xmm4, %eax
 	pmovmskb	%xmm3, %r10d
-	pcmpeqb	%xmm6, %xmm2
+	PCMPEQ	%xmm6, %xmm2
 	pmovmskb	%xmm5, %r9d
 	salq	$32, %r10
 	salq	$16, %rax
@@ -149,6 +175,9 @@ L(loop_entry):
 	orq	%r9, %rax
 	salq	$48, %r8
 	orq	%r8, %rax
+#ifdef USE_AS_WCSRCHR
+	andq	%r11, %rax
+#endif
 	leaq	-1(%rax), %r8
 	xorq	%rax, %r8
 	andq	%r8, %rdx
@@ -177,26 +206,26 @@ L(cross_page):
 	movdqu	(%rax), %xmm5
 	movdqa	%xmm5, %xmm6
 	movdqu	16(%rax), %xmm4
-	pcmpeqb	%xmm1, %xmm5
-	pcmpeqb	%xmm0, %xmm6
+	PCMPEQ	%xmm1, %xmm5
+	PCMPEQ	%xmm0, %xmm6
 	movdqu	32(%rax), %xmm3
 	pmovmskb	%xmm6, %esi
 	movdqa	%xmm4, %xmm6
 	movdqu	48(%rax), %xmm2
-	pcmpeqb	%xmm1, %xmm4
-	pcmpeqb	%xmm0, %xmm6
+	PCMPEQ	%xmm1, %xmm4
+	PCMPEQ	%xmm0, %xmm6
 	pmovmskb	%xmm6, %edx
 	movdqa	%xmm3, %xmm6
-	pcmpeqb	%xmm1, %xmm3
-	pcmpeqb	%xmm0, %xmm6
-	pcmpeqb	%xmm2, %xmm0
+	PCMPEQ	%xmm1, %xmm3
+	PCMPEQ	%xmm0, %xmm6
+	PCMPEQ	%xmm2, %xmm0
 	salq	$16, %rdx
 	pmovmskb	%xmm3, %r9d
 	pmovmskb	%xmm6, %r8d
 	pmovmskb	%xmm0, %ecx
 	salq	$32, %r9
 	salq	$32, %r8
-	pcmpeqb	%xmm1, %xmm2
+	PCMPEQ	%xmm1, %xmm2
 	orq	%r8, %rdx
 	salq	$48, %rcx
 	pmovmskb	%xmm5, %r8d
@@ -209,6 +238,10 @@ L(cross_page):
 	orq	%r9, %rsi
 	orq	%r8, %rsi
 	orq	%rcx, %rsi
+#ifdef USE_AS_WCSRCHR
+	andq	%r11, %rdx
+	andq	%r11, %rsi
+#endif
 	movl	%edi, %ecx
 	subl	%eax, %ecx
 	shrq	%cl, %rdx
@@ -224,5 +257,7 @@ L(cross_page):
 	ret
 END (strrchr)
 
+#ifndef USE_AS_WCSRCHR
 weak_alias (strrchr, rindex)
 libc_hidden_builtin_def (strrchr)
+#endif
