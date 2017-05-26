@@ -138,8 +138,8 @@ L(return_value):
 	mov	%r8d, %eax
 	mov	%rsi, %rdi
 
-	andl	$0x11111111, %eax
-	bsrl	%eax, %eax
+	and	$0x11111111, %eax
+	bsr	%eax, %eax
 	lea	-16(%rdi, %rax), %rax
 	ret
 
@@ -164,8 +164,8 @@ L(find_zero):
 	and	$1 << 13 - 1, %eax
 	jz	L(return_value)
 
-	andl	$0x11111111, %eax
-	bsrl	%eax, %eax
+	and	$0x11111111, %eax
+	bsr	%eax, %eax
 	lea	-16(%rdi, %rax), %rax
 	ret
 
@@ -203,18 +203,12 @@ L(prolog_find_zero):
 	add	%rcx, %rdi
 	mov     %edx, %ecx
 L(prolog_find_zero_1):
-	test	$15, %cl
-	jnz	L(prolog_find_zero_in_first_wchar)
-	test	%cl, %cl
-	jnz	L(prolog_find_zero_in_second_wchar)
-	test	$15, %ch
-	jnz	L(prolog_find_zero_in_third_wchar)
-
-	and	$1 << 13 - 1, %eax
-	jz	L(return_null)
-
-	andl	$0x11111111, %eax
-	bsrl	%eax, %eax
+	and	$0x11111111, %ecx
+	and	$0x11111111, %eax
+	bsf	%ecx, %ecx
+	bsr	%eax, %eax
+	cmp	%eax, %ecx
+	jl	L(return_null)
 	lea	-16(%rdi, %rax), %rax
 	ret
 
