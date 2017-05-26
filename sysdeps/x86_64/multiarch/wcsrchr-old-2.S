@@ -45,7 +45,7 @@ ENTRY (__wcsrchr_old_2)
 	jnz	L(return_null)
 
 	and	$-16, %rdi
-	xor	%r8, %r8
+	xor	%r8d, %r8d
 	jmp	L(loop)
 
 	.p2align 4
@@ -53,7 +53,7 @@ L(unaligned_match1):
 	test	%ecx, %ecx
 	jnz	L(prolog_find_zero_1)
 
-	mov	%rax, %r8
+	mov	%eax, %r8d
 	mov	%rdi, %rsi
 	and	$-16, %rdi
 	jmp	L(loop)
@@ -78,7 +78,7 @@ L(crosscache):
 	test	%edx, %edx
 	jnz	L(return_null)
 
-	xor	%r8, %r8
+	xor	%r8d, %r8d
 	jmp	L(loop)
 
 	.p2align 4
@@ -86,7 +86,7 @@ L(unaligned_match):
 	test	%edx, %edx
 	jnz	L(prolog_find_zero)
 
-	mov	%rax, %r8
+	mov	%eax, %r8d
 	lea	(%rdi, %rcx), %rsi
 
 /* Loop start on aligned string.  */
@@ -133,9 +133,9 @@ L(matches):
 	test	%eax, %eax
 	jnz	L(match)
 L(return_value):
-	test	%r8, %r8
+	test	%r8d, %r8d
 	jz	L(return_null)
-	mov	%r8, %rax
+	mov	%r8d, %eax
 	mov	%rsi, %rdi
 
 	andl	$0x11111111, %eax
@@ -148,7 +148,7 @@ L(match):
 	pmovmskb %xmm2, %ecx
 	test	%ecx, %ecx
 	jnz	L(find_zero)
-	mov	%rax, %r8
+	mov	%eax, %r8d
 	mov	%rdi, %rsi
 	jmp	L(loop)
 
