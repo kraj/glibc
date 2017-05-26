@@ -286,6 +286,12 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 	      IFUNC_IMPL_ADD (array, i, strstr, 1, __strstr_sse2_unaligned)
 	      IFUNC_IMPL_ADD (array, i, strstr, 1, __strstr_sse2))
 
+  /* Support sysdeps/x86_64/multiarch/wcsrchr.S.  */
+  IFUNC_IMPL (i, name, wcsrchr,
+	      IFUNC_IMPL_ADD (array, i, wcsrchr, 1, __wcsrchr)
+	      IFUNC_IMPL_ADD (array, i, wcsrchr, 1, __wcsrchr_old_2)
+	      IFUNC_IMPL_ADD (array, i, wcsrchr, 1, __wcsrchr_old))
+
   /* Support sysdeps/x86_64/multiarch/wcscpy.S.  */
   IFUNC_IMPL (i, name, wcscpy,
 	      IFUNC_IMPL_ADD (array, i, wcscpy, HAS_CPU_FEATURE (SSSE3),

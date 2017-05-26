@@ -30,5 +30,6 @@ CFLAGS-strspn-c.c += -msse4
 endif
 
 ifeq ($(subdir),wcsmbs)
-sysdep_routines += wmemcmp-sse4 wmemcmp-ssse3 wmemcmp-c wcscpy-ssse3 wcscpy-c
+sysdep_routines += wmemcmp-sse4 wmemcmp-ssse3 wmemcmp-c wcscpy-ssse3 \
+		   wcscpy-c wcsrchr-old wcsrchr-old-2
 endif
