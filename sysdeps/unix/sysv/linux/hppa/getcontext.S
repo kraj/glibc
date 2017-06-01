@@ -130,8 +130,11 @@ ENTRY(__getcontext)
 
 	/* Prologue */
 	stwm	%r4, 64(%sp)
+	.cfi_def_cfa_offset -64
+	.cfi_offset 4, 0
 #ifdef PIC
 	stw	%r19, -32(%sp)
+	.cfi_offset 19, 32
 #endif
 
 	/* Set up the trampoline registers.
@@ -156,7 +159,7 @@ ENTRY(__getcontext)
 	/* Epilogue */
 	ldw	-84(%sp), %r2
 #ifdef PIC
-	ldw	-96(%sp), %r19
+	ldw	-32(%sp), %r19
 #endif
 	bv	%r0(%r2)
 	ldwm	-64(%sp), %r4

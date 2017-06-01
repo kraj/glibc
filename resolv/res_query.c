@@ -80,6 +80,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include <shlib-compat.h>
+#include <resolv/resolv-internal.h>
+
+/* The structure HEADER is normally aligned to a word boundary and its
+   fields are accessed using word loads and stores.  We need to access
+   this structure when it is aligned on a byte boundary.  This can cause
+   problems on machines with strict alignment.  So, we create a new
+   typedef to reduce its alignment to one.  This ensures the fields are
+   accessed with byte loads and stores.  */
+typedef HEADER __attribute__ ((__aligned__(1))) UHEADER;
 
 #if PACKETSZ > 65536
 #define MAXPACKET	PACKETSZ
@@ -112,8 +121,8 @@ __res_context_query (struct resolv_context *ctx, const char *name,
 		     int *nanswerp2, int *resplen2, int *answerp2_malloced)
 {
 	struct __res_state *statp = ctx->resp;
-	HEADER *hp = (HEADER *) answer;
-	HEADER *hp2;
+	UHEADER *hp = (UHEADER *) answer;
+	UHEADER *hp2;
 	int n, use_malloc = 0;
 
 	size_t bufsize = (type == T_QUERY_A_AND_AAAA ? 2 : 1) * QUERYSIZE;
@@ -217,7 +226,7 @@ __res_context_query (struct resolv_context *ctx, const char *name,
 
 	if (answerp != NULL)
 	  /* __res_context_send might have reallocated the buffer.  */
-	  hp = (HEADER *) *answerp;
+	  hp = (UHEADER *) *answerp;
 
 	/* We simplify the following tests by assigning HP to HP2 or
 	   vice versa.  It is easy to verify that this is the same as
@@ -228,7 +237,7 @@ __res_context_query (struct resolv_context *ctx, const char *name,
 	  }
 	else
 	  {
-	    hp2 = (HEADER *) *answerp2;
+	    hp2 = (UHEADER *) *answerp2;
 	    if (n < (int) sizeof (HEADER))
 	      {
 	        hp = hp2;
@@ -327,7 +336,7 @@ __res_context_search (struct resolv_context *ctx,
 {
 	struct __res_state *statp = ctx->resp;
 	const char *cp;
-	HEADER *hp = (HEADER *) answer;
+	UHEADER *hp = (UHEADER *) answer;
 	char tmp[NS_MAXDNAME];
 	u_int dots;
 	int trailing_dot, ret, saved_herrno;

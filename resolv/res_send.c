@@ -111,6 +111,15 @@
 #include <libc-diag.h>
 #include <hp-timing.h>
 
+/* The structure HEADER is normally aligned to a word boundary and its
+   fields are accessed using word loads and stores.  We need to access
+   this structure when it is aligned on a byte boundary.  This can cause
+   problems on machines with strict alignment.  So, we create a new
+   typedef to reduce its alignment to one.  This ensures the fields are
+   accessed with byte loads and stores.  */
+typedef HEADER __attribute__ ((__aligned__(1))) UHEADER;
+#define HEADER UHEADER
+
 #if PACKETSZ > 65536
 #define MAXPACKET       PACKETSZ
 #else
