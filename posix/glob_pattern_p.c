@@ -1,4 +1,5 @@
-/* Copyright (C) 1992-2017 Free Software Foundation, Inc.
+/* Return nonzero if PATTERN contains any metacharacters.
+   Copyright (C) 2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -15,34 +16,14 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <dirent.h>
-#include <string.h>
+#include <glob.h>
+#include "glob_internal.h"
 
+/* Return nonzero if PATTERN contains any metacharacters.
+   Metacharacters can be quoted with backslashes if QUOTE is nonzero.  */
 int
-__alphasort64 (const struct dirent64 **a, const struct dirent64 **b)
+__glob_pattern_p (const char *pattern, int quote)
 {
-  return strcoll ((*a)->d_name, (*b)->d_name);
+  return __glob_pattern_type (pattern, quote) == 1;
 }
-
-#include <shlib-compat.h>
-
-versioned_symbol (libc, __alphasort64, alphasort64, GLIBC_2_2);
-
-#if SHLIB_COMPAT(libc, GLIBC_2_1, GLIBC_2_2)
-
-#include <olddirent.h>
-
-int
-__old_alphasort64 (const struct __old_dirent64 **a,
-		   const struct __old_dirent64 **b);
-
-int
-attribute_compat_text_section
-__old_alphasort64 (const struct __old_dirent64 **a,
-		   const struct __old_dirent64 **b)
-{
-  return strcoll ((*a)->d_name, (*b)->d_name);
-}
-
-compat_symbol (libc, __old_alphasort64, alphasort64, GLIBC_2_1);
-#endif
+weak_alias (__glob_pattern_p, glob_pattern_p)

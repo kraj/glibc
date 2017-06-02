@@ -37,8 +37,6 @@
 
 #include <stdio.h>		/* Needed on stupid SunOS for assert.  */
 
-#ifndef GLOB_ONLY_P
-
 #include <unistd.h>
 #if !defined POSIX && defined _POSIX_VERSION
 # define POSIX
@@ -89,6 +87,8 @@
 #endif /* _LIBC */
 
 #include <fnmatch.h>
+
+#include "glob_internal.h"
 
 #ifdef _SC_GETPW_R_SIZE_MAX
 # define GETPW_R_SIZE_MAX()	sysconf (_SC_GETPW_R_SIZE_MAX)
@@ -167,8 +167,6 @@ readdir_result_might_be_dir (struct readdir_result d)
     D_TYPE_TO_RESULT (source)		   \
     D_INO_TO_RESULT (source)		   \
   }
-
-#endif /* !defined GLOB_ONLY_P */
 
 /* Call gl_readdir on STREAM.  This macro can be overridden to reduce
    type safety if an old interface version needs to be supported.  */
@@ -252,7 +250,6 @@ static bool size_add_wrapv (size_t a, size_t b, size_t *r);
 static bool glob_use_alloca (size_t alloca_used, size_t len);
 
 /* We must not compile this function twice.  */
-#ifndef GLOB_COMPAT_BUILD
 static bool
 size_add_wrapv (size_t a, size_t b, size_t *r)
 {
@@ -271,7 +268,6 @@ glob_use_alloca (size_t alloca_used, size_t len)
   return (!size_add_wrapv (alloca_used, len, &size)
 	  && __libc_use_alloca (size));
 }
-#endif
 
 static int glob_in_dir (const char *pattern, const char *directory,
 			int flags, int (*errfunc) (const char *, int),
@@ -279,7 +275,6 @@ static int glob_in_dir (const char *pattern, const char *directory,
 extern int __glob_pattern_type (const char *pattern, int quote)
     attribute_hidden;
 
-#ifndef GLOB_ONLY_P
 static int prefix_array (const char *prefix, char **array, size_t n) __THROWNL;
 static int collated_compare (const void *, const void *) __THROWNL;
 
@@ -308,7 +303,6 @@ next_brace_sub (const char *cp, int flags)
   return *cp != '\0' ? cp : NULL;
 }
 
-#endif /* !defined GLOB_ONLY_P */
 
 /* Do glob searching for PATTERN, placing results in PGLOB.
    The bits defined above may be set in FLAGS.
@@ -1355,26 +1349,6 @@ libc_hidden_def (glob)
 #endif
 
 
-#ifndef GLOB_ONLY_P
-
-/* Free storage allocated in PGLOB by a previous `glob' call.  */
-void
-globfree (glob_t *pglob)
-{
-  if (pglob->gl_pathv != NULL)
-    {
-      size_t i;
-      for (i = 0; i < pglob->gl_pathc; ++i)
-	free (pglob->gl_pathv[pglob->gl_offs + i]);
-      free (pglob->gl_pathv);
-      pglob->gl_pathv = NULL;
-    }
-}
-#if defined _LIBC && !defined globfree
-libc_hidden_def (globfree)
-#endif
-
-
 /* Do a collated comparison of A and B.  */
 static int
 collated_compare (const void *a, const void *b)
@@ -1449,58 +1423,6 @@ prefix_array (const char *dirname, char **array, size_t n)
 
   return 0;
 }
-
-
-/* We must not compile this function twice.  */
-#ifndef NO_GLOB_PATTERN_P
-int
-__glob_pattern_type (const char *pattern, int quote)
-{
-  const char *p;
-  int ret = 0;
-
-  for (p = pattern; *p != '\0'; ++p)
-    switch (*p)
-      {
-      case '?':
-      case '*':
-	return 1;
-
-      case '\\':
-	if (quote)
-	  {
-	    if (p[1] != '\0')
-	      ++p;
-	    ret |= 2;
-	  }
-	break;
-
-      case '[':
-	ret |= 4;
-	break;
-
-      case ']':
-	if (ret & 4)
-	  return 1;
-	break;
-      }
-
-  return ret;
-}
-
-/* Return nonzero if PATTERN contains any metacharacters.
-   Metacharacters can be quoted with backslashes if QUOTE is nonzero.  */
-int
-__glob_pattern_p (const char *pattern, int quote)
-{
-  return __glob_pattern_type (pattern, quote) == 1;
-}
-# ifdef _LIBC
-weak_alias (__glob_pattern_p, glob_pattern_p)
-# endif
-#endif
-
-#endif /* !defined GLOB_ONLY_P */
 
 
 /* Like `glob', but PATTERN is a final pathname component,

@@ -1,4 +1,4 @@
-/* Copyright (C) 2000-2017 Free Software Foundation, Inc.
+/* Copyright (C) 1998-2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -12,28 +12,29 @@
    Lesser General Public License for more details.
 
    You should have received a copy of the GNU Lesser General Public
-   License along with the GNU C Library; if not, see
+   License along with the GNU C Library.  If not, see
    <http://www.gnu.org/licenses/>.  */
 
-#define __GETDENTS __getdents64
-#define DIRENT_TYPE struct dirent64
+#define glob64 __no_glob64_decl
 
-#include <sysdeps/unix/sysv/linux/getdents.c>
-
+#include <glob.h>
 #include <shlib-compat.h>
 
-#undef __READDIR
-#undef __GETDENTS
-#undef DIRENT_TYPE
+/* For Linux/Alpha we have to make the glob symbols versioned.  */
+#define glob(pattern, flags, errfunc, pglob) \
+  __new_glob (pattern, flags, errfunc, pglob)
 
-#if SHLIB_COMPAT(libc, GLIBC_2_1, GLIBC_2_2)
+/* We need prototypes for these new names.  */
+extern int __new_glob (const char *__pattern, int __flags,
+		       int (*__errfunc) (const char *, int),
+		       glob_t *__pglob);
 
-#include <olddirent.h>
+#include <posix/glob.c>
 
-#define __GETDENTS __old_getdents64
-#define DIRENT_TYPE struct __old_dirent64
-#define kernel_dirent old_kernel_dirent
-#define kernel_dirent64 old_kernel_dirent64
+#undef glob
+#undef glob64
 
-#include <sysdeps/unix/sysv/linux/getdents.c>
-#endif
+versioned_symbol (libc, __new_glob, glob, GLIBC_2_1);
+libc_hidden_ver (__new_glob, glob)
+
+weak_alias (__new_glob, glob64)
