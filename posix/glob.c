@@ -754,8 +754,7 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
 	{
 	  char *dirnamestr = char_array_at (&dirname, 0);
 	  char *end_name = strchr (dirnamestr, '/');
-	  char *user_name;
-	  int malloc_user_name = 0;
+	  char user_name[LOGIN_NAME_MAX];
 	  char *unescape = NULL;
 
 	  if (!(flags & GLOB_NOESCAPE))
@@ -770,26 +769,14 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
 		unescape = memchr (dirnamestr, '\\', end_name - dirnamestr);
 	    }
 	  if (end_name == NULL)
-	    user_name = dirnamestr + 1;
+	    strncpy (user_name, dirnamestr + 1, LOGIN_NAME_MAX - 1);
 	  else
 	    {
-	      char *newp;
-	      if (glob_use_alloca (alloca_used, end_name - dirnamestr))
-		newp = alloca_account (end_name - dirnamestr, alloca_used);
-	      else
-		{
-		  newp = malloc (end_name - dirnamestr);
-		  if (newp == NULL)
-		    {
-		      retval = GLOB_NOSPACE;
-		      goto out;
-		    }
-		  malloc_user_name = 1;
-		}
 	      if (unescape != NULL)
 		{
-		  char *p = mempcpy (newp, dirnamestr + 1,
-				     unescape - dirnamestr - 1);
+		  ptrdiff_t name_len = unescape - dirnamestr - 1;
+		  name_len = MIN (name_len, LOGIN_NAME_MAX - 1);
+		  char *p = mempcpy (user_name, dirnamestr + 1, name_len);
 		  char *q = unescape;
 		  while (*q != '\0')
 		    {
@@ -811,9 +798,12 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
 		  *p = '\0';
 		}
 	      else
-		*((char *) mempcpy (newp, dirnamestr + 1, end_name - dirnamestr))
-		  = '\0';
-	      user_name = newp;
+		{
+		  ptrdiff_t name_len = end_name - dirnamestr;
+		  name_len = MIN (name_len, LOGIN_NAME_MAX - 1);
+		  *((char *) mempcpy (user_name, dirnamestr + 1, name_len))
+		    = '\0';
+		}
 	    }
 
 	  /* Look up specific user's home directory.  */
@@ -844,9 +834,6 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
 #  else
 	    p = getpwnam (user_name);
 #  endif
-
-	    if (__glibc_unlikely (malloc_user_name))
-	      free (user_name);
 
 	    /* If we found a home directory use this.  */
 	    if (p != NULL)
