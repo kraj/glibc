@@ -92,10 +92,8 @@
 #include "glob_internal.h"
 #include <malloc/char_array-skeleton.c>
 
-#ifdef _SC_LOGIN_NAME_MAX
-# define GET_LOGIN_NAME_MAX()	sysconf (_SC_LOGIN_NAME_MAX)
-#else
-# define GET_LOGIN_NAME_MAX()	(-1)
+#ifndef LOGIN_NAME_MAX
+# define LOGIN_NAME_MAX 256
 #endif
 
 static const char *next_brace_sub (const char *begin, int flags) __THROWNL;
@@ -677,25 +675,9 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
 	  if (home_dir == NULL || home_dir[0] == '\0')
 	    {
 	      int success;
-	      char *name;
-	      int malloc_name = 0;
-	      size_t buflen = GET_LOGIN_NAME_MAX () + 1;
+	      char user_name[LOGIN_NAME_MAX];
 
-	      if (buflen == 0)
-		/* `sysconf' does not support _SC_LOGIN_NAME_MAX.  Try
-		   a moderate value.  */
-		buflen = 20;
-	      if (glob_use_alloca (alloca_used, buflen))
-		name = alloca_account (buflen, alloca_used);
-	      else
-		{
-		  name = malloc (buflen);
-		  if (name == NULL)
-		    goto err_nospace;
-		  malloc_name = 1;
-		}
-
-	      success = __getlogin_r (name, buflen) == 0;
+	      success = __getlogin_r (user_name, sizeof (user_name)) == 0;
 	      if (success)
 		{
 		  struct passwd *p;
@@ -705,7 +687,7 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
 		  struct scratch_buffer pwtmpbuf;
 		  scratch_buffer_init (&pwtmpbuf);
 
-		  while (getpwnam_r (name, &pwbuf,
+		  while (getpwnam_r (user_name, &pwbuf,
 				     pwtmpbuf.data, pwtmpbuf.length, &p)
 			 != 0)
 		    {
@@ -732,11 +714,6 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
 			}
 		    }
 		  scratch_buffer_free (&pwtmpbuf);
-		}
-	      else
-		{
-		  if (__glibc_unlikely (malloc_name))
-		    free (name);
 		}
 	    }
 	  if (home_dir == NULL || home_dir[0] == '\0')
