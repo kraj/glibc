@@ -91,4 +91,18 @@ check_mul_overflow_size_t (size_t left, size_t right, size_t *result)
 #endif
 }
 
+/* Set *R = A + B.  Return true if the answer is mathematically incorrect due
+   to overflow; in this case, *R is the low order bits of the correct
+   answer.  */
+static inline bool
+check_add_overflow_size_t (size_t a, size_t b, size_t *r)
+{
+#if 5 <= __GNUC__
+  return __builtin_add_overflow (a, b, r);
+#else
+  *r = a + b;
+  return *r < a;
+#endif
+}
+
 #endif /* _MALLOC_INTERNAL_H */

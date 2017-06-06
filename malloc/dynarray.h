@@ -168,12 +168,21 @@ bool __libc_dynarray_finalize (struct dynarray_header *list, void *scratch,
 void __libc_dynarray_at_failure (size_t size, size_t index)
   __attribute__ ((noreturn));
 
+/* Internal function.  TErminate the process after an overflow in
+   new size allocation.  SIZE is the current number of elements in
+   dynamic array and INCR is the new elements to add on current
+   size.  */
+void __libc_dynarray_overflow_failure (size_t size, size_t incr)
+  __attribute__ ((noreturn));
+
 #ifndef _ISOMAC
 libc_hidden_proto (__libc_dynarray_emplace_enlarge)
 libc_hidden_proto (__libc_dynarray_resize)
 libc_hidden_proto (__libc_dynarray_resize_clear)
 libc_hidden_proto (__libc_dynarray_finalize)
 libc_hidden_proto (__libc_dynarray_at_failure)
+libc_hidden_proto (__libc_dynarray_overflow_failure)
+
 #endif
 
 #endif /* _DYNARRAY_H */

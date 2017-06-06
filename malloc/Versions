@@ -81,6 +81,7 @@ libc {
 
     # dynarray support
     __libc_dynarray_at_failure;
+    __libc_dynarray_overflow_failure;
     __libc_dynarray_emplace_enlarge;
     __libc_dynarray_finalize;
     __libc_dynarray_resize;
@@ -92,5 +93,11 @@ libc {
     __libc_alloc_buffer_copy_bytes;
     __libc_alloc_buffer_copy_string;
     __libc_alloc_buffer_create_failure;
+
+    # char_array support
+    __char_array_set_str_size;
+    __char_array_erase;
+    __char_array_prepend_str_size;
+    __char_array_replace_str_pos;
   }
 }
