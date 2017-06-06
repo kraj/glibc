@@ -606,8 +606,15 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
 		  || char_array_pos (&dirname, 2) == '/')))
 	{
 	  /* Look up home directory.  */
-	  char *home_dir = getenv ("HOME");
-	  int malloc_home_dir = 0;
+	  struct char_array home_dir;
+
+	  const char *home_env = getenv ("HOME");
+	  home_env = home_env == NULL ? "" : home_env;
+	  if (!char_array_init_str (&home_dir, home_env))
+	    {
+	      retval = GLOB_NOSPACE;
+	      goto out;
+	    }
 # ifdef _AMIGA
 	  if (home_dir == NULL || home_dir[0] == '\0')
 	    home_dir = "SYS:";
@@ -634,7 +641,7 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
 		home_dir = "c:/users/default"; /* poor default */
 	    }
 #  else
-	  if (home_dir == NULL || home_dir[0] == '\0')
+	  if (char_array_is_empty (&home_dir))
 	    {
 	      int success;
 	      char user_name[LOGIN_NAME_MAX];
@@ -667,9 +674,7 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
 #   endif
 		  if (p != NULL)
 		    {
-		      home_dir = strdup (p->pw_dir);
-		      malloc_home_dir = 1;
-		      if (home_dir == NULL)
+		      if (!char_array_set_str (&home_dir, p->pw_dir))
 			{
 			  scratch_buffer_free (&pwtmpbuf);
 			  goto err_nospace;
@@ -678,10 +683,8 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
 		  scratch_buffer_free (&pwtmpbuf);
 		}
 	    }
-	  if (home_dir == NULL || home_dir[0] == '\0')
+	  if (char_array_is_empty (&home_dir))
 	    {
-	      if (__glibc_unlikely (malloc_home_dir))
-		free (home_dir);
 	      if (flags & GLOB_TILDE_CHECK)
 		{
 		  retval = GLOB_NOMATCH;
@@ -689,8 +692,11 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
 		}
 	      else
 		{
-		  home_dir = (char *) "~"; /* No luck.  */
-		  malloc_home_dir = 0;
+		  if (!char_array_set_str (&home_dir, "~"))
+		    {
+		      retval = GLOB_NOSPACE;
+		      goto out;
+		    }
 		}
 	    }
 #  endif /* WINDOWS32 */
@@ -698,7 +704,7 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
 	  /* Now construct the full directory.  */
 	  if (char_array_pos (&dirname, 1) == '\0')
 	    {
-	      if (!char_array_set_str (&dirname, home_dir))
+	      if (!char_array_set_str (&dirname, char_array_str (&home_dir)))
 		goto err_nospace;
 	      dirlen = char_array_size (&dirname) - 1;
 	    }
@@ -706,9 +712,11 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
 	    {
 	      /* Replaces '~' by the obtained HOME dir.  */
 	      char_array_erase (&dirname, 0);
-	      if (!char_array_prepend_str (&dirname, home_dir))
+	      if (!char_array_prepend_str (&dirname,
+					   char_array_str (&home_dir)))
 		goto err_nospace;
 	    }
+	  char_array_free (&home_dir);
 	  dirname_modified = true;
 	}
 # if !defined _AMIGA && !defined WINDOWS32
