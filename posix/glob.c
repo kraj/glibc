@@ -264,6 +264,44 @@ next_brace_sub (const char *cp, int flags)
   return *cp != '\0' ? cp : NULL;
 }
 
+/* Obtain the full home directory path from user 'user_name' and writes it
+   on char_array 'home_dir'.  */
+static bool
+get_home_directory (const char *user_name, struct char_array *home_dir)
+{
+  struct passwd *p;
+#if defined HAVE_GETPWNAM_R || defined _LIBC
+  struct passwd pwbuf;
+  int save = errno;
+  struct scratch_buffer pwtmpbuf;
+  scratch_buffer_init (&pwtmpbuf);
+
+  while (getpwnam_r (user_name, &pwbuf, pwtmpbuf.data, pwtmpbuf.length, &p)
+	 != 0)
+    {
+      if (errno != ERANGE)
+	{
+	  p = NULL;
+	  break;
+	}
+      if (!scratch_buffer_grow (&pwtmpbuf))
+	return false;
+      __set_errno (save);
+    }
+#else
+  p = getpwnam (pwtmpbuf.data);
+#endif
+
+  bool retval = false;
+  if (p != NULL)
+    {
+      if (char_array_set_str (home_dir, p->pw_dir))
+	retval = true;
+    }
+  scratch_buffer_free (&pwtmpbuf);
+  return retval;
+}
+
 
 /* Do glob searching for PATTERN, placing results in PGLOB.
    The bits defined above may be set in FLAGS.
@@ -649,38 +687,8 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
 	      success = __getlogin_r (user_name, sizeof (user_name)) == 0;
 	      if (success)
 		{
-		  struct passwd *p;
-#   if defined HAVE_GETPWNAM_R || defined _LIBC
-		  struct passwd pwbuf;
-		  int save = errno;
-		  struct scratch_buffer pwtmpbuf;
-		  scratch_buffer_init (&pwtmpbuf);
-
-		  while (getpwnam_r (user_name, &pwbuf,
-				     pwtmpbuf.data, pwtmpbuf.length, &p)
-			 != 0)
-		    {
-		      if (errno != ERANGE)
-			{
-			  p = NULL;
-			  break;
-			}
-		      if (!scratch_buffer_grow (&pwtmpbuf))
-			goto err_nospace;
-		      __set_errno (save);
-		    }
-#   else
-		  p = getpwnam (pwtmpbuf.data);
-#   endif
-		  if (p != NULL)
-		    {
-		      if (!char_array_set_str (&home_dir, p->pw_dir))
-			{
-			  scratch_buffer_free (&pwtmpbuf);
-			  goto err_nospace;
-			}
-		    }
-		  scratch_buffer_free (&pwtmpbuf);
+		  if (!get_home_directory (user_name, &home_dir))
+		    goto err_nospace;
 		}
 	    }
 	  if (char_array_is_empty (&home_dir))
@@ -693,10 +701,7 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
 	      else
 		{
 		  if (!char_array_set_str (&home_dir, "~"))
-		    {
-		      retval = GLOB_NOSPACE;
-		      goto out;
-		    }
+		    goto err_nospace;
 		}
 	    }
 #  endif /* WINDOWS32 */
@@ -777,59 +782,21 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
 	    }
 
 	  /* Look up specific user's home directory.  */
-	  {
-	    struct passwd *p;
-	    struct scratch_buffer pwtmpbuf;
-	    scratch_buffer_init (&pwtmpbuf);
-
-#  if defined HAVE_GETPWNAM_R || defined _LIBC
-	    struct passwd pwbuf;
-	    int save = errno;
-
-	    while (getpwnam_r (user_name, &pwbuf,
-			       pwtmpbuf.data, pwtmpbuf.length, &p) != 0)
-	      {
-		if (errno != ERANGE)
-		  {
-		    p = NULL;
-		    break;
-		  }
-		if (!scratch_buffer_grow (&pwtmpbuf))
-		  {
-		    retval = GLOB_NOSPACE;
-		    goto out;
-		  }
-		__set_errno (save);
-	      }
-#  else
-	    p = getpwnam (user_name);
-#  endif
-
-	    /* If we found a home directory use this.  */
-	    if (p != NULL)
-	      {
-		if (!char_array_set_str (&dirname, p->pw_dir))
-		  {
-		    scratch_buffer_free (&pwtmpbuf);
-		    retval = GLOB_NOSPACE;
-		    goto out;
-		  }
-
-		dirlen = strlen (p->pw_dir);
-		dirname_modified = true;
-	      }
-	    else
-	      {
-		if (flags & GLOB_TILDE_CHECK)
-		  /* We have to regard it as an error if we cannot find the
-		     home directory.  */
-		  {
-		    retval = GLOB_NOMATCH;
-		    goto out;
-		  }
-	      }
-	    scratch_buffer_free (&pwtmpbuf);
-	  }
+	  if (get_home_directory (user_name, &dirname))
+	    {
+	      dirlen = char_array_size (&dirname) - 1;
+	      dirname_modified = true;
+	    }
+	  else
+	    {
+	      if (flags & GLOB_TILDE_CHECK)
+	       /* We have to regard it as an error if we cannot find the
+		  home directory.  */
+	        {
+		  retval = GLOB_NOMATCH;
+		  goto out;
+		}
+	    }
 	}
 # endif	/* Not Amiga && not WINDOWS32.  */
     }
