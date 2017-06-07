@@ -302,6 +302,39 @@ get_home_directory (const char *user_name, struct char_array *home_dir)
   return retval;
 }
 
+/* Allocate '(size + incr) * typesize' bytes while for overflow on the
+   arithmetic operations.  */
+static void *
+glob_malloc_incr (size_t size, size_t incr, size_t typesize)
+{
+  size_t newsize;
+  if (check_add_overflow_size_t (size, incr, &newsize))
+    return NULL;
+  return __libc_reallocarray (NULL, newsize, typesize);
+}
+
+/* Allocate '(size + incr1 + incr2) * typesize' bytes while for overflow on
+   the arithmetic operations.  */
+static void *
+glob_malloc_incr2 (size_t size, size_t incr1, size_t incr2, size_t typesize)
+{
+  size_t newsize;
+  if (check_add_overflow_size_t (size, incr1, &newsize)
+      || check_add_overflow_size_t (newsize, incr2, &newsize))
+    return NULL;
+  return __libc_reallocarray (NULL, newsize, typesize);
+}
+
+/* Reallocate '(size + incr1) * typesize' bytes while for overflow on the
+   arithmetic operations.  */
+static void *
+glob_realloc_incr (void *old, size_t size, size_t incr, size_t typesize)
+{
+  size_t newsize;
+  if (check_add_overflow_size_t (size, incr, &newsize))
+    return NULL;
+  return __libc_reallocarray (old, newsize, typesize);
+}
 
 /* Do glob searching for PATTERN, placing results in PGLOB.
    The bits defined above may be set in FLAGS.
@@ -356,11 +389,8 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
 	{
 	  size_t i;
 
-	  if (pglob->gl_offs >= ~((size_t) 0) / sizeof (char *))
-	    goto err_nospace;
-
-	  pglob->gl_pathv = (char **) malloc ((pglob->gl_offs + 1)
-					      * sizeof (char *));
+	  pglob->gl_pathv = glob_malloc_incr (pglob->gl_offs, 1,
+					      sizeof (char *));
 	  if (pglob->gl_pathv == NULL)
 	    goto err_nospace;
 
@@ -816,10 +846,11 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
 	       : (__lstat64 (char_array_str (&dirname), &st64) == 0
 		  && S_ISDIR (st64.st_mode)))))
 	{
-	  size_t newcount = pglob->gl_pathc + pglob->gl_offs;
 	  char **new_gl_pathv;
+	  size_t newcount;
 
-          if (newcount > SIZE_MAX / sizeof (char *) - 2)
+	  if (check_add_overflow_size_t (pglob->gl_pathc, pglob->gl_offs,
+					 &newcount))
 	    {
 	    nospace:
 	      free (pglob->gl_pathv);
@@ -828,8 +859,8 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
 	      goto err_nospace;
 	    }
 
-	  new_gl_pathv = realloc (pglob->gl_pathv,
-				  (newcount + 2) * sizeof (char *));
+	  new_gl_pathv = glob_realloc_incr (pglob->gl_pathv, newcount, 2,
+					    sizeof (char *));
 	  if (new_gl_pathv == NULL)
 	    goto nospace;
 	  pglob->gl_pathv = new_gl_pathv;
@@ -837,9 +868,12 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
 	  if (flags & GLOB_MARK)
 	    {
 	      char *p;
-	      pglob->gl_pathv[newcount] = malloc (dirlen + 2);
+
+	      pglob->gl_pathv[newcount] = glob_malloc_incr (dirlen, 2,
+							    sizeof (char));
 	      if (pglob->gl_pathv[newcount] == NULL)
 		goto nospace;
+
 	      p = mempcpy (pglob->gl_pathv[newcount],
 			   char_array_str (&dirname), dirlen);
 	      p[0] = '/';
@@ -976,18 +1010,19 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
 	  /* No matches.  */
 	  if (flags & GLOB_NOCHECK)
 	    {
-	      size_t newcount = pglob->gl_pathc + pglob->gl_offs;
+	      size_t newcount;
 	      char **new_gl_pathv;
 
-	      if (newcount > SIZE_MAX / sizeof (char *) - 2)
+	      if (check_add_overflow_size_t (pglob->gl_pathc, pglob->gl_offs,
+					     &newcount))
 		{
 		nospace2:
 		  globfree (&dirs);
 		  goto err_nospace;
 		}
 
-	      new_gl_pathv = realloc (pglob->gl_pathv,
-				      (newcount + 2) * sizeof (char *));
+	      new_gl_pathv = glob_realloc_incr (pglob->gl_pathv, newcount, 2,
+						sizeof (char *));
 	      if (new_gl_pathv == NULL)
 		goto nospace2;
 	      pglob->gl_pathv = new_gl_pathv;
@@ -1089,15 +1124,16 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
 	     : (__lstat64 (pglob->gl_pathv[i], &st64) == 0
 		&& (S_ISDIR (st64.st_mode) || S_ISLNK (st64.st_mode)))))
 	  {
-	    size_t len = strlen (pglob->gl_pathv[i]) + 2;
-	    char *new = realloc (pglob->gl_pathv[i], len);
+	    size_t len = strlen (pglob->gl_pathv[i]);
+	    char *new = glob_realloc_incr (pglob->gl_pathv[i], len, 2,
+					   sizeof (char));
 	    if (new == NULL)
 	      {
 		globfree (pglob);
 		pglob->gl_pathc = 0;
 		goto err_nospace;
 	      }
-	    strcpy (&new[len - 2], "/");
+	    strcpy (&new[len], "/");
 	    pglob->gl_pathv[i] = new;
 	  }
     }
@@ -1182,7 +1218,7 @@ prefix_array (const char *dirname, char **array, size_t n)
   for (i = 0; i < n; ++i)
     {
       size_t eltlen = strlen (array[i]) + 1;
-      char *new = malloc (dirlen + 1 + eltlen);
+      char *new = glob_malloc_incr2 (dirlen, 1, eltlen, sizeof (char));
       if (new == NULL)
 	{
 	  while (i > 0)
@@ -1190,11 +1226,10 @@ prefix_array (const char *dirname, char **array, size_t n)
 	  return 1;
 	}
 
-      {
-	char *endp = mempcpy (new, dirname, dirlen);
-	*endp++ = DIRSEP_CHAR;
-	mempcpy (endp, array[i], eltlen);
-      }
+      char *endp = mempcpy (new, dirname, dirlen);
+      *endp++ = DIRSEP_CHAR;
+      mempcpy (endp, array[i], eltlen);
+
       free (array[i]);
       array[i] = new;
     }
@@ -1345,16 +1380,15 @@ glob_in_dir (const char *pattern, const char *directory, int flags,
   if (nfound != 0)
     {
       char **new_gl_pathv;
+      size_t newlen;
       result = 0;
 
-      if (SIZE_MAX / sizeof (char *) - pglob->gl_pathc
-          < pglob->gl_offs + nfound + 1)
+      if (check_add_overflow_size_t (pglob->gl_pathc, pglob->gl_offs, &newlen)
+	  || check_add_overflow_size_t (newlen, nfound, &newlen)
+	  || check_add_overflow_size_t (newlen, 1, &newlen))
 	goto memory_error;
 
-      new_gl_pathv
-	= realloc (pglob->gl_pathv,
-		   (pglob->gl_pathc + pglob->gl_offs + nfound + 1)
-		    * sizeof (char *));
+      new_gl_pathv = realloc (pglob->gl_pathv, newlen * sizeof (char *));
 
       if (new_gl_pathv == NULL)
 	{
