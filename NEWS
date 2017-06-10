@@ -15,6 +15,11 @@ Version 2.26
   supported operating systems.  In this context, it will only define the
   Exxxx constants, as preprocessor macros expanding to integer literals.
 
+* error_t, a debugging aid, is now available on all supported operating
+  systems for programs compiled with GCC 4.5 or higher.  'p (error_t) errno'
+  in GDB will print the Exxxx constant corresponding to the current value of
+  errno.
+
 * The rpcgen, librpcsvc and related headers will only be built and
   installed when glibc is configured with --enable-obsolete-rpc.
   This allows alternative RPC implementations, like TIRPC, to be used

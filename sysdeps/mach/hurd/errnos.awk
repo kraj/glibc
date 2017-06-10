@@ -147,73 +147,22 @@ in_device_errors && $1 == "#endif" \
     in_device_errors = 0;
   }
 
-function print_errno_enum(maxseq)
+END \
 {
   print "";
-  print "#ifndef __ASSEMBLER__";
-  print "";
-  print "enum __error_t_codes";
-  print "{";
-  print "  /* The value zero always means success and it is perfectly fine";
-  print "     for code to use 0 explicitly (or implicitly, e.g. via Boolean";
-  print "     coercion.)  Having an enum entry for zero both makes the";
-  print "     debugger print the name for error_t-typed zero values, and";
-  print "     prevents the compiler from issuing warnings about 'case 0:'";
-  print "     in a switch on an error_t-typed value.  */";
-  printf("  %-*s = 0,\n", maxerrlen, "ESUCCESS");
-
-  print "";
-  print "  /* The Hurd uses Mach error system 0x10, subsystem 0. */";
-  for (i = 0; i < maxseq; i++)
+  print "/* The Hurd uses Mach error system 0x10, subsystem 0.  */";
+  for (i = 0; i < seq; i++)
     {
       if (i in annot)
 	print annot[i];
       else if (i in etexts && etexts[i] != "")
-	printf("  %-*s = %s,\t/* %s */\n",
+	printf("#define %-*s %s\t/* %s */\n",
 	       maxerrlen, econsts[i], errnos[i], etexts[i]);
-      else if (errnos[i] != "EAGAIN")
-	printf("  %-*s = %s,\n", maxerrlen, econsts[i], errnos[i]);
-    }
-
-  print "";
-  print "  /* Because the C standard requires that errno have type 'int',"
-  print "     this enumeration must be a signed type.  */";
-  print "  __FORCE_ERROR_T_CODES_SIGNED = -1";
-  print "};";
-  print "";
-  print "/* User-visible type of error codes.  It is ok to use 'int' or";
-  print "   'kern_return_t' for these, but with 'error_t' the debugger prints";
-  print "   symbolic values.  */";
-  print "# if !defined __error_t_defined && defined __USE_GNU";
-  print "#  define __error_t_defined 1";
-  print "typedef enum __error_t_codes error_t;"
-  print "# endif";
-  print "";
-  print "#endif /* not __ASSEMBLER__ */";
-}
-
-function print_errno_defines(maxseq)
-{
-  print "";
-  print "/* The C standard requires that all of the E-constants be"
-  print "   defined as macros.  */"
-  print "";
-  for (i = 0; i < maxseq; i++)
-    {
-      if (i in annot)
-	print annot[i];
       else
 	printf("#define %-*s %s\n", maxerrlen, econsts[i], errnos[i]);
     }
   print "";
   printf("#define _HURD_ERRNOS %d\n", maxerrno+1);
+  print "";
+  print "#endif /* bits/errno.h.  */";
 }
-
-END \
-  {
-    print_errno_enum(seq);
-    print_errno_defines(seq);
-
-    print "";
-    print "#endif /* bits/errno.h.  */";
-  }

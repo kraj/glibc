@@ -1139,6 +1139,19 @@ $(common-objpfx)dl-tunable-list.stmp: \
 	touch $@
 endif
 
+# Build errno-enum.h early, ditto.
+before-compile += $(common-objpfx)bits/errno-enum.h
+common-generated += bits/error_t.h bits/errno-enum.stmp
+$(common-objpfx)bits/errno-enum.h: $(common-objpfx)bits/errno-enum.stmp; @:
+$(common-objpfx)bits/errno-enum.stmp: $(..)scripts/make-errno-enum.sh \
+				      bits/errno.h
+	[ -d $(common-objpfx)bits ] || mkdir $(common-objpfx)bits
+	CC="$(CC)" AWK="$(AWK)" \
+	    $(SHELL) $(..)scripts/make-errno-enum.sh $(+includes) \
+	    > ${@:stmp=T}
+	$(move-if-change) ${@:stmp=T} ${@:stmp=h}
+	touch $@
+
 # The name under which the run-time dynamic linker is installed.
 # We are currently going for the convention that `/lib/ld.so.1'
 # names the SVR4/ELF ABI-compliant dynamic linker.
