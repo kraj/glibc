@@ -4,6 +4,8 @@
 #ifndef _ISOMAC
 # include <xlocale.h>
 
+#include <endian.h>
+
 __BEGIN_DECLS
 
 extern __typeof (strftime_l) __strftime_l;
@@ -19,6 +21,22 @@ libc_hidden_proto (timelocal)
 libc_hidden_proto (localtime)
 libc_hidden_proto (strftime)
 libc_hidden_proto (strptime)
+
+#if BYTE_ORDER == BIG_ENDIAN
+struct __timespec64
+{
+  __time64_t tv_sec;		/* Seconds */
+  int tv_pad: 32;		/* Padding named for checking/setting */
+  __syscall_slong_t tv_nsec;	/* Nanoseconds */
+};
+#else
+struct __timespec64
+{
+  __time64_t tv_sec;		/* Seconds */
+  __syscall_slong_t tv_nsec;	/* Nanoseconds */
+  int tv_pad: 32;		/* Padding named for checking/setting */
+};
+#endif
 
 extern __typeof (clock_getres) __clock_getres;
 extern __typeof (clock_gettime) __clock_gettime;
