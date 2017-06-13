@@ -264,6 +264,9 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 
   /* Support sysdeps/x86_64/multiarch/strcmp.S.  */
   IFUNC_IMPL (i, name, strcmp,
+	      IFUNC_IMPL_ADD (array, i, strcmp,
+			      HAS_ARCH_FEATURE (AVX_Usable),
+			      __strcmp_avx)
 	      IFUNC_IMPL_ADD (array, i, strcmp, HAS_CPU_FEATURE (SSE4_2),
 			      __strcmp_sse42)
 	      IFUNC_IMPL_ADD (array, i, strcmp, HAS_CPU_FEATURE (SSSE3),
@@ -529,6 +532,9 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 
   /* Support sysdeps/x86_64/multiarch/strncmp.S.  */
   IFUNC_IMPL (i, name, strncmp,
+	      IFUNC_IMPL_ADD (array, i, strncmp,
+			      HAS_ARCH_FEATURE (AVX_Usable),
+			      __strncmp_avx)
 	      IFUNC_IMPL_ADD (array, i, strncmp, HAS_CPU_FEATURE (SSE4_2),
 			      __strncmp_sse42)
 	      IFUNC_IMPL_ADD (array, i, strncmp, HAS_CPU_FEATURE (SSSE3),
