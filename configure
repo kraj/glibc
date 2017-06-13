@@ -5336,9 +5336,12 @@ fi
 # copy of those headers in Makerules.
 if test -n "$CXX"; then
   find_cxx_header () {
-    echo "#include <$1>" | $CXX -M -MP -x c++ - | sed -n "/$1:/{s/:\$//;p}"
+    echo "#include <$1>" | $CXX -M -MP -x c++ - | sed -n "\,$1:,{s/:\$//;p}"
   }
   CXX_CSTDLIB_HEADER="$(find_cxx_header cstdlib)"
+  # Also make a copy of <bits/std_abs.h> from GCC 7 to prevent it from
+  # including /usr/include/stdlib.h.
+  CXX_CSTDLIB_HEADER="$CXX_CSTDLIB_HEADER $(find_cxx_header bits/std_abs.h)"
   CXX_CMATH_HEADER="$(find_cxx_header cmath)"
 fi
 
