@@ -34,19 +34,17 @@ _dl_runtime_resolve:
 	cfi_adjust_cfa_offset (8)
 	pushl %eax		# Preserve registers otherwise clobbered.
 	cfi_adjust_cfa_offset (4)
-	pushl %ecx
-	cfi_adjust_cfa_offset (4)
 	pushl %edx
 	cfi_adjust_cfa_offset (4)
-	movl 16(%esp), %edx	# Copy args pushed by PLT in register.  Note
-	movl 12(%esp), %eax	# that `fixup' takes its parameters in regs.
+	movl 12(%esp), %edx	# Copy args pushed by PLT in register.  Note
+	movl 8(%esp), %eax	# that `fixup' takes its parameters in regs.
 	call _dl_fixup		# Call resolver.
-	popl %edx		# Get register content back.
-	cfi_adjust_cfa_offset (-4)
-	movl (%esp), %ecx
-	movl %eax, (%esp)	# Store the function address.
-	movl 4(%esp), %eax
-	ret $12			# Jump to function address.
+	movl (%esp), %edx	# Get register content back.
+	movl %eax, %ecx		# Store the function address.
+	movl 4(%esp), %eax	# Get register content back.
+	addl $16, %esp		# Adjust stack: PLT1 + PLT2 + %eax + %edx
+	cfi_adjust_cfa_offset (-16)
+	jmp *%ecx		# Jump to function address.
 	cfi_endproc
 	.size _dl_runtime_resolve, .-_dl_runtime_resolve
 
@@ -85,14 +83,14 @@ _dl_runtime_profile:
 	movl (%esp), %edx
 	testl %edx, %edx
 	jns 1f
-	popl %edx
-	cfi_adjust_cfa_offset (-4)
-	popl %edx		# Get register content back.
-	cfi_adjust_cfa_offset (-4)
-	movl (%esp), %ecx
-	movl %eax, (%esp)	# Store the function address.
-	movl 4(%esp), %eax
-	ret $20			# Jump to function address.
+	movl 4(%esp), %edx	# Get register content back.
+	movl %eax, %ecx		# Store the function address.
+	movl 12(%esp), %eax	# Get register content back.
+	# Adjust stack: PLT1 + PLT2 + %esp + %ebp + %eax + %ecx + %edx
+	# + free.
+	addl $32, %esp
+	cfi_adjust_cfa_offset (-32)
+	jmp *%ecx		# Jump to function address.
 
 	/*
 	    +32     return address
