@@ -188,10 +188,15 @@
 #endif /* __ASSEMBLER__ */
 
 /* On some platforms we can make internal function calls (i.e., calls of
-   functions not exported) a bit faster by using a different calling
-   convention.  */
+   functions within the same shared object) or private function calls
+   (i.e., calls of functions between different shared objects of glibc)
+   a bit faster by using a different calling convention.  */
 #ifndef internal_function
 # define internal_function	/* empty */
+#endif
+
+#ifndef private_function
+# define private_function	/* empty */
 #endif
 
 /* Determine the return address.  */

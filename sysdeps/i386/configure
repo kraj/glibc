@@ -26,7 +26,7 @@ libc_compiler_builtin_inlined=no
 cat > conftest.c <<EOF
 int _start (void) { int a, b, c; __sync_val_compare_and_swap (&a, b, c); return 0; }
 EOF
-if ! { ac_try='${CC-cc} $CFLAGS $CPPFLAGS $LDFLAGS
+if ! { ac_try='${CC-cc} $CFLAGS $CPPFLAGS $LDFLAGS $no_ssp
 		     -O0 -nostdlib -nostartfiles
 		     -S conftest.c -o - | fgrep "__sync_val_compare_and_swap"
 		     1>&5'
@@ -77,7 +77,15 @@ if test $libc_cv_asm_mpx = yes; then
 
 fi
 
-$as_echo "#define USE_REGPARMS 1" >>confdefs.h
+# On i386, we can make internal function calls (i.e., calls of functions
+# within the same shared object) or private function calls (i.e., calls
+# of functions between different shared objects of glibc) a bit faster
+# by passing function parameters in registers.  We can only pass 2
+# parameters in registers for private function calls since one register
+# is used by _dl_runtime_resolve as scratch register.
+$as_echo "#define internal_function __attribute__ ((regparm (3), stdcall))" >>confdefs.h
+
+$as_echo "#define private_function __attribute__ ((regparm (2), stdcall))" >>confdefs.h
 
 
 $as_echo "#define PI_STATIC_AND_HIDDEN 1" >>confdefs.h

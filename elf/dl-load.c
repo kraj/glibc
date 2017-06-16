@@ -2241,7 +2241,7 @@ add_path (struct add_path_state *p, const struct r_search_path_struct *sps,
 }
 
 void
-internal_function
+private_function
 _dl_rtld_di_serinfo (struct link_map *loader, Dl_serinfo *si, bool counting)
 {
   if (counting)

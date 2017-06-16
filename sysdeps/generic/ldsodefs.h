@@ -377,7 +377,7 @@ struct rtld_global
   /* If loading a shared object requires that we make the stack executable
      when it was not, we do it by calling this function.
      It returns an errno code or zero on success.  */
-  EXTERN int (*_dl_make_stack_executable_hook) (void **) internal_function;
+  EXTERN int (*_dl_make_stack_executable_hook) (void **) private_function;
 
   /* Prevailing state of the stack, PF_X indicating it's executable.  */
   EXTERN ElfW(Word) _dl_stack_flags;
@@ -632,7 +632,7 @@ extern size_t _dl_phnum;
 
 /* This is the initial value of GL(dl_make_stack_executable_hook).
    A threads library can change it.  */
-extern int _dl_make_stack_executable (void **stack_endp) internal_function;
+extern int _dl_make_stack_executable (void **stack_endp) private_function;
 rtld_hidden_proto (_dl_make_stack_executable)
 
 /* Variable pointing to the end of the stack (or close to it).  This value
@@ -739,7 +739,7 @@ _dl_dprintf (int fd, const char *fmt, ...)
    problem.  */
 extern void _dl_signal_error (int errcode, const char *object,
 			      const char *occurred, const char *errstring)
-     internal_function __attribute__ ((__noreturn__));
+     private_function __attribute__ ((__noreturn__));
 libc_hidden_proto (_dl_signal_error)
 
 /* Like _dl_signal_error, but may return when called in the context of
@@ -779,7 +779,7 @@ extern void _dl_receive_error (receiver_fct fct, void (*operate) (void *),
 extern int _dl_catch_error (const char **objname, const char **errstring,
 			    bool *mallocedp, void (*operate) (void *),
 			    void *args)
-     internal_function;
+     private_function;
 libc_hidden_proto (_dl_catch_error)
 
 /* Open the shared object NAME and map in its segments.
@@ -813,7 +813,7 @@ extern void _dl_setup_hash (struct link_map *map)
    bytes to be used in filling in the result.  */
 extern void _dl_rtld_di_serinfo (struct link_map *loader,
 				 Dl_serinfo *si, bool counting)
-     internal_function;
+     private_function;
 
 
 /* Search loaded objects' symbol tables for a definition of the symbol
@@ -1012,12 +1012,12 @@ void __pthread_initialize_minimal (void) weak_function;
 #endif
 
 /* Allocate memory for static TLS block (unless MEM is nonzero) and dtv.  */
-extern void *_dl_allocate_tls (void *mem) internal_function;
+extern void *_dl_allocate_tls (void *mem) private_function;
 rtld_hidden_proto (_dl_allocate_tls)
 
 /* Get size and alignment requirements of the static TLS block.  */
 extern void _dl_get_tls_static_info (size_t *sizep, size_t *alignp)
-     internal_function;
+     private_function;
 
 extern void _dl_allocate_static_tls (struct link_map *map)
      internal_function attribute_hidden;
@@ -1026,11 +1026,11 @@ extern void _dl_allocate_static_tls (struct link_map *map)
    only used within rtld.c itself at startup time.  */
 extern void *_dl_allocate_tls_storage (void)
      internal_function attribute_hidden;
-extern void *_dl_allocate_tls_init (void *) internal_function;
+extern void *_dl_allocate_tls_init (void *) private_function;
 rtld_hidden_proto (_dl_allocate_tls_init)
 
 /* Deallocate memory allocated with _dl_allocate_tls.  */
-extern void _dl_deallocate_tls (void *tcb, bool dealloc_tcb) internal_function;
+extern void _dl_deallocate_tls (void *tcb, bool dealloc_tcb) private_function;
 rtld_hidden_proto (_dl_deallocate_tls)
 
 extern void _dl_nothread_init_static_tls (struct link_map *) attribute_hidden;
@@ -1081,7 +1081,7 @@ extern void _dl_show_scope (struct link_map *new, int from)
      attribute_hidden;
 
 extern struct link_map *_dl_find_dso_for_object (const ElfW(Addr) addr)
-     internal_function;
+     private_function;
 rtld_hidden_proto (_dl_find_dso_for_object)
 
 /* Initialization which is normally done by the dynamic linker.  */

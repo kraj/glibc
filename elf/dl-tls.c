@@ -308,7 +308,7 @@ allocate_dtv (void *result)
 
 /* Get size and alignment requirements of the static TLS block.  */
 void
-internal_function
+private_function
 _dl_get_tls_static_info (size_t *sizep, size_t *alignp)
 {
   *sizep = GL(dl_tls_static_size);
@@ -439,7 +439,7 @@ _dl_resize_dtv (dtv_t *dtv)
 
 
 void *
-internal_function
+private_function
 _dl_allocate_tls_init (void *result)
 {
   if (result == NULL)
@@ -532,7 +532,7 @@ _dl_allocate_tls_init (void *result)
 rtld_hidden_def (_dl_allocate_tls_init)
 
 void *
-internal_function
+private_function
 _dl_allocate_tls (void *mem)
 {
   return _dl_allocate_tls_init (mem == NULL
@@ -543,7 +543,7 @@ rtld_hidden_def (_dl_allocate_tls)
 
 
 void
-internal_function
+private_function
 _dl_deallocate_tls (void *tcb, bool dealloc_tcb)
 {
   dtv_t *dtv = GET_DTV (tcb);

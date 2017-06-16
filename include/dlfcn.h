@@ -44,7 +44,7 @@ libc_hidden_proto (__libc_dlclose)
 #ifdef ElfW
 extern int _dl_addr (const void *address, Dl_info *info,
 		     struct link_map **mapp, const ElfW(Sym) **symbolp)
-     internal_function;
+     private_function;
 libc_hidden_proto (_dl_addr)
 #endif
 
@@ -61,7 +61,7 @@ extern void _dl_close_worker (struct link_map *map, bool force)
    RTLD_NEXT).  WHO is the calling function, for RTLD_NEXT.  Returns
    the symbol value, which may be NULL.  */
 extern void *_dl_sym (void *handle, const char *name, void *who)
-    internal_function;
+    private_function;
 
 /* Look up version VERSION of symbol NAME in shared object HANDLE
    (which may be RTLD_DEFAULT or RTLD_NEXT).  WHO is the calling
@@ -69,7 +69,7 @@ extern void *_dl_sym (void *handle, const char *name, void *who)
    NULL.  */
 extern void *_dl_vsym (void *handle, const char *name, const char *version,
 		       void *who)
-    internal_function;
+    private_function;
 
 /* Helper function for <dlfcn.h> functions.  Runs the OPERATE function via
    _dl_catch_error.  Returns zero for success, nonzero for failure; and

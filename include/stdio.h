@@ -91,7 +91,7 @@ extern void __libc_fatal (const char *__message)
      __attribute__ ((__noreturn__));
 extern void __libc_message (int do_abort, const char *__fnt, ...);
 extern void __fortify_fail (const char *msg)
-     __attribute__ ((__noreturn__)) internal_function;
+     __attribute__ ((__noreturn__)) private_function;
 libc_hidden_proto (__fortify_fail)
 
 /* Acquire ownership of STREAM.  */

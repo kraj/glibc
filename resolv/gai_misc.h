@@ -96,6 +96,6 @@ extern int __gai_notify_only (struct sigevent *sigev, pid_t caller_pid)
 
 /* Send the signal.  */
 extern int __gai_sigqueue (int sig, const union sigval val, pid_t caller_pid)
-     internal_function;
+     private_function;
 
 #endif /* gai_misc.h */

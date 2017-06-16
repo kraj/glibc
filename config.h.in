@@ -47,10 +47,6 @@
 #undef	STACK_PROTECTOR_LEVEL
 #endif
 
-/* Define if the regparm attribute shall be used for local functions
-   (gcc on ix86 only).  */
-#undef	USE_REGPARMS
-
 /* Defined on SPARC if GCC emits GOTDATA relocations.  */
 #undef  HAVE_GCC_GOTDATA
 
@@ -101,9 +97,10 @@
 
 
 /* Defined to some form of __attribute__ ((...)) if the compiler supports
-   a different, more efficient calling convention.  */
-#if defined USE_REGPARMS && !defined PROF
-# define internal_function __attribute__ ((regparm (3), stdcall))
+   a different, more efficient calling convention (gcc on ix86 only).  */
+#ifndef PROF
+# undef internal_function
+# undef private_function
 #endif
 
 /* Linux specific: minimum supported kernel version.  */

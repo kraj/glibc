@@ -45,7 +45,14 @@ if test $libc_cv_asm_mpx = yes; then
   AC_DEFINE(HAVE_MPX_SUPPORT)
 fi
 
-AC_DEFINE(USE_REGPARMS)
+# On i386, we can make internal function calls (i.e., calls of functions
+# within the same shared object) or private function calls (i.e., calls
+# of functions between different shared objects of glibc) a bit faster
+# by passing function parameters in registers.  We can only pass 2
+# parameters in registers for private function calls since one register
+# is used by _dl_runtime_resolve as scratch register.
+AC_DEFINE(internal_function, __attribute__ ((regparm (3), stdcall)))
+AC_DEFINE(private_function, __attribute__ ((regparm (2), stdcall)))
 
 dnl It is always possible to access static and hidden symbols in an
 dnl position independent way.

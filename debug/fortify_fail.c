@@ -22,7 +22,7 @@
 extern char **__libc_argv attribute_hidden;
 
 void
-__attribute__ ((noreturn)) internal_function
+__attribute__ ((noreturn)) private_function
 __fortify_fail (const char *msg)
 {
   /* The loop is added only to keep gcc happy.  */

@@ -26,12 +26,12 @@
 int
 __copy_grp (const struct group srcgrp, const size_t buflen,
 	    struct group *destgrp, char *destbuf, char **endptr)
-	    internal_function;
+	    private_function;
 
 /* Merge the member lists of two grp structs together.  */
 int
 __merge_grp (struct group *savedgrp, char *savedbuf, char *savedend,
 	     size_t buflen, struct group *mergegrp, char *mergebuf)
-	     internal_function;
+	     private_function;
 
 #endif /* _GRP_MERGE_H */

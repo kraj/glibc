@@ -77,7 +77,7 @@ static receiver_fct receiver;
 #endif /* DL_ERROR_BOOTSTRAP */
 
 void
-internal_function
+private_function
 _dl_signal_error (int errcode, const char *objname, const char *occation,
 		  const char *errstring)
 {
@@ -169,7 +169,7 @@ _dl_signal_cerror (int errcode, const char *objname, const char *occation,
 
 
 int
-internal_function
+private_function
 _dl_catch_error (const char **objname, const char **errstring,
 		 bool *mallocedp, void (*operate) (void *), void *args)
 {

@@ -357,7 +357,7 @@ extern void __reclaim_stacks (void) attribute_hidden;
 
 /* Make all threads's stacks executable.  */
 extern int __make_stacks_executable (void **stack_endp)
-     internal_function attribute_hidden;
+     private_function attribute_hidden;
 
 /* longjmp handling.  */
 extern void __pthread_cleanup_upto (__jmp_buf target, char *targetframe);
@@ -388,12 +388,12 @@ hidden_proto (__nptl_death_event)
 extern void __libc_pthread_init (unsigned long int *ptr,
 				 void (*reclaim) (void),
 				 const struct pthread_functions *functions)
-     internal_function;
+     private_function;
 #else
 extern int *__libc_pthread_init (unsigned long int *ptr,
 				 void (*reclaim) (void),
 				 const struct pthread_functions *functions)
-     internal_function;
+     private_function;
 
 /* Variable set to a nonzero value either if more than one thread runs or ran,
    or if a single-threaded process is trying to cancel itself.  See

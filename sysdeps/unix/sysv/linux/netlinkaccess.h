@@ -52,7 +52,7 @@ extern int __netlink_request (struct netlink_handle *h, int type);
 /* Terminate the process if RESULT is an invalid recvmsg result for
    the netlink socket FD.  */
 void __netlink_assert_response (int fd, ssize_t result)
-  internal_function;
+  private_function;
 libc_hidden_proto (__netlink_assert_response)
 
 #endif /* netlinkaccess.h */

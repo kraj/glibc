@@ -26,7 +26,7 @@
 
 int __inet6_scopeid_pton (const struct in6_addr *address,
                           const char *scope, uint32_t *result)
-  internal_function attribute_hidden;
+  private_function attribute_hidden;
 libc_hidden_proto (__inet6_scopeid_pton)
 
 
