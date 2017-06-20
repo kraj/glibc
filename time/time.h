@@ -379,6 +379,14 @@ extern int timer_getoverrun (timer_t __timerid) __THROW;
 
 #ifdef __USE_ISOC11
 /* Set TS to calendar time based in time base BASE.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern int __REDIRECT (timespec_get, (struct timespec *__ts, int __base),
+     __timespec_get64) __THROW __nonnull ((1));
+# else
+# define timespec_get __timespec_get64
+# endif
+#endif
 extern int timespec_get (struct timespec *__ts, int __base)
      __THROW __nonnull ((1));
 #endif

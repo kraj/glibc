@@ -44,3 +44,38 @@ timespec_get (struct timespec *ts, int base)
 
   return base;
 }
+
+/* 64-bit time version */
+
+extern int __y2038_linux_support;
+
+int
+__timespec_get64 (struct __timespec64 *ts, int base)
+{
+  switch (base)
+    {
+      int res;
+      INTERNAL_SYSCALL_DECL (err);
+    case TIME_UTC:
+      if (__y2038_linux_support)
+      {
+        res = INTERNAL_VSYSCALL (clock_gettime64, err, 2, CLOCK_REALTIME, ts);
+      }
+      else
+      {
+        struct timespec ts32;
+        res = INTERNAL_VSYSCALL (clock_gettime, err, 2, CLOCK_REALTIME, &ts32);
+        if (INTERNAL_SYSCALL_ERROR_P (res, err))
+	  return 0;
+        ts->tv_sec = ts32.tv_sec;
+        ts->tv_nsec = ts32.tv_nsec;
+        ts->tv_pad = 0;
+      }
+      break;
+
+    default:
+      return 0;
+    }
+
+  return base;
+}
