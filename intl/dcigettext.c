@@ -1109,25 +1109,24 @@ _nl_find_msg (struct loaded_l10nfile *domain_file,
 		    {
 		      size_t len;
 		      char *charset;
-		      const char *outcharset;
+		      char *outcharset;
 
 		      charsetstr += strlen ("charset=");
 		      len = strcspn (charsetstr, " \t\n");
 
-		      charset = (char *) alloca (len + 1);
-# if defined _LIBC || HAVE_MEMPCPY
-		      *((char *) mempcpy (charset, charsetstr, len)) = '\0';
-# else
-		      memcpy (charset, charsetstr, len);
-		      charset[len] = '\0';
-# endif
-
-		      outcharset = encoding;
-
 # ifdef _LIBC
 		      /* We always want to use transliteration.  */
-		      outcharset = norm_add_slashes (outcharset, "TRANSLIT");
-		      charset = norm_add_slashes (charset, "");
+		      charset = __gconv_norm_add_slashes (charsetstr, len, "");
+		      outcharset = __gconv_norm_add_slashes
+			(encoding, strlen (encoding),  "TRANSLIT");
+		      if (charset == NULL || outcharset == NULL)
+			{
+			  free ((char *) encoding);
+			  free (outcharset);
+			  free (charset);
+			  goto unlock_fail;
+			}
+
 		      int r = __gconv_open (outcharset, charset, &convd->conv,
 					    GCONV_AVOID_NOCONV);
 		      if (__builtin_expect (r != __GCONV_OK, 0))
@@ -1139,6 +1138,8 @@ _nl_find_msg (struct loaded_l10nfile *domain_file,
 			    {
 			      gl_rwlock_unlock (domain->conversions_lock);
 			      free ((char *) encoding);
+			      free (outcharset);
+			      free (charset);
 			      return NULL;
 			    }
 
@@ -1151,27 +1152,31 @@ _nl_find_msg (struct loaded_l10nfile *domain_file,
 #   if (((__GLIBC__ == 2 && __GLIBC_MINOR__ >= 2) || __GLIBC__ > 2) \
 	&& !defined __UCLIBC__) \
        || _LIBICONV_VERSION >= 0x0105
+		      charset = strndup (charsetstr, len);
 		      if (strchr (outcharset, '/') == NULL)
 			{
-			  char *tmp;
-
-			  len = strlen (outcharset);
-			  tmp = (char *) alloca (len + 10 + 1);
-			  memcpy (tmp, outcharset, len);
-			  memcpy (tmp + len, "//TRANSLIT", 10 + 1);
-			  outcharset = tmp;
-
-			  convd->conv = iconv_open (outcharset, charset);
-
-			  freea (outcharset);
+			  if (asprintf (&outcharset, "%s//TRANSLIT",
+					encoding) < 0)
+			    outcharset = NULL;
 			}
 		      else
+			  outcharset = strdup (encoding);
+		      if (charset == NULL || outcharset == NULL)
+			{
+			  gl_rwlock_unlock (domain->conversions_lock);
+			  free (outcharset);
+			  free (charset);
+			  free ((char *) encoding);
+			  return NULL;
+			}
 #   endif
-			convd->conv = iconv_open (outcharset, charset);
+		      convd->conv = iconv_open (outcharset, charset);
 #  endif
 # endif
-
-		      freea (charset);
+		      free (outcharset);
+		      free (charset);
+		      /* Do not free encoding here because
+                         convd->encoding takes ownership.  */
 		    }
 		}
 	    }

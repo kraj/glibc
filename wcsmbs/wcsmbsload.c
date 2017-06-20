@@ -160,7 +160,6 @@ __wcsmbs_load_conv (struct __locale_data *new_category)
     {
       /* We must find the real functions.  */
       const char *charset_name;
-      const char *complete_name;
       struct gconv_fcts *new_fcts;
       int use_translit;
 
@@ -177,8 +176,11 @@ __wcsmbs_load_conv (struct __locale_data *new_category)
 
       /* Normalize the name and add the slashes necessary for a
 	 complete lookup.  */
-      complete_name = norm_add_slashes (charset_name,
-					use_translit ? "TRANSLIT" : "");
+      char *complete_name = __gconv_norm_add_slashes
+	(charset_name, strlen (charset_name),
+	 use_translit ? "TRANSLIT" : "");
+      if (complete_name ==NULL)
+	goto failed;
 
       /* It is not necessary to use transliteration in this direction
 	 since the internal character set is supposed to be able to
@@ -188,6 +190,7 @@ __wcsmbs_load_conv (struct __locale_data *new_category)
       if (new_fcts->towc != NULL)
 	new_fcts->tomb = __wcsmbs_getfct (complete_name, "INTERNAL",
 					  &new_fcts->tomb_nsteps);
+      free (complete_name);
 
       /* If any of the conversion functions is not available we don't
 	 use any since this would mean we cannot convert back and

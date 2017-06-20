@@ -121,38 +121,13 @@ extern const char *__gconv_path_envvar attribute_hidden;
 __libc_lock_define (extern, __gconv_lock attribute_hidden)
 
 
-/* The gconv functions expects the name to be in upper case and complete,
-   including the trailing slashes if necessary.  */
-#define norm_add_slashes(str,suffix) \
-  ({									      \
-    const char *cp = (str);						      \
-    char *result;							      \
-    char *tmp;								      \
-    size_t cnt = 0;							      \
-    const size_t suffix_len = strlen (suffix);				      \
-									      \
-    while (*cp != '\0')							      \
-      if (*cp++ == '/')							      \
-	++cnt;								      \
-									      \
-    tmp = result = __alloca (cp - (str) + 3 + suffix_len);		      \
-    cp = (str);								      \
-    while (*cp != '\0')							      \
-      *tmp++ = __toupper_l (*cp++, _nl_C_locobj_ptr);			      \
-    if (cnt < 2)							      \
-      {									      \
-	*tmp++ = '/';							      \
-	if (cnt < 1)							      \
-	  {								      \
-	    *tmp++ = '/';						      \
-	    if (suffix_len != 0)					      \
-	      tmp = __mempcpy (tmp, suffix, suffix_len);		      \
-	  }								      \
-      }									      \
-    *tmp = '\0';							      \
-    result;								      \
-  })
-
+/* Convert NAME of NAME_LEN bytes to the form expected by the gconv
+   functions, including the trailing slashes if necessary.  The caller
+   has to free the returned string.  Return NULL on allocation
+   failure.  */
+char *__gconv_norm_add_slashes (const char *name, size_t name_len,
+				const char *suffix)
+  attribute_hidden;
 
 /* Return in *HANDLE decriptor for transformation from FROMSET to TOSET.  */
 extern int __gconv_open (const char *toset, const char *fromset,
