@@ -15,6 +15,8 @@ libc {
     __default_sa_restorer; __default_rt_sa_restorer;
     # nptl/pthread_cond_timedwait.c uses INTERNAL_VSYSCALL(clock_gettime).
     __vdso_clock_gettime;
+    # __y2038_kernel_support is used by e.g. librt
+    __y2038_kernel_support;
   }
 
   # Y2038 symbols are given their own version until they can be put in
@@ -27,5 +29,7 @@ libc {
     __localtime64; __localtime64_r;
     __mktime64; __timelocal64_r;
     __timegm64;
+    __clock_gettime64; __clock_settime64; __clock_getres64;
+    __vdso_clock_gettime64;
   }
 }
