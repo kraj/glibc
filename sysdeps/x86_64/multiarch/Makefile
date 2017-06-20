@@ -10,6 +10,7 @@ sysdep_routines += strncat-c stpncpy-c strncpy-c strcmp-ssse3 \
 		   memrchr-sse2 memrchr-avx2 \
 		   memcmp-sse2 \
 		   memcmp-avx2-movbe \
+		   memcmp-avx2-movbe-new \
 		   memcmp-sse4 memcpy-ssse3 \
 		   memmove-ssse3 \
 		   memcpy-ssse3-back \
@@ -44,6 +45,7 @@ endif
 ifeq ($(subdir),wcsmbs)
 sysdep_routines += wmemcmp-sse4 wmemcmp-ssse3 wmemcmp-c \
 		   wmemcmp-avx2-movbe \
+		   wmemcmp-avx2-movbe-new \
 		   wmemchr-sse2 wmemchr-avx2 \
 		   wcscpy-ssse3 wcscpy-c \
 		   wcschr-sse2 wcschr-avx2 \
