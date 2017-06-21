@@ -73,6 +73,7 @@ ENTRY (MEMCMP)
 	cmpq	$(VEC_SIZE * 2), %rdx
 	jbe	L(last_vec)
 
+	VPCMPEQ	%ymm0, %ymm0, %ymm0
 	/* More than 2 * VEC.  */
 	cmpq	$(VEC_SIZE * 8), %rdx
 	ja	L(more_8x_vec)
@@ -96,9 +97,8 @@ ENTRY (MEMCMP)
 	vpand	%ymm3, %ymm4, %ymm6
 	vpand	%ymm5, %ymm6, %ymm5
 
-	vpmovmskb %ymm5, %eax
-	subl	$VEC_MASK, %eax
-	jnz	L(4x_vec_end)
+	vptest	%ymm0, %ymm5
+	jnc	L(4x_vec_end)
 
 	leaq	-(4 * VEC_SIZE)(%rdi, %rdx), %rdi
 	leaq	-(4 * VEC_SIZE)(%rsi, %rdx), %rsi
@@ -117,9 +117,9 @@ ENTRY (MEMCMP)
 	VPCMPEQ (VEC_SIZE * 3)(%rdi), %ymm4, %ymm4
 	vpand	%ymm4, %ymm5, %ymm5
 
-	vpmovmskb %ymm5, %eax
-	subl	$VEC_MASK, %eax
-	jnz	L(4x_vec_end)
+	vptest	%ymm0, %ymm5
+	jnc	L(4x_vec_end)
+	xorl	%eax, %eax
 	VZEROUPPER
 	ret
 
@@ -318,9 +318,8 @@ L(loop_4x_vec):
 	VPCMPEQ (VEC_SIZE * 3)(%rdi), %ymm4, %ymm4
 	vpand	%ymm4, %ymm5, %ymm5
 
-	vpmovmskb %ymm5, %eax
-	subl	$VEC_MASK, %eax
-	jnz	L(4x_vec_end)
+	vptest	%ymm0, %ymm5
+	jnc	L(4x_vec_end)
 
 	addq	$(VEC_SIZE * 4), %rdi
 	addq	$(VEC_SIZE * 4), %rsi
