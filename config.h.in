@@ -131,6 +131,10 @@
 /* Define if __stack_chk_guard canary should be randomized at program startup.  */
 #undef ENABLE_STACKGUARD_RANDOMIZE
 
+/* Define if Intel Control-flow Enforcement Technology (CET) should be
+   enabled.  */
+#undef ENABLE_CET
+
 /* Package description.  */
 #undef PKGVERSION
 

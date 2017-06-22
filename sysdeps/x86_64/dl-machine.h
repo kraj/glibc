@@ -135,6 +135,10 @@ elf_machine_runtime_setup (struct link_map *l, int lazy, int profile)
   return lazy;
 }
 
+#ifndef DL_INIT
+# define DL_INIT	"_dl_init"
+#endif
+
 /* Initial entry point code for the dynamic linker.
    The C function `_dl_start' is the real entry point;
    its return value is the user program's entry point.  */
@@ -176,7 +180,7 @@ _dl_start_user:\n\
 	# Clear %rbp to mark outermost frame obviously even for constructors.\n\
 	xorl %ebp, %ebp\n\
 	# Call the function to run the initializers.\n\
-	call _dl_init\n\
+	call " DL_INIT "\n\
 	# Pass our finalizer function to the user in %rdx, as per ELF ABI.\n\
 	leaq _dl_fini(%rip), %rdx\n\
 	# And make sure %rsp points to argc stored on the stack.\n\

@@ -1241,6 +1241,14 @@ of this helper program; chances are you did not intend to run this program.\n\
 	main_map->l_relro_addr = ph->p_vaddr;
 	main_map->l_relro_size = ph->p_memsz;
 	break;
+
+#ifdef DL_PROCESS_PT_NOTE
+      case PT_NOTE:
+	if (DL_PROCESS_PT_NOTE (main_map, ph))
+	  _dl_error_printf ("\
+ERROR: '%s': cannot process note segment.\n", _dl_argv[0]);
+	break;
+#endif
       }
 
   /* Adjust the address of the TLS initialization image in case

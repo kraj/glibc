@@ -299,6 +299,10 @@ dl_open_worker (void *a)
   _dl_debug_state ();
   LIBC_PROBE (map_complete, 3, args->nsid, r, new);
 
+#ifdef DL_OPEN_CHECK
+  DL_OPEN_CHECK (new);
+#endif
+
   /* Print scope information.  */
   if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_SCOPES))
     _dl_show_scope (new, 0);
