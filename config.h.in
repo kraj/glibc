@@ -137,6 +137,10 @@
 /* Define if lock elision should be enabled by default.  */
 #undef ENABLE_LOCK_ELISION
 
+/* Define if Intel Control-flow Enforcement Technology (CET) should be
+   enabled.  */
+#undef ENABLE_CET
+
 /* Package description.  */
 #undef PKGVERSION
 

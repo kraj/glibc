@@ -1,4 +1,6 @@
-/* Copyright (C) 2015-2017 Free Software Foundation, Inc.
+/* Machine-dependent ELF dynamic relocation inline functions.
+   Linux/x86-64 version.
+   Copyright (C) 2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -15,17 +17,7 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef SHARED
-# include <ldsodefs.h>
-# include <cpu-features.h>
-# include <cpu-features.c>
-
-extern struct cpu_features _dl_x86_cpu_features;
-
-# ifndef ARCH_INIT_CPU_FEATURES
-#  define ARCH_INIT_CPU_FEATURES() \
-  init_cpu_features (&_dl_x86_cpu_features)
-# endif
+#ifdef ENABLE_CET
+# include <sysdeps/unix/sysv/linux/x86/dl-cet.h>
 #endif
-
-#include <csu/libc-start.c>
+#include <sysdeps/x86_64/dl-machine.h>

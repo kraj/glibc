@@ -137,6 +137,10 @@ extern ElfW(Addr) _dl_profile_fixup (struct link_map *l,
    where the dynamic linker should not map anything.  */
 #define ELF_MACHINE_USER_ADDRESS_MASK	0xf8000000UL
 
+#ifndef DL_INIT
+# define DL_INIT	"_dl_init"
+#endif
+
 /* Initial entry point code for the dynamic linker.
    The C function `_dl_start' is the real entry point;
    its return value is the user program's entry point.  */
@@ -194,7 +198,7 @@ _dl_start_user:\n\
 	# Clear %ebp, so that even constructors have terminated backchain.\n\
 	xorl %ebp, %ebp\n\
 	# Call the function to run the initializers.\n\
-	call _dl_init\n\
+	call " DL_INIT "\n\
 	# Pass our finalizer function to the user in %edx, as per ELF ABI.\n\
 	leal _dl_fini@GOTOFF(%ebx), %edx\n\
 	# Restore %esp _start expects.\n\

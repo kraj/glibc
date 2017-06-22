@@ -1,4 +1,5 @@
-/* Copyright (C) 2015-2017 Free Software Foundation, Inc.
+/* Additional fields in struct link_map.  Linux/x86 version.
+   Copyright (C) 2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -15,17 +16,11 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef SHARED
-# include <ldsodefs.h>
-# include <cpu-features.h>
-# include <cpu-features.c>
-
-extern struct cpu_features _dl_x86_cpu_features;
-
-# ifndef ARCH_INIT_CPU_FEATURES
-#  define ARCH_INIT_CPU_FEATURES() \
-  init_cpu_features (&_dl_x86_cpu_features)
-# endif
-#endif
-
-#include <csu/libc-start.c>
+/* If this object is enabled with CET.  */
+enum
+  {
+    lc_none = 0,			 /* Not enabled with CET.  */
+    lc_ibt = 1 << 0,			 /* Enabled with IBT.  */
+    lc_shstk = 1 << 1,			 /* Enabled with STSHK.  */
+    lc_ibt_and_shstk = lc_ibt | lc_shstk /* Enabled with both.  */
+  } l_cet:2;

@@ -19,3 +19,19 @@ endif
 ifeq ($(subdir),elf)
 sysdep_routines += dl-vdso
 endif
+
+ifeq ($(enable-cet),yes)
+ifeq ($(subdir),elf)
+sysdep_routines += dl-cet-nonshared
+sysdep-dl-routines += dl-cet
+endif
+
+# Add -fcf-protection -mcet to CFLAGS when CET is enabled.
+CFLAGS-.o += -fcf-protection -mcet
+CFLAGS-.os += -fcf-protection -mcet
+CFLAGS-.op += -fcf-protection -mcet
+CFLAGS-.oS += -fcf-protection -mcet
+
+# Compile assembly codes with <cet.h> when CET is enabled.
+asm-CPPFLAGS += -fcf-protection -mcet -include cet.h
+endif

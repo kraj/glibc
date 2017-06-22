@@ -1,4 +1,4 @@
-/* Copyright (C) 2015-2017 Free Software Foundation, Inc.
+/* Copyright (C) 2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -15,17 +15,13 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef SHARED
-# include <ldsodefs.h>
-# include <cpu-features.h>
-# include <cpu-features.c>
-
-extern struct cpu_features _dl_x86_cpu_features;
-
-# ifndef ARCH_INIT_CPU_FEATURES
-#  define ARCH_INIT_CPU_FEATURES() \
-  init_cpu_features (&_dl_x86_cpu_features)
-# endif
+#ifdef ENABLE_CET
+# include <link.h>
+# define ARCH_INIT_CPU_FEATURES() \
+  {								\
+    init_cpu_features (&_dl_x86_cpu_features);			\
+    _dl_setup_cet (_dl_phdr, _dl_phnum, 0);			\
+  }
 #endif
 
-#include <csu/libc-start.c>
+#include <sysdeps/x86/libc-start.c>

@@ -1241,6 +1241,12 @@ of this helper program; chances are you did not intend to run this program.\n\
 	main_map->l_relro_addr = ph->p_vaddr;
 	main_map->l_relro_size = ph->p_memsz;
 	break;
+
+#ifdef DL_PROCESS_PT_NOTE
+      case PT_NOTE:
+	DL_PROCESS_PT_NOTE (main_map, ph);
+	break;
+#endif
       }
 
   /* Adjust the address of the TLS initialization image in case

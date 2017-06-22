@@ -158,6 +158,11 @@ struct cpu_features
 extern const struct cpu_features *__get_cpu_features (void)
      __attribute__ ((const));
 
+# ifdef ElfW
+extern void _dl_setup_cet (const ElfW(Phdr) *, size_t, const ElfW(Addr))
+    attribute_hidden;
+# endif
+
 # if defined (_LIBC) && !IS_IN (nonlib)
 /* Unused for x86.  */
 #  define INIT_ARCH()
