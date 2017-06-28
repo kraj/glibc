@@ -35,3 +35,20 @@ stime (const time_t *when)
 }
 
 stub_warning (stime)
+
+/* 64-bit time version */
+
+int
+__stime_t64 (const __time64_t *when)
+{
+  if (when == NULL)
+    {
+      __set_errno (EINVAL);
+      return -1;
+    }
+
+  __set_errno (ENOSYS);
+  return -1;
+}
+
+stub_warning (__stime_t64)

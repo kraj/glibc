@@ -31,3 +31,16 @@ time (time_t *timer)
 libc_hidden_def (time)
 
 stub_warning (time)
+
+/* 64-bit time version */
+
+__time64_t
+__time_t64 (__time64_ *timer)
+{
+  __set_errno (ENOSYS);
+
+  if (timer != NULL)
+    *timer = (__time64_t) -1;
+  return (__time64_t) -1;
+}
+libc_hidden_def (__time_t64)

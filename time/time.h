@@ -73,6 +73,14 @@ __BEGIN_NAMESPACE_STD
 extern clock_t clock (void) __THROW;
 
 /* Return the current time and put it in *TIMER if TIMER is not NULL.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern time_t __REDIRECT (time, (time_t * __timer),
+     __time_t64) __THROW;
+# else
+# define time __time_t64
+# endif
+#endif
 extern time_t time (time_t *__timer) __THROW;
 
 /* Return the difference between TIME1 and TIME0.  */
@@ -250,6 +258,14 @@ extern long int timezone;
 #ifdef __USE_MISC
 /* Set the system time to *WHEN.
    This call is restricted to the superuser.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern int __REDIRECT (stime, (const time_t *__when), __stime_t64)
+           __THROW;
+# else
+# define stime __stime_t64
+# endif
+#endif
 extern int stime (const time_t *__when) __THROW;
 #endif
 

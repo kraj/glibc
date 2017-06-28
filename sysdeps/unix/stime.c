@@ -37,3 +37,34 @@ stime (const time_t *when)
   tv.tv_usec = 0;
   return __settimeofday (&tv, (struct timezone *) 0);
 }
+
+/* 64-bit time version */
+
+extern int __y2038_linux_support;
+
+int
+__stime_t64 (const __time64_t *when)
+{
+  struct timeval tv32;
+
+  if (when == NULL)
+    {
+      __set_errno (EINVAL);
+      return -1;
+    }
+
+  if (__y2038_linux_support)
+  {
+    /* TODO: implement 64-bit-time syscall case */
+  }
+
+  if (*when > INT_MAX)
+    {
+      __set_errno (EOVERFLOW);
+      return -1;
+    }
+
+  tv32.tv_sec = *when;
+  tv32.tv_usec = 0;
+  return __settimeofday (&tv32, (struct timezone *) 0);
+}
