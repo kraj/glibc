@@ -32,3 +32,13 @@ weak_alias (__gettimeofday, gettimeofday)
 libc_hidden_weak (gettimeofday)
 
 stub_warning (gettimeofday)
+
+/* 64-bit time version */
+
+int
+__gettimeofday_t64 (struct timeval *tv, struct timezone *tz)
+{
+  __set_errno (ENOSYS);
+  return -1;
+}
+stub_warning (__gettimeofday_t64)

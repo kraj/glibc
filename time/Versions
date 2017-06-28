@@ -72,5 +72,6 @@ libc {
   GLIBC_Y2038 {
     __timespec_get64;
     __time_t64; __stime_t64;
+    __gettimeofday_t64; __settimeofday_t64;
   }
 }

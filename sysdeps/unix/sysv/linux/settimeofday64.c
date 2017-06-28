@@ -15,25 +15,30 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
+#include <sysdep.h>
 #include <errno.h>
 #include <sys/time.h>
 
-/* Set the current time of day and timezone information.
-   This call is restricted to the super-user.  */
-int
-__settimeofday (const struct timeval *tv, const struct timezone *tz)
-{
-  __set_errno (ENOSYS);
-  return -1;
-}
-stub_warning (settimeofday)
+extern int __y2038_linux_support;
 
-weak_alias (__settimeofday, settimeofday)
-
-int
-__settimeofday_t64 (const struct timeval *tv, const struct timezone *tz)
+int __settimeofday_t64(const struct __timeval64 *tv,
+                       const struct timezone *tz)
 {
-  __set_errno (ENOSYS);
-  return -1;
+  struct timeval tv32;
+
+  if (__y2038_linux_support)
+  {
+    /* TODO: use 64-bit syscall */
+  }
+
+  if (tv && tv->tv_sec > INT_MAX)
+  {
+    __set_errno(EOVERFLOW);
+    return -1;
+  }
+
+  tv32.tv_sec = tv->tv_sec;
+  tv32.tv_usec = tv->tv_usec;
+
+  return settimeofday(&tv32, tz);
 }
-stub_warning (__settimeofday_t64)

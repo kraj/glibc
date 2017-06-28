@@ -65,12 +65,31 @@ typedef void *__restrict __timezone_ptr_t;
    Returns 0 on success, -1 on errors.
    NOTE: This form of timezone information is obsolete.
    Use the functions and variables declared in <time.h> instead.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern int __REDIRECT (gettimeofday, (struct timeval *__restrict __tv,
+                                   __timezone_ptr_t __tz),
+                    __gettimeofday_t64) __THROW __nonnull((1));
+# else
+# define gettimeofday __gettimeofday_t64
+# endif
+#endif
 extern int gettimeofday (struct timeval *__restrict __tv,
 			 __timezone_ptr_t __tz) __THROW __nonnull ((1));
 
 #ifdef __USE_MISC
 /* Set the current time of day and timezone information.
    This call is restricted to the super-user.  */
+# ifdef __USE_TIME_BITS64
+#  if defined(__REDIRECT)
+extern int __REDIRECT (settimeofday,
+                       (const struct timeval *__tv,
+                        const struct timezone *__tz),
+                    __settimeofday_t64) __THROW;
+#  else
+#   define settimeofday __settimeofday_t64
+#  endif
+# endif
 extern int settimeofday (const struct timeval *__tv,
 			 const struct timezone *__tz)
      __THROW;
