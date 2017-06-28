@@ -132,6 +132,15 @@ extern int setitimer (__itimer_which_t __which,
 /* Change the access time of FILE to TVP[0] and the modification time of
    FILE to TVP[1].  If TVP is a null pointer, use the current time instead.
    Returns 0 on success, -1 on errors.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern int __REDIRECT (utimes, (const char *__file,
+       const struct timeval __tvp[2]), __utimes64)
+       __THROW __nonnull ((1));
+# else
+# define utimes __utimes64
+# endif
+#endif
 extern int utimes (const char *__file, const struct timeval __tvp[2])
      __THROW __nonnull ((1));
 
@@ -140,7 +149,8 @@ extern int utimes (const char *__file, const struct timeval __tvp[2])
 #ifdef __USE_TIME_BITS64
 # if defined(__REDIRECT)
 extern int __REDIRECT (lutimes, (const char *__file,
-       const struct timeval __tvp[2]), __lutimes64) __THROW;
+       const struct timeval __tvp[2]), __lutimes64)
+       __THROW __nonnull ((1));
 # else
 # define lutimes __lutimes64
 # endif

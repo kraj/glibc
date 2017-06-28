@@ -35,6 +35,7 @@ libc {
     __futimens64;
     __utimensat64;
     __sigtimedwait64;
+    __utimes_t64;
     __futimes64;
     __lutimes64;
   }
