@@ -22,6 +22,7 @@
 #include <stdarg.h>
 
 #include <sysdep-cancel.h>
+#include <not-cancel.h>
 
 #ifndef __OFF_T_MATCHES_OFF64_T
 
@@ -47,5 +48,22 @@ libc_hidden_def (__libc_open)
 weak_alias (__libc_open, __open)
 libc_hidden_weak (__open)
 weak_alias (__libc_open, open)
+
+int
+__open_nocancel (const char *file, int oflag, ...)
+{
+  int mode = 0;
+
+  if (__OPEN_NEEDS_MODE (oflag))
+    {
+      va_list arg;
+      va_start (arg, oflag);
+      mode = va_arg (arg, int);
+      va_end (arg);
+    }
+
+  return INLINE_SYSCALL_CALL (openat, AT_FDCWD, file, oflag, mode);
+}
+libc_hidden_def (__open_nocancel)
 
 #endif

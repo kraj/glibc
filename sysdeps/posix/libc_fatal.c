@@ -79,7 +79,7 @@ __libc_message (int do_abort, const char *fmt, ...)
      requests errors on standard error.  */
   const char *on_2 = __libc_secure_getenv ("LIBC_FATAL_STDERR_");
   if (on_2 == NULL || *on_2 == '\0')
-    fd = open_not_cancel_2 (_PATH_TTY, O_RDWR | O_NOCTTY | O_NDELAY);
+    fd = __open_nocancel (_PATH_TTY, O_RDWR | O_NOCTTY | O_NDELAY);
 
   if (fd == -1)
     fd = STDERR_FILENO;
