@@ -18,6 +18,7 @@
 
 #include <unistd.h>
 #include <sysdep-cancel.h>
+#include <not-cancel.h>
 
 /* Read NBYTES into BUF from FD.  Return the number read or -1.  */
 ssize_t
@@ -31,3 +32,10 @@ libc_hidden_def (__read)
 weak_alias (__libc_read, __read)
 libc_hidden_def (read)
 weak_alias (__libc_read, read)
+
+ssize_t
+__read_nocancel (int fd, void *buf, size_t nbytes)
+{
+  return INLINE_SYSCALL_CALL (read, fd, buf, nbytes);
+}
+libc_hidden_def (__read_nocancel)
