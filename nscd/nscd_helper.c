@@ -236,7 +236,7 @@ open_socket (request_type type, const char *key, size_t keylen)
     }
 
  out:
-  close_not_cancel_no_status (sock);
+  __close_nocancel_no_status (sock);
 
   return -1;
 }
@@ -555,7 +555,7 @@ __nscd_open_socket (const char *key, size_t keylen, request_type type,
 	    return sock;
 	}
 
-      close_not_cancel_no_status (sock);
+      __close_nocancel_no_status (sock);
     }
 
   __set_errno (saved_errno);
