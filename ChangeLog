@@ -1,5 +1,10 @@
 2017-07-04  Adhemerval Zanella  <adhemerval.zanella@linaro.org>
 
+	* sysdeps/generic/not-cancel.h (sigsuspend_not_cancel): Remove
+	macro.
+	* sysdeps/unix/sysv/linux/not-cancel.h (sigsuspend_not_cancel):
+	Likewise.
+
 	* nptl/pthread_mutex_timedlock.c (__pthread_mutex_timedlock): Replace
 	nanosleep_not_cancel with __nanosleep_nocancel.
 	* sysdeps/generic/not-cancel.h (nanosleep_not_cancel): Remove macro.
