@@ -6,6 +6,8 @@ GLIBC_2.2.5 calloc F
 GLIBC_2.2.5 free F
 GLIBC_2.2.5 malloc F
 GLIBC_2.2.5 realloc F
+GLIBC_2.26 GLIBC_2.26 A
+GLIBC_2.26 ___tls_get_addr F
 GLIBC_2.3 GLIBC_2.3 A
 GLIBC_2.3 __tls_get_addr F
 GLIBC_2.4 GLIBC_2.4 A

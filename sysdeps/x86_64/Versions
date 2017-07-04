@@ -10,3 +10,9 @@ libm {
     exp2l;
   }
 }
+ld {
+  GLIBC_2.26 {
+    # The alternative x86-64 runtime interface to TLS with aligned stack.
+    ___tls_get_addr;
+  }
+}
