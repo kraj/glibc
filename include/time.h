@@ -43,6 +43,12 @@ struct __timespec64
 };
 #endif
 
+struct __timeval64
+{
+  __time64_t tv_sec;		/* Seconds */
+  __int64_t tv_usec;		/* Microseconds */
+};
+
 extern __typeof (clock_getres) __clock_getres;
 extern __typeof (clock_gettime) __clock_gettime;
 extern int __clock_getres64 (clockid_t __clock_id, struct __timespec64 *__res) __THROW;
