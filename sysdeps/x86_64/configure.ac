@@ -40,6 +40,53 @@ if test $libc_cv_asm_mpx = yes; then
   AC_DEFINE(HAVE_MPX_SUPPORT)
 fi
 
+dnl Check for ___tls_get_addr.
+AC_CACHE_CHECK(for ___tls_get_addr,
+	       libc_cv_cc____tls_get_addr, [dnl
+cat > conftest.c <<\EOF
+__thread int x;
+int
+_start (void)
+{
+  return x;
+}
+EOF
+if AC_TRY_COMMAND(${CC-cc} $CFLAGS $CPPFLAGS -O2 $no_ssp -fPIC -c conftest.c) \
+  && AC_TRY_COMMAND($NM -u conftest.o | grep -q "U ___tls_get_addr"); then
+  libc_cv_cc____tls_get_addr=yes
+else
+  libc_cv_cc____tls_get_addr=no
+fi
+rm -f conftest*])
+
+if test $libc_cv_cc____tls_get_addr = no; then
+  dnl Check if __tls_get_addr -> ___tls_get_addr redirection works.
+  AC_CACHE_CHECK(for __tls_get_addr -> ___tls_get_addr redirection,
+		 libc_cv____tls_get_addr, [dnl
+cat > conftest.c <<\EOF
+__thread int x;
+asm (".weakref __tls_get_addr, ___tls_get_addr");
+
+int
+_start (void)
+{
+  return x;
+}
+EOF
+if AC_TRY_COMMAND(${CC-cc} $CFLAGS $CPPFLAGS -O2 $no_ssp -fPIC -c conftest.c) \
+  && AC_TRY_COMMAND($NM -u conftest.o | grep -q "U ___tls_get_addr") \
+  && $OBJDUMP -dw conftest.o | grep -E "sub[[lq]]? +\\\$0x8,%[[re]]sp" 1>&AS_MESSAGE_LOG_FD \
+  && AC_TRY_COMMAND(${CC-cc} $LDFLAGS -nostdlib -nostartfiles conftest.o -o conftest); then
+  libc_cv____tls_get_addr=yes
+else
+  libc_cv____tls_get_addr=no
+fi
+rm -f conftest*])
+else
+  libc_cv____tls_get_addr=no
+fi
+LIBC_CONFIG_VAR([have-___tls_get_addr], [$libc_cv____tls_get_addr])
+
 if test x"$build_mathvec" = xnotset; then
   build_mathvec=yes
 fi

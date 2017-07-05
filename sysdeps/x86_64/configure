@@ -81,6 +81,89 @@ if test $libc_cv_asm_mpx = yes; then
 
 fi
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for ___tls_get_addr" >&5
+$as_echo_n "checking for ___tls_get_addr... " >&6; }
+if ${libc_cv_cc____tls_get_addr+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat > conftest.c <<\EOF
+__thread int x;
+int
+_start (void)
+{
+  return x;
+}
+EOF
+if { ac_try='${CC-cc} $CFLAGS $CPPFLAGS -O2 $no_ssp -fPIC -c conftest.c'
+  { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; } \
+  && { ac_try='$NM -u conftest.o | grep -q "U ___tls_get_addr"'
+  { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; }; then
+  libc_cv_cc____tls_get_addr=yes
+else
+  libc_cv_cc____tls_get_addr=no
+fi
+rm -f conftest*
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $libc_cv_cc____tls_get_addr" >&5
+$as_echo "$libc_cv_cc____tls_get_addr" >&6; }
+
+if test $libc_cv_cc____tls_get_addr = no; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for __tls_get_addr -> ___tls_get_addr redirection" >&5
+$as_echo_n "checking for __tls_get_addr -> ___tls_get_addr redirection... " >&6; }
+if ${libc_cv____tls_get_addr+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat > conftest.c <<\EOF
+__thread int x;
+asm (".weakref __tls_get_addr, ___tls_get_addr");
+
+int
+_start (void)
+{
+  return x;
+}
+EOF
+if { ac_try='${CC-cc} $CFLAGS $CPPFLAGS -O2 $no_ssp -fPIC -c conftest.c'
+  { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; } \
+  && { ac_try='$NM -u conftest.o | grep -q "U ___tls_get_addr"'
+  { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; } \
+  && $OBJDUMP -dw conftest.o | grep -E "sub[lq]? +\\\$0x8,%[re]sp" 1>&5 \
+  && { ac_try='${CC-cc} $LDFLAGS -nostdlib -nostartfiles conftest.o -o conftest'
+  { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; }; then
+  libc_cv____tls_get_addr=yes
+else
+  libc_cv____tls_get_addr=no
+fi
+rm -f conftest*
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $libc_cv____tls_get_addr" >&5
+$as_echo "$libc_cv____tls_get_addr" >&6; }
+else
+  libc_cv____tls_get_addr=no
+fi
+config_vars="$config_vars
+have-___tls_get_addr = $libc_cv____tls_get_addr"
+
 if test x"$build_mathvec" = xnotset; then
   build_mathvec=yes
 fi

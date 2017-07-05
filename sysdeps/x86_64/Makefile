@@ -122,3 +122,7 @@ endif
 ifeq ($(subdir),csu)
 gen-as-const-headers += tlsdesc.sym rtld-offsets.sym
 endif
+
+ifeq (yes,$(have-___tls_get_addr))
++cflags += -include $(..)sysdeps/x86_64/tls_get_addr.h
+endif
