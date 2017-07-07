@@ -86,33 +86,56 @@ except:
 
     subprocess.run = _run
 
+def total_ram():
+    """Retrieve the total amount of physical RAM available on this computer."""
+
+    # This can't be done cross-platform using the Python standard library.
+    # If the add-on 'psutil' module is available, use it.
+    try:
+        import psutil
+        # Despite the name, virtual_memory() counts only physical RAM, not swap.
+        return psutil.virtual_memory().total
+
+    except ImportError:
+        pass
+
+    # This works on Linux, but (reportedly) not on all other Unixes.
+    try:
+        return \
+            os.sysconf('SC_PAGESIZE') * os.sysconf('SC_PHYS_PAGES')
+
+    except:
+        pass
+
+    # We don't know.  Return a very large number.
+    return sys.maxsize
 
 class Context(object):
     """The global state associated with builds in a given directory."""
 
-    def __init__(self, topdir, parallelism, keep, replace_sources, strip,
-                 action):
+    def __init__(self, opts):
         """Initialize the context."""
-        self.topdir = topdir
-        self.parallelism = parallelism
-        self.keep = keep
-        self.replace_sources = replace_sources
-        self.strip = strip
-        self.srcdir = os.path.join(topdir, 'src')
+        self.topdir = os.path.abspath(opts.topdir)
+        self.parallelism = opts.parallelism
+        self.memory_limit = opts.memory_limit
+        self.keep = opts.keep
+        self.replace_sources = opts.replace_sources
+        self.strip = opts.strip
+        self.srcdir = os.path.join(self.topdir, 'src')
         self.versions_json = os.path.join(self.srcdir, 'versions.json')
-        self.build_state_json = os.path.join(topdir, 'build-state.json')
-        self.bot_config_json = os.path.join(topdir, 'bot-config.json')
-        self.installdir = os.path.join(topdir, 'install')
+        self.build_state_json = os.path.join(self.topdir, 'build-state.json')
+        self.bot_config_json = os.path.join(self.topdir, 'bot-config.json')
+        self.installdir = os.path.join(self.topdir, 'install')
         self.host_libraries_installdir = os.path.join(self.installdir,
                                                       'host-libraries')
-        self.builddir = os.path.join(topdir, 'build')
-        self.logsdir = os.path.join(topdir, 'logs')
-        self.logsdir_old = os.path.join(topdir, 'logs-old')
+        self.builddir = os.path.join(self.topdir, 'build')
+        self.logsdir = os.path.join(self.topdir, 'logs')
+        self.logsdir_old = os.path.join(self.topdir, 'logs-old')
         self.makefile = os.path.join(self.builddir, 'Makefile')
         self.wrapper = os.path.join(self.builddir, 'wrapper')
         self.save_logs = os.path.join(self.builddir, 'save-logs')
         self.script_text = self.get_script_text()
-        if action != 'checkout':
+        if opts.action != 'checkout':
             self.build_triplet = self.get_build_triplet()
             self.glibc_version = self.get_glibc_version()
         self.configs = {}
@@ -133,6 +156,50 @@ class Context(object):
         """Re-execute this script with the same arguments."""
         sys.stdout.flush()
         os.execv(sys.executable, [sys.executable] + sys.argv)
+
+    def set_memory_limits(self):
+        """Impose a memory-consumption limit on this process, and therefore
+           all of the subprocesses it creates.  The limit can be set
+           on the command line; the default is either physical RAM
+           divided by the number of jobs to be run in parallel, or 1.5
+           gigabytes, whichever is larger.  (1GB is too small for
+           genautomata on MIPS and for the compilation of several
+           large math test cases.)
+        """
+        if self.memory_limit == 0:
+            return
+        try:
+            import resource
+        except ImportError as e:
+            print('warning: cannot set memory limit:', e)
+            return
+
+        if self.memory_limit is None:
+            physical_ram = total_ram()
+            memory_limit = int(max(physical_ram / self.parallelism,
+                                   1.5 * 1024 * 1024 * 1024))
+        else:
+            if memory_limit < 1.5:
+                print('warning: memory limit %.5g GB known to be too small'
+                      % memory_limit)
+            memory_limit = int(memory_limit * 1024 * 1024 * 1024)
+
+        set_a_limit = False
+        for mem_rsrc_name in ['RLIMIT_DATA', 'RLIMIT_STACK', 'RLIMIT_RSS',
+                              'RLIMIT_VMEM', 'RLIMIT_AS']:
+            mem_rsrc = getattr(resource, mem_rsrc_name, None)
+            if mem_rsrc is not None:
+                soft, hard = resource.getrlimit(mem_rsrc)
+                if hard == resource.RLIM_INFINITY or hard > memory_limit:
+                    hard = memory_limit
+                if soft == resource.RLIM_INFINITY or soft > hard:
+                    soft = hard
+                resource.setrlimit(mem_rsrc, (soft, hard))
+                set_a_limit = True
+
+        if set_a_limit:
+            print("Per-process memory limit set to %.5g GB." %
+                  (memory_limit / (1024 * 1024 * 1024)))
 
     def get_build_triplet(self):
         """Determine the build triplet with config.guess."""
@@ -465,6 +532,7 @@ class Context(object):
             old_versions = self.build_state['compilers']['build-versions']
             self.build_glibcs(configs)
         self.write_files()
+        self.set_memory_limits()
         self.do_build()
         if configs:
             # Partial build, do not update stored state.
@@ -1589,6 +1657,9 @@ def get_parser():
     parser.add_argument('-j', dest='parallelism',
                         help='Run this number of jobs in parallel',
                         type=int, default=os.cpu_count())
+    parser.add_argument('--memory-limit',
+                        help='Per-process memory limit in gigabytes (0 for unlimited)',
+                        type=float, default=None)
     parser.add_argument('--keep', dest='keep',
                         help='Whether to keep all build directories, '
                         'none or only those from failed builds',
@@ -1614,9 +1685,7 @@ def main(argv):
     """The main entry point."""
     parser = get_parser()
     opts = parser.parse_args(argv)
-    topdir = os.path.abspath(opts.topdir)
-    ctx = Context(topdir, opts.parallelism, opts.keep, opts.replace_sources,
-                  opts.strip, opts.action)
+    ctx = Context(opts)
     ctx.run_builds(opts.action, opts.configs)
 
 
