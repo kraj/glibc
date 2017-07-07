@@ -525,7 +525,7 @@ class Context(object):
             '    printf " %s" "$word"\n'
             '  else\n'
             '    printf " \'"\n'
-            '    printf "%s" "$word" | sed -e "s/\'/\'\\\\\\\\\'\'/"\n'
+            '    printf "%s" "$word" | sed -e "s/\'/\'\\\\\\\\\'\'/g"\n'
             '    printf "\'"\n'
             '  fi\n'
             'done >> "$this_log"\n'
@@ -1213,15 +1213,37 @@ class Config(object):
         assert linux_arch is not None
         srcdir = self.ctx.component_srcdir('linux')
         builddir = self.component_builddir('linux')
-        headers_dir = os.path.join(self.sysroot, 'usr')
+        kernel_prefix = os.path.join(self.sysroot, 'usr/share/linux')
+        kernel_headers_dir = os.path.join(kernel_prefix, 'include')
+        all_headers_dir = os.path.join(self.sysroot, 'usr/include')
         cmdlist.push_subdesc('linux')
         cmdlist.create_use_dir(builddir)
+        # Only this operation has any business writing files below the
+        # kernel_prefix; in particular we want to trap any case where
+        # glibc's "make install" installs a header in a subdirectory of
+        # /usr/include that belongs to the kernel.
+        cmdlist.add_command('install-mkdir',
+                            ['mkdir', '-p', kernel_prefix])
+        cmdlist.add_command('install-make-writable',
+                            ['chmod', '-R', 'u+w', kernel_prefix])
         cmdlist.add_command('install-headers',
                             ['make', '-C', srcdir, 'O=%s' % builddir,
                              'ARCH=%s' % linux_arch,
-                             'INSTALL_HDR_PATH=%s' % headers_dir,
+                             'INSTALL_HDR_PATH=%s' % kernel_prefix,
                              'headers_install'])
         cmdlist.cleanup_dir()
+        cmdlist.add_command('install-make-read-only',
+                            ['chmod', '-R', 'a-w', kernel_prefix])
+        cmdlist.link_dir_contents(kernel_headers_dir, all_headers_dir)
+        # Currently, some headers in /usr/include/scsi are provided by
+        # the kernel and some by glibc.  This should be cleaned up, but
+        # for the time being we have to special-case this directory.
+        cmdlist.add_command('link-scsi-rm',
+                            ['rm', '-f', os.path.join(all_headers_dir, 'scsi')])
+        cmdlist.link_dir_contents(
+            os.path.join(kernel_headers_dir, 'scsi'),
+            os.path.join(all_headers_dir, 'scsi'),
+            'scsi')
         cmdlist.pop_subdesc()
 
     def build_gcc(self, cmdlist, bootstrap):
@@ -1357,6 +1379,11 @@ class Glibc(object):
                    'RANLIB=%s' % self.tool_name('ranlib'),
                    'READELF=%s' % self.tool_name('readelf'),
                    'STRIP=%s' % self.tool_name('strip')]
+        if self.os.startswith('linux'):
+            cfg_cmd.append('--with-headers=%s'
+                           % os.path.join(self.compiler.sysroot,
+                                          'usr/share/linux/include'))
+
         cfg_cmd += self.cfg
         cmdlist.add_command('configure', cfg_cmd)
         cmdlist.add_command('build', ['make'])
@@ -1389,8 +1416,7 @@ class Command(object):
         self.dir = dir
         self.path = path
         self.desc = desc
-        trans = str.maketrans({' ': '-'})
-        self.logbase = '%03d-%s' % (num, desc.translate(trans))
+        self.logbase = '%03d-%s' % (num, desc.replace(' ', '-'))
         self.command = command
         self.always_run = always_run
 
@@ -1401,10 +1427,8 @@ class Command(object):
         assert '\n' not in s
         if re.fullmatch('[]+,./0-9@A-Z_a-z-]+', s):
             return s
-        strans = str.maketrans({"'": "'\\''"})
-        s = "'%s'" % s.translate(strans)
-        mtrans = str.maketrans({'$': '$$'})
-        return s.translate(mtrans)
+        s = "'%s'" % s.replace("'", "'\\''")
+        return s.replace('$', '$$')
 
     @staticmethod
     def shell_make_quote_list(l, translate_make):
@@ -1469,6 +1493,32 @@ class CommandList(object):
         parent = os.path.dirname(dest)
         self.add_command_dir('copy-mkdir', None, ['mkdir', '-p', parent])
         self.add_command_dir('copy', None, ['cp', '-a', src, dest])
+
+    def link_dir_contents(self, src, dest, tag=''):
+        """Create relative symbolic links in DEST pointing to each of the
+        files and directories in SRC.  If DEST does not already exist,
+        it is created."""
+        relpath = os.path.relpath(src, dest)
+        if tag:
+            mkdir_tag = 'link-%s-mkdir' % tag
+            link_tag = 'link-%s' % tag
+        else:
+            mkdir_tag = 'link-mkdir'
+            link_tag = 'link'
+
+        self.add_command_dir(mkdir_tag, None, ['mkdir', '-p', dest])
+
+        # The exec() below works around a limitation of the Python
+        # grammar; a 'compound' statement (like 'for f in ...: ...')
+        # cannot be set off from a preceding statement with a
+        # semicolon, only a newline.  Since shell_make_quote can't
+        # quote newlines, we have to turn the loop into a 'simple'
+        # statement somehow.
+        self.add_command_dir(link_tag, dest, [
+            sys.executable, '-c',
+            "import glob, os, sys;"
+            "exec(\"for f in glob.glob(os.path.join(sys.argv[1], '*')):"
+            " os.symlink(f, os.path.basename(f))\")", relpath])
 
     def add_command_dir(self, desc, dir, command, always_run=False):
         """Add a command to run in a given directory."""
