@@ -137,4 +137,11 @@ libc {
   GLIBC_PRIVATE {
     __libc_fork; __libc_pread; __libc_pwrite;
   }
+
+  # Y2038 symbols are given their own version until they can be put in
+  # the right place
+
+  GLIBC_Y2038 {
+    __sched_rr_get_interval_t64;
+  }
 }
