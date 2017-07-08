@@ -73,5 +73,6 @@ libc {
     __timespec_get64;
     __time_t64; __stime_t64;
     __gettimeofday_t64; __settimeofday_t64;
+    __nanosleep_t64;
   }
 }

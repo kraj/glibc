@@ -310,6 +310,14 @@ extern int dysize (int __year) __THROW  __attribute__ ((__const__));
 
    This function is a cancellation point and therefore not marked with
    __THROW.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern int __REDIRECT (nanosleep, (const struct timespec *__requested_time,
+		      struct timespec *__remaining), __nanosleep_t64);
+# else
+# define nanosleep __nanosleep_t64
+# endif
+#endif
 extern int nanosleep (const struct timespec *__requested_time,
 		      struct timespec *__remaining);
 
