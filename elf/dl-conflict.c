@@ -17,6 +17,7 @@
    License along with the GNU C Library; see the file COPYING.LIB.  If
    not, see <http://www.gnu.org/licenses/>.  */
 
+#ifdef SHARED
 #include <errno.h>
 #include <libintl.h>
 #include <stdlib.h>
@@ -72,3 +73,4 @@ _dl_resolve_conflicts (struct link_map *l, ElfW(Rela) *conflict,
   }
 #endif
 }
+#endif
