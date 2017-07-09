@@ -51,7 +51,7 @@ routines  = backtrace backtracesyms backtracesymsfd noophooks \
 	    explicit_bzero_chk \
 	    stack_chk_fail fortify_fail \
 	    $(static-only-routines)
-static-only-routines := warning-nop stack_chk_fail_local
+static-only-routines := warning-nop
 
 # Building the stack-protector failure routines with stack protection
 # makes no sense.
