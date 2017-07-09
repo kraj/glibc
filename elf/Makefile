@@ -369,6 +369,7 @@ tests-internal += tst-_dl_addr_inside_object
 tests-pie += tst-_dl_addr_inside_object
 $(objpfx)tst-_dl_addr_inside_object: $(objpfx)dl-addr-obj.os
 CFLAGS-tst-_dl_addr_inside_object.c += $(PIE-ccflag)
+LDFLAGS-tst-_dl_addr_inside_object = $(dummy-stack-chk-fail)
 endif
 
 # By default tst-linkall-static should try to use crypt routines to test
