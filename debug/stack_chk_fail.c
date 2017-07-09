@@ -28,4 +28,8 @@ __stack_chk_fail (void)
   __fortify_fail ("stack smashing detected");
 }
 
+#ifdef SHARED
+/* Some targets call __stack_chk_fail_local as a hidden function within
+   libc.so.  */
 strong_alias (__stack_chk_fail, __stack_chk_fail_local)
+#endif
