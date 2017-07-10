@@ -92,7 +92,10 @@ extern void __libc_fatal (const char *__message)
 extern void __libc_message (int do_abort, const char *__fnt, ...);
 extern void __fortify_fail (const char *msg)
      __attribute__ ((__noreturn__)) internal_function;
+extern void __fortify_fail_abort (int, const char *msg)
+     __attribute__ ((__noreturn__)) internal_function;
 libc_hidden_proto (__fortify_fail)
+libc_hidden_proto (__fortify_fail_abort)
 
 /* Acquire ownership of STREAM.  */
 extern void __flockfile (FILE *__stream);

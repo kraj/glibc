@@ -1,4 +1,5 @@
-/* Copyright (C) 2007-2017 Free Software Foundation, Inc.
+/* Verify that __stack_chk_fail won't segfault. 
+   Copyright (C) 2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -15,28 +16,22 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <stdio.h>
-#include <stdlib.h>
+/* Based on gcc.dg/ssp-1.c from GCC testsuite.  */
 
+#include <signal.h>
 
-extern char **__libc_argv attribute_hidden;
-
-void
-__attribute__ ((noreturn)) internal_function
-__fortify_fail_abort (int no_backtrace, const char *msg)
+static int
+do_test (void)
 {
-  /* The loop is added only to keep gcc happy.  */
-  while (1)
-    __libc_message (no_backtrace ? 3 : 2, "*** %s ***: %s terminated\n",
-		    msg, __libc_argv[0] ?: "<unknown>");
+  int i;
+  char foo[30];
+
+  /* smash stack */
+  for (i = 0; i <= 400; i++)
+    foo[i] = 42;
+
+  return 1; /* fail */
 }
 
-void
-__attribute__ ((noreturn)) internal_function
-__fortify_fail (const char *msg)
-{
-  __fortify_fail_abort (0, msg);
-}
-
-libc_hidden_def (__fortify_fail)
-libc_hidden_def (__fortify_fail_abort)
+#define EXPECTED_SIGNAL SIGABRT
+#include <support/test-driver.c>

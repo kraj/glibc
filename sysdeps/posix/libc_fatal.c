@@ -169,7 +169,8 @@ __libc_message (int do_abort, const char *fmt, ...)
 
   if (do_abort)
     {
-      BEFORE_ABORT (do_abort, written, fd);
+      if (do_abort < 3)
+	BEFORE_ABORT (do_abort, written, fd);
 
       /* Kill the application.  */
       abort ();
