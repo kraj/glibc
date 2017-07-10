@@ -23,7 +23,7 @@ extern char **__libc_argv attribute_hidden;
 
 void
 __attribute__ ((noreturn)) internal_function
-__fortify_fail_abort (int no_backtrace, const char *msg)
+__fortify_fail_abort (bool no_backtrace, const char *msg)
 {
   /* The loop is added only to keep gcc happy.  */
   while (1)
@@ -35,7 +35,7 @@ void
 __attribute__ ((noreturn)) internal_function
 __fortify_fail (const char *msg)
 {
-  __fortify_fail_abort (0, msg);
+  __fortify_fail_abort (false, msg);
 }
 
 libc_hidden_def (__fortify_fail)

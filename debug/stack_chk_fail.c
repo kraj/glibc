@@ -25,7 +25,7 @@ void
 __attribute__ ((noreturn))
 __stack_chk_fail (void)
 {
-  __fortify_fail_abort (1, "stack smashing detected");
+  __fortify_fail_abort (true, "stack smashing detected");
 }
 
 #ifdef SHARED

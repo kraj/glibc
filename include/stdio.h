@@ -1,5 +1,6 @@
 #ifndef _STDIO_H
 # include <libio/stdio.h>
+# include <stdbool.h>
 # ifndef _ISOMAC
 
 /* Now define the internal interfaces.  */
@@ -92,7 +93,7 @@ extern void __libc_fatal (const char *__message)
 extern void __libc_message (int do_abort, const char *__fnt, ...);
 extern void __fortify_fail (const char *msg)
      __attribute__ ((__noreturn__)) internal_function;
-extern void __fortify_fail_abort (int, const char *msg)
+extern void __fortify_fail_abort (bool, const char *msg)
      __attribute__ ((__noreturn__)) internal_function;
 libc_hidden_proto (__fortify_fail)
 libc_hidden_proto (__fortify_fail_abort)
