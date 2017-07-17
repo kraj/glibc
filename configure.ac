@@ -1439,6 +1439,15 @@ LIBC_LINKER_FEATURE([-z execstack], [-Wl,-z,execstack],
 		    [libc_cv_z_execstack=yes], [libc_cv_z_execstack=no])
 AC_SUBST(libc_cv_z_execstack)
 
+LIBC_LINKER_FEATURE([--no-dynamic-linker],
+		    [-Wl,--no-dynamic-linker],
+		    [libc_cv_no_dynamic_linker=yes],
+		    [libc_cv_no_dynamic_linker=no])
+if test $libc_cv_no_dynamic_linker = yes; then
+  AC_DEFINE(HAVE_NO_DYNAMIC_LINKER)
+fi
+LIBC_CONFIG_VAR([have-no-dynamic-linker], [$libc_cv_no_dynamic_linker])
+
 AC_CACHE_CHECK(for -fpie, libc_cv_fpie, [dnl
 LIBC_TRY_CC_OPTION([-fpie], [libc_cv_fpie=yes], [libc_cv_fpie=no])
 ])

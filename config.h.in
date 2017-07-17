@@ -177,6 +177,9 @@
 /* Define if the linker defines __ehdr_start.  */
 #undef HAVE_EHDR_START
 
+/* Define if the linker supports --no-dynamic-linker.  */
+#undef HAVE_NO_DYNAMIC_LINKER
+
 /*
  */
 
