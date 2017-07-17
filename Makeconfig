@@ -386,6 +386,12 @@ LDFLAGS.so += $(hashstyle-LDFLAGS)
 LDFLAGS-rtld += $(hashstyle-LDFLAGS)
 endif
 
+ifeq (yes,$(have-static-pie))
+pic-default = -DPIC
+pie-default = -fPIE
+default-pie-ldflag = -pie -Wl,--no-dynamic-linker,--eh-frame-hdr,-z,text
+endif
+
 # If lazy relocations are disabled, add the -z now flag.  Use
 # LDFLAGS-lib.so instead of LDFLAGS.so, to avoid adding the flag to
 # test modules.
@@ -435,6 +441,7 @@ endif
 # Command for statically linking programs with the C library.
 ifndef +link-static
 +link-static-before-libc = $(CC) -nostdlib -nostartfiles -static -o $@ \
+	      $(default-pie-ldflag) \
 	      $(sysdep-LDFLAGS) $(LDFLAGS) $(LDFLAGS-$(@F))  \
 	      $(addprefix $(csu-objpfx),$(static-start-installed-name)) \
 	      $(+preinit) $(+prectorT) \
@@ -651,8 +658,13 @@ endif
 +prectorS = `$(CC) $(sysdep-LDFLAGS) --print-file-name=crtbeginS.o`
 +postctorS = `$(CC) $(sysdep-LDFLAGS) --print-file-name=crtendS.o`
 # Variants of the two previous definitions for statically linking programs.
+ifeq (yes,$(have-static-pie))
++prectorT = $(+prectorS)
++postctorT = $(+postctorS)
+else
 +prectorT = `$(CC) $(sysdep-LDFLAGS) --print-file-name=crtbeginT.o`
 +postctorT = `$(CC) $(sysdep-LDFLAGS) --print-file-name=crtend.o`
+endif
 csu-objpfx = $(common-objpfx)csu/
 elf-objpfx = $(common-objpfx)elf/
 
@@ -973,7 +985,7 @@ libtypes = $(foreach o,$(object-suffixes-for-libc),$(libtype$o))
 all-object-suffixes := .o .os .oS
 object-suffixes :=
 CPPFLAGS-.o = $(pic-default)
-CFLAGS-.o = $(filter %frame-pointer,$(+cflags))
+CFLAGS-.o = $(filter %frame-pointer,$(+cflags)) $(pie-default)
 libtype.o := lib%.a
 object-suffixes += .o
 ifeq (yes,$(build-shared))
@@ -998,7 +1010,7 @@ ifeq (yes,$(build-profile))
 all-object-suffixes += .op
 object-suffixes += .op
 CPPFLAGS-.op = -DPROF $(pic-default)
-CFLAGS-.op = -pg
+CFLAGS-.op = -pg $(pie-default)
 libtype.op = lib%_p.a
 endif
 
