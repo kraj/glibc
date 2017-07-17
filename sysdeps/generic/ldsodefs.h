@@ -1006,6 +1006,13 @@ extern void _dl_determine_tlsoffset (void) internal_function attribute_hidden;
    stack protector, among other things).  */
 void __libc_setup_tls (void);
 
+# ifdef HAVE_STATIC_PIE
+/* Relocate static executable with PIE.  */
+void _dl_relocate_static_pie (void);
+# else
+#  define _dl_relocate_static_pie()
+# endif
+
 /* Initialization of libpthread for statically linked applications.
    If libpthread is not linked in, this is an empty function.  */
 void __pthread_initialize_minimal (void) weak_function;

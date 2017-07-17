@@ -26,7 +26,11 @@
 #include <sys/param.h>
 #include <stdint.h>
 #include <ldsodefs.h>
-#include <dl-machine.h>
+#if HAVE_STATIC_PIE
+# include "dynamic-link.h"
+#else
+# include <dl-machine.h>
+#endif
 #include <libc-lock.h>
 #include <dl-cache.h>
 #include <dl-librecon.h>
@@ -200,7 +204,9 @@ const ElfW(Ehdr) *_dl_sysinfo_dso;
 
 struct link_map *_dl_sysinfo_map;
 
-# include "get-dynamic-info.h"
+# if !HAVE_STATIC_PIE
+#  include "get-dynamic-info.h"
+# endif
 #endif
 #include "setup-vdso.h"
 
@@ -301,6 +307,35 @@ _dl_aux_init (ElfW(auxv_t) *av)
       __libc_enable_secure = uid != 0 || gid != 0;
       __libc_enable_secure_decided = 1;
     }
+}
+#endif
+
+#if HAVE_STATIC_PIE
+/* Relocate static executable with PIE.  */
+
+void
+_dl_relocate_static_pie (void)
+{
+# define STATIC_PIE_BOOTSTRAP
+# define RESOLVE_MAP(sym, version, flags) (&_dl_main_map)
+# include "dynamic-link.h"
+
+  /* Figure out the run-time load addres of static PIE.  */
+  _dl_main_map.l_addr = elf_machine_load_address ();
+
+  /* Read our own dynamic section and fill in the info array.  */
+  _dl_main_map.l_ld = ((void *) _dl_main_map.l_addr
+		       + elf_machine_dynamic ());
+  elf_get_dynamic_info (&_dl_main_map, NULL);
+
+# ifdef ELF_MACHINE_BEFORE_RTLD_RELOC
+  ELF_MACHINE_BEFORE_RTLD_RELOC (_dl_main_map.l_info);
+# endif
+
+  /* Relocate ourselves so we can do normal function calls and
+     data access using the global offset table.  */
+  ELF_DYNAMIC_RELOCATE (&_dl_main_map, 0, 0, 0);
+  _dl_main_map.l_relocated = 1;
 }
 #endif
 
