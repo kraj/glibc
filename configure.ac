@@ -176,6 +176,11 @@ AC_ARG_ENABLE([profile],
 			     [build profiled library @<:@default=no@:>@]),
 	      [profile=$enableval],
 	      [profile=no])
+AC_ARG_ENABLE([static-pie],
+	      AC_HELP_STRING([--enable-static-pie],
+			     [build static executables as PIE @<:@default=no@:>@]),
+	      [static_pie=$enableval],
+	      [static_pie=no])
 AC_ARG_ENABLE([timezone-tools],
 	      AC_HELP_STRING([--disable-timezone-tools],
 			     [do not install timezone tools @<:@default=install@:>@]),
@@ -1949,6 +1954,16 @@ if eval "${CC-cc} -S conftest.c 2>&AS_MESSAGE_LOG_FD 1>&AS_MESSAGE_LOG_FD"; then
 fi
 rm -f conftest.*])
 AC_SUBST(libc_cv_pie_default)
+
+# The linker must support --no-dynamic-linker if --enable-static-pie is
+# used.
+if test "$static_pie" = yes; then
+  if test "$libc_cv_no_dynamic_linker" != yes; then
+    AC_MSG_ERROR([linker support for --no-dynamic-linker needed])
+  fi
+  AC_DEFINE(HAVE_STATIC_PIE)
+fi
+LIBC_CONFIG_VAR([have-static-pie], [$static_pie])
 
 AC_SUBST(profile)
 AC_SUBST(static_nss)

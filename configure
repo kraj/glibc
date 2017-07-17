@@ -765,6 +765,7 @@ with_default_link
 enable_sanity_checks
 enable_shared
 enable_profile
+enable_static_pie
 enable_timezone_tools
 enable_hardcoded_path_in_tests
 enable_stackguard_randomization
@@ -1422,6 +1423,7 @@ Optional Features:
                           in special situations) [default=yes]
   --enable-shared         build shared library [default=yes if GNU ld]
   --enable-profile        build profiled library [default=no]
+  --enable-static-pie     build static executables as PIE [default=no]
   --disable-timezone-tools
                           do not install timezone tools [default=install]
   --enable-hardcoded-path-in-tests
@@ -3368,6 +3370,13 @@ if test "${enable_profile+set}" = set; then :
   enableval=$enable_profile; profile=$enableval
 else
   profile=no
+fi
+
+# Check whether --enable-static-pie was given.
+if test "${enable_static_pie+set}" = set; then :
+  enableval=$enable_static_pie; static_pie=$enableval
+else
+  static_pie=no
 fi
 
 # Check whether --enable-timezone-tools was given.
@@ -6889,6 +6898,18 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $libc_cv_pie_default" >&5
 $as_echo "$libc_cv_pie_default" >&6; }
 
+
+# The linker must support --no-dynamic-linker if --enable-static-pie is
+# used.
+if test "$static_pie" = yes; then
+  if test "$libc_cv_no_dynamic_linker" != yes; then
+    as_fn_error $? "linker support for --no-dynamic-linker needed" "$LINENO" 5
+  fi
+  $as_echo "#define HAVE_STATIC_PIE 1" >>confdefs.h
+
+fi
+config_vars="$config_vars
+have-static-pie = $static_pie"
 
 
 
