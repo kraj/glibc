@@ -31,6 +31,10 @@ sysdep_routines += divdi3
 shared-only-routines += divdi3
 CPPFLAGS-divdi3.c = -Din_divdi3_c
 endif
+ifneq (,$(pic-default))
+sysdep_routines += startup_sbrk
+static-only-routines += startup_sbrk
+endif
 endif
 
 ifeq ($(subdir),nptl)

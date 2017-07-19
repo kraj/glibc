@@ -18,9 +18,11 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
+#include <unistd.h>
+#include <stdio.h>
+#include <startup.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include <unistd.h>
 #include <stdlib.h>
 #include <sysdep.h>
 #include <fcntl.h>
@@ -42,7 +44,9 @@ tunables_strdup (const char *in)
   size_t i = 0;
 
   while (in[i++] != '\0');
-  char *out = __sbrk (i);
+
+  /* Can't use __sbrk before __libc_setup_tls is called.  */
+  char *out = _startup_sbrk (i);
 
   /* FIXME: In reality if the allocation fails, __sbrk will crash attempting to
      set the thread-local errno since the TCB has not yet been set up.  This

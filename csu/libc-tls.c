@@ -16,11 +16,12 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
+#include <unistd.h>
+#include <stdio.h>
+#include <startup.h>
 #include <errno.h>
 #include <ldsodefs.h>
 #include <tls.h>
-#include <unistd.h>
-#include <stdio.h>
 #include <sys/param.h>
 
 
@@ -142,11 +143,11 @@ __libc_setup_tls (void)
      _dl_allocate_tls_storage (in elf/dl-tls.c) does using __libc_memalign
      and dl_tls_static_align.  */
   tcb_offset = roundup (memsz + GL(dl_tls_static_size), max_align);
-  tlsblock = __sbrk (tcb_offset + TLS_INIT_TCB_SIZE + max_align);
+  tlsblock = _startup_sbrk (tcb_offset + TLS_INIT_TCB_SIZE + max_align);
 #elif TLS_DTV_AT_TP
   tcb_offset = roundup (TLS_INIT_TCB_SIZE, align ?: 1);
-  tlsblock = __sbrk (tcb_offset + memsz + max_align
-		     + TLS_PRE_TCB_SIZE + GL(dl_tls_static_size));
+  tlsblock = _startup_sbrk (tcb_offset + memsz + max_align
+			    + TLS_PRE_TCB_SIZE + GL(dl_tls_static_size));
   tlsblock += TLS_PRE_TCB_SIZE;
 #else
   /* In case a model with a different layout for the TCB and DTV
@@ -193,7 +194,7 @@ __libc_setup_tls (void)
 # error "Either TLS_TCB_AT_TP or TLS_DTV_AT_TP must be defined"
 #endif
   if (__builtin_expect (lossage != NULL, 0))
-    __libc_fatal (lossage);
+    _startup_fatal (lossage);
 
   /* Update the executable's link map with enough information to make
      the TLS routines happy.  */
