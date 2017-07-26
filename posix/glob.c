@@ -357,6 +357,8 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
   size_t oldcount;
   int meta;
   bool dirname_modified;
+  /* Indicate if the directory should be prepended on return values.  */
+  bool dirname_prefix = true;
   glob_t dirs;
   int retval = 0;
   struct char_array dirname;
@@ -590,6 +592,10 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
 	goto err_nospace;
       dirlen = 1;
       ++filename;
+      /* prefix_array adds a separator for each result and DIRNAME is
+	 already '/'.  So we indicate later that we should not prepend
+	 anything for this specific case.  */
+      dirname_prefix = false;
     }
   else
     {
@@ -1099,7 +1105,7 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
       if (dirlen > 0)
 	{
 	  /* Stick the directory on the front of each name.  */
-	  if (prefix_array (char_array_str (&dirname),
+	  if (prefix_array (dirname_prefix ? char_array_str (&dirname) : "",
 			    &pglob->gl_pathv[old_pathc + pglob->gl_offs],
 			    pglob->gl_pathc - old_pathc))
 	    {
@@ -1196,12 +1202,8 @@ prefix_array (const char *dirname, char **array, size_t n)
 # define DIRSEP_CHAR '/'
 #endif
 
-  if (dirlen == 1 && dirname[0] == '/')
-    /* DIRNAME is just "/", so normal prepending would get us "//foo".
-       We want "/foo" instead, so don't prepend any chars from DIRNAME.  */
-    dirlen = 0;
 #if defined __MSDOS__ || defined WINDOWS32
-  else if (dirlen > 1)
+  if (dirlen > 1)
     {
       if (dirname[dirlen - 1] == '/' && dirname[dirlen - 2] == ':')
 	/* DIRNAME is "d:/".  Don't prepend the slash from DIRNAME.  */

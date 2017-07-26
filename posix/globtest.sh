@@ -242,6 +242,42 @@ if test $failed -ne 0; then
   result=1
 fi
 
+# Test NOCHECK for specific cases where the pattern used starts
+# with '/' (BZ#10246).
+failed=0
+${test_program_prefix} \
+${common_objpfx}posix/globtest -c "$testdir" "/%" |
+sort > $testout
+cat <<"EOF" | $CMP - $testout >> $logfile || failed=1
+`/%'
+EOF
+if test $failed -ne 0; then
+  echo "No check test failed" >> $logfile
+  result=1
+fi
+
+${test_program_prefix} \
+${common_objpfx}posix/globtest -c "$testdir" "//%" |
+sort > $testout
+cat <<"EOF" | $CMP - $testout >> $logfile || failed=1
+`//%'
+EOF
+if test $failed -ne 0; then
+  echo "No check test failed" >> $logfile
+  result=1
+fi
+
+${test_program_prefix} \
+${common_objpfx}posix/globtest -c "$testdir" "///%" |
+sort > $testout
+cat <<"EOF" | $CMP - $testout >> $logfile || failed=1
+`///%'
+EOF
+if test $failed -ne 0; then
+  echo "No check test failed" >> $logfile
+  result=1
+fi
+
 # Test NOMAGIC without magic characters
 failed=0
 ${test_program_prefix} \
