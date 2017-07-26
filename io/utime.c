@@ -37,3 +37,19 @@ utime (const char *file, const struct utimbuf *times)
 libc_hidden_def (utime)
 
 stub_warning (utime)
+
+/* 64-bit time version */
+
+int
+__utime_t64 (const char *file, const struct utimbuf *times)
+{
+  if (file == NULL)
+    {
+      __set_errno (EINVAL);
+      return -1;
+    }
+
+  __set_errno (ENOSYS);
+  return -1;
+}
+stub_warning (__utime_t64)

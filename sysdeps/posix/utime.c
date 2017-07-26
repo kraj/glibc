@@ -45,3 +45,28 @@ utime (const char *file, const struct utimbuf *times)
   return __utimes (file, tvp);
 }
 libc_hidden_def (utime)
+
+/* 64-bit time version */
+
+extern int __utimes64 (const char *file,
+                       const struct __timeval64 tvp[2]);
+
+int
+__utime_t64 (const char *file, const struct __utimbuf64 *times)
+{
+  struct timeval timevals[2];
+  struct timeval *tvp;
+
+  if (times != NULL)
+    {
+      timevals[0].tv_sec = (time_t) times->actime;
+      timevals[0].tv_usec = 0L;
+      timevals[1].tv_sec = (time_t) times->modtime;
+      timevals[1].tv_usec = 0L;
+      tvp = timevals;
+    }
+  else
+    tvp = NULL;
+
+  return __utimes (file, tvp);
+}
