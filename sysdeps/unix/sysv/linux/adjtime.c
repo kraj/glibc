@@ -90,3 +90,46 @@ ADJTIME (const struct TIMEVAL *itv, struct TIMEVAL *otv)
 #ifdef NO_LOCAL_ADJTIME
 weak_alias (__adjtime, adjtime)
 #endif
+
+/* 64-bit time version */
+
+extern int __y2038_linux_support;
+
+int __adjtime_t64 (const struct __timeval64 *itv,
+                 struct __timeval64 *otv)
+{
+  struct TIMEX tntx;
+
+  if (itv)
+    {
+      struct TIMEVAL tmp;
+
+      /* We will do some check here. */
+      tmp.tv_sec = itv->tv_sec + itv->tv_usec / 1000000L;
+      tmp.tv_usec = itv->tv_usec % 1000000L;
+      if (tmp.tv_sec > MAX_SEC || tmp.tv_sec < MIN_SEC)
+	return INLINE_SYSCALL_ERROR_RETURN_VALUE (EINVAL);
+      tntx.offset = tmp.tv_usec + tmp.tv_sec * 1000000L;
+      tntx.modes = ADJ_OFFSET_SINGLESHOT;
+    }
+  else
+    tntx.modes = ADJ_OFFSET_SS_READ;
+
+  if (__glibc_unlikely (ADJTIMEX (&tntx) < 0))
+    return -1;
+
+  if (otv)
+    {
+      if (tntx.offset < 0)
+	{
+	  otv->tv_usec = -(-tntx.offset % 1000000);
+	  otv->tv_sec  = -(-tntx.offset / 1000000);
+	}
+      else
+	{
+	  otv->tv_usec = tntx.offset % 1000000;
+	  otv->tv_sec  = tntx.offset / 1000000;
+	}
+    }
+  return 0;
+}

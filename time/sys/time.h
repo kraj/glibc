@@ -98,6 +98,16 @@ extern int settimeofday (const struct timeval *__tv,
    If OLDDELTA is not NULL, it is filled in with the amount
    of time adjustment remaining to be done from the last `adjtime' call.
    This call is restricted to the super-user.  */
+# ifdef __USE_TIME_BITS64
+#  if defined(__REDIRECT)
+extern int __REDIRECT (adjtime,
+                       (const struct timeval *__delta,
+                        struct timeval *__olddelta),
+                    __adjtime_t64) __THROW;
+#  else
+#   define adjtime __adjtime_t64
+#  endif
+# endif
 extern int adjtime (const struct timeval *__delta,
 		    struct timeval *__olddelta) __THROW;
 #endif
