@@ -905,7 +905,7 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
      [ which we handle the same, using fnmatch.  Broken unterminated
      pattern bracket expressions ought to be rare enough that it is
      not worth special casing them, fnmatch will do the right thing.  */
-  if (meta & 5)
+  if (meta & (__glob_special | __glob_bracket))
     {
       /* The directory name contains metacharacters, so we
 	 have to glob for the directory, and then glob for
@@ -1057,7 +1057,7 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
       size_t old_pathc = pglob->gl_pathc;
       int orig_flags = flags;
 
-      if (meta & 2)
+      if (meta & __glob_backslash)
 	{
 	  char *p = strchr (char_array_str (&dirname), '\\'), *q;
 	  /* We need to unescape the dirname string.  It is certainly
@@ -1270,14 +1270,14 @@ glob_in_dir (const char *pattern, const char *directory, int flags,
   globnames_array_init (&globnames);
 
   meta = __glob_pattern_type (pattern, !(flags & GLOB_NOESCAPE));
-  if (meta == 0 && (flags & (GLOB_NOCHECK|GLOB_NOMAGIC)))
+  if (meta == __glob_none && (flags & (GLOB_NOCHECK|GLOB_NOMAGIC)))
     {
       /* We need not do any tests.  The PATTERN contains no meta
 	 characters and we must not return an error therefore the
 	 result will always contain exactly one name.  */
       flags |= GLOB_NOCHECK;
     }
-  else if (meta == 0)
+  else if (meta == __glob_none)
     {
       /* Since we use the normal file functions we can also use stat()
 	 to verify the file is there.  */

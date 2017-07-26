@@ -19,35 +19,43 @@
 #ifndef GLOB_INTERNAL_H
 # define GLOB_INTERNAL_H
 
+enum __glob_pat_types
+{
+  __glob_none      = 0x0,
+  __glob_special   = 0x1,
+  __glob_backslash = 0x2,
+  __glob_bracket   = 0x4 
+};
+
 static inline int
 __glob_pattern_type (const char *pattern, int quote)
 {
   const char *p;
-  int ret = 0;
+  int ret = __glob_none;
 
   for (p = pattern; *p != '\0'; ++p)
     switch (*p)
       {
       case '?':
       case '*':
-	return 1;
+	return __glob_special;
 
       case '\\':
 	if (quote)
 	  {
 	    if (p[1] != '\0')
 	      ++p;
-	    ret |= 2;
+	    ret |= __glob_backslash;
 	  }
 	break;
 
       case '[':
-	ret |= 4;
+	ret |= __glob_bracket;
 	break;
 
       case ']':
 	if (ret & 4)
-	  return 1;
+	  return __glob_special;
 	break;
       }
 

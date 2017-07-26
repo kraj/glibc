@@ -24,6 +24,6 @@
 int
 __glob_pattern_p (const char *pattern, int quote)
 {
-  return __glob_pattern_type (pattern, quote) == 1;
+  return __glob_pattern_type (pattern, quote) == __glob_special;
 }
 weak_alias (__glob_pattern_p, glob_pattern_p)
