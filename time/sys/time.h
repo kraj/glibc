@@ -148,12 +148,31 @@ typedef int __itimer_which_t;
 
 /* Set *VALUE to the current setting of timer WHICH.
    Return 0 on success, -1 on errors.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern int __REDIRECT (getitimer, (__itimer_which_t __which,
+       struct itimerval *__value), __getitimer_t64)
+       __THROW;
+# else
+# define getitimer __getitimer_t64
+# endif
+#endif
 extern int getitimer (__itimer_which_t __which,
 		      struct itimerval *__value) __THROW;
 
 /* Set the timer WHICH to *NEW.  If OLD is not NULL,
    set *OLD to the old value of timer WHICH.
    Returns 0 on success, -1 on errors.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern int __REDIRECT (setitimer, (__itimer_which_t __which,
+       const struct itimerval *__restrict __new,
+       struct itimerval *__restrict __old), __setitimer_t64)
+       __THROW;
+# else
+# define setitimer __setitimer_t64
+# endif
+#endif
 extern int setitimer (__itimer_which_t __which,
 		      const struct itimerval *__restrict __new,
 		      struct itimerval *__restrict __old) __THROW;
