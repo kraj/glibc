@@ -178,5 +178,7 @@ libc {
 
   GLIBC_Y2038 {
     __msgctl_t64;
+    __ntp_gettime_t64;
+    __ntp_gettimex_t64;
   }
 }
