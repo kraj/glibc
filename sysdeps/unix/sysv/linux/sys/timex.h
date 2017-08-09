@@ -55,6 +55,15 @@ struct ntptimeval
 __BEGIN_DECLS
 
 extern int __adjtimex (struct timex *__ntx) __THROW;
+
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern time_t __REDIRECT (adjtimex, (struct timex *__ntx),
+     __adjtimex_t64) __THROW;
+# else
+# define adjtimex __adjtimex_t64
+# endif
+#endif
 extern int adjtimex (struct timex *__ntx) __THROW;
 
 #ifndef __USE_TIME_BITS64
@@ -75,6 +84,14 @@ extern time_t __REDIRECT (ntp_gettimex, (struct ntptimeval *__ntv),
 # define ntp_gettime ntp_gettimex
 #endif
 
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern int __REDIRECT (ntp_adjtime, (struct timex *__tntx),
+                       __ntp_adjtime_t64) __THROW;
+# else
+# define ntp_adjtime __ntp_adjtime_t64
+# endif
+#endif
 extern int ntp_adjtime (struct timex *__tntx) __THROW;
 
 __END_DECLS
