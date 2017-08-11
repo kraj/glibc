@@ -195,12 +195,7 @@
 
 #endif /* __ASSEMBLER__ */
 
-/* On some platforms we can make internal function calls (i.e., calls of
-   functions not exported) a bit faster by using a different calling
-   convention.  */
-#ifndef internal_function
-# define internal_function	/* empty */
-#endif
+#include <function-attrs.h>
 
 /* Determine the return address.  */
 #define RETURN_ADDRESS(nr) \

@@ -23,7 +23,7 @@
    so as to mprotect it.  */
 
 int
-internal_function
+private_function
 _dl_make_stack_executable (void **stack_endp)
 {
   return ENOSYS;

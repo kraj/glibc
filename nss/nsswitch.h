@@ -169,7 +169,7 @@ extern void __nss_disable_nscd (void (*) (size_t, struct traced_file *));
 
 typedef int (*db_lookup_function) (service_user **, const char *, const char *,
 				   void **)
-     internal_function;
+     private_function;
 typedef enum nss_status (*setent_function) (int);
 typedef enum nss_status (*endent_function) (void);
 typedef enum nss_status (*getent_function) (void *, char *, size_t,

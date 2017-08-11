@@ -26,7 +26,7 @@ libc_compiler_builtin_inlined=no
 cat > conftest.c <<EOF
 int _start (void) { int a, b, c; __sync_val_compare_and_swap (&a, b, c); return 0; }
 EOF
-if ! { ac_try='${CC-cc} $CFLAGS $CPPFLAGS $LDFLAGS
+if ! { ac_try='${CC-cc} $CFLAGS $CPPFLAGS $LDFLAGS $no_ssp
 		     -O0 -nostdlib -nostartfiles
 		     -S conftest.c -o - | fgrep "__sync_val_compare_and_swap"
 		     1>&5'
@@ -76,9 +76,6 @@ if test $libc_cv_asm_mpx = yes; then
   $as_echo "#define HAVE_MPX_SUPPORT 1" >>confdefs.h
 
 fi
-
-$as_echo "#define USE_REGPARMS 1" >>confdefs.h
-
 
 $as_echo "#define PI_STATIC_AND_HIDDEN 1" >>confdefs.h
 

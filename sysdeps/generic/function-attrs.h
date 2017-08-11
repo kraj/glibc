@@ -1,5 +1,5 @@
-/* Group merging implementation.
-   Copyright (C) 2016-2017 Free Software Foundation, Inc.
+/* Define internal_function and private_function.  Generic version.
+   Copyright (C) 2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -16,22 +16,9 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef _GRP_MERGE_H
-#define _GRP_MERGE_H 1
-
-#include <grp.h>
-
-/* Duplicate a grp struct (and its members). When no longer needed, the
-   calling function must free(newbuf).  */
-int
-__copy_grp (const struct group srcgrp, const size_t buflen,
-	    struct group *destgrp, char *destbuf, char **endptr)
-	    private_function;
-
-/* Merge the member lists of two grp structs together.  */
-int
-__merge_grp (struct group *savedgrp, char *savedbuf, char *savedend,
-	     size_t buflen, struct group *mergegrp, char *mergebuf)
-	     private_function;
-
-#endif /* _GRP_MERGE_H */
+/* On some platforms we can make internal function calls (i.e., calls of
+   functions within the same shared object) or private function calls
+   (i.e., calls of functions between different shared objects of glibc)
+   a bit faster by using a different calling convention.  */
+#define internal_function	/* empty */
+#define private_function	/* empty */

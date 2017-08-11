@@ -38,7 +38,7 @@ __fortify_fail_abort (_Bool need_backtrace, const char *msg)
 }
 
 void
-__attribute__ ((noreturn)) internal_function
+__attribute__ ((noreturn)) private_function
 __fortify_fail (const char *msg)
 {
   __fortify_fail_abort (true, msg);

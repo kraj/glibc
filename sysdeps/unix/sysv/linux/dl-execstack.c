@@ -30,7 +30,7 @@ extern int __stack_prot attribute_relro attribute_hidden;
 
 
 int
-internal_function
+private_function
 _dl_make_stack_executable (void **stack_endp)
 {
   /* This gives us the highest/lowest page that needs to be changed.  */

@@ -99,7 +99,7 @@ extern void __libc_fatal (const char *__message)
 extern void __libc_message (enum __libc_message_action action,
 			    const char *__fnt, ...);
 extern void __fortify_fail (const char *msg)
-     __attribute__ ((__noreturn__)) internal_function;
+     __attribute__ ((__noreturn__)) private_function;
 extern void __fortify_fail_abort (_Bool, const char *msg)
      __attribute__ ((__noreturn__)) internal_function;
 libc_hidden_proto (__fortify_fail)
