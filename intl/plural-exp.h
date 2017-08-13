@@ -106,13 +106,13 @@ struct parse_args
 #endif
 
 extern void FREE_EXPRESSION (struct expression *exp)
-     internal_function;
+     internal_function attribute_hidden;
 extern int PLURAL_PARSE (struct parse_args *arg);
 extern const struct expression GERMANIC_PLURAL attribute_hidden;
 extern void EXTRACT_PLURAL_EXPRESSION (const char *nullentry,
 				       const struct expression **pluralp,
 				       unsigned long int *npluralsp)
-     internal_function;
+     internal_function attribute_hidden;
 
 #if !defined (_LIBC) && !defined (IN_LIBINTL) && !defined (IN_LIBGLOCALE)
 extern unsigned long int plural_eval (const struct expression *pexp,

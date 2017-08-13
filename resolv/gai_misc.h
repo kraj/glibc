@@ -76,23 +76,23 @@ extern pthread_mutex_t __gai_requests_mutex;
 
 /* Enqueue request.  */
 extern struct requestlist *__gai_enqueue_request (struct gaicb *gaicbp)
-     internal_function;
+     internal_function attribute_hidden;
 
 /* Find request on wait list.  */
 extern struct requestlist *__gai_find_request (const struct gaicb *gaicbp)
-     internal_function;
+     internal_function attribute_hidden;
 
 /* Remove request from waitlist.  */
 extern int __gai_remove_request (struct gaicb *gaicbp)
-     internal_function;
+     internal_function attribute_hidden;
 
 /* Notify initiator of request and tell this everybody listening.  */
 extern void __gai_notify (struct requestlist *req)
-     internal_function;
+     internal_function attribute_hidden;
 
 /* Notify initiator of request.  */
 extern int __gai_notify_only (struct sigevent *sigev, pid_t caller_pid)
-     internal_function;
+     internal_function attribute_hidden;
 
 /* Send the signal.  */
 extern int __gai_sigqueue (int sig, const union sigval val, pid_t caller_pid)
