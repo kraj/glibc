@@ -1,10 +1,10 @@
-/* Copyright (C) 1991-2018 Free Software Foundation, Inc.
+/* qsort, sort an array.
    This file is part of the GNU C Library.
-   Written by Douglas C. Schmidt (schmidt@ics.uci.edu).
+   Copyright (C) 2018 Free Software Foundation, Inc.
 
    The GNU C Library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
-   License as published by the Free Software Foundation; either
+   GLicense as published by the Free Software Foundation; either
    version 2.1 of the License, or (at your option) any later version.
 
    The GNU C Library is distributed in the hope that it will be useful,
@@ -16,234 +16,224 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-/* If you consider tuning this algorithm, you should consult first:
-   Engineering a sort function; Jon Bentley and M. Douglas McIlroy;
-   Software - Practice and Experience; Vol. 23 (11), 1249-1265, 1993.  */
+/* The qsort{_r} implementation is based on Smoothsort by Dijkstra [1]
+   with the optimization to used O(1) extra space (implicit Leonardo
+   Heaps).  A extensive analysis on algorithm details was written by
+   Keith Schwarz [2].  This implementation is based on paper [3].
+
+   The Smoothsort is used because:
+
+   1. follows the comparison sort with an average-case lower bound of
+      O(n * log (n)).
+
+   2. It uses O(1) extra memory (the implicit Leonardo heap plus stack
+      function usage).  It allows the function to be as-safe and also
+      to avoid extra latency (due a possible malloc or extra function
+      calls on a mergesort for instance).
+
+   3. It has a the advantage over heapsort to approximate of O(n) for
+      inputs already sorted in some degree.
+
+   [1] http://www.cs.utexas.edu/users/EWD/ewd07xx/EWD796a.PDF
+   [2] http://www.keithschwarz.com/smoothsort/
+   [3] http://www.enterag.ch/hartwig/order/smoothsort.pdf
+ */
 
 #include <alloca.h>
 #include <limits.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
-/* Byte-wise swap two items of size SIZE. */
-#define SWAP(a, b, size)						      \
-  do									      \
-    {									      \
-      size_t __size = (size);						      \
-      char *__a = (a), *__b = (b);					      \
-      do								      \
-	{								      \
-	  char __tmp = *__a;						      \
-	  *__a++ = *__b;						      \
-	  *__b++ = __tmp;						      \
-	} while (--__size > 0);						      \
-    } while (0)
+/* Helper to get the address of BASE access as an array of elements of
+   size SIZE.  */
+static inline void *
+arr (void *base, size_t idx, size_t size)
+{
+  return (void*)((uintptr_t)base + (idx * size));
+}
 
-/* Discontinue quicksort algorithm when partition gets below this size.
-   This particular magic number was chosen to work best on a Sun 4/260. */
-#define MAX_THRESH 4
+/* Bitvector to encode the used Leonardo Heaps.  We need at most 1.7i bits
+   to encode all the Leonardo numbers that can fit in a machine with word
+   of size 2^i.  */
+typedef size_t lnbitvector_t[2];
 
-/* Stack node declarations used to store unfulfilled partition obligations. */
-typedef struct
-  {
-    char *lo;
-    char *hi;
-  } stack_node;
+static inline void
+incr (lnbitvector_t p)
+{
+  size_t r = p[0] + 1;
+  p[1] += ((p[0] ^ r) & p[0]) >> (sizeof(size_t) * 8 - 1);
+  p[0] = r;
+}
 
-/* The next 4 #defines implement a very fast in-line stack abstraction. */
-/* The stack needs log (total_elements) entries (we could even subtract
-   log(MAX_THRESH)).  Since total_elements has type size_t, we get as
-   upper bound for log (total_elements):
-   bits per byte (CHAR_BIT) * sizeof(size_t).  */
-#define STACK_SIZE	(CHAR_BIT * sizeof(size_t))
-#define PUSH(low, high)	((void) ((top->lo = (low)), (top->hi = (high)), ++top))
-#define	POP(low, high)	((void) (--top, (low = top->lo), (high = top->hi)))
-#define	STACK_NOT_EMPTY	(stack < top)
+static inline void
+decr (lnbitvector_t p)
+{
+  size_t r = p[0] - 1;
+  p[1] -= ((r ^ p[0]) & r) >> (sizeof(size_t) * 8 - 1);
+  p[0] = r;
+}
+
+static inline void
+shr (lnbitvector_t p)
+{
+  p[0] >>= 1;
+  p[0] |= p[1] << (sizeof(size_t) * 8 - 1);
+  p[1] >>= 1;
+}
+
+static inline void
+shl (lnbitvector_t p)
+{
+  p[1] <<= 1;
+  p[1] |= p[0] >> (sizeof(size_t) * 8 - 1);
+  p[0] <<= 1;
+}
 
 
-/* Order size using quicksort.  This implementation incorporates
-   four optimizations discussed in Sedgewick:
+/* Swap SIZE bytes between addresses A and B.  Helper to generic types
+   are provided as an optimization.  */
 
-   1. Non-recursive, using an explicit stack of pointer that store the
-      next array partition to sort.  To save time, this maximum amount
-      of space required to store an array of SIZE_MAX is allocated on the
-      stack.  Assuming a 32-bit (64 bit) integer for size_t, this needs
-      only 32 * sizeof(stack_node) == 256 bytes (for 64 bit: 1024 bytes).
-      Pretty cheap, actually.
+typedef void (*swap_t)(void *, void *, size_t);
 
-   2. Chose the pivot element using a median-of-three decision tree.
-      This reduces the probability of selecting a bad pivot value and
-      eliminates certain extraneous comparisons.
+static inline bool
+check_alignment (const void *base, size_t align)
+{
+  return _STRING_ARCH_unaligned || ((uintptr_t)base % (align - 1)) == 0;
+}
 
-   3. Only quicksorts TOTAL_ELEMS / MAX_THRESH partitions, leaving
-      insertion sort to order the MAX_THRESH items within each partition.
-      This is a big win, since insertion sort is faster for small, mostly
-      sorted array segments.
+static void
+swap_u32 (void *a, void *b, size_t size)
+{
+  uint32_t tmp = *(uint32_t*) a;
+  *(uint32_t*) a = *(uint32_t*) b;
+  *(uint32_t*) b = tmp;
+}
 
-   4. The larger of the two sub-partitions is always pushed onto the
-      stack first, with the algorithm then concentrating on the
-      smaller partition.  This *guarantees* no more than log (total_elems)
-      stack size is needed (actually O(1) in this case)!  */
+static void
+swap_u64 (void *a, void *b, size_t size)
+{
+  uint64_t tmp = *(uint64_t*) a;
+  *(uint64_t*) a = *(uint64_t*) b;
+  *(uint64_t*) b = tmp;
+}
+
+static inline void
+swap_generic (void *a, void *b, size_t size)
+{
+  unsigned char tmp[256];
+  do
+    {
+      size_t s = size > sizeof (tmp) ? sizeof (tmp) : size;
+      memcpy (tmp, a, s);
+      a = __mempcpy (a, b, s);
+      b = __mempcpy (b, tmp, s);
+      size -= s;
+    }
+  while (size > 0);
+}
+
+static inline swap_t
+select_swap_func (const void *base, size_t size)
+{
+  if (size == 4 && check_alignment (base, 4))
+    return swap_u32;
+  else if (size == 8 && check_alignment (base, 8))
+    return swap_u64;
+  return swap_generic;
+}
+
+
+struct state_t
+{
+  size_t q;         /* Length of the unsorted prefix (1 <= q <= n).  */
+  size_t n;         /* Total number of elements.  */
+  size_t r;
+  size_t b;         /* Leonardo number.  */
+  size_t c;         /* Next Leonardo number.  */
+  lnbitvector_t p;  /* Bitvector to track the Leonardo heaps.  */
+};
+
+static inline size_t
+up (struct state_t *s)
+{
+  shr (s->p);
+
+  size_t next = s->b + s->c + 1;
+  s->c = s->b;
+  s->b = next;
+  return next;
+}
+
+static inline size_t
+down (struct state_t *s, size_t bit)
+{
+  shl (s->p);
+
+  s->p[0] |= bit;
+
+  size_t prev = s->c;
+  s->c = s->b - s->c - 1;
+  s->b = prev;
+  return prev;
+}
+
+/* Invariant arguments used generic functions.  */
+struct args_t
+{
+  void *m;            /* Base pointer to array.  */
+  size_t s;           /* Element size.  */
+  __compar_fn_t cmp;  /* Comparison function.  */
+  swap_t swap;        /* Swap function.  */
+};
+
+#include "qsort_common.c"
 
 void
-_quicksort (void *const pbase, size_t total_elems, size_t size,
-	    __compar_d_fn_t cmp, void *arg)
+qsort (void *base, size_t nmemb, size_t size, __compar_fn_t cmp)
 {
-  char *base_ptr = (char *) pbase;
+  struct args_t args = { base, size, cmp, select_swap_func (base, size) };
+  struct state_t s = { 1, nmemb, 0, 1, 1, { 1, 0 } };
 
-  const size_t max_thresh = MAX_THRESH * size;
-
-  if (total_elems == 0)
-    /* Avoid lossage with unsigned arithmetic below.  */
+  if (nmemb <= 0)
     return;
 
-  if (total_elems > MAX_THRESH)
-    {
-      char *lo = base_ptr;
-      char *hi = &lo[size * (total_elems - 1)];
-      stack_node stack[STACK_SIZE];
-      stack_node *top = stack;
+  buildtree (&args, &s);
 
-      PUSH (NULL, NULL);
+  trinkle (&args, s.r, s);
 
-      while (STACK_NOT_EMPTY)
-        {
-          char *left_ptr;
-          char *right_ptr;
-
-	  /* Select median value from among LO, MID, and HI. Rearrange
-	     LO and HI so the three values are sorted. This lowers the
-	     probability of picking a pathological pivot value and
-	     skips a comparison for both the LEFT_PTR and RIGHT_PTR in
-	     the while loops. */
-
-	  char *mid = lo + size * ((hi - lo) / size >> 1);
-
-	  if ((*cmp) ((void *) mid, (void *) lo, arg) < 0)
-	    SWAP (mid, lo, size);
-	  if ((*cmp) ((void *) hi, (void *) mid, arg) < 0)
-	    SWAP (mid, hi, size);
-	  else
-	    goto jump_over;
-	  if ((*cmp) ((void *) mid, (void *) lo, arg) < 0)
-	    SWAP (mid, lo, size);
-	jump_over:;
-
-	  left_ptr  = lo + size;
-	  right_ptr = hi - size;
-
-	  /* Here's the famous ``collapse the walls'' section of quicksort.
-	     Gotta like those tight inner loops!  They are the main reason
-	     that this algorithm runs much faster than others. */
-	  do
-	    {
-	      while ((*cmp) ((void *) left_ptr, (void *) mid, arg) < 0)
-		left_ptr += size;
-
-	      while ((*cmp) ((void *) mid, (void *) right_ptr, arg) < 0)
-		right_ptr -= size;
-
-	      if (left_ptr < right_ptr)
-		{
-		  SWAP (left_ptr, right_ptr, size);
-		  if (mid == left_ptr)
-		    mid = right_ptr;
-		  else if (mid == right_ptr)
-		    mid = left_ptr;
-		  left_ptr += size;
-		  right_ptr -= size;
-		}
-	      else if (left_ptr == right_ptr)
-		{
-		  left_ptr += size;
-		  right_ptr -= size;
-		  break;
-		}
-	    }
-	  while (left_ptr <= right_ptr);
-
-          /* Set up pointers for next iteration.  First determine whether
-             left and right partitions are below the threshold size.  If so,
-             ignore one or both.  Otherwise, push the larger partition's
-             bounds on the stack and continue sorting the smaller one. */
-
-          if ((size_t) (right_ptr - lo) <= max_thresh)
-            {
-              if ((size_t) (hi - left_ptr) <= max_thresh)
-		/* Ignore both small partitions. */
-                POP (lo, hi);
-              else
-		/* Ignore small left partition. */
-                lo = left_ptr;
-            }
-          else if ((size_t) (hi - left_ptr) <= max_thresh)
-	    /* Ignore small right partition. */
-            hi = right_ptr;
-          else if ((right_ptr - lo) > (hi - left_ptr))
-            {
-	      /* Push larger left partition indices. */
-              PUSH (lo, right_ptr);
-              lo = left_ptr;
-            }
-          else
-            {
-	      /* Push larger right partition indices. */
-              PUSH (left_ptr, hi);
-              hi = right_ptr;
-            }
-        }
-    }
-
-  /* Once the BASE_PTR array is partially sorted by quicksort the rest
-     is completely sorted using insertion sort, since this is efficient
-     for partitions below MAX_THRESH size. BASE_PTR points to the beginning
-     of the array to sort, and END_PTR points at the very last element in
-     the array (*not* one beyond it!). */
-
-#define min(x, y) ((x) < (y) ? (x) : (y))
-
-  {
-    char *const end_ptr = &base_ptr[size * (total_elems - 1)];
-    char *tmp_ptr = base_ptr;
-    char *thresh = min(end_ptr, base_ptr + max_thresh);
-    char *run_ptr;
-
-    /* Find smallest element in first threshold and place it at the
-       array's beginning.  This is the smallest array element,
-       and the operation speeds up insertion sort's inner loop. */
-
-    for (run_ptr = tmp_ptr + size; run_ptr <= thresh; run_ptr += size)
-      if ((*cmp) ((void *) run_ptr, (void *) tmp_ptr, arg) < 0)
-        tmp_ptr = run_ptr;
-
-    if (tmp_ptr != base_ptr)
-      SWAP (tmp_ptr, base_ptr, size);
-
-    /* Insertion sort, running from left-hand-side up to right-hand-side.  */
-
-    run_ptr = base_ptr + size;
-    while ((run_ptr += size) <= end_ptr)
-      {
-	tmp_ptr = run_ptr - size;
-	while ((*cmp) ((void *) run_ptr, (void *) tmp_ptr, arg) < 0)
-	  tmp_ptr -= size;
-
-	tmp_ptr += size;
-        if (tmp_ptr != run_ptr)
-          {
-            char *trav;
-
-	    trav = run_ptr + size;
-	    while (--trav >= run_ptr)
-              {
-                char c = *trav;
-                char *hi, *lo;
-
-                for (hi = lo = trav; (lo -= size) >= tmp_ptr; hi = lo)
-                  *hi = *lo;
-                *hi = c;
-              }
-          }
-      }
-  }
+  buildsorted (&args, &s);
 }
+libc_hidden_def (qsort)
+
+struct args_t_r
+{
+  void *m;
+  size_t s;
+  __compar_d_fn_t cmp;
+  void *a;
+  swap_t swap;
+};
+
+#define R_VERSION
+#include "qsort_common.c"
+
+void
+__qsort_r (void *base, size_t nmemb, size_t size, __compar_d_fn_t cmp,
+	   void *arg)
+{
+  struct args_t_r args = { base, size, cmp, arg, select_swap_func (base, size) };
+  struct state_t s = { 1, nmemb, 0, 1, 1, { 1, 0 } };
+
+  if (nmemb <= 1)
+    return;
+
+  buildtree_r (&args, &s);
+
+  trinkle_r (&args, s.r, s);
+
+  buildsorted_r (&args, &s);
+}
+
+libc_hidden_def (__qsort_r)
+weak_alias (__qsort_r, qsort_r)
