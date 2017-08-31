@@ -76,7 +76,7 @@ LOCALES := en_US.UTF-8 tr_TR.UTF-8 cs_CZ.UTF-8 fa_IR.UTF-8 fr_FR.UTF-8 \
 include ../gen-locales.mk
 endif
 
-stdlib-benchset := strtod
+stdlib-benchset := strtod qsort
 
 stdio-common-benchset := sprintf
 
