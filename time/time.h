@@ -72,15 +72,37 @@ __BEGIN_DECLS
 extern clock_t clock (void) __THROW;
 
 /* Return the current time and put it in *TIMER if TIMER is not NULL.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern time_t __REDIRECT (time, (time_t * __timer),
+     __time_t64) __THROW;
+# else
+# define time __time_t64
+# endif
+#endif
 extern time_t time (time_t *__timer) __THROW;
 
 /* Return the difference between TIME1 and TIME0.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern double __REDIRECT (difftime, (time_t __time1, time_t __time0),
+     __difftime64) __THROW;
+# else
+# define difftime __difftime64
+# endif
+#endif
 extern double difftime (time_t __time1, time_t __time0)
      __THROW __attribute__ ((__const__));
 
 /* Return the `time_t' representation of TP and normalize TP.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern time_t __REDIRECT (mktime, (struct tm *__tp), __mktime64) __THROW;
+# else
+# define mktime __mktime64
+# endif
+#endif
 extern time_t mktime (struct tm *__tp) __THROW;
-
 
 /* Format TP into S according to FORMAT.
    Write no more than MAXSIZE characters and return the number
@@ -116,20 +138,52 @@ extern char *strptime_l (const char *__restrict __s,
 
 /* Return the `struct tm' representation of *TIMER
    in Universal Coordinated Time (aka Greenwich Mean Time).  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern struct tm * __REDIRECT (gmtime, (const time_t *__timer),
+       __gmtime64) __THROW;
+# else
+# define gmtime __gmtime64
+# endif
+#endif
 extern struct tm *gmtime (const time_t *__timer) __THROW;
 
 /* Return the `struct tm' representation
    of *TIMER in the local timezone.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern struct tm * __REDIRECT (localtime, (const time_t *__timer),
+       __localtime64) __THROW;
+# else
+# define localtime __localtime64
+# endif
+#endif
 extern struct tm *localtime (const time_t *__timer) __THROW;
 
 #ifdef __USE_POSIX
 /* Return the `struct tm' representation of *TIMER in UTC,
    using *TP to store the result.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern struct tm * __REDIRECT (gmtime_r, (const time_t *__restrict
+       __timer, struct tm *__restrict __tp), __gmtime64_r) __THROW;
+# else
+# define gmtime_r __gmtime64_r
+# endif
+#endif
 extern struct tm *gmtime_r (const time_t *__restrict __timer,
 			    struct tm *__restrict __tp) __THROW;
 
 /* Return the `struct tm' representation of *TIMER in local time,
    using *TP to store the result.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern struct tm * __REDIRECT (localtime_r, (const time_t *__restrict
+       __timer, struct tm *__restrict __tp), __localtime64_r) __THROW;
+# else
+# define localtime_r __localtime64_r
+# endif
+#endif
 extern struct tm *localtime_r (const time_t *__restrict __timer,
 			       struct tm *__restrict __tp) __THROW;
 #endif	/* POSIX */
@@ -139,6 +193,14 @@ extern struct tm *localtime_r (const time_t *__restrict __timer,
 extern char *asctime (const struct tm *__tp) __THROW;
 
 /* Equivalent to `asctime (localtime (timer))'.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern char * __REDIRECT (ctime, (const time_t *__timer),
+       __ctime64) __THROW;
+# else
+# define ctime __ctime64
+# endif
+#endif
 extern char *ctime (const time_t *__timer) __THROW;
 
 #ifdef __USE_POSIX
@@ -150,6 +212,14 @@ extern char *asctime_r (const struct tm *__restrict __tp,
 			char *__restrict __buf) __THROW;
 
 /* Equivalent to `asctime_r (localtime_r (timer, *TMP*), buf)'.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern char * __REDIRECT (ctime_r, (const time_t *__restrict __timer,
+       char *__restrict __buf), __ctime64_r) __THROW;
+# else
+# define ctime_r __ctime64_r
+# endif
+#endif
 extern char *ctime_r (const time_t *__restrict __timer,
 		      char *__restrict __buf) __THROW;
 #endif	/* POSIX */
@@ -178,6 +248,14 @@ extern long int timezone;
 #ifdef __USE_MISC
 /* Set the system time to *WHEN.
    This call is restricted to the superuser.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern int __REDIRECT (stime, (const time_t *__when), __stime_t64)
+           __THROW;
+# else
+# define stime __stime_t64
+# endif
+#endif
 extern int stime (const time_t *__when) __THROW;
 #endif
 
@@ -193,9 +271,23 @@ extern int stime (const time_t *__when) __THROW;
    localtime package.  These are included only for compatibility.  */
 
 /* Like `mktime', but for TP represents Universal Time, not local time.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern time_t __REDIRECT (timegm, (struct tm *__tp), __timegm64) __THROW;
+# else
+# define timegm __timegm64
+# endif
+#endif
 extern time_t timegm (struct tm *__tp) __THROW;
 
 /* Another name for `mktime'.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern time_t __REDIRECT (timelocal, (struct tm *__tp), __timelocal64) __THROW;
+# else
+# define timelocal __timelocal64
+# endif
+#endif
 extern time_t timelocal (struct tm *__tp) __THROW;
 
 /* Return the number of days in YEAR.  */
@@ -208,17 +300,49 @@ extern int dysize (int __year) __THROW  __attribute__ ((__const__));
 
    This function is a cancellation point and therefore not marked with
    __THROW.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern int __REDIRECT (nanosleep, (const struct timespec *__requested_time,
+		      struct timespec *__remaining), __nanosleep_t64);
+# else
+# define nanosleep __nanosleep_t64
+# endif
+#endif
 extern int nanosleep (const struct timespec *__requested_time,
 		      struct timespec *__remaining);
 
 
 /* Get resolution of clock CLOCK_ID.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern int __REDIRECT (clock_getres, (clockid_t __clock_id, struct
+     timespec *__res), __clock_getres64) __THROW;
+# else
+# define clock_getres __clock_getres64
+# endif
+#endif
 extern int clock_getres (clockid_t __clock_id, struct timespec *__res) __THROW;
 
 /* Get current value of clock CLOCK_ID and store it in TP.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern int __REDIRECT (clock_gettime, (clockid_t __clock_id, struct
+     timespec *__tp), __clock_gettime64) __THROW;
+# else
+# define clock_gettime __clock_gettime64
+# endif
+#endif
 extern int clock_gettime (clockid_t __clock_id, struct timespec *__tp) __THROW;
 
 /* Set clock CLOCK_ID to value TP.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern int __REDIRECT (clock_settime, (clockid_t __clock_id, const struct
+     timespec *__tp), __clock_settime64) __THROW;
+# else
+# define clock_settime __clock_settime64
+# endif
+#endif
 extern int clock_settime (clockid_t __clock_id, const struct timespec *__tp)
      __THROW;
 
@@ -227,6 +351,15 @@ extern int clock_settime (clockid_t __clock_id, const struct timespec *__tp)
 
    This function is a cancellation point and therefore not marked with
    __THROW.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern int __REDIRECT (clock_nanosleep, (clockid_t __clock_id, int __flags,
+     const struct timespec *__req, struct timespec *__rem),
+     __clock_nanosleep64) __THROW;
+# else
+# define clock_nanosleep __clock_nanosleep64
+# endif
+#endif
 extern int clock_nanosleep (clockid_t __clock_id, int __flags,
 			    const struct timespec *__req,
 			    struct timespec *__rem);
@@ -245,11 +378,29 @@ extern int timer_create (clockid_t __clock_id,
 extern int timer_delete (timer_t __timerid) __THROW;
 
 /* Set timer TIMERID to VALUE, returning old value in OVALUE.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern int __REDIRECT (timer_settime, (timer_t __timerid, int __flags,
+			  const struct itimerspec *__restrict __value,
+			  struct itimerspec *__restrict __ovalue),
+                          __timer_settime64) __THROW;
+# else
+# define timer_settime __timer_settime64
+# endif
+#endif
 extern int timer_settime (timer_t __timerid, int __flags,
 			  const struct itimerspec *__restrict __value,
 			  struct itimerspec *__restrict __ovalue) __THROW;
 
 /* Get current value of timer TIMERID and store it in VALUE.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern int __REDIRECT (timer_gettime, (timer_t __timerid, struct
+     itimerspec *__value), __timer_gettime64) __THROW __nonnull ((1));
+# else
+# define timer_gettime __timer_gettime64
+# endif
+#endif
 extern int timer_gettime (timer_t __timerid, struct itimerspec *__value)
      __THROW;
 
@@ -260,6 +411,14 @@ extern int timer_getoverrun (timer_t __timerid) __THROW;
 
 #ifdef __USE_ISOC11
 /* Set TS to calendar time based in time base BASE.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern int __REDIRECT (timespec_get, (struct timespec *__ts, int __base),
+     __timespec_get64) __THROW __nonnull ((1));
+# else
+# define timespec_get __timespec_get64
+# endif
+#endif
 extern int timespec_get (struct timespec *__ts, int __base)
      __THROW __nonnull ((1));
 #endif

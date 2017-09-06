@@ -765,6 +765,16 @@ extern int pthread_mutex_lock (pthread_mutex_t *__mutex)
 
 #ifdef __USE_XOPEN2K
 /* Wait until lock becomes available, or specified time passes. */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern struct tm * __REDIRECT (pthread_mutex_timedlock,
+                               (pthread_mutex_t *__restrict __mutex,
+                                const struct timespec *__restrict __abstime),
+       __pthread_mutex_timedlock_t64) __THROWNL __nonnull ((1, 2));
+# else
+# define pthread_mutex_timedlock __pthread_mutex_timedlock_t64
+# endif
+#endif
 extern int pthread_mutex_timedlock (pthread_mutex_t *__restrict __mutex,
 				    const struct timespec *__restrict
 				    __abstime) __THROWNL __nonnull ((1, 2));
@@ -904,6 +914,16 @@ extern int pthread_rwlock_tryrdlock (pthread_rwlock_t *__rwlock)
 
 # ifdef __USE_XOPEN2K
 /* Try to acquire read lock for RWLOCK or return after specfied time.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern struct tm * __REDIRECT (pthread_rwlock_timedrdlock,
+                               (pthread_rwlock_t *__restrict __rwlock,
+                                struct timespec *__restrict __abstime),
+       __pthread_rwlock_timedrdlock_t64) __THROWNL __nonnull ((1, 2));
+# else
+# define pthread_rwlock_timedrdlock __pthread_rwlock_timedrdlock_t64
+# endif
+#endif
 extern int pthread_rwlock_timedrdlock (pthread_rwlock_t *__restrict __rwlock,
 				       const struct timespec *__restrict
 				       __abstime) __THROWNL __nonnull ((1, 2));
@@ -919,6 +939,16 @@ extern int pthread_rwlock_trywrlock (pthread_rwlock_t *__rwlock)
 
 # ifdef __USE_XOPEN2K
 /* Try to acquire write lock for RWLOCK or return after specfied time.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern struct tm * __REDIRECT (pthread_rwlock_timedwrlock,
+                               (pthread_rwlock_t *__restrict __rwlock,
+                                struct timespec *__restrict __abstime),
+       __pthread_rwlock_timedwrlock_t64) __THROWNL __nonnull ((1, 2));
+# else
+# define pthread_rwlock_timedwrlock __pthread_rwlock_timedwrlock_t64
+# endif
+#endif
 extern int pthread_rwlock_timedwrlock (pthread_rwlock_t *__restrict __rwlock,
 				       const struct timespec *__restrict
 				       __abstime) __THROWNL __nonnull ((1, 2));
@@ -998,6 +1028,17 @@ extern int pthread_cond_wait (pthread_cond_t *__restrict __cond,
 
    This function is a cancellation point and therefore not marked with
    __THROW.  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern struct tm * __REDIRECT (pthread_cond_timedwait,
+                               (pthread_cond_t *__restrict __cond,
+                                pthread_mutex_t *__restrict __mutex,
+                                const struct timespec *__restrict __abstime),
+       __pthread_cond_timedwait_t64) __nonnull ((1, 2, 3));
+# else
+# define pthread_cond_timedwait __pthread_cond_timedwait_t64
+# endif
+#endif
 extern int pthread_cond_timedwait (pthread_cond_t *__restrict __cond,
 				   pthread_mutex_t *__restrict __mutex,
 				   const struct timespec *__restrict __abstime)
