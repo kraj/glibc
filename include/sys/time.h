@@ -39,5 +39,6 @@ extern int __utimes (const char *__file, const struct timeval __tvp[2])
 	attribute_hidden;
 extern int __futimes (int fd, const struct timeval tvp[2]) attribute_hidden;
 
+extern struct tm * __localtime64 (const __time64_t *__timer);
 # endif
 #endif
