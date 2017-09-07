@@ -39,3 +39,25 @@ timer_gettime (timer_t timerid, struct itimerspec *value)
 
   return res;
 }
+
+/* 64-bit time version */
+
+int
+__timer_gettime64 (timer_t timerid, struct __itimerspec64 *value)
+{
+  struct itimerspec value32;
+  struct timer *kt = (struct timer *) timerid;
+  int res;
+
+  res = INLINE_SYSCALL (timer_gettime, 2, kt->ktimerid, &value32);
+
+  if (res == 0)
+    {
+      value->it_value.tv_sec = value32.it_value.tv_sec;
+      value->it_value.tv_nsec = value32.it_value.tv_nsec;
+      value->it_interval.tv_sec = value32.it_interval.tv_sec;
+      value->it_interval.tv_nsec = value32.it_interval.tv_nsec;
+    }
+
+  return res;
+}
