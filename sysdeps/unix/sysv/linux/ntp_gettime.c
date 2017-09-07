@@ -18,6 +18,7 @@
 #define ntp_gettime ntp_gettime_redirect
 
 #include <sys/timex.h>
+#include <include/time.h>
 
 #undef ntp_gettime
 
@@ -35,6 +36,30 @@ ntp_gettime (struct ntptimeval *ntv)
   tntx.modes = 0;
   result = __adjtimex (&tntx);
   ntv->time = tntx.time;
+  ntv->maxerror = tntx.maxerror;
+  ntv->esterror = tntx.esterror;
+  return result;
+}
+
+/* The 64-bit-time version */
+
+extern int __y2038_linux_support;
+
+int
+__ntp_gettime_t64 (struct __ntptimeval_t64 *ntv)
+{
+  struct timex tntx;
+  int result;
+
+  if (__y2038_linux_support)
+    {
+      // TODO: use 64-bit syscall if possible
+    }
+
+  tntx.modes = 0;
+  result = __adjtimex (&tntx);
+  ntv->time.tv_sec = tntx.time.tv_sec;
+  ntv->time.tv_usec = tntx.time.tv_usec;
   ntv->maxerror = tntx.maxerror;
   ntv->esterror = tntx.esterror;
   return result;
