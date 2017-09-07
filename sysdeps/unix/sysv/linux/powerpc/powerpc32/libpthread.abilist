@@ -206,6 +206,11 @@ GLIBC_2.2 pwrite64 F
 GLIBC_2.2 sem_timedwait F
 GLIBC_2.2.3 pthread_getattr_np F
 GLIBC_2.2.6 __nanosleep F
+GLIBC_2.28 GLIBC_2.28 A
+GLIBC_2.28 __pthread_cond_timedwait64 F
+GLIBC_2.28 __pthread_mutex_timedlock64 F
+GLIBC_2.28 __sem_timedwait64 F
+GLIBC_2.3.2 GLIBC_2.3.2 A
 GLIBC_2.3.2 pthread_cond_broadcast F
 GLIBC_2.3.2 pthread_cond_destroy F
 GLIBC_2.3.2 pthread_cond_init F
