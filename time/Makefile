@@ -33,6 +33,7 @@ routines := offtime asctime clock ctime ctime_r difftime \
 	    gmtime localtime mktime time		 \
 	    time64 stime64				 \
 	    gettimeofday settimeofday adjtime tzset	 \
+	    gettimeofday64				 \
 	    tzfile getitimer setitimer			 \
 	    stime dysize timegm ftime			 \
 	    getdate strptime strptime_l			 \
