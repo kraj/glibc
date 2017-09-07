@@ -88,5 +88,6 @@ libc {
     __stime_t64;
     __utimes_t64;
     __gettimeofday_t64;
+    __settimeofday_t64;
   }
 }
