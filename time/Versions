@@ -92,5 +92,6 @@ libc {
     __adjtime64;
     __getitimer64;
     __setitimer64;
+    __adjtimex64;
   }
 }
