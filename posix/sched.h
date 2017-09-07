@@ -30,6 +30,7 @@
 
 #include <bits/types/time_t.h>
 #include <bits/types/struct_timespec.h>
+#include <bits/types/struct_timespec64.h>
 #ifndef __USE_XOPEN2K
 # include <time.h>
 #endif

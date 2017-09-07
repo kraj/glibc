@@ -27,6 +27,7 @@
 #include <bits/types/sigevent_t.h>
 #include <bits/sigevent-consts.h>
 #include <bits/types/struct_timespec.h>
+#include <bits/types/struct_timespec64.h>
 
 __BEGIN_DECLS
 
