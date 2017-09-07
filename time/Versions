@@ -93,5 +93,6 @@ libc {
     __adjtime_t64;
     __getitimer_t64;
     __setitimer_t64;
+    __adjtimex_t64;
   }
 }
