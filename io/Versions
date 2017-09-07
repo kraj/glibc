@@ -128,4 +128,7 @@ libc {
   GLIBC_2.27 {
     copy_file_range;
   }
+  GLIBC_2.28 {
+    __fxstat64_time64;
+  }
 }
