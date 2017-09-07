@@ -127,5 +127,6 @@ libc {
   }
   GLIBC_2.27 {
     copy_file_range;
+    __fxstat64_t64;
   }
 }
