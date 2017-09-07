@@ -83,5 +83,6 @@ libc {
     __utimensat64;
     __sigtimedwait64;
     __futimes64;
+    __lutimes64;
   }
 }
