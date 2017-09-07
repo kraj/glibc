@@ -29,6 +29,8 @@ GLIBC_2.2 timer_delete F
 GLIBC_2.2 timer_getoverrun F
 GLIBC_2.2 timer_gettime F
 GLIBC_2.2 timer_settime F
+GLIBC_2.27 GLIBC_2.27 A
+GLIBC_2.27 __timer_gettime64 F
 GLIBC_2.3.4 GLIBC_2.3.4 A
 GLIBC_2.3.4 mq_close F
 GLIBC_2.3.4 mq_getattr F
