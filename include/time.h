@@ -61,6 +61,19 @@ struct __itimerval_t64
   struct __timeval64 it_value;
 };
 
+struct __ntptimeval_t64
+{
+  struct __timeval64 time;	/* current time (ro) */
+  long int maxerror;	/* maximum error (us) (ro) */
+  long int esterror;	/* estimated error (us) (ro) */
+  long int tai;		/* TAI offset (ro) */
+
+  long int __glibc_reserved1;
+  long int __glibc_reserved2;
+  long int __glibc_reserved3;
+  long int __glibc_reserved4;
+};
+
 extern __typeof (clock_getres) __clock_getres;
 extern __typeof (clock_gettime) __clock_gettime;
 libc_hidden_proto (__clock_gettime)
