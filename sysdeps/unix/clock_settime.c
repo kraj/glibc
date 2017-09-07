@@ -68,8 +68,62 @@ hp_timing_settime (clockid_t clock_id, const struct timespec *tp)
 }
 #endif
 
+/* Set CLOCK to value TP, 64-bit Y2038-safe version.  */
+int
+__clock_settime64 (clockid_t clock_id, const struct __timespec64 *tp)
+{
+  int retval = -1;
 
-/* Set CLOCK to value TP.  */
+  /* Make sure the time cvalue is OK.  */
+  if (! IS_VALID_NANOSECONDS(tp->tv_nsec))
+    {
+      __set_errno (EINVAL);
+      return -1;
+    }
+
+  switch (clock_id)
+    {
+#define HANDLE_REALTIME \
+      do {								      \
+	struct timeval tv;						      \
+	TIMESPEC_TO_TIMEVAL (&tv, tp);					      \
+									      \
+	retval = settimeofday (&tv, NULL);				      \
+      } while (0)
+
+#ifdef SYSDEP_SETTIME64
+      SYSDEP_SETTIME64;
+#endif
+
+#ifndef HANDLED_REALTIME
+    case CLOCK_REALTIME:
+      HANDLE_REALTIME;
+      break;
+#endif
+
+    default:
+#ifdef SYSDEP_SETTIME64_CPU
+      SYSDEP_SETTIME64_CPU;
+#endif
+#ifndef HANDLED_CPUTIME
+# if HP_TIMING_AVAIL
+      if (CPUCLOCK_WHICH (clock_id) == CLOCK_PROCESS_CPUTIME_ID
+	  || CPUCLOCK_WHICH (clock_id) == CLOCK_THREAD_CPUTIME_ID)
+	retval = hp_timing_settime (clock_id, tp);
+      else
+# endif
+	{
+	  __set_errno (EINVAL);
+	  retval = -1;
+	}
+#endif
+      break;
+    }
+
+  return retval;
+}
+
+/* Set CLOCK to value TP, 64-bit Y2038-unsafe version.  */
 int
 __clock_settime (clockid_t clock_id, const struct timespec *tp)
 {

@@ -35,4 +35,43 @@
 #define SYSDEP_SETTIME_CPU \
   retval = INLINE_SYSCALL (clock_settime, 2, clock_id, tp)
 
+/* 64-bit time version */
+
+/* Check that we are built with a 64-bit-time kernel */
+#ifdef __NR_clockgettime64
+
+extern int __y2038_linux_support;
+
+#define SYSDEP_SETTIME64 \
+  case CLOCK_REALTIME:							      \
+    if (__y2038_linux_support)						      \
+      {									      \
+        struct __timespec64 ts64;					      \
+        ts64.tv_sec = tp->tv_sec;					      \
+        ts64.tv_nsec = tp->tv_nsec;					      \
+        ts64.tv_pad = 0;						      \
+        retval = INLINE_SYSCALL (clock_settime64, 2, clock_id, &ts64);	      \
+      }									      \
+    else                         					      \
+      {									      \
+        retval = -1;                                                          \
+        __set_errno (EOVERFLOW);                                              \
+      }									      \
+    if (retval == -1 && errno == ENOSYS)				      \
+      {									      \
+        struct timespec ts32;						      \
+        if (! fits_in_time_t(tp->tv_sec))                                     \
+         {                                                                    \
+           __set_errno (EOVERFLOW);                                           \
+         }                                                                    \
+        else                                                                  \
+          {                                                                   \
+            valid_timespec64_to_timespec(tp, &ts32);  			      \
+            retval = INLINE_SYSCALL (clock_settime, 2, clock_id, &ts32);      \
+          }                                                                   \
+      }                                                                       \
+    break
+
+#endif
+
 #include <sysdeps/unix/clock_settime.c>
