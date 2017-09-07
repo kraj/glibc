@@ -11,4 +11,11 @@ struct itimerspec
     struct timespec it_value;
   };
 
+/* 64-bit interval timer spec */
+struct __itimerspec64
+{
+  struct __timespec64 it_interval;
+  struct __timespec64 it_value;
+};
+
 #endif
