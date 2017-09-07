@@ -34,6 +34,28 @@ time (time_t *t)
 }
 libc_hidden_def (time)
 
+/* 64-BIT TIME VERSION */
+
+extern int __y2038_linux_support;
+
+__time64_t
+__time_t64 (__time64_t *t)
+{
+  INTERNAL_SYSCALL_DECL (err);
+  __time64_t res;
+
+  if (__y2038_linux_support)
+    {
+      /* TODO: implement using 64-bit time syscall */
+    }
+
+  res = INTERNAL_SYSCALL (time, err, 1, NULL);
+  /* There cannot be any error.  */
+  if (t != NULL)
+    *t = res;
+  return res;
+}
+
 #else
 
 # include <sysdeps/posix/time.c>

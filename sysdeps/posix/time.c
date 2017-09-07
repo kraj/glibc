@@ -38,3 +38,29 @@ time (time_t *t)
   return result;
 }
 libc_hidden_def (time)
+
+/* 64-bit time version */
+
+extern int __y2038_linux_support;
+
+__time64_t
+__time_t64 (__time64_t *t)
+{
+  struct timeval tv32;
+  __time64_t result;
+
+  if (__y2038_linux_support)
+  {
+    /* TODO: implement using 64-bit time syscall */
+  }
+
+  if (__gettimeofday (&tv32, (struct timezone *) NULL))
+    result = (__time64_t) -1;
+  else
+    result = (__time64_t) tv32.tv_sec;
+
+  if (t != NULL)
+    *t = result;
+
+  return result;
+}
