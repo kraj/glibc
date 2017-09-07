@@ -91,5 +91,6 @@ libc {
     __settimeofday_t64;
     __nanosleep_t64;
     __adjtime_t64;
+    __getitimer_t64;
   }
 }
