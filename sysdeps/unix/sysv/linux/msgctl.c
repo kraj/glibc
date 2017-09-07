@@ -69,3 +69,75 @@ __old_msgctl (int msqid, int cmd, struct __old_msqid_ds *buf)
 }
 compat_symbol (libc, __old_msgctl, msgctl, GLIBC_2_0);
 #endif
+
+/* 64-bit time version */
+
+struct __msqid_ds_t64
+{
+  struct ipc_perm msg_perm;	/* structure describing operation permission */
+  __time64_t msg_stime;		/* time of last msgsnd command */
+  unsigned long int __glibc_reserved1;
+  __time64_t msg_rtime;		/* time of last msgrcv command */
+  unsigned long int __glibc_reserved2;
+  __time64_t msg_ctime;		/* time of last change */
+  unsigned long int __glibc_reserved3;
+  unsigned long int __msg_cbytes; /* current number of bytes on queue */
+  msgqnum_t msg_qnum;		/* number of messages currently on queue */
+  msglen_t msg_qbytes;		/* max number of bytes allowed on queue */
+  __pid_t msg_lspid;		/* pid of last msgsnd() */
+  __pid_t msg_lrpid;		/* pid of last msgrcv() */
+  unsigned long int __glibc_reserved4;
+  unsigned long int __glibc_reserved5;
+};
+
+extern int __y2038_linux_support;
+
+int
+__msgctl_t64 (int msqid, int cmd, struct __msqid_ds_t64 *buf)
+{
+  int result;
+  struct msqid_ds buf32, *pbuf32 = NULL;
+
+  if (__y2038_linux_support)
+    {
+      /* TODO: use 64-bit syscalls */
+    }
+
+  if (cmd == IPC_SET && buf != NULL)
+    {
+      buf32.msg_qbytes = buf->msg_qbytes;
+      buf32.msg_perm.uid = buf->msg_perm.uid;
+      buf32.msg_perm.gid = buf->msg_perm.gid;
+      buf32.msg_perm.mode = buf->msg_perm.mode;
+    }
+
+  if (cmd == IPC_SET || cmd == IPC_STAT)
+    pbuf32 = &buf32;
+
+#ifdef __ASSUME_DIRECT_SYSVIPC_SYSCALLS
+  result = INLINE_SYSCALL_CALL (msgctl, msqid, cmd | __IPC_64, pbuf32);
+#else
+  result = INLINE_SYSCALL_CALL (ipc, IPCOP_msgctl, msqid, cmd | __IPC_64,
+                                0, pbuf32);
+#endif
+
+  if (cmd == IPC_STAT && result == 0 && buf != NULL)
+    {
+      buf->msg_perm = buf32.msg_perm;
+      buf->msg_stime = buf32.msg_stime;
+      buf->__glibc_reserved1 = buf32.__glibc_reserved1;
+      buf->msg_rtime = buf32.msg_rtime;
+      buf->__glibc_reserved2 = buf32.__glibc_reserved2;
+      buf->msg_ctime = buf32.msg_ctime;
+      buf->__glibc_reserved3 = buf32.__glibc_reserved3;
+      buf->__msg_cbytes = buf32.__msg_cbytes;
+      buf->msg_qnum = buf32.msg_qnum;
+      buf->msg_qbytes = buf32.msg_qbytes;
+      buf->msg_lspid = buf32.msg_lspid;
+      buf->msg_lrpid = buf32.msg_lrpid;
+      buf->__glibc_reserved4 = buf32.__glibc_reserved4;
+      buf->__glibc_reserved5 = buf32.__glibc_reserved5;
+    }
+
+  return result;
+}
