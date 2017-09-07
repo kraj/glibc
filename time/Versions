@@ -92,5 +92,6 @@ libc {
     __nanosleep_t64;
     __adjtime_t64;
     __getitimer_t64;
+    __setitimer_t64;
   }
 }
