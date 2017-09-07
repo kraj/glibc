@@ -9,6 +9,10 @@ GLIBC_2.12 pthread_setname_np F
 GLIBC_2.18 GLIBC_2.18 A
 GLIBC_2.18 pthread_getattr_default_np F
 GLIBC_2.18 pthread_setattr_default_np F
+GLIBC_2.27 GLIBC_2.27 A
+GLIBC_2.27 __pthread_cond_timedwait64 F
+GLIBC_2.27 __pthread_mutex_timedlock64 F
+GLIBC_2.27 __sem_timedwait64 F
 GLIBC_2.4 GLIBC_2.4 A
 GLIBC_2.4 _IO_flockfile F
 GLIBC_2.4 _IO_ftrylockfile F
