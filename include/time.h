@@ -49,6 +49,12 @@ struct __timeval64
   __int64_t tv_usec;		/* Microseconds */
 };
 
+struct __itimerspec64
+{
+  struct __timespec64 it_interval;
+  struct __timespec64 it_value;
+};
+
 extern __typeof (clock_getres) __clock_getres;
 extern __typeof (clock_gettime) __clock_gettime;
 libc_hidden_proto (__clock_gettime)
