@@ -34,3 +34,34 @@ __utimes (const char *file, const struct timeval tvp[2])
 }
 
 weak_alias (__utimes, utimes)
+
+/* 64-bit time version */
+
+extern int __y2038_linux_support;
+
+int
+__utimes_t64 (const char *file, const struct __timeval64 tvp[2])
+{
+  struct timeval tv32[2], *tvp32 = NULL;
+
+  if (__y2038_linux_support)
+    {
+      /* TODO: implement using 64-bit time syscall */
+    }
+
+  if (tvp != NULL)
+    {
+      if (tvp[0].tv_sec > INT_MAX || tvp[1].tv_sec > INT_MAX)
+        {
+          __set_errno(EOVERFLOW);
+          return -1;
+        }
+      tv32[0].tv_sec = tvp[0].tv_sec;
+      tv32[0].tv_usec = tvp[0].tv_usec;
+      tv32[1].tv_sec = tvp[1].tv_sec;
+      tv32[1].tv_usec = tvp[1].tv_usec;
+      tvp32 = tv32;
+    }
+
+  return INLINE_SYSCALL (utimes, 2, file, tvp32);
+}

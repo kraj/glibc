@@ -20,6 +20,9 @@
 # include <time/sys/time.h>
 
 # ifndef _ISOMAC
+
+#  include <include/time.h>
+
 extern int __gettimeofday (struct timeval *__tv,
 			   struct timezone *__tz);
 libc_hidden_proto (__gettimeofday)
@@ -38,6 +41,9 @@ extern int __setitimer (enum __itimer_which __which,
 extern int __utimes (const char *__file, const struct timeval __tvp[2])
 	attribute_hidden;
 extern int __futimes (int fd, const struct timeval tvp[2]) attribute_hidden;
+
+extern int __utimes_t64 (const char *file, const struct __timeval64 tvp[2])
+	attribute_hidden;
 
 # endif
 #endif
