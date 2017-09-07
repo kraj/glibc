@@ -37,3 +37,18 @@ __utimes (const char *file, const struct timeval tvp[2])
 weak_alias (__utimes, utimes)
 
 stub_warning (utimes)
+
+int
+__utimes_t64 (const char *file, const struct __timeval64 tvp[2])
+{
+  if (file == NULL)
+    {
+      __set_errno (EINVAL);
+      return -1;
+    }
+
+  __set_errno (ENOSYS);
+  return -1;
+}
+
+stub_warning (__utimes_t64)
