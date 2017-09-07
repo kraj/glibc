@@ -77,5 +77,6 @@ libc {
     __y2038_kernel_support;
     __clock_settime64;
     __clock_getres64;
+    __clock_nanosleep64;
   }
 }
