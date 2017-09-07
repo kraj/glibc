@@ -10,4 +10,12 @@ struct timeval
   __time_t tv_sec;		/* Seconds.  */
   __suseconds_t tv_usec;	/* Microseconds.  */
 };
+
+/* 64-bit time version. Here we can simply use 64-bit signed ints and
+   still keep tings Posix-ish. */ 
+struct __timeval64
+{
+  __time64_t tv_sec;		/* Seconds */
+  __int64_t tv_usec;		/* Microseconds */
+};
 #endif
