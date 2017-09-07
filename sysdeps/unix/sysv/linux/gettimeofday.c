@@ -37,3 +37,29 @@ __gettimeofday (struct timeval *tv, struct timezone *tz)
 libc_hidden_def (__gettimeofday)
 weak_alias (__gettimeofday, gettimeofday)
 libc_hidden_weak (gettimeofday)
+
+/* 64-bit time version */
+
+extern int __y2038_linux_support;
+
+int
+__gettimeofday_t64 (struct __timeval64 *tv, struct timezone *tz)
+{
+  struct timeval tv32;
+  int result;
+
+  if (__y2038_linux_support)
+    {
+      /* TODO: implement using 64-bit time syscall */
+    }
+
+  result = INLINE_VSYSCALL (gettimeofday, 2, &tv32, tz);
+
+  if (result == 0)
+    {
+      tv->tv_sec = tv32.tv_sec;
+      tv->tv_usec = tv32.tv_usec;
+    }
+
+  return result;
+}
