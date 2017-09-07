@@ -129,5 +129,6 @@ libc {
     copy_file_range;
     __fxstat64_t64;
     __xstat64_t64;
+    __lxstat64_t64;
   }
 }
