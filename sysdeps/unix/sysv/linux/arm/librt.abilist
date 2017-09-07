@@ -1,5 +1,6 @@
 GLIBC_2.28 GLIBC_2.28 A
 GLIBC_2.28 __mq_timedreceive64 F
+GLIBC_2.28 __mq_timedsend_time64 F
 GLIBC_2.28 __timer_gettime64 F
 GLIBC_2.28 __timer_settime64 F
 GLIBC_2.28 __timerfd_gettime64 F
