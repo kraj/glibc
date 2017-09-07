@@ -1,4 +1,6 @@
-/* Copyright (C) 1992-2018 Free Software Foundation, Inc.
+/* Set the system clock on a Linux kernel 
+
+   Copyright (C) 2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -16,39 +18,37 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include <errno.h>
+#include <stddef.h>		/* For NULL.  */
+#include <sys/time.h>
 #include <time.h>
-#include <stddef.h>
 
 /* Set the system clock to *WHEN.  */
 
-int
-stime (const time_t *when)
-{
-  if (when == NULL)
-    {
-      __set_errno (EINVAL);
-      return -1;
-    }
-
-  __set_errno (ENOSYS);
-  return -1;
-}
-
-stub_warning (stime)
-
-/* 64-bit time version */
+extern int __y2038_linux_support;
 
 int
 __stime64 (const __time64_t *when)
 {
+  struct timeval tv32;
+
   if (when == NULL)
     {
       __set_errno (EINVAL);
       return -1;
     }
 
-  __set_errno (ENOSYS);
-  return -1;
-}
+  if (__y2038_linux_support)
+  {
+    /* TODO: implement 64-bit-time syscall case */
+  }
 
-stub_warning (__stime64)
+  if (*when > INT_MAX)
+    {
+      __set_errno (EOVERFLOW);
+      return -1;
+    }
+
+  tv32.tv_sec = *when;
+  tv32.tv_usec = 0;
+  return __settimeofday (&tv32, (struct timezone *) 0);
+}
