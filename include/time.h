@@ -55,6 +55,12 @@ struct __itimerspec64
   struct __timespec64 it_value;
 };
 
+struct __itimerval_t64
+{
+  struct __timeval64 it_interval;
+  struct __timeval64 it_value;
+};
+
 extern __typeof (clock_getres) __clock_getres;
 extern __typeof (clock_gettime) __clock_gettime;
 libc_hidden_proto (__clock_gettime)
