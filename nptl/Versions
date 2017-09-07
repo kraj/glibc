@@ -265,6 +265,14 @@ libpthread {
   GLIBC_2.22 {
   }
 
+  GLIBC_2.27 {
+    __pthread_rwlock_rdlock64;
+    __pthread_rwlock_wrlock64;
+    __pthread_mutex_timedlock64;
+    __sem_timedwait64;
+    __pthread_cond_timedwait64;
+  }
+
   GLIBC_PRIVATE {
     __pthread_initialize_minimal;
     __pthread_clock_gettime; __pthread_clock_settime;
