@@ -46,5 +46,6 @@ librt {
     __timer_settime64;
     __timerfd_gettime64;
     __timerfd_settime64;
+    __mq_timedreceive_t64;
   }
 }
