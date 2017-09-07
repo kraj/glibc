@@ -73,5 +73,6 @@ libc {
     __difftime64;
     __timegm64;
     __clock_gettime64;
+    __clock_settime64;
   }
 }
