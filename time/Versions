@@ -90,5 +90,6 @@ libc {
     __gettimeofday64;
     __settimeofday64;
     __adjtime64;
+    __getitimer64;
   }
 }
