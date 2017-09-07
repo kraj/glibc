@@ -43,6 +43,12 @@ struct __timespec64
 };
 #endif
 
+struct __timeval64
+{
+  __time64_t tv_sec;		/* Seconds */
+  __int64_t tv_usec;		/* Microseconds */
+};
+
 extern __typeof (clock_getres) __clock_getres;
 extern __typeof (clock_gettime) __clock_gettime;
 libc_hidden_proto (__clock_gettime)
@@ -215,6 +221,55 @@ static inline bool timespec64_to_timespec(const struct __timespec64 *ts64,
     return false;
   /* all ts64 fields can fit in ts32, so copy them */
   valid_timespec64_to_timespec(ts64, ts32);
+  return true;
+}
+
+/* convert a known valid struct timeval into a struct __timeval64 */
+static inline void valid_timeval_to_timeval64(const struct timeval *tv32,
+                                              struct __timeval64 *tv64)
+{
+  tv64->tv_sec = tv32->tv_sec;
+  tv64->tv_usec = tv32->tv_usec;
+}
+
+/* convert a known valid struct timeval into a struct __timeval64 */
+static inline void valid_timeval64_to_timeval(const struct __timeval64 *tv64,
+					      struct timeval *tv32)
+{
+  tv32->tv_sec = (time_t) tv64->tv_sec;
+  tv32->tv_usec = tv64->tv_usec;
+}
+
+/* check if a struct timeval/__timeval64 is valid */
+#define IS_VALID_TIMEVAL(ts) \
+  ((ts).tv_usec >= 0 && (ts).tv_usec <= 999999)
+
+/* check if a struct timeval/__timeval64 is a valid 32-bit timeval */
+#define IS_VALID_TIMEVAL32(ts) \
+  (fits_in_time_t((ts).tv_sec) && (ts).tv_usec >= 0 && (ts).tv_usec <= 999999)
+
+/* check and convert a struct timeval into a struct __timeval64 */
+static inline bool timeval_to_timeval64(const struct timeval *tv32,
+                                        struct __timeval64 *tv64)
+{
+  /* check that tv_usec holds a valid count of nanoseconds */
+  if (! IS_VALID_TIMEVAL(*tv32))
+    return false;
+  /* all ts32 fields can fit in ts64, so copy them */
+  valid_timeval_to_timeval64(tv32, tv64);
+  /* we will only zero ts64->tv_pad if we pass it to the kernel */
+  return true;
+}
+
+/* check and convert a struct __timeval64 into a struct timeval */
+static inline bool timeval64_to_timeval(const struct __timeval64 *tv64,
+                                        struct timeval *tv32)
+{
+  /* check that tv_usec holds a valid count of nanoseconds */
+  if (! IS_VALID_TIMEVAL32(*tv64))
+    return false;
+  /* all ts64 fields can fit in ts32, so copy them */
+  valid_timeval64_to_timeval(tv64, tv32);
   return true;
 }
 
