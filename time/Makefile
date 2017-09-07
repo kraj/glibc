@@ -37,7 +37,7 @@ routines := offtime asctime clock ctime ctime_r difftime \
 	    getdate strptime strptime_l			 \
 	    strftime wcsftime strftime_l wcsftime_l	 \
 	    timespec_get                                 \
-	    settimeofday64
+	    settimeofday64 nanosleep64
 aux :=	    era alt_digit lc-time-cleanup
 
 tests	:= test_time clocktest tst-posixtz tst-strptime tst_wcsftime \
