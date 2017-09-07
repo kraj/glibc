@@ -45,6 +45,10 @@ extern int __xstat64_t64 (int __ver, const char *__filename,
                           struct __stat64_t64 *__stat_buf);
 extern int __lxstat64_t64 (int __ver, const char *__filename,
 		           struct __stat64_t64 *__stat_buf);
+extern int __fxstatat64_t64 (int __ver, int __fildes,
+                             const char *__filename,
+			     struct __stat64_t64 *__stat_buf,
+                             int __flag);
 #if IS_IN (libc) || (IS_IN (rtld) && !defined NO_RTLD_HIDDEN)
 hidden_proto (__fxstat)
 hidden_proto (__fxstat64)
