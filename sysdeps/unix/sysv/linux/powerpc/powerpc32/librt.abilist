@@ -29,6 +29,7 @@ GLIBC_2.2 timer_gettime F
 GLIBC_2.2 timer_settime F
 GLIBC_2.28 GLIBC_2.28 A
 GLIBC_2.28 __timer_gettime64 F
+GLIBC_2.28 __timer_settime64 F
 GLIBC_2.3.4 GLIBC_2.3.4 A
 GLIBC_2.3.4 mq_close F
 GLIBC_2.3.4 mq_getattr F
