@@ -80,5 +80,6 @@ libc {
     __clock_nanosleep64;
     __timespec_get64;
     __futimens64;
+    __utimensat64;
   }
 }
