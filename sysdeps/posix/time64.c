@@ -15,32 +15,27 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <errno.h>
+#include <stddef.h>		/* For NULL.  */
 #include <time.h>
+#include <sys/time.h>
 
-/* Return the time now, and store it in *TIMER if not NULL.  */
-time_t
-time (time_t *timer)
-{
-  __set_errno (ENOSYS);
 
-  if (timer != NULL)
-    *timer = (time_t) -1;
-  return (time_t) -1;
-}
-libc_hidden_def (time)
-
-stub_warning (time)
-
-/* 64-bit time version */
+/* Return the current time as a `time_t' and also put it in *T if T is
+   not NULL.  Time is represented as seconds from Jan 1 00:00:00 1970.  */
 
 __time64_t
-__time64 (__time64_ *timer)
+__time64 (__time64_t *t)
 {
-  __set_errno (ENOSYS);
+  struct timeval tv32;
+  __time64_t result;
 
-  if (timer != NULL)
-    *timer = (__time64_t) -1;
-  return (__time64_t) -1;
+  if (__gettimeofday (&tv32, (struct timezone *) NULL))
+    result = (__time64_t) -1;
+  else
+    result = (__time64_t) tv32.tv_sec;
+
+  if (t != NULL)
+    *t = result;
+
+  return result;
 }
-libc_hidden_def (__time64)

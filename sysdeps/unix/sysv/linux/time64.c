@@ -1,4 +1,4 @@
-/* Copyright (C) 1991-2018 Free Software Foundation, Inc.
+/* Copyright (C) 2005-2018 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -15,32 +15,30 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <errno.h>
+#include <stddef.h>
 #include <time.h>
 
-/* Return the time now, and store it in *TIMER if not NULL.  */
-time_t
-time (time_t *timer)
-{
-  __set_errno (ENOSYS);
+#include <sysdep.h>
 
-  if (timer != NULL)
-    *timer = (time_t) -1;
-  return (time_t) -1;
-}
-libc_hidden_def (time)
+/* Use 32-bit 'time' syscall until a 64-bit one exists */
 
-stub_warning (time)
-
-/* 64-bit time version */
+#ifdef __NR_time
 
 __time64_t
-__time64 (__time64_ *timer)
+__time64 (__time64_t *t)
 {
-  __set_errno (ENOSYS);
+  INTERNAL_SYSCALL_DECL (err);
+  __time64_t res;
 
-  if (timer != NULL)
-    *timer = (__time64_t) -1;
-  return (__time64_t) -1;
+  res = INTERNAL_SYSCALL (time, err, 1, NULL);
+  /* There cannot be any error.  */
+  if (t != NULL)
+    *t = res;
+  return res;
 }
-libc_hidden_def (__time64)
+
+#else
+
+# include <sysdeps/posix/time64.c>
+
+#endif
