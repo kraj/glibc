@@ -1,5 +1,4 @@
-/* utimes -- Change access and modification times of file.  Stub version.
-   Copyright (C) 1991-2018 Free Software Foundation, Inc.
+/* Copyright (C) 1995-2018 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -16,40 +15,40 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <sys/time.h>
 #include <errno.h>
 #include <stddef.h>
+#include <utime.h>
+#include <sys/time.h>
+#include <sysdep.h>
 
-/* Change the access time of FILE to TVP[0] and
-   the modification time of FILE to TVP[1].  */
-int
-__utimes (const char *file, const struct timeval tvp[2])
-{
-  if (file == NULL)
-    {
-      __set_errno (EINVAL);
-      return -1;
-    }
 
-  __set_errno (ENOSYS);
-  return -1;
-}
+/* Consider moving to syscalls.list.  */
 
-weak_alias (__utimes, utimes)
-
-stub_warning (utimes)
+extern int __y2038_linux_support;
 
 int
 __utimes64 (const char *file, const struct __timeval64 tvp[2])
 {
-  if (file == NULL)
+  struct timeval tv32[2], *tvp32 = NULL;
+
+  if (__y2038_linux_support)
     {
-      __set_errno (EINVAL);
-      return -1;
+      /* TODO: implement using 64-bit time syscall */
     }
 
-  __set_errno (ENOSYS);
-  return -1;
-}
+  if (tvp != NULL)
+    {
+      if (tvp[0].tv_sec > INT_MAX || tvp[1].tv_sec > INT_MAX)
+        {
+          __set_errno(EOVERFLOW);
+          return -1;
+        }
+      tv32[0].tv_sec = tvp[0].tv_sec;
+      tv32[0].tv_usec = tvp[0].tv_usec;
+      tv32[1].tv_sec = tvp[1].tv_sec;
+      tv32[1].tv_usec = tvp[1].tv_usec;
+      tvp32 = tv32;
+    }
 
-stub_warning (__utimes64)
+  return INLINE_SYSCALL (utimes, 2, file, tvp32);
+}

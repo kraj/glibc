@@ -86,5 +86,6 @@ libc {
     __lutimes64;
     __time64;
     __stime64;
+    __utimes64;
   }
 }
