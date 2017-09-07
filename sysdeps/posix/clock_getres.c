@@ -23,12 +23,38 @@
 #include <sys/param.h>
 #include <libc-internal.h>
 
-
 #if HP_TIMING_AVAIL
 static long int nsec;		/* Clock frequency of the processor.  */
 
 static int
 hp_timing_getres (struct timespec *res)
+{
+  if (__glibc_unlikely (nsec == 0))
+    {
+      hp_timing_t freq;
+
+      /* This can only happen if we haven't initialized the `nsec'
+	 variable yet.  Do this now.  We don't have to protect this
+	 code against multiple execution since all of them should
+	 lead to the same result.  */
+      freq = __get_clockfreq ();
+      if (__glibc_unlikely (freq == 0))
+	/* Something went wrong.  */
+	return -1;
+
+      nsec = MAX (UINT64_C (1000000000) / freq, 1);
+    }
+
+  /* Fill in the values.
+     The seconds are always zero (unless we have a 1Hz machine).  */
+  res->tv_sec = 0;
+  res->tv_nsec = nsec;
+
+  return 0;
+}
+
+static int
+hp_timing_getres64 (struct __timespec64 *res)
 {
   if (__glibc_unlikely (nsec == 0))
     {
@@ -73,6 +99,28 @@ realtime_getres (struct timespec *res)
   return -1;
 }
 
+/* Check that we are built with a 64-bit-time kernel */
+#ifdef __NR_clockgetres64
+
+static inline int
+realtime_getres64 (struct __timespec64 *res)
+{
+  long int clk_tck = sysconf (_SC_CLK_TCK);
+
+  if (__glibc_likely (clk_tck != -1))
+    {
+      /* This implementation assumes that the realtime clock has a
+	 resolution higher than 1 second.  This is the case for any
+	 reasonable implementation.  */
+      res->tv_sec = 0;
+      res->tv_nsec = 1000000000 / clk_tck;
+      return 0;
+    }
+
+  return -1;
+}
+
+#endif
 
 /* Get resolution of clock.  */
 int
@@ -116,3 +164,49 @@ __clock_getres (clockid_t clock_id, struct timespec *res)
   return retval;
 }
 weak_alias (__clock_getres, clock_getres)
+
+int
+__clock_getres64 (clockid_t clock_id, struct __timespec64 *res)
+{
+  int retval = -1;
+
+  switch (clock_id)
+    {
+#ifdef SYSDEP_GETRES64
+      SYSDEP_GETRES64;
+#endif
+
+/* Check that we are built with a 64-bit-time kernel */
+#ifdef __NR_clockgetres64
+
+# ifndef HANDLED_REALTIME64
+    case CLOCK_REALTIME64:
+      retval = realtime_getres64 (res);
+      break;
+# endif	/* handled REALTIME */
+
+#endif
+
+    default:
+#ifdef SYSDEP_GETRES_CPU64
+      SYSDEP_GETRES_CPU64;
+#endif
+#if HP_TIMING_AVAIL
+      if ((clock_id & ((1 << CLOCK_IDFIELD_SIZE) - 1))
+	  == CLOCK_THREAD_CPUTIME_ID)
+	retval = hp_timing_getres64 (res);
+      else
+#endif
+	__set_errno (EINVAL);
+      break;
+
+#if HP_TIMING_AVAIL && !defined HANDLED_CPUTIME
+    case CLOCK_PROCESS_CPUTIME_ID:
+    case CLOCK_THREAD_CPUTIME_ID:
+      retval = hp_timing_getres64 (res);
+      break;
+#endif
+    }
+
+  return retval;
+}

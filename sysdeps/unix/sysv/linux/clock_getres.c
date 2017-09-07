@@ -48,4 +48,53 @@
 #define SYSDEP_GETRES_CPU SYSCALL_GETRES
 #define SYSDEP_GETRES_CPUTIME	/* Default catches them too.  */
 
+/* The 64-bit version */
+
+/* Check that we are built with a 64-bit-time kernel */
+#ifdef __NR_clockgetres64
+
+extern int __y2038_linux_support;
+
+#define SYSCALL_GETRES64 \
+  if (__y2038_linux_support)						      \
+    {									      \
+      retval = INLINE_VSYSCALL (clock_getres64, 2, clock_id, res);  	      \
+    }									      \
+  else									      \
+    {									      \
+      retval = -1;                                                 	      \
+      errno = ENOSYS;                                                 	      \
+    }									      \
+  if (retval == -1 && errno == ENOSYS)					      \
+    {									      \
+      retval = INLINE_VSYSCALL (clock_getres, 2, clock_id, &ts32);	      \
+        if (retval==0)							      \
+        {								      \
+          timespec_to_timespec64(&ts32, res);	                	      \
+          res->tv_pad = 0;				               	      \
+        }								      \
+    }									      \
+  break
+
+/* The REALTIME and MONOTONIC clock are definitely supported in the
+   kernel.  */
+#define SYSDEP_GETRES64							      \
+  SYSDEP_GETRES_CPUTIME64						      \
+  case CLOCK_REALTIME:							      \
+  case CLOCK_MONOTONIC:							      \
+  case CLOCK_MONOTONIC_RAW:						      \
+  case CLOCK_REALTIME_COARSE:						      \
+  case CLOCK_MONOTONIC_COARSE:						      \
+    SYSCALL_GETRES64
+
+/* We handled the REALTIME clock here.  */
+#define HANDLED_REALTIME64	1
+#define HANDLED_CPUTIME64	1
+
+#define SYSDEP_GETRES_CPU64 SYSCALL_GETRES64
+#define SYSDEP_GETRES_CPUTIME64 \
+  struct timespec ts32;
+
+#endif
+
 #include <sysdeps/posix/clock_getres.c>
