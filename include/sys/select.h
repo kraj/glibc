@@ -3,6 +3,9 @@
 
 #ifndef _ISOMAC
 /* Now define the internal interfaces.  */
+
+#include <include/time.h>
+
 extern int __pselect (int __nfds, fd_set *__readfds,
 		      fd_set *__writefds, fd_set *__exceptfds,
 		      const struct timespec *__timeout,
@@ -13,6 +16,13 @@ extern int __select (int __nfds, fd_set *__restrict __readfds,
 		     fd_set *__restrict __exceptfds,
 		     struct timeval *__restrict __timeout);
 libc_hidden_proto (__select)
+
+/* 64-bit time version */
+
+extern int __pselect_t64 (int __nfds, fd_set *__readfds,
+		         fd_set *__writefds, fd_set *__exceptfds,
+		         const struct __timespec64 *__timeout,
+		         const __sigset_t *__sigmask);
 
 #endif
 #endif

@@ -79,6 +79,67 @@ __pselect (int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
 }
 weak_alias (__pselect, pselect)
 
+/* 64-bit time version */
+
+extern int __y2038_linux_support;
+
+int
+__pselect_t64 (int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
+	       const struct __timespec64 *timeout, const sigset_t *sigmask)
+{
+  struct timespec tval32, *timeout32 = NULL;
+
+  if (__y2038_linux_support)
+  {
+    /* TODO: implement using Linux kernel system call */
+  }
+
+  /* The Linux kernel can in some situations update the timeout value.
+     We do not want that so use a local variable.  */
+  if (timeout != NULL)
+    {
+      if (timeout->tv_sec > INT_MAX)
+      {
+        errno = EOVERFLOW;
+        return -1;
+      }
+      tval32.tv_sec = timeout->tv_sec;
+      tval32.tv_nsec = timeout->tv_nsec;
+      timeout32 = &tval32;
+    }
+
+  /* Note: the system call expects 7 values but on most architectures
+     we can only pass in 6 directly.  If there is an architecture with
+     support for more parameters a new version of this file needs to
+     be created.  */
+  struct
+  {
+    __syscall_ulong_t ss;
+    __syscall_ulong_t ss_len;
+  } data;
+
+  data.ss = (__syscall_ulong_t) (uintptr_t) sigmask;
+  data.ss_len = _NSIG / 8;
+
+  int result;
+
+#ifndef CALL_PSELECT6
+# define CALL_PSELECT6(nfds, readfds, writefds, exceptfds, timeout, data) \
+  SYSCALL_CANCEL (pselect6, nfds, readfds, writefds, exceptfds,	timeout32, data)
+#endif
+
+  result = CALL_PSELECT6 (nfds, readfds, writefds, exceptfds, timeout32,
+			  &data);
+
+# ifndef __ASSUME_PSELECT
+  if (result == -1 && errno == ENOSYS)
+    result = __generic_pselect (nfds, readfds, writefds, exceptfds, timeout32,
+				sigmask);
+# endif
+
+  return result;
+}
+
 # ifndef __ASSUME_PSELECT
 #  define __pselect static __generic_pselect
 # endif
