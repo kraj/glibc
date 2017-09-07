@@ -81,5 +81,6 @@ libc {
     __timespec_get64;
     __futimens64;
     __utimensat64;
+    __sigtimedwait64;
   }
 }
