@@ -75,5 +75,6 @@ libc {
     __clock_gettime64;
     __vdso_clock_gettime64;
     __y2038_kernel_support;
+    __clock_settime64;
   }
 }

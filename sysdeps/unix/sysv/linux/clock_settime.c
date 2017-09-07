@@ -35,4 +35,64 @@
 #define SYSDEP_SETTIME_CPU \
   retval = INLINE_SYSCALL (clock_settime, 2, clock_id, tp)
 
+/* 64-bit time version */
+
+#ifdef __NR_clock_settime64
+/* We know the clock_gettime64 syscall, so use it or else clock_gettime */
+
+extern int __y2038_linux_support;
+
+#define SYSDEP_SETTIME64 \
+  SYSDEP_SETTIME64_CPUTIME;						      \
+  case CLOCK_REALTIME:							      \
+    if (__y2038_linux_support)						      \
+      {									      \
+        ts64.tv_sec = tp->tv_sec;					      \
+        ts64.tv_nsec = tp->tv_nsec;					      \
+        ts64.tv_pad = 0;						      \
+        retval = INLINE_SYSCALL (clock_settime64, 2, clock_id, &ts64);	      \
+      }									      \
+    else                         					      \
+      {									      \
+        retval = -1;                                                          \
+        __set_errno (EOVERFLOW);                                              \
+      }									      \
+    if (retval == -1 && errno == ENOSYS)				      \
+      {									      \
+        if (! fits_in_time_t(tp->tv_sec))                                     \
+         {                                                                    \
+           __set_errno (EOVERFLOW);                                           \
+         }                                                                    \
+        else                                                                  \
+          {                                                                   \
+            valid_timespec64_to_timespec(tp, &ts32);  			      \
+            retval = INLINE_SYSCALL (clock_settime, 2, clock_id, &ts32);      \
+          }                                                                   \
+      }                                                                       \
+    break
+#define SYSDEP_SETTIME64_CPUTIME \
+  struct __timespec64 ts64;						      \
+  struct timespec ts32;
+
+#else
+/* We don't know the clock_gettime64 syscall, so only use clock_gettime */
+
+#define SYSDEP_SETTIME64 \
+  SYSDEP_SETTIME64_CPUTIME;						      \
+  case CLOCK_REALTIME:							      \
+    if (! fits_in_time_t(tp->tv_sec))                                         \
+     {                                                                        \
+       __set_errno (EOVERFLOW);                                               \
+     }                                                                        \
+    else                                                                      \
+      {                                                                       \
+        valid_timespec64_to_timespec(tp, &ts32);  			      \
+        retval = INLINE_SYSCALL (clock_settime, 2, clock_id, &ts32);          \
+      }                                                                       \
+    break
+#define SYSDEP_SETTIME64_CPUTIME \
+  struct timespec ts32;
+
+#endif
+
 #include <sysdeps/unix/clock_settime.c>
