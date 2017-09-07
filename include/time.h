@@ -5,6 +5,9 @@
 # include <bits/types/locale_t.h>
 # include <stdbool.h>
 
+#include <endian.h>
+#include <stdbool.h>
+
 extern __typeof (strftime_l) __strftime_l;
 libc_hidden_proto (__strftime_l)
 extern __typeof (strptime_l) __strptime_l;
@@ -18,6 +21,22 @@ libc_hidden_proto (timelocal)
 libc_hidden_proto (localtime)
 libc_hidden_proto (strftime)
 libc_hidden_proto (strptime)
+
+#if BYTE_ORDER == BIG_ENDIAN
+struct __timespec64
+{
+  __time64_t tv_sec;		/* Seconds */
+  int tv_pad: 32;		/* Padding named for checking/setting */
+  __syscall_slong_t tv_nsec;	/* Nanoseconds */
+};
+#else
+struct __timespec64
+{
+  __time64_t tv_sec;		/* Seconds */
+  __syscall_slong_t tv_nsec;	/* Nanoseconds */
+  int tv_pad: 32;		/* Padding named for checking/setting */
+};
+#endif
 
 extern __typeof (clock_getres) __clock_getres;
 extern __typeof (clock_gettime) __clock_gettime;
@@ -132,6 +151,56 @@ static inline bool
 fits_in_time_t (__time64_t t)
 {
   return t == (time_t) t;
+}
+
+/* convert a known valid struct timespec into a struct __timespec64 */
+static inline void
+valid_timespec_to_timespec64(const struct timespec *ts32,
+			     struct __timespec64 *ts64)
+{
+  ts64->tv_sec = ts32->tv_sec;
+  ts64->tv_nsec = ts32->tv_nsec;
+  /* we only need to zero ts64->tv_pad if we pass it to the kernel */
+}
+
+/* convert a known valid struct timespec into a struct __timespec64 */
+static inline void
+valid_timespec64_to_timespec(const struct __timespec64 *ts64,
+			     struct timespec *ts32)
+{
+  ts32->tv_sec = (time_t) ts64->tv_sec;
+  ts32->tv_nsec = ts64->tv_nsec;
+}
+
+/* check if a value lies with the valid nanoseconds range */
+#define IS_VALID_NANOSECONDS(ns) (ns >= 0 && ns <= 999999999)
+
+/* check and convert a struct timespec into a struct __timespec64 */
+static inline bool timespec_to_timespec64(const struct timespec *ts32,
+					  struct __timespec64 *ts64)
+{
+  /* check that ts32 holds a valid count of nanoseconds */
+  if (! IS_VALID_NANOSECONDS(ts32->tv_nsec))
+    return false;
+  /* all ts32 fields can fit in ts64, so copy them */
+  valid_timespec_to_timespec64(ts32, ts64);
+  /* we only need to zero ts64->tv_pad if we pass it to the kernel */
+  return true;
+}
+
+/* check and convert a struct __timespec64 into a struct timespec */
+static inline bool timespec64_to_timespec(const struct __timespec64 *ts64,
+					  struct timespec *ts32)
+{
+  /* check that tv_nsec holds a valid count of nanoseconds */
+  if (! IS_VALID_NANOSECONDS(ts64->tv_nsec))
+    return false;
+  /* check that tv_sec can fit in a __time_t */
+  if (! fits_in_time_t(ts64->tv_sec))
+    return false;
+  /* all ts64 fields can fit in ts32, so copy them */
+  valid_timespec64_to_timespec(ts64, ts32);
+  return true;
 }
 
 #endif
