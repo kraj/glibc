@@ -22,6 +22,7 @@
 #include <sys/types.h>
 #ifdef __USE_XOPEN2K
 # include <bits/types/struct_timespec.h>
+# include <bits/types/struct_timespec64.h>
 #endif
 
 /* Get the definition for sem_t.  */

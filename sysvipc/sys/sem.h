@@ -31,6 +31,7 @@
 
 #ifdef __USE_GNU
 # include <bits/types/struct_timespec.h>
+# include <bits/types/struct_timespec64.h>
 #endif
 
 /* The following System V style IPC functions implement a semaphore

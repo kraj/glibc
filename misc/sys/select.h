@@ -37,6 +37,7 @@
 #include <bits/types/struct_timeval.h>
 #ifdef __USE_XOPEN2K
 # include <bits/types/struct_timespec.h>
+# include <bits/types/struct_timespec64.h>
 #endif
 
 #ifndef __suseconds_t_defined

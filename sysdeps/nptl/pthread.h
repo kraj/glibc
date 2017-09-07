@@ -27,6 +27,7 @@
 #include <bits/setjmp.h>
 #include <bits/wordsize.h>
 #include <bits/types/struct_timespec.h>
+#include <bits/types/struct_timespec64.h>
 
 
 /* Detach state.  */

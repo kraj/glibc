@@ -40,6 +40,7 @@
 
 #if defined __USE_POSIX199309 || defined __USE_ISOC11
 # include <bits/types/struct_timespec.h>
+# include <bits/types/struct_timespec64.h>
 #endif
 
 #ifdef __USE_POSIX199309

@@ -3,6 +3,7 @@
 
 #include <bits/types.h>
 #include <bits/types/struct_timespec.h>
+#include <bits/types/struct_timespec64.h>
 
 /* POSIX.1b structure for timer start values and intervals.  */
 struct itimerspec

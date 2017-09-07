@@ -51,6 +51,7 @@ typedef __uid_t uid_t;
 #ifdef __USE_POSIX199309
 /* We need `struct timespec' later on.  */
 # include <bits/types/struct_timespec.h>
+# include <bits/types/struct_timespec64.h>
 #endif
 
 #if defined __USE_POSIX199309 || defined __USE_XOPEN_EXTENDED

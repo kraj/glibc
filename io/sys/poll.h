@@ -26,6 +26,7 @@
 #ifdef __USE_GNU
 # include <bits/types/__sigset_t.h>
 # include <bits/types/struct_timespec.h>
+# include <bits/types/struct_timespec64.h>
 #endif
 
 
