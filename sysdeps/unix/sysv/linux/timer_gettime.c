@@ -39,3 +39,35 @@ timer_gettime (timer_t timerid, struct itimerspec *value)
 
   return res;
 }
+
+/* 64-bit time version */
+
+int
+__timer_gettime64 (timer_t timerid, struct __itimerspec64 *value)
+{
+  struct itimerspec value32;
+  struct timer *kt = (struct timer *) timerid;
+  int res;
+
+/* Only try and use this syscall if defined by kernel */
+#ifdef __NR_timer_gettime64
+  if (__y2038_kernel_support())
+    {
+      res = INLINE_SYSCALL (timer_gettime64, 2, kt->ktimerid, value);
+      if (res == 0 || errno != ENOSYS)
+        return res;
+    }
+#endif
+
+  res = INLINE_SYSCALL (timer_gettime, 2, kt->ktimerid, &value32);
+
+  if (res == 0)
+    {
+      value->it_value.tv_sec = value32.it_value.tv_sec;
+      value->it_value.tv_nsec = value32.it_value.tv_nsec;
+      value->it_interval.tv_sec = value32.it_interval.tv_sec;
+      value->it_interval.tv_nsec = value32.it_interval.tv_nsec;
+    }
+
+  return res;
+}
