@@ -48,5 +48,6 @@ librt {
     __timerfd_settime64;
     __mq_timedreceive_t64;
     __mq_timedsend_t64;
+    __aio_suspend_t64;
   }
 }

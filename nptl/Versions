@@ -272,4 +272,15 @@ libpthread {
     __pthread_barrier_init; __pthread_barrier_wait;
     __shm_directory;
   }
+
+  # Y2038 symbols are given their own version until they can be put in
+  # the right place
+
+  GLIBC_Y2038 {
+    __pthread_rwlock_rdlock_t64;
+    __pthread_rwlock_wrlock_t64;
+    __pthread_mutex_timedlock_t64;
+    __sem_timedwait_t64;
+    __pthread_cond_timedwait_t64;
+  }
 }
