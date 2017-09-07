@@ -130,5 +130,6 @@ libc {
     __fxstat64_t64;
     __xstat64_t64;
     __lxstat64_t64;
+    __fxstatat64_t64;
   }
 }
