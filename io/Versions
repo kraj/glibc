@@ -128,4 +128,9 @@ libc {
   GLIBC_2.27 {
     copy_file_range;
   }
+  # Y2038 symbols are given their own version until they can be put in
+  # the right place
+  GLIBC_Y2038 {
+    __fxstat64_t64;
+  }
 }
