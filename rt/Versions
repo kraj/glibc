@@ -37,4 +37,11 @@ librt {
   GLIBC_2.7 {
    __mq_open_2;
   }
+
+  # Y2038 symbols are given their own version until they can be put in
+  # the right place
+
+  GLIBC_Y2038 {
+    __timer_gettime64;
+  }
 }
