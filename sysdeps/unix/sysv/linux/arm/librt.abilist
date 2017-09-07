@@ -1,4 +1,5 @@
 GLIBC_2.27 GLIBC_2.27 A
+GLIBC_2.27 __aio_suspend64 F
 GLIBC_2.27 __mq_timedreceive64 F
 GLIBC_2.27 __mq_timedsend64 F
 GLIBC_2.27 __timer_gettime64 F

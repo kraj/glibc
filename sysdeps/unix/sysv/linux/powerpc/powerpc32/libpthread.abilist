@@ -216,6 +216,10 @@ GLIBC_2.2.3 GLIBC_2.2.3 A
 GLIBC_2.2.3 pthread_getattr_np F
 GLIBC_2.2.6 GLIBC_2.2.6 A
 GLIBC_2.2.6 __nanosleep F
+GLIBC_2.27 GLIBC_2.27 A
+GLIBC_2.27 __pthread_cond_timedwait64 F
+GLIBC_2.27 __pthread_mutex_timedlock64 F
+GLIBC_2.27 __sem_timedwait64 F
 GLIBC_2.3.2 GLIBC_2.3.2 A
 GLIBC_2.3.2 pthread_cond_broadcast F
 GLIBC_2.3.2 pthread_cond_destroy F
