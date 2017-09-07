@@ -70,7 +70,8 @@ routines := brk sbrk sstk ioctl \
 	    getloadavg getclktck \
 	    fgetxattr flistxattr fremovexattr fsetxattr getxattr \
 	    listxattr lgetxattr llistxattr lremovexattr lsetxattr \
-	    removexattr setxattr getauxval ifunc-impl-list makedev
+	    removexattr setxattr getauxval ifunc-impl-list makedev \
+	    utimes64
 
 generated += tst-error1.mtrace tst-error1-mem.out
 
