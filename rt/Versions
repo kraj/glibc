@@ -43,5 +43,6 @@ librt {
 
   GLIBC_Y2038 {
     __timer_gettime64;
+    __timer_settime64;
   }
 }
