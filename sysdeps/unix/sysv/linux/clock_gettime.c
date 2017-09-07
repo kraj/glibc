@@ -44,4 +44,59 @@
   break
 #define SYSDEP_GETTIME_CPUTIME	/* Default catches them too.  */
 
+/* 64-bit versions */
+
+/* Check that we are built with a 64-bit-time kernel */
+#ifdef __NR_clockgettime64
+
+/* The REALTIME and MONOTONIC clock are definitely supported in the
+   kernel.  */
+#define SYSDEP_GETTIME64 \
+  SYSDEP_GETTIME64_CPUTIME;						      \
+  case CLOCK_REALTIME:							      \
+  case CLOCK_MONOTONIC:							      \
+    if (__y2038_linux_support)						      \
+      {									      \
+        retval = INLINE_VSYSCALL (clock_gettime64, 2, clock_id, tp);	      \
+      }									      \
+    else								      \
+      {									      \
+        retval = -1;                                                          \
+        __set_errno(ENOSYS);                                                  \
+      }									      \
+    if (retval == -1 && errno == ENOSYS)				      \
+      {									      \
+        retval = INLINE_VSYSCALL (clock_gettime, 2, clock_id, &ts32);	      \
+        if (retval==0)							      \
+          {								      \
+            valid_timespec_to_timespec64(&ts32, tp);			      \
+          }								      \
+      }									      \
+    break
+
+#define SYSDEP_GETTIME64_CPU(clock_id, tp) \
+  if (__y2038_linux_support)						      \
+    {									      \
+      retval = INLINE_VSYSCALL (clock_gettime64, 2, clock_id, tp);	      \
+    }									      \
+  else								              \
+    {									      \
+      retval = -1;                                                            \
+      __set_errno(ENOSYS);                                                    \
+    }									      \
+  if (retval == -1 && errno == ENOSYS)  			              \
+    {									      \
+      retval = INLINE_VSYSCALL (clock_gettime, 2, clock_id, &ts32);	      \
+      if (retval==0)							      \
+        {								      \
+          valid_timespec_to_timespec64(&ts32, tp);			      \
+        }								      \
+    }									      \
+  break
+#define SYSDEP_GETTIME64_CPUTIME \
+  struct timespec ts32;							      \
+  extern int __y2038_linux_support;
+
+#endif
+
 #include <sysdeps/unix/clock_gettime.c>

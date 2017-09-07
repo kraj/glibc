@@ -22,6 +22,11 @@ libc_hidden_proto (localtime)
 libc_hidden_proto (strftime)
 libc_hidden_proto (strptime)
 
+/* Indicates whether the underlying kernel has 64-bit time support.
+   This is required for e.g. librt, which cannot directly check the
+   flag variable that init-first.c sets when detecting support. */
+extern int __y2038_kernel_support (void);
+
 #if BYTE_ORDER == BIG_ENDIAN
 struct __timespec64
 {
@@ -44,6 +49,9 @@ libc_hidden_proto (__clock_gettime)
 extern __typeof (clock_settime) __clock_settime;
 extern __typeof (clock_nanosleep) __clock_nanosleep;
 extern __typeof (clock_getcpuclockid) __clock_getcpuclockid;
+
+extern int __clock_gettime64 (clockid_t __clock_id,
+			      struct __timespec64 *__tp) __THROW;
 
 /* Now define the internal interfaces.  */
 struct tm;
