@@ -33,6 +33,8 @@
 # define __NR_select __NR__newselect
 #endif
 
+extern int __y2038_linux_support;
+
 int
 __select (int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
 	  struct timeval *timeout)
@@ -69,3 +71,67 @@ libc_hidden_def (__select)
 
 weak_alias (__select, select)
 weak_alias (__select, __libc_select)
+
+/* 64-bit time version */
+
+extern int __y2038_linux_support;
+
+int
+__select_t64 (int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
+	      struct __timeval64 *timeout)
+{
+  struct timeval tval32, *timeout32 = NULL;
+#ifndef __NR_select
+  int result;
+  struct timespec ts32, *tsp32 = NULL;
+#endif
+
+  if (__y2038_linux_support)
+  {
+    /* TODO: implement using Linux kernel system call */
+  }
+
+  if (timeout != NULL)
+    {
+      if (timeout->tv_sec > INT_MAX)
+      {
+        errno = EOVERFLOW;
+        return -1;
+      }
+      tval32.tv_sec = timeout->tv_sec;
+      tval32.tv_usec = timeout->tv_usec;
+      timeout32 = &tval32;
+    }
+
+#ifdef __NR_select
+  return SYSCALL_CANCEL (select, nfds, readfds, writefds, exceptfds,
+			 timeout32);
+#else
+  if (timeout)
+    {
+      if (timeout->tv_sec > INT_MAX)
+      {
+        errno = EOVERFLOW;
+        return -1;
+      }
+      ts32.tv_sec = timeout->tv_sec;
+      ts32.tv_nsec = timeout->tv_usec * 1000;
+      tsp32 = &ts32;
+    }
+
+  result = SYSCALL_CANCEL (pselect6, nfds, readfds, writefds, exceptfds, tsp32,
+			   NULL);
+
+  if (timeout)
+    {
+      /* Linux by default will update the timeout after a pselect6 syscall
+         (though the pselect() glibc call suppresses this behavior).
+         Since select() on Linux has the same behavior as the pselect6
+         syscall, we update the timeout here.  */
+      timeout->tv_sec = ts32.tv_sec;
+      timeout->tv_usec = ts32.tv_nsec / 1000;
+    }
+
+  return result;
+#endif
+}
