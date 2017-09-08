@@ -329,9 +329,33 @@ extern CLIENT *clnttcp_create (struct sockaddr_in *__raddr, u_long __prog,
  *	u_int sendsz;
  *	u_int recvsz;
  */
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern CLIENT * __REDIRECT (clntudp_create,(struct sockaddr_in *__raddr,
+                                            u_long __program,
+					    u_long __version,
+					    struct timeval __wait_resend,
+					    int *__sockp),
+                            __clntudp_create_t64) __THROW;
+# else
+# define clntudp_create __clntudp_create_t64
+# endif
+#endif
 extern CLIENT *clntudp_create (struct sockaddr_in *__raddr, u_long __program,
 			       u_long __version, struct timeval __wait_resend,
 			       int *__sockp) __THROW;
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern CLIENT * __REDIRECT (clntudp_bufcreate,(struct sockaddr_in *__raddr,
+				               u_long __program, u_long __version,
+				               struct __timeval64 __wait_resend,
+					       int *__sockp, u_int __sendsz,
+					       u_int __recvsz),
+                            __clntudp_bufcreate_t64) __THROW;
+# else
+# define clntudp_bufcreate __clntudp_bufcreate_t64
+# endif
+#endif
 extern CLIENT *clntudp_bufcreate (struct sockaddr_in *__raddr,
 				  u_long __program, u_long __version,
 				  struct timeval __wait_resend, int *__sockp,
