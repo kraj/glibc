@@ -27,6 +27,7 @@
 #include <dl-tls.h>
 #include <sysdep.h>
 #include <hwcapinfo.h>
+#include <cpu-features.c>
 
 /* Translate a processor specific dynamic tag to the index
    in l_info array.  */
@@ -307,6 +308,7 @@ static inline void __attribute__ ((unused))
 dl_platform_init (void)
 {
   __tcb_parse_hwcap_and_convert_at_platform ();
+  init_cpu_features (&GLRO(dl_powerpc_cpu_features));
 }
 #endif
 
