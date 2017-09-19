@@ -27,7 +27,6 @@
 
 # include <dl-vdso.h>
 # include <libc-vdso.h>
-# include <dl-machine.h>
 
 # ifndef __powerpc64__
 #  undef __gettimeofday

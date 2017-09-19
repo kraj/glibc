@@ -23,7 +23,6 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <ldsodefs.h>
-#include <dl-machine.h>
 
 #define ELF_MACHINE_IRELA	1
 

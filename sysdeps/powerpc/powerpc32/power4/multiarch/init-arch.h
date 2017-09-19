@@ -37,6 +37,8 @@
 #define INIT_ARCH() \
   unsigned long int hwcap = __GLRO(dl_hwcap); 			\
   unsigned long int __attribute__((unused)) hwcap2 = __GLRO(dl_hwcap2); \
+  bool __attribute__((unused)) use_aligned_memopt =		\
+    GLRO(dl_powerpc_cpu_features).use_aligned_memopt;		\
   if (hwcap & PPC_FEATURE_ARCH_2_06)				\
     hwcap |= PPC_FEATURE_ARCH_2_05 |				\
 	     PPC_FEATURE_POWER5_PLUS |				\
