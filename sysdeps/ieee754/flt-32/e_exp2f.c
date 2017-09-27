@@ -86,6 +86,9 @@ __exp2f (float x)
   y = y * s;
   return (float) y;
 }
+
+#ifndef __exp2f
 strong_alias (__exp2f, __ieee754_exp2f)
 strong_alias (__exp2f, __exp2f_finite)
 versioned_symbol (libm, __exp2f, exp2f, GLIBC_2_27);
+#endif
