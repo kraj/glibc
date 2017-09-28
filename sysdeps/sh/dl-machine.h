@@ -50,6 +50,7 @@ static inline Elf32_Addr __attribute__ ((unused))
 elf_machine_load_address (void)
 {
   Elf32_Addr addr;
+#ifdef SHARED
   asm ("mov.l 1f,r0\n\
 	mov.l 3f,r2\n\
 	add r12,r2\n\
@@ -61,6 +62,19 @@ elf_machine_load_address (void)
 	3: .long _dl_start@GOTOFF\n\
 	2: mov r2,%0"
        : "=r" (addr) : : "r0", "r1", "r2");
+#else
+  asm ("mov.l 1f,r0\n\
+	mov.l 3f,r2\n\
+	add r12,r2\n\
+	mov.l @(r0,r12),r0\n\
+	bra 2f\n\
+	 sub r0,r2\n\
+	.align 2\n\
+	1: .long _dl_relocate_static_pie@GOT\n\
+	3: .long _dl_relocate_static_pie@GOTOFF\n\
+	2: mov r2,%0"
+       : "=r" (addr) : : "r0", "r1", "r2");
+#endif
   return addr;
 }
 
