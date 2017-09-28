@@ -70,6 +70,7 @@ elf_machine_load_address (void)
 {
   Elf32_Addr addr;
 
+#ifdef SHARED
   __asm__( "   bras  1,2f\n"
 	   "1: .long _GLOBAL_OFFSET_TABLE_ - 1b\n"
 	   "   .long (_dl_start - 1b - 0x80000000) & 0x00000000ffffffff\n"
@@ -78,6 +79,16 @@ elf_machine_load_address (void)
 	   "   al    1,0(1)\n"
 	   "   sl    %0,_dl_start@GOT(1)"
 	   : "=&d" (addr) : : "1" );
+#else
+  __asm__( "   bras  1,2f\n"
+	   "1: .long _GLOBAL_OFFSET_TABLE_ - 1b\n"
+	   "   .long (_dl_relocate_static_pie - 1b - 0x80000000) & 0x00000000ffffffff\n"
+	   "2: l     %0,4(1)\n"
+	   "   ar    %0,1\n"
+	   "   al    1,0(1)\n"
+	   "   sl    %0,_dl_relocate_static_pie@GOT(1)"
+	   : "=&d" (addr) : : "1" );
+#endif
   return addr;
 }
 
