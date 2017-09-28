@@ -58,7 +58,7 @@ _start:
     sw      r6,r1,r0
     addik   r7,r1,4
     addik   r1,r1,-24
-#ifdef SHARED
+#ifdef PIC
     /* Setup PIC.  */
     mfs     r20,rpc
     addik   r20,r20,_GLOBAL_OFFSET_TABLE_+8
