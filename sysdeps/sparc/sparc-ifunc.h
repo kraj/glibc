@@ -162,6 +162,9 @@ END (__##name)
 
 #else	/* __ASSEMBLER__ */
 
+# define sparc_libc_ifunc_redirected(redirected_name, name, expr)	\
+  __ifunc (redirected_name, name, expr(hwcap), int hwcap, INIT_ARCH)
+
 # define sparc_libm_ifunc(name, expr)				\
   __ifunc (name, name, expr, int hwcap, libm_ifunc_init)
 

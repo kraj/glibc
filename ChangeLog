@@ -1,3 +1,27 @@
+2017-10-03  Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+
+	* sysdeps/generic/ifunc-init.h: New file.
+	* sysdeps/sparc/init-arch.h: Likewise.
+	* sysdeps/sparc/sparc32/sparcv9/multiarch/memcpy-ultra1.S: New
+	file.
+	* sysdeps/sparc/sparc32/sparcv9/multiarch/memcpy.c: Likewise.
+	* sysdeps/sparc/sparc32/sparcv9/multiarch/mempcpy.c: Likewise.
+	* sysdeps/sparc/sparc32/sparcv9/multiarch/rtld-mempcpy.S: Likewise.
+	* sysdeps/sparc/sparc64/multiarch/ifunc-memcpy.h: Likewise.
+	* sysdeps/sparc/sparc64/multiarch/memcpy-ultra1.S: Likewise.
+	* sysdeps/sparc/sparc64/multiarch/memcpy.c: Likewise.
+	* sysdeps/sparc/sparc64/multiarch/mempcpy.c: Likewise.
+	* sysdeps/sparc/sparc64/multiarch/rtld-mempcpy.S: Likewise.
+	* sysdeps/sparc/sparc-ifunc.h (sparc_libc_ifunc_redirected): New
+	macro.
+	* sysdeps/sparc/sparc32/sparcv9/multiarch/Makefile
+	[$(subdir) = string] (sysdep_routines): Add memcpy-ultra1.
+	* sysdeps/sparc/sparc64/multiarch/Makefile [$(subdir) = string]
+	(sysdep_routines): Add memcpy-ultra1.
+	* sysdeps/sparc/sparc64/multiarch/memcpy.S: Remove file.
+	* sysdeps/sparc/sparc32/sparcv9/multiarch/memcpy.S: Likewise.
+	* sysdeps/x86/init-arch.h: Use generic ifunc-init.h.
+
 2017-10-03  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* include/libc-symbols.h [NO_RTLD_HIDDEN] (rtld_hidden_proto,
