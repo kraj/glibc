@@ -1,5 +1,19 @@
 2017-11-20  Adhemerval Zanella  <adhemerval.zanella@linaro.org>
 
+	* sysdeps/sparc/sparc32/sparcv9/fpu/multiarch/Makefile
+	(sysdep_calls): New rule.
+	(sysdep_routines): Use sysdep_calls as base.
+	(libm-sysdep_routines): Add generic rule for symbols shared with
+	libc.  Add s_copysign-generic and s_copysign-generic objects.
+	* sysdeps/sparc/sparcv9/fpu/multiarch/s_copysign-generic.S: New
+	file.
+	* sysdeps/sparc32/sparcv9/fpu/multiarch/s_copysign.c: Likewise.
+	* sysdeps/sparc/sparcv9/fpu/multiarch/s_copysignf-generic.S:
+	Likewise.
+	* sysdeps/sparc32/sparcv9/fpu/multiarch/s_copysignf.c: Likewise.
+	* sysdeps/sparc32/sparcv9/fpu/multiarch/s_copysign.S: Remove file.
+	* sysdeps/sparc32/sparcv9/fpu/multiarch/s_copysignf.S: Likewise.
+
 	* sysdeps/sparc/sparc64/multiarch/Makefile (sysdep_routines):
 	Add add_n-generic.
 	* sysdeps/sparc/sparc64/multiarch/add_n-generic.S: New file.
