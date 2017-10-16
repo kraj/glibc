@@ -1,3 +1,24 @@
+2017-10-19  Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+
+	* nptl/Makefile (tests-internal): Add tst-offsets.
+	* nptl/tst-offsets.c: New file.
+	* sysdeps/aarch64/nptl/pthread-offsets.h: Likewise.
+	* sysdeps/alpha/nptl/pthread-offsets.h: Likewise.
+	* sysdeps/arm/nptl/pthread-offsets.h: Likewise.
+	* sysdeps/hppa/nptl/pthread-offsets.h: Likewise.
+	* sysdeps/i386/nptl/pthread-offsets.h: Likewise.
+	* sysdeps/ia64/nptl/pthread-offsets.h: Likewise.
+	* sysdeps/m68k/nptl/pthread-offsets.h: Likewise.
+	* sysdeps/microblaze/nptl/pthread-offsets.h: Likewise.
+	* sysdeps/mips/nptl/pthread-offsets.h: Likewise.
+	* sysdeps/nios2/nptl/pthread-offsets.h: Likewise.
+	* sysdeps/powerpc/nptl/pthread-offsets.h: Likewise.
+	* sysdeps/s390/nptl/pthread-offsets.h: Likewise.
+	* sysdeps/sh/nptl/pthread-offsets.h: Likewise.
+	* sysdeps/sparc/nptl/pthread-offsets.h: Likewise.
+	* sysdeps/tile/nptl/pthread-offsets.h: Likewise.
+	* sysdeps/x86_64/nptl/pthread-offsets.h: Likewise.
+
 2017-10-19  H.J. Lu  <hongjiu.lu@intel.com>
 
 	* sysdeps/x86_64/Makefile (tests): Add tst-sse, tst-avx and
