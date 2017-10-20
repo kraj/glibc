@@ -1,3 +1,10 @@
+2017-12-11  Jose E. Marchesi  <jose.marchesi@oracle.com>
+
+	* sysdeps/sparc/bits/hwcap.h (HWCAP_SPARC_ADP): Defined.
+	* sysdeps/sparc/dl-procinfo.c: Added "adp" to the
+	_dl_sparc_cap_flags array.
+	* sysdeps/sparc/dl-procinfo.h (_DL_HWCAP_COUNT): Increment.
+
 2017-12-11  Paul A. Clarke  <pc@us.ibm.com>
 
 	* sysdeps/ieee754/flt-32/s_cosf.c: New implementation.
