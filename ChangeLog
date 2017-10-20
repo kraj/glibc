@@ -1,6 +1,18 @@
 2017-12-11  Jose E. Marchesi  <jose.marchesi@oracle.com>
 
 	* sysdeps/sparc/sparc32/sparcv9/multiarch/Makefile
+	(sysdeps_routines): Add memset-niagara7.
+	* sysdeps/sparc/sparc64/multiarch/Makefile (sysdes_rotuines):
+	Likewise.
+	* sysdeps/sparc/sparc32/sparcv9/multiarch/memset-niagara7.S: New
+	file.
+	* sysdeps/sparc/sparc64/multiarch/memset-niagara7.S: Likewise.
+	* sysdeps/sparc/sparc64/multiarch/ifunc-impl-list.c
+	(__libc_ifunc_impl_list): Add __bzero_niagara7 and __memset_niagara7.
+	* sysdeps/sparc/sparc64/multiarch/ifunc-memset.h (IFUNC_SELECTOR):
+	Add niagara7 option.
+
+	* sysdeps/sparc/sparc32/sparcv9/multiarch/Makefile
 	(sysdeps_routines): Add memcpy-memmove-niagara7 and memmove-ultra1.
 	* sysdeps/sparc/sparc64/multiarch/Makefile (sysdeps_routines):
 	Likewise.
