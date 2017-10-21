@@ -1,3 +1,8 @@
+2017-10-21  Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+
+	* sysdeps/unix/sysv/linux/spawni.c (__spawnix): Use 0 instead of
+	WNOHANG in waitpid call.
+
 2017-10-20  Joseph Myers  <joseph@codesourcery.com>
 
 	* bits/floatn-common.h: New file.
