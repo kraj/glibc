@@ -401,27 +401,13 @@ tests: $(test-modules)
 endif
 
 ifeq ($(build-shared),yes)
-
-# Set the `multidir' variable by grabbing the variable from the compiler.
-# We do it once and save the result in a generated makefile.
--include $(objpfx)multidir.mk
-$(objpfx)multidir.mk: $(common-objpfx)config.make
-	$(make-target-directory)
-	dir=`$(CC) $(CFLAGS) $(CPPFLAGS) -print-multi-directory`; \
-	echo "multidir := $$dir" > $@T
-	mv -f $@T $@
-
 crti-objs := crti.o
-crtn-objs := crtn.o
-ifneq (,$(patsubst .,,$(multidir)))
-generated-dirs += $(firstword $(subst /, , $(multidir)))
-crti-objs += $(multidir)/crti.o
-crtn-objs += $(multidir)/crtn.o
-$(objpfx)$(multidir):
-	mkdir -p $@
+extra-objs += $(crti-objs)
+
+ifneq ($(multidir),.)
+multilib-crti-objs := $(addprefix $(multidir)/, $(crti-objs))
+extra-objs += $(multilib-crti-objs)
 endif
-extra-objs += $(crti-objs) $(crtn-objs)
-extra-objs += pt-crti.o
 endif
 
 CFLAGS-flockfile.c = $(libio-mtsafe)
@@ -623,9 +609,7 @@ LDLIBS-tst-cancel24 = $(no-as-needed) -lstdc++
 LDLIBS-tst-cancel24-static = $(LDLIBS-tst-cancel24)
 
 extra-B-pthread.so = -B$(common-objpfx)nptl/
-$(objpfx)libpthread.so: $(addprefix $(objpfx),$(crti-objs) $(crtn-objs))
-$(objpfx)libpthread.so: +preinit += $(addprefix $(objpfx),$(crti-objs))
-$(objpfx)libpthread.so: +postinit += $(addprefix $(objpfx),$(crtn-objs))
+CPPFLAGS-crti.o = -include pt-crti.h
 
 # Make sure we link with the thread library.
 ifeq ($(build-shared),yes)
@@ -659,19 +643,13 @@ $(objpfx)tst-cleanup0-cmp.out: tst-cleanup0.expect $(objpfx)tst-cleanup0.out
 	cmp $^ > $@; \
 	$(evaluate-test)
 
-$(objpfx)crti.o: $(objpfx)pt-crti.o
-	ln -f $< $@
-
 ifneq ($(multidir),.)
-$(objpfx)$(multidir)/crti.o: $(objpfx)crti.o $(objpfx)$(multidir)/
-	ln -f $< $@
-
-$(objpfx)$(multidir)/crtn.o: $(objpfx)crtn.o $(objpfx)$(multidir)/
-	ln -f $< $@
+$(addprefix $(objpfx)$(multidir)/, $(crti-objs)): $(addprefix $(objpfx), $(crti-objs))
+	$(make-link-multidir)
 endif
 
 generated += libpthread_nonshared.a \
-	     multidir.mk tst-atfork2.mtrace tst-cancel-wrappers.out \
+	     tst-atfork2.mtrace tst-cancel-wrappers.out \
 	     tst-tls6.out
 
 generated += $(objpfx)tst-atfork2.mtrace \

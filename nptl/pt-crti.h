@@ -39,5 +39,3 @@
 
 #define PREINIT_FUNCTION __pthread_initialize_minimal_internal
 #define PREINIT_FUNCTION_WEAK 0
-
-#include <crti.S>
