@@ -25,7 +25,7 @@ include ../Makeconfig
 ifneq ($(use-nscd),no)
 routines := nscd_getpw_r nscd_getgr_r nscd_gethst_r nscd_getai \
 	    nscd_initgroups nscd_getserv_r nscd_netgroup
-aux	:= nscd_helper nscd_hash
+aux	:= nscd_helper libc-nscd_hash
 endif
 
 # To find xmalloc.c
