@@ -2,6 +2,7 @@
 # include <wcsmbs/wchar.h>
 # ifndef _ISOMAC
 
+#include <wcharP.h>
 #include <bits/floatn.h>
 
 extern __typeof (wcscasecmp_l) __wcscasecmp_l;
