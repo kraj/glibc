@@ -271,7 +271,8 @@ elf_machine_rela (struct link_map *map, const ElfW(Rela) *reloc,
 				strtab + refsym->st_name);
             }
           memcpy (reloc_addr_arg, (void *) value,
-                  MIN (sym->st_size, refsym->st_size));
+		  sym->st_size < refsym->st_size
+		  ? sym->st_size : refsym->st_size);
           break;
 	case R_NIOS2_GLOB_DAT:
 	case R_NIOS2_JUMP_SLOT:
