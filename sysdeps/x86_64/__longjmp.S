@@ -17,6 +17,7 @@
 
 #include <sysdep.h>
 #include <jmpbuf-offsets.h>
+#include <jmp_buf-ssp.h>
 #include <asm-syntax.h>
 #include <stap-probe.h>
 
@@ -41,6 +42,40 @@ ENTRY(__longjmp)
 	shlq $32, %rax
 	orq %rax, %r9
 # endif
+#endif
+#if defined __SHSTK__ && defined SHADOW_STACK_POINTER_OFFSET
+# if IS_IN (libc) && defined SHARED && defined FEATURE_1_OFFSET
+	/* Check if Shadow Stack is enabled.  */
+	testl $(1 << 1), %fs:FEATURE_1_OFFSET
+	jz .Lnoadj
+# endif
+	/* Check and adjust the Shadow-Stack-Pointer.  */
+	xorl %eax, %eax
+	/* Get the current ssp.  */
+	rdsspq %rax
+	/* And compare it with the saved ssp value.  */
+	subq SHADOW_STACK_POINTER_OFFSET(%rdi), %rax
+	je .Lnoadj
+	/* Count the number of frames to adjust and adjust it
+	   with incssp instruction.  The instruction can adjust
+	   the ssp by [0..255] value only thus use a loop if
+	   the number of frames is bigger than 255.  */
+	negq %rax
+	shrq $3, %rax
+	/* NB: We saved Shadow-Stack-Pointer of setjmp.  Since we are
+	       restoring Shadow-Stack-Pointer of setjmp's caller, we
+	       need to unwind shadow stack by one more frame.  */
+	addq $1, %rax
+	cmpq $255, %rax
+	jbe .Lonetime
+.Loopadj:
+	incsspq %rax
+	subq $255, %rax
+	cmpq $255, %rax
+	ja .Loopadj
+.Lonetime:
+	incsspq %rax
+.Lnoadj:
 #endif
 	LIBC_PROBE (longjmp, 3, LP_SIZE@%RDI_LP, -4@%esi, LP_SIZE@%RDX_LP)
 	/* We add unwind information for the target here.  */

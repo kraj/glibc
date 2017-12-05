@@ -22,6 +22,7 @@
 
 #include <sysdep.h>
 #include <jmpbuf-offsets.h>
+#include <jmp_buf-ssp.h>
 #include <stap-probe.h>
 
 #define PARMS  4		/* no space for saved regs */
@@ -51,6 +52,20 @@ ENTRY (setjmp)
 #endif
 	movl %ecx, (JB_PC*4)(%eax)
 	movl %ebp, (JB_BP*4)(%eax) /* Save caller's frame pointer.  */
+#if defined __SHSTK__ && defined SHADOW_STACK_POINTER_OFFSET
+# if IS_IN (libc) && defined SHARED && defined FEATURE_1_OFFSET
+	/* Check if Shadow Stack is enabled.  */
+	testl $(1 << 1), %gs:FEATURE_1_OFFSET
+	jz .Lskip_ssp
+# endif
+	/* Get the current Shadow-Stack-Pointer and save it.  */
+	xorl %ecx, %ecx
+	rdsspd %ecx
+	movl %ecx, SHADOW_STACK_POINTER_OFFSET(%eax)
+# if IS_IN (libc) && defined SHARED
+.Lskip_ssp:
+# endif
+#endif
 
 	/* Call __sigjmp_save.  */
 	pushl $1
