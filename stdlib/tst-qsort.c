@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <tst-stack-align.h>
 
+#include <support/check.h>
+
 struct big { char c[4 * 1024]; };
 
 struct big *array;
@@ -10,7 +12,7 @@ struct big *array_end;
 
 static int align_check;
 
-int
+static int
 compare (void const *a1, void const *b1)
 {
   struct big const *a = a1;
@@ -19,37 +21,34 @@ compare (void const *a1, void const *b1)
   if (!align_check)
     align_check = TEST_STACK_ALIGN () ? -1 : 1;
 
-  if (! (array <= a && a < array_end
-	 && array <= b && b < array_end))
-    {
-      exit (EXIT_FAILURE);
-    }
-  return b->c[0] - a->c[0];
+  TEST_VERIFY_EXIT (array <= a && a < array_end
+		    && array <= b && b < array_end);
+
+  return (b->c[0] - a->c[0]) > 0;
 }
 
 int
-main (int argc, char **argv)
+do_test (void)
 {
-  size_t i;
-  size_t array_members = argv[1] ? atoi (argv[1]) : 50;
-  array = (struct big *) malloc (array_members * sizeof *array);
-  if (array == NULL)
+  const size_t sizes[] = { 8, 16, 24, 48, 96, 192, 384 };
+  const size_t sizes_len = sizeof (sizes) / sizeof (sizes[0]);
+
+  for (size_t s = 0; s < sizes_len; s++)
     {
-      puts ("no memory");
-      exit (EXIT_FAILURE);
-    }
+      array = (struct big *) malloc (sizes[s] * sizeof *array);
+      TEST_VERIFY_EXIT (array != NULL);
 
-  array_end = array + array_members;
-  for (i = 0; i < array_members; i++)
-    array[i].c[0] = i % 128;
+      array_end = array + sizes[s];
+      for (size_t i = 0; i < sizes[s]; i++)
+        array[i].c[0] = i % 128;
 
-  qsort (array, array_members, sizeof *array, compare);
+      qsort (array, sizes[s], sizeof *array, compare);
+      TEST_VERIFY_EXIT (align_check != -1);
 
-  if (align_check == -1)
-    {
-      puts ("stack not sufficiently aligned");
-      exit (EXIT_FAILURE);
+      free (array);
     }
 
   return 0;
 }
+
+#include <support/test-driver.c>
