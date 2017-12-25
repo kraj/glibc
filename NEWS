@@ -121,6 +121,9 @@ Deprecated and removed features, and other changes affecting compatibility:
   any remaining external users.  _G_config.h was never intended for public
   use, but predates the bits convention.
 
+* The C++ name mangling for interfaces involving the types fpos_t and
+  fpos64_t has changed.
+
 Changes to build and runtime requirements:
 
 * bison version 2.7 or later is required to generate code in the 'intl'

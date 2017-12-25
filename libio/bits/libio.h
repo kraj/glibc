@@ -32,10 +32,12 @@
 # error "Never include <bits/libio.h> directly; use <stdio.h> instead."
 #endif
 
+#include <stdio.h>
+
 #include <bits/_G_config.h>
 /* ALL of these should be defined in _G_config.h */
-#define _IO_fpos_t _G_fpos_t
-#define _IO_fpos64_t _G_fpos64_t
+#define _IO_fpos_t __fpos_t
+#define _IO_fpos64_t __fpos64_t
 #define _IO_size_t size_t
 #define _IO_ssize_t __ssize_t
 #define _IO_off_t __off_t
@@ -44,39 +46,12 @@
 #define _IO_uid_t __uid_t
 #define _IO_iconv_t _G_iconv_t
 #define _IO_HAVE_ST_BLKSIZE _G_HAVE_ST_BLKSIZE
-#define _IO_BUFSIZ _G_BUFSIZ
-#define _IO_va_list _G_va_list
+#define _IO_BUFSIZ BUFSIZ
 #define _IO_wint_t wint_t
+#define _IO_va_list __gnuc_va_list
 
-/* This define avoids name pollution if we're using GNU stdarg.h */
-#define __need___va_list
-#include <stdarg.h>
-#ifdef __GNUC_VA_LIST
-# undef _IO_va_list
-# define _IO_va_list __gnuc_va_list
-#endif /* __GNUC_VA_LIST */
-
-#ifndef __P
-# include <sys/cdefs.h>
-#endif /*!__P*/
-
+#define _STDIO_USES_IOSTREAM
 #define _IO_UNIFIED_JUMPTABLES 1
-
-#ifndef EOF
-# define EOF (-1)
-#endif
-#ifndef NULL
-# if defined __GNUG__ && \
-    (__GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 8))
-#  define NULL (__null)
-# else
-#  if !defined(__cplusplus)
-#   define NULL ((void*)0)
-#  else
-#   define NULL (0)
-#  endif
-# endif
-#endif
 
 #define _IOS_INPUT	1
 #define _IOS_OUTPUT	2
@@ -330,49 +305,13 @@ extern _IO_FILE *_IO_stderr attribute_hidden;
 #endif
 
 
-/* Functions to do I/O and file management for a stream.  */
-
-/* Read NBYTES bytes from COOKIE into a buffer pointed to by BUF.
-   Return number of bytes read.  */
-typedef __ssize_t __io_read_fn (void *__cookie, char *__buf, size_t __nbytes);
-
-/* Write N bytes pointed to by BUF to COOKIE.  Write all N bytes
-   unless there is an error.  Return number of bytes written.  If
-   there is an error, return 0 and do not write anything.  If the file
-   has been opened for append (__mode.__append set), then set the file
-   pointer to the end of the file and then do the write; if not, just
-   write at the current file pointer.  */
-typedef __ssize_t __io_write_fn (void *__cookie, const char *__buf,
-				 size_t __n);
-
-/* Move COOKIE's file position to *POS bytes from the
-   beginning of the file (if W is SEEK_SET),
-   the current position (if W is SEEK_CUR),
-   or the end of the file (if W is SEEK_END).
-   Set *POS to the new file position.
-   Returns zero if successful, nonzero if not.  */
-typedef int __io_seek_fn (void *__cookie, _IO_off64_t *__pos, int __w);
-
-/* Close COOKIE.  */
-typedef int __io_close_fn (void *__cookie);
-
-
+/* Compatibility names for cookie I/O functions.  */
 #ifdef __USE_GNU
-/* User-visible names for the above.  */
-typedef __io_read_fn cookie_read_function_t;
-typedef __io_write_fn cookie_write_function_t;
-typedef __io_seek_fn cookie_seek_function_t;
-typedef __io_close_fn cookie_close_function_t;
-
-/* The structure with the cookie function pointers.  */
-typedef struct
-{
-  __io_read_fn *read;		/* Read bytes.  */
-  __io_write_fn *write;		/* Write bytes.  */
-  __io_seek_fn *seek;		/* Seek/tell file position.  */
-  __io_close_fn *close;		/* Close file.  */
-} _IO_cookie_io_functions_t;
-typedef _IO_cookie_io_functions_t cookie_io_functions_t;
+typedef cookie_read_function_t __io_read_fn;
+typedef cookie_write_function_t __io_write_fn;
+typedef cookie_seek_function_t __io_seek_fn;
+typedef cookie_close_function_t __io_close_fn;
+typedef cookie_io_functions_t _IO_cookie_io_functions_t;
 
 struct _IO_cookie_file;
 

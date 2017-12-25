@@ -19,20 +19,17 @@
 #include <stddef.h>
 
 #include <bits/types/__mbstate_t.h>
+#include <bits/types/__fpos_t.h>
+#include <bits/types/__fpos64_t.h>
+
+#define _G_fpos_t __fpos_t
+#define _G_fpos64_t __fpos64_t
+
 #if defined _LIBC || defined _GLIBCPP_USE_WCHAR_T
 # include <bits/types/wint_t.h>
 #endif
 
-typedef struct
-{
-  __off_t __pos;
-  __mbstate_t __state;
-} _G_fpos_t;
-typedef struct
-{
-  __off64_t __pos;
-  __mbstate_t __state;
-} _G_fpos64_t;
+
 #if defined _LIBC || defined _GLIBCPP_USE_WCHAR_T
 # include <gconv.h>
 typedef union

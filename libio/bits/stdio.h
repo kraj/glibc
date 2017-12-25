@@ -33,7 +33,7 @@
 # if !(__USE_FORTIFY_LEVEL > 0 && defined __fortify_function)
 /* Write formatted output to stdout from argument list ARG.  */
 __STDIO_INLINE int
-vprintf (const char *__restrict __fmt, _G_va_list __arg)
+vprintf (const char *__restrict __fmt, __gnuc_va_list __arg)
 {
   return vfprintf (stdout, __fmt, __arg);
 }
@@ -111,7 +111,7 @@ putchar_unlocked (int __c)
 
 # ifdef	__USE_GNU
 /* Like `getdelim', but reads up to a newline.  */
-__STDIO_INLINE _IO_ssize_t
+__STDIO_INLINE __ssize_t
 getline (char **__lineptr, size_t *__n, FILE *__stream)
 {
   return __getdelim (__lineptr, __n, '\n', __stream);
