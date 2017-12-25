@@ -67,7 +67,6 @@ unsigned int error_message_count;
 # define program_name program_invocation_name
 # include <errno.h>
 # include <limits.h>
-# include <libio/libioP.h>
 
 /* In GNU libc we want do not want to use the common name 'error' directly.
    Instead make it a weak alias.  */
@@ -79,11 +78,6 @@ extern void __error_at_line (int status, int errnum, const char *file_name,
      __attribute__ ((__format__ (__printf__, 5, 6)));;
 # define error __error
 # define error_at_line __error_at_line
-
-# include <libio/iolibio.h>
-# define fflush(s) _IO_fflush (s)
-# undef putc
-# define putc(c, fp) _IO_putc (c, fp)
 
 # include <libc-lock.h>
 
@@ -304,7 +298,7 @@ error (int status, int errnum, const char *message, ...)
 
   flush_stdout ();
 #ifdef _LIBC
-  _IO_flockfile (stderr);
+  flockfile (stderr);
 #endif
   if (error_print_progname)
     (*error_print_progname) ();
@@ -321,7 +315,7 @@ error (int status, int errnum, const char *message, ...)
   error_tail (status, errnum, message, args);
 
 #ifdef _LIBC
-  _IO_funlockfile (stderr);
+  funlockfile (stderr);
 # ifdef __libc_ptf_call
   __libc_ptf_call (__pthread_setcancelstate, (state, NULL), 0);
 # endif
@@ -367,7 +361,7 @@ error_at_line (int status, int errnum, const char *file_name,
 
   flush_stdout ();
 #ifdef _LIBC
-  _IO_flockfile (stderr);
+  flockfile (stderr);
 #endif
   if (error_print_progname)
     (*error_print_progname) ();
@@ -392,7 +386,7 @@ error_at_line (int status, int errnum, const char *file_name,
   error_tail (status, errnum, message, args);
 
 #ifdef _LIBC
-  _IO_funlockfile (stderr);
+  funlockfile (stderr);
 # ifdef __libc_ptf_call
   __libc_ptf_call (__pthread_setcancelstate, (state, NULL), 0);
 # endif

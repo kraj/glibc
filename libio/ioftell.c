@@ -58,3 +58,4 @@ _IO_ftell (_IO_FILE *fp)
 libc_hidden_def (_IO_ftell)
 
 weak_alias (_IO_ftell, ftell)
+libc_hidden_weak (ftell)

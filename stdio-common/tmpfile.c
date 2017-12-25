@@ -20,8 +20,6 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#include <iolibio.h>
-#define __fdopen _IO_fdopen
 #ifndef tmpfile
 # define tmpfile __new_tmpfile
 #endif
@@ -60,7 +58,7 @@ tmpfile (void)
       (void) __unlink (buf);
     }
 
-  if ((f = __fdopen (fd, "w+b")) == NULL)
+  if ((f = fdopen (fd, "w+b")) == NULL)
     __close (fd);
 
   return f;

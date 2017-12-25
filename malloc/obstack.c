@@ -400,10 +400,6 @@ _obstack_memory_used (struct obstack *h)
 #  define _(msgid) gettext (msgid)
 # endif
 
-# ifdef _LIBC
-#  include <libio/iolibio.h>
-# endif
-
 static _Noreturn void
 print_and_abort (void)
 {

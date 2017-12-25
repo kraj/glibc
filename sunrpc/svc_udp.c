@@ -63,7 +63,6 @@
 #endif
 
 #include <wchar.h>
-#include <libio/iolibio.h>
 #include <shlib-compat.h>
 
 #define rpc_buffer(xprt) ((xprt)->xp_p1)

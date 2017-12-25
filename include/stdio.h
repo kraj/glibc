@@ -1,6 +1,11 @@
 #ifndef _STDIO_H
+# if !defined _ISOMAC && defined _IO_MTSAFE_IO
+#  include <stdio-lock.h>
+# endif
 # include <libio/stdio.h>
 # ifndef _ISOMAC
+
+#  include <math_ldbl_opt.h>
 
 /* Now define the internal interfaces.  */
 
@@ -12,6 +17,7 @@ libc_hidden_proto (__snprintf)
 extern int __vsnprintf (char *__restrict __s, size_t __maxlen,
 			const char *__restrict __format, _G_va_list __arg)
      __attribute__ ((__format__ (__printf__, 3, 0)));
+libc_hidden_proto (__vsnprintf)
 extern int __vfscanf (FILE *__restrict __s,
 		      const char *__restrict __format,
 		      _G_va_list __arg)
@@ -22,10 +28,15 @@ extern int __vscanf (const char *__restrict __format,
      __attribute__ ((__format__ (__scanf__, 1, 0)));
 extern _IO_ssize_t __getline (char **__lineptr, size_t *__n,
 			      FILE *__stream) attribute_hidden;
+extern _IO_ssize_t __getdelim (char **__lineptr, size_t *__n,
+                               int __delim, FILE *__stream);
+libc_hidden_proto (__getdelim)
+
 extern int __vsscanf (const char *__restrict __s,
 		      const char *__restrict __format,
 		      _G_va_list __arg)
      __attribute__ ((__format__ (__scanf__, 2, 0)));
+libc_hidden_proto (__vsscanf)
 
 extern int __sprintf_chk (char *, int, size_t, const char *, ...) __THROW;
 extern int __snprintf_chk (char *, size_t, int, size_t, const char *, ...)
@@ -125,7 +136,6 @@ extern int __fxprintf_nocancel (FILE *__fp, const char *__fmt, ...)
 extern const char *const _sys_errlist_internal[] attribute_hidden;
 extern int _sys_nerr_internal attribute_hidden;
 
-libc_hidden_proto (__asprintf)
 #  if IS_IN (libc)
 extern _IO_FILE *_IO_new_fopen (const char*, const char*);
 #   define fopen(fname, mode) _IO_new_fopen (fname, mode)
@@ -142,6 +152,10 @@ extern int _IO_new_fgetpos (_IO_FILE *, _IO_fpos_t *);
 #   define fgetpos(fp, posp) _IO_new_fgetpos (fp, posp)
 #  endif
 
+libc_hidden_proto (__asprintf)
+extern __typeof (vasprintf) __vasprintf
+     __attribute__ ((__format__ (__printf__, 2, 0)));
+libc_hidden_proto (__vasprintf)
 libc_hidden_proto (dprintf)
 extern __typeof (dprintf) __dprintf
      __attribute__ ((__format__ (__printf__, 2, 3)));
@@ -149,6 +163,7 @@ libc_hidden_proto (__dprintf)
 libc_hidden_proto (fprintf)
 libc_hidden_proto (vfprintf)
 libc_hidden_proto (sprintf)
+libc_hidden_proto (vsprintf)
 libc_hidden_proto (sscanf)
 libc_hidden_proto (fwrite)
 libc_hidden_proto (perror)
@@ -157,11 +172,14 @@ libc_hidden_proto (rewind)
 libc_hidden_proto (fileno)
 extern __typeof (fileno) __fileno;
 libc_hidden_proto (__fileno)
+libc_hidden_proto (fread)
 libc_hidden_proto (fwrite)
 libc_hidden_proto (fseek)
+libc_hidden_proto (ftell)
 extern __typeof (ftello) __ftello;
 libc_hidden_proto (__ftello)
 libc_hidden_proto (fflush)
+libc_hidden_proto (setvbuf)
 libc_hidden_proto (fflush_unlocked)
 extern __typeof (fflush_unlocked) __fflush_unlocked;
 libc_hidden_proto (__fflush_unlocked)
@@ -193,6 +211,49 @@ libc_hidden_proto (__fmemopen)
 
 extern int __gen_tempfd (int flags);
 libc_hidden_proto (__gen_tempfd)
+
+libc_hidden_proto (__overflow)
+libc_hidden_proto (__underflow)
+libc_hidden_proto (__uflow)
+libc_hidden_proto (__woverflow)
+libc_hidden_proto (__wunderflow)
+libc_hidden_proto (__wuflow)
+libc_hidden_proto (_IO_free_backup_area)
+libc_hidden_proto (_IO_free_wbackup_area)
+libc_hidden_proto (_IO_padn)
+libc_hidden_proto (_IO_putc)
+libc_hidden_proto (_IO_sgetn)
+libc_hidden_proto (_IO_vfprintf)
+libc_hidden_proto (_IO_vfscanf)
+
+#ifdef _IO_MTSAFE_IO
+# undef _IO_peekc
+# undef _IO_flockfile
+# undef _IO_funlockfile
+# undef _IO_ftrylockfile
+
+# define _IO_peekc(_fp) _IO_peekc_locked (_fp)
+# if _IO_lock_inexpensive
+#  define _IO_flockfile(_fp) \
+  if (((_fp)->_flags & _IO_USER_LOCK) == 0) _IO_lock_lock (*(_fp)->_lock)
+#  define _IO_funlockfile(_fp) \
+  if (((_fp)->_flags & _IO_USER_LOCK) == 0) _IO_lock_unlock (*(_fp)->_lock)
+# else
+#  define _IO_flockfile(_fp) \
+  if (((_fp)->_flags & _IO_USER_LOCK) == 0) _IO_flockfile (_fp)
+#  define _IO_funlockfile(_fp) \
+  if (((_fp)->_flags & _IO_USER_LOCK) == 0) _IO_funlockfile (_fp)
+# endif
+#endif /* _IO_MTSAFE_IO */
+
+#if IS_IN (libc)
+# undef flockfile
+# define flockfile(s) _IO_flockfile (s)
+# undef funlockfile
+# define funlockfile(s) _IO_funlockfile (s)
+# undef putc
+# define putc(c, fp) _IO_putc (c, fp)
+#endif
 
 # endif /* not _ISOMAC */
 #endif /* stdio.h */

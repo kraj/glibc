@@ -42,6 +42,7 @@ _IO_fread (void *buf, _IO_size_t size, _IO_size_t count, _IO_FILE *fp)
 libc_hidden_def (_IO_fread)
 
 weak_alias (_IO_fread, fread)
+libc_hidden_weak (fread)
 
 # ifndef _IO_MTSAFE_IO
 strong_alias (_IO_fread, __fread_unlocked)

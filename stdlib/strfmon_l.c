@@ -22,12 +22,12 @@
 #include <langinfo.h>
 #include <locale.h>
 #include <monetary.h>
-#include "../libio/libioP.h"
-#include "../libio/strfile.h"
 #include <printf.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
+#include "../libio/libioP.h"
+#include "../libio/strfile.h"
 #include "../locale/localeinfo.h"
 
 

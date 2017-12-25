@@ -17,8 +17,6 @@
 
 #include <stdarg.h>
 #include <stdio.h>
-#include <libioP.h>
-#define __vsnprintf(s, l, f, a) _IO_vsnprintf (s, l, f, a)
 
 /* Write formatted output into S, according to the format
    string FORMAT, writing no more than MAXLEN characters.  */

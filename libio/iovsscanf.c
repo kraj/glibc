@@ -42,4 +42,5 @@ _IO_vsscanf (const char *string, const char *format, _IO_va_list args)
   return ret;
 }
 ldbl_weak_alias (_IO_vsscanf, __vsscanf)
+libc_hidden_weak (__vsscanf)
 ldbl_weak_alias (_IO_vsscanf, vsscanf)

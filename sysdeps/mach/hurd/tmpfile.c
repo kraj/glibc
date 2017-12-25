@@ -22,7 +22,6 @@
 #include <hurd/fd.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <iolibio.h>
 
 /* This returns a new stream opened on a temporary file (generated
    by tmpnam).  The file is opened with mode "w+b" (binary read/write).

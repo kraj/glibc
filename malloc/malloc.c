@@ -4962,7 +4962,7 @@ __malloc_stats (void)
 
   if (__malloc_initialized < 0)
     ptmalloc_init ();
-  _IO_flockfile (stderr);
+  flockfile (stderr);
   int old_flags2 = ((_IO_FILE *) stderr)->_flags2;
   ((_IO_FILE *) stderr)->_flags2 |= _IO_FLAGS2_NOTCANCEL;
   for (i = 0, ar_ptr = &main_arena;; i++)
@@ -4993,7 +4993,7 @@ __malloc_stats (void)
   fprintf (stderr, "max mmap bytes   = %10lu\n",
            (unsigned long) mp_.max_mmapped_mem);
   ((_IO_FILE *) stderr)->_flags2 |= old_flags2;
-  _IO_funlockfile (stderr);
+  funlockfile (stderr);
 }
 
 

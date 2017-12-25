@@ -40,7 +40,6 @@
 #include <rpc/xdr.h>
 #include <libintl.h>
 #include <wchar.h>
-#include <libio/iolibio.h>
 #include <shlib-compat.h>
 
 #define LASTUNSIGNED	((u_int)0-1)

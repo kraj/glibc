@@ -19,7 +19,6 @@
 
 #include <stdarg.h>
 #include <stdio.h>
-#include <libioP.h>
 #include <wchar.h>
 #include <printf.h>
 #include <monetary.h>

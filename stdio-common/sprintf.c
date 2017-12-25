@@ -17,8 +17,6 @@
 
 #include <stdarg.h>
 #include <stdio.h>
-#include <libioP.h>
-#define vsprintf(s, f, a) _IO_vsprintf (s, f, a)
 
 /* Write formatted output into S, according to the format string FORMAT.  */
 /* VARARGS2 */

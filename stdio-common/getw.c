@@ -17,9 +17,6 @@
 
 #include <stdio.h>
 
-#include <libio/iolibio.h>
-#define fread(p, m, n, s) _IO_fread (p, m, n, s)
-
 /* Read a word (int) from STREAM.  */
 int
 getw (FILE *stream)

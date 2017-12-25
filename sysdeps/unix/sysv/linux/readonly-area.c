@@ -21,7 +21,6 @@
 #include <stdio_ext.h>
 #include <stdlib.h>
 #include <string.h>
-#include "libio/libioP.h"
 
 /* Return 1 if the whole area PTR .. PTR+SIZE is not writable.
    Return -1 if it is writable.  */
@@ -55,7 +54,7 @@ __readonly_area (const char *ptr, size_t size)
 
   while (! feof_unlocked (fp))
     {
-      if (_IO_getdelim (&line, &linelen, '\n', fp) <= 0)
+      if (__getdelim (&line, &linelen, '\n', fp) <= 0)
 	break;
 
       char *p;

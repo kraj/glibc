@@ -125,3 +125,4 @@ unlock_return:
 
 weak_alias (_IO_getdelim, __getdelim)
 weak_alias (_IO_getdelim, getdelim)
+libc_hidden_weak (__getdelim)

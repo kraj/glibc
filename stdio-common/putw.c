@@ -16,8 +16,6 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include <stdio.h>
-#include <libio/iolibio.h>
-#define fwrite(p, n, m, s) _IO_fwrite (p, n, m, s)
 
 /* Write the word (int) W to STREAM.  */
 int

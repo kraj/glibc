@@ -18,7 +18,6 @@
 #include <stdarg.h>
 #undef	__OPTIMIZE__	/* Avoid inline `vprintf' function.  */
 #include <stdio.h>
-#include <libioP.h>
 
 #undef	vprintf
 

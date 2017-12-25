@@ -17,7 +17,6 @@
 
 #include <stdarg.h>
 #include <stdio.h>
-#include <libioP.h>
 
 
 /* Write formatted output to STREAM from the format string FORMAT.  */

@@ -40,9 +40,7 @@
 #include <rpc/pmap_clnt.h>
 #include <sys/socket.h>
 #include <netdb.h>
-
 #include <wchar.h>
-#include <libio/iolibio.h>
 #include <shlib-compat.h>
 
 struct proglst_

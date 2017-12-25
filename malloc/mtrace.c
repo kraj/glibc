@@ -35,11 +35,6 @@
 
 #include <libc-internal.h>
 #include <dso_handle.h>
-
-#include <libio/iolibio.h>
-#define setvbuf(s, b, f, l) _IO_setvbuf (s, b, f, l)
-#define fwrite(buf, size, count, fp) _IO_fwrite (buf, size, count, fp)
-
 #include <kernel-features.h>
 
 #define TRACE_BUFFER_SIZE 512

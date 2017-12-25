@@ -40,7 +40,7 @@ putsgent (const struct sgrp *g, FILE *stream)
       return -1;
     }
 
-  _IO_flockfile (stream);
+  flockfile (stream);
 
   if (fprintf (stream, "%s:%s:", g->sg_namp, _S (g->sg_passwd)) < 0)
     ++errors;
@@ -75,7 +75,7 @@ putsgent (const struct sgrp *g, FILE *stream)
   if (putc_unlocked ('\n', stream) == EOF)
     ++errors;
 
-  _IO_funlockfile (stream);
+  funlockfile (stream);
 
   return errors ? -1 : 0;
 }

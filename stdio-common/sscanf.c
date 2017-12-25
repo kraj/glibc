@@ -17,8 +17,6 @@
 
 #include <stdarg.h>
 #include <stdio.h>
-#include <libioP.h>
-#define __vsscanf(s, f, a) _IO_vsscanf (s, f, a)
 
 /* Read formatted input from S, according to the format string FORMAT.  */
 /* VARARGS2 */

@@ -89,9 +89,6 @@ static const char builtin_aliases[] =
 #undef BUILTIN_ALIAS
 };
 
-#include <libio/libioP.h>
-#define __getdelim(line, len, c, fp) _IO_getdelim (line, len, c, fp)
-
 
 /* Value of the GCONV_PATH environment variable.  */
 const char *__gconv_path_envvar;

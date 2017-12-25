@@ -61,9 +61,7 @@
 #include <sys/poll.h>
 #include <errno.h>
 #include <stdlib.h>
-
 #include <wchar.h>
-#include <libio/iolibio.h>
 #include <shlib-compat.h>
 
 /*
