@@ -53,6 +53,7 @@ libsupport-routines = \
   support_format_netent \
   support_isolate_in_subprocess \
   support_record_failure \
+  support_random \
   support_run_diff \
   support_shared_allocate \
   support_test_compare_failure \
@@ -153,6 +154,7 @@ tests = \
   tst-support_record_failure \
   tst-test_compare \
   tst-xreadlink \
+  tst-support_random
 
 ifeq ($(run-built-tests),yes)
 tests-special = \
