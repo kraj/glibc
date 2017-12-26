@@ -17,7 +17,10 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include <stdio.h>
+#include <libio/libioP.h>
 
+#undef ftrylockfile
+#undef __ftrylockfile
 #undef _IO_ftrylockfile
 
 int
@@ -26,5 +29,7 @@ __ftrylockfile (FILE *stream)
   /* Do nothing.  Using this version does not do any locking.  */
   return 1;
 }
-weak_alias (__ftrylockfile, ftrylockfile);
-weak_alias (__ftrylockfile, _IO_ftrylockfile)
+strong_alias (__ftrylockfile, _IO_ftrylockfile)
+weak_alias (__ftrylockfile, ftrylockfile)
+libc_hidden_def (__ftrylockfile)
+libc_hidden_def (_IO_ftrylockfile)

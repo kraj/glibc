@@ -222,6 +222,7 @@
 
 #include <unistd.h>
 #include <stdio.h>    /* needed for malloc_stats */
+#include <libio/libioP.h> /* needed for cancellation handling in malloc_stats */
 #include <errno.h>
 
 #include <shlib-compat.h>

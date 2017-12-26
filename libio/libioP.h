@@ -24,6 +24,9 @@
    This exception applies to code released by its copyright holders
    in files containing the exception.  */
 
+#ifndef _LIBIOP_H
+#define _LIBIOP_H 1
+
 /* NOTE: libio is now exclusively used only by glibc since libstdc++ has its
    own implementation.  As a result, functions that were implemented for C++
    (like *sputn) may no longer have C++ semantics.  This is of course only
@@ -33,12 +36,13 @@
    FIXME: All of the C++ cruft eventually needs to go away.  */
 
 #include <stddef.h>
-
+#include <stdio.h>
 #include <errno.h>
 #include <libc-lock.h>
 
 #include <math_ldbl_opt.h>
 
+#include <bits/libio.h>
 #include "iolibio.h"
 
 #ifdef __cplusplus
@@ -876,3 +880,5 @@ IO_validate_vtable (const struct _IO_jump_t *vtable)
     _IO_vtable_check ();
   return vtable;
 }
+
+#endif /* libioP.h.  */

@@ -147,7 +147,7 @@ __argp_fmtstream_update (argp_fmtstream_t fs)
 	      size_t i;
 	      for (i = 0; i < pad; i++)
 		{
-		  if (_IO_fwide (fs->stream, 0) > 0)
+		  if (fwide (fs->stream, 0) > 0)
 		    putwc_unlocked (L' ', fs->stream);
 		  else
 		    putc_unlocked (' ', fs->stream);
@@ -310,7 +310,7 @@ __argp_fmtstream_update (argp_fmtstream_t fs)
 	      *nl++ = ' ';
 	  else
 	    for (i = 0; i < fs->wmargin; ++i)
-	      if (_IO_fwide (fs->stream, 0) > 0)
+	      if (fwide (fs->stream, 0) > 0)
 		putwc_unlocked (L' ', fs->stream);
 	      else
 		putc_unlocked (' ', fs->stream);

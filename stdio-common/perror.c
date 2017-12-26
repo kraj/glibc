@@ -21,6 +21,8 @@
 #include <unistd.h>
 #include <wchar.h>
 
+#include <libio/libioP.h>
+
 static void
 perror_internal (FILE *fp, const char *s, int errnum)
 {

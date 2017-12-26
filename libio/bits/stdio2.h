@@ -16,6 +16,9 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
+#ifndef _BITS_STDIO2_H
+#define _BITS_STDIO2_H 1
+
 #ifndef _STDIO_H
 # error "Never include <bits/stdio2.h> directly; use <stdio.h> instead."
 #endif
@@ -368,7 +371,7 @@ fread_unlocked (void *__restrict __ptr, size_t __size, size_t __n,
 
       for (; __cnt > 0; --__cnt)
 	{
-	  int __c = _IO_getc_unlocked (__stream);
+	  int __c = getc_unlocked (__stream);
 	  if (__c == EOF)
 	    break;
 	  *__cptr++ = __c;
@@ -379,3 +382,5 @@ fread_unlocked (void *__restrict __ptr, size_t __size, size_t __n,
   return __fread_unlocked_alias (__ptr, __size, __n, __stream);
 }
 #endif
+
+#endif /* bits/stdio2.h.  */

@@ -18,8 +18,11 @@
 
 #include <pthread.h>
 #include <stdio.h>
-#include <stdio-lock.h>
+#include <libio/libioP.h>
 
+#undef funlockfile
+#undef __funlockfile
+#undef _IO_funlockfile
 
 void
 __funlockfile (FILE *stream)
@@ -28,3 +31,5 @@ __funlockfile (FILE *stream)
 }
 strong_alias (__funlockfile, _IO_funlockfile)
 weak_alias (__funlockfile, funlockfile)
+libc_hidden_def (__funlockfile)
+libc_hidden_def (_IO_funlockfile)

@@ -17,7 +17,10 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include <stdio.h>
+#include <libio/libioP.h>
 
+#undef flockfile
+#undef __flockfile
 #undef _IO_flockfile
 
 void
@@ -25,5 +28,7 @@ __flockfile (FILE *stream)
 {
   /* Do nothing.  Using this version does not do any locking.  */
 }
-weak_alias (__flockfile, flockfile);
-weak_alias (__flockfile, _IO_flockfile)
+strong_alias (__flockfile, _IO_flockfile)
+weak_alias (__flockfile, flockfile)
+libc_hidden_def (__flockfile)
+libc_hidden_def (_IO_flockfile)

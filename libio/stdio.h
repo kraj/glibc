@@ -845,19 +845,11 @@ extern void funlockfile (FILE *__stream) __THROW;
 # include <bits/getopt_posix.h>
 #endif
 
-/* Internal definitions used by optimizing inlines.  */
-#include <bits/libio.h>
+/* Slow-path routines used by the optimized inline functions in bits/stdio.h.  */
+extern int __underflow (FILE *);
+extern int __uflow (FILE *);
+extern int __overflow (FILE *, int);
 
-/* The C standard explicitly says this can be a macro,
-   so we always do the optimization for it.  */
-#define getc(_fp) _IO_getc (_fp)
-
-/* The C standard explicitly says this can be a macro,
-   so we always do the optimization for it.  */
-#define putc(_ch, _fp) _IO_putc (_ch, _fp)
-
-/* If we are compiling with optimizing read this file.  It contains
-   several optimizing inline functions and macros.  */
 #ifdef __USE_EXTERN_INLINES
 # include <bits/stdio.h>
 #endif

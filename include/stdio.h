@@ -15,26 +15,26 @@ extern int __snprintf (char *__restrict __s, size_t __maxlen,
      __attribute__ ((__format__ (__printf__, 3, 4)));
 libc_hidden_proto (__snprintf)
 extern int __vsnprintf (char *__restrict __s, size_t __maxlen,
-			const char *__restrict __format, _G_va_list __arg)
+			const char *__restrict __format, __gnuc_va_list __arg)
      __attribute__ ((__format__ (__printf__, 3, 0)));
 libc_hidden_proto (__vsnprintf)
 extern int __vfscanf (FILE *__restrict __s,
 		      const char *__restrict __format,
-		      _G_va_list __arg)
+		      __gnuc_va_list __arg)
      __attribute__ ((__format__ (__scanf__, 2, 0)));
 libc_hidden_proto (__vfscanf)
 extern int __vscanf (const char *__restrict __format,
-		     _G_va_list __arg)
+		     __gnuc_va_list __arg)
      __attribute__ ((__format__ (__scanf__, 1, 0)));
-extern _IO_ssize_t __getline (char **__lineptr, size_t *__n,
-			      FILE *__stream) attribute_hidden;
-extern _IO_ssize_t __getdelim (char **__lineptr, size_t *__n,
-                               int __delim, FILE *__stream);
+extern __ssize_t __getline (char **__lineptr, size_t *__n,
+                            FILE *__stream) attribute_hidden;
+extern __ssize_t __getdelim (char **__lineptr, size_t *__n,
+                             int __delim, FILE *__stream);
 libc_hidden_proto (__getdelim)
 
 extern int __vsscanf (const char *__restrict __s,
 		      const char *__restrict __format,
-		      _G_va_list __arg)
+		      __gnuc_va_list __arg)
      __attribute__ ((__format__ (__scanf__, 2, 0)));
 libc_hidden_proto (__vsscanf)
 
@@ -42,23 +42,23 @@ extern int __sprintf_chk (char *, int, size_t, const char *, ...) __THROW;
 extern int __snprintf_chk (char *, size_t, int, size_t, const char *, ...)
      __THROW;
 extern int __vsprintf_chk (char *, int, size_t, const char *,
-			   _G_va_list) __THROW;
+			   __gnuc_va_list) __THROW;
 extern int __vsnprintf_chk (char *, size_t, int, size_t, const char *,
-			    _G_va_list) __THROW;
+			    __gnuc_va_list) __THROW;
 extern int __printf_chk (int, const char *, ...);
 extern int __fprintf_chk (FILE *, int, const char *, ...);
-extern int __vprintf_chk (int, const char *, _G_va_list);
-extern int __vfprintf_chk (FILE *, int, const char *, _G_va_list);
+extern int __vprintf_chk (int, const char *, __gnuc_va_list);
+extern int __vfprintf_chk (FILE *, int, const char *, __gnuc_va_list);
 extern char *__fgets_unlocked_chk (char *buf, size_t size, int n, FILE *fp);
 extern char *__fgets_chk (char *buf, size_t size, int n, FILE *fp);
 extern int __asprintf_chk (char **, int, const char *, ...) __THROW;
-extern int __vasprintf_chk (char **, int, const char *, _G_va_list) __THROW;
+extern int __vasprintf_chk (char **, int, const char *, __gnuc_va_list) __THROW;
 extern int __dprintf_chk (int, int, const char *, ...);
-extern int __vdprintf_chk (int, int, const char *, _G_va_list);
+extern int __vdprintf_chk (int, int, const char *, __gnuc_va_list);
 extern int __obstack_printf_chk (struct obstack *, int, const char *, ...)
      __THROW;
 extern int __obstack_vprintf_chk (struct obstack *, int, const char *,
-				  _G_va_list) __THROW;
+				  __gnuc_va_list) __THROW;
 
 extern int __isoc99_fscanf (FILE *__restrict __stream,
 			    const char *__restrict __format, ...) __wur;
@@ -67,12 +67,12 @@ extern int __isoc99_sscanf (const char *__restrict __s,
 			    const char *__restrict __format, ...) __THROW;
 extern int __isoc99_vfscanf (FILE *__restrict __s,
 			     const char *__restrict __format,
-			     _G_va_list __arg) __wur;
+			     __gnuc_va_list __arg) __wur;
 extern int __isoc99_vscanf (const char *__restrict __format,
-			    _G_va_list __arg) __wur;
+			    __gnuc_va_list __arg) __wur;
 extern int __isoc99_vsscanf (const char *__restrict __s,
 			     const char *__restrict __format,
-			     _G_va_list __arg) __THROW;
+			     __gnuc_va_list __arg) __THROW;
 libc_hidden_proto (__isoc99_vsscanf)
 libc_hidden_proto (__isoc99_vfscanf)
 
@@ -116,14 +116,17 @@ libc_hidden_proto (__fortify_fail)
 libc_hidden_proto (__fortify_fail_abort)
 
 /* Acquire ownership of STREAM.  */
-extern void __flockfile (FILE *__stream) attribute_hidden;
+extern void __flockfile (FILE *__stream);
+libc_hidden_proto (__flockfile)
 
 /* Relinquish the ownership granted for STREAM.  */
-extern void __funlockfile (FILE *__stream) attribute_hidden;
+extern void __funlockfile (FILE *__stream);
+libc_hidden_proto (__funlockfile)
 
 /* Try to acquire ownership of STREAM but do not block if it is not
    possible.  */
 extern int __ftrylockfile (FILE *__stream);
+libc_hidden_proto (__ftrylockfile)
 
 extern int __getc_unlocked (FILE *__fp);
 extern wint_t __getwc_unlocked (FILE *__fp);
@@ -137,18 +140,18 @@ extern const char *const _sys_errlist_internal[] attribute_hidden;
 extern int _sys_nerr_internal attribute_hidden;
 
 #  if IS_IN (libc)
-extern _IO_FILE *_IO_new_fopen (const char*, const char*);
+extern FILE *_IO_new_fopen (const char*, const char*);
 #   define fopen(fname, mode) _IO_new_fopen (fname, mode)
-extern _IO_FILE *_IO_new_fdopen (int, const char*);
+extern FILE *_IO_new_fdopen (int, const char*);
 #   define fdopen(fd, mode) _IO_new_fdopen (fd, mode)
-extern int _IO_new_fclose (_IO_FILE*);
+extern int _IO_new_fclose (FILE *);
 #   define fclose(fp) _IO_new_fclose (fp)
-extern int _IO_fputs (const char*, _IO_FILE*);
+extern int _IO_fputs (const char*, FILE *);
 libc_hidden_proto (_IO_fputs)
 #   define fputs(str, fp) _IO_fputs (str, fp)
-extern int _IO_new_fsetpos (_IO_FILE *, const _IO_fpos_t *);
+extern int _IO_new_fsetpos (FILE *, const fpos_t *);
 #   define fsetpos(fp, posp) _IO_new_fsetpos (fp, posp)
-extern int _IO_new_fgetpos (_IO_FILE *, _IO_fpos_t *);
+extern int _IO_new_fgetpos (FILE *, fpos_t *);
 #   define fgetpos(fp, posp) _IO_new_fgetpos (fp, posp)
 #  endif
 
@@ -215,45 +218,38 @@ libc_hidden_proto (__gen_tempfd)
 libc_hidden_proto (__overflow)
 libc_hidden_proto (__underflow)
 libc_hidden_proto (__uflow)
-libc_hidden_proto (__woverflow)
-libc_hidden_proto (__wunderflow)
-libc_hidden_proto (__wuflow)
-libc_hidden_proto (_IO_free_backup_area)
-libc_hidden_proto (_IO_free_wbackup_area)
-libc_hidden_proto (_IO_padn)
-libc_hidden_proto (_IO_putc)
-libc_hidden_proto (_IO_sgetn)
-libc_hidden_proto (_IO_vfprintf)
-libc_hidden_proto (_IO_vfscanf)
+
+#if IS_IN (libc)
+# undef flockfile
+# define flockfile(s) __flockfile (s)
+# undef funlockfile
+# define funlockfile(s) __funlockfile (s)
+#endif
 
 #ifdef _IO_MTSAFE_IO
-# undef _IO_peekc
 # undef _IO_flockfile
 # undef _IO_funlockfile
 # undef _IO_ftrylockfile
 
-# define _IO_peekc(_fp) _IO_peekc_locked (_fp)
 # if _IO_lock_inexpensive
+#  define _IO_USER_LOCK 0x8000
 #  define _IO_flockfile(_fp) \
   if (((_fp)->_flags & _IO_USER_LOCK) == 0) _IO_lock_lock (*(_fp)->_lock)
 #  define _IO_funlockfile(_fp) \
   if (((_fp)->_flags & _IO_USER_LOCK) == 0) _IO_lock_unlock (*(_fp)->_lock)
 # else
 #  define _IO_flockfile(_fp) \
-  if (((_fp)->_flags & _IO_USER_LOCK) == 0) _IO_flockfile (_fp)
+  do { if (((_fp)->_flags & _IO_USER_LOCK) == 0) __flockfile (_fp) } while (0)
 #  define _IO_funlockfile(_fp) \
-  if (((_fp)->_flags & _IO_USER_LOCK) == 0) _IO_funlockfile (_fp)
+  do { if (((_fp)->_flags & _IO_USER_LOCK) == 0) __funlockfile (_fp) } while (0)
 # endif
-#endif /* _IO_MTSAFE_IO */
 
-#if IS_IN (libc)
-# undef flockfile
-# define flockfile(s) _IO_flockfile (s)
-# undef funlockfile
-# define funlockfile(s) _IO_funlockfile (s)
-# undef putc
-# define putc(c, fp) _IO_putc (c, fp)
-#endif
+# undef __flockfile
+# define __flockfile(s) _IO_flockfile (s)
+# undef __funlockfile
+# define __funlockfile(s) _IO_funlockfile (s)
+
+#endif /* _IO_MTSAFE_IO */
 
 # endif /* not _ISOMAC */
 #endif /* stdio.h */

@@ -17,7 +17,10 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include <stdio.h>
+#include <libio/libioP.h>
 
+#undef funlockfile
+#undef __funlockfile
 #undef _IO_funlockfile
 
 void
@@ -25,5 +28,8 @@ __funlockfile (FILE *stream)
 {
   /* Do nothing.  Using this version does not do any locking.  */
 }
-weak_alias (__funlockfile, _IO_funlockfile)
-weak_alias (__funlockfile, funlockfile);
+strong_alias (__funlockfile, _IO_funlockfile)
+weak_alias (__funlockfile, funlockfile)
+libc_hidden_def (__funlockfile)
+libc_hidden_def (_IO_funlockfile)
+

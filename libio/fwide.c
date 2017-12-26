@@ -28,6 +28,8 @@
 #include <stdio.h>
 #include <wchar.h>
 
+#undef fwide
+
 int
 fwide (_IO_FILE *fp, int mode)
 {

@@ -28,7 +28,7 @@ __scanf (const char *format, ...)
   int done;
 
   va_start (arg, format);
-  done = _IO_vfscanf (stdin, format, arg, NULL);
+  done = __vfscanf (stdin, format, arg);
   va_end (arg);
 
   return done;

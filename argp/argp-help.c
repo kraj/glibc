@@ -1870,7 +1870,7 @@ __argp_failure (const struct argp_state *state, int status, int errnum,
 #endif
 	    }
 
-	  if (_IO_fwide (stream, 0) > 0)
+	  if (fwide (stream, 0) > 0)
 	    putwc_unlocked (L'\n', stream);
 	  else
 	    putc_unlocked ('\n', stream);

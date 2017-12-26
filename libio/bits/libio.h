@@ -28,11 +28,12 @@
 #ifndef _BITS_LIBIO_H
 #define _BITS_LIBIO_H 1
 
-#if !defined _STDIO_H && !defined _LIBIO_H
+#if !defined _LIBIO_H && !defined _LIBIOP_H
 # error "Never include <bits/libio.h> directly; use <stdio.h> instead."
 #endif
 
 #include <stdio.h>
+#include <bits/types/struct_FILE.h>
 
 #include <bits/_G_config.h>
 /* ALL of these should be defined in _G_config.h */
@@ -50,9 +51,13 @@
 #define _IO_wint_t wint_t
 #define _IO_va_list __gnuc_va_list
 
+/* compatibility defines */
 #define _STDIO_USES_IOSTREAM
 #define _IO_UNIFIED_JUMPTABLES 1
+#define __HAVE_COLUMN
+#define _IO_file_flags _flags
 
+/* open modes */
 #define _IOS_INPUT	1
 #define _IOS_OUTPUT	2
 #define _IOS_ATEND	4
@@ -121,14 +126,7 @@
 #define _IO_BOOLALPHA 0200000
 
 
-struct _IO_jump_t;  struct _IO_FILE;
-
-/* During the build of glibc itself, _IO_lock_t will already have been
-   defined by internal headers.  */
-#ifndef _IO_lock_t_defined
-typedef void _IO_lock_t;
-#endif
-
+struct _IO_jump_t;
 
 /* A streammarker remembers a position in a buffer. */
 
@@ -139,16 +137,6 @@ struct _IO_marker {
  it points to _buf->Gbase()+_pos. FIXME comment */
   /* if _pos < 0, it points to _buf->eBptr()+_pos. FIXME comment */
   int _pos;
-#if 0
-    void set_streampos(streampos sp) { _spos = sp; }
-    void set_offset(int offset) { _pos = offset; _spos = (streampos)(-2); }
-  public:
-    streammarker(streambuf *sb);
-    ~streammarker();
-    int saving() { return  _spos == -2; }
-    int delta(streammarker&);
-    int delta();
-#endif
 };
 
 /* This is the structure from the libstdc++ codecvt class.  */
@@ -217,73 +205,6 @@ struct _IO_wide_data
 };
 #endif
 
-struct _IO_FILE {
-  int _flags;		/* High-order word is _IO_MAGIC; rest is flags. */
-#define _IO_file_flags _flags
-
-  /* The following pointers correspond to the C++ streambuf protocol. */
-  /* Note:  Tk uses the _IO_read_ptr and _IO_read_end fields directly. */
-  char* _IO_read_ptr;	/* Current read pointer */
-  char* _IO_read_end;	/* End of get area. */
-  char* _IO_read_base;	/* Start of putback+get area. */
-  char* _IO_write_base;	/* Start of put area. */
-  char* _IO_write_ptr;	/* Current put pointer. */
-  char* _IO_write_end;	/* End of put area. */
-  char* _IO_buf_base;	/* Start of reserve area. */
-  char* _IO_buf_end;	/* End of reserve area. */
-  /* The following fields are used to support backing up and undo. */
-  char *_IO_save_base; /* Pointer to start of non-current get area. */
-  char *_IO_backup_base;  /* Pointer to first valid character of backup area */
-  char *_IO_save_end; /* Pointer to end of non-current get area. */
-
-  struct _IO_marker *_markers;
-
-  struct _IO_FILE *_chain;
-
-  int _fileno;
-#if 0
-  int _blksize;
-#else
-  int _flags2;
-#endif
-  _IO_off_t _old_offset; /* This used to be _offset but it's too small.  */
-
-#define __HAVE_COLUMN /* temporary */
-  /* 1+column number of pbase(); 0 is unknown. */
-  unsigned short _cur_column;
-  signed char _vtable_offset;
-  char _shortbuf[1];
-
-  /*  char* _save_gptr;  char* _save_egptr; */
-
-  _IO_lock_t *_lock;
-#ifdef _IO_USE_OLD_IO_FILE
-};
-
-struct _IO_FILE_complete
-{
-  struct _IO_FILE _file;
-#endif
-#if defined _G_IO_IO_FILE_VERSION && _G_IO_IO_FILE_VERSION == 0x20001
-  _IO_off64_t _offset;
-# if defined _LIBC || defined _GLIBCPP_USE_WCHAR_T
-  /* Wide character stream stuff.  */
-  struct _IO_codecvt *_codecvt;
-  struct _IO_wide_data *_wide_data;
-  struct _IO_FILE *_freeres_list;
-  void *_freeres_buf;
-# else
-  void *__pad1;
-  void *__pad2;
-  void *__pad3;
-  void *__pad4;
-# endif
-  size_t __pad5;
-  int _mode;
-  /* Make sure we don't get into trouble again.  */
-  char _unused2[15 * sizeof (int) - 4 * sizeof (void *) - sizeof (size_t)];
-#endif
-};
 
 #ifndef __cplusplus
 typedef struct _IO_FILE _IO_FILE;
@@ -325,9 +246,6 @@ extern void _IO_cookie_init (struct _IO_cookie_file *__cfile, int __read_write,
 extern "C" {
 #endif
 
-extern int __underflow (_IO_FILE *);
-extern int __uflow (_IO_FILE *);
-extern int __overflow (_IO_FILE *, int);
 #if defined _LIBC || defined _GLIBCPP_USE_WCHAR_T
 extern _IO_wint_t __wunderflow (_IO_FILE *);
 extern _IO_wint_t __wuflow (_IO_FILE *);
@@ -340,17 +258,12 @@ extern _IO_wint_t __woverflow (_IO_FILE *, _IO_wint_t);
 # define _IO_BE(expr, res) (expr)
 #endif
 
-#define _IO_getc_unlocked(_fp) \
-       (_IO_BE ((_fp)->_IO_read_ptr >= (_fp)->_IO_read_end, 0) \
-	? __uflow (_fp) : *(unsigned char *) (_fp)->_IO_read_ptr++)
+#define _IO_getc_unlocked(_fp) __getc_unlocked_body (_fp)
 #define _IO_peekc_unlocked(_fp) \
        (_IO_BE ((_fp)->_IO_read_ptr >= (_fp)->_IO_read_end, 0) \
 	  && __underflow (_fp) == EOF ? EOF \
 	: *(unsigned char *) (_fp)->_IO_read_ptr)
-#define _IO_putc_unlocked(_ch, _fp) \
-   (_IO_BE ((_fp)->_IO_write_ptr >= (_fp)->_IO_write_end, 0) \
-    ? __overflow (_fp, (unsigned char) (_ch)) \
-    : (unsigned char) (*(_fp)->_IO_write_ptr++ = (_ch)))
+#define _IO_putc_unlocked(_ch, _fp) __putc_unlocked_body (_ch, _fp)
 
 #if defined _LIBC || defined _GLIBCPP_USE_WCHAR_T
 # define _IO_getwc_unlocked(_fp) \
@@ -366,8 +279,8 @@ extern _IO_wint_t __woverflow (_IO_FILE *, _IO_wint_t);
    : (_IO_wint_t) (*(_fp)->_wide_data->_IO_write_ptr++ = (_wch)))
 #endif
 
-#define _IO_feof_unlocked(__fp) (((__fp)->_flags & _IO_EOF_SEEN) != 0)
-#define _IO_ferror_unlocked(__fp) (((__fp)->_flags & _IO_ERR_SEEN) != 0)
+#define _IO_feof_unlocked(_fp) __feof_unlocked_body (_fp)
+#define _IO_ferror_unlocked(_fp) __ferror_unlocked_body (_fp)
 
 extern int _IO_getc (_IO_FILE *__fp);
 extern int _IO_putc (int __c, _IO_FILE *__fp);
@@ -380,11 +293,13 @@ extern int _IO_peekc_locked (_IO_FILE *__fp);
 #define _IO_PENDING_OUTPUT_COUNT(_fp)	\
 	((_fp)->_IO_write_ptr - (_fp)->_IO_write_base)
 
-extern void _IO_flockfile (_IO_FILE *) __THROW;
-extern void _IO_funlockfile (_IO_FILE *) __THROW;
+/* These might have macro definitions while building libc itself.  */
+extern void (_IO_flockfile) (_IO_FILE *) __THROW;
+extern void (_IO_funlockfile) (_IO_FILE *) __THROW;
 extern int _IO_ftrylockfile (_IO_FILE *) __THROW;
 
 #define _IO_peekc(_fp) _IO_peekc_unlocked (_fp)
+#if !defined _LIBC && !defined _IO_MTSAFE_IO
 #define _IO_flockfile(_fp) /**/
 #define _IO_funlockfile(_fp) /**/
 #define _IO_ftrylockfile(_fp) /**/
@@ -393,6 +308,7 @@ extern int _IO_ftrylockfile (_IO_FILE *) __THROW;
 #endif
 #ifndef _IO_cleanup_region_end
 #define _IO_cleanup_region_end(_Doit) /**/
+#endif
 #endif
 
 #define _IO_need_lock(_fp) \

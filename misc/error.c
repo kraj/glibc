@@ -39,6 +39,7 @@
 # include <stdbool.h>
 # include <stdint.h>
 # include <wchar.h>
+# include <libio/libioP.h>
 # define mbsrtowcs __mbsrtowcs
 # define USE_UNLOCKED_IO 0
 # define _GL_ATTRIBUTE_FORMAT_PRINTF(a, b)
@@ -197,7 +198,7 @@ static void _GL_ATTRIBUTE_FORMAT_PRINTF (3, 0) _GL_ARG_NONNULL ((3))
 error_tail (int status, int errnum, const char *message, va_list args)
 {
 #if _LIBC
-  if (_IO_fwide (stderr, 0) > 0)
+  if (fwide (stderr, 0) > 0)
     {
       size_t len = strlen (message) + 1;
       wchar_t *wmessage = NULL;

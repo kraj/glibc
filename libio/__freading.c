@@ -16,6 +16,7 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include <stdio_ext.h>
+#include <libio/libioP.h>
 
 int
 __freading (FILE *fp)

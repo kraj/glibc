@@ -313,7 +313,7 @@ res_vinit_1 (FILE *fp, struct resolv_conf_parser *parser)
             ssize_t ret = __getline (&parser->buffer, &buffer_size, fp);
             if (ret <= 0)
               {
-                if (_IO_ferror_unlocked (fp))
+                if (ferror_unlocked (fp))
                   return false;
                 else
                   break;

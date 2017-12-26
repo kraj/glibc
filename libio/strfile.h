@@ -25,6 +25,7 @@
    in files containing the exception.  */
 
 #include <stdio.h>
+#include <libio/libioP.h>
 
 typedef void *(*_IO_alloc_type) (_IO_size_t);
 typedef void (*_IO_free_type) (void*);

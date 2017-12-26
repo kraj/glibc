@@ -3,6 +3,8 @@
 
 # ifndef _ISOMAC
 
+#  define _IO_USER_LOCK 0x8000
+
 libc_hidden_proto (__fsetlocking)
 
 #define __fsetlocking(fp, type) \

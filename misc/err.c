@@ -23,6 +23,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <wchar.h>
+#include <libio/libioP.h>
 
 
 extern char *__progname;
@@ -84,7 +85,7 @@ void
 vwarnx (const char *format, __gnuc_va_list ap)
 {
   flockfile (stderr);
-  if (_IO_fwide (stderr, 0) > 0)
+  if (fwide (stderr, 0) > 0)
     {
       __fwprintf (stderr, L"%s: ", __progname);
       convert_and_print (format, ap);
@@ -107,7 +108,7 @@ vwarn (const char *format, __gnuc_va_list ap)
   int error = errno;
 
   flockfile (stderr);
-  if (_IO_fwide (stderr, 0) > 0)
+  if (fwide (stderr, 0) > 0)
     {
       __fwprintf (stderr, L"%s: ", __progname);
       if (format)

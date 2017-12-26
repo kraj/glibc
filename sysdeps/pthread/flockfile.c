@@ -18,8 +18,11 @@
 
 #include <pthread.h>
 #include <stdio.h>
-#include <stdio-lock.h>
+#include <libio/libioP.h>
 
+#undef flockfile
+#undef __flockfile
+#undef _IO_flockfile
 
 void
 __flockfile (FILE *stream)
@@ -29,3 +32,5 @@ __flockfile (FILE *stream)
 }
 strong_alias (__flockfile, _IO_flockfile)
 weak_alias (__flockfile, flockfile)
+libc_hidden_def (__flockfile)
+libc_hidden_def (_IO_flockfile)

@@ -16,11 +16,13 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <errno.h>
 #include <pthread.h>
 #include <stdio.h>
-#include <stdio-lock.h>
+#include <libio/libioP.h>
 
+#undef ftrylockfile
+#undef __ftrylockfile
+#undef _IO_ftrylockfile
 
 int
 __ftrylockfile (FILE *stream)
@@ -29,3 +31,5 @@ __ftrylockfile (FILE *stream)
 }
 strong_alias (__ftrylockfile, _IO_ftrylockfile)
 weak_alias (__ftrylockfile, ftrylockfile)
+libc_hidden_def (__ftrylockfile)
+libc_hidden_def (_IO_ftrylockfile)

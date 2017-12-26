@@ -260,5 +260,11 @@ extern size_t __mbsrtowcs_l (wchar_t *dst, const char **src, size_t len,
 #  define mbsinit(state) ((state)->__count == 0)
 #  define __mbsinit(state) ((state)->__count == 0)
 
+#  if IS_IN (libc)
+extern __typeof (fwide) _IO_fwide;
+#   undef fwide
+#   define fwide(s, m) _IO_fwide (s, m)
+#  endif
+
 # endif
 #endif
