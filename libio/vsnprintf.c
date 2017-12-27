@@ -119,4 +119,4 @@ _IO_vsnprintf (char *string, _IO_size_t maxlen, const char *format,
 }
 ldbl_weak_alias (_IO_vsnprintf, __vsnprintf)
 ldbl_weak_alias (_IO_vsnprintf, vsnprintf)
-libc_hidden_weak (__vsnprintf)
+ldbl_hidden_weak (_IO_vsnprintf, __vsnprintf)

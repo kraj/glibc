@@ -45,6 +45,18 @@
 #include <bits/libio.h>
 #include "iolibio.h"
 
+#ifndef _IO_pos_BAD
+#define _IO_pos_BAD ((__off64_t)(-1))
+#endif
+
+#define _IO_fileno(FP) ((FP)->_fileno)
+#define _IO_clearerr(FP) ((FP)->_flags &= ~(_IO_ERR_SEEN|_IO_EOF_SEEN))
+#define _IO_fseek(__fp, __offset, __whence) \
+  (_IO_seekoff_unlocked (__fp, __offset, __whence, _IOS_INPUT|_IOS_OUTPUT) \
+   == _IO_pos_BAD ? EOF : 0)
+#define _IO_rewind(FILE) \
+  (void) _IO_seekoff_unlocked (FILE, 0, 0, _IOS_INPUT|_IOS_OUTPUT)
+
 #ifdef __cplusplus
 extern "C" {
 #endif

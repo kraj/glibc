@@ -25,6 +25,7 @@
 #include <locale/localeinfo.h>
 #include <sys/syslog.h>
 #include <libc-lock.h>
+#include <libio/libioP.h>
 
 #include "nldbl-compat.h"
 

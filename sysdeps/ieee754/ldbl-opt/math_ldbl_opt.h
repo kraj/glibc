@@ -12,6 +12,7 @@
   long_double_symbol_1 (lib, local, symbol, LONG_DOUBLE_COMPAT_VERSION)
 #ifdef SHARED
 # define ldbl_hidden_def(local, name) libc_hidden_ver (local, name)
+# define ldbl_hidden_weak(local, name) libc_hidden_weak_ver (local, name)
 # define ldbl_strong_alias(name, aliasname) \
   strong_alias (name, __GL_##name##_##aliasname) \
   long_double_symbol (libc, __GL_##name##_##aliasname, aliasname);
@@ -22,6 +23,7 @@
   versioned_symbol (lib, local, symbol, version)
 #else
 # define ldbl_hidden_def(local, name) libc_hidden_def (name)
+# define ldbl_hidden_weak(local, name) libc_hidden_weak (name)
 # define ldbl_strong_alias(name, aliasname) strong_alias (name, aliasname)
 # define ldbl_weak_alias(name, aliasname) weak_alias (name, aliasname)
 # ifndef __ASSEMBLER__

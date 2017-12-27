@@ -9,6 +9,7 @@
 #define LONG_DOUBLE_COMPAT(lib, introduced) 0
 #define long_double_symbol(lib, local, symbol)
 #define ldbl_hidden_def(local, name) libc_hidden_def (name)
+#define ldbl_hidden_weak(local, name) libc_hidden_weak (name)
 #define ldbl_strong_alias(name, aliasname) strong_alias (name, aliasname)
 #define ldbl_weak_alias(name, aliasname) weak_alias (name, aliasname)
 #define __ldbl_is_dbl 0

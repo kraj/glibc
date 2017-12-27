@@ -85,5 +85,6 @@ _IO_vasprintf (char **result_ptr, const char *format, _IO_va_list args)
   (*result_ptr)[needed - 1] = '\0';
   return ret;
 }
-ldbl_strong_alias (_IO_vasprintf, __vasprintf)
+strong_alias (_IO_vasprintf, __vasprintf)
+ldbl_hidden_def (_IO_vasprintf, __vasprintf)
 ldbl_weak_alias (_IO_vasprintf, vasprintf)

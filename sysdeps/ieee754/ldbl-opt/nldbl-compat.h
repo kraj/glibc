@@ -36,7 +36,6 @@
 /* Declare the __nldbl_NAME function the wrappers call that's in libc.so.  */
 #define NLDBL_DECL(name) extern __typeof (name) __nldbl_##name
 
-NLDBL_DECL (_IO_vfscanf);
 NLDBL_DECL (vfscanf);
 NLDBL_DECL (vfwscanf);
 NLDBL_DECL (obstack_vprintf);
@@ -82,23 +81,25 @@ extern ssize_t __nldbl___vstrfmon (char *, size_t, const char *, va_list)
 /* These don't use __typeof because they were not declared by the headers,
    since we don't compile with _FORTIFY_SOURCE.  */
 extern int __nldbl___vfprintf_chk (FILE *__restrict, int,
-				   const char *__restrict, _G_va_list);
+				   const char *__restrict, va_list);
 extern int __nldbl___vfwprintf_chk (FILE *__restrict, int,
-				    const wchar_t *__restrict, __gnuc_va_list);
+				    const wchar_t *__restrict, va_list);
 extern int __nldbl___vsprintf_chk (char *__restrict, int, size_t,
-				   const char *__restrict, _G_va_list) __THROW;
+				   const char *__restrict, va_list) __THROW;
 extern int __nldbl___vsnprintf_chk (char *__restrict, size_t, int, size_t,
-				    const char *__restrict, _G_va_list)
+				    const char *__restrict, va_list)
   __THROW;
 extern int __nldbl___vswprintf_chk (wchar_t *__restrict, size_t, int, size_t,
-				    const wchar_t *__restrict, __gnuc_va_list)
+				    const wchar_t *__restrict, va_list)
   __THROW;
-extern int __nldbl___vasprintf_chk (char **, int, const char *, _G_va_list)
+extern int __nldbl___vasprintf_chk (char **, int, const char *, va_list)
   __THROW;
-extern int __nldbl___vdprintf_chk (int, int, const char *, _G_va_list);
+extern int __nldbl___vdprintf_chk (int, int, const char *, va_list);
 extern int __nldbl___obstack_vprintf_chk (struct obstack *, int, const char *,
-					  _G_va_list) __THROW;
+					  va_list) __THROW;
 extern void __nldbl___vsyslog_chk (int, int, const char *, va_list);
 
+/* This function is not declared by stdio.h anymore.  */
+extern int __nldbl__IO_vfscanf (FILE *, const char *, va_list, int *);
 
 #endif /* __NLDBL_COMPAT_H */

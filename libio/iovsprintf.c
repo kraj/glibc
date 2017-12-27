@@ -44,7 +44,6 @@ __IO_vsprintf (char *string, const char *format, _IO_va_list args)
   return ret;
 }
 ldbl_hidden_def (__IO_vsprintf, _IO_vsprintf)
-
 ldbl_strong_alias (__IO_vsprintf, _IO_vsprintf)
 ldbl_weak_alias (__IO_vsprintf, vsprintf)
-libc_hidden_weak (vsprintf)
+ldbl_hidden_weak (__IO_vsprintf, vsprintf)
