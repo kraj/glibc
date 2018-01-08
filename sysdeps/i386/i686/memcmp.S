@@ -83,42 +83,42 @@ L(not_1):
 	jmp	*%ebx
 
 	ALIGN (4)
-L(28bytes):
+INDIRECT_JUMP_ENTRY(28bytes)
 	movl	-28(%esi), %eax
 	movl	-28(%edx), %ecx
 	cmpl	%ecx, %eax
 	jne	L(find_diff)
-L(24bytes):
+INDIRECT_JUMP_ENTRY(24bytes)
 	movl	-24(%esi), %eax
 	movl	-24(%edx), %ecx
 	cmpl	%ecx, %eax
 	jne	L(find_diff)
-L(20bytes):
+INDIRECT_JUMP_ENTRY(20bytes)
 	movl	-20(%esi), %eax
 	movl	-20(%edx), %ecx
 	cmpl	%ecx, %eax
 	jne	L(find_diff)
-L(16bytes):
+INDIRECT_JUMP_ENTRY(16bytes)
 	movl	-16(%esi), %eax
 	movl	-16(%edx), %ecx
 	cmpl	%ecx, %eax
 	jne	L(find_diff)
-L(12bytes):
+INDIRECT_JUMP_ENTRY(12bytes)
 	movl	-12(%esi), %eax
 	movl	-12(%edx), %ecx
 	cmpl	%ecx, %eax
 	jne	L(find_diff)
-L(8bytes):
+INDIRECT_JUMP_ENTRY(8bytes)
 	movl	-8(%esi), %eax
 	movl	-8(%edx), %ecx
 	cmpl	%ecx, %eax
 	jne	L(find_diff)
-L(4bytes):
+INDIRECT_JUMP_ENTRY(4bytes)
 	movl	-4(%esi), %eax
 	movl	-4(%edx), %ecx
 	cmpl	%ecx, %eax
 	jne	L(find_diff)
-L(0bytes):
+INDIRECT_JUMP_ENTRY(0bytes)
 	popl	%esi
 	cfi_adjust_cfa_offset (-4)
 	cfi_restore (esi)
@@ -128,42 +128,42 @@ L(0bytes):
 	cfi_adjust_cfa_offset (8)
 	cfi_rel_offset (esi, 0)
 	cfi_rel_offset (ebx, 4)
-L(29bytes):
+INDIRECT_JUMP_ENTRY(29bytes)
 	movl	-29(%esi), %eax
 	movl	-29(%edx), %ecx
 	cmpl	%ecx, %eax
 	jne	L(find_diff)
-L(25bytes):
+INDIRECT_JUMP_ENTRY(25bytes)
 	movl	-25(%esi), %eax
 	movl	-25(%edx), %ecx
 	cmpl	%ecx, %eax
 	jne	L(find_diff)
-L(21bytes):
+INDIRECT_JUMP_ENTRY(21bytes)
 	movl	-21(%esi), %eax
 	movl	-21(%edx), %ecx
 	cmpl	%ecx, %eax
 	jne	L(find_diff)
-L(17bytes):
+INDIRECT_JUMP_ENTRY(17bytes)
 	movl	-17(%esi), %eax
 	movl	-17(%edx), %ecx
 	cmpl	%ecx, %eax
 	jne	L(find_diff)
-L(13bytes):
+INDIRECT_JUMP_ENTRY(13bytes)
 	movl	-13(%esi), %eax
 	movl	-13(%edx), %ecx
 	cmpl	%ecx, %eax
 	jne	L(find_diff)
-L(9bytes):
+INDIRECT_JUMP_ENTRY(9bytes)
 	movl	-9(%esi), %eax
 	movl	-9(%edx), %ecx
 	cmpl	%ecx, %eax
 	jne	L(find_diff)
-L(5bytes):
+INDIRECT_JUMP_ENTRY(5bytes)
 	movl	-5(%esi), %eax
 	movl	-5(%edx), %ecx
 	cmpl	%ecx, %eax
 	jne	L(find_diff)
-L(1bytes):
+INDIRECT_JUMP_ENTRY(1bytes)
 	movzbl	-1(%esi), %eax
 	cmpb	-1(%edx), %al
 	jne	L(set)
@@ -176,42 +176,42 @@ L(1bytes):
 	cfi_adjust_cfa_offset (8)
 	cfi_rel_offset (esi, 0)
 	cfi_rel_offset (ebx, 4)
-L(30bytes):
+INDIRECT_JUMP_ENTRY(30bytes)
 	movl	-30(%esi), %eax
 	movl	-30(%edx), %ecx
 	cmpl	%ecx, %eax
 	jne	L(find_diff)
-L(26bytes):
+INDIRECT_JUMP_ENTRY(26bytes)
 	movl	-26(%esi), %eax
 	movl	-26(%edx), %ecx
 	cmpl	%ecx, %eax
 	jne	L(find_diff)
-L(22bytes):
+INDIRECT_JUMP_ENTRY(22bytes)
 	movl	-22(%esi), %eax
 	movl	-22(%edx), %ecx
 	cmpl	%ecx, %eax
 	jne	L(find_diff)
-L(18bytes):
+INDIRECT_JUMP_ENTRY(18bytes)
 	movl	-18(%esi), %eax
 	movl	-18(%edx), %ecx
 	cmpl	%ecx, %eax
 	jne	L(find_diff)
-L(14bytes):
+INDIRECT_JUMP_ENTRY(14bytes)
 	movl	-14(%esi), %eax
 	movl	-14(%edx), %ecx
 	cmpl	%ecx, %eax
 	jne	L(find_diff)
-L(10bytes):
+INDIRECT_JUMP_ENTRY(10bytes)
 	movl	-10(%esi), %eax
 	movl	-10(%edx), %ecx
 	cmpl	%ecx, %eax
 	jne	L(find_diff)
-L(6bytes):
+INDIRECT_JUMP_ENTRY(6bytes)
 	movl	-6(%esi), %eax
 	movl	-6(%edx), %ecx
 	cmpl	%ecx, %eax
 	jne	L(find_diff)
-L(2bytes):
+INDIRECT_JUMP_ENTRY(2bytes)
 	movzwl	-2(%esi), %eax
 	movzwl	-2(%edx), %ecx
 	cmpb	%cl, %al
@@ -227,42 +227,42 @@ L(2bytes):
 	cfi_adjust_cfa_offset (8)
 	cfi_rel_offset (esi, 0)
 	cfi_rel_offset (ebx, 4)
-L(31bytes):
+INDIRECT_JUMP_ENTRY(31bytes)
 	movl	-31(%esi), %eax
 	movl	-31(%edx), %ecx
 	cmpl	%ecx, %eax
 	jne	L(find_diff)
-L(27bytes):
+INDIRECT_JUMP_ENTRY(27bytes)
 	movl	-27(%esi), %eax
 	movl	-27(%edx), %ecx
 	cmpl	%ecx, %eax
 	jne	L(find_diff)
-L(23bytes):
+INDIRECT_JUMP_ENTRY(23bytes)
 	movl	-23(%esi), %eax
 	movl	-23(%edx), %ecx
 	cmpl	%ecx, %eax
 	jne	L(find_diff)
-L(19bytes):
+INDIRECT_JUMP_ENTRY(19bytes)
 	movl	-19(%esi), %eax
 	movl	-19(%edx), %ecx
 	cmpl	%ecx, %eax
 	jne	L(find_diff)
-L(15bytes):
+INDIRECT_JUMP_ENTRY(15bytes)
 	movl	-15(%esi), %eax
 	movl	-15(%edx), %ecx
 	cmpl	%ecx, %eax
 	jne	L(find_diff)
-L(11bytes):
+INDIRECT_JUMP_ENTRY(11bytes)
 	movl	-11(%esi), %eax
 	movl	-11(%edx), %ecx
 	cmpl	%ecx, %eax
 	jne	L(find_diff)
-L(7bytes):
+INDIRECT_JUMP_ENTRY(7bytes)
 	movl	-7(%esi), %eax
 	movl	-7(%edx), %ecx
 	cmpl	%ecx, %eax
 	jne	L(find_diff)
-L(3bytes):
+INDIRECT_JUMP_ENTRY(3bytes)
 	movzwl	-3(%esi), %eax
 	movzwl	-3(%edx), %ecx
 	cmpb	%cl, %al
