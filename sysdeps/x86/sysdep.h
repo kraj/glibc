@@ -51,6 +51,10 @@
 #define ENTRY_CHK(name) ENTRY (name)
 #define END_CHK(name) END (name)
 
+/* Define a label for indirect jump target.  */
+#undef INDIRECT_JUMP_ENTRY
+#define	INDIRECT_JUMP_ENTRY(name) L(name): _CET_ENDBR
+
 /* Since C identifiers are not normally prefixed with an underscore
    on this system, the asm identifier `syscall_error' intrudes on the
    C name space.  Make sure we use an innocuous name.  */
