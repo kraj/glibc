@@ -789,12 +789,12 @@ L(32bytesin256):
 L(16bytesin256):
 	add	$16, %rdi
 	add	$16, %rsi
-L(16bytes):
+INDIRECT_JUMP_ENTRY(16bytes)
 	mov	-16(%rdi), %rax
 	mov	-16(%rsi), %rcx
 	cmp	%rax, %rcx
 	jne	L(diffin8bytes)
-L(8bytes):
+INDIRECT_JUMP_ENTRY(8bytes)
 	mov	-8(%rdi), %rax
 	mov	-8(%rsi), %rcx
 	cmp	%rax, %rcx
@@ -803,12 +803,12 @@ L(8bytes):
 	ret
 
 	.p2align 4
-L(12bytes):
+INDIRECT_JUMP_ENTRY(12bytes)
 	mov	-12(%rdi), %rax
 	mov	-12(%rsi), %rcx
 	cmp	%rax, %rcx
 	jne	L(diffin8bytes)
-L(4bytes):
+INDIRECT_JUMP_ENTRY(4bytes)
 	mov	-4(%rsi), %ecx
 # ifndef USE_AS_WMEMCMP
 	mov	-4(%rdi), %eax
@@ -817,40 +817,40 @@ L(4bytes):
 	cmp	-4(%rdi), %ecx
 # endif
 	jne	L(diffin4bytes)
-L(0bytes):
+INDIRECT_JUMP_ENTRY(0bytes)
 	xor	%eax, %eax
 	ret
 
 # ifndef USE_AS_WMEMCMP
 /* unreal case for wmemcmp */
 	.p2align 4
-L(65bytes):
+INDIRECT_JUMP_ENTRY(65bytes)
 	movdqu	-65(%rdi), %xmm1
 	movdqu	-65(%rsi), %xmm2
 	mov	$-65, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(49bytes):
+INDIRECT_JUMP_ENTRY(49bytes)
 	movdqu	-49(%rdi), %xmm1
 	movdqu	-49(%rsi), %xmm2
 	mov	$-49, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(33bytes):
+INDIRECT_JUMP_ENTRY(33bytes)
 	movdqu	-33(%rdi), %xmm1
 	movdqu	-33(%rsi), %xmm2
 	mov	$-33, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(17bytes):
+INDIRECT_JUMP_ENTRY(17bytes)
 	mov	-17(%rdi), %rax
 	mov	-17(%rsi), %rcx
 	cmp	%rax, %rcx
 	jne	L(diffin8bytes)
-L(9bytes):
+INDIRECT_JUMP_ENTRY(9bytes)
 	mov	-9(%rdi), %rax
 	mov	-9(%rsi), %rcx
 	cmp	%rax, %rcx
@@ -861,7 +861,7 @@ L(9bytes):
 	ret
 
 	.p2align 4
-L(13bytes):
+INDIRECT_JUMP_ENTRY(13bytes)
 	mov	-13(%rdi), %rax
 	mov	-13(%rsi), %rcx
 	cmp	%rax, %rcx
@@ -874,7 +874,7 @@ L(13bytes):
 	ret
 
 	.p2align 4
-L(5bytes):
+INDIRECT_JUMP_ENTRY(5bytes)
 	mov	-5(%rdi), %eax
 	mov	-5(%rsi), %ecx
 	cmp	%eax, %ecx
@@ -885,33 +885,33 @@ L(5bytes):
 	ret
 
 	.p2align 4
-L(66bytes):
+INDIRECT_JUMP_ENTRY(66bytes)
 	movdqu	-66(%rdi), %xmm1
 	movdqu	-66(%rsi), %xmm2
 	mov	$-66, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(50bytes):
+INDIRECT_JUMP_ENTRY(50bytes)
 	movdqu	-50(%rdi), %xmm1
 	movdqu	-50(%rsi), %xmm2
 	mov	$-50, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(34bytes):
+INDIRECT_JUMP_ENTRY(34bytes)
 	movdqu	-34(%rdi), %xmm1
 	movdqu	-34(%rsi), %xmm2
 	mov	$-34, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(18bytes):
+INDIRECT_JUMP_ENTRY(18bytes)
 	mov	-18(%rdi), %rax
 	mov	-18(%rsi), %rcx
 	cmp	%rax, %rcx
 	jne	L(diffin8bytes)
-L(10bytes):
+INDIRECT_JUMP_ENTRY(10bytes)
 	mov	-10(%rdi), %rax
 	mov	-10(%rsi), %rcx
 	cmp	%rax, %rcx
@@ -926,7 +926,7 @@ L(10bytes):
 	ret
 
 	.p2align 4
-L(14bytes):
+INDIRECT_JUMP_ENTRY(14bytes)
 	mov	-14(%rdi), %rax
 	mov	-14(%rsi), %rcx
 	cmp	%rax, %rcx
@@ -939,12 +939,12 @@ L(14bytes):
 	ret
 
 	.p2align 4
-L(6bytes):
+INDIRECT_JUMP_ENTRY(6bytes)
 	mov	-6(%rdi), %eax
 	mov	-6(%rsi), %ecx
 	cmp	%eax, %ecx
 	jne	L(diffin4bytes)
-L(2bytes):
+INDIRECT_JUMP_ENTRY(2bytes)
 	movzwl	-2(%rsi), %ecx
 	movzwl	-2(%rdi), %eax
 	cmp	%cl, %al
@@ -955,33 +955,33 @@ L(2bytes):
 	ret
 
 	.p2align 4
-L(67bytes):
+INDIRECT_JUMP_ENTRY(67bytes)
 	movdqu	-67(%rdi), %xmm2
 	movdqu	-67(%rsi), %xmm1
 	mov	$-67, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(51bytes):
+INDIRECT_JUMP_ENTRY(51bytes)
 	movdqu	-51(%rdi), %xmm2
 	movdqu	-51(%rsi), %xmm1
 	mov	$-51, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(35bytes):
+INDIRECT_JUMP_ENTRY(35bytes)
 	movdqu	-35(%rsi), %xmm1
 	movdqu	-35(%rdi), %xmm2
 	mov	$-35, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(19bytes):
+INDIRECT_JUMP_ENTRY(19bytes)
 	mov	-19(%rdi), %rax
 	mov	-19(%rsi), %rcx
 	cmp	%rax, %rcx
 	jne	L(diffin8bytes)
-L(11bytes):
+INDIRECT_JUMP_ENTRY(11bytes)
 	mov	-11(%rdi), %rax
 	mov	-11(%rsi), %rcx
 	cmp	%rax, %rcx
@@ -994,7 +994,7 @@ L(11bytes):
 	ret
 
 	.p2align 4
-L(15bytes):
+INDIRECT_JUMP_ENTRY(15bytes)
 	mov	-15(%rdi), %rax
 	mov	-15(%rsi), %rcx
 	cmp	%rax, %rcx
@@ -1007,7 +1007,7 @@ L(15bytes):
 	ret
 
 	.p2align 4
-L(7bytes):
+INDIRECT_JUMP_ENTRY(7bytes)
 	mov	-7(%rdi), %eax
 	mov	-7(%rsi), %ecx
 	cmp	%eax, %ecx
@@ -1020,12 +1020,12 @@ L(7bytes):
 	ret
 
 	.p2align 4
-L(3bytes):
+INDIRECT_JUMP_ENTRY(3bytes)
 	movzwl	-3(%rdi), %eax
 	movzwl	-3(%rsi), %ecx
 	cmp	%eax, %ecx
 	jne	L(diffin2bytes)
-L(1bytes):
+INDIRECT_JUMP_ENTRY(1bytes)
 	movzbl	-1(%rdi), %eax
 	movzbl	-1(%rsi), %ecx
 	sub	%ecx, %eax
@@ -1033,28 +1033,28 @@ L(1bytes):
 # endif
 
 	.p2align 4
-L(68bytes):
+INDIRECT_JUMP_ENTRY(68bytes)
 	movdqu	-68(%rdi), %xmm2
 	movdqu	-68(%rsi), %xmm1
 	mov	$-68, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(52bytes):
+INDIRECT_JUMP_ENTRY(52bytes)
 	movdqu	-52(%rdi), %xmm2
 	movdqu	-52(%rsi), %xmm1
 	mov	$-52, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(36bytes):
+INDIRECT_JUMP_ENTRY(36bytes)
 	movdqu	-36(%rdi), %xmm2
 	movdqu	-36(%rsi), %xmm1
 	mov	$-36, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(20bytes):
+INDIRECT_JUMP_ENTRY(20bytes)
 	movdqu	-20(%rdi), %xmm2
 	movdqu	-20(%rsi), %xmm1
 	mov	$-20, %dl
@@ -1076,28 +1076,28 @@ L(20bytes):
 # ifndef USE_AS_WMEMCMP
 /* unreal cases for wmemcmp */
 	.p2align 4
-L(69bytes):
+INDIRECT_JUMP_ENTRY(69bytes)
 	movdqu	-69(%rsi), %xmm1
 	movdqu	-69(%rdi), %xmm2
 	mov	$-69, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(53bytes):
+INDIRECT_JUMP_ENTRY(53bytes)
 	movdqu	-53(%rsi), %xmm1
 	movdqu	-53(%rdi), %xmm2
 	mov	$-53, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(37bytes):
+INDIRECT_JUMP_ENTRY(37bytes)
 	movdqu	-37(%rsi), %xmm1
 	movdqu	-37(%rdi), %xmm2
 	mov	$-37, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(21bytes):
+INDIRECT_JUMP_ENTRY(21bytes)
 	movdqu	-21(%rsi), %xmm1
 	movdqu	-21(%rdi), %xmm2
 	mov	$-21, %dl
@@ -1112,28 +1112,28 @@ L(21bytes):
 	ret
 
 	.p2align 4
-L(70bytes):
+INDIRECT_JUMP_ENTRY(70bytes)
 	movdqu	-70(%rsi), %xmm1
 	movdqu	-70(%rdi), %xmm2
 	mov	$-70, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(54bytes):
+INDIRECT_JUMP_ENTRY(54bytes)
 	movdqu	-54(%rsi), %xmm1
 	movdqu	-54(%rdi), %xmm2
 	mov	$-54, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(38bytes):
+INDIRECT_JUMP_ENTRY(38bytes)
 	movdqu	-38(%rsi), %xmm1
 	movdqu	-38(%rdi), %xmm2
 	mov	$-38, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(22bytes):
+INDIRECT_JUMP_ENTRY(22bytes)
 	movdqu	-22(%rsi), %xmm1
 	movdqu	-22(%rdi), %xmm2
 	mov	$-22, %dl
@@ -1148,28 +1148,28 @@ L(22bytes):
 	ret
 
 	.p2align 4
-L(71bytes):
+INDIRECT_JUMP_ENTRY(71bytes)
 	movdqu	-71(%rsi), %xmm1
 	movdqu	-71(%rdi), %xmm2
 	mov	$-71, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(55bytes):
+INDIRECT_JUMP_ENTRY(55bytes)
 	movdqu	-55(%rdi), %xmm2
 	movdqu	-55(%rsi), %xmm1
 	mov	$-55, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(39bytes):
+INDIRECT_JUMP_ENTRY(39bytes)
 	movdqu	-39(%rdi), %xmm2
 	movdqu	-39(%rsi), %xmm1
 	mov	$-39, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(23bytes):
+INDIRECT_JUMP_ENTRY(23bytes)
 	movdqu	-23(%rdi), %xmm2
 	movdqu	-23(%rsi), %xmm1
 	mov	$-23, %dl
@@ -1185,28 +1185,28 @@ L(23bytes):
 # endif
 
 	.p2align 4
-L(72bytes):
+INDIRECT_JUMP_ENTRY(72bytes)
 	movdqu	-72(%rsi), %xmm1
 	movdqu	-72(%rdi), %xmm2
 	mov	$-72, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(56bytes):
+INDIRECT_JUMP_ENTRY(56bytes)
 	movdqu	-56(%rdi), %xmm2
 	movdqu	-56(%rsi), %xmm1
 	mov	$-56, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(40bytes):
+INDIRECT_JUMP_ENTRY(40bytes)
 	movdqu	-40(%rdi), %xmm2
 	movdqu	-40(%rsi), %xmm1
 	mov	$-40, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(24bytes):
+INDIRECT_JUMP_ENTRY(24bytes)
 	movdqu	-24(%rdi), %xmm2
 	movdqu	-24(%rsi), %xmm1
 	mov	$-24, %dl
@@ -1224,28 +1224,28 @@ L(24bytes):
 # ifndef USE_AS_WMEMCMP
 /* unreal cases for wmemcmp */
 	.p2align 4
-L(73bytes):
+INDIRECT_JUMP_ENTRY(73bytes)
 	movdqu	-73(%rsi), %xmm1
 	movdqu	-73(%rdi), %xmm2
 	mov	$-73, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(57bytes):
+INDIRECT_JUMP_ENTRY(57bytes)
 	movdqu	-57(%rdi), %xmm2
 	movdqu	-57(%rsi), %xmm1
 	mov	$-57, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(41bytes):
+INDIRECT_JUMP_ENTRY(41bytes)
 	movdqu	-41(%rdi), %xmm2
 	movdqu	-41(%rsi), %xmm1
 	mov	$-41, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(25bytes):
+INDIRECT_JUMP_ENTRY(25bytes)
 	movdqu	-25(%rdi), %xmm2
 	movdqu	-25(%rsi), %xmm1
 	mov	$-25, %dl
@@ -1262,28 +1262,28 @@ L(25bytes):
 	ret
 
 	.p2align 4
-L(74bytes):
+INDIRECT_JUMP_ENTRY(74bytes)
 	movdqu	-74(%rsi), %xmm1
 	movdqu	-74(%rdi), %xmm2
 	mov	$-74, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(58bytes):
+INDIRECT_JUMP_ENTRY(58bytes)
 	movdqu	-58(%rdi), %xmm2
 	movdqu	-58(%rsi), %xmm1
 	mov	$-58, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(42bytes):
+INDIRECT_JUMP_ENTRY(42bytes)
 	movdqu	-42(%rdi), %xmm2
 	movdqu	-42(%rsi), %xmm1
 	mov	$-42, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(26bytes):
+INDIRECT_JUMP_ENTRY(26bytes)
 	movdqu	-26(%rdi), %xmm2
 	movdqu	-26(%rsi), %xmm1
 	mov	$-26, %dl
@@ -1299,28 +1299,28 @@ L(26bytes):
 	jmp	L(diffin2bytes)
 
 	.p2align 4
-L(75bytes):
+INDIRECT_JUMP_ENTRY(75bytes)
 	movdqu	-75(%rsi), %xmm1
 	movdqu	-75(%rdi), %xmm2
 	mov	$-75, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(59bytes):
+INDIRECT_JUMP_ENTRY(59bytes)
 	movdqu	-59(%rdi), %xmm2
 	movdqu	-59(%rsi), %xmm1
 	mov	$-59, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(43bytes):
+INDIRECT_JUMP_ENTRY(43bytes)
 	movdqu	-43(%rdi), %xmm2
 	movdqu	-43(%rsi), %xmm1
 	mov	$-43, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(27bytes):
+INDIRECT_JUMP_ENTRY(27bytes)
 	movdqu	-27(%rdi), %xmm2
 	movdqu	-27(%rsi), %xmm1
 	mov	$-27, %dl
@@ -1339,28 +1339,28 @@ L(27bytes):
 	ret
 # endif
 	.p2align 4
-L(76bytes):
+INDIRECT_JUMP_ENTRY(76bytes)
 	movdqu	-76(%rsi), %xmm1
 	movdqu	-76(%rdi), %xmm2
 	mov	$-76, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(60bytes):
+INDIRECT_JUMP_ENTRY(60bytes)
 	movdqu	-60(%rdi), %xmm2
 	movdqu	-60(%rsi), %xmm1
 	mov	$-60, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(44bytes):
+INDIRECT_JUMP_ENTRY(44bytes)
 	movdqu	-44(%rdi), %xmm2
 	movdqu	-44(%rsi), %xmm1
 	mov	$-44, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(28bytes):
+INDIRECT_JUMP_ENTRY(28bytes)
 	movdqu	-28(%rdi), %xmm2
 	movdqu	-28(%rsi), %xmm1
 	mov	$-28, %dl
@@ -1385,28 +1385,28 @@ L(28bytes):
 # ifndef USE_AS_WMEMCMP
 /* unreal cases for wmemcmp */
 	.p2align 4
-L(77bytes):
+INDIRECT_JUMP_ENTRY(77bytes)
 	movdqu	-77(%rsi), %xmm1
 	movdqu	-77(%rdi), %xmm2
 	mov	$-77, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(61bytes):
+INDIRECT_JUMP_ENTRY(61bytes)
 	movdqu	-61(%rdi), %xmm2
 	movdqu	-61(%rsi), %xmm1
 	mov	$-61, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(45bytes):
+INDIRECT_JUMP_ENTRY(45bytes)
 	movdqu	-45(%rdi), %xmm2
 	movdqu	-45(%rsi), %xmm1
 	mov	$-45, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(29bytes):
+INDIRECT_JUMP_ENTRY(29bytes)
 	movdqu	-29(%rdi), %xmm2
 	movdqu	-29(%rsi), %xmm1
 	mov	$-29, %dl
@@ -1427,28 +1427,28 @@ L(29bytes):
 	ret
 
 	.p2align 4
-L(78bytes):
+INDIRECT_JUMP_ENTRY(78bytes)
 	movdqu	-78(%rsi), %xmm1
 	movdqu	-78(%rdi), %xmm2
 	mov	$-78, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(62bytes):
+INDIRECT_JUMP_ENTRY(62bytes)
 	movdqu	-62(%rdi), %xmm2
 	movdqu	-62(%rsi), %xmm1
 	mov	$-62, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(46bytes):
+INDIRECT_JUMP_ENTRY(46bytes)
 	movdqu	-46(%rdi), %xmm2
 	movdqu	-46(%rsi), %xmm1
 	mov	$-46, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(30bytes):
+INDIRECT_JUMP_ENTRY(30bytes)
 	movdqu	-30(%rdi), %xmm2
 	movdqu	-30(%rsi), %xmm1
 	mov	$-30, %dl
@@ -1467,28 +1467,28 @@ L(30bytes):
 	ret
 
 	.p2align 4
-L(79bytes):
+INDIRECT_JUMP_ENTRY(79bytes)
 	movdqu	-79(%rsi), %xmm1
 	movdqu	-79(%rdi), %xmm2
 	mov	$-79, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(63bytes):
+INDIRECT_JUMP_ENTRY(63bytes)
 	movdqu	-63(%rdi), %xmm2
 	movdqu	-63(%rsi), %xmm1
 	mov	$-63, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(47bytes):
+INDIRECT_JUMP_ENTRY(47bytes)
 	movdqu	-47(%rdi), %xmm2
 	movdqu	-47(%rsi), %xmm1
 	mov	$-47, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(31bytes):
+INDIRECT_JUMP_ENTRY(31bytes)
 	movdqu	-31(%rdi), %xmm2
 	movdqu	-31(%rsi), %xmm1
 	mov	$-31, %dl
@@ -1507,21 +1507,21 @@ L(31bytes):
 	ret
 # endif
 	.p2align 4
-L(64bytes):
+INDIRECT_JUMP_ENTRY(64bytes)
 	movdqu	-64(%rdi), %xmm2
 	movdqu	-64(%rsi), %xmm1
 	mov	$-64, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(48bytes):
+INDIRECT_JUMP_ENTRY(48bytes)
 	movdqu	-48(%rdi), %xmm2
 	movdqu	-48(%rsi), %xmm1
 	mov	$-48, %dl
 	pxor	%xmm1, %xmm2
 	ptest	%xmm2, %xmm0
 	jnc	L(less16bytes)
-L(32bytes):
+INDIRECT_JUMP_ENTRY(32bytes)
 	movdqu	-32(%rdi), %xmm2
 	movdqu	-32(%rsi), %xmm1
 	mov	$-32, %dl
@@ -1599,7 +1599,7 @@ L(end):
 L(nequal_bigger):
 	ret
 
-L(unreal_case):
+INDIRECT_JUMP_ENTRY(unreal_case)
 	xor	%eax, %eax
 	ret
 # endif
