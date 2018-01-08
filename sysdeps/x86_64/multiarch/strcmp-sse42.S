@@ -372,7 +372,7 @@ LABEL(ashr_0_exit_use):
  *        n(15)            n -15            0(15 +(n-15) - n)         ashr_1
  */
 	.p2align 4
-LABEL(ashr_1):
+INDIRECT_JUMP_ENTRY(ashr_1)
 	pslldq	$15, D(%xmm2)		/* shift first string to align with second */
 	TOLOWER (%xmm1, %xmm2)
 	pcmpeqb	%xmm1, D(%xmm2)		/* compare 16 bytes for equality */
@@ -1172,7 +1172,7 @@ LABEL(nibble_ashr_9_use):
  *        n(6~15)          n - 6		  9(15 +(n - 6) - n)         ashr_10
  */
 	.p2align 4
-LABEL(ashr_10):
+INDIRECT_JUMP_ENTRY(ashr_10)
 	pslldq	$6, D(%xmm2)
 	TOLOWER (%xmm1, %xmm2)
 	pcmpeqb	%xmm1, D(%xmm2)
@@ -1261,7 +1261,7 @@ LABEL(nibble_ashr_10_use):
  *        n(5~15)          n - 5		  10(15 +(n - 5) - n)         ashr_11
  */
 	.p2align 4
-LABEL(ashr_11):
+INDIRECT_JUMP_ENTRY(ashr_11)
 	pslldq	$5, D(%xmm2)
 	TOLOWER (%xmm1, %xmm2)
 	pcmpeqb	%xmm1, D(%xmm2)
@@ -1350,7 +1350,7 @@ LABEL(nibble_ashr_11_use):
  *        n(4~15)          n - 4		  11(15 +(n - 4) - n)         ashr_12
  */
 	.p2align 4
-LABEL(ashr_12):
+INDIRECT_JUMP_ENTRY(ashr_12)
 	pslldq	$4, D(%xmm2)
 	TOLOWER (%xmm1, %xmm2)
 	pcmpeqb	%xmm1, D(%xmm2)
@@ -1439,7 +1439,7 @@ LABEL(nibble_ashr_12_use):
  *        n(3~15)          n - 3		  12(15 +(n - 3) - n)         ashr_13
  */
 	.p2align 4
-LABEL(ashr_13):
+INDIRECT_JUMP_ENTRY(ashr_13)
 	pslldq	$3, D(%xmm2)
 	TOLOWER (%xmm1, %xmm2)
 	pcmpeqb	%xmm1, D(%xmm2)
@@ -1529,7 +1529,7 @@ LABEL(nibble_ashr_13_use):
  *        n(2~15)          n - 2		  13(15 +(n - 2) - n)         ashr_14
  */
 	.p2align 4
-LABEL(ashr_14):
+INDIRECT_JUMP_ENTRY(ashr_14)
 	pslldq  $2, D(%xmm2)
 	TOLOWER (%xmm1, %xmm2)
 	pcmpeqb	%xmm1, D(%xmm2)
@@ -1619,7 +1619,7 @@ LABEL(nibble_ashr_14_use):
  *        n(1~15)          n - 1		  14(15 +(n - 1) - n)         ashr_15
  */
 	.p2align 4
-LABEL(ashr_15):
+INDIRECT_JUMP_ENTRY(ashr_15)
 	pslldq	$1, D(%xmm2)
 	TOLOWER (%xmm1, %xmm2)
 	pcmpeqb	%xmm1, D(%xmm2)
