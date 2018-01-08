@@ -6682,6 +6682,60 @@ if test $libc_cv_builtin_trap = yes; then
 
 fi
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for __builtin_ctz{l} with no external dependencies" >&5
+$as_echo_n "checking for __builtin_ctz{l} with no external dependencies... " >&6; }
+if ${libc_cv_builtin_ctz+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  libc_cv_builtin_ctz=yes
+echo 'int foo (unsigned long x) { return __builtin_ctz (x); }' > conftest.c
+if { ac_try='${CC-cc} $CFLAGS $CPPFLAGS -S conftest.c -o conftest.s 1>&5'
+  { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; }; then
+  if grep '__ctz[s,d]i2' conftest.s > /dev/null; then
+    libc_cv_builtin_ctz=no
+  fi
+fi
+rm -f conftest.c conftest.s
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $libc_cv_builtin_ctz" >&5
+$as_echo "$libc_cv_builtin_ctz" >&6; }
+if test x$libc_cv_builtin_ctz = xyes; then
+  $as_echo "#define HAVE_BUILTIN_CTZ 1" >>confdefs.h
+
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for __builtin_clz{l} with no external dependencies" >&5
+$as_echo_n "checking for __builtin_clz{l} with no external dependencies... " >&6; }
+if ${libc_cv_builtin_clz+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  libc_cv_builtin_clz=yes
+echo 'int foo (unsigned long x) { return __builtin_clz (x); }' > conftest.c
+if { ac_try='${CC-cc} $CFLAGS $CPPFLAGS -S conftest.c -o conftest.s 1>&5'
+  { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; }; then
+  if grep '__clz[s,d]i2' conftest.s > /dev/null; then
+    libc_cv_builtin_clz=no
+  fi
+fi
+rm -f conftest.c conftest.s
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $libc_cv_builtin_clz" >&5
+$as_echo "$libc_cv_builtin_clz" >&6; }
+if test x$libc_cv_builtin_clz = xyes; then
+  $as_echo "#define HAVE_BUILTIN_CLZ 1" >>confdefs.h
+
+fi
+
 ac_ext=cpp
 ac_cpp='$CXXCPP $CPPFLAGS'
 ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'

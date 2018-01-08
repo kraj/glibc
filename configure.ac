@@ -1735,6 +1735,40 @@ if test $libc_cv_builtin_trap = yes; then
   AC_DEFINE([HAVE_BUILTIN_TRAP])
 fi
 
+AC_CACHE_CHECK(for __builtin_ctz{l} with no external dependencies,
+	       libc_cv_builtin_ctz, [dnl
+libc_cv_builtin_ctz=yes
+echo 'int foo (unsigned long x) { return __builtin_ctz (x); }' > conftest.c
+if AC_TRY_COMMAND(${CC-cc} $CFLAGS $CPPFLAGS -S conftest.c -o conftest.s 1>&AS_MESSAGE_LOG_FD); then
+changequote(,)dnl
+  if grep '__ctz[s,d]i2' conftest.s > /dev/null; then
+    libc_cv_builtin_ctz=no
+  fi
+changequote([,])dnl
+fi
+rm -f conftest.c conftest.s
+])
+if test x$libc_cv_builtin_ctz = xyes; then
+  AC_DEFINE(HAVE_BUILTIN_CTZ)
+fi
+
+AC_CACHE_CHECK(for __builtin_clz{l} with no external dependencies,
+	       libc_cv_builtin_clz, [dnl
+libc_cv_builtin_clz=yes
+echo 'int foo (unsigned long x) { return __builtin_clz (x); }' > conftest.c
+if AC_TRY_COMMAND(${CC-cc} $CFLAGS $CPPFLAGS -S conftest.c -o conftest.s 1>&AS_MESSAGE_LOG_FD); then
+changequote(,)dnl
+  if grep '__clz[s,d]i2' conftest.s > /dev/null; then
+    libc_cv_builtin_clz=no
+  fi
+changequote([,])dnl
+fi
+rm -f conftest.c conftest.s
+])
+if test x$libc_cv_builtin_clz = xyes; then
+  AC_DEFINE(HAVE_BUILTIN_CLZ)
+fi
+
 dnl C++ feature tests.
 AC_LANG_PUSH([C++])
 
