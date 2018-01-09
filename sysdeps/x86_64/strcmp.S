@@ -241,7 +241,7 @@ LABEL(bigger):
  *        n(0~15)            n(0~15)           15(15+ n-n)         ashr_0
  */
 	.p2align 4
-LABEL(ashr_0):
+INDIRECT_JUMP_ENTRY(ashr_0)
 
 	movdqa	(%rsi), %xmm1
 	pxor	%xmm0, %xmm0			/* clear %xmm0 for null char check */
@@ -313,7 +313,7 @@ LABEL(loop_ashr_0):
  *        n(15)            n -15            0(15 +(n-15) - n)         ashr_1
  */
 	.p2align 4
-LABEL(ashr_1):
+INDIRECT_JUMP_ENTRY(ashr_1)
 	pxor	%xmm0, %xmm0
 	movdqa	(%rdi), %xmm2
 	movdqa	(%rsi), %xmm1
@@ -443,7 +443,7 @@ LABEL(ashr_1_exittail):
  *        n(14~15)            n -14         1(15 +(n-14) - n)         ashr_2
  */
 	.p2align 4
-LABEL(ashr_2):
+INDIRECT_JUMP_ENTRY(ashr_2)
 	pxor	%xmm0, %xmm0
 	movdqa	(%rdi), %xmm2
 	movdqa	(%rsi), %xmm1
@@ -567,7 +567,7 @@ LABEL(ashr_2_exittail):
  *        n(13~15)            n -13         2(15 +(n-13) - n)         ashr_3
  */
 	.p2align 4
-LABEL(ashr_3):
+INDIRECT_JUMP_ENTRY(ashr_3)
 	pxor	%xmm0, %xmm0
 	movdqa	(%rdi), %xmm2
 	movdqa	(%rsi), %xmm1
@@ -692,7 +692,7 @@ LABEL(ashr_3_exittail):
  *        n(12~15)            n -12         3(15 +(n-12) - n)         ashr_4
  */
 	.p2align 4
-LABEL(ashr_4):
+INDIRECT_JUMP_ENTRY(ashr_4)
 	pxor	%xmm0, %xmm0
 	movdqa	(%rdi), %xmm2
 	movdqa	(%rsi), %xmm1
@@ -817,7 +817,7 @@ LABEL(ashr_4_exittail):
  *        n(11~15)          n - 11		  4(15 +(n-11) - n)         ashr_5
  */
 	.p2align 4
-LABEL(ashr_5):
+INDIRECT_JUMP_ENTRY(ashr_5)
 	pxor	%xmm0, %xmm0
 	movdqa	(%rdi), %xmm2
 	movdqa	(%rsi), %xmm1
@@ -942,7 +942,7 @@ LABEL(ashr_5_exittail):
  *        n(10~15)          n - 10		  5(15 +(n-10) - n)         ashr_6
  */
 	.p2align 4
-LABEL(ashr_6):
+INDIRECT_JUMP_ENTRY(ashr_6)
 	pxor	%xmm0, %xmm0
 	movdqa	(%rdi), %xmm2
 	movdqa	(%rsi), %xmm1
@@ -1067,7 +1067,7 @@ LABEL(ashr_6_exittail):
  *        n(9~15)          n - 9                6(15 +(n - 9) - n)         ashr_7
  */
 	.p2align 4
-LABEL(ashr_7):
+INDIRECT_JUMP_ENTRY(ashr_7)
 	pxor	%xmm0, %xmm0
 	movdqa	(%rdi), %xmm2
 	movdqa	(%rsi), %xmm1
@@ -1192,7 +1192,7 @@ LABEL(ashr_7_exittail):
  *        n(8~15)          n - 8                7(15 +(n - 8) - n)         ashr_8
  */
 	.p2align 4
-LABEL(ashr_8):
+INDIRECT_JUMP_ENTRY(ashr_8)
 	pxor	%xmm0, %xmm0
 	movdqa	(%rdi), %xmm2
 	movdqa	(%rsi), %xmm1
@@ -1317,7 +1317,7 @@ LABEL(ashr_8_exittail):
  *        n(7~15)          n - 7                8(15 +(n - 7) - n)         ashr_9
  */
 	.p2align 4
-LABEL(ashr_9):
+INDIRECT_JUMP_ENTRY(ashr_9)
 	pxor	%xmm0, %xmm0
 	movdqa	(%rdi), %xmm2
 	movdqa	(%rsi), %xmm1
@@ -1442,7 +1442,7 @@ LABEL(ashr_9_exittail):
  *        n(6~15)          n - 6                9(15 +(n - 6) - n)         ashr_10
  */
 	.p2align 4
-LABEL(ashr_10):
+INDIRECT_JUMP_ENTRY(ashr_10)
 	pxor	%xmm0, %xmm0
 	movdqa	(%rdi), %xmm2
 	movdqa	(%rsi), %xmm1
@@ -1567,7 +1567,7 @@ LABEL(ashr_10_exittail):
  *        n(5~15)          n - 5               10(15 +(n - 5) - n)         ashr_11
  */
 	.p2align 4
-LABEL(ashr_11):
+INDIRECT_JUMP_ENTRY(ashr_11)
 	pxor	%xmm0, %xmm0
 	movdqa	(%rdi), %xmm2
 	movdqa	(%rsi), %xmm1
@@ -1692,7 +1692,7 @@ LABEL(ashr_11_exittail):
  *        n(4~15)          n - 4                11(15 +(n - 4) - n)         ashr_12
  */
 	.p2align 4
-LABEL(ashr_12):
+INDIRECT_JUMP_ENTRY(ashr_12)
 	pxor	%xmm0, %xmm0
 	movdqa	(%rdi), %xmm2
 	movdqa	(%rsi), %xmm1
@@ -1817,7 +1817,7 @@ LABEL(ashr_12_exittail):
  *        n(3~15)          n - 3                12(15 +(n - 3) - n)         ashr_13
  */
 	.p2align 4
-LABEL(ashr_13):
+INDIRECT_JUMP_ENTRY(ashr_13)
 	pxor	%xmm0, %xmm0
 	movdqa	(%rdi), %xmm2
 	movdqa	(%rsi), %xmm1
@@ -1942,7 +1942,7 @@ LABEL(ashr_13_exittail):
  *        n(2~15)          n - 2                13(15 +(n - 2) - n)         ashr_14
  */
 	.p2align 4
-LABEL(ashr_14):
+INDIRECT_JUMP_ENTRY(ashr_14)
 	pxor	%xmm0, %xmm0
 	movdqa	(%rdi), %xmm2
 	movdqa	(%rsi), %xmm1
@@ -2067,7 +2067,7 @@ LABEL(ashr_14_exittail):
  *        n(1~15)          n - 1                14(15 +(n - 1) - n)         ashr_15
  */
 	.p2align 4
-LABEL(ashr_15):
+INDIRECT_JUMP_ENTRY(ashr_15)
 	pxor	%xmm0, %xmm0
 	movdqa	(%rdi), %xmm2
 	movdqa	(%rsi), %xmm1
