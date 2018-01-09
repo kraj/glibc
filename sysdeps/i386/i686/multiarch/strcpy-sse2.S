@@ -475,14 +475,14 @@ L(CopyFrom1To16BytesTail1Case2OrCase3):
 	BRANCH_TO_JMPTBL_ENTRY (L(ExitStrncpyTable), %ebx, 4)
 
 	.p2align 4
-L(Exit0):
+INDIRECT_JUMP_ENTRY(Exit0)
 # ifdef USE_AS_STPCPY
 	mov	%edi, %eax
 # endif
 	RETURN
 
 	.p2align 4
-L(Exit1):
+INDIRECT_JUMP_ENTRY(Exit1)
 	movb	%dh, (%edi)
 # ifdef USE_AS_STPCPY
 	lea	(%edi), %eax
@@ -493,7 +493,7 @@ L(Exit1):
 	RETURN
 
 	.p2align 4
-L(Exit2):
+INDIRECT_JUMP_ENTRY(Exit2)
 	movw	(%esi), %dx
 	movw	%dx, (%edi)
 # ifdef USE_AS_STPCPY
@@ -505,7 +505,7 @@ L(Exit2):
 	RETURN
 
 	.p2align 4
-L(Exit3):
+INDIRECT_JUMP_ENTRY(Exit3)
 	movw	(%esi), %cx
 	movw	%cx, (%edi)
 	movb	%dh, 2(%edi)
@@ -518,7 +518,7 @@ L(Exit3):
 	RETURN
 
 	.p2align 4
-L(Exit4):
+INDIRECT_JUMP_ENTRY(Exit4)
 	movl	(%esi), %edx
 	movl	%edx, (%edi)
 # ifdef USE_AS_STPCPY
@@ -530,7 +530,7 @@ L(Exit4):
 	RETURN
 
 	.p2align 4
-L(Exit5):
+INDIRECT_JUMP_ENTRY(Exit5)
 	movl	(%esi), %ecx
 	movb	%dh, 4(%edi)
 	movl	%ecx, (%edi)
@@ -543,7 +543,7 @@ L(Exit5):
 	RETURN
 
 	.p2align 4
-L(Exit6):
+INDIRECT_JUMP_ENTRY(Exit6)
 	movl	(%esi), %ecx
 	movw	4(%esi), %dx
 	movl	%ecx, (%edi)
@@ -557,7 +557,7 @@ L(Exit6):
 	RETURN
 
 	.p2align 4
-L(Exit7):
+INDIRECT_JUMP_ENTRY(Exit7)
 	movl	(%esi), %ecx
 	movl	3(%esi), %edx
 	movl	%ecx, (%edi)
@@ -571,7 +571,7 @@ L(Exit7):
 	RETURN
 
 	.p2align 4
-L(Exit8):
+INDIRECT_JUMP_ENTRY(Exit8)
 	movlpd	(%esi), %xmm0
 	movlpd	%xmm0, (%edi)
 # ifdef USE_AS_STPCPY
@@ -583,7 +583,7 @@ L(Exit8):
 	RETURN
 
 	.p2align 4
-L(Exit9):
+INDIRECT_JUMP_ENTRY(Exit9)
 	movlpd	(%esi), %xmm0
 	movb	%dh, 8(%edi)
 	movlpd	%xmm0, (%edi)
@@ -596,7 +596,7 @@ L(Exit9):
 	RETURN
 
 	.p2align 4
-L(Exit10):
+INDIRECT_JUMP_ENTRY(Exit10)
 	movlpd	(%esi), %xmm0
 	movw	8(%esi), %dx
 	movlpd	%xmm0, (%edi)
@@ -610,7 +610,7 @@ L(Exit10):
 	RETURN
 
 	.p2align 4
-L(Exit11):
+INDIRECT_JUMP_ENTRY(Exit11)
 	movlpd	(%esi), %xmm0
 	movl	7(%esi), %edx
 	movlpd	%xmm0, (%edi)
@@ -624,7 +624,7 @@ L(Exit11):
 	RETURN
 
 	.p2align 4
-L(Exit12):
+INDIRECT_JUMP_ENTRY(Exit12)
 	movlpd	(%esi), %xmm0
 	movl	8(%esi), %edx
 	movlpd	%xmm0, (%edi)
@@ -638,7 +638,7 @@ L(Exit12):
 	RETURN
 
 	.p2align 4
-L(Exit13):
+INDIRECT_JUMP_ENTRY(Exit13)
 	movlpd	(%esi), %xmm0
 	movlpd	5(%esi), %xmm1
 	movlpd	%xmm0, (%edi)
@@ -652,7 +652,7 @@ L(Exit13):
 	RETURN
 
 	.p2align 4
-L(Exit14):
+INDIRECT_JUMP_ENTRY(Exit14)
 	movlpd	(%esi), %xmm0
 	movlpd	6(%esi), %xmm1
 	movlpd	%xmm0, (%edi)
@@ -666,7 +666,7 @@ L(Exit14):
 	RETURN
 
 	.p2align 4
-L(Exit15):
+INDIRECT_JUMP_ENTRY(Exit15)
 	movlpd	(%esi), %xmm0
 	movlpd	7(%esi), %xmm1
 	movlpd	%xmm0, (%edi)
@@ -680,7 +680,7 @@ L(Exit15):
 	RETURN
 
 	.p2align 4
-L(Exit16):
+INDIRECT_JUMP_ENTRY(Exit16)
 	movdqu	(%esi), %xmm0
 	movdqu	%xmm0, (%edi)
 # ifdef USE_AS_STPCPY
@@ -692,7 +692,7 @@ L(Exit16):
 	RETURN
 
 	.p2align 4
-L(Exit17):
+INDIRECT_JUMP_ENTRY(Exit17)
 	movdqu	(%esi), %xmm0
 	movdqu	%xmm0, (%edi)
 	movb	%dh, 16(%edi)
@@ -705,7 +705,7 @@ L(Exit17):
 	RETURN
 
 	.p2align 4
-L(Exit18):
+INDIRECT_JUMP_ENTRY(Exit18)
 	movdqu	(%esi), %xmm0
 	movw	16(%esi), %cx
 	movdqu	%xmm0, (%edi)
@@ -719,7 +719,7 @@ L(Exit18):
 	RETURN
 
 	.p2align 4
-L(Exit19):
+INDIRECT_JUMP_ENTRY(Exit19)
 	movdqu	(%esi), %xmm0
 	movl	15(%esi), %ecx
 	movdqu	%xmm0, (%edi)
@@ -733,7 +733,7 @@ L(Exit19):
 	RETURN
 
 	.p2align 4
-L(Exit20):
+INDIRECT_JUMP_ENTRY(Exit20)
 	movdqu	(%esi), %xmm0
 	movl	16(%esi), %ecx
 	movdqu	%xmm0, (%edi)
@@ -747,7 +747,7 @@ L(Exit20):
 	RETURN
 
 	.p2align 4
-L(Exit21):
+INDIRECT_JUMP_ENTRY(Exit21)
 	movdqu	(%esi), %xmm0
 	movl	16(%esi), %ecx
 	movdqu	%xmm0, (%edi)
@@ -762,7 +762,7 @@ L(Exit21):
 	RETURN
 
 	.p2align 4
-L(Exit22):
+INDIRECT_JUMP_ENTRY(Exit22)
 	movdqu	(%esi), %xmm0
 	movlpd	14(%esi), %xmm3
 	movdqu	%xmm0, (%edi)
@@ -776,7 +776,7 @@ L(Exit22):
 	RETURN
 
 	.p2align 4
-L(Exit23):
+INDIRECT_JUMP_ENTRY(Exit23)
 	movdqu	(%esi), %xmm0
 	movlpd	15(%esi), %xmm3
 	movdqu	%xmm0, (%edi)
@@ -790,7 +790,7 @@ L(Exit23):
 	RETURN
 
 	.p2align 4
-L(Exit24):
+INDIRECT_JUMP_ENTRY(Exit24)
 	movdqu	(%esi), %xmm0
 	movlpd	16(%esi), %xmm2
 	movdqu	%xmm0, (%edi)
@@ -804,7 +804,7 @@ L(Exit24):
 	RETURN
 
 	.p2align 4
-L(Exit25):
+INDIRECT_JUMP_ENTRY(Exit25)
 	movdqu	(%esi), %xmm0
 	movlpd	16(%esi), %xmm2
 	movdqu	%xmm0, (%edi)
@@ -819,7 +819,7 @@ L(Exit25):
 	RETURN
 
 	.p2align 4
-L(Exit26):
+INDIRECT_JUMP_ENTRY(Exit26)
 	movdqu	(%esi), %xmm0
 	movlpd	16(%esi), %xmm2
 	movw	24(%esi), %cx
@@ -835,7 +835,7 @@ L(Exit26):
 	RETURN
 
 	.p2align 4
-L(Exit27):
+INDIRECT_JUMP_ENTRY(Exit27)
 	movdqu	(%esi), %xmm0
 	movlpd	16(%esi), %xmm2
 	movl	23(%esi), %ecx
@@ -851,7 +851,7 @@ L(Exit27):
 	RETURN
 
 	.p2align 4
-L(Exit28):
+INDIRECT_JUMP_ENTRY(Exit28)
 	movdqu	(%esi), %xmm0
 	movlpd	16(%esi), %xmm2
 	movl	24(%esi), %ecx
@@ -867,7 +867,7 @@ L(Exit28):
 	RETURN
 
 	.p2align 4
-L(Exit29):
+INDIRECT_JUMP_ENTRY(Exit29)
 	movdqu	(%esi), %xmm0
 	movdqu	13(%esi), %xmm2
 	movdqu	%xmm0, (%edi)
@@ -881,7 +881,7 @@ L(Exit29):
 	RETURN
 
 	.p2align 4
-L(Exit30):
+INDIRECT_JUMP_ENTRY(Exit30)
 	movdqu	(%esi), %xmm0
 	movdqu	14(%esi), %xmm2
 	movdqu	%xmm0, (%edi)
@@ -896,7 +896,7 @@ L(Exit30):
 
 
 	.p2align 4
-L(Exit31):
+INDIRECT_JUMP_ENTRY(Exit31)
 	movdqu	(%esi), %xmm0
 	movdqu	15(%esi), %xmm2
 	movdqu	%xmm0, (%edi)
@@ -910,7 +910,7 @@ L(Exit31):
 	RETURN
 
 	.p2align 4
-L(Exit32):
+INDIRECT_JUMP_ENTRY(Exit32)
 	movdqu	(%esi), %xmm0
 	movdqu	16(%esi), %xmm2
 	movdqu	%xmm0, (%edi)
@@ -924,7 +924,7 @@ L(Exit32):
 	RETURN
 
 	.p2align 4
-L(StrncpyExit1):
+INDIRECT_JUMP_ENTRY(StrncpyExit1)
 	movb	(%esi), %dl
 	movb	%dl, (%edi)
 # ifdef USE_AS_STPCPY
@@ -933,7 +933,7 @@ L(StrncpyExit1):
 	RETURN
 
 	.p2align 4
-L(StrncpyExit2):
+INDIRECT_JUMP_ENTRY(StrncpyExit2)
 	movw	(%esi), %dx
 	movw	%dx, (%edi)
 # ifdef USE_AS_STPCPY
@@ -942,7 +942,7 @@ L(StrncpyExit2):
 	RETURN
 
 	.p2align 4
-L(StrncpyExit3):
+INDIRECT_JUMP_ENTRY(StrncpyExit3)
 	movw	(%esi), %cx
 	movb	2(%esi), %dl
 	movw	%cx, (%edi)
@@ -953,7 +953,7 @@ L(StrncpyExit3):
 	RETURN
 
 	.p2align 4
-L(StrncpyExit4):
+INDIRECT_JUMP_ENTRY(StrncpyExit4)
 	movl	(%esi), %edx
 	movl	%edx, (%edi)
 # ifdef USE_AS_STPCPY
@@ -962,7 +962,7 @@ L(StrncpyExit4):
 	RETURN
 
 	.p2align 4
-L(StrncpyExit5):
+INDIRECT_JUMP_ENTRY(StrncpyExit5)
 	movl	(%esi), %ecx
 	movb	4(%esi), %dl
 	movl	%ecx, (%edi)
@@ -973,7 +973,7 @@ L(StrncpyExit5):
 	RETURN
 
 	.p2align 4
-L(StrncpyExit6):
+INDIRECT_JUMP_ENTRY(StrncpyExit6)
 	movl	(%esi), %ecx
 	movw	4(%esi), %dx
 	movl	%ecx, (%edi)
@@ -984,7 +984,7 @@ L(StrncpyExit6):
 	RETURN
 
 	.p2align 4
-L(StrncpyExit7):
+INDIRECT_JUMP_ENTRY(StrncpyExit7)
 	movl	(%esi), %ecx
 	movl	3(%esi), %edx
 	movl	%ecx, (%edi)
@@ -995,7 +995,7 @@ L(StrncpyExit7):
 	RETURN
 
 	.p2align 4
-L(StrncpyExit8):
+INDIRECT_JUMP_ENTRY(StrncpyExit8)
 	movlpd	(%esi), %xmm0
 	movlpd	%xmm0, (%edi)
 # ifdef USE_AS_STPCPY
@@ -1004,7 +1004,7 @@ L(StrncpyExit8):
 	RETURN
 
 	.p2align 4
-L(StrncpyExit9):
+INDIRECT_JUMP_ENTRY(StrncpyExit9)
 	movlpd	(%esi), %xmm0
 	movb	8(%esi), %dl
 	movlpd	%xmm0, (%edi)
@@ -1015,7 +1015,7 @@ L(StrncpyExit9):
 	RETURN
 
 	.p2align 4
-L(StrncpyExit10):
+INDIRECT_JUMP_ENTRY(StrncpyExit10)
 	movlpd	(%esi), %xmm0
 	movw	8(%esi), %dx
 	movlpd	%xmm0, (%edi)
@@ -1026,7 +1026,7 @@ L(StrncpyExit10):
 	RETURN
 
 	.p2align 4
-L(StrncpyExit11):
+INDIRECT_JUMP_ENTRY(StrncpyExit11)
 	movlpd	(%esi), %xmm0
 	movl	7(%esi), %edx
 	movlpd	%xmm0, (%edi)
@@ -1037,7 +1037,7 @@ L(StrncpyExit11):
 	RETURN
 
 	.p2align 4
-L(StrncpyExit12):
+INDIRECT_JUMP_ENTRY(StrncpyExit12)
 	movlpd	(%esi), %xmm0
 	movl	8(%esi), %edx
 	movlpd	%xmm0, (%edi)
@@ -1048,7 +1048,7 @@ L(StrncpyExit12):
 	RETURN
 
 	.p2align 4
-L(StrncpyExit13):
+INDIRECT_JUMP_ENTRY(StrncpyExit13)
 	movlpd	(%esi), %xmm0
 	movlpd	5(%esi), %xmm1
 	movlpd	%xmm0, (%edi)
@@ -1059,7 +1059,7 @@ L(StrncpyExit13):
 	RETURN
 
 	.p2align 4
-L(StrncpyExit14):
+INDIRECT_JUMP_ENTRY(StrncpyExit14)
 	movlpd	(%esi), %xmm0
 	movlpd	6(%esi), %xmm1
 	movlpd	%xmm0, (%edi)
@@ -1070,7 +1070,7 @@ L(StrncpyExit14):
 	RETURN
 
 	.p2align 4
-L(StrncpyExit15):
+INDIRECT_JUMP_ENTRY(StrncpyExit15)
 	movlpd	(%esi), %xmm0
 	movlpd	7(%esi), %xmm1
 	movlpd	%xmm0, (%edi)
@@ -1081,7 +1081,7 @@ L(StrncpyExit15):
 	RETURN
 
 	.p2align 4
-L(StrncpyExit16):
+INDIRECT_JUMP_ENTRY(StrncpyExit16)
 	movdqu	(%esi), %xmm0
 	movdqu	%xmm0, (%edi)
 # ifdef USE_AS_STPCPY
@@ -1090,7 +1090,7 @@ L(StrncpyExit16):
 	RETURN
 
 	.p2align 4
-L(StrncpyExit17):
+INDIRECT_JUMP_ENTRY(StrncpyExit17)
 	movdqu	(%esi), %xmm0
 	movb	16(%esi), %cl
 	movdqu	%xmm0, (%edi)
@@ -1101,7 +1101,7 @@ L(StrncpyExit17):
 	RETURN
 
 	.p2align 4
-L(StrncpyExit18):
+INDIRECT_JUMP_ENTRY(StrncpyExit18)
 	movdqu	(%esi), %xmm0
 	movw	16(%esi), %cx
 	movdqu	%xmm0, (%edi)
@@ -1112,7 +1112,7 @@ L(StrncpyExit18):
 	RETURN
 
 	.p2align 4
-L(StrncpyExit19):
+INDIRECT_JUMP_ENTRY(StrncpyExit19)
 	movdqu	(%esi), %xmm0
 	movl	15(%esi), %ecx
 	movdqu	%xmm0, (%edi)
@@ -1123,7 +1123,7 @@ L(StrncpyExit19):
 	RETURN
 
 	.p2align 4
-L(StrncpyExit20):
+INDIRECT_JUMP_ENTRY(StrncpyExit20)
 	movdqu	(%esi), %xmm0
 	movl	16(%esi), %ecx
 	movdqu	%xmm0, (%edi)
@@ -1134,7 +1134,7 @@ L(StrncpyExit20):
 	RETURN
 
 	.p2align 4
-L(StrncpyExit21):
+INDIRECT_JUMP_ENTRY(StrncpyExit21)
 	movdqu	(%esi), %xmm0
 	movl	16(%esi), %ecx
 	movb	20(%esi), %dl
@@ -1147,7 +1147,7 @@ L(StrncpyExit21):
 	RETURN
 
 	.p2align 4
-L(StrncpyExit22):
+INDIRECT_JUMP_ENTRY(StrncpyExit22)
 	movdqu	(%esi), %xmm0
 	movlpd	14(%esi), %xmm3
 	movdqu	%xmm0, (%edi)
@@ -1158,7 +1158,7 @@ L(StrncpyExit22):
 	RETURN
 
 	.p2align 4
-L(StrncpyExit23):
+INDIRECT_JUMP_ENTRY(StrncpyExit23)
 	movdqu	(%esi), %xmm0
 	movlpd	15(%esi), %xmm3
 	movdqu	%xmm0, (%edi)
@@ -1169,7 +1169,7 @@ L(StrncpyExit23):
 	RETURN
 
 	.p2align 4
-L(StrncpyExit24):
+INDIRECT_JUMP_ENTRY(StrncpyExit24)
 	movdqu	(%esi), %xmm0
 	movlpd	16(%esi), %xmm2
 	movdqu	%xmm0, (%edi)
@@ -1180,7 +1180,7 @@ L(StrncpyExit24):
 	RETURN
 
 	.p2align 4
-L(StrncpyExit25):
+INDIRECT_JUMP_ENTRY(StrncpyExit25)
 	movdqu	(%esi), %xmm0
 	movlpd	16(%esi), %xmm2
 	movb	24(%esi), %cl
@@ -1193,7 +1193,7 @@ L(StrncpyExit25):
 	RETURN
 
 	.p2align 4
-L(StrncpyExit26):
+INDIRECT_JUMP_ENTRY(StrncpyExit26)
 	movdqu	(%esi), %xmm0
 	movlpd	16(%esi), %xmm2
 	movw	24(%esi), %cx
@@ -1206,7 +1206,7 @@ L(StrncpyExit26):
 	RETURN
 
 	.p2align 4
-L(StrncpyExit27):
+INDIRECT_JUMP_ENTRY(StrncpyExit27)
 	movdqu	(%esi), %xmm0
 	movlpd	16(%esi), %xmm2
 	movl	23(%esi), %ecx
@@ -1219,7 +1219,7 @@ L(StrncpyExit27):
 	RETURN
 
 	.p2align 4
-L(StrncpyExit28):
+INDIRECT_JUMP_ENTRY(StrncpyExit28)
 	movdqu	(%esi), %xmm0
 	movlpd	16(%esi), %xmm2
 	movl	24(%esi), %ecx
@@ -1232,7 +1232,7 @@ L(StrncpyExit28):
 	RETURN
 
 	.p2align 4
-L(StrncpyExit29):
+INDIRECT_JUMP_ENTRY(StrncpyExit29)
 	movdqu	(%esi), %xmm0
 	movdqu	13(%esi), %xmm2
 	movdqu	%xmm0, (%edi)
@@ -1243,7 +1243,7 @@ L(StrncpyExit29):
 	RETURN
 
 	.p2align 4
-L(StrncpyExit30):
+INDIRECT_JUMP_ENTRY(StrncpyExit30)
 	movdqu	(%esi), %xmm0
 	movdqu	14(%esi), %xmm2
 	movdqu	%xmm0, (%edi)
@@ -1254,7 +1254,7 @@ L(StrncpyExit30):
 	RETURN
 
 	.p2align 4
-L(StrncpyExit31):
+INDIRECT_JUMP_ENTRY(StrncpyExit31)
 	movdqu	(%esi), %xmm0
 	movdqu	15(%esi), %xmm2
 	movdqu	%xmm0, (%edi)
@@ -1265,7 +1265,7 @@ L(StrncpyExit31):
 	RETURN
 
 	.p2align 4
-L(StrncpyExit32):
+INDIRECT_JUMP_ENTRY(StrncpyExit32)
 	movdqu	(%esi), %xmm0
 	movdqu	16(%esi), %xmm2
 	movdqu	%xmm0, (%edi)
@@ -1276,7 +1276,7 @@ L(StrncpyExit32):
 	RETURN
 
 	.p2align 4
-L(StrncpyExit33):
+INDIRECT_JUMP_ENTRY(StrncpyExit33)
 	movdqu	(%esi), %xmm0
 	movdqu	16(%esi), %xmm2
 	movb	32(%esi), %cl
@@ -1286,94 +1286,94 @@ L(StrncpyExit33):
 	RETURN
 
 	.p2align 4
-L(Fill0):
+INDIRECT_JUMP_ENTRY(Fill0)
 	RETURN
 
 	.p2align 4
-L(Fill1):
+INDIRECT_JUMP_ENTRY(Fill1)
 	movb	%dl, (%edi)
 	RETURN
 
 	.p2align 4
-L(Fill2):
+INDIRECT_JUMP_ENTRY(Fill2)
 	movw	%dx, (%edi)
 	RETURN
 
 	.p2align 4
-L(Fill3):
+INDIRECT_JUMP_ENTRY(Fill3)
 	movl	%edx, -1(%edi)
 	RETURN
 
 	.p2align 4
-L(Fill4):
+INDIRECT_JUMP_ENTRY(Fill4)
 	movl	%edx, (%edi)
 	RETURN
 
 	.p2align 4
-L(Fill5):
+INDIRECT_JUMP_ENTRY(Fill5)
 	movl	%edx, (%edi)
 	movb	%dl, 4(%edi)
 	RETURN
 
 	.p2align 4
-L(Fill6):
+INDIRECT_JUMP_ENTRY(Fill6)
 	movl	%edx, (%edi)
 	movw	%dx, 4(%edi)
 	RETURN
 
 	.p2align 4
-L(Fill7):
+INDIRECT_JUMP_ENTRY(Fill7)
 	movlpd	%xmm0, -1(%edi)
 	RETURN
 
 	.p2align 4
-L(Fill8):
+INDIRECT_JUMP_ENTRY(Fill8)
 	movlpd	%xmm0, (%edi)
 	RETURN
 
 	.p2align 4
-L(Fill9):
+INDIRECT_JUMP_ENTRY(Fill9)
 	movlpd	%xmm0, (%edi)
 	movb	%dl, 8(%edi)
 	RETURN
 
 	.p2align 4
-L(Fill10):
+INDIRECT_JUMP_ENTRY(Fill10)
 	movlpd	%xmm0, (%edi)
 	movw	%dx, 8(%edi)
 	RETURN
 
 	.p2align 4
-L(Fill11):
+INDIRECT_JUMP_ENTRY(Fill11)
 	movlpd	%xmm0, (%edi)
 	movl	%edx, 7(%edi)
 	RETURN
 
 	.p2align 4
-L(Fill12):
+INDIRECT_JUMP_ENTRY(Fill12)
 	movlpd	%xmm0, (%edi)
 	movl	%edx, 8(%edi)
 	RETURN
 
 	.p2align 4
-L(Fill13):
+INDIRECT_JUMP_ENTRY(Fill13)
 	movlpd	%xmm0, (%edi)
 	movlpd	%xmm0, 5(%edi)
 	RETURN
 
 	.p2align 4
-L(Fill14):
+INDIRECT_JUMP_ENTRY(Fill14)
 	movlpd	%xmm0, (%edi)
 	movlpd	%xmm0, 6(%edi)
 	RETURN
 
 	.p2align 4
-L(Fill15):
+INDIRECT_JUMP_ENTRY(Fill15)
 	movdqu	%xmm0, -1(%edi)
 	RETURN
 
 	.p2align 4
-L(Fill16):
+INDIRECT_JUMP_ENTRY(Fill16)
 	movdqu	%xmm0, (%edi)
 	RETURN
 
@@ -1853,7 +1853,7 @@ L(ExitHigh):
 	RETURN
 
 	.p2align 4
-L(Exit1):
+INDIRECT_JUMP_ENTRY(Exit1)
 	movb	(%ecx), %al
 	movb	%al, (%edx)
 # ifdef USE_AS_STPCPY
@@ -1864,7 +1864,7 @@ L(Exit1):
 	RETURN
 
 	.p2align 4
-L(Exit2):
+INDIRECT_JUMP_ENTRY(Exit2)
 	movw	(%ecx), %ax
 	movw	%ax, (%edx)
 # ifdef USE_AS_STPCPY
@@ -1875,7 +1875,7 @@ L(Exit2):
 	RETURN
 
 	.p2align 4
-L(Exit3):
+INDIRECT_JUMP_ENTRY(Exit3)
 	movw	(%ecx), %ax
 	movw	%ax, (%edx)
 	movb	2(%ecx), %al
@@ -1888,7 +1888,7 @@ L(Exit3):
 	RETURN
 
 	.p2align 4
-L(Exit4):
+INDIRECT_JUMP_ENTRY(Exit4)
 	movl	(%ecx), %eax
 	movl	%eax, (%edx)
 # ifdef USE_AS_STPCPY
@@ -1899,7 +1899,7 @@ L(Exit4):
 	RETURN
 
 	.p2align 4
-L(Exit5):
+INDIRECT_JUMP_ENTRY(Exit5)
 	movl	(%ecx), %eax
 	movl	%eax, (%edx)
 	movb	4(%ecx), %al
@@ -1912,7 +1912,7 @@ L(Exit5):
 	RETURN
 
 	.p2align 4
-L(Exit6):
+INDIRECT_JUMP_ENTRY(Exit6)
 	movl	(%ecx), %eax
 	movl	%eax, (%edx)
 	movw	4(%ecx), %ax
@@ -1925,7 +1925,7 @@ L(Exit6):
 	RETURN
 
 	.p2align 4
-L(Exit7):
+INDIRECT_JUMP_ENTRY(Exit7)
 	movl	(%ecx), %eax
 	movl	%eax, (%edx)
 	movl	3(%ecx), %eax
@@ -1938,7 +1938,7 @@ L(Exit7):
 	RETURN
 
 	.p2align 4
-L(Exit9):
+INDIRECT_JUMP_ENTRY(Exit9)
 	movl	(%ecx), %eax
 	movl	%eax, (%edx)
 	movl	4(%ecx), %eax
@@ -1953,7 +1953,7 @@ L(Exit9):
 	RETURN
 
 	.p2align 4
-L(Exit10):
+INDIRECT_JUMP_ENTRY(Exit10)
 	movl	(%ecx), %eax
 	movl	%eax, (%edx)
 	movl	4(%ecx), %eax
@@ -1968,7 +1968,7 @@ L(Exit10):
 	RETURN
 
 	.p2align 4
-L(Exit11):
+INDIRECT_JUMP_ENTRY(Exit11)
 	movl	(%ecx), %eax
 	movl	%eax, (%edx)
 	movl	4(%ecx), %eax
@@ -1983,7 +1983,7 @@ L(Exit11):
 	RETURN
 
 	.p2align 4
-L(Exit12):
+INDIRECT_JUMP_ENTRY(Exit12)
 	movl	(%ecx), %eax
 	movl	%eax, (%edx)
 	movl	4(%ecx), %eax
@@ -1998,7 +1998,7 @@ L(Exit12):
 	RETURN
 
 	.p2align 4
-L(Exit13):
+INDIRECT_JUMP_ENTRY(Exit13)
 	movlpd	(%ecx), %xmm0
 	movlpd	%xmm0, (%edx)
 	movlpd	5(%ecx), %xmm0
@@ -2011,7 +2011,7 @@ L(Exit13):
 	RETURN
 
 	.p2align 4
-L(Exit14):
+INDIRECT_JUMP_ENTRY(Exit14)
 	movlpd	(%ecx), %xmm0
 	movlpd	%xmm0, (%edx)
 	movlpd	6(%ecx), %xmm0
@@ -2024,7 +2024,7 @@ L(Exit14):
 	RETURN
 
 	.p2align 4
-L(Exit15):
+INDIRECT_JUMP_ENTRY(Exit15)
 	movlpd	(%ecx), %xmm0
 	movlpd	%xmm0, (%edx)
 	movlpd	7(%ecx), %xmm0
