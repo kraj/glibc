@@ -665,7 +665,7 @@ L(CopyFrom1To16BytesTail1Case2OrCase3):
 
 # ifdef USE_AS_STRNCAT
 	.p2align 4
-L(StrncatExit0):
+INDIRECT_JUMP_ENTRY(StrncatExit0)
 	movb	%bh, (%eax)
 	mov	STR3(%esp), %eax
 	RETURN
@@ -673,10 +673,10 @@ L(StrncatExit0):
 
 	.p2align 4
 # ifdef USE_AS_STRNCAT
-L(StrncatExit1):
+INDIRECT_JUMP_ENTRY(StrncatExit1)
 	movb	%bh, 1(%eax)
 # endif
-L(Exit1):
+INDIRECT_JUMP_ENTRY(Exit1)
 # ifdef USE_AS_STRNCAT
 	movb	(%esi), %dh
 # endif
@@ -686,10 +686,10 @@ L(Exit1):
 
 	.p2align 4
 # ifdef USE_AS_STRNCAT
-L(StrncatExit2):
+INDIRECT_JUMP_ENTRY(StrncatExit2)
 	movb	%bh, 2(%eax)
 # endif
-L(Exit2):
+INDIRECT_JUMP_ENTRY(Exit2)
 	movw	(%esi), %dx
 	movw	%dx, (%eax)
 	mov	STR3(%esp), %eax
@@ -697,10 +697,10 @@ L(Exit2):
 
 	.p2align 4
 # ifdef USE_AS_STRNCAT
-L(StrncatExit3):
+INDIRECT_JUMP_ENTRY(StrncatExit3)
 	movb	%bh, 3(%eax)
 # endif
-L(Exit3):
+INDIRECT_JUMP_ENTRY(Exit3)
 	movw	(%esi), %cx
 	movw	%cx, (%eax)
 # ifdef USE_AS_STRNCAT
@@ -712,10 +712,10 @@ L(Exit3):
 
 	.p2align 4
 # ifdef USE_AS_STRNCAT
-L(StrncatExit4):
+INDIRECT_JUMP_ENTRY(StrncatExit4)
 	movb	%bh, 4(%eax)
 # endif
-L(Exit4):
+INDIRECT_JUMP_ENTRY(Exit4)
 	movl	(%esi), %edx
 	movl	%edx, (%eax)
 	mov	STR3(%esp), %eax
@@ -723,10 +723,10 @@ L(Exit4):
 
 	.p2align 4
 # ifdef USE_AS_STRNCAT
-L(StrncatExit5):
+INDIRECT_JUMP_ENTRY(StrncatExit5)
 	movb	%bh, 5(%eax)
 # endif
-L(Exit5):
+INDIRECT_JUMP_ENTRY(Exit5)
 	movl	(%esi), %ecx
 # ifdef USE_AS_STRNCAT
 	movb	4(%esi), %dh
@@ -738,10 +738,10 @@ L(Exit5):
 
 	.p2align 4
 # ifdef USE_AS_STRNCAT
-L(StrncatExit6):
+INDIRECT_JUMP_ENTRY(StrncatExit6)
 	movb	%bh, 6(%eax)
 # endif
-L(Exit6):
+INDIRECT_JUMP_ENTRY(Exit6)
 	movl	(%esi), %ecx
 	movw	4(%esi), %dx
 	movl	%ecx, (%eax)
@@ -751,10 +751,10 @@ L(Exit6):
 
 	.p2align 4
 # ifdef USE_AS_STRNCAT
-L(StrncatExit7):
+INDIRECT_JUMP_ENTRY(StrncatExit7)
 	movb	%bh, 7(%eax)
 # endif
-L(Exit7):
+INDIRECT_JUMP_ENTRY(Exit7)
 	movl	(%esi), %ecx
 	movl	3(%esi), %edx
 	movl	%ecx, (%eax)
@@ -764,10 +764,10 @@ L(Exit7):
 
 	.p2align 4
 # ifdef USE_AS_STRNCAT
-L(StrncatExit8):
+INDIRECT_JUMP_ENTRY(StrncatExit8)
 	movb	%bh, 8(%eax)
 # endif
-L(Exit8):
+INDIRECT_JUMP_ENTRY(Exit8)
 	movlpd	(%esi), %xmm0
 	movlpd	%xmm0, (%eax)
 	mov	STR3(%esp), %eax
@@ -775,10 +775,10 @@ L(Exit8):
 
 	.p2align 4
 # ifdef USE_AS_STRNCAT
-L(StrncatExit9):
+INDIRECT_JUMP_ENTRY(StrncatExit9)
 	movb	%bh, 9(%eax)
 # endif
-L(Exit9):
+INDIRECT_JUMP_ENTRY(Exit9)
 	movlpd	(%esi), %xmm0
 # ifdef USE_AS_STRNCAT
 	movb	8(%esi), %dh
@@ -790,10 +790,10 @@ L(Exit9):
 
 	.p2align 4
 # ifdef USE_AS_STRNCAT
-L(StrncatExit10):
+INDIRECT_JUMP_ENTRY(StrncatExit10)
 	movb	%bh, 10(%eax)
 # endif
-L(Exit10):
+INDIRECT_JUMP_ENTRY(Exit10)
 	movlpd	(%esi), %xmm0
 	movw	8(%esi), %dx
 	movlpd	%xmm0, (%eax)
@@ -803,10 +803,10 @@ L(Exit10):
 
 	.p2align 4
 # ifdef USE_AS_STRNCAT
-L(StrncatExit11):
+INDIRECT_JUMP_ENTRY(StrncatExit11)
 	movb	%bh, 11(%eax)
 # endif
-L(Exit11):
+INDIRECT_JUMP_ENTRY(Exit11)
 	movlpd	(%esi), %xmm0
 	movl	7(%esi), %edx
 	movlpd	%xmm0, (%eax)
@@ -816,10 +816,10 @@ L(Exit11):
 
 	.p2align 4
 # ifdef USE_AS_STRNCAT
-L(StrncatExit12):
+INDIRECT_JUMP_ENTRY(StrncatExit12)
 	movb	%bh, 12(%eax)
 # endif
-L(Exit12):
+INDIRECT_JUMP_ENTRY(Exit12)
 	movlpd	(%esi), %xmm0
 	movl	8(%esi), %edx
 	movlpd	%xmm0, (%eax)
@@ -829,10 +829,10 @@ L(Exit12):
 
 	.p2align 4
 # ifdef USE_AS_STRNCAT
-L(StrncatExit13):
+INDIRECT_JUMP_ENTRY(StrncatExit13)
 	movb	%bh, 13(%eax)
 # endif
-L(Exit13):
+INDIRECT_JUMP_ENTRY(Exit13)
 	movlpd	(%esi), %xmm0
 	movlpd	5(%esi), %xmm1
 	movlpd	%xmm0, (%eax)
@@ -842,10 +842,10 @@ L(Exit13):
 
 	.p2align 4
 # ifdef USE_AS_STRNCAT
-L(StrncatExit14):
+INDIRECT_JUMP_ENTRY(StrncatExit14)
 	movb	%bh, 14(%eax)
 # endif
-L(Exit14):
+INDIRECT_JUMP_ENTRY(Exit14)
 	movlpd	(%esi), %xmm0
 	movlpd	6(%esi), %xmm1
 	movlpd	%xmm0, (%eax)
@@ -855,10 +855,10 @@ L(Exit14):
 
 	.p2align 4
 # ifdef USE_AS_STRNCAT
-L(StrncatExit15):
+INDIRECT_JUMP_ENTRY(StrncatExit15)
 	movb	%bh, 15(%eax)
 # endif
-L(Exit15):
+INDIRECT_JUMP_ENTRY(Exit15)
 	movlpd	(%esi), %xmm0
 	movlpd	7(%esi), %xmm1
 	movlpd	%xmm0, (%eax)
@@ -868,10 +868,10 @@ L(Exit15):
 
 	.p2align 4
 # ifdef USE_AS_STRNCAT
-L(StrncatExit16):
+INDIRECT_JUMP_ENTRY(StrncatExit16)
 	movb	%bh, 16(%eax)
 # endif
-L(Exit16):
+INDIRECT_JUMP_ENTRY(Exit16)
 	movdqu	(%esi), %xmm0
 	movdqu	%xmm0, (%eax)
 	mov	STR3(%esp), %eax
@@ -879,10 +879,10 @@ L(Exit16):
 
 	.p2align 4
 # ifdef USE_AS_STRNCAT
-L(StrncatExit17):
+INDIRECT_JUMP_ENTRY(StrncatExit17)
 	movb	%bh, 17(%eax)
 # endif
-L(Exit17):
+INDIRECT_JUMP_ENTRY(Exit17)
 	movdqu	(%esi), %xmm0
 # ifdef USE_AS_STRNCAT
 	movb	16(%esi), %dh
@@ -894,10 +894,10 @@ L(Exit17):
 
 	.p2align 4
 # ifdef USE_AS_STRNCAT
-L(StrncatExit18):
+INDIRECT_JUMP_ENTRY(StrncatExit18)
 	movb	%bh, 18(%eax)
 # endif
-L(Exit18):
+INDIRECT_JUMP_ENTRY(Exit18)
 	movdqu	(%esi), %xmm0
 	movw	16(%esi), %cx
 	movdqu	%xmm0, (%eax)
@@ -907,10 +907,10 @@ L(Exit18):
 
 	.p2align 4
 # ifdef USE_AS_STRNCAT
-L(StrncatExit19):
+INDIRECT_JUMP_ENTRY(StrncatExit19)
 	movb	%bh, 19(%eax)
 # endif
-L(Exit19):
+INDIRECT_JUMP_ENTRY(Exit19)
 	movdqu	(%esi), %xmm0
 	movl	15(%esi), %ecx
 	movdqu	%xmm0, (%eax)
@@ -920,10 +920,10 @@ L(Exit19):
 
 	.p2align 4
 # ifdef USE_AS_STRNCAT
-L(StrncatExit20):
+INDIRECT_JUMP_ENTRY(StrncatExit20)
 	movb	%bh, 20(%eax)
 # endif
-L(Exit20):
+INDIRECT_JUMP_ENTRY(Exit20)
 	movdqu	(%esi), %xmm0
 	movl	16(%esi), %ecx
 	movdqu	%xmm0, (%eax)
@@ -933,10 +933,10 @@ L(Exit20):
 
 	.p2align 4
 # ifdef USE_AS_STRNCAT
-L(StrncatExit21):
+INDIRECT_JUMP_ENTRY(StrncatExit21)
 	movb	%bh, 21(%eax)
 # endif
-L(Exit21):
+INDIRECT_JUMP_ENTRY(Exit21)
 	movdqu	(%esi), %xmm0
 	movl	16(%esi), %ecx
 # ifdef USE_AS_STRNCAT
@@ -950,10 +950,10 @@ L(Exit21):
 
 	.p2align 4
 # ifdef USE_AS_STRNCAT
-L(StrncatExit22):
+INDIRECT_JUMP_ENTRY(StrncatExit22)
 	movb	%bh, 22(%eax)
 # endif
-L(Exit22):
+INDIRECT_JUMP_ENTRY(Exit22)
 	movdqu	(%esi), %xmm0
 	movlpd	14(%esi), %xmm3
 	movdqu	%xmm0, (%eax)
@@ -963,10 +963,10 @@ L(Exit22):
 
 	.p2align 4
 # ifdef USE_AS_STRNCAT
-L(StrncatExit23):
+INDIRECT_JUMP_ENTRY(StrncatExit23)
 	movb	%bh, 23(%eax)
 # endif
-L(Exit23):
+INDIRECT_JUMP_ENTRY(Exit23)
 	movdqu	(%esi), %xmm0
 	movlpd	15(%esi), %xmm3
 	movdqu	%xmm0, (%eax)
@@ -976,10 +976,10 @@ L(Exit23):
 
 	.p2align 4
 # ifdef USE_AS_STRNCAT
-L(StrncatExit24):
+INDIRECT_JUMP_ENTRY(StrncatExit24)
 	movb	%bh, 24(%eax)
 # endif
-L(Exit24):
+INDIRECT_JUMP_ENTRY(Exit24)
 	movdqu	(%esi), %xmm0
 	movlpd	16(%esi), %xmm2
 	movdqu	%xmm0, (%eax)
@@ -989,10 +989,10 @@ L(Exit24):
 
 	.p2align 4
 # ifdef USE_AS_STRNCAT
-L(StrncatExit25):
+INDIRECT_JUMP_ENTRY(StrncatExit25)
 	movb	%bh, 25(%eax)
 # endif
-L(Exit25):
+INDIRECT_JUMP_ENTRY(Exit25)
 	movdqu	(%esi), %xmm0
 	movlpd	16(%esi), %xmm2
 # ifdef USE_AS_STRNCAT
@@ -1006,10 +1006,10 @@ L(Exit25):
 
 	.p2align 4
 # ifdef USE_AS_STRNCAT
-L(StrncatExit26):
+INDIRECT_JUMP_ENTRY(StrncatExit26)
 	movb	%bh, 26(%eax)
 # endif
-L(Exit26):
+INDIRECT_JUMP_ENTRY(Exit26)
 	movdqu	(%esi), %xmm0
 	movlpd	16(%esi), %xmm2
 	movw	24(%esi), %cx
@@ -1021,10 +1021,10 @@ L(Exit26):
 
 	.p2align 4
 # ifdef USE_AS_STRNCAT
-L(StrncatExit27):
+INDIRECT_JUMP_ENTRY(StrncatExit27)
 	movb	%bh, 27(%eax)
 # endif
-L(Exit27):
+INDIRECT_JUMP_ENTRY(Exit27)
 	movdqu	(%esi), %xmm0
 	movlpd	16(%esi), %xmm2
 	movl	23(%esi), %ecx
@@ -1036,10 +1036,10 @@ L(Exit27):
 
 	.p2align 4
 # ifdef USE_AS_STRNCAT
-L(StrncatExit28):
+INDIRECT_JUMP_ENTRY(StrncatExit28)
 	movb	%bh, 28(%eax)
 # endif
-L(Exit28):
+INDIRECT_JUMP_ENTRY(Exit28)
 	movdqu	(%esi), %xmm0
 	movlpd	16(%esi), %xmm2
 	movl	24(%esi), %ecx
@@ -1051,10 +1051,10 @@ L(Exit28):
 
 	.p2align 4
 # ifdef USE_AS_STRNCAT
-L(StrncatExit29):
+INDIRECT_JUMP_ENTRY(StrncatExit29)
 	movb	%bh, 29(%eax)
 # endif
-L(Exit29):
+INDIRECT_JUMP_ENTRY(Exit29)
 	movdqu	(%esi), %xmm0
 	movdqu	13(%esi), %xmm2
 	movdqu	%xmm0, (%eax)
@@ -1064,10 +1064,10 @@ L(Exit29):
 
 	.p2align 4
 # ifdef USE_AS_STRNCAT
-L(StrncatExit30):
+INDIRECT_JUMP_ENTRY(StrncatExit30)
 	movb	%bh, 30(%eax)
 # endif
-L(Exit30):
+INDIRECT_JUMP_ENTRY(Exit30)
 	movdqu	(%esi), %xmm0
 	movdqu	14(%esi), %xmm2
 	movdqu	%xmm0, (%eax)
@@ -1077,10 +1077,10 @@ L(Exit30):
 
 	.p2align 4
 # ifdef USE_AS_STRNCAT
-L(StrncatExit31):
+INDIRECT_JUMP_ENTRY(StrncatExit31)
 	movb	%bh, 31(%eax)
 # endif
-L(Exit31):
+INDIRECT_JUMP_ENTRY(Exit31)
 	movdqu	(%esi), %xmm0
 	movdqu	15(%esi), %xmm2
 	movdqu	%xmm0, (%eax)
@@ -1090,10 +1090,10 @@ L(Exit31):
 
 	.p2align 4
 # ifdef USE_AS_STRNCAT
-L(StrncatExit32):
+INDIRECT_JUMP_ENTRY(StrncatExit32)
 	movb	%bh, 32(%eax)
 # endif
-L(Exit32):
+INDIRECT_JUMP_ENTRY(Exit32)
 	movdqu	(%esi), %xmm0
 	movdqu	16(%esi), %xmm2
 	movdqu	%xmm0, (%eax)
