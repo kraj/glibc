@@ -146,80 +146,80 @@ L(table_less_32bytes):
 	.popsection
 
 	ALIGN (4)
-L(write_28bytes):
+INDIRECT_JUMP_ENTRY(write_28bytes)
 	movl	%eax, -28(%edx)
-L(write_24bytes):
+INDIRECT_JUMP_ENTRY(write_24bytes)
 	movl	%eax, -24(%edx)
-L(write_20bytes):
+INDIRECT_JUMP_ENTRY(write_20bytes)
 	movl	%eax, -20(%edx)
-L(write_16bytes):
+INDIRECT_JUMP_ENTRY(write_16bytes)
 	movl	%eax, -16(%edx)
-L(write_12bytes):
+INDIRECT_JUMP_ENTRY(write_12bytes)
 	movl	%eax, -12(%edx)
-L(write_8bytes):
+INDIRECT_JUMP_ENTRY(write_8bytes)
 	movl	%eax, -8(%edx)
-L(write_4bytes):
+INDIRECT_JUMP_ENTRY(write_4bytes)
 	movl	%eax, -4(%edx)
-L(write_0bytes):
+INDIRECT_JUMP_ENTRY(write_0bytes)
 	SETRTNVAL
 	RETURN
 
 	ALIGN (4)
-L(write_29bytes):
+INDIRECT_JUMP_ENTRY(write_29bytes)
 	movl	%eax, -29(%edx)
-L(write_25bytes):
+INDIRECT_JUMP_ENTRY(write_25bytes)
 	movl	%eax, -25(%edx)
-L(write_21bytes):
+INDIRECT_JUMP_ENTRY(write_21bytes)
 	movl	%eax, -21(%edx)
-L(write_17bytes):
+INDIRECT_JUMP_ENTRY(write_17bytes)
 	movl	%eax, -17(%edx)
-L(write_13bytes):
+INDIRECT_JUMP_ENTRY(write_13bytes)
 	movl	%eax, -13(%edx)
-L(write_9bytes):
+INDIRECT_JUMP_ENTRY(write_9bytes)
 	movl	%eax, -9(%edx)
-L(write_5bytes):
+INDIRECT_JUMP_ENTRY(write_5bytes)
 	movl	%eax, -5(%edx)
-L(write_1bytes):
+INDIRECT_JUMP_ENTRY(write_1bytes)
 	movb	%al, -1(%edx)
 	SETRTNVAL
 	RETURN
 
 	ALIGN (4)
-L(write_30bytes):
+INDIRECT_JUMP_ENTRY(write_30bytes)
 	movl	%eax, -30(%edx)
-L(write_26bytes):
+INDIRECT_JUMP_ENTRY(write_26bytes)
 	movl	%eax, -26(%edx)
-L(write_22bytes):
+INDIRECT_JUMP_ENTRY(write_22bytes)
 	movl	%eax, -22(%edx)
-L(write_18bytes):
+INDIRECT_JUMP_ENTRY(write_18bytes)
 	movl	%eax, -18(%edx)
-L(write_14bytes):
+INDIRECT_JUMP_ENTRY(write_14bytes)
 	movl	%eax, -14(%edx)
-L(write_10bytes):
+INDIRECT_JUMP_ENTRY(write_10bytes)
 	movl	%eax, -10(%edx)
-L(write_6bytes):
+INDIRECT_JUMP_ENTRY(write_6bytes)
 	movl	%eax, -6(%edx)
-L(write_2bytes):
+INDIRECT_JUMP_ENTRY(write_2bytes)
 	movw	%ax, -2(%edx)
 	SETRTNVAL
 	RETURN
 
 	ALIGN (4)
-L(write_31bytes):
+INDIRECT_JUMP_ENTRY(write_31bytes)
 	movl	%eax, -31(%edx)
-L(write_27bytes):
+INDIRECT_JUMP_ENTRY(write_27bytes)
 	movl	%eax, -27(%edx)
-L(write_23bytes):
+INDIRECT_JUMP_ENTRY(write_23bytes)
 	movl	%eax, -23(%edx)
-L(write_19bytes):
+INDIRECT_JUMP_ENTRY(write_19bytes)
 	movl	%eax, -19(%edx)
-L(write_15bytes):
+INDIRECT_JUMP_ENTRY(write_15bytes)
 	movl	%eax, -15(%edx)
-L(write_11bytes):
+INDIRECT_JUMP_ENTRY(write_11bytes)
 	movl	%eax, -11(%edx)
-L(write_7bytes):
+INDIRECT_JUMP_ENTRY(write_7bytes)
 	movl	%eax, -7(%edx)
-L(write_3bytes):
+INDIRECT_JUMP_ENTRY(write_3bytes)
 	movw	%ax, -3(%edx)
 	movb	%al, -1(%edx)
 	SETRTNVAL
@@ -471,163 +471,163 @@ L(table_16_128bytes):
 	.popsection
 
 	ALIGN (4)
-L(aligned_16_112bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_112bytes)
 	movdqa	%xmm0, -112(%edx)
-L(aligned_16_96bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_96bytes)
 	movdqa	%xmm0, -96(%edx)
-L(aligned_16_80bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_80bytes)
 	movdqa	%xmm0, -80(%edx)
-L(aligned_16_64bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_64bytes)
 	movdqa	%xmm0, -64(%edx)
-L(aligned_16_48bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_48bytes)
 	movdqa	%xmm0, -48(%edx)
-L(aligned_16_32bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_32bytes)
 	movdqa	%xmm0, -32(%edx)
-L(aligned_16_16bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_16bytes)
 	movdqa	%xmm0, -16(%edx)
-L(aligned_16_0bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_0bytes)
 	SETRTNVAL
 	RETURN
 
 	ALIGN (4)
-L(aligned_16_113bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_113bytes)
 	movdqa	%xmm0, -113(%edx)
-L(aligned_16_97bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_97bytes)
 	movdqa	%xmm0, -97(%edx)
-L(aligned_16_81bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_81bytes)
 	movdqa	%xmm0, -81(%edx)
-L(aligned_16_65bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_65bytes)
 	movdqa	%xmm0, -65(%edx)
-L(aligned_16_49bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_49bytes)
 	movdqa	%xmm0, -49(%edx)
-L(aligned_16_33bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_33bytes)
 	movdqa	%xmm0, -33(%edx)
-L(aligned_16_17bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_17bytes)
 	movdqa	%xmm0, -17(%edx)
-L(aligned_16_1bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_1bytes)
 	movb	%al, -1(%edx)
 	SETRTNVAL
 	RETURN
 
 	ALIGN (4)
-L(aligned_16_114bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_114bytes)
 	movdqa	%xmm0, -114(%edx)
-L(aligned_16_98bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_98bytes)
 	movdqa	%xmm0, -98(%edx)
-L(aligned_16_82bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_82bytes)
 	movdqa	%xmm0, -82(%edx)
-L(aligned_16_66bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_66bytes)
 	movdqa	%xmm0, -66(%edx)
-L(aligned_16_50bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_50bytes)
 	movdqa	%xmm0, -50(%edx)
-L(aligned_16_34bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_34bytes)
 	movdqa	%xmm0, -34(%edx)
-L(aligned_16_18bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_18bytes)
 	movdqa	%xmm0, -18(%edx)
-L(aligned_16_2bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_2bytes)
 	movw	%ax, -2(%edx)
 	SETRTNVAL
 	RETURN
 
 	ALIGN (4)
-L(aligned_16_115bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_115bytes)
 	movdqa	%xmm0, -115(%edx)
-L(aligned_16_99bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_99bytes)
 	movdqa	%xmm0, -99(%edx)
-L(aligned_16_83bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_83bytes)
 	movdqa	%xmm0, -83(%edx)
-L(aligned_16_67bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_67bytes)
 	movdqa	%xmm0, -67(%edx)
-L(aligned_16_51bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_51bytes)
 	movdqa	%xmm0, -51(%edx)
-L(aligned_16_35bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_35bytes)
 	movdqa	%xmm0, -35(%edx)
-L(aligned_16_19bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_19bytes)
 	movdqa	%xmm0, -19(%edx)
-L(aligned_16_3bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_3bytes)
 	movw	%ax, -3(%edx)
 	movb	%al, -1(%edx)
 	SETRTNVAL
 	RETURN
 
 	ALIGN (4)
-L(aligned_16_116bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_116bytes)
 	movdqa	%xmm0, -116(%edx)
-L(aligned_16_100bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_100bytes)
 	movdqa	%xmm0, -100(%edx)
-L(aligned_16_84bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_84bytes)
 	movdqa	%xmm0, -84(%edx)
-L(aligned_16_68bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_68bytes)
 	movdqa	%xmm0, -68(%edx)
-L(aligned_16_52bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_52bytes)
 	movdqa	%xmm0, -52(%edx)
-L(aligned_16_36bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_36bytes)
 	movdqa	%xmm0, -36(%edx)
-L(aligned_16_20bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_20bytes)
 	movdqa	%xmm0, -20(%edx)
-L(aligned_16_4bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_4bytes)
 	movl	%eax, -4(%edx)
 	SETRTNVAL
 	RETURN
 
 	ALIGN (4)
-L(aligned_16_117bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_117bytes)
 	movdqa	%xmm0, -117(%edx)
-L(aligned_16_101bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_101bytes)
 	movdqa	%xmm0, -101(%edx)
-L(aligned_16_85bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_85bytes)
 	movdqa	%xmm0, -85(%edx)
-L(aligned_16_69bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_69bytes)
 	movdqa	%xmm0, -69(%edx)
-L(aligned_16_53bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_53bytes)
 	movdqa	%xmm0, -53(%edx)
-L(aligned_16_37bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_37bytes)
 	movdqa	%xmm0, -37(%edx)
-L(aligned_16_21bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_21bytes)
 	movdqa	%xmm0, -21(%edx)
-L(aligned_16_5bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_5bytes)
 	movl	%eax, -5(%edx)
 	movb	%al, -1(%edx)
 	SETRTNVAL
 	RETURN
 
 	ALIGN (4)
-L(aligned_16_118bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_118bytes)
 	movdqa	%xmm0, -118(%edx)
-L(aligned_16_102bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_102bytes)
 	movdqa	%xmm0, -102(%edx)
-L(aligned_16_86bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_86bytes)
 	movdqa	%xmm0, -86(%edx)
-L(aligned_16_70bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_70bytes)
 	movdqa	%xmm0, -70(%edx)
-L(aligned_16_54bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_54bytes)
 	movdqa	%xmm0, -54(%edx)
-L(aligned_16_38bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_38bytes)
 	movdqa	%xmm0, -38(%edx)
-L(aligned_16_22bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_22bytes)
 	movdqa	%xmm0, -22(%edx)
-L(aligned_16_6bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_6bytes)
 	movl	%eax, -6(%edx)
 	movw	%ax, -2(%edx)
 	SETRTNVAL
 	RETURN
 
 	ALIGN (4)
-L(aligned_16_119bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_119bytes)
 	movdqa	%xmm0, -119(%edx)
-L(aligned_16_103bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_103bytes)
 	movdqa	%xmm0, -103(%edx)
-L(aligned_16_87bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_87bytes)
 	movdqa	%xmm0, -87(%edx)
-L(aligned_16_71bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_71bytes)
 	movdqa	%xmm0, -71(%edx)
-L(aligned_16_55bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_55bytes)
 	movdqa	%xmm0, -55(%edx)
-L(aligned_16_39bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_39bytes)
 	movdqa	%xmm0, -39(%edx)
-L(aligned_16_23bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_23bytes)
 	movdqa	%xmm0, -23(%edx)
-L(aligned_16_7bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_7bytes)
 	movl	%eax, -7(%edx)
 	movw	%ax, -3(%edx)
 	movb	%al, -1(%edx)
@@ -635,83 +635,83 @@ L(aligned_16_7bytes):
 	RETURN
 
 	ALIGN (4)
-L(aligned_16_120bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_120bytes)
 	movdqa	%xmm0, -120(%edx)
-L(aligned_16_104bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_104bytes)
 	movdqa	%xmm0, -104(%edx)
-L(aligned_16_88bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_88bytes)
 	movdqa	%xmm0, -88(%edx)
-L(aligned_16_72bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_72bytes)
 	movdqa	%xmm0, -72(%edx)
-L(aligned_16_56bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_56bytes)
 	movdqa	%xmm0, -56(%edx)
-L(aligned_16_40bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_40bytes)
 	movdqa	%xmm0, -40(%edx)
-L(aligned_16_24bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_24bytes)
 	movdqa	%xmm0, -24(%edx)
-L(aligned_16_8bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_8bytes)
 	movq	%xmm0, -8(%edx)
 	SETRTNVAL
 	RETURN
 
 	ALIGN (4)
-L(aligned_16_121bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_121bytes)
 	movdqa	%xmm0, -121(%edx)
-L(aligned_16_105bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_105bytes)
 	movdqa	%xmm0, -105(%edx)
-L(aligned_16_89bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_89bytes)
 	movdqa	%xmm0, -89(%edx)
-L(aligned_16_73bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_73bytes)
 	movdqa	%xmm0, -73(%edx)
-L(aligned_16_57bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_57bytes)
 	movdqa	%xmm0, -57(%edx)
-L(aligned_16_41bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_41bytes)
 	movdqa	%xmm0, -41(%edx)
-L(aligned_16_25bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_25bytes)
 	movdqa	%xmm0, -25(%edx)
-L(aligned_16_9bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_9bytes)
 	movq	%xmm0, -9(%edx)
 	movb	%al, -1(%edx)
 	SETRTNVAL
 	RETURN
 
 	ALIGN (4)
-L(aligned_16_122bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_122bytes)
 	movdqa	%xmm0, -122(%edx)
-L(aligned_16_106bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_106bytes)
 	movdqa	%xmm0, -106(%edx)
-L(aligned_16_90bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_90bytes)
 	movdqa	%xmm0, -90(%edx)
-L(aligned_16_74bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_74bytes)
 	movdqa	%xmm0, -74(%edx)
-L(aligned_16_58bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_58bytes)
 	movdqa	%xmm0, -58(%edx)
-L(aligned_16_42bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_42bytes)
 	movdqa	%xmm0, -42(%edx)
-L(aligned_16_26bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_26bytes)
 	movdqa	%xmm0, -26(%edx)
-L(aligned_16_10bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_10bytes)
 	movq	%xmm0, -10(%edx)
 	movw	%ax, -2(%edx)
 	SETRTNVAL
 	RETURN
 
 	ALIGN (4)
-L(aligned_16_123bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_123bytes)
 	movdqa	%xmm0, -123(%edx)
-L(aligned_16_107bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_107bytes)
 	movdqa	%xmm0, -107(%edx)
-L(aligned_16_91bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_91bytes)
 	movdqa	%xmm0, -91(%edx)
-L(aligned_16_75bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_75bytes)
 	movdqa	%xmm0, -75(%edx)
-L(aligned_16_59bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_59bytes)
 	movdqa	%xmm0, -59(%edx)
-L(aligned_16_43bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_43bytes)
 	movdqa	%xmm0, -43(%edx)
-L(aligned_16_27bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_27bytes)
 	movdqa	%xmm0, -27(%edx)
-L(aligned_16_11bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_11bytes)
 	movq	%xmm0, -11(%edx)
 	movw	%ax, -3(%edx)
 	movb	%al, -1(%edx)
@@ -719,42 +719,42 @@ L(aligned_16_11bytes):
 	RETURN
 
 	ALIGN (4)
-L(aligned_16_124bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_124bytes)
 	movdqa	%xmm0, -124(%edx)
-L(aligned_16_108bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_108bytes)
 	movdqa	%xmm0, -108(%edx)
-L(aligned_16_92bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_92bytes)
 	movdqa	%xmm0, -92(%edx)
-L(aligned_16_76bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_76bytes)
 	movdqa	%xmm0, -76(%edx)
-L(aligned_16_60bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_60bytes)
 	movdqa	%xmm0, -60(%edx)
-L(aligned_16_44bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_44bytes)
 	movdqa	%xmm0, -44(%edx)
-L(aligned_16_28bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_28bytes)
 	movdqa	%xmm0, -28(%edx)
-L(aligned_16_12bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_12bytes)
 	movq	%xmm0, -12(%edx)
 	movl	%eax, -4(%edx)
 	SETRTNVAL
 	RETURN
 
 	ALIGN (4)
-L(aligned_16_125bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_125bytes)
 	movdqa	%xmm0, -125(%edx)
-L(aligned_16_109bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_109bytes)
 	movdqa	%xmm0, -109(%edx)
-L(aligned_16_93bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_93bytes)
 	movdqa	%xmm0, -93(%edx)
-L(aligned_16_77bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_77bytes)
 	movdqa	%xmm0, -77(%edx)
-L(aligned_16_61bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_61bytes)
 	movdqa	%xmm0, -61(%edx)
-L(aligned_16_45bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_45bytes)
 	movdqa	%xmm0, -45(%edx)
-L(aligned_16_29bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_29bytes)
 	movdqa	%xmm0, -29(%edx)
-L(aligned_16_13bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_13bytes)
 	movq	%xmm0, -13(%edx)
 	movl	%eax, -5(%edx)
 	movb	%al, -1(%edx)
@@ -762,21 +762,21 @@ L(aligned_16_13bytes):
 	RETURN
 
 	ALIGN (4)
-L(aligned_16_126bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_126bytes)
 	movdqa	%xmm0, -126(%edx)
-L(aligned_16_110bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_110bytes)
 	movdqa	%xmm0, -110(%edx)
-L(aligned_16_94bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_94bytes)
 	movdqa	%xmm0, -94(%edx)
-L(aligned_16_78bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_78bytes)
 	movdqa	%xmm0, -78(%edx)
-L(aligned_16_62bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_62bytes)
 	movdqa	%xmm0, -62(%edx)
-L(aligned_16_46bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_46bytes)
 	movdqa	%xmm0, -46(%edx)
-L(aligned_16_30bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_30bytes)
 	movdqa	%xmm0, -30(%edx)
-L(aligned_16_14bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_14bytes)
 	movq	%xmm0, -14(%edx)
 	movl	%eax, -6(%edx)
 	movw	%ax, -2(%edx)
@@ -784,21 +784,21 @@ L(aligned_16_14bytes):
 	RETURN
 
 	ALIGN (4)
-L(aligned_16_127bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_127bytes)
 	movdqa	%xmm0, -127(%edx)
-L(aligned_16_111bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_111bytes)
 	movdqa	%xmm0, -111(%edx)
-L(aligned_16_95bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_95bytes)
 	movdqa	%xmm0, -95(%edx)
-L(aligned_16_79bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_79bytes)
 	movdqa	%xmm0, -79(%edx)
-L(aligned_16_63bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_63bytes)
 	movdqa	%xmm0, -63(%edx)
-L(aligned_16_47bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_47bytes)
 	movdqa	%xmm0, -47(%edx)
-L(aligned_16_31bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_31bytes)
 	movdqa	%xmm0, -31(%edx)
-L(aligned_16_15bytes):
+INDIRECT_JUMP_ENTRY(aligned_16_15bytes)
 	movq	%xmm0, -15(%edx)
 	movl	%eax, -7(%edx)
 	movw	%ax, -3(%edx)
