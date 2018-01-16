@@ -23,20 +23,85 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
-/* Byte-wise swap two items of size SIZE. */
-#define SWAP(a, b, size)						      \
-  do									      \
-    {									      \
-      size_t __size = (size);						      \
-      char *__a = (a), *__b = (b);					      \
-      do								      \
-	{								      \
-	  char __tmp = *__a;						      \
-	  *__a++ = *__b;						      \
-	  *__b++ = __tmp;						      \
-	} while (--__size > 0);						      \
-    } while (0)
+/* Swap SIZE bytes between addresses A and B.  These helpers are provided
+   along the generic one as an optimization.  */
+
+typedef void (*swap_func_t)(void * restrict, void * restrict, size_t);
+
+/* Return trues is elements can be copied used word load and sortes.
+   The size must be a multiple of the alignment, and the base address.  */
+static inline bool
+is_aligned_to_copy (const void *base, size_t size, size_t align)
+{
+  unsigned char lsbits = size;
+#if !_STRING_ARCH_unaligned
+  lsbits |= (unsigned char)(uintptr_t) base;
+#endif
+  return (lsbits & (align - 1)) == 0;
+}
+
+#define SWAP_WORDS_64 (swap_func_t)0
+#define SWAP_WORDS_32 (swap_func_t)1
+#define SWAP_BYTES    (swap_func_t)2
+
+static void
+swap_words_64 (void * restrict a, void * restrict b, size_t n)
+{
+  do
+   {
+     n -= 8;
+     uint64_t t = *(uint64_t *)(a + n);
+     *(uint64_t *)(a + n) = *(uint64_t *)(b + n);
+     *(uint64_t *)(b + n) = t;
+   } while (n);
+}
+
+static void
+swap_words_32 (void * restrict a, void * restrict b, size_t n)
+{
+  do
+   {
+     n -= 4;
+     uint32_t t = *(uint32_t *)(a + n);
+     *(uint32_t *)(a + n) = *(uint32_t *)(b + n);
+     *(uint32_t *)(b + n) = t;
+   } while (n);
+}
+
+static void
+swap_bytes (void * restrict a, void * restrict b, size_t n)
+{
+  /* Use multiple small memcpys with constant size to enable inlining
+     on most targets.  */
+  enum { SWAP_GENERIC_SIZE = 32 };
+  unsigned char tmp[SWAP_GENERIC_SIZE];
+  while (n > SWAP_GENERIC_SIZE)
+    {
+      memcpy (tmp, a, SWAP_GENERIC_SIZE);
+      a = memcpy (a, b, SWAP_GENERIC_SIZE) + SWAP_GENERIC_SIZE;
+      b = memcpy (b, tmp, SWAP_GENERIC_SIZE) + SWAP_GENERIC_SIZE;
+      n -= SWAP_GENERIC_SIZE;
+    }
+  memcpy (tmp, a, n);
+  memcpy (a, b, n);
+  memcpy (b, tmp, n);
+}
+
+/* Replace the indirect call with a serie of if statements.  It should help
+   the branch predictor.  */
+static void
+do_swap (void * restrict a, void * restrict b, size_t size,
+	 swap_func_t swap_func)
+{
+  if (swap_func == SWAP_WORDS_64)
+    swap_words_64 (a, b, size);
+  else if (swap_func == SWAP_WORDS_32)
+    swap_words_32 (a, b, size);
+  else
+    swap_bytes (a, b, size);
+}
 
 /* Discontinue quicksort algorithm when partition gets below this size.
    This particular magic number was chosen to work best on a Sun 4/260. */
@@ -96,6 +161,14 @@ _quicksort (void *const pbase, size_t total_elems, size_t size,
     /* Avoid lossage with unsigned arithmetic below.  */
     return;
 
+  swap_func_t swap_func;
+  if (is_aligned_to_copy (pbase, size, 8))
+    swap_func = SWAP_WORDS_64;
+  else if (is_aligned_to_copy (pbase, size, 4))
+    swap_func = SWAP_WORDS_32;
+  else
+    swap_func = SWAP_BYTES;
+
   if (total_elems > MAX_THRESH)
     {
       char *lo = base_ptr;
@@ -119,13 +192,13 @@ _quicksort (void *const pbase, size_t total_elems, size_t size,
 	  char *mid = lo + size * ((hi - lo) / size >> 1);
 
 	  if ((*cmp) ((void *) mid, (void *) lo, arg) < 0)
-	    SWAP (mid, lo, size);
+	    do_swap (mid, lo, size, swap_func);
 	  if ((*cmp) ((void *) hi, (void *) mid, arg) < 0)
-	    SWAP (mid, hi, size);
+	    do_swap (mid, hi, size, swap_func);
 	  else
 	    goto jump_over;
 	  if ((*cmp) ((void *) mid, (void *) lo, arg) < 0)
-	    SWAP (mid, lo, size);
+	    do_swap (mid, lo, size, swap_func);
 	jump_over:;
 
 	  left_ptr  = lo + size;
@@ -144,7 +217,7 @@ _quicksort (void *const pbase, size_t total_elems, size_t size,
 
 	      if (left_ptr < right_ptr)
 		{
-		  SWAP (left_ptr, right_ptr, size);
+		  do_swap (left_ptr, right_ptr, size, swap_func);
 		  if (mid == left_ptr)
 		    mid = right_ptr;
 		  else if (mid == right_ptr)
@@ -216,7 +289,7 @@ _quicksort (void *const pbase, size_t total_elems, size_t size,
         tmp_ptr = run_ptr;
 
     if (tmp_ptr != base_ptr)
-      SWAP (tmp_ptr, base_ptr, size);
+      do_swap (tmp_ptr, base_ptr, size, swap_func);
 
     /* Insertion sort, running from left-hand-side up to right-hand-side.  */
 
