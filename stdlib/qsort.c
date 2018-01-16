@@ -23,20 +23,65 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
-/* Byte-wise swap two items of size SIZE. */
-#define SWAP(a, b, size)						      \
-  do									      \
-    {									      \
-      size_t __size = (size);						      \
-      char *__a = (a), *__b = (b);					      \
-      do								      \
-	{								      \
-	  char __tmp = *__a;						      \
-	  *__a++ = *__b;						      \
-	  *__b++ = __tmp;						      \
-	} while (--__size > 0);						      \
-    } while (0)
+/* Swap SIZE bytes between addresses A and B.  Helper to generic types
+   are provided as an optimization.  */
+
+typedef void (*swap_t)(void *, void *, size_t);
+
+static inline bool
+check_alignment (const void *base, size_t align)
+{
+  return _STRING_ARCH_unaligned || ((uintptr_t)base & (align - 1)) == 0;
+}
+
+static void
+swap_u32 (void * restrict a, void * restrict b, size_t size)
+{
+  uint32_t *ua = a, *ub = b, tmp = *ua;
+  *ua = *ub, *ub = tmp;
+}
+
+static void
+swap_u64 (void * restrict a, void * restrict b, size_t size)
+{
+  uint64_t *ua = a, *ub = b, tmp = *ua;
+  *ua = *ub, *ub = tmp;
+}
+
+static void
+swap_generic (void * restrict a, void * restrict b, size_t size)
+{
+  /* Use multiple small memcpys with constant size to enable inlining
+     on most targets.  */
+  enum {
+    SWAP_GENERIC_SIZE = 32
+  };
+  unsigned char tmp[SWAP_GENERIC_SIZE];
+  while (size > SWAP_GENERIC_SIZE)
+    {
+      memcpy (tmp, a, SWAP_GENERIC_SIZE);
+      a = memcpy (a, b, SWAP_GENERIC_SIZE) + SWAP_GENERIC_SIZE;
+      b = memcpy (b, tmp, SWAP_GENERIC_SIZE) + SWAP_GENERIC_SIZE;
+      size -= SWAP_GENERIC_SIZE;
+    }
+  memcpy (tmp, a, size);
+  memcpy (a, b, size);
+  memcpy (b, tmp, size);
+}
+
+static inline swap_t
+select_swap_func (const void *base, size_t size)
+{
+  if (size == sizeof (uint32_t)
+      && check_alignment (base, _Alignof (uint32_t)))
+    return swap_u32;
+  else if (size == sizeof (uint64_t)
+	   && check_alignment (base, _Alignof (uint64_t)))
+    return swap_u64;
+  return swap_generic;
+}
 
 /* Discontinue quicksort algorithm when partition gets below this size.
    This particular magic number was chosen to work best on a Sun 4/260. */
@@ -96,6 +141,8 @@ __qsort_r (void *const pbase, size_t total_elems, size_t size,
     /* Avoid lossage with unsigned arithmetic below.  */
     return;
 
+  swap_t swap = select_swap_func (pbase, size);
+
   if (total_elems > MAX_THRESH)
     {
       char *lo = base_ptr;
@@ -119,13 +166,13 @@ __qsort_r (void *const pbase, size_t total_elems, size_t size,
 	  char *mid = lo + size * ((hi - lo) / size >> 1);
 
 	  if ((*cmp) ((void *) mid, (void *) lo, arg) < 0)
-	    SWAP (mid, lo, size);
+	    swap (mid, lo, size);
 	  if ((*cmp) ((void *) hi, (void *) mid, arg) < 0)
-	    SWAP (mid, hi, size);
+	    swap (mid, hi, size);
 	  else
 	    goto jump_over;
 	  if ((*cmp) ((void *) mid, (void *) lo, arg) < 0)
-	    SWAP (mid, lo, size);
+	    swap (mid, lo, size);
 	jump_over:;
 
 	  left_ptr  = lo + size;
@@ -144,7 +191,7 @@ __qsort_r (void *const pbase, size_t total_elems, size_t size,
 
 	      if (left_ptr < right_ptr)
 		{
-		  SWAP (left_ptr, right_ptr, size);
+		  swap (left_ptr, right_ptr, size);
 		  if (mid == left_ptr)
 		    mid = right_ptr;
 		  else if (mid == right_ptr)
@@ -216,7 +263,7 @@ __qsort_r (void *const pbase, size_t total_elems, size_t size,
         tmp_ptr = run_ptr;
 
     if (tmp_ptr != base_ptr)
-      SWAP (tmp_ptr, base_ptr, size);
+      swap (tmp_ptr, base_ptr, size);
 
     /* Insertion sort, running from left-hand-side up to right-hand-side.  */
 
