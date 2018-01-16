@@ -34,7 +34,7 @@ headers	:= stdlib.h bits/stdlib.h bits/stdlib-ldbl.h bits/stdlib-float.h      \
 routines	:=							      \
 	atof atoi atol atoll						      \
 	abort								      \
-	bsearch qsort msort						      \
+	bsearch qsort							      \
 	getenv putenv setenv secure-getenv				      \
 	exit on_exit atexit cxa_atexit cxa_finalize old_atexit		      \
 	quick_exit at_quick_exit cxa_at_quick_exit cxa_thread_atexit_impl     \
@@ -143,7 +143,6 @@ extra-test-objs += tst-putenvmod.os
 generated += isomac isomac.out tst-putenvmod.so
 
 CFLAGS-bsearch.c += $(uses-callbacks)
-CFLAGS-msort.c += $(uses-callbacks)
 CFLAGS-qsort.c += $(uses-callbacks)
 CFLAGS-system.c += -fexceptions
 CFLAGS-system.os = -fomit-frame-pointer

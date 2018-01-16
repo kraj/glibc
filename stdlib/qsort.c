@@ -19,7 +19,6 @@
    Engineering a sort function; Jon Bentley and M. Douglas McIlroy;
    Software - Practice and Experience; Vol. 23 (11), 1249-1265, 1993.  */
 
-#include <alloca.h>
 #include <limits.h>
 #include <stdlib.h>
 #include <string.h>
@@ -285,8 +284,8 @@ insertion_sort (void *const pbase, size_t total_elems, size_t size,
 }
 
 void
-_quicksort (void *const pbase, size_t total_elems, size_t size,
-	    __compar_d_fn_t cmp, void *arg)
+__qsort_r (void *const pbase, size_t total_elems, size_t size,
+	   __compar_d_fn_t cmp, void *arg)
 {
   char *base_ptr = (char *) pbase;
 
@@ -419,3 +418,13 @@ _quicksort (void *const pbase, size_t total_elems, size_t size,
      the array (*not* one beyond it!). */
   insertion_sort (pbase, total_elems, size, swap_func, cmp, arg);
 }
+
+libc_hidden_def (__qsort_r)
+weak_alias (__qsort_r, qsort_r)
+
+void
+qsort (void *b, size_t n, size_t s, __compar_fn_t cmp)
+{
+  return __qsort_r (b, n, s, (__compar_d_fn_t) cmp, NULL);
+}
+libc_hidden_def (qsort)
