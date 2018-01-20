@@ -125,6 +125,9 @@ with no-pie.  The resulting glibc can be used with the GCC option,
 -static-pie, which is available with GCC 8 or above, to create static
 PIE.  This option also implies that glibc programs and tests are created
 as dynamic position independent executables (PIE) by default.
+To enable static PIE, GNU @code{binutils} 2.29 or later is required on
+i386, x86_64 and x32, GNU @code{binutils} 2.30 or later is required on
+aarch64.
 
 @item --disable-profile
 Don't build libraries with profiling information.  You may want to use

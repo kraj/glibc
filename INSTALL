@@ -95,7 +95,9 @@ will be used, and CFLAGS sets optimization options for the compiler.
      the GCC option, -static-pie, which is available with GCC 8 or
      above, to create static PIE. This option also implies that glibc
      programs and tests are created as dynamic position independent
-     executables (PIE) by default.
+     executables (PIE) by default.  To enable static PIE, GNU 'binutils'
+     2.29 or later is required on i386, x86_64 and x32, GNU 'binutils'
+     2.30 or later is required on aarch64.
 
 '--disable-profile'
      Don't build libraries with profiling information.  You may want to
