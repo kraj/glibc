@@ -428,8 +428,8 @@ START_THREAD_DEFN
   struct pthread_unwind_buf unwind_buf;
 
   /* No previous handlers.  */
-  unwind_buf.priv.data.prev = NULL;
-  unwind_buf.priv.data.cleanup = NULL;
+  unwind_buf.full.priv.data.prev = NULL;
+  unwind_buf.full.priv.data.cleanup = NULL;
 
   int not_first_call;
   not_first_call = setjmp ((struct __jmp_buf_tag *) unwind_buf.cancel_jmp_buf);
@@ -699,6 +699,11 @@ __pthread_create_2_1 (pthread_t *newthread, const pthread_attr_t *attr,
   /* Copy the pointer guard value.  */
 #ifdef THREAD_COPY_POINTER_GUARD
   THREAD_COPY_POINTER_GUARD (pd);
+#endif
+
+  /* Copy additonal info.  */
+#ifdef THREAD_COPY_ADDITONAL_INFO
+  THREAD_COPY_ADDITONAL_INFO (pd);
 #endif
 
   /* Verify the sysinfo bits were copied in allocate_stack if needed.  */

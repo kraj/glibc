@@ -23,7 +23,7 @@
 
 extern struct pthread_unwind_buf ____pthread_unwind_buf_private;
 
-_Static_assert (sizeof (____pthread_unwind_buf_private.cancel_jmp_buf)
+_Static_assert (sizeof (____pthread_unwind_buf_private.full.cancel_jmp_buf)
 		>= sizeof (struct __jmp_buf_tag),
 		"size of cancel_jmp_buf < sizeof __jmp_buf_tag");
 

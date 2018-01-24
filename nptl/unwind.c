@@ -66,7 +66,8 @@ unwind_stop (int version, _Unwind_Action actions,
       /* Handle the compatibility stuff.  Execute all handlers
 	 registered with the old method which would be unwound by this
 	 step.  */
-      struct _pthread_cleanup_buffer *oldp = buf->priv.data.cleanup;
+      struct _pthread_cleanup_buffer *oldp
+	= UNWIND_BUF_PRIV (self, buf)->data.cleanup;
       void *cfa = (void *) (_Unwind_Ptr) _Unwind_GetCFA (context);
 
       if (curp != oldp && (do_longjump || FRAME_LEFT (cfa, curp, adj)))
@@ -133,6 +134,7 @@ __pthread_unwind_next (__pthread_unwind_buf_t *buf)
 {
   struct pthread_unwind_buf *ibuf = (struct pthread_unwind_buf *) buf;
 
-  __pthread_unwind ((__pthread_unwind_buf_t *) ibuf->priv.data.prev);
+  __pthread_unwind ((__pthread_unwind_buf_t *)
+		    UNWIND_BUF_PRIV (THREAD_SELF, ibuf)->data.prev);
 }
 hidden_def (__pthread_unwind_next)

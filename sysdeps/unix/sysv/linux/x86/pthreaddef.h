@@ -20,3 +20,17 @@
 
 /* Need saved_mask in cancel_jmp_buf.  */
 #define NEED_SAVED_MASK_IN_CANCEL_JMP_BUF 1
+
+/* Wee need to copy feature_1 in pthread_create.  */
+#define THREAD_COPY_ADDITONAL_INFO(descr)				\
+  ((descr)->header.feature_1						\
+   = THREAD_GETMEM (THREAD_SELF, header.feature_1))
+
+/* Use the compatible struct __cancel_jmp_buf_tag if shadow stack is
+   disabled.  */
+#undef UNWIND_BUF_PRIV
+#define UNWIND_BUF_PRIV(self,p) \
+  (__extension__ ({							\
+     unsigned int feature_1 = THREAD_GETMEM (self, header.feature_1);	\
+     (((feature_1 & (1 << 1)) == 0)					\
+      ? &((p)->compat.priv) : &((p)->full.priv));}))

@@ -298,8 +298,10 @@ LIBC_START_MAIN (int (*main) (int, char **, char ** MAIN_AUXVEC_DECL),
       struct pthread *self = THREAD_SELF;
 
       /* Store old info.  */
-      unwind_buf.priv.data.prev = THREAD_GETMEM (self, cleanup_jmp_buf);
-      unwind_buf.priv.data.cleanup = THREAD_GETMEM (self, cleanup);
+      unwind_buf.full.priv.data.prev
+	= THREAD_GETMEM (self, cleanup_jmp_buf);
+      unwind_buf.full.priv.data.cleanup
+	= THREAD_GETMEM (self, cleanup);
 
       /* Store the new cleanup handler info.  */
       THREAD_SETMEM (self, cleanup_jmp_buf, &unwind_buf);
