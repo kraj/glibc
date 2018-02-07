@@ -200,7 +200,9 @@ endif
 test-srcs = tst-pathopt
 selinux-enabled := $(shell cat /selinux/enforce 2> /dev/null)
 ifneq ($(selinux-enabled),1)
+ifneq ($(with-clang),yes)
 tests-execstack-yes = tst-execstack tst-execstack-needed tst-execstack-prog
+endif
 endif
 endif
 ifeq ($(run-built-tests),yes)
@@ -304,7 +306,9 @@ tests-pie += vismain
 CFLAGS-vismain.c += $(PIE-ccflag)
 endif
 endif
+ifneq ($(with-clang),yes)
 modules-execstack-yes = tst-execstack-mod
+endif
 extra-test-objs += $(addsuffix .os,$(strip $(modules-names)))
 
 # filtmod1.so has a special rule
