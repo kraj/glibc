@@ -1,18 +1,12 @@
-#undef _GNU_SOURCE
-#define _XOPEN_SOURCE 600
-#undef _LIBC
-#undef _IO_MTSAFE_IO
-/* The following macro definitions are a hack.  They word around disabling
-   the GNU extension while still using a few internal headers.  */
-#define u_char unsigned char
-#define u_short unsigned short
-#define u_int unsigned int
-#define u_long unsigned long
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <wchar.h>
+
+#if __GLIBC_USE_DEPRECATED_SCANF
+# error "This file should not be compiled with deprecated scanf"
+#endif
 
 #define FAIL() \
   do {							\

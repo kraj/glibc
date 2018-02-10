@@ -4,13 +4,17 @@
 #include <string.h>
 #include <wchar.h>
 
+#if __GLIBC_USE_DEPRECATED_SCANF
+# error "This file should not be compiled with deprecated scanf"
+#endif
+
 #define FAIL() \
   do {							\
     result = 1;						\
     printf ("test at line %d failed\n", __LINE__);	\
   } while (0)
 
-static int
+static int __attribute__ ((format (scanf, 2, 3)))
 xsscanf (const char *str, const char *fmt, ...)
 {
   va_list ap;
@@ -20,7 +24,7 @@ xsscanf (const char *str, const char *fmt, ...)
   return ret;
 }
 
-static int
+static int __attribute__ ((format (scanf, 1, 2)))
 xscanf (const char *fmt, ...)
 {
   va_list ap;
@@ -30,7 +34,7 @@ xscanf (const char *fmt, ...)
   return ret;
 }
 
-static int
+static int __attribute__ ((format (scanf, 2, 3)))
 xfscanf (FILE *f, const char *fmt, ...)
 {
   va_list ap;
@@ -54,7 +58,7 @@ main (void)
     FAIL ();
   else if (f != 0.25 || memcmp (c, "s x", 3) != 0)
     FAIL ();
-  if (xsscanf (" 1.25s x", "%as%2c", &sp, c) != 2)
+  if (xsscanf (" 1.25s x", "%ms%2c", &sp, c) != 2)
     FAIL ();
   else
     {
@@ -67,7 +71,7 @@ main (void)
     FAIL ();
   else if (d != 2.25 || memcmp (c, " x", 2) != 0)
     FAIL ();
-  if (xsscanf (" 3.25S x", "%4aS%3c", &lsp, c) != 2)
+  if (xsscanf (" 3.25S x", "%4mS%3c", &lsp, c) != 2)
     FAIL ();
   else
     {
@@ -76,7 +80,7 @@ main (void)
       memset (lsp, 'x', sizeof L"3.25");
       free (lsp);
     }
-  if (xsscanf ("4.25[0-9.] x", "%a[0-9.]%8c", &sp, c) != 2)
+  if (xsscanf ("4.25[0-9.] x", "%m[0-9.]%8c", &sp, c) != 2)
     FAIL ();
   else
     {
@@ -113,7 +117,7 @@ main (void)
 	FAIL ();
       if (fseek (fp, 0, SEEK_SET) != 0)
 	FAIL ();
-      if (xfscanf (fp, "%as%2c", &sp, c) != 2)
+      if (xfscanf (fp, "%ms%2c", &sp, c) != 2)
 	FAIL ();
       else
 	{
@@ -127,7 +131,7 @@ main (void)
 	FAIL ();
       else
 	{
-	  if (xscanf ("%as%2c", &sp, c) != 2)
+	  if (xscanf ("%ms%2c", &sp, c) != 2)
 	    FAIL ();
 	  else
 	    {
