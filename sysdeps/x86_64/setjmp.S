@@ -18,6 +18,7 @@
 
 #include <sysdep.h>
 #include <jmpbuf-offsets.h>
+#include <jmp_buf-ssp.h>
 #include <asm-syntax.h>
 #include <stap-probe.h>
 
@@ -53,6 +54,10 @@ ENTRY (__sigsetjmp)
 	PTR_MANGLE (%RAX_LP)
 #endif
 	movq %rax, (JB_PC*8)(%rdi)
+
+	/* Set shadow stack field to see if it works with struct
+	   pthread_unwind_buf.  */
+	movq $-1, SHADOW_STACK_POINTER_OFFSET(%rdi)
 
 #if IS_IN (rtld)
 	/* In ld.so we never save the signal mask.  */

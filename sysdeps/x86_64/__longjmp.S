@@ -17,6 +17,7 @@
 
 #include <sysdep.h>
 #include <jmpbuf-offsets.h>
+#include <jmp_buf-ssp.h>
 #include <asm-syntax.h>
 #include <stap-probe.h>
 
@@ -25,6 +26,11 @@
    void __longjmp (__jmp_buf env, int val).  */
 	.text
 ENTRY(__longjmp)
+	/* Verify that shadow stack field isn't changed by struct
+	   pthread_unwind_buf.  */
+	cmpq $-1, SHADOW_STACK_POINTER_OFFSET(%rdi)
+	jnz L(hlt)
+
 	/* Restore registers.  */
 	mov (JB_RSP*8)(%rdi),%R8_LP
 	mov (JB_RBP*8)(%rdi),%R9_LP
@@ -65,4 +71,7 @@ ENTRY(__longjmp)
 	LIBC_PROBE (longjmp_target, 3,
 		    LP_SIZE@%RDI_LP, -4@%eax, LP_SIZE@%RDX_LP)
 	jmpq *%rdx
+
+L(hlt):
+	hlt
 END (__longjmp)
