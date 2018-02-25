@@ -21,9 +21,8 @@
 
 #include <bits/types/__sigset_t.h>
 
-/* The biggest signal number + 1.  As of kernel 4.14, x86 _NSIG is 64.
-   Define it to 513 to leave some rooms for future use.  */
-#define _JUMP_BUF_SIGSET_NSIG	513
+/* The biggest signal number + 1.  As of kernel 4.15, x86 _NSIG is 64.  */
+#define _JUMP_BUF_SIGSET_NSIG	65
 /* Number of longs to hold all signals.  */
 #define _JUMP_BUF_SIGSET_NWORDS \
   ((_JUMP_BUF_SIGSET_NSIG - 1 + 7) / (8 * sizeof (unsigned long int)))
@@ -63,5 +62,48 @@ extern jmp_buf ___buf;
 extern  __typeof (___buf[0].__saved_mask) ___saved_mask;
 _Static_assert (sizeof (___saved_mask) >= sizeof (__sigprocmask_sigset_t),
 		"size of ___saved_mask < size of __sigprocmask_sigset_t");
+
+#if IS_IN (libpthread)
+/* <nptl/descr.h> has
+
+struct pthread_unwind_buf
+{
+  struct
+  {
+    __jmp_buf jmp_buf;
+    int mask_was_saved;
+  } cancel_jmp_buf[1];
+
+  union
+  {
+    void *pad[4];
+    struct
+    {
+      struct pthread_unwind_buf *prev;
+      struct _pthread_cleanup_buffer *cleanup;
+      int canceltype;
+    } data;
+  } priv;
+};
+
+  Use pad array in truct pthread_unwind_buf to save and restore shadow
+  stack register if size of struct pthread_unwind_buf is no less than
+  offset of shadow stack pointer + shadow stack pointer size.   */
+
+# include <pthreadP.h>
+# include <jmp_buf-ssp.h>
+
+# ifdef __x86_64__
+#  define SHADOW_STACK_POINTER_SIZE 8
+# else
+#  define SHADOW_STACK_POINTER_SIZE 4
+# endif
+
+_Static_assert ((sizeof (struct pthread_unwind_buf)
+		 >= (SHADOW_STACK_POINTER_OFFSET
+		     + SHADOW_STACK_POINTER_SIZE)),
+		"size of struct pthread_unwind_buf < "
+		"(SHADOW_STACK_POINTER_OFFSET + SHADOW_STACK_POINTER_SIZE)");
+#endif
 
 #endif /* setjmpP.h  */
