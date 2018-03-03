@@ -333,9 +333,6 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
 
 #define LDBL_DISTINCT (__glibc_likely ((mode_flags & SCANF_LDBL_IS_DBL) == 0))
 #define USE_ISOC99_A  (__glibc_likely (mode_flags & SCANF_ISOC99_A))
-  /* Temporarily honor the environmental mode bits.  */
-  if (__ldbl_is_dbl)
-    mode_flags |= SCANF_LDBL_IS_DBL;
 
 #ifdef __va_copy
   __va_copy (arg, argptr);
