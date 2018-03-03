@@ -16,25 +16,19 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include <libioP.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <wchar.h>
+#include <shlib-compat.h>
 
-/* Read formatted input from STREAM according to the format string FORMAT.  */
-/* VARARGS2 */
+#if SHLIB_COMPAT (libc, GLIBC_2_0, GLIBC_2_28)
+
 int
-__isoc99_fwscanf (FILE *stream, const wchar_t *format, ...)
+attribute_compat_text_section
+__IO_vfwscanf (FILE *fp, const wchar_t *format, va_list ap, int *errp)
 {
-  va_list arg;
-  int done;
-
-  _IO_acquire_lock_clear_flags2 (stream);
-  stream->_flags2 |= _IO_FLAGS2_SCANF_STD;
-
-  va_start (arg, format);
-  done = __vfwscanf_internal (stream, format, arg, 0);
-  va_end (arg);
-
-  _IO_release_lock (stream);
-  return done;
+  int rv = __vfwscanf_internal (fp, format, ap, 0);
+  if (__glibc_unlikely (errp != 0))
+    *errp = (rv == -1);
+  return rv;
 }
+compat_symbol (libc, __IO_vfwscanf, _IO_vfwscanf, GLIBC_2_0);
+
+#endif

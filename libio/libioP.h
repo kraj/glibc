@@ -704,6 +704,15 @@ extern off64_t _IO_seekpos_unlocked (FILE *, off64_t, int)
 
 #endif /* _G_HAVE_MMAP */
 
+/* Flags for __vfscanf_internal and __vfwscanf_internal.  */
+#define SCANF_LDBL_IS_DBL 0x0001
+#define SCANF_ISOC99_A    0x0002
+
+extern int __vfscanf_internal (FILE *fp, const char *format, va_list argp,
+                               unsigned int flags);
+extern int __vfwscanf_internal (FILE *fp, const wchar_t *format, va_list argp,
+                                unsigned int flags);
+
 extern int _IO_vscanf (const char *, va_list) __THROW;
 
 #ifdef _IO_MTSAFE_IO

@@ -57,6 +57,9 @@ libc {
     psiginfo;
     register_printf_modifier; register_printf_type; register_printf_specifier;
   }
+  GLIBC_2.28 {
+    # SHLIB_COMPAT(GLIBC_2_0, GLIBC_2_28) used in iovfscanf.c etc
+  }
   GLIBC_PRIVATE {
     # global variables
     _itoa_lower_digits;
