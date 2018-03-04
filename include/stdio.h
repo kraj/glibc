@@ -17,6 +17,10 @@ libc_hidden_proto (__snprintf)
 extern int __vsnprintf (char *__restrict __s, size_t __maxlen,
 			const char *__restrict __format, __gnuc_va_list __arg)
      __attribute__ ((__format__ (__printf__, 3, 0)));
+libc_hidden_proto (__vsnprintf)
+extern int __vasprintf (char **__result_ptr, const char *__restrict __format,
+			va_list args)
+     __attribute__ ((__format__ (__printf__, 2, 0)));
 extern int __vfscanf (FILE *__restrict __s,
 		      const char *__restrict __format,
 		      __gnuc_va_list __arg)

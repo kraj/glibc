@@ -98,6 +98,8 @@
 #define __strerror_r strerror_r
 #undef __strndup
 #define __strndup strndup
+#undef __vasprintf
+#define __vasprintf vasprintf
 #undef __vsnprintf
 #define __vsnprintf vsnprintf
 

@@ -658,12 +658,32 @@ extern off64_t _IO_wstr_seekoff (FILE *, off64_t, int, int)
 extern wint_t _IO_wstr_pbackfail (FILE *, wint_t) __THROW;
 extern void _IO_wstr_finish (FILE *, int) __THROW;
 
-extern int _IO_vasprintf (char **result_ptr, const char *format,
-			  va_list args) __THROW;
-extern int _IO_vdprintf (int d, const char *format, va_list arg);
-extern int _IO_vsnprintf (char *string, size_t maxlen,
-			  const char *format, va_list args) __THROW;
+/* Internal versions of v*printf that take an additional flags
+   parameter.  */
+extern int __vfprintf_internal (FILE *fp, const char *format, va_list ap,
+                                unsigned int mode_flags);
+extern int __vfwprintf_internal (FILE *fp, const wchar_t *format, va_list ap,
+                                 unsigned int mode_flags);
 
+extern int __vasprintf_internal (char **result_ptr, const char *format,
+                                 va_list ap, unsigned int mode_flags);
+extern int __vdprintf_internal (int d, const char *format, va_list ap,
+                                unsigned int mode_flags);
+extern int __obstack_vprintf_internal (struct obstack *ob, const char *fmt,
+                                       va_list ap, unsigned int mode_flags);
+
+extern int __vsprintf_internal (char *string, const char *format, va_list ap,
+                                unsigned int mode_flags);
+extern int __vsnprintf_internal (char *string, size_t maxlen,
+                                 const char *format, va_list ap,
+                                 unsigned int mode_flags);
+extern int __vswprintf_internal (wchar_t *string, size_t maxlen,
+                                 const wchar_t *format, va_list ap,
+                                 unsigned int mode_flags);
+
+/* Flags for __v*printf_internal.  */
+#define PRINTF_LDBL_IS_DBL 0x0001
+#define PRINTF_FORTIFY     0x0002
 
 extern size_t _IO_getline (FILE *,char *, size_t, int, int);
 libc_hidden_proto (_IO_getline)
