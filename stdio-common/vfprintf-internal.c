@@ -31,6 +31,7 @@
 #include <locale/localeinfo.h>
 #include <stdio.h>
 #include <scratch_buffer.h>
+#include <libc-diag.h>
 
 /* This code is shared between the standard stdio implementation found
    in GNU C library and the libio implementation originally found in
@@ -774,9 +775,19 @@ static const uint8_t jump_table[] =
 					.is_binary128 = 0};		      \
 									      \
 	    if (is_long_double)						      \
-	      the_arg.pa_long_double = va_arg (ap, long double);	      \
+	      {								      \
+		/* GCC 7.3 has a bug on some architectures where */	      \
+		/* va_arg (ap, long double) produces spurious warnings.  */   \
+		/* https://gcc.gnu.org/bugzilla/show_bug.cgi?id=84772 */      \
+		DIAG_PUSH_NEEDS_COMMENT;				      \
+		DIAG_IGNORE_NEEDS_COMMENT (7.3, "-Wuninitialized");	      \
+		DIAG_IGNORE_NEEDS_COMMENT (7.3, "-Wmaybe-uninitialized");     \
+		the_arg.pa_long_double = va_arg (ap, long double);	      \
+		DIAG_POP_NEEDS_COMMENT;					      \
+	      }								      \
 	    else							      \
 	      the_arg.pa_double = va_arg (ap, double);			      \
+									      \
 	    ptr = (const void *) &the_arg;				      \
 									      \
 	    function_done = __printf_fp (s, &info, &ptr);		      \
@@ -834,7 +845,16 @@ static const uint8_t jump_table[] =
 					.is_binary128 = 0};		      \
 									      \
 	    if (is_long_double)						      \
-	      the_arg.pa_long_double = va_arg (ap, long double);	      \
+	      {								      \
+		/* GCC 7.3 has a bug on some architectures where */	      \
+		/* va_arg (ap, long double) produces spurious warnings.  */   \
+		/* https://gcc.gnu.org/bugzilla/show_bug.cgi?id=84772 */      \
+		DIAG_PUSH_NEEDS_COMMENT;				      \
+		DIAG_IGNORE_NEEDS_COMMENT (7.3, "-Wuninitialized");	      \
+		DIAG_IGNORE_NEEDS_COMMENT (7.3, "-Wmaybe-uninitialized");     \
+		the_arg.pa_long_double = va_arg (ap, long double);	      \
+		DIAG_POP_NEEDS_COMMENT;					      \
+	      }								      \
 	    else							      \
 	      the_arg.pa_double = va_arg (ap, double);			      \
 	    ptr = (const void *) &the_arg;				      \
@@ -844,7 +864,7 @@ static const uint8_t jump_table[] =
 	else								      \
 	  {								      \
 	    ptr = (const void *) &args_value[fspec->data_arg];		      \
-	    if (LDBL_IS_DBL)                                            \
+	    if (LDBL_IS_DBL)                                                  \
 	      fspec->info.is_long_double = 0;				      \
 	    /* Not supported by *printf functions.  */			      \
 	    fspec->info.is_binary128 = 0;				      \
@@ -1878,7 +1898,16 @@ printf_positional (FILE *s, const CHAR_T *format, int readonly_format,
 	    args_type[cnt] &= ~PA_FLAG_LONG_DOUBLE;
 	  }
 	else
-	  args_value[cnt].pa_long_double = va_arg (*ap_savep, long double);
+	  {
+	    /* GCC 7.3 has a bug on some architectures where
+	       va_arg (ap, long double) produces spurious warnings.
+	       https://gcc.gnu.org/bugzilla/show_bug.cgi?id=84772 */
+	    DIAG_PUSH_NEEDS_COMMENT;
+	    DIAG_IGNORE_NEEDS_COMMENT (7.3, "-Wuninitialized");
+	    DIAG_IGNORE_NEEDS_COMMENT (7.3, "-Wmaybe-uninitialized");
+	    args_value[cnt].pa_long_double = va_arg (*ap_savep, long double);
+	    DIAG_POP_NEEDS_COMMENT;
+	  }
 	break;
       case PA_STRING:				/* All pointers are the same */
       case PA_WSTRING:			/* All pointers are the same */
