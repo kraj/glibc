@@ -78,5 +78,7 @@ ld {
 
     # Set value of a tunable.
     __tunable_get_val;
+
+    __google_auxv;
   }
 }
