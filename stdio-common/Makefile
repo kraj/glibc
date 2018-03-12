@@ -136,6 +136,11 @@ CFLAGS-isoc99_scanf.c += -fexceptions
 CFLAGS-errlist.c += $(fno-unit-at-a-time)
 CFLAGS-siglist.c += $(fno-unit-at-a-time)
 
+# The clang integrated assembler does not like the '@@@' trickery here.
+ifeq ($(with-clang),yes)
+CFLAGS-errlist.c += -no-integrated-as
+endif
+
 # The following is a hack since we must compile scanf1{5,7}.c without any
 # GNU extension.  The latter are needed, though, when internal headers
 # are used.  So made sure we see the installed headers first.
