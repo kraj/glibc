@@ -1,0 +1,739 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+CFLAGS	tests/Makefile	/^CFLAGS=-Wall -g$/;"	m
+CFLAGS-lockfile.c	Makefile	/^CFLAGS-lockfile.c = -D_IO_MTSAFE_IO$/;"	m
+CHECK_OBJS	tests/Makefile	/^CHECK_OBJS := $(addsuffix .o,$(basename $(notdir $(CHECK_SRC))))$/;"	m
+CHECK_PROGS	tests/Makefile	/^CHECK_PROGS := $(basename $(notdir $(CHECK_SRC))) \\$/;"	m
+CHECK_SRC	tests/Makefile	/^CHECK_SRC := test-1.c test-2.c test-3.c test-6.c test-7.c test-8.c	\\$/;"	m
+CTHREAD_KEY_INVALID	pthread/cthreads-compat.c	22;"	d	file:
+FORWARD	forward.c	53;"	d	file:
+FORWARD2	forward.c	32;"	d	file:
+FORWARD_NORETURN	forward.c	43;"	d	file:
+HURD_TLS_DESC_DECL	sysdeps/mach/hurd/i386/pt-machdep.c	27;"	d	file:
+INSTALL_ROOT_CPPFLAGS	tests/Makefile	/^INSTALL_ROOT_CPPFLAGS = -isystem $(INSTALL_ROOT)\/include$/;"	m
+INSTALL_ROOT_LDFLAGS	tests/Makefile	/^INSTALL_ROOT_LDFLAGS = -L$(INSTALL_ROOT)\/lib -Wl,-rpath,$(INSTALL_ROOT)\/lib$/;"	m
+KEYS	tests/test-7.c	10;"	d	file:
+LCLHDRS	Makefile	/^LCLHDRS :=$/;"	m
+LDLIBS	tests/Makefile	/^LDLIBS = -lpthread$/;"	m
+LOSE	sysdeps/generic/pt-mutex-timedlock.c	24;"	d	file:
+LOSE	sysdeps/generic/pt-mutex-trylock.c	23;"	d	file:
+LOSE	sysdeps/generic/pt-mutex-unlock.c	23;"	d	file:
+MICROKERNEL	Makefile	/^MICROKERNEL := mach$/;"	m
+MTX_TYPE	sysdeps/mach/hurd/pt-mutex.h	86;"	d
+NOTRECOVERABLE_ID	sysdeps/mach/hurd/pt-mutex.h	24;"	d
+N_k	tests/test-__pthread_destroy_specific-skip.c	11;"	d	file:
+PTFAVAIL	sysdeps/pthread/libc-lockP.h	44;"	d
+PTFAVAIL	sysdeps/pthread/libc-lockP.h	50;"	d
+PTFAVAIL	sysdeps/pthread/libc-lockP.h	56;"	d
+PTHFCT_CALL	sysdeps/pthread/pthread-functions.h	137;"	d
+PTHREAD_BARRIER_SERIAL_THREAD	sysdeps/generic/pthread/pthread.h	757;"	d
+PTHREAD_CANCELED	sysdeps/generic/pthread/pthread.h	713;"	d
+PTHREAD_CANCEL_ASYNCHRONOUS	sysdeps/generic/pthread/pthread.h	705;"	d
+PTHREAD_CANCEL_DEFERRED	sysdeps/generic/pthread/pthread.h	704;"	d
+PTHREAD_CANCEL_DISABLE	sysdeps/generic/pthread/pthread.h	697;"	d
+PTHREAD_CANCEL_ENABLE	sysdeps/generic/pthread/pthread.h	698;"	d
+PTHREAD_COND_INITIALIZER	sysdeps/generic/pthread/pthread.h	485;"	d
+PTHREAD_CREATE_DETACHED	sysdeps/generic/pthread/pthread.h	74;"	d
+PTHREAD_CREATE_JOINABLE	sysdeps/generic/pthread/pthread.h	73;"	d
+PTHREAD_DETACHED	pthread/pt-internal.h	/^  PTHREAD_DETACHED,$/;"	e	enum:pthread_state
+PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP	sysdeps/generic/pthread/pthread.h	372;"	d
+PTHREAD_EXITED	pthread/pt-internal.h	/^  PTHREAD_EXITED,$/;"	e	enum:pthread_state
+PTHREAD_EXPLICIT_SCHED	sysdeps/generic/pthread/pthread.h	65;"	d
+PTHREAD_INHERIT_SCHED	sysdeps/generic/pthread/pthread.h	66;"	d
+PTHREAD_JOINABLE	pthread/pt-internal.h	/^  PTHREAD_JOINABLE = 0,$/;"	e	enum:pthread_state
+PTHREAD_KEY_INVALID	sysdeps/generic/pt-key.h	26;"	d
+PTHREAD_KEY_MEMBERS	pthread/pt-internal.h	54;"	d
+PTHREAD_KEY_MEMBERS	sysdeps/generic/pt-key.h	22;"	d
+PTHREAD_MUTEX_DEFAULT	sysdeps/generic/pthread/pthread.h	265;"	d
+PTHREAD_MUTEX_ERRORCHECK	sysdeps/generic/pthread/pthread.h	263;"	d
+PTHREAD_MUTEX_ERRORCHECK_NP	sysdeps/generic/pthread/pthread.h	259;"	d
+PTHREAD_MUTEX_FAST_NP	sysdeps/generic/pthread/pthread.h	269;"	d
+PTHREAD_MUTEX_INITIALIZER	sysdeps/generic/pthread/pthread.h	368;"	d
+PTHREAD_MUTEX_NORMAL	sysdeps/generic/pthread/pthread.h	262;"	d
+PTHREAD_MUTEX_RECURSIVE	sysdeps/generic/pthread/pthread.h	264;"	d
+PTHREAD_MUTEX_RECURSIVE_NP	sysdeps/generic/pthread/pthread.h	260;"	d
+PTHREAD_MUTEX_ROBUST	sysdeps/generic/pthread/pthread.h	274;"	d
+PTHREAD_MUTEX_STALLED	sysdeps/generic/pthread/pthread.h	273;"	d
+PTHREAD_MUTEX_TIMED_NP	sysdeps/generic/pthread/pthread.h	258;"	d
+PTHREAD_ONCE_INIT	sysdeps/generic/pthread/pthread.h	804;"	d
+PTHREAD_PRIO_INHERIT	sysdeps/generic/pthread/pthread.h	254;"	d
+PTHREAD_PRIO_INHERIT_NP	sysdeps/generic/pthread/pthread.h	250;"	d
+PTHREAD_PRIO_NONE	sysdeps/generic/pthread/pthread.h	253;"	d
+PTHREAD_PRIO_NONE_NP	sysdeps/generic/pthread/pthread.h	249;"	d
+PTHREAD_PRIO_PROTECT	sysdeps/generic/pthread/pthread.h	255;"	d
+PTHREAD_PRIO_PROTECT_NP	sysdeps/generic/pthread/pthread.h	251;"	d
+PTHREAD_PROCESS_PRIVATE	sysdeps/generic/pthread/pthread.h	58;"	d
+PTHREAD_PROCESS_SHARED	sysdeps/generic/pthread/pthread.h	59;"	d
+PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP	sysdeps/generic/pthread/pthread.h	374;"	d
+PTHREAD_RWLOCK_INITIALIZER	sysdeps/generic/pthread/pthread.h	633;"	d
+PTHREAD_SCOPE_PROCESS	sysdeps/generic/pthread/pthread.h	70;"	d
+PTHREAD_SCOPE_SYSTEM	sysdeps/generic/pthread/pthread.h	69;"	d
+PTHREAD_SPINLOCK_INITIALIZER	sysdeps/generic/pthread/pthread.h	526;"	d
+PTHREAD_STACK_DEFAULT	sysdeps/mach/hurd/pt-sysdep.h	28;"	d
+PTHREAD_SYSDEP_MEMBERS	pthread/pt-internal.h	58;"	d
+PTHREAD_SYSDEP_MEMBERS	sysdeps/mach/hurd/pt-sysdep.h	30;"	d
+PTHREAD_TERMINATED	pthread/pt-internal.h	/^  PTHREAD_TERMINATED$/;"	e	enum:pthread_state
+PT_MTX_ERRORCHECK	sysdeps/mach/hurd/pt-mutex.h	83;"	d
+PT_MTX_NORMAL	sysdeps/mach/hurd/pt-mutex.h	81;"	d
+PT_MTX_RECURSIVE	sysdeps/mach/hurd/pt-mutex.h	82;"	d
+ROBUST_LOCK	sysdeps/mach/hurd/pt-mutex.h	28;"	d
+SEM_FAILED	sysdeps/pthread/semaphore.h	33;"	d
+SYSDEPS	Makefile	/^SYSDEPS := lockfile$/;"	m
+SYSDEP_PATH	Makefile	/^SYSDEP_PATH = $(srcdir)\/sysdeps\/$(MICROKERNEL)\/hurd\/i386	\\$/;"	m
+TEST	tests/test-3.c	37;"	d	file:
+TEST1	tests/test-3.c	30;"	d	file:
+THREADS	tests/test-1.c	10;"	d	file:
+THREADS	tests/test-11.c	10;"	d	file:
+THREADS	tests/test-15.c	12;"	d	file:
+THREADS	tests/test-6.c	9;"	d	file:
+THREADS	tests/test-7.c	9;"	d	file:
+THREADS	tests/test-8.c	8;"	d	file:
+THREADS	tests/test-9.c	10;"	d	file:
+UNREGISTER_ATFORK	sysdeps/generic/fork.h	21;"	d
+WAITS	tests/test-6.c	10;"	d	file:
+_BITS_ATOMIC_H	sysdeps/i386/bits/pt-atomic.h	20;"	d
+_BITS_BARRIER_ATTR_H	sysdeps/pthread/bits/barrier-attr.h	20;"	d
+_BITS_BARRIER_H	sysdeps/pthread/bits/barrier.h	20;"	d
+_BITS_CANCELATION_H	sysdeps/pthread/bits/cancelation.h	20;"	d
+_BITS_CONDITION_ATTR_H	sysdeps/pthread/bits/condition-attr.h	20;"	d
+_BITS_CONDITION_H	sysdeps/pthread/bits/condition.h	20;"	d
+_BITS_LIBC_LOCKP_H	sysdeps/pthread/libc-lockP.h	20;"	d
+_BITS_MUTEX_ATTR_H	sysdeps/pthread/bits/mutex-attr.h	20;"	d
+_BITS_MUTEX_H	sysdeps/mach/hurd/bits/mutex.h	20;"	d
+_BITS_MUTEX_H	sysdeps/pthread/bits/mutex.h	22;"	d
+_BITS_ONCE_H	sysdeps/pthread/bits/once.h	20;"	d
+_BITS_PTHREADTYPES_ARCH_H	sysdeps/i386/bits/pthreadtypes-arch.h	19;"	d
+_BITS_PTHREADTYPES_H	sysdeps/pthread/bits/pthreadtypes.h	24;"	d
+_BITS_PTHREAD_H	sysdeps/pthread/bits/pthread.h	20;"	d
+_BITS_PTHREAD_NP_H	sysdeps/mach/hurd/bits/pthread-np.h	24;"	d
+_BITS_PTHREAD_NP_H	sysdeps/pthread/bits/pthread-np.h	24;"	d
+_BITS_RWLOCK_ATTR_H	sysdeps/pthread/bits/rwlock-attr.h	20;"	d
+_BITS_RWLOCK_H	sysdeps/pthread/bits/rwlock.h	20;"	d
+_BITS_SEMAPHORE_H	sysdeps/pthread/bits/semaphore.h	20;"	d
+_BITS_SPIN_LOCK_H	sysdeps/mach/bits/spin-lock.h	20;"	d
+_BITS_SPIN_LOCK_INLINE_H	sysdeps/mach/bits/spin-lock-inline.h	20;"	d
+_BITS_THREAD_ATTR_H	sysdeps/pthread/bits/thread-attr.h	20;"	d
+_BITS_THREAD_SPECIFIC_H	sysdeps/pthread/bits/thread-specific.h	20;"	d
+_FORCE_INLINES	pthread/pt-spin-inlines.c	22;"	d	file:
+_GNU_SOURCE	tests/test-1.c	1;"	d	file:
+_GNU_SOURCE	tests/test-10.c	3;"	d	file:
+_GNU_SOURCE	tests/test-11.c	3;"	d	file:
+_GNU_SOURCE	tests/test-12.c	3;"	d	file:
+_GNU_SOURCE	tests/test-13.c	3;"	d	file:
+_GNU_SOURCE	tests/test-14.c	3;"	d	file:
+_GNU_SOURCE	tests/test-15.c	3;"	d	file:
+_GNU_SOURCE	tests/test-16.c	3;"	d	file:
+_GNU_SOURCE	tests/test-17.c	4;"	d	file:
+_GNU_SOURCE	tests/test-2.c	2;"	d	file:
+_GNU_SOURCE	tests/test-3.c	3;"	d	file:
+_GNU_SOURCE	tests/test-4.c	3;"	d	file:
+_GNU_SOURCE	tests/test-5.c	3;"	d	file:
+_GNU_SOURCE	tests/test-6.c	1;"	d	file:
+_GNU_SOURCE	tests/test-7.c	1;"	d	file:
+_GNU_SOURCE	tests/test-8.c	1;"	d	file:
+_GNU_SOURCE	tests/test-9.c	3;"	d	file:
+_GNU_SOURCE	tests/test-__pthread_destroy_specific-skip.c	4;"	d	file:
+_IO_flockfile	lockfile.c	41;"	d	file:
+_IO_ftrylockfile	lockfile.c	43;"	d	file:
+_IO_funlockfile	lockfile.c	42;"	d	file:
+_MACHINE_SP_H	sysdeps/i386/machine-sp.h	20;"	d
+_POSIX_THREAD_THREADS_MAX	sysdeps/mach/hurd/pt-sysdep.h	25;"	d
+_PTHREADP_H	sysdeps/pthread/pthreadP.h	19;"	d
+_PTHREADTYPES_H	sysdeps/generic/pthread/pthreadtypes.h	23;"	d
+_PTHREAD_FUNCTIONS_H	sysdeps/pthread/pthread-functions.h	20;"	d
+_PTHREAD_H	sysdeps/generic/pthread/pthread.h	23;"	d
+_PT_INTERNAL_H	pthread/pt-internal.h	20;"	d
+_PT_MACHDEP_H	sysdeps/i386/pt-machdep.h	20;"	d
+_PT_MUTEX_H	sysdeps/mach/hurd/pt-mutex.h	21;"	d
+_PT_SYSDEP_H	sysdeps/mach/hurd/pt-sysdep.h	20;"	d
+_SEMAPHORE_H	sysdeps/pthread/semaphore.h	19;"	d
+_THREAD_SHARED_TYPES_H	sysdeps/pthread/bits/thread-shared-types.h	20;"	d
+_TIMER_ROUTINES_H	sysdeps/generic/timer_routines.h	21;"	d
+__EBUSY	sysdeps/mach/bits/spin-lock-inline.h	32;"	d
+__PTHREAD_COND_INITIALIZER	sysdeps/pthread/bits/condition.h	35;"	d
+__PTHREAD_CREATE_DETACHED	sysdeps/generic/pthread/pthreadtypes.h	/^    __PTHREAD_CREATE_DETACHED$/;"	e	enum:__pthread_detachstate
+__PTHREAD_CREATE_JOINABLE	sysdeps/generic/pthread/pthreadtypes.h	/^    __PTHREAD_CREATE_JOINABLE = 0,$/;"	e	enum:__pthread_detachstate
+__PTHREAD_ERRORCHECK_MUTEXATTR	sysdeps/pthread/bits/mutex.h	50;"	d
+__PTHREAD_ERRORCHECK_MUTEX_INITIALIZER	sysdeps/mach/hurd/bits/mutex.h	43;"	d
+__PTHREAD_ERRORCHECK_MUTEX_INITIALIZER	sysdeps/pthread/bits/mutex.h	52;"	d
+__PTHREAD_EXPLICIT_SCHED	sysdeps/generic/pthread/pthreadtypes.h	/^    __PTHREAD_EXPLICIT_SCHED = 0,$/;"	e	enum:__pthread_inheritsched
+__PTHREAD_INHERIT_SCHED	sysdeps/generic/pthread/pthreadtypes.h	/^    __PTHREAD_INHERIT_SCHED$/;"	e	enum:__pthread_inheritsched
+__PTHREAD_MUTEX_ERRORCHECK	sysdeps/generic/pthread/pthreadtypes.h	/^    __PTHREAD_MUTEX_ERRORCHECK,$/;"	e	enum:__pthread_mutex_type
+__PTHREAD_MUTEX_INITIALIZER	sysdeps/mach/hurd/bits/mutex.h	38;"	d
+__PTHREAD_MUTEX_INITIALIZER	sysdeps/pthread/bits/mutex.h	47;"	d
+__PTHREAD_MUTEX_RECURSIVE	sysdeps/generic/pthread/pthreadtypes.h	/^    __PTHREAD_MUTEX_RECURSIVE$/;"	e	enum:__pthread_mutex_type
+__PTHREAD_MUTEX_ROBUST	sysdeps/generic/pthread/pthreadtypes.h	/^    __PTHREAD_MUTEX_ROBUST = 0x100$/;"	e	enum:__pthread_mutex_robustness
+__PTHREAD_MUTEX_STALLED	sysdeps/generic/pthread/pthreadtypes.h	/^    __PTHREAD_MUTEX_STALLED,$/;"	e	enum:__pthread_mutex_robustness
+__PTHREAD_MUTEX_TIMED	sysdeps/generic/pthread/pthreadtypes.h	/^    __PTHREAD_MUTEX_TIMED,$/;"	e	enum:__pthread_mutex_type
+__PTHREAD_ONCE_INIT	sysdeps/pthread/bits/once.h	30;"	d
+__PTHREAD_PRIO_INHERIT	sysdeps/generic/pthread/pthreadtypes.h	/^    __PTHREAD_PRIO_INHERIT,$/;"	e	enum:__pthread_mutex_protocol
+__PTHREAD_PRIO_NONE	sysdeps/generic/pthread/pthreadtypes.h	/^    __PTHREAD_PRIO_NONE= 0,$/;"	e	enum:__pthread_mutex_protocol
+__PTHREAD_PRIO_PROTECT	sysdeps/generic/pthread/pthreadtypes.h	/^    __PTHREAD_PRIO_PROTECT$/;"	e	enum:__pthread_mutex_protocol
+__PTHREAD_PROCESS_PRIVATE	sysdeps/generic/pthread/pthreadtypes.h	/^    __PTHREAD_PROCESS_PRIVATE = 0,$/;"	e	enum:__pthread_process_shared
+__PTHREAD_PROCESS_SHARED	sysdeps/generic/pthread/pthreadtypes.h	/^    __PTHREAD_PROCESS_SHARED$/;"	e	enum:__pthread_process_shared
+__PTHREAD_RECURSIVE_MUTEXATTR	sysdeps/pthread/bits/mutex.h	56;"	d
+__PTHREAD_RECURSIVE_MUTEX_INITIALIZER	sysdeps/mach/hurd/bits/mutex.h	46;"	d
+__PTHREAD_RECURSIVE_MUTEX_INITIALIZER	sysdeps/pthread/bits/mutex.h	58;"	d
+__PTHREAD_RWLOCK_INITIALIZER	sysdeps/pthread/bits/rwlock.h	41;"	d
+__PTHREAD_SCOPE_PROCESS	sysdeps/generic/pthread/pthreadtypes.h	/^    __PTHREAD_SCOPE_PROCESS$/;"	e	enum:__pthread_contentionscope
+__PTHREAD_SCOPE_SYSTEM	sysdeps/generic/pthread/pthreadtypes.h	/^    __PTHREAD_SCOPE_SYSTEM = 0,$/;"	e	enum:__pthread_contentionscope
+__PTHREAD_SPIN_COUNT	sysdeps/posix/pt-spin.c	25;"	d	file:
+__PTHREAD_SPIN_LOCK_INITIALIZER	sysdeps/mach/bits/spin-lock.h	30;"	d
+__PT_SPIN_INLINE	pthread/pt-spin-inlines.c	23;"	d	file:
+__PT_SPIN_INLINE	sysdeps/mach/bits/spin-lock-inline.h	36;"	d
+__SEMAPHORE_INITIALIZER	sysdeps/pthread/bits/semaphore.h	40;"	d
+___pthread_init	pthread/pt-initialize.c	/^___pthread_init (void)$/;"	f
+___pthread_self	sysdeps/mach/hurd/pt-sysdep.c	/^__thread struct __pthread *___pthread_self;$/;"	v	typeref:struct:__pthread
+__arg	sysdeps/pthread/bits/cancelation.h	/^  void *__arg;$/;"	m	struct:__pthread_cancelation_handler
+__atomic_dec	sysdeps/i386/bits/pt-atomic.h	/^__atomic_dec (__atomic_t *__var)$/;"	f
+__atomic_dec_and_test	sysdeps/i386/bits/pt-atomic.h	/^__atomic_dec_and_test (__atomic_t *__var)$/;"	f
+__atomic_inc	sysdeps/i386/bits/pt-atomic.h	/^__atomic_inc (__atomic_t *__var)$/;"	f
+__atomic_t	sysdeps/i386/bits/pt-atomic.h	/^typedef __volatile int __atomic_t;$/;"	t
+__atomicptr_compare_and_swap	sysdeps/i386/bits/pt-atomic.h	/^__atomicptr_compare_and_swap (__atomicptr_t *__ptr, void *__oldval,$/;"	f
+__atomicptr_t	sysdeps/i386/bits/pt-atomic.h	/^typedef __volatile int * __atomicptr_t;$/;"	t
+__attr	sysdeps/pthread/bits/barrier.h	/^  struct __pthread_barrierattr *__attr;$/;"	m	struct:__pthread_barrier	typeref:struct:__pthread_barrier::__pthread_barrierattr
+__attr	sysdeps/pthread/bits/condition.h	/^    struct __pthread_condattr *__attr;$/;"	m	struct:__pthread_cond	typeref:struct:__pthread_cond::__pthread_condattr
+__attr	sysdeps/pthread/bits/mutex.h	/^    struct __pthread_mutexattr *__attr;$/;"	m	struct:__pthread_mutex	typeref:struct:__pthread_mutex::__pthread_mutexattr
+__attr	sysdeps/pthread/bits/rwlock.h	/^    struct __pthread_rwlockattr *__attr;$/;"	m	struct:__pthread_rwlock	typeref:struct:__pthread_rwlock::__pthread_rwlockattr
+__clock	sysdeps/pthread/bits/condition-attr.h	/^    __clockid_t __clock;$/;"	m	struct:__pthread_condattr
+__cnt	sysdeps/mach/hurd/bits/mutex.h	/^  unsigned int __cnt;$/;"	m	struct:__pthread_mutex
+__contentionscope	sysdeps/pthread/bits/thread-attr.h	/^  enum __pthread_contentionscope __contentionscope;$/;"	m	struct:__pthread_attr	typeref:enum:__pthread_attr::__pthread_contentionscope
+__count	sysdeps/pthread/bits/barrier.h	/^  unsigned __count;	\/* Number of threads that must wait before$/;"	m	struct:__pthread_barrier
+__cthread_detach	pthread/cthreads-compat.c	/^__cthread_detach (__cthread_t thread)$/;"	f
+__cthread_fn_t	sysdeps/pthread/pthread.h	/^typedef void *	(*__cthread_fn_t)(void *__arg);$/;"	t
+__cthread_key_t	sysdeps/pthread/pthread.h	/^typedef int __cthread_key_t;$/;"	t
+__cthread_t	sysdeps/pthread/pthread.h	/^typedef struct __cthread *__cthread_t;$/;"	t	typeref:struct:__cthread
+__cthreadscompat1	sysdeps/pthread/bits/mutex.h	/^    char *__cthreadscompat1;$/;"	m	struct:__pthread_mutex
+__data	sysdeps/pthread/bits/barrier.h	/^  void *__data;$/;"	m	struct:__pthread_barrier
+__data	sysdeps/pthread/bits/condition.h	/^    void *__data;$/;"	m	struct:__pthread_cond
+__data	sysdeps/pthread/bits/mutex.h	/^    void *__data;$/;"	m	struct:__pthread_mutex
+__data	sysdeps/pthread/bits/rwlock.h	/^    void *__data;$/;"	m	struct:__pthread_rwlock
+__data	sysdeps/pthread/bits/semaphore.h	/^    void *__data;$/;"	m	struct:__semaphore
+__detachstate	sysdeps/pthread/bits/thread-attr.h	/^  enum __pthread_detachstate __detachstate;$/;"	m	struct:__pthread_attr	typeref:enum:__pthread_attr::__pthread_detachstate
+__extern_always_inline	sysdeps/generic/pthread/pthread.h	35;"	d
+__extern_always_inline	sysdeps/generic/pthread/pthread.h	38;"	d
+__extern_always_inline	sysdeps/generic/pthread/pthread.h	43;"	d
+__extern_inline	sysdeps/generic/pthread/pthread.h	33;"	d
+__extern_inline	sysdeps/generic/pthread/pthread.h	42;"	d
+__flags	sysdeps/mach/hurd/bits/mutex.h	/^  int __flags;$/;"	m	struct:__pthread_mutex
+__flockfile	sysdeps/pthread/flockfile.c	/^__flockfile (FILE *stream)$/;"	f
+__ftrylockfile	sysdeps/pthread/ftrylockfile.c	/^__ftrylockfile (FILE *stream)$/;"	f
+__funlockfile	sysdeps/pthread/funlockfile.c	/^__funlockfile (FILE *stream)$/;"	f
+__guardsize	sysdeps/pthread/bits/thread-attr.h	/^  size_t __guardsize;$/;"	m	struct:__pthread_attr
+__handler	sysdeps/pthread/bits/cancelation.h	/^  void (*__handler)(void *);$/;"	m	struct:__pthread_cancelation_handler
+__held	sysdeps/pthread/bits/mutex.h	/^    __pthread_spinlock_t __held;$/;"	m	struct:__pthread_mutex
+__held	sysdeps/pthread/bits/rwlock.h	/^    __pthread_spinlock_t __held;$/;"	m	struct:__pthread_rwlock
+__impl	sysdeps/pthread/bits/condition.h	/^    struct __pthread_condimpl *__impl;$/;"	m	struct:__pthread_cond	typeref:struct:__pthread_cond::__pthread_condimpl
+__inheritsched	sysdeps/pthread/bits/thread-attr.h	/^  enum __pthread_inheritsched __inheritsched;$/;"	m	struct:__pthread_attr	typeref:enum:__pthread_attr::__pthread_inheritsched
+__libc_alloca_cutoff	pthread/alloca_cutoff.c	/^__libc_alloca_cutoff (size_t size)$/;"	f
+__libc_getspecific	sysdeps/pthread/libc-lockP.h	68;"	d
+__libc_key_create	sysdeps/pthread/libc-lockP.h	64;"	d
+__libc_key_t	sysdeps/pthread/libc-lockP.h	/^typedef pthread_key_t __libc_key_t;$/;"	t
+__libc_maybe_call	sysdeps/pthread/libc-lockP.h	34;"	d
+__libc_maybe_call	sysdeps/pthread/libc-lockP.h	38;"	d
+__libc_ptf_call	sysdeps/pthread/libc-lockP.h	45;"	d
+__libc_ptf_call	sysdeps/pthread/libc-lockP.h	51;"	d
+__libc_ptf_call	sysdeps/pthread/libc-lockP.h	57;"	d
+__libc_ptf_call_always	sysdeps/pthread/libc-lockP.h	47;"	d
+__libc_ptf_call_always	sysdeps/pthread/libc-lockP.h	53;"	d
+__libc_ptf_call_always	sysdeps/pthread/libc-lockP.h	59;"	d
+__libc_pthread_init	libc_pthread_init.c	/^__libc_pthread_init (const struct pthread_functions *functions)$/;"	f
+__libc_setspecific	sysdeps/pthread/libc-lockP.h	72;"	d
+__lock	sysdeps/mach/hurd/bits/mutex.h	/^  unsigned int __lock;$/;"	m	struct:__pthread_mutex
+__lock	sysdeps/pthread/bits/barrier.h	/^  __pthread_spinlock_t __lock;$/;"	m	struct:__pthread_barrier
+__lock	sysdeps/pthread/bits/condition.h	/^    __pthread_spinlock_t __lock;$/;"	m	struct:__pthread_cond
+__lock	sysdeps/pthread/bits/mutex.h	/^    __pthread_spinlock_t __lock;$/;"	m	struct:__pthread_mutex
+__lock	sysdeps/pthread/bits/once.h	/^  __pthread_spinlock_t __lock;$/;"	m	struct:__pthread_once
+__lock	sysdeps/pthread/bits/rwlock.h	/^    __pthread_spinlock_t __lock;$/;"	m	struct:__pthread_rwlock
+__lock	sysdeps/pthread/bits/semaphore.h	/^    __pthread_spinlock_t __lock;$/;"	m	struct:__semaphore
+__locks	sysdeps/pthread/bits/mutex.h	/^    unsigned __locks;$/;"	m	struct:__pthread_mutex
+__mutex_type	sysdeps/pthread/bits/mutex-attr.h	/^  enum __pthread_mutex_type __mutex_type;$/;"	m	struct:__pthread_mutexattr	typeref:enum:__pthread_mutexattr::__pthread_mutex_type
+__mutex_unlock_solid	pthread/cthreads-compat.c	/^__mutex_unlock_solid (void *lock)$/;"	f
+__need_size_t	sysdeps/pthread/bits/thread-attr.h	24;"	d
+__next	sysdeps/pthread/bits/cancelation.h	/^  struct __pthread_cancelation_handler *__next;$/;"	m	struct:__pthread_cancelation_handler	typeref:struct:__pthread_cancelation_handler::__pthread_cancelation_handler
+__owner	sysdeps/pthread/bits/mutex.h	/^    void *__owner;$/;"	m	struct:__pthread_mutex
+__owner_id	sysdeps/mach/hurd/bits/mutex.h	/^  unsigned int __owner_id;$/;"	m	struct:__pthread_mutex
+__pending	sysdeps/pthread/bits/barrier.h	/^  unsigned __pending;	\/* Number of that still need to wait on$/;"	m	struct:__pthread_barrier
+__prioceiling	sysdeps/pthread/bits/mutex-attr.h	/^  int __prioceiling;$/;"	m	struct:__pthread_mutexattr
+__protocol	sysdeps/pthread/bits/mutex-attr.h	/^  enum __pthread_mutex_protocol __protocol;$/;"	m	struct:__pthread_mutexattr	typeref:enum:__pthread_mutexattr::__pthread_mutex_protocol
+__pshared	sysdeps/pthread/bits/barrier-attr.h	/^  enum __pthread_process_shared __pshared;$/;"	m	struct:__pthread_barrierattr	typeref:enum:__pthread_barrierattr::__pthread_process_shared
+__pshared	sysdeps/pthread/bits/condition-attr.h	/^    enum __pthread_process_shared __pshared;$/;"	m	struct:__pthread_condattr	typeref:enum:__pthread_condattr::__pthread_process_shared
+__pshared	sysdeps/pthread/bits/mutex-attr.h	/^  enum __pthread_process_shared __pshared;$/;"	m	struct:__pthread_mutexattr	typeref:enum:__pthread_mutexattr::__pthread_process_shared
+__pshared	sysdeps/pthread/bits/rwlock-attr.h	/^  enum __pthread_process_shared __pshared;$/;"	m	struct:__pthread_rwlockattr	typeref:enum:__pthread_rwlockattr::__pthread_process_shared
+__pshared	sysdeps/pthread/bits/semaphore.h	/^    int __pshared;$/;"	m	struct:__semaphore
+__pthread	pthread/pt-internal.h	/^struct __pthread$/;"	s
+__pthread_alloc	pthread/pt-alloc.c	/^__pthread_alloc (struct __pthread **pthread)$/;"	f
+__pthread_atfork	sysdeps/pthread/libc-lockP.h	175;"	d
+__pthread_attr	sysdeps/pthread/bits/thread-attr.h	/^struct __pthread_attr$/;"	s
+__pthread_attr_destroy	sysdeps/generic/pt-attr-destroy.c	/^__pthread_attr_destroy (pthread_attr_t *attr)$/;"	f
+__pthread_attr_getdetachstate	sysdeps/generic/pt-attr-getdetachstate.c	/^__pthread_attr_getdetachstate (const pthread_attr_t *attr,$/;"	f
+__pthread_attr_getinheritsched	sysdeps/generic/pt-attr-getinheritsched.c	/^__pthread_attr_getinheritsched (const pthread_attr_t *attr,$/;"	f
+__pthread_attr_getschedparam	sysdeps/generic/pt-attr-getschedparam.c	/^__pthread_attr_getschedparam (const pthread_attr_t *attr,$/;"	f
+__pthread_attr_getschedpolicy	sysdeps/generic/pt-attr-getschedpolicy.c	/^__pthread_attr_getschedpolicy (const pthread_attr_t *attr,$/;"	f
+__pthread_attr_getscope	sysdeps/generic/pt-attr-getscope.c	/^__pthread_attr_getscope (const pthread_attr_t *attr,$/;"	f
+__pthread_attr_getstack	sysdeps/generic/pt-attr-getstack.c	/^__pthread_attr_getstack (const pthread_attr_t *attr,$/;"	f
+__pthread_attr_init	sysdeps/generic/pt-attr-init.c	/^__pthread_attr_init (pthread_attr_t *attr)$/;"	f
+__pthread_attr_setdetachstate	sysdeps/generic/pt-attr-setdetachstate.c	/^__pthread_attr_setdetachstate (pthread_attr_t *attr,$/;"	f
+__pthread_attr_setinheritsched	sysdeps/generic/pt-attr-setinheritsched.c	/^__pthread_attr_setinheritsched (pthread_attr_t *attr,$/;"	f
+__pthread_attr_setschedparam	sysdeps/generic/pt-attr-setschedparam.c	/^__pthread_attr_setschedparam (pthread_attr_t *attr,$/;"	f
+__pthread_attr_setschedpolicy	sysdeps/generic/pt-attr-setschedpolicy.c	/^__pthread_attr_setschedpolicy (pthread_attr_t *attr,$/;"	f
+__pthread_attr_setscope	sysdeps/generic/pt-attr-setscope.c	/^__pthread_attr_setscope (pthread_attr_t *attr,$/;"	f
+__pthread_barrier	sysdeps/pthread/bits/barrier.h	/^struct __pthread_barrier$/;"	s
+__pthread_barrierattr	sysdeps/pthread/bits/barrier-attr.h	/^struct __pthread_barrierattr$/;"	s
+__pthread_block	sysdeps/mach/pt-block.c	/^__pthread_block (struct __pthread *thread)$/;"	f
+__pthread_cancelation_handler	sysdeps/pthread/bits/cancelation.h	/^struct __pthread_cancelation_handler$/;"	s
+__pthread_cleanup_pop	sysdeps/pthread/bits/cancelation.h	44;"	d
+__pthread_cleanup_push	sysdeps/pthread/bits/cancelation.h	32;"	d
+__pthread_concurrency	sysdeps/generic/pt-setconcurrency.c	/^int __pthread_concurrency;$/;"	v
+__pthread_cond	sysdeps/pthread/bits/condition.h	/^struct __pthread_cond$/;"	s
+__pthread_cond_broadcast	sysdeps/generic/pt-cond-brdcast.c	/^__pthread_cond_broadcast (pthread_cond_t *cond)$/;"	f
+__pthread_cond_destroy	sysdeps/generic/pt-cond-destroy.c	/^__pthread_cond_destroy (pthread_cond_t *cond)$/;"	f
+__pthread_cond_init	sysdeps/generic/pt-cond-init.c	/^__pthread_cond_init (pthread_cond_t *cond,$/;"	f
+__pthread_cond_signal	sysdeps/generic/pt-cond-signal.c	/^__pthread_cond_signal (pthread_cond_t *cond)$/;"	f
+__pthread_cond_timedwait	sysdeps/generic/pt-cond-timedwait.c	/^__pthread_cond_timedwait (pthread_cond_t *cond,$/;"	f
+__pthread_cond_timedwait_internal	sysdeps/generic/pt-cond-timedwait.c	/^__pthread_cond_timedwait_internal (pthread_cond_t *cond,$/;"	f
+__pthread_cond_wait	sysdeps/generic/pt-cond-wait.c	/^__pthread_cond_wait (pthread_cond_t *cond, pthread_mutex_t *mutex)$/;"	f
+__pthread_condattr	sysdeps/pthread/bits/condition-attr.h	/^struct __pthread_condattr$/;"	s
+__pthread_condattr_destroy	sysdeps/generic/pt-condattr-destroy.c	/^__pthread_condattr_destroy (pthread_condattr_t *cond)$/;"	f
+__pthread_condattr_init	sysdeps/generic/pt-condattr-init.c	/^__pthread_condattr_init (pthread_condattr_t *attr)$/;"	f
+__pthread_contentionscope	sysdeps/generic/pthread/pthreadtypes.h	/^enum __pthread_contentionscope$/;"	g
+__pthread_create_internal	pthread/pt-create.c	/^__pthread_create_internal (struct __pthread **thread,$/;"	f
+__pthread_dealloc	pthread/pt-dealloc.c	/^__pthread_dealloc (struct __pthread *pthread)$/;"	f
+__pthread_default_attr	sysdeps/generic/pt-attr.c	/^const struct __pthread_attr __pthread_default_attr =$/;"	v	typeref:struct:__pthread_attr
+__pthread_default_barrierattr	sysdeps/generic/pt-barrier.c	/^const struct __pthread_barrierattr __pthread_default_barrierattr =$/;"	v	typeref:struct:__pthread_barrierattr
+__pthread_default_condattr	sysdeps/generic/pt-cond.c	/^const struct __pthread_condattr __pthread_default_condattr =$/;"	v	typeref:struct:__pthread_condattr
+__pthread_default_mutexattr	sysdeps/generic/pt-mutexattr.c	/^const struct __pthread_mutexattr __pthread_default_mutexattr =$/;"	v	typeref:struct:__pthread_mutexattr
+__pthread_default_rwlockattr	sysdeps/generic/pt-rwlock-attr.c	/^const struct __pthread_rwlockattr __pthread_default_rwlockattr =$/;"	v	typeref:struct:__pthread_rwlockattr
+__pthread_dequeue	pthread/pt-internal.h	/^__pthread_dequeue (struct __pthread *thread)$/;"	f
+__pthread_dequeuing_iterate	pthread/pt-internal.h	165;"	d
+__pthread_destroy_specific	sysdeps/generic/pt-destroy-specific.c	/^__pthread_destroy_specific (struct __pthread *thread)$/;"	f
+__pthread_detachstate	sysdeps/generic/pthread/pthreadtypes.h	/^enum __pthread_detachstate$/;"	g
+__pthread_do_cancel	sysdeps/mach/hurd/pt-docancel.c	/^__pthread_do_cancel (struct __pthread *p)$/;"	f
+__pthread_enqueue	pthread/pt-internal.h	/^__pthread_enqueue (struct __pthread **head, struct __pthread *thread)$/;"	f
+__pthread_equal	sysdeps/generic/pt-equal.c	/^__pthread_equal (pthread_t __t1, pthread_t __t2)$/;"	f
+__pthread_equal	sysdeps/pthread/bits/pthread.h	/^__pthread_equal (__pthread_t __t1, __pthread_t __t2)$/;"	f
+__pthread_errorcheck_mutexattr	sysdeps/generic/pt-mutexattr.c	/^const struct __pthread_mutexattr __pthread_errorcheck_mutexattr =$/;"	v	typeref:struct:__pthread_mutexattr
+__pthread_exit	pthread/pt-exit.c	/^__pthread_exit (void *status)$/;"	f
+__pthread_free_threads	pthread/pt-alloc.c	/^struct __pthread *__pthread_free_threads;$/;"	v	typeref:struct:__pthread
+__pthread_free_threads_lock	pthread/pt-alloc.c	/^pthread_mutex_t __pthread_free_threads_lock;$/;"	v
+__pthread_get_cleanup_stack	pthread/pt-cleanup.c	/^__pthread_get_cleanup_stack (void)$/;"	f
+__pthread_getattr_np	pthread/pt-getattr.c	/^__pthread_getattr_np (pthread_t thread, pthread_attr_t *attr)$/;"	f
+__pthread_getid	pthread/pt-internal.h	190;"	d
+__pthread_getschedparam	sysdeps/generic/pt-getschedparam.c	/^__pthread_getschedparam (pthread_t thread, int *policy,$/;"	f
+__pthread_getspecific	sysdeps/generic/pt-getspecific.c	/^__pthread_getspecific (pthread_key_t key)$/;"	f
+__pthread_getspecific	sysdeps/pthread/libc-lockP.h	172;"	d
+__pthread_hurd_cond_timedwait_internal	sysdeps/mach/hurd/pt-hurd-cond-timedwait.c	/^__pthread_hurd_cond_timedwait_internal (pthread_cond_t *cond,$/;"	f
+__pthread_hurd_cond_timedwait_np	sysdeps/mach/hurd/pt-hurd-cond-timedwait.c	/^__pthread_hurd_cond_timedwait_np (pthread_cond_t *cond,$/;"	f
+__pthread_hurd_cond_wait_np	sysdeps/mach/hurd/pt-hurd-cond-wait.c	/^__pthread_hurd_cond_wait_np (pthread_cond_t *cond,$/;"	f
+__pthread_inheritsched	sysdeps/generic/pthread/pthreadtypes.h	/^enum __pthread_inheritsched$/;"	g
+__pthread_init_specific	sysdeps/generic/pt-init-specific.c	/^__pthread_init_specific (struct __pthread *thread)$/;"	f
+__pthread_initialize	sysdeps/pthread/libc-lockP.h	174;"	d
+__pthread_key	sysdeps/pthread/bits/thread-specific.h	/^typedef int __pthread_key;$/;"	t
+__pthread_key_count	sysdeps/generic/pt-key-create.c	/^int __pthread_key_count;$/;"	v
+__pthread_key_create	sysdeps/generic/pt-key-create.c	/^__pthread_key_create (pthread_key_t *key, void (*destructor) (void *))$/;"	f
+__pthread_key_create	sysdeps/pthread/libc-lockP.h	170;"	d
+__pthread_key_destructors	sysdeps/generic/pt-key-create.c	/^void (**__pthread_key_destructors) (void *arg);$/;"	v
+__pthread_key_invalid_count	sysdeps/generic/pt-key-create.c	/^int __pthread_key_invalid_count;$/;"	v
+__pthread_key_lock	sysdeps/generic/pt-key-create.c	/^pthread_mutex_t __pthread_key_lock;$/;"	v
+__pthread_key_lock_ready	sysdeps/generic/pt-key.h	/^__pthread_key_lock_ready (void)$/;"	f
+__pthread_key_size	sysdeps/generic/pt-key-create.c	/^int __pthread_key_size;$/;"	v
+__pthread_kill	sysdeps/generic/pt-kill.c	/^__pthread_kill (pthread_t tid, int signo)$/;"	f
+__pthread_kill	sysdeps/generic/raise.c	25;"	d	file:
+__pthread_kill	sysdeps/hurd/pt-kill.c	/^__pthread_kill (pthread_t thread, int sig)$/;"	f
+__pthread_max_threads	pthread/pt-alloc.c	/^int __pthread_max_threads;$/;"	v
+__pthread_mutex	sysdeps/mach/hurd/bits/mutex.h	/^struct __pthread_mutex$/;"	s
+__pthread_mutex	sysdeps/pthread/bits/mutex.h	/^struct __pthread_mutex$/;"	s
+__pthread_mutex_destroy	sysdeps/pthread/libc-lockP.h	157;"	d
+__pthread_mutex_init	sysdeps/pthread/libc-lockP.h	156;"	d
+__pthread_mutex_lock	sysdeps/generic/pt-mutex-lock.c	/^__pthread_mutex_lock (struct __pthread_mutex *mutex)$/;"	f
+__pthread_mutex_lock	sysdeps/mach/hurd/pt-mutex-lock.c	/^int __pthread_mutex_lock (pthread_mutex_t *mtxp)$/;"	f
+__pthread_mutex_lock	sysdeps/pthread/libc-lockP.h	158;"	d
+__pthread_mutex_protocol	sysdeps/generic/pthread/pthreadtypes.h	/^enum __pthread_mutex_protocol$/;"	g
+__pthread_mutex_robustness	sysdeps/generic/pthread/pthreadtypes.h	/^enum __pthread_mutex_robustness$/;"	g
+__pthread_mutex_timedlock_internal	sysdeps/generic/pt-mutex-timedlock.c	/^__pthread_mutex_timedlock_internal (struct __pthread_mutex *mutex,$/;"	f
+__pthread_mutex_transfer_np	sysdeps/generic/pt-mutex-transfer-np.c	/^__pthread_mutex_transfer_np (struct __pthread_mutex *mutex, pthread_t tid)$/;"	f
+__pthread_mutex_transfer_np	sysdeps/mach/hurd/pt-mutex-transfer-np.c	/^int __pthread_mutex_transfer_np (pthread_mutex_t *mtxp, pthread_t th)$/;"	f
+__pthread_mutex_trylock	sysdeps/generic/pt-mutex-trylock.c	/^__pthread_mutex_trylock (struct __pthread_mutex *mutex)$/;"	f
+__pthread_mutex_trylock	sysdeps/mach/hurd/pt-mutex-trylock.c	/^int __pthread_mutex_trylock (pthread_mutex_t *mtxp)$/;"	f
+__pthread_mutex_trylock	sysdeps/pthread/libc-lockP.h	159;"	d
+__pthread_mutex_type	sysdeps/generic/pthread/pthreadtypes.h	/^enum __pthread_mutex_type$/;"	g
+__pthread_mutex_unlock	sysdeps/generic/pt-mutex-unlock.c	/^__pthread_mutex_unlock (pthread_mutex_t *mutex)$/;"	f
+__pthread_mutex_unlock	sysdeps/mach/hurd/pt-mutex-unlock.c	/^int __pthread_mutex_unlock (pthread_mutex_t *mtxp)$/;"	f
+__pthread_mutex_unlock	sysdeps/pthread/libc-lockP.h	160;"	d
+__pthread_mutexattr	sysdeps/pthread/bits/mutex-attr.h	/^struct __pthread_mutexattr$/;"	s
+__pthread_mutexattr_destroy	sysdeps/generic/pt-mutexattr-destroy.c	/^__pthread_mutexattr_destroy (pthread_mutexattr_t *attr)$/;"	f
+__pthread_mutexattr_destroy	sysdeps/mach/hurd/pt-mutexattr-destroy.c	/^int __pthread_mutexattr_destroy (pthread_mutexattr_t *attrp)$/;"	f
+__pthread_mutexattr_destroy	sysdeps/pthread/libc-lockP.h	162;"	d
+__pthread_mutexattr_init	sysdeps/generic/pt-mutexattr-init.c	/^__pthread_mutexattr_init (pthread_mutexattr_t *attr)$/;"	f
+__pthread_mutexattr_init	sysdeps/mach/hurd/pt-mutexattr-init.c	/^int __pthread_mutexattr_init (pthread_mutexattr_t *attrp)$/;"	f
+__pthread_mutexattr_init	sysdeps/pthread/libc-lockP.h	161;"	d
+__pthread_mutexattr_settype	sysdeps/generic/pt-mutexattr-settype.c	/^__pthread_mutexattr_settype (pthread_mutexattr_t *attr, int type)$/;"	f
+__pthread_mutexattr_settype	sysdeps/mach/hurd/pt-mutexattr-settype.c	/^int __pthread_mutexattr_settype (pthread_mutexattr_t *attrp, int type)$/;"	f
+__pthread_mutexattr_settype	sysdeps/pthread/libc-lockP.h	163;"	d
+__pthread_num_threads	pthread/pt-alloc.c	/^int __pthread_num_threads;$/;"	v
+__pthread_once	sysdeps/generic/pt-once.c	/^__pthread_once (pthread_once_t *once_control, void (*init_routine) (void))$/;"	f
+__pthread_once	sysdeps/pthread/bits/once.h	/^struct __pthread_once$/;"	s
+__pthread_once	sysdeps/pthread/libc-lockP.h	173;"	d
+__pthread_process_shared	sysdeps/generic/pthread/pthreadtypes.h	/^enum __pthread_process_shared$/;"	g
+__pthread_queue_iterate	pthread/pt-internal.h	156;"	d
+__pthread_recursive_mutexattr	sysdeps/generic/pt-mutexattr.c	/^const struct __pthread_mutexattr __pthread_recursive_mutexattr =$/;"	v	typeref:struct:__pthread_mutexattr
+__pthread_rwlock	sysdeps/pthread/bits/rwlock.h	/^struct __pthread_rwlock$/;"	s
+__pthread_rwlock_destroy	sysdeps/pthread/libc-lockP.h	164;"	d
+__pthread_rwlock_rdlock	sysdeps/generic/pt-rwlock-rdlock.c	/^__pthread_rwlock_rdlock (struct __pthread_rwlock *rwlock)$/;"	f
+__pthread_rwlock_rdlock	sysdeps/pthread/libc-lockP.h	165;"	d
+__pthread_rwlock_timedrdlock	sysdeps/generic/pt-rwlock-timedrdlock.c	/^__pthread_rwlock_timedrdlock (struct __pthread_rwlock *rwlock,$/;"	f
+__pthread_rwlock_timedrdlock_internal	sysdeps/generic/pt-rwlock-timedrdlock.c	/^__pthread_rwlock_timedrdlock_internal (struct __pthread_rwlock *rwlock,$/;"	f
+__pthread_rwlock_timedwrlock	sysdeps/generic/pt-rwlock-timedwrlock.c	/^__pthread_rwlock_timedwrlock (struct __pthread_rwlock *rwlock,$/;"	f
+__pthread_rwlock_timedwrlock_internal	sysdeps/generic/pt-rwlock-timedwrlock.c	/^__pthread_rwlock_timedwrlock_internal (struct __pthread_rwlock *rwlock,$/;"	f
+__pthread_rwlock_tryrdlock	sysdeps/pthread/libc-lockP.h	166;"	d
+__pthread_rwlock_trywrlock	sysdeps/pthread/libc-lockP.h	168;"	d
+__pthread_rwlock_unlock	sysdeps/generic/pt-rwlock-unlock.c	/^__pthread_rwlock_unlock (pthread_rwlock_t *rwlock)$/;"	f
+__pthread_rwlock_unlock	sysdeps/pthread/libc-lockP.h	169;"	d
+__pthread_rwlock_wrlock	sysdeps/generic/pt-rwlock-wrlock.c	/^__pthread_rwlock_wrlock (struct __pthread_rwlock *rwlock)$/;"	f
+__pthread_rwlock_wrlock	sysdeps/pthread/libc-lockP.h	167;"	d
+__pthread_rwlockattr	sysdeps/pthread/bits/rwlock-attr.h	/^struct __pthread_rwlockattr$/;"	s
+__pthread_self	pthread/pt-self.c	/^__pthread_self (void)$/;"	f
+__pthread_self	sysdeps/generic/raise.c	26;"	d	file:
+__pthread_setcancelstate	pthread/pt-setcancelstate.c	/^__pthread_setcancelstate (int state, int *oldstate)$/;"	f
+__pthread_setcancelstate	sysdeps/pthread/libc-lockP.h	176;"	d
+__pthread_setcanceltype	pthread/pt-setcanceltype.c	/^__pthread_setcanceltype (int type, int *oldtype)$/;"	f
+__pthread_setid	pthread/pt-internal.h	197;"	d
+__pthread_setschedparam	sysdeps/generic/pt-setschedparam.c	/^__pthread_setschedparam (pthread_t thread, int policy,$/;"	f
+__pthread_setspecific	sysdeps/generic/pt-setspecific.c	/^__pthread_setspecific (pthread_key_t key, const void *value)$/;"	f
+__pthread_setspecific	sysdeps/pthread/libc-lockP.h	171;"	d
+__pthread_setup	sysdeps/mach/hurd/i386/pt-setup.c	/^__pthread_setup (struct __pthread *thread,$/;"	f
+__pthread_sigstate	sysdeps/mach/hurd/pt-sigstate.c	/^__pthread_sigstate (struct __pthread *thread, int how,$/;"	f
+__pthread_sigstate_destroy	sysdeps/mach/hurd/pt-sigstate-destroy.c	/^__pthread_sigstate_destroy (struct __pthread *thread)$/;"	f
+__pthread_sigstate_init	sysdeps/mach/hurd/pt-sigstate-init.c	/^__pthread_sigstate_init (struct __pthread *thread)$/;"	f
+__pthread_spin_count	sysdeps/posix/pt-spin.c	/^int __pthread_spin_count = __PTHREAD_SPIN_COUNT;$/;"	v
+__pthread_spin_destroy	sysdeps/mach/bits/spin-lock-inline.h	/^__pthread_spin_destroy (__pthread_spinlock_t *__lock)$/;"	f
+__pthread_spin_init	sysdeps/mach/bits/spin-lock-inline.h	/^__pthread_spin_init (__pthread_spinlock_t *__lock, int __pshared)$/;"	f
+__pthread_spin_lock	sysdeps/mach/bits/spin-lock-inline.h	/^__pthread_spin_lock (__pthread_spinlock_t *__lock)$/;"	f
+__pthread_spin_trylock	sysdeps/mach/bits/spin-lock-inline.h	/^__pthread_spin_trylock (__pthread_spinlock_t *__lock)$/;"	f
+__pthread_spin_unlock	sysdeps/mach/bits/spin-lock-inline.h	/^__pthread_spin_unlock (__pthread_spinlock_t *__lock)$/;"	f
+__pthread_spinlock_t	sysdeps/mach/bits/spin-lock.h	/^typedef volatile int __pthread_spinlock_t;$/;"	t
+__pthread_stack_alloc	sysdeps/mach/pt-stack-alloc.c	/^__pthread_stack_alloc (void **stackaddr, size_t stacksize)$/;"	f
+__pthread_stack_dealloc	sysdeps/mach/hurd/pt-sysdep.h	/^__pthread_stack_dealloc (void *stackaddr, size_t stacksize)$/;"	f
+__pthread_startup	sysdeps/generic/pt-startup.c	/^__pthread_startup (void)$/;"	f
+__pthread_t	sysdeps/pthread/bits/pthread.h	/^typedef int __pthread_t;$/;"	t
+__pthread_thread_alloc	sysdeps/mach/pt-thread-alloc.c	/^__pthread_thread_alloc (struct __pthread *thread)$/;"	f
+__pthread_thread_start	sysdeps/mach/pt-thread-start.c	/^__pthread_thread_start (struct __pthread *thread)$/;"	f
+__pthread_thread_terminate	sysdeps/mach/pt-thread-terminate.c	/^__pthread_thread_terminate (struct __pthread *thread)$/;"	f
+__pthread_threads	pthread/pt-alloc.c	/^struct __pthread **__pthread_threads;$/;"	v	typeref:struct:__pthread
+__pthread_threads	sysdeps/generic/raise.c	27;"	d	file:
+__pthread_threads_lock	pthread/pt-alloc.c	/^pthread_rwlock_t __pthread_threads_lock;$/;"	v
+__pthread_timedblock	sysdeps/mach/pt-timedblock.c	/^__pthread_timedblock (struct __pthread *thread,$/;"	f
+__pthread_total	pthread/pt-create.c	/^unsigned int __pthread_total;$/;"	v
+__pthread_wakeup	sysdeps/mach/pt-wakeup.c	/^__pthread_wakeup (struct __pthread *thread)$/;"	f
+__queue	sysdeps/pthread/bits/barrier.h	/^  struct __pthread *__queue; \/* List of waiters.  *\/$/;"	m	struct:__pthread_barrier	typeref:struct:__pthread_barrier::__pthread
+__queue	sysdeps/pthread/bits/condition.h	/^    struct __pthread *__queue;$/;"	m	struct:__pthread_cond	typeref:struct:__pthread_cond::__pthread
+__queue	sysdeps/pthread/bits/mutex.h	/^    struct __pthread *__queue;$/;"	m	struct:__pthread_mutex	typeref:struct:__pthread_mutex::__pthread
+__queue	sysdeps/pthread/bits/semaphore.h	/^    struct __pthread *__queue;$/;"	m	struct:__semaphore	typeref:struct:__semaphore::__pthread
+__readerqueue	sysdeps/pthread/bits/rwlock.h	/^    struct __pthread *__readerqueue;$/;"	m	struct:__pthread_rwlock	typeref:struct:__pthread_rwlock::__pthread
+__readers	sysdeps/pthread/bits/rwlock.h	/^    int __readers;$/;"	m	struct:__pthread_rwlock
+__register_atfork	forward.c	/^__register_atfork ($/;"	f
+__reserved1	sysdeps/mach/hurd/bits/mutex.h	/^  unsigned int __reserved1;$/;"	m	struct:__pthread_mutex
+__reserved2	sysdeps/mach/hurd/bits/mutex.h	/^  unsigned int __reserved2;$/;"	m	struct:__pthread_mutex
+__run	sysdeps/pthread/bits/once.h	/^  int __run;$/;"	m	struct:__pthread_once
+__schedparam	sysdeps/pthread/bits/thread-attr.h	/^  struct sched_param __schedparam;$/;"	m	struct:__pthread_attr	typeref:struct:__pthread_attr::sched_param
+__schedpolicy	sysdeps/pthread/bits/thread-attr.h	/^  int __schedpolicy;$/;"	m	struct:__pthread_attr
+__sem_close	sysdeps/generic/sem-close.c	/^__sem_close (sem_t *sem)$/;"	f
+__sem_destroy	sysdeps/generic/sem-destroy.c	/^__sem_destroy (sem_t *sem)$/;"	f
+__sem_getvalue	sysdeps/generic/sem-getvalue.c	/^__sem_getvalue (sem_t *restrict sem, int *restrict value)$/;"	f
+__sem_init	sysdeps/generic/sem-init.c	/^__sem_init (sem_t *sem, int pshared, unsigned value)$/;"	f
+__sem_open	sysdeps/generic/sem-open.c	/^__sem_open (const char *name, int open_flags, ...)$/;"	f
+__sem_post	sysdeps/generic/sem-post.c	/^__sem_post (sem_t *sem)$/;"	f
+__sem_timedwait	sysdeps/generic/sem-timedwait.c	/^__sem_timedwait (sem_t *restrict sem,$/;"	f
+__sem_timedwait_internal	sysdeps/generic/sem-timedwait.c	/^__sem_timedwait_internal (sem_t *restrict sem,$/;"	f
+__sem_trywait	sysdeps/generic/sem-trywait.c	/^__sem_trywait (sem_t *sem)$/;"	f
+__sem_unlink	sysdeps/generic/sem-unlink.c	/^__sem_unlink (const char *name)$/;"	f
+__sem_wait	sysdeps/generic/sem-wait.c	/^__sem_wait (sem_t *sem)$/;"	f
+__semaphore	sysdeps/pthread/bits/semaphore.h	/^struct __semaphore$/;"	s
+__shpid	sysdeps/mach/hurd/bits/mutex.h	/^  int __shpid;$/;"	m	struct:__pthread_mutex
+__stackaddr	sysdeps/pthread/bits/thread-attr.h	/^  void *__stackaddr;$/;"	m	struct:__pthread_attr
+__stacksize	sysdeps/pthread/bits/thread-attr.h	/^  size_t __stacksize;$/;"	m	struct:__pthread_attr
+__thread_set_pcsptp	sysdeps/mach/hurd/i386/pt-machdep.c	/^__thread_set_pcsptp (thread_t thread,$/;"	f
+__thread_stack_pointer	sysdeps/i386/machine-sp.h	24;"	d
+__type	sysdeps/mach/hurd/bits/mutex.h	/^  int __type;$/;"	m	struct:__pthread_mutex
+__value	sysdeps/pthread/bits/semaphore.h	/^    int __value;$/;"	m	struct:__semaphore
+__writerqueue	sysdeps/pthread/bits/rwlock.h	/^    struct __pthread *__writerqueue;$/;"	m	struct:__pthread_rwlock	typeref:struct:__pthread_rwlock::__pthread
+_cthread_init_routine	sysdeps/mach/hurd/pt-sysdep.c	/^void *(*_cthread_init_routine)(void) = &init_routine;$/;"	v
+_cthreads_flockfile	lockfile.c	/^_cthreads_flockfile (_IO_FILE *fp)$/;"	f
+_cthreads_ftrylockfile	lockfile.c	/^_cthreads_ftrylockfile (_IO_FILE *fp)$/;"	f
+_cthreads_funlockfile	lockfile.c	/^_cthreads_funlockfile (_IO_FILE *fp)$/;"	f
+_init_routine	sysdeps/mach/hurd/pt-sysdep.c	/^_init_routine (void *stack)$/;"	f	file:
+_pthread_mutex_destroy	sysdeps/generic/pt-mutex-destroy.c	/^_pthread_mutex_destroy (pthread_mutex_t *mutex)$/;"	f
+_pthread_mutex_destroy	sysdeps/mach/hurd/pt-mutex-destroy.c	/^int _pthread_mutex_destroy (pthread_mutex_t *mtxp)$/;"	f
+_pthread_mutex_init	sysdeps/generic/pt-mutex-init.c	/^_pthread_mutex_init (pthread_mutex_t *mutex,$/;"	f
+_pthread_mutex_init	sysdeps/mach/hurd/pt-mutex-init.c	/^int _pthread_mutex_init (pthread_mutex_t *mtxp,$/;"	f
+_pthread_rwlock_destroy	sysdeps/generic/pt-rwlock-destroy.c	/^_pthread_rwlock_destroy (pthread_rwlock_t *rwlock)$/;"	f
+_pthread_rwlock_init	sysdeps/generic/pt-rwlock-init.c	/^_pthread_rwlock_init (pthread_rwlock_t *rwlock,$/;"	f
+_pthread_self	sysdeps/mach/hurd/pt-sysdep.h	35;"	d
+_pthread_spin_lock	sysdeps/mach/pt-spin.c	/^_pthread_spin_lock (__spin_lock_t *lock)$/;"	f
+_pthread_spin_lock	sysdeps/posix/pt-spin.c	/^_pthread_spin_lock (__pthread_spinlock_t *lock)$/;"	f
+a	tests/test-11.c	/^int a;$/;"	v
+atfork	forward.c	/^struct atfork {$/;"	s	file:
+atfork_pthread_child	forward.c	/^atfork_pthread_child (void)$/;"	f	file:
+atfork_pthread_parent	forward.c	/^atfork_pthread_parent (void)$/;"	f	file:
+atfork_pthread_prepare	forward.c	/^atfork_pthread_prepare (void)$/;"	f	file:
+attribute_hidden	forward.c	/^int __libc_pthread_functions_init attribute_hidden;$/;"	v
+attribute_hidden	forward.c	/^struct pthread_functions __libc_pthread_functions attribute_hidden;$/;"	v	typeref:struct:__libc_pthread_functions
+b	tests/test-11.c	/^int b;$/;"	v
+call_exit	sysdeps/mach/hurd/pt-docancel.c	/^call_exit (void)$/;"	f	file:
+cancel_ctx	sysdeps/generic/pt-cond-timedwait.c	/^struct cancel_ctx$/;"	s	file:
+cancel_hook	pthread/pt-internal.h	/^  void (*cancel_hook)(void *);	\/* Called to unblock a thread blocking$/;"	m	struct:__pthread
+cancel_hook	sysdeps/generic/pt-cond-timedwait.c	/^cancel_hook (void *arg)$/;"	f	file:
+cancel_hook_arg	pthread/pt-internal.h	/^  void *cancel_hook_arg;$/;"	m	struct:__pthread
+cancel_lock	pthread/pt-internal.h	/^  pthread_mutex_t cancel_lock;  \/* Protect cancel_xxx members.  *\/$/;"	m	struct:__pthread
+cancel_pending	pthread/pt-internal.h	/^  int cancel_pending;$/;"	m	struct:__pthread
+cancel_state	pthread/pt-internal.h	/^  int cancel_state;$/;"	m	struct:__pthread
+cancel_type	pthread/pt-internal.h	/^  int cancel_type;$/;"	m	struct:__pthread
+cancelation_handlers	pthread/pt-internal.h	/^  struct __pthread_cancelation_handler *cancelation_handlers;$/;"	m	struct:__pthread	typeref:struct:__pthread::__pthread_cancelation_handler
+child	forward.c	/^  void (*child) (void);$/;"	m	struct:atfork	file:
+cond	sysdeps/generic/pt-cond-timedwait.c	/^    pthread_cond_t *cond;$/;"	m	struct:cancel_ctx	file:
+create_wakeupmsg	sysdeps/mach/pt-thread-alloc.c	/^create_wakeupmsg (struct __pthread *thread)$/;"	f	file:
+d	tests/test-__pthread_destroy_specific-skip.c	/^d (void *x)$/;"	f	file:
+dfl_attr	sysdeps/mach/hurd/pt-mutex-init.c	/^static const pthread_mutexattr_t dfl_attr =$/;"	v	file:
+dfl_attr	sysdeps/mach/hurd/pt-mutexattr-init.c	/^static const pthread_mutexattr_t dfl_attr =$/;"	v	file:
+distribute	Makefile	/^distribute :=$/;"	m
+dowait	tests/test-6.c	/^dowait (void *arg)$/;"	f
+dso_handle	forward.c	/^  void *dso_handle;$/;"	m	struct:atfork	file:
+dtv	pthread/pt-internal.h	/^  void *dtv;			\/* Vector of pointers to TLS data.  *\/$/;"	m	struct:__anon1
+dummy_list	forward.c	/^struct __pthread_cancelation_handler *dummy_list;$/;"	v	typeref:struct:__pthread_cancelation_handler
+dynamic_init_routine	sysdeps/mach/hurd/pt-sysdep.c	/^__attribute__ ((constructor)) static void dynamic_init_routine(void)$/;"	f	file:
+entry_point	pthread/pt-create.c	/^entry_point (struct __pthread *self, void *(*start_routine)(void *), void *arg)$/;"	f	file:
+extra-B-pthread.so	Makefile	/^extra-B-pthread.so = -B$(common-objpfx)htl\/$/;"	m
+extra-libs	Makefile	/^extra-libs := libpthread$/;"	m
+extra-libs-others	Makefile	/^extra-libs-others := $(extra-libs)$/;"	m
+flockfile	lockfile.c	44;"	d	file:
+foo	tests/test-1.c	/^foo (void *arg)$/;"	f
+foo	tests/test-9.c	/^int foo;$/;"	v
+foobar	tests/test-5.c	/^int foobar;$/;"	v
+fork_handlers	forward.c	/^static struct atfork *fork_handlers, *fork_last_handler;$/;"	v	typeref:struct:atfork	file:
+fork_last_handler	forward.c	/^static struct atfork *fork_handlers, *fork_last_handler;$/;"	v	typeref:struct:	file:
+ftrylockfile	lockfile.c	46;"	d	file:
+funlockfile	lockfile.c	45;"	d	file:
+guardsize	pthread/pt-internal.h	/^  size_t guardsize;$/;"	m	struct:__pthread
+handler	tests/test-16.c	/^handler (int sig)$/;"	f	file:
+headers	Makefile	/^headers :=				\\$/;"	m
+i	tests/test-16.c	/^int i;$/;"	v
+inc_var	tests/test-8.c	/^inc_var (void)$/;"	f
+inc_var_once	tests/test-8.c	/^pthread_once_t inc_var_once = PTHREAD_ONCE_INIT;$/;"	v
+init_routine	sysdeps/mach/hurd/pt-sysdep.c	/^init_routine (void)$/;"	f	file:
+initialize_pthread	pthread/pt-alloc.c	/^initialize_pthread (struct __pthread *new)$/;"	f	file:
+install-lib	Makefile	/^install-lib := libpthread.so$/;"	m
+key	tests/test-7.c	/^pthread_key_t key[KEYS];$/;"	v
+libc-link.so	Makefile	/^libc-link.so = $(common-objpfx)libc.so$/;"	m
+libc_hidden_def	forward.c	/^libc_hidden_def (__register_atfork)$/;"	f
+libpthread-routines	Makefile	/^libpthread-routines := pt-attr pt-attr-destroy pt-attr-getdetachstate	    \\$/;"	m
+libpthread-static-only-routines	Makefile	/^libpthread-static-only-routines = pt-atfork$/;"	m
+main	tests/test-1.c	/^main (int argc, char **argv)$/;"	f
+main	tests/test-10.c	/^main (int argc, char **argv)$/;"	f
+main	tests/test-11.c	/^main (int argc, char **argv)$/;"	f
+main	tests/test-12.c	/^main (int argc, char **argv)$/;"	f
+main	tests/test-13.c	/^main (int argc, char **argv)$/;"	f
+main	tests/test-14.c	/^main (int argc, char **argv)$/;"	f
+main	tests/test-15.c	/^main (int argc, char **argv)$/;"	f
+main	tests/test-16.c	/^main (int argc, char **argv)$/;"	f
+main	tests/test-17.c	/^main (int argc, char *argv[])$/;"	f
+main	tests/test-2.c	/^main (int argc, char **argv)$/;"	f
+main	tests/test-3.c	/^main (int argc, char *argv[])$/;"	f
+main	tests/test-4.c	/^main (int argc, char *argv[])$/;"	f
+main	tests/test-5.c	/^main (int argc, char *argv[])$/;"	f
+main	tests/test-6.c	/^main (int argc, char **argv)$/;"	f
+main	tests/test-7.c	/^main (int argc, char **argv)$/;"	f
+main	tests/test-8.c	/^main (int argc, char **argv)$/;"	f
+main	tests/test-9.c	/^main (int argc, char **argv)$/;"	f
+main	tests/test-__pthread_destroy_specific-skip.c	/^int main(void)$/;"	f
+mcontext	pthread/pt-internal.h	/^  struct pthread_mcontext mcontext;$/;"	m	struct:__pthread	typeref:struct:__pthread::pthread_mcontext
+mtx_owned_p	sysdeps/mach/hurd/pt-mutex.h	66;"	d
+mtx_set_owner	sysdeps/mach/hurd/pt-mutex.h	72;"	d
+next	forward.c	/^  struct atfork *next;$/;"	m	struct:atfork	typeref:struct:atfork::atfork	file:
+next	pthread/pt-internal.h	/^  struct __pthread *next, **prevp;$/;"	m	struct:__pthread	typeref:struct:__pthread::__pthread
+next_stack_base	sysdeps/mach/pt-stack-alloc.c	/^static vm_address_t next_stack_base = VM_MIN_ADDRESS;$/;"	v	file:
+nr_refs	pthread/pt-internal.h	/^  __atomic_t nr_refs;   \/* Detached threads have a self reference only,$/;"	m	struct:__pthread
+parent	forward.c	/^  void (*parent) (void);$/;"	m	struct:atfork	file:
+pc	sysdeps/i386/pt-machdep.h	/^  void *pc;$/;"	m	struct:pthread_mcontext
+prepare	forward.c	/^  void (*prepare) (void);$/;"	m	struct:atfork	file:
+prev	forward.c	/^  struct atfork *prev;$/;"	m	struct:atfork	typeref:struct:atfork::atfork	file:
+prevp	pthread/pt-internal.h	/^  struct __pthread *next, **prevp;$/;"	m	struct:__pthread	typeref:struct:__pthread::
+pthread_atfork	sysdeps/generic/old_pt-atfork.c	22;"	d	file:
+pthread_atfork	sysdeps/generic/old_pt-atfork.c	24;"	d	file:
+pthread_atfork	sysdeps/generic/pt-atfork.c	/^pthread_atfork (void (*prepare) (void),$/;"	f
+pthread_attr_getguardsize	sysdeps/generic/pt-attr-getguardsize.c	/^pthread_attr_getguardsize (const pthread_attr_t *attr,$/;"	f
+pthread_attr_getstackaddr	sysdeps/generic/pt-attr-getstackaddr.c	/^pthread_attr_getstackaddr (const pthread_attr_t *attr,$/;"	f
+pthread_attr_getstacksize	sysdeps/generic/pt-attr-getstacksize.c	/^pthread_attr_getstacksize (const pthread_attr_t *attr,$/;"	f
+pthread_attr_setguardsize	sysdeps/generic/pt-attr-setguardsize.c	/^pthread_attr_setguardsize (pthread_attr_t *attr,$/;"	f
+pthread_attr_setstack	sysdeps/generic/pt-attr-setstack.c	/^pthread_attr_setstack (pthread_attr_t *attr,$/;"	f
+pthread_attr_setstackaddr	sysdeps/generic/pt-attr-setstackaddr.c	/^pthread_attr_setstackaddr (pthread_attr_t *attr,$/;"	f
+pthread_attr_setstackaddr	sysdeps/mach/hurd/pt-attr-setstackaddr.c	/^pthread_attr_setstackaddr (pthread_attr_t *attr,$/;"	f
+pthread_attr_setstacksize	sysdeps/generic/pt-attr-setstacksize.c	/^pthread_attr_setstacksize (pthread_attr_t *attr,$/;"	f
+pthread_attr_setstacksize	sysdeps/mach/hurd/pt-attr-setstacksize.c	/^pthread_attr_setstacksize (pthread_attr_t *attr,$/;"	f
+pthread_attr_t	sysdeps/generic/pthread/pthreadtypes.h	/^typedef struct __pthread_attr pthread_attr_t;$/;"	t	typeref:struct:__pthread_attr
+pthread_barrier_destroy	sysdeps/generic/pt-barrier-destroy.c	/^pthread_barrier_destroy (pthread_barrier_t *barrier)$/;"	f
+pthread_barrier_init	sysdeps/generic/pt-barrier-init.c	/^pthread_barrier_init (pthread_barrier_t *barrier,$/;"	f
+pthread_barrier_t	sysdeps/generic/pthread/pthreadtypes.h	/^typedef struct __pthread_barrier pthread_barrier_t;$/;"	t	typeref:struct:__pthread_barrier
+pthread_barrier_wait	sysdeps/generic/pt-barrier-wait.c	/^pthread_barrier_wait (pthread_barrier_t *barrier)$/;"	f
+pthread_barrierattr_destroy	sysdeps/generic/pt-barrierattr-destroy.c	/^pthread_barrierattr_destroy (pthread_barrierattr_t *attr)$/;"	f
+pthread_barrierattr_getpshared	sysdeps/generic/pt-barrierattr-getpshared.c	/^pthread_barrierattr_getpshared (const pthread_barrierattr_t *attr,$/;"	f
+pthread_barrierattr_init	sysdeps/generic/pt-barrierattr-init.c	/^pthread_barrierattr_init (pthread_barrierattr_t *attr)$/;"	f
+pthread_barrierattr_setpshared	sysdeps/generic/pt-barrierattr-setpshared.c	/^pthread_barrierattr_setpshared (pthread_barrierattr_t *attr,$/;"	f
+pthread_barrierattr_t	sysdeps/generic/pthread/pthreadtypes.h	/^typedef struct __pthread_barrierattr pthread_barrierattr_t;$/;"	t	typeref:struct:__pthread_barrierattr
+pthread_cancel	pthread/pt-cancel.c	/^pthread_cancel (pthread_t t)$/;"	f
+pthread_cleanup_pop	sysdeps/generic/pthread/pthread.h	695;"	d
+pthread_cleanup_push	sysdeps/generic/pthread/pthread.h	694;"	d
+pthread_cond_t	sysdeps/generic/pthread/pthreadtypes.h	/^typedef struct __pthread_cond pthread_cond_t;$/;"	t	typeref:struct:__pthread_cond
+pthread_condattr_getclock	sysdeps/generic/pt-condattr-getclock.c	/^pthread_condattr_getclock (const pthread_condattr_t *attr,$/;"	f
+pthread_condattr_getpshared	sysdeps/generic/pt-condattr-getpshared.c	/^pthread_condattr_getpshared (const pthread_condattr_t *attr,$/;"	f
+pthread_condattr_setclock	sysdeps/generic/pt-condattr-setclock.c	/^pthread_condattr_setclock (pthread_condattr_t *attr, clockid_t clock)$/;"	f
+pthread_condattr_setpshared	sysdeps/generic/pt-condattr-setpshared.c	/^pthread_condattr_setpshared (pthread_condattr_t *attr,$/;"	f
+pthread_condattr_t	sysdeps/generic/pthread/pthreadtypes.h	/^typedef struct __pthread_condattr pthread_condattr_t;$/;"	t	typeref:struct:__pthread_condattr
+pthread_create	pthread/pt-create.c	/^pthread_create (pthread_t *thread, const pthread_attr_t *attr,$/;"	f
+pthread_detach	pthread/pt-detach.c	/^pthread_detach (pthread_t thread)$/;"	f
+pthread_equal	sysdeps/generic/pthread/pthread.h	/^pthread_equal (pthread_t __t1, pthread_t __t2)$/;"	f
+pthread_functions	pthread/pt-initialize.c	/^static const struct pthread_functions pthread_functions =$/;"	v	typeref:struct:pthread_functions	file:
+pthread_functions	sysdeps/pthread/pthread-functions.h	/^struct pthread_functions$/;"	s
+pthread_getconcurrency	sysdeps/generic/pt-getconcurrency.c	/^pthread_getconcurrency (void)$/;"	f
+pthread_getcpuclockid	sysdeps/generic/pt-getcpuclockid.c	/^pthread_getcpuclockid (pthread_t thread, clockid_t *clock)$/;"	f
+pthread_join	pthread/pt-join.c	/^pthread_join (pthread_t thread, void **status)$/;"	f
+pthread_key_delete	sysdeps/generic/pt-key-delete.c	/^pthread_key_delete (pthread_key_t key)$/;"	f
+pthread_key_t	sysdeps/generic/pthread/pthreadtypes.h	/^typedef __pthread_key pthread_key_t;$/;"	t
+pthread_mcontext	sysdeps/i386/pt-machdep.h	/^struct pthread_mcontext$/;"	s
+pthread_mutex_consistent	sysdeps/mach/hurd/pt-mutex-consistent.c	/^int pthread_mutex_consistent (pthread_mutex_t *mtxp)$/;"	f
+pthread_mutex_getprioceiling	sysdeps/generic/pt-mutex-getprioceiling.c	/^pthread_mutex_getprioceiling (const pthread_mutex_t *mutex,$/;"	f
+pthread_mutex_getprioceiling	sysdeps/mach/hurd/pt-mutex-getprioceiling.c	/^int pthread_mutex_getprioceiling (const pthread_mutex_t *mtxp, int *clp)$/;"	f
+pthread_mutex_setprioceiling	sysdeps/generic/pt-mutex-setprioceiling.c	/^pthread_mutex_setprioceiling (pthread_mutex_t *mutex, int prio,$/;"	f
+pthread_mutex_setprioceiling	sysdeps/mach/hurd/pt-mutex-setprioceiling.c	/^int pthread_mutex_setprioceiling (pthread_mutex_t *mtxp, int cl, int *prp)$/;"	f
+pthread_mutex_t	sysdeps/generic/pthread/pthreadtypes.h	/^typedef struct __pthread_mutex pthread_mutex_t;$/;"	t	typeref:struct:__pthread_mutex
+pthread_mutex_timedlock	sysdeps/generic/pt-mutex-timedlock.c	/^pthread_mutex_timedlock (struct __pthread_mutex *mutex,$/;"	f
+pthread_mutex_timedlock	sysdeps/mach/hurd/pt-mutex-timedlock.c	/^int pthread_mutex_timedlock (pthread_mutex_t *mtxp,$/;"	f
+pthread_mutexattr_getprioceiling	sysdeps/generic/pt-mutexattr-getprioceiling.c	/^pthread_mutexattr_getprioceiling (const pthread_mutexattr_t *attr,$/;"	f
+pthread_mutexattr_getprioceiling	sysdeps/mach/hurd/pt-mutexattr-getprioceiling.c	/^int pthread_mutexattr_getprioceiling (const pthread_mutexattr_t *ap, int *clp)$/;"	f
+pthread_mutexattr_getprotocol	sysdeps/generic/pt-mutexattr-getprotocol.c	/^pthread_mutexattr_getprotocol (const pthread_mutexattr_t *attr,$/;"	f
+pthread_mutexattr_getprotocol	sysdeps/mach/hurd/pt-mutexattr-getprotocol.c	/^int pthread_mutexattr_getprotocol (const pthread_mutexattr_t *attrp, int *ptp)$/;"	f
+pthread_mutexattr_getpshared	sysdeps/generic/pt-mutexattr-getpshared.c	/^pthread_mutexattr_getpshared (const pthread_mutexattr_t *attr,$/;"	f
+pthread_mutexattr_getpshared	sysdeps/mach/hurd/pt-mutexattr-getpshared.c	/^int pthread_mutexattr_getpshared (const pthread_mutexattr_t *attrp, int *outp)$/;"	f
+pthread_mutexattr_getrobust	sysdeps/mach/hurd/pt-mutexattr-getrobust.c	/^int pthread_mutexattr_getrobust (const pthread_mutexattr_t *attrp, int *outp)$/;"	f
+pthread_mutexattr_gettype	sysdeps/generic/pt-mutexattr-gettype.c	/^pthread_mutexattr_gettype (const pthread_mutexattr_t *attr, int *type)$/;"	f
+pthread_mutexattr_gettype	sysdeps/mach/hurd/pt-mutexattr-gettype.c	/^int pthread_mutexattr_gettype (const pthread_mutexattr_t *attrp, int *outp)$/;"	f
+pthread_mutexattr_setprioceiling	sysdeps/generic/pt-mutexattr-setprioceiling.c	/^pthread_mutexattr_setprioceiling (pthread_mutexattr_t *attr,$/;"	f
+pthread_mutexattr_setprioceiling	sysdeps/mach/hurd/pt-mutexattr-setprioceiling.c	/^int pthread_mutexattr_setprioceiling (pthread_mutexattr_t *attrp, int cl)$/;"	f
+pthread_mutexattr_setprotocol	sysdeps/generic/pt-mutexattr-setprotocol.c	/^pthread_mutexattr_setprotocol (pthread_mutexattr_t *attr,$/;"	f
+pthread_mutexattr_setprotocol	sysdeps/mach/hurd/pt-mutexattr-setprotocol.c	/^int pthread_mutexattr_setprotocol (pthread_mutexattr_t *attrp, int proto)$/;"	f
+pthread_mutexattr_setpshared	sysdeps/generic/pt-mutexattr-setpshared.c	/^pthread_mutexattr_setpshared (pthread_mutexattr_t *attr,$/;"	f
+pthread_mutexattr_setpshared	sysdeps/mach/hurd/pt-mutexattr-setpshared.c	/^int pthread_mutexattr_setpshared (pthread_mutexattr_t *attrp, int pshared)$/;"	f
+pthread_mutexattr_setrobust	sysdeps/mach/hurd/pt-mutexattr-setrobust.c	/^int pthread_mutexattr_setrobust (pthread_mutexattr_t *attrp, int robust)$/;"	f
+pthread_mutexattr_t	sysdeps/generic/pthread/pthreadtypes.h	/^typedef struct __pthread_mutexattr pthread_mutexattr_t;$/;"	t	typeref:struct:__pthread_mutexattr
+pthread_once_t	sysdeps/generic/pthread/pthreadtypes.h	/^typedef struct __pthread_once pthread_once_t;$/;"	t	typeref:struct:__pthread_once
+pthread_rwlock_t	sysdeps/generic/pthread/pthreadtypes.h	/^typedef struct __pthread_rwlock pthread_rwlock_t;$/;"	t	typeref:struct:__pthread_rwlock
+pthread_rwlock_tryrdlock	sysdeps/generic/pt-rwlock-tryrdlock.c	/^pthread_rwlock_tryrdlock (struct __pthread_rwlock *rwlock)$/;"	f
+pthread_rwlock_trywrlock	sysdeps/generic/pt-rwlock-trywrlock.c	/^pthread_rwlock_trywrlock (struct __pthread_rwlock *rwlock)$/;"	f
+pthread_rwlockattr_destroy	sysdeps/generic/pt-rwlockattr-destroy.c	/^pthread_rwlockattr_destroy (pthread_rwlockattr_t *attr)$/;"	f
+pthread_rwlockattr_getpshared	sysdeps/generic/pt-rwlockattr-getpshared.c	/^pthread_rwlockattr_getpshared (const pthread_rwlockattr_t *attr,$/;"	f
+pthread_rwlockattr_init	sysdeps/generic/pt-rwlockattr-init.c	/^pthread_rwlockattr_init (pthread_rwlockattr_t *attr)$/;"	f
+pthread_rwlockattr_setpshared	sysdeps/generic/pt-rwlockattr-setpshared.c	/^pthread_rwlockattr_setpshared (pthread_rwlockattr_t *attr,$/;"	f
+pthread_rwlockattr_t	sysdeps/generic/pthread/pthreadtypes.h	/^typedef struct __pthread_rwlockattr pthread_rwlockattr_t;$/;"	t	typeref:struct:__pthread_rwlockattr
+pthread_setconcurrency	sysdeps/generic/pt-setconcurrency.c	/^pthread_setconcurrency (int new_level)$/;"	f
+pthread_setschedprio	sysdeps/generic/pt-setschedprio.c	/^pthread_setschedprio (pthread_t thread, int prio)$/;"	f
+pthread_sigmask	pthread/pt-sigmask.c	/^pthread_sigmask (int how, const sigset_t *set,$/;"	f
+pthread_spin_destroy	sysdeps/generic/pthread/pthread.h	/^pthread_spin_destroy (pthread_spinlock_t *__lock)$/;"	f
+pthread_spin_init	sysdeps/generic/pthread/pthread.h	/^pthread_spin_init (pthread_spinlock_t *__lock, int __pshared)$/;"	f
+pthread_spin_lock	sysdeps/generic/pthread/pthread.h	/^pthread_spin_lock (pthread_spinlock_t *__lock)$/;"	f
+pthread_spin_trylock	sysdeps/generic/pthread/pthread.h	/^pthread_spin_trylock (pthread_spinlock_t *__lock)$/;"	f
+pthread_spin_unlock	sysdeps/generic/pthread/pthread.h	/^pthread_spin_unlock (pthread_spinlock_t *__lock)$/;"	f
+pthread_spinlock_t	sysdeps/generic/pthread/pthreadtypes.h	/^typedef __pthread_spinlock_t pthread_spinlock_t;$/;"	t
+pthread_state	pthread/pt-internal.h	/^enum pthread_state$/;"	g
+pthread_t	sysdeps/generic/pthread/pthreadtypes.h	/^typedef __pthread_t pthread_t;$/;"	t
+pthread_testcancel	pthread/pt-testcancel.c	/^pthread_testcancel (void)$/;"	f
+pthread_yield	pthread/pt-yield.c	/^int pthread_yield(void)$/;"	f
+ptr__IO_flockfile	sysdeps/pthread/pthread-functions.h	/^  void (*ptr__IO_flockfile) (FILE *);$/;"	m	struct:pthread_functions
+ptr__IO_ftrylockfile	sysdeps/pthread/pthread-functions.h	/^  int (*ptr__IO_ftrylockfile) (FILE *);$/;"	m	struct:pthread_functions
+ptr__IO_funlockfile	sysdeps/pthread/pthread-functions.h	/^  void (*ptr__IO_funlockfile) (FILE *);$/;"	m	struct:pthread_functions
+ptr___pthread_exit	sysdeps/pthread/pthread-functions.h	/^  void (*ptr___pthread_exit) (void *);$/;"	m	struct:pthread_functions
+ptr___pthread_get_cleanup_stack	sysdeps/pthread/pthread-functions.h	/^  struct __pthread_cancelation_handler **(*ptr___pthread_get_cleanup_stack) (void);$/;"	m	struct:pthread_functions	typeref:struct:pthread_functions::ptr___pthread_get_cleanup_stack
+ptr___pthread_getspecific	sysdeps/pthread/pthread-functions.h	/^  void *(*ptr___pthread_getspecific) (pthread_key_t);$/;"	m	struct:pthread_functions
+ptr___pthread_key_create	sysdeps/pthread/pthread-functions.h	/^  int (*ptr___pthread_key_create) (pthread_key_t *, void (*) (void *));$/;"	m	struct:pthread_functions
+ptr___pthread_setcancelstate	sysdeps/pthread/pthread-functions.h	/^  int (*ptr___pthread_setcancelstate) (int, int *);$/;"	m	struct:pthread_functions
+ptr___pthread_setspecific	sysdeps/pthread/pthread-functions.h	/^  int (*ptr___pthread_setspecific) (pthread_key_t, const void *);$/;"	m	struct:pthread_functions
+ptr_pthread_attr_destroy	sysdeps/pthread/pthread-functions.h	/^  int (*ptr_pthread_attr_destroy) (pthread_attr_t *);$/;"	m	struct:pthread_functions
+ptr_pthread_attr_getdetachstate	sysdeps/pthread/pthread-functions.h	/^  int (*ptr_pthread_attr_getdetachstate) (const pthread_attr_t *, int *);$/;"	m	struct:pthread_functions
+ptr_pthread_attr_getinheritsched	sysdeps/pthread/pthread-functions.h	/^  int (*ptr_pthread_attr_getinheritsched) (const pthread_attr_t *, int *);$/;"	m	struct:pthread_functions
+ptr_pthread_attr_getschedparam	sysdeps/pthread/pthread-functions.h	/^  int (*ptr_pthread_attr_getschedparam) (const pthread_attr_t *,$/;"	m	struct:pthread_functions
+ptr_pthread_attr_getschedpolicy	sysdeps/pthread/pthread-functions.h	/^  int (*ptr_pthread_attr_getschedpolicy) (const pthread_attr_t *, int *);$/;"	m	struct:pthread_functions
+ptr_pthread_attr_getscope	sysdeps/pthread/pthread-functions.h	/^  int (*ptr_pthread_attr_getscope) (const pthread_attr_t *, int *);$/;"	m	struct:pthread_functions
+ptr_pthread_attr_init	sysdeps/pthread/pthread-functions.h	/^  int (*ptr_pthread_attr_init) (pthread_attr_t *);$/;"	m	struct:pthread_functions
+ptr_pthread_attr_setdetachstate	sysdeps/pthread/pthread-functions.h	/^  int (*ptr_pthread_attr_setdetachstate) (pthread_attr_t *, int);$/;"	m	struct:pthread_functions
+ptr_pthread_attr_setinheritsched	sysdeps/pthread/pthread-functions.h	/^  int (*ptr_pthread_attr_setinheritsched) (pthread_attr_t *, int);$/;"	m	struct:pthread_functions
+ptr_pthread_attr_setschedparam	sysdeps/pthread/pthread-functions.h	/^  int (*ptr_pthread_attr_setschedparam) (pthread_attr_t *,$/;"	m	struct:pthread_functions
+ptr_pthread_attr_setschedpolicy	sysdeps/pthread/pthread-functions.h	/^  int (*ptr_pthread_attr_setschedpolicy) (pthread_attr_t *, int);$/;"	m	struct:pthread_functions
+ptr_pthread_attr_setscope	sysdeps/pthread/pthread-functions.h	/^  int (*ptr_pthread_attr_setscope) (pthread_attr_t *, int);$/;"	m	struct:pthread_functions
+ptr_pthread_cond_broadcast	sysdeps/pthread/pthread-functions.h	/^  int (*ptr_pthread_cond_broadcast) (pthread_cond_t *);$/;"	m	struct:pthread_functions
+ptr_pthread_cond_destroy	sysdeps/pthread/pthread-functions.h	/^  int (*ptr_pthread_cond_destroy) (pthread_cond_t *);$/;"	m	struct:pthread_functions
+ptr_pthread_cond_init	sysdeps/pthread/pthread-functions.h	/^  int (*ptr_pthread_cond_init) (pthread_cond_t *,$/;"	m	struct:pthread_functions
+ptr_pthread_cond_signal	sysdeps/pthread/pthread-functions.h	/^  int (*ptr_pthread_cond_signal) (pthread_cond_t *);$/;"	m	struct:pthread_functions
+ptr_pthread_cond_timedwait	sysdeps/pthread/pthread-functions.h	/^  int (*ptr_pthread_cond_timedwait) (pthread_cond_t *, pthread_mutex_t *,$/;"	m	struct:pthread_functions
+ptr_pthread_cond_wait	sysdeps/pthread/pthread-functions.h	/^  int (*ptr_pthread_cond_wait) (pthread_cond_t *, pthread_mutex_t *);$/;"	m	struct:pthread_functions
+ptr_pthread_condattr_destroy	sysdeps/pthread/pthread-functions.h	/^  int (*ptr_pthread_condattr_destroy) (pthread_condattr_t *);$/;"	m	struct:pthread_functions
+ptr_pthread_condattr_init	sysdeps/pthread/pthread-functions.h	/^  int (*ptr_pthread_condattr_init) (pthread_condattr_t *);$/;"	m	struct:pthread_functions
+ptr_pthread_equal	sysdeps/pthread/pthread-functions.h	/^  int (*ptr_pthread_equal) (pthread_t, pthread_t);$/;"	m	struct:pthread_functions
+ptr_pthread_getschedparam	sysdeps/pthread/pthread-functions.h	/^  int (*ptr_pthread_getschedparam) (pthread_t, int *, struct sched_param *);$/;"	m	struct:pthread_functions
+ptr_pthread_mutex_destroy	sysdeps/pthread/pthread-functions.h	/^  int (*ptr_pthread_mutex_destroy) (pthread_mutex_t *);$/;"	m	struct:pthread_functions
+ptr_pthread_mutex_init	sysdeps/pthread/pthread-functions.h	/^  int (*ptr_pthread_mutex_init) (pthread_mutex_t *,$/;"	m	struct:pthread_functions
+ptr_pthread_mutex_lock	sysdeps/pthread/pthread-functions.h	/^  int (*ptr_pthread_mutex_lock) (pthread_mutex_t *);$/;"	m	struct:pthread_functions
+ptr_pthread_mutex_trylock	sysdeps/pthread/pthread-functions.h	/^  int (*ptr_pthread_mutex_trylock) (pthread_mutex_t *);$/;"	m	struct:pthread_functions
+ptr_pthread_mutex_unlock	sysdeps/pthread/pthread-functions.h	/^  int (*ptr_pthread_mutex_unlock) (pthread_mutex_t *);$/;"	m	struct:pthread_functions
+ptr_pthread_once	sysdeps/pthread/pthread-functions.h	/^  int (*ptr_pthread_once) (pthread_once_t *, void (*) (void));$/;"	m	struct:pthread_functions
+ptr_pthread_rwlock_rdlock	sysdeps/pthread/pthread-functions.h	/^  int (*ptr_pthread_rwlock_rdlock) (pthread_rwlock_t *);$/;"	m	struct:pthread_functions
+ptr_pthread_rwlock_unlock	sysdeps/pthread/pthread-functions.h	/^  int (*ptr_pthread_rwlock_unlock) (pthread_rwlock_t *);$/;"	m	struct:pthread_functions
+ptr_pthread_rwlock_wrlock	sysdeps/pthread/pthread-functions.h	/^  int (*ptr_pthread_rwlock_wrlock) (pthread_rwlock_t *);$/;"	m	struct:pthread_functions
+ptr_pthread_self	sysdeps/pthread/pthread-functions.h	/^  pthread_t (*ptr_pthread_self) (void);$/;"	m	struct:pthread_functions
+ptr_pthread_setcanceltype	sysdeps/pthread/pthread-functions.h	/^  int (*ptr_pthread_setcanceltype) (int, int *);$/;"	m	struct:pthread_functions
+ptr_pthread_setschedparam	sysdeps/pthread/pthread-functions.h	/^  int (*ptr_pthread_setschedparam) (pthread_t, int,$/;"	m	struct:pthread_functions
+raise	sysdeps/generic/raise.c	/^raise (int signo)$/;"	f
+res_state	pthread/pt-internal.h	/^  struct __res_state res_state;$/;"	m	struct:__pthread	typeref:struct:__pthread::__res_state
+routines	Makefile	/^routines := forward libc_pthread_init alloca_cutoff$/;"	m
+rwlock	tests/test-15.c	/^pthread_rwlock_t rwlock;$/;"	v
+self	pthread/pt-internal.h	/^  thread_t self;		\/* This thread's control port.  *\/$/;"	m	struct:__anon1
+sem_t	sysdeps/pthread/semaphore.h	/^typedef struct __semaphore sem_t;$/;"	t	typeref:struct:__semaphore
+shared-only-routines	Makefile	/^shared-only-routines = forward$/;"	m
+sp	sysdeps/i386/pt-machdep.h	/^  void *sp;$/;"	m	struct:pthread_mcontext
+srcdir	Makefile	/^srcdir = .$/;"	m
+stack	pthread/pt-internal.h	/^  int stack;			\/* Nonzero if the stack was allocated.  *\/$/;"	m	struct:__pthread
+stack_setup	sysdeps/mach/hurd/i386/pt-setup.c	/^stack_setup (struct __pthread *thread,$/;"	f	file:
+stackaddr	pthread/pt-internal.h	/^  void *stackaddr;$/;"	m	struct:__pthread
+stacksize	pthread/pt-internal.h	/^  size_t stacksize;$/;"	m	struct:__pthread
+stacksize	tests/test-4.c	/^size_t stacksize;$/;"	v
+state	pthread/pt-internal.h	/^  enum pthread_state state;$/;"	m	struct:__pthread	typeref:enum:__pthread::pthread_state
+state_cond	pthread/pt-internal.h	/^  pthread_cond_t state_cond;	\/* Signalled when the state changes.  *\/$/;"	m	struct:__pthread
+state_lock	pthread/pt-internal.h	/^  pthread_mutex_t state_lock;	\/* Locks the state.  *\/$/;"	m	struct:__pthread
+status	pthread/pt-internal.h	/^  void *status;$/;"	m	struct:__pthread
+subdir	Makefile	/^subdir := htl$/;"	m
+tcb	pthread/pt-internal.h	/^  tcbhead_t *tcb;$/;"	m	struct:__pthread
+tcb	pthread/pt-internal.h	/^  void *tcb;			\/* Points to this structure.  *\/$/;"	m	struct:__anon1
+tcbhead_t	pthread/pt-internal.h	/^} tcbhead_t;$/;"	t	typeref:struct:__anon1
+test	tests/test-15.c	/^test (void *arg)$/;"	f
+test	tests/test-16.c	/^test (void *arg)$/;"	f
+test	tests/test-__pthread_destroy_specific-skip.c	/^test (void *x)$/;"	f	file:
+test1	tests/test-11.c	/^test1 (void *arg)$/;"	f
+testthread	tests/test-16.c	/^pthread_t testthread;$/;"	v
+thr	tests/test-4.c	/^thr (void *arg)$/;"	f
+thr	tests/test-5.c	/^thr (void *arg)$/;"	f
+thr	tests/test-7.c	/^thr (void *arg)$/;"	f
+thr	tests/test-8.c	/^thr (void *arg)$/;"	f
+thr	tests/test-9.c	/^thr (void *arg)$/;"	f
+thread	pthread/pt-internal.h	/^  pthread_t thread;$/;"	m	struct:__pthread
+thread	tests/test-2.c	/^thread (void *arg)$/;"	f
+thread_attr_compare	sysdeps/generic/timer_routines.h	/^thread_attr_compare (const pthread_attr_t *left, const pthread_attr_t *right)$/;"	f
+v	tests/test-__pthread_destroy_specific-skip.c	/^static volatile int v;$/;"	v	file:
+var	tests/test-8.c	/^int var;$/;"	v
+wakeup	sysdeps/generic/pt-cond-timedwait.c	/^    struct __pthread *wakeup;$/;"	m	struct:cancel_ctx	typeref:struct:cancel_ctx::__pthread	file:
+weak_alias	pthread/cthreads-compat.c	/^weak_alias (__cthread_detach, cthread_detach)$/;"	f
+weak_alias	pthread/cthreads-compat.c	/^weak_alias (__cthread_fork, cthread_fork)$/;"	f
+weak_alias	pthread/cthreads-compat.c	/^weak_alias (__cthread_getspecific, cthread_getspecific)$/;"	f
+weak_alias	pthread/cthreads-compat.c	/^weak_alias (__cthread_keycreate, cthread_keycreate)$/;"	f
+weak_alias	pthread/cthreads-compat.c	/^weak_alias (__cthread_setspecific, cthread_setspecific)$/;"	f
+work	tests/test-17.c	/^work (int iter)$/;"	f
