@@ -1466,4 +1466,3 @@ $(objpfx)tst-dlopen-offset-comb.so: $(objpfx)tst-dlopen-offset-mod1.so $(objpfx)
 	dd if=$(objpfx)tst-dlopen-offset-mod1.so of=$(objpfx)tst-dlopen-offset-comb.so bs=1024 seek=64
 	dd if=$(objpfx)tst-dlopen-offset-mod2.so of=$(objpfx)tst-dlopen-offset-comb.so bs=1024 seek=128
 	dd if=$(objpfx)tst-dlopen-offset-mod3.so of=$(objpfx)tst-dlopen-offset-comb.so bs=1024 seek=192
-
