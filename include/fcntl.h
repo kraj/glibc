@@ -10,6 +10,7 @@ extern int __libc_open (const char *file, int oflag, ...);
 libc_hidden_proto (__libc_open)
 extern int __libc_fcntl (int fd, int cmd, ...) attribute_hidden;
 libc_hidden_proto (__libc_fcntl)
+extern int __fcntl_nocancel_adjusted (int fd, int cmd, void *arg) attribute_hidden;
 extern int __open (const char *__file, int __oflag, ...);
 libc_hidden_proto (__open)
 extern int __fcntl (int __fd, int __cmd, ...);
