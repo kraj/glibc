@@ -20,6 +20,7 @@
 #include <stddef.h>
 #include <string.h>
 #include <signal.h>
+#include <dl-vdso.h>
 #include <libc-vdso.h>
 
 /* This is the stack layout we see with every stack frame.

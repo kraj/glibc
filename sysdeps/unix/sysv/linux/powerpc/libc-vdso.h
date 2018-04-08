@@ -32,6 +32,8 @@ extern unsigned long long (*VDSO_SYMBOL(get_tbfreq)) (void);
 extern int (*VDSO_SYMBOL(getcpu)) (unsigned *, unsigned *);
 extern time_t (*VDSO_SYMBOL(time)) (time_t *);
 
+extern long (*VDSO_SYMBOL(clock_gettime64)) (clockid_t, struct __timespec64 *);
+
 #if defined(__PPC64__) || defined(__powerpc64__)
 extern void *VDSO_SYMBOL(sigtramp_rt64);
 #else
