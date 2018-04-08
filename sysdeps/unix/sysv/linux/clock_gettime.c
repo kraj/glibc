@@ -25,14 +25,49 @@
 # define HAVE_VSYSCALL
 #endif
 #include <sysdep-vdso.h>
+#include <y2038-support.h>
+
+# define DO_CLOCK_GETTIME_32 \
+  retval = INLINE_VSYSCALL (clock_gettime, 2, clock_id, &ts32);		\
+  if (retval == 0)							\
+    {									\
+      valid_timespec_to_timespec64 (&ts32, tp);				\
+    }
+
+#ifdef __NR_clock_gettime64
+
+/* We are building with a 64-bit-time clock_gettime syscall */
+
+# define DO_CLOCK_GETTIME_64 \
+    if (__y2038_linux_support > 0)					\
+      {									\
+	retval = INLINE_SYSCALL (clock_gettime64, 2, clock_id, tp);	\
+	if (retval == -1 && errno == ENOSYS)				\
+	  {								\
+	    __y2038_linux_support = -1;					\
+	    DO_CLOCK_GETTIME_32;					\
+	  }								\
+      }									\
+    else								\
+      {									\
+        DO_CLOCK_GETTIME_32;						\
+      }
+
+#else
+
+/* We are building withoout a 64-bit-time clock_gettime syscall */
+
+# define DO_CLOCK_GETTIME_64 DO_CLOCK_GETTIME_32
+
+#endif
 
 /* The REALTIME and MONOTONIC clock are definitely supported in the
    kernel.  */
 #define SYSDEP_GETTIME \
-  SYSDEP_GETTIME_CPUTIME;						      \
-  case CLOCK_REALTIME:							      \
-  case CLOCK_MONOTONIC:							      \
-    retval = INLINE_VSYSCALL (clock_gettime, 2, clock_id, tp);		      \
+  SYSDEP_GETTIME64_CPUTIME;						\
+  case CLOCK_REALTIME:							\
+  case CLOCK_MONOTONIC:							\
+    DO_CLOCK_GETTIME_64;						\
     break
 
 /* We handled the REALTIME clock here.  */
@@ -43,5 +78,12 @@
   retval = INLINE_VSYSCALL (clock_gettime, 2, clock_id, tp); \
   break
 #define SYSDEP_GETTIME_CPUTIME	/* Default catches them too.  */
+
+#define SYSDEP_GETTIME_CPU(clock_id, tp) \
+  DO_CLOCK_GETTIME_32;							\
+  break
+
+#define SYSDEP_GETTIME_CPUTIME \
+  struct timespec ts32
 
 #include <sysdeps/unix/clock_gettime.c>
