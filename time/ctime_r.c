@@ -18,12 +18,26 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include <time.h>
+#include <errno.h>
 
 /* Return a string as returned by asctime which is the representation
-   of *T in that form.  Reentrant version.  */
+   of *T in that form.  */
+char *
+__ctime64_r (const __time64_t *t, char *buf)
+{
+  struct tm tm;
+  return __asctime_r (__localtime64_r (t, &tm), buf);
+}
+
+/* Provide a 32-bit wrapper if needed */
+
+#if __TIMESIZE != 64
+
 char *
 ctime_r (const time_t *t, char *buf)
 {
-  struct tm tm;
-  return __asctime_r (__localtime_r (t, &tm), buf);
+  __time64_t t64 = *t;
+  return __ctime64_r (&t64, buf);
 }
+
+#endif
