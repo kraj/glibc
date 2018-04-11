@@ -17,6 +17,7 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include <time.h>
+#include <errno.h>
 
 /* The C Standard says that localtime and gmtime return the same pointer.  */
 struct tm _tmbuf;
@@ -27,7 +28,12 @@ struct tm _tmbuf;
 struct tm *
 __localtime_r (const time_t *t, struct tm *tp)
 {
-  return __tz_convert (t, 1, tp);
+  if (t == NULL)
+    {
+      __set_errno (EINVAL);
+      return NULL;
+    }
+  return __tz_convert (*t, 1, tp);
 }
 weak_alias (__localtime_r, localtime_r)
 
@@ -36,6 +42,11 @@ weak_alias (__localtime_r, localtime_r)
 struct tm *
 localtime (const time_t *t)
 {
-  return __tz_convert (t, 1, &_tmbuf);
+  if (t == NULL)
+    {
+      __set_errno (EINVAL);
+      return NULL;
+    }
+  return __tz_convert (*t, 1, &_tmbuf);
 }
 libc_hidden_def (localtime)
