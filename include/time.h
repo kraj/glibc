@@ -9,6 +9,8 @@ extern __typeof (strftime_l) __strftime_l;
 libc_hidden_proto (__strftime_l)
 extern __typeof (strptime_l) __strptime_l;
 
+extern struct tm *__localtime64 (const __time64_t *__timer);
+
 libc_hidden_proto (time)
 libc_hidden_proto (asctime)
 libc_hidden_proto (mktime)
@@ -16,6 +18,8 @@ libc_hidden_proto (timelocal)
 libc_hidden_proto (localtime)
 libc_hidden_proto (strftime)
 libc_hidden_proto (strptime)
+
+libc_hidden_proto (__localtime64)
 
 extern __typeof (clock_getres) __clock_getres;
 extern __typeof (clock_gettime) __clock_gettime;
