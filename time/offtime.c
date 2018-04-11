@@ -21,18 +21,18 @@
 #define	SECS_PER_HOUR	(60 * 60)
 #define	SECS_PER_DAY	(SECS_PER_HOUR * 24)
 
-/* Compute the `struct tm' representation of *T,
+/* Compute the `struct tm' representation of T,
    offset OFFSET seconds east of UTC,
    and store year, yday, mon, mday, wday, hour, min, sec into *TP.
    Return nonzero if successful.  */
 int
-__offtime (const time_t *t, long int offset, struct tm *tp)
+__offtime (const __time64_t t, long int offset, struct tm *tp)
 {
   time_t days, rem, y;
   const unsigned short int *ip;
 
-  days = *t / SECS_PER_DAY;
-  rem = *t % SECS_PER_DAY;
+  days = t / SECS_PER_DAY;
+  rem = t % SECS_PER_DAY;
   rem += offset;
   while (rem < 0)
     {

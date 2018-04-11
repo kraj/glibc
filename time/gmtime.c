@@ -17,13 +17,19 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include <time.h>
+#include <errno.h>
 
 /* Return the `struct tm' representation of *T in UTC,
    using *TP to store the result.  */
 struct tm *
 __gmtime_r (const time_t *t, struct tm *tp)
 {
-  return __tz_convert (t, 0, tp);
+  if (t == NULL)
+    {
+      __set_errno (EINVAL);
+      return NULL;
+    }
+  return __tz_convert (*t, 0, tp);
 }
 libc_hidden_def (__gmtime_r)
 weak_alias (__gmtime_r, gmtime_r)
@@ -33,5 +39,10 @@ weak_alias (__gmtime_r, gmtime_r)
 struct tm *
 gmtime (const time_t *t)
 {
-  return __tz_convert (t, 0, &_tmbuf);
+  if (t == NULL)
+    {
+      __set_errno (EINVAL);
+      return NULL;
+    }
+  return __tz_convert (*t, 0, &_tmbuf);
 }
