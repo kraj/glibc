@@ -53,6 +53,14 @@ libc_hidden_def (localtime)
 
 /* 64-bit-time versions */
 
+/* Return the `struct tm' representation of *T in local time,
+   using *TP to store the result.  */
+struct tm *
+__localtime64_r (const __time64_t *t, struct tm *tp)
+{
+  return __tz_convert (*t, 1, tp);
+}
+
 /* Return the `struct tm' representation of *T in local time.  */
 struct tm *
 __localtime64 (const __time64_t *t)

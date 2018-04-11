@@ -64,6 +64,9 @@ extern time_t __mktime_internal (struct tm *__tp,
 extern struct tm *__localtime_r (const time_t *__timer,
 				 struct tm *__tp) attribute_hidden;
 
+extern struct tm *__localtime64_r (const __time64_t *__timer,
+				   struct tm *__tp) attribute_hidden;
+
 extern struct tm *__gmtime_r (const time_t *__restrict __timer,
 			      struct tm *__restrict __tp);
 libc_hidden_proto (__gmtime_r)
