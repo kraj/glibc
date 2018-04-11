@@ -71,6 +71,9 @@ extern struct tm *__gmtime_r (const time_t *__restrict __timer,
 			      struct tm *__restrict __tp);
 libc_hidden_proto (__gmtime_r)
 
+extern struct tm *__gmtime64_r (const __time64_t *__restrict __timer,
+			        struct tm *__restrict __tp);
+
 /* Compute the `struct tm' representation of T,
    offset OFFSET seconds east of UTC,
    and store year, yday, mon, mday, wday, hour, min, sec into *TP.
