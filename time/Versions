@@ -67,6 +67,7 @@ libc {
   }
   GLIBC_2.27 {
     __difftime64;
+    __gmtime64;
     __localtime64; __localtime64_r;
   }
 }
