@@ -37,11 +37,22 @@ time_t __mktime_internal (struct tm *,
 			  struct tm * (*) (time_t const *, struct tm *),
 			  time_t *);
 #endif
+# include <limits.h>
+# include <errno.h>
 
 time_t
 timegm (struct tm *tmp)
 {
-  static time_t gmtime_offset;
+  static __time64_t gmtime_offset;
+  __time64_t result;
   tmp->tm_isdst = 0;
-  return __mktime_internal (tmp, __gmtime_r, &gmtime_offset);
+  result = __mktime_internal (tmp, __gmtime64_r, &gmtime_offset);
+  /* Result may be correct for __mktime_internal() which handles 64-bit
+     time, but still beyond 32-bit time_t */
+  if ( (result < INT32_MIN) || (result > INT32_MAX) )
+    {
+      __set_errno(EOVERFLOW);
+      return (time_t) -1;
+    }
+  return (time_t) result;
 }
