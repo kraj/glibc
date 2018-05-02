@@ -33,15 +33,27 @@
 # include <time_r.h>
 # undef __gmtime_r
 # define __gmtime_r gmtime_r
-time_t __mktime_internal (struct tm *,
-			  struct tm * (*) (time_t const *, struct tm *),
-			  time_t *);
+time64_t __mktime_internal (struct tm *,
+			  struct tm * (*) (__time64_t const *, struct tm *),
+			  __time64_t *);
 #endif
+# include <limits.h>
+# include <errno.h>
+
+__time64_t
+__timegm64 (struct tm *tmp)
+{
+  static __time64_t gmtime_offset;
+  tmp->tm_isdst = 0;
+  return __mktime_internal (tmp, __gmtime64_r, &gmtime_offset);
+}
 
 time_t
 timegm (struct tm *tmp)
 {
-  static time_t gmtime_offset;
-  tmp->tm_isdst = 0;
-  return __mktime_internal (tmp, __gmtime_r, &gmtime_offset);
+  __time64_t t64 = __timegm64(tmp);
+  if (fits_in_time_t (t64))
+    return (time_t) t64;
+  __set_errno (EOVERFLOW);
+  return -1;
 }
