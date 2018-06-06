@@ -59,4 +59,3 @@ of known bugs in clang, and issues with conformance to old standards
 predating clang.  Note that the clang build still needs symlinks to
 libgcc and libstdc++ in the installed library directory, so that
 thread cancellation tests pass.
-
