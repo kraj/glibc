@@ -158,6 +158,10 @@ libc {
   GLIBC_2.26 {
     preadv2; preadv64v2; pwritev2; pwritev64v2;
   }
+  GLIBC_2.28 {
+    __y2038_get_kernel_support;
+    __y2038_set_kernel_support;
+  }
   GLIBC_PRIVATE {
     __madvise;
     __mktemp;
