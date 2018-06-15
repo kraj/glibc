@@ -58,6 +58,12 @@ void *__libc_stack_end attribute_relro = NULL;
 rtld_hidden_data_def(__libc_stack_end)
 void *_dl_random attribute_relro = NULL;
 
+#ifdef DL_NEED_START_ARGS_ADJUST
+/* Original sp at ELF entry, used when rtld is executed explicitly
+   and needs to adjust arg components for the actual application.  */
+void **_dl_start_argptr attribute_hidden attribute_relro = NULL;
+#endif
+
 #ifndef DL_STACK_END
 # define DL_STACK_END(cookie) ((void *) (cookie))
 #endif
@@ -113,6 +119,10 @@ _dl_sysdep_start (void **start_argptr,
   _dl_sort_maps_init ();
 
   __brk (0);			/* Initialize the break.  */
+
+#ifdef DL_NEED_START_ARGS_ADJUST
+  _dl_start_argptr = start_argptr;
+#endif
 
 #ifdef DL_PLATFORM_INIT
   DL_PLATFORM_INIT;

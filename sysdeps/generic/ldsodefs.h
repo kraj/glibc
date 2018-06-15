@@ -785,6 +785,9 @@ extern unsigned int _dl_skip_args attribute_hidden
      attribute_relro
 # endif
      ;
+# ifdef DL_NEED_START_ARGS_ADJUST
+extern void **_dl_start_argptr attribute_hidden attribute_relro;
+# endif
 #endif
 #define rtld_progname _dl_argv[0]
 

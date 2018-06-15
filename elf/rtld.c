@@ -1311,6 +1311,60 @@ rtld_setup_main_map (struct link_map *main_map)
   return has_interp;
 }
 
+#ifdef DL_NEED_START_ARGS_ADJUST
+static void
+_dl_start_args_adjust (void)
+{
+  void **sp;
+  void **p;
+  long argc;
+  char **argv;
+  ElfW(auxv_t) *auxv;
+
+  if (_dl_skip_args == 0)
+    return;
+
+  sp = _dl_start_argptr;
+
+  /* Adjust argc on stack.  */
+  argc = (long) sp[0] - _dl_skip_args;
+  sp[0] = (void *) argc;
+
+  argv = (char **) (sp + 1); /* Necessary aliasing violation.  */
+  p = sp + _dl_skip_args;
+  /* Shuffle argv down.  */
+  do
+    *++sp = *++p;
+  while (*p != NULL);
+
+  /* Shuffle envp down.  */
+  do
+    *++sp = *++p;
+  while (*p != NULL);
+
+  auxv = (ElfW(auxv_t) *) (sp + 1); /* Necessary aliasing violation.  */
+  /* Shuffle auxv down. */
+  void *a, *b; /* Use a pair of pointers for an auxv entry.  */
+  unsigned long a_type;
+  do
+    {
+      a_type = ((ElfW(auxv_t) *) (p + 1))->a_type;
+      a = *++p;
+      b = *++p;
+      *++sp = a;
+      *++sp = b;
+    }
+  while (a_type != AT_NULL);
+
+  /* Update globals in rtld.  */
+  _dl_argv = argv;
+  _environ = argv + argc + 1;
+  GLRO(dl_auxv) = auxv;
+  /* No longer need to skip args.  */
+  _dl_skip_args = 0;
+}
+#endif
+
 static void
 dl_main (const ElfW(Phdr) *phdr,
 	 ElfW(Word) phnum,
@@ -1615,6 +1669,10 @@ dl_main (const ElfW(Phdr) *phdr,
       /* Set the argv[0] string now that we've processed the executable.  */
       if (argv0 != NULL)
         _dl_argv[0] = argv0;
+#ifdef DL_NEED_START_ARGS_ADJUST
+      /* Adjust arguments for the application entry point.  */
+      _dl_start_args_adjust ();
+#endif
     }
   else
     {
