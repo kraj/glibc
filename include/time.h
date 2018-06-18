@@ -26,10 +26,6 @@ extern __typeof (clock_getcpuclockid) __clock_getcpuclockid;
 /* Now define the internal interfaces.  */
 struct tm;
 
-/* time_t variant for representing time zone data, independent of
-   time_t.  */
-typedef __int64_t internal_time_t;
-
 /* Defined in mktime.c.  */
 extern const unsigned short int __mon_yday[2][13] attribute_hidden;
 
@@ -43,7 +39,7 @@ extern int __use_tzfile attribute_hidden;
 
 extern void __tzfile_read (const char *file, size_t extra,
 			   char **extrap) attribute_hidden;
-extern void __tzfile_compute (internal_time_t timer, int use_localtime,
+extern void __tzfile_compute (__time64_t timer, int use_localtime,
 			      long int *leap_correct, int *leap_hit,
 			      struct tm *tp) attribute_hidden;
 extern void __tzfile_default (const char *std, const char *dst,
@@ -100,7 +96,6 @@ extern char * __strptime_internal (const char *rp, const char *fmt,
 				   locale_t locparam) attribute_hidden;
 
 extern double __difftime (time_t time1, time_t time0);
-
 
 /* Use in the clock_* functions.  Size of the field representing the
    actual clock ID.  */
