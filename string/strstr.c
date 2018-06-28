@@ -27,19 +27,11 @@
 
 #include <stdbool.h>
 
-#ifndef _LIBC
-# define __builtin_expect(expr, val)   (expr)
-#endif
-
 #define RETURN_TYPE char *
-#define AVAILABLE(h, h_l, j, n_l)			\
-  (!memchr ((h) + (h_l), '\0', (j) + (n_l) - (h_l))	\
+#define AVAILABLE(h, h_l, j, n_l)                       \
+  (!memchr ((h) + (h_l), '\0', (j) + (n_l) - (h_l))     \
    && ((h_l) = (j) + (n_l)))
-#define CHECK_EOL (1)
-#define RET0_IF_0(a) if (!a) goto ret0
 #include "str-two-way.h"
-
-#undef strstr
 
 #ifndef STRSTR
 #define STRSTR strstr

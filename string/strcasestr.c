@@ -16,15 +16,6 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-/*
- * My personal strstr() implementation that beats most other algorithms.
- * Until someone tells me otherwise, I assume that this is the
- * fastest implementation of strstr() in C.
- * I deliberately chose not to comment it.  You should have at least
- * as much fun trying to understand it, as I had to write it :-).
- *
- * Stephen R. van den Berg, berg@pool.informatik.rwth-aachen.de	*/
-
 /* Specification.  */
 #include <string.h>
 
@@ -32,27 +23,21 @@
 #include <stdbool.h>
 #include <strings.h>
 
-#define TOLOWER(Ch) tolower (Ch)
+#define TOLOWER(Ch) (isupper (Ch) ? tolower (Ch) : (Ch))
 
 /* Two-Way algorithm.  */
 #define RETURN_TYPE char *
 #define AVAILABLE(h, h_l, j, n_l)			\
   (!memchr ((h) + (h_l), '\0', (j) + (n_l) - (h_l))	\
    && ((h_l) = (j) + (n_l)))
-#define CHECK_EOL (1)
-#define RET0_IF_0(a) if (!a) goto ret0
 #define CANON_ELEMENT(c) TOLOWER (c)
 #define CMP_FUNC(p1, p2, l)				\
   __strncasecmp ((const char *) (p1), (const char *) (p2), l)
 #include "str-two-way.h"
 
-#undef strcasestr
-#undef __strcasestr
-
 #ifndef STRCASESTR
 #define STRCASESTR __strcasestr
 #endif
-
 
 /* Find the first occurrence of NEEDLE in HAYSTACK, using
    case-insensitive comparison.  This function gives unspecified

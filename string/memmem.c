@@ -24,16 +24,9 @@
 /* Specification of memmem.  */
 #include <string.h>
 
-#ifndef _LIBC
-# define __builtin_expect(expr, val)   (expr)
-# define __memmem	memmem
-#endif
-
 #define RETURN_TYPE void *
 #define AVAILABLE(h, h_l, j, n_l) ((j) <= (h_l) - (n_l))
 #include "str-two-way.h"
-
-#undef memmem
 
 /* Return the first occurrence of NEEDLE in HAYSTACK.  Return HAYSTACK
    if NEEDLE_LEN is 0, otherwise NULL if NEEDLE is not found in

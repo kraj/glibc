@@ -1,3 +1,10 @@
+2018-06-29  Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+
+	* string/memmem.c: Sync with gnulib.
+	* string/strcasestr.c: Likewise.
+	* string/strstr.c: Likewise.
+	* string/str-two-way.h: Likewise.
+
 2018-06-28  Szabolcs Nagy  <szabolcs.nagy@arm.com>
 
 	* manual/llio.texi: Remove spurious space.
