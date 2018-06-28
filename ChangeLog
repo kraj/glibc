@@ -1,3 +1,13 @@
+2018-06-29  Wilco Dijkstra  <wdijkstr@arm.com>
+
+	* string/memmem.c (FASTSEARCH): Define.
+	* string/strcasestr.c (AVAILABLE): Use read-ahead strnlen.
+	* string/strstr.c (AVAILABLE): Use read-ahead strnlen.
+	* benchtests/bench-strcasestr.c (__strnlen): Define to strnlen.
+	* benchtests/bench-strstr.c (__strnlen): Likewise.
+	* string/test-strcasestr.c (__strnlen): Likewise.
+	* string/test-strstr.c (__strnlen): Likewise.
+
 2018-06-29  Adhemerval Zanella  <adhemerval.zanella@linaro.org>
 
 	* string/memmem.c: Sync with gnulib.

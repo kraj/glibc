@@ -26,6 +26,7 @@
 
 #define RETURN_TYPE void *
 #define AVAILABLE(h, h_l, j, n_l) ((j) <= (h_l) - (n_l))
+#define FASTSEARCH(S,C,N) (void*) memchr ((void *)(S), (C), (N))
 #include "str-two-way.h"
 
 /* Return the first occurrence of NEEDLE in HAYSTACK.  Return HAYSTACK

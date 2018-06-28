@@ -28,8 +28,9 @@
 /* Two-Way algorithm.  */
 #define RETURN_TYPE char *
 #define AVAILABLE(h, h_l, j, n_l)			\
-  (!memchr ((h) + (h_l), '\0', (j) + (n_l) - (h_l))	\
-   && ((h_l) = (j) + (n_l)))
+  (((j) + (n_l) <= (h_l))				\
+   || ((h_l) += __strnlen ((void*)((h) + (h_l)), 512), \
+                             (j) + (n_l) <= (h_l)))
 #define CANON_ELEMENT(c) TOLOWER (c)
 #define CMP_FUNC(p1, p2, l)				\
   __strncasecmp ((const char *) (p1), (const char *) (p2), l)
