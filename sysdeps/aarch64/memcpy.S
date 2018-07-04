@@ -48,6 +48,7 @@
 #define G_l	count
 #define G_h	dst
 #define tmp1	x14
+#define tmp2	x15
 
 /* Copies are split into 3 main cases: small copies of up to 16 bytes,
    medium copies of 17..96 bytes which are fully unrolled. Large copies
@@ -65,6 +66,23 @@
 #ifndef MEMCPY
 # define MEMCPY memcpy
 #endif
+#ifndef MEMPCPY
+# define MEMPCPY __mempcpy
+#endif
+
+ENTRY_ALIGN (MEMPCPY, 6)
+
+	DELOUSE (0)
+	DELOUSE (1)
+	DELOUSE (2)
+
+	mov	tmp2, dstin
+	add	dstin, dstin, count
+	b	L(memcpy_start)
+END (MEMPCPY)
+libc_hidden_def (mempcpy)
+weak_alias (MEMPCPY, mempcpy)
+libc_hidden_builtin_def (mempcpy)
 
 ENTRY_ALIGN (MEMMOVE, 6)
 
@@ -72,6 +90,7 @@ ENTRY_ALIGN (MEMMOVE, 6)
 	DELOUSE (1)
 	DELOUSE (2)
 
+	mov	tmp2, dstin
 	sub	tmp1, dstin, src
 	cmp	count, 96
 	ccmp	tmp1, count, 2, hi
@@ -86,9 +105,11 @@ ENTRY (MEMCPY)
 	DELOUSE (1)
 	DELOUSE (2)
 
+	mov	tmp2, dstin
+L(memcpy_start):
 	prfm	PLDL1KEEP, [src]
 	add	srcend, src, count
-	add	dstend, dstin, count
+	add	dstend, tmp2, count
 	cmp	count, 16
 	b.ls	L(copy16)
 	cmp	count, 96
@@ -102,10 +123,10 @@ ENTRY (MEMCPY)
 	tbz	tmp1, 5, 1f
 	ldp	B_l, B_h, [src, 16]
 	ldp	C_l, C_h, [srcend, -32]
-	stp	B_l, B_h, [dstin, 16]
+	stp	B_l, B_h, [tmp2, 16]
 	stp	C_l, C_h, [dstend, -32]
 1:
-	stp	A_l, A_h, [dstin]
+	stp	A_l, A_h, [tmp2]
 	stp	D_l, D_h, [dstend, -16]
 	ret
 
@@ -116,7 +137,7 @@ L(copy16):
 	b.lo	1f
 	ldr	A_l, [src]
 	ldr	A_h, [srcend, -8]
-	str	A_l, [dstin]
+	str	A_l, [tmp2]
 	str	A_h, [dstend, -8]
 	ret
 	.p2align 4
@@ -124,7 +145,7 @@ L(copy16):
 	tbz	count, 2, 1f
 	ldr	A_lw, [src]
 	ldr	A_hw, [srcend, -4]
-	str	A_lw, [dstin]
+	str	A_lw, [tmp2]
 	str	A_hw, [dstend, -4]
 	ret
 
@@ -136,8 +157,8 @@ L(copy16):
 	ldrb	A_lw, [src]
 	ldrb	A_hw, [srcend, -1]
 	ldrb	B_lw, [src, tmp1]
-	strb	A_lw, [dstin]
-	strb	B_lw, [dstin, tmp1]
+	strb	A_lw, [tmp2]
+	strb	B_lw, [tmp2, tmp1]
 	strb	A_hw, [dstend, -1]
 2:	ret
 
@@ -150,10 +171,10 @@ L(copy96):
 	ldp	D_l, D_h, [src, 48]
 	ldp	E_l, E_h, [srcend, -32]
 	ldp	F_l, F_h, [srcend, -16]
-	stp	A_l, A_h, [dstin]
-	stp	B_l, B_h, [dstin, 16]
-	stp	C_l, C_h, [dstin, 32]
-	stp	D_l, D_h, [dstin, 48]
+	stp	A_l, A_h, [tmp2]
+	stp	B_l, B_h, [tmp2, 16]
+	stp	C_l, C_h, [tmp2, 32]
+	stp	D_l, D_h, [tmp2, 48]
 	stp	E_l, E_h, [dstend, -32]
 	stp	F_l, F_h, [dstend, -16]
 	ret
@@ -165,13 +186,13 @@ L(copy96):
 
 	.p2align 4
 L(copy_long):
-	and	tmp1, dstin, 15
-	bic	dst, dstin, 15
+	and	tmp1, tmp2, 15
+	bic	dst, tmp2, 15
 	ldp	D_l, D_h, [src]
 	sub	src, src, tmp1
 	add	count, count, tmp1	/* Count is now 16 too large.  */
 	ldp	A_l, A_h, [src, 16]
-	stp	D_l, D_h, [dstin]
+	stp	D_l, D_h, [tmp2]
 	ldp	B_l, B_h, [src, 32]
 	ldp	C_l, C_h, [src, 48]
 	ldp	D_l, D_h, [src, 64]!
@@ -212,7 +233,7 @@ L(move_long):
 	cbz	tmp1, 3f
 
 	add	srcend, src, count
-	add	dstend, dstin, count
+	add	dstend, tmp2, count
 
 	/* Align dstend to 16 byte alignment so that we don't cross cache line
 	   boundaries on both loads and stores.  There are at least 96 bytes
@@ -257,10 +278,10 @@ L(move_long):
 	stp	C_l, C_h, [dstend, -48]
 	ldp	C_l, C_h, [src]
 	stp	D_l, D_h, [dstend, -64]
-	stp	G_l, G_h, [dstin, 48]
-	stp	A_l, A_h, [dstin, 32]
-	stp	B_l, B_h, [dstin, 16]
-	stp	C_l, C_h, [dstin]
+	stp	G_l, G_h, [tmp2, 48]
+	stp	A_l, A_h, [tmp2, 32]
+	stp	B_l, B_h, [tmp2, 16]
+	stp	C_l, C_h, [tmp2]
 3:	ret
 
 END (MEMCPY)
