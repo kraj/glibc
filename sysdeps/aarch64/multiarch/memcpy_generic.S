@@ -26,16 +26,22 @@
 #if IS_IN (libc)
 
 # define MEMCPY __memcpy_generic
+# define MEMPCPY __mempcpy_generic
 # define MEMMOVE __memmove_generic
 
-/* Do not hide the generic versions of memcpy and memmove, we use them
-   internally.  */
+/* Do not hide the generic versions of memcpy, mempcpy and memmove, we use
+   them internally.  */
 # undef libc_hidden_builtin_def
 # define libc_hidden_builtin_def(name)
+# undef weak_alias
+# define weak_alias(a,b)
+# undef libc_hidden_def
+# define libc_hidden_def(a)
 
 # ifdef SHARED
 /* It doesn't make sense to send libc-internal memcpy calls through a PLT. */
 	.globl __GI_memcpy; __GI_memcpy = __memcpy_generic
+	.globl __GI_mempcpy; __GI_mempcpy = __mempcpy_generic
 	.globl __GI_memmove; __GI_memmove = __memmove_generic
 # endif
 

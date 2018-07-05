@@ -20,7 +20,8 @@
 /* The actual code in this memcpy and memmove is in memcpy_thunderx.S.
    The only real differences are with the prefetching instructions.  */
 
-#define MEMCPY __memcpy_thunderx2
+#define MEMCPY  __memcpy_thunderx2
+#define MEMPCPY __mempcpy_thunderx2
 #define MEMMOVE __memmove_thunderx2
 #define USE_THUNDERX2
 

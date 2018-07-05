@@ -30,6 +30,7 @@
 #define srcend	x4
 #define dstend	x5
 #define tmp1	x14
+#define tmp2	x15
 #define A_x	x6
 #define B_x	x7
 #define A_w	w6
@@ -68,15 +69,24 @@
    The non-temporal stores help optimize cache utilization.  */
 
 #if IS_IN (libc)
+
+ENTRY_ALIGN (__mempcpy_falkor, 6)
+	mov	tmp2, dstin
+	add	dstin, dstin, count
+	b	L(memcpy_start)
+END (__mempcpy_falkor)
+
 ENTRY_ALIGN (__memcpy_falkor, 6)
 
+	mov	tmp2, dstin
+L(memcpy_start):
 	cmp	count, 32
 	add	srcend, src, count
-	add	dstend, dstin, count
+	add	dstend, tmp2, count
 	b.ls	L(copy32)
 	ldr	A_q, [src]
 	cmp	count, 128
-	str	A_q, [dstin]
+	str	A_q, [tmp2]
 	b.hi	L(copy_long)
 
 	/* Medium copies: 33..128 bytes.  */
@@ -87,14 +97,14 @@ ENTRY_ALIGN (__memcpy_falkor, 6)
 	tbz	tmp1, 6, 1f
 	ldr	D_q, [src, 32]
 	ldr	E_q, [src, 48]
-	str	D_q, [dstin, 32]
-	str	E_q, [dstin, 48]
+	str	D_q, [tmp2, 32]
+	str	E_q, [tmp2, 48]
 	ldr	F_q, [srcend, -64]
 	ldr	G_q, [srcend, -48]
 	str	F_q, [dstend, -64]
 	str	G_q, [dstend, -48]
 1:
-	str	A_q, [dstin, 16]
+	str	A_q, [tmp2, 16]
 	str	B_q, [dstend, -32]
 	str	C_q, [dstend, -16]
 	ret
@@ -107,7 +117,7 @@ L(copy32):
 	b.lo	1f
 	ldr	A_q, [src]
 	ldr	B_q, [srcend, -16]
-	str	A_q, [dstin]
+	str	A_q, [tmp2]
 	str	B_q, [dstend, -16]
 	ret
 	.p2align 4
@@ -116,7 +126,7 @@ L(copy32):
 	tbz	count, 3, 1f
 	ldr	A_x, [src]
 	ldr	B_x, [srcend, -8]
-	str	A_x, [dstin]
+	str	A_x, [tmp2]
 	str	B_x, [dstend, -8]
 	ret
 	.p2align 4
@@ -125,7 +135,7 @@ L(copy32):
 	tbz	count, 2, 1f
 	ldr	A_w, [src]
 	ldr	B_w, [srcend, -4]
-	str	A_w, [dstin]
+	str	A_w, [tmp2]
 	str	B_w, [dstend, -4]
 	ret
 	.p2align 4
@@ -134,7 +144,7 @@ L(copy32):
 	tbz	count, 1, 1f
 	ldrh	A_w, [src]
 	ldrh	B_w, [srcend, -2]
-	strh	A_w, [dstin]
+	strh	A_w, [tmp2]
 	strh	B_w, [dstend, -2]
 	ret
 	.p2align 4
@@ -142,7 +152,7 @@ L(copy32):
 	/* 0-1 */
 	tbz	count, 0, 1f
 	ldrb	A_w, [src]
-	strb	A_w, [dstin]
+	strb	A_w, [tmp2]
 1:
 	ret
 
@@ -157,7 +167,7 @@ L(copy_long):
 	sub	count, count, 64 + 16
 	and	tmp1, src, 15
 	bic	src, src, 15
-	sub	dst, dstin, tmp1
+	sub	dst, tmp2, tmp1
 	add	count, count, tmp1
 
 L(loop64):
