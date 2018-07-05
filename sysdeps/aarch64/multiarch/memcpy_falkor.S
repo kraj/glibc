@@ -71,12 +71,19 @@
 #if IS_IN (libc)
 
 ENTRY_ALIGN (__mempcpy_falkor, 6)
+	DELOUSE (0)
+	DELOUSE (1)
+	DELOUSE (2)
+
 	mov	tmp2, dstin
 	add	dstin, dstin, count
 	b	L(memcpy_start)
 END (__mempcpy_falkor)
 
 ENTRY_ALIGN (__memcpy_falkor, 6)
+	DELOUSE (0)
+	DELOUSE (1)
+	DELOUSE (2)
 
 	mov	tmp2, dstin
 L(memcpy_start):

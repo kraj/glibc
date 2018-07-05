@@ -55,6 +55,10 @@
    time to correctly train the hardware prefetcher for better throughput.  */
 ENTRY_ALIGN (__memmove_falkor, 6)
 
+        DELOUSE (0)
+        DELOUSE (1)
+        DELOUSE (2)
+
 	sub	tmp1, dstin, src
 	add	srcend, src, count
 	add	dstend, dstin, count
