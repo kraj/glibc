@@ -204,5 +204,4 @@ L(last64):
 	ret
 
 END (__memcpy_falkor)
-libc_hidden_builtin_def (__memcpy_falkor)
 #endif

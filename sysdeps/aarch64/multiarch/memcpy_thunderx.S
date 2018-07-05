@@ -66,13 +66,6 @@
    Overlapping large forward memmoves use a loop that copies backwards.
 */
 
-#ifndef MEMMOVE
-# define MEMMOVE memmove
-#endif
-#ifndef MEMCPY
-# define MEMCPY memcpy
-#endif
-
 #if IS_IN (libc)
 
 # ifndef USE_THUNDERX2
@@ -110,7 +103,7 @@ ENTRY_ALIGN (MEMMOVE, 6)
 
 	/* Common case falls through into memcpy.  */
 END (MEMMOVE)
-libc_hidden_builtin_def (MEMMOVE)
+
 ENTRY (MEMCPY)
 
 	DELOUSE (0)
@@ -348,6 +341,5 @@ L(move_long):
 3:	ret
 
 END (MEMCPY)
-libc_hidden_builtin_def (MEMCPY)
 
 #endif

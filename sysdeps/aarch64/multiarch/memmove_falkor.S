@@ -226,4 +226,3 @@ L(move_long):
 3:	ret
 
 END (__memmove_falkor)
-libc_hidden_builtin_def (__memmove_falkor)
