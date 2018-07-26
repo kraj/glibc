@@ -1,3 +1,20 @@
+2018-07-26  Florian Weimer  <fweimer@redhat.com>
+
+	* support/support_descriptor_supports_holes.c: New file.
+	* support/Makefile (libsupport-routines): Add
+	support_descriptor_supports_holes.
+	* support/support.h (support_descriptor_supports_holes): Declare.
+	* io/tst-copy_file_range.c: Call support_descriptor_supports_holes
+	and stop testing if holes are not supported.
+	* io/test-lfs.c (do_prepare): Likewise.
+	* sysdeps/unix/sysv/linux/tst-fallocate-common.c (do_prepare):
+	Likewise.
+	* timezone/tst-tzset.c (create_tz_file): Likewise.
+	* misc/tst-preadvwritev-common.c (temp_fd_supports_holes) New
+	variable.
+	(do_prepare): Set it.
+	* misc/tst-preadvwritev64.c (do_test): Use temp_fd_supports_holes.
+
 2018-07-27  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* sysdeps/mach/hurd/Versions (libc): Make __access and
