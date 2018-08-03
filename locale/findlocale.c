@@ -55,7 +55,7 @@ struct __locale_data *const _nl_C[] attribute_hidden =
    which are somehow addressed.  */
 struct loaded_l10nfile *_nl_locale_file_list[__LC_LAST];
 
-const char _nl_default_locale_path[] attribute_hidden = COMPLOCALEDIR;
+char _nl_default_locale_path[4096] attribute_hidden __attribute__ ((section (".gccrelocprefix"))) = COMPLOCALEDIR;
 
 /* Checks if the name is actually present, that is, not NULL and not
    empty.  */
@@ -165,7 +165,7 @@ _nl_find_locale (const char *locale_path, size_t locale_path_len,
 
       /* Nothing in the archive.  Set the default path to search below.  */
       locale_path = _nl_default_locale_path;
-      locale_path_len = sizeof _nl_default_locale_path;
+      locale_path_len = strlen(locale_path) + 1;
     }
   else
     /* We really have to load some data.  First see whether the name is
