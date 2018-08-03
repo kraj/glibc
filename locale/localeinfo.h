@@ -346,7 +346,7 @@ _nl_lookup_word (locale_t l, int category, int item)
 }
 
 /* Default search path if no LOCPATH environment variable.  */
-extern const char _nl_default_locale_path[] attribute_hidden;
+extern char _nl_default_locale_path[4096] attribute_hidden;
 
 /* Load the locale data for CATEGORY from the file specified by *NAME.
    If *NAME is "", use environment variables as specified by POSIX, and
