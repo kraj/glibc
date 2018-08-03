@@ -340,12 +340,24 @@ enlarge_archive (struct locarhandle *ah, const struct locarhead *head)
   struct namehashent *oldnamehashtab;
   struct locarhandle new_ah;
   size_t prefix_len = output_prefix ? strlen (output_prefix) : 0;
-  char archivefname[prefix_len + sizeof (ARCHIVE_NAME)];
-  char fname[prefix_len + sizeof (ARCHIVE_NAME) + sizeof (".XXXXXX") - 1];
+  char *archivefname;
+  char *fname;
+  char *envarchive = getenv("LOCALEARCHIVE");
 
-  if (output_prefix)
-    memcpy (archivefname, output_prefix, prefix_len);
-  strcpy (archivefname + prefix_len, ARCHIVE_NAME);
+  if (envarchive != NULL)
+    {
+      archivefname = xmalloc(strlen(envarchive) + 1);
+      fname = xmalloc(strlen(envarchive) + sizeof (".XXXXXX"));
+      strcpy (archivefname, envarchive);
+    }
+  else
+    {
+      archivefname = xmalloc(prefix_len + sizeof (ARCHIVE_NAME));
+      fname = xmalloc(prefix_len + sizeof (ARCHIVE_NAME) + sizeof (".XXXXXX") - 1);
+      if (output_prefix)
+        memcpy (archivefname, output_prefix, prefix_len);
+      strcpy (archivefname + prefix_len, ARCHIVE_NAME);
+    }
   strcpy (stpcpy (fname, archivefname), ".XXXXXX");
 
   /* Not all of the old file has to be mapped.  Change this now this
@@ -569,10 +581,13 @@ open_archive (struct locarhandle *ah, bool readonly)
   /* If ah has a non-NULL fname open that otherwise open the default.  */
   if (archivefname == NULL)
     {
-      archivefname = default_fname;
-      if (output_prefix)
-        memcpy (default_fname, output_prefix, prefix_len);
-      strcpy (default_fname + prefix_len, ARCHIVE_NAME);
+      archivefname = getenv("LOCALEARCHIVE");
+      if (archivefname == NULL) {
+              archivefname = default_fname;
+              if (output_prefix)
+                memcpy (default_fname, output_prefix, prefix_len);
+              strcpy (default_fname + prefix_len, ARCHIVE_NAME);
+      }
     }
 
   while (1)
@@ -585,7 +600,7 @@ open_archive (struct locarhandle *ah, bool readonly)
 	     the default locale archive we ignore the failure and
 	     list an empty archive, otherwise we print an error
 	     and exit.  */
-	  if (errno == ENOENT && archivefname == default_fname)
+	  if (errno == ENOENT)
 	    {
 	      if (readonly)
 		{
