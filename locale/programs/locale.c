@@ -631,6 +631,7 @@ nameentcmp (const void *a, const void *b)
 		  ((const struct nameent *) b)->name);
 }
 
+static char _write_archive_locales_path[4096] attribute_hidden __attribute__ ((section (".gccrelocprefix"))) = ARCHIVE_NAME;
 
 static int
 write_archive_locales (void **all_datap, char *linebuf)
@@ -644,7 +645,7 @@ write_archive_locales (void **all_datap, char *linebuf)
   int fd, ret = 0;
   uint32_t cnt;
 
-  fd = open64 (ARCHIVE_NAME, O_RDONLY);
+  fd = open64 (_write_archive_locales_path, O_RDONLY);
   if (fd < 0)
     return 0;
 
@@ -699,8 +700,8 @@ write_archive_locales (void **all_datap, char *linebuf)
 	  if (cnt)
 	    putchar_unlocked ('\n');
 
-	  printf ("locale: %-15.15s archive: " ARCHIVE_NAME "\n%s\n",
-		  names[cnt].name, linebuf);
+	  printf ("locale: %-15.15s archive: %s\n%s\n",
+		  names[cnt].name, _write_archive_locales_path, linebuf);
 
 	  locrec = (struct locrecent *) (addr + names[cnt].locrec_offset);
 
