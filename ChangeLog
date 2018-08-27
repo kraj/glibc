@@ -1,3 +1,17 @@
+2018-08-27  Adam J. Richte  <adam_richter2004@yahoo.com>
+	    Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+	    Fangrui Song  <maskray@google.com>
+
+	[BZ #20480]
+	* config.h.in (CAN_TEXTREL_IFUNC): New define.
+	* configure.ac: Add check if linker supports textrel relocation with
+	ifunc.
+	* elf/dl-reloc.c (_dl_relocate_object): Use all required flags on
+	DT_TEXTREL segments, not only PROT_READ and PROT_WRITE.
+	* elf/Makefile (ifunc-pie-tests): Add tst-ifunc-textrel.
+	(CFLAGS-tst-ifunc-textrel.c): New rule.
+	* elf/tst-ifunc-textrel.c: New file.
+
 2018-08-27  Joseph Myers  <joseph@codesourcery.com>
 
 	* sysdeps/generic/math-tests-trap-force.h: New file.
