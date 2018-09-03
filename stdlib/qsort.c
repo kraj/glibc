@@ -100,14 +100,24 @@ typedef struct
 #define	POP(low, high)	((void) (--top, (low = top->lo), (high = top->hi)))
 #define	STACK_NOT_EMPTY	(stack < top)
 
+/* Helper function to calculate the maximum depth before quicksort switches
+   to heapsort.  X should be higher than 0.  */
+static inline size_t
+lg (size_t x)
+{
+  return sizeof (size_t) * CHAR_BIT - 1 - __builtin_clzl(x);
+}
+
 #define R_VERSION
 #define R_FUNC    __qsort_r
+#define R_HEAP    heapsort_r
 #include <stdlib/qsort_common.c>
 
 libc_hidden_def (__qsort_r)
 weak_alias (__qsort_r, qsort_r)
 
 #define R_FUNC   qsort
+#define R_HEAP   heapsort
 #include <stdlib/qsort_common.c>
 
 libc_hidden_def (qsort)

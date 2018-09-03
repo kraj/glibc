@@ -23,15 +23,65 @@
 #ifdef R_VERSION
 # define R_CMP_TYPE          __compar_d_fn_t
 # define R_CMP_ARG           , void *arg
+# define R_CMP_ARG_USE       , arg
 # define R_CMP(p1, p2)       cmp (p1, p2, arg)
 #else
 # define R_CMP_TYPE           __compar_fn_t
 # define R_CMP_ARG
+# define R_CMP_ARG_USE
 # define R_CMP(p1, p2)       cmp (p1, p2)
 #endif
 
-/* Order size using quicksort.  This implementation incorporates
-   four optimizations discussed in Sedgewick:
+/* A fast, small, non-recursive O(nlog n) heapsort, adapted from Linux
+   lib/sort.c.  Used on introsort implementation as a fallback routine with
+   worst-case performance of O(nlog n) and worst-case space complexity of
+   O(1).  */
+
+static void
+R_HEAP (void *pbase, size_t total_elems, size_t size, swap_t swap,
+	R_CMP_TYPE cmp R_CMP_ARG)
+{
+  size_t i = (total_elems / 2 - 1) * size;
+  size_t n = total_elems * size;
+  size_t r, c;
+
+  while (1)
+    {
+      for (r = i; r * 2 + size < n; r = c)
+	{
+	  c = r * 2 + size;
+	  if (c < n - size && R_CMP (pbase + c, pbase + c + size) < 0)
+	    c += size;
+	  if (R_CMP (pbase + r, pbase + c) >= 0)
+	    break;
+	  swap (pbase + r, pbase + c, size);
+	}
+      if (i == 0)
+	break;
+      i -= size;
+    }
+
+  i = n - size;
+  while (1)
+    {
+      swap (pbase, pbase + i, size);
+      for (r = 0; r * 2 + size < i; r = c)
+	{
+	  c = r * 2 + size;
+	  if (c < i - size && R_CMP (pbase + c, pbase + c + size) < 0)
+	    c += size;
+	  if (R_CMP (pbase + r, pbase + c) >= 0)
+	    break;
+	  swap (pbase + r, pbase + c, size);
+	}
+      i -= size;
+      if (i == 0)
+	break;
+    }
+}
+
+/* Introsort to avoid worst case scenario of quicksort.  For quicksort
+   the implementation incorporates four optimizations discussed in Sedgewick:
 
    1. Non-recursive, using an explicit stack of pointer that store the
       next array partition to sort.  To save time, this maximum amount
@@ -57,7 +107,7 @@
 void
 R_FUNC (void *pbase, size_t total_elems, size_t size, R_CMP_TYPE cmp R_CMP_ARG)
 {
-  if (total_elems == 0)
+  if (total_elems <= 1)
     /* Avoid lossage with unsigned arithmetic below.  */
     return;
 
@@ -66,6 +116,8 @@ R_FUNC (void *pbase, size_t total_elems, size_t size, R_CMP_TYPE cmp R_CMP_ARG)
   const size_t max_thresh = MAX_THRESH * size;
 
   swap_t swap = select_swap_func (pbase, size);
+
+  size_t depth = 2 * lg (total_elems);
 
   if (total_elems > MAX_THRESH)
     {
@@ -78,6 +130,9 @@ R_FUNC (void *pbase, size_t total_elems, size_t size, R_CMP_TYPE cmp R_CMP_ARG)
 
       while (STACK_NOT_EMPTY)
         {
+	  if (depth-- == 0)
+	    return R_HEAP (pbase, total_elems, size, swap, cmp R_CMP_ARG_USE);
+
           char *left_ptr;
           char *right_ptr;
 
@@ -220,6 +275,8 @@ R_FUNC (void *pbase, size_t total_elems, size_t size, R_CMP_TYPE cmp R_CMP_ARG)
 #undef R_NAME
 #undef R_CMP_TYPE
 #undef R_CMP_ARG
+#undef R_CMP_ARG_USE
 #undef R_CMP
 #undef R_FUNC
 #undef R_VERSION
+#undef R_HEAP
