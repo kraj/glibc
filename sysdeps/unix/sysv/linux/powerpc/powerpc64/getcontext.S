@@ -155,7 +155,7 @@ compat_symbol (libc, __novec_getcontext, getcontext, GLIBC_2_3)
 #endif
 	.section ".text"
 
-	.machine	"altivec"
+	DOT_MACHINE ("altivec")
 ENTRY(__getcontext)
 	CALL_MCOUNT 1
   std  r0,(SIGCONTEXT_GP_REGS+(PT_R0*8))(r3)

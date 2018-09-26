@@ -178,7 +178,7 @@ ENTRY(__novec_swapcontext)
 # ifdef _ARCH_PWR6
   /* Use the extended four-operand version of the mtfsf insn.  */
   .machine push
-  .machine "power6"
+  DOT_MACHINE ("power6")
 
   mtfsf  0xff,fp0,1,0
 
@@ -189,7 +189,7 @@ ENTRY(__novec_swapcontext)
   beq    5f
 
   .machine push
-  .machine "power6"
+  DOT_MACHINE ("power6")
 
   mtfsf  0xff,fp0,1,0
 
@@ -310,7 +310,7 @@ compat_symbol (libc, __novec_swapcontext, swapcontext, GLIBC_2_3)
 #endif
 
 	.section ".text"
-	.machine	"altivec"
+	DOT_MACHINE ("altivec")
 ENTRY(__swapcontext)
 	CALL_MCOUNT 2
   std  r0,(SIGCONTEXT_GP_REGS+(PT_R0*8))(r3)
@@ -667,7 +667,7 @@ L(has_no_vec2):
 # ifdef _ARCH_PWR6
   /* Use the extended four-operand version of the mtfsf insn.  */
   .machine push
-  .machine "power6"
+  DOT_MACHINE ("power6")
 
   mtfsf  0xff,fp0,1,0
 
@@ -678,7 +678,7 @@ L(has_no_vec2):
   beq    7f
 
   .machine push
-  .machine "power6"
+  DOT_MACHINE ("power6")
 
   mtfsf  0xff,fp0,1,0
 
@@ -787,7 +787,7 @@ L(error_exit):
      R1 pointing at the dummy frame) state.  We do have the ucontext
      address in R3, so simply copy R3 to R1 before the syscall.  */
 L(do_sigret):
-  mr   r1,r3,
+  mr   r1,r3
   li   r0,SYS_ify(rt_sigreturn)
   sc
   /* No return.  */

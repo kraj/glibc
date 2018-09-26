@@ -189,7 +189,7 @@ END(_dl_runtime_resolve)
 # endif
 	.section ".text"
 
-	.machine	"altivec"
+	DOT_MACHINE ("altivec")
 /* On entry r0 contains the index of the PLT entry we need to fixup
    and r11 contains the link_map (from PLT0+16).  The link_map becomes
    parm1 (r3) and the index (r0) needs to be converted to an offset

@@ -20,11 +20,15 @@
 #include <math_ldbl_opt.h>
 
 /* int __isnan(x)  */
-	.machine power4
+	DOT_MACHINE ("power4")
 ENTRY_TOCLESS (__isnan, 4)
 	CALL_MCOUNT 0
 	mffs	fp0
+#if defined __clang__
+	mtfsb0	30 /* reset_fpscr_bit (FPSCR_VE) */
+#else
 	mtfsb0	4*cr6+lt /* reset_fpscr_bit (FPSCR_VE) */
+#endif
 	fcmpu	cr7,fp1,fp1
 	mtfsf	255,fp0
 	li	r3,0

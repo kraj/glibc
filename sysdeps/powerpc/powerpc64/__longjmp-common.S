@@ -43,7 +43,7 @@
 	.section ".text"
 #endif
 
-	.machine	"altivec"
+	DOT_MACHINE ("altivec")
 ENTRY (__longjmp)
 	CALL_MCOUNT 2
 #ifndef __NO_VMX__

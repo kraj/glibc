@@ -42,7 +42,7 @@
 	.section ".text"
 #endif
 
-	.machine	"altivec"
+	DOT_MACHINE ("altivec")
 ENTRY (setjmp_symbol)
 	CALL_MCOUNT 1
 	li r4,1			/* Set second argument to 1.  */
