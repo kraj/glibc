@@ -31,7 +31,7 @@
 #define src 4
 #define cnt 5
 
-	.machine power7
+	DOT_MACHINE ("power7")
 ENTRY_TOCLESS (MEMCPY, 5)
 	CALL_MCOUNT 3
 

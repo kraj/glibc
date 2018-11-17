@@ -47,7 +47,7 @@
    64K as default, the page cross handling assumes minimum page size of
    4k.  */
 
-	.machine  power8
+	DOT_MACHINE ("power8")
 ENTRY_TOCLESS (FUNC_NAME, 4)
         li      r0,0          /* Doubleword with null chars to use
                                  with cmpb.  */

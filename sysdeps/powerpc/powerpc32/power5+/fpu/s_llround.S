@@ -31,7 +31,7 @@
    instruction before we use the Floating Convert to Integer Word with
    round to zero instruction.  */
 
-	.machine	"power5"
+	DOT_MACHINE ("power5")
 ENTRY (__llround)
 	stwu    r1,-16(r1)
 	cfi_adjust_cfa_offset (16)

@@ -28,7 +28,7 @@
 
 	.section    ".text"
 	.type	    __finite, @function
-	.machine    power7
+	DOT_MACHINE ("power7")
 ENTRY (__finite)
 #ifdef SHARED
 	mflr	r11

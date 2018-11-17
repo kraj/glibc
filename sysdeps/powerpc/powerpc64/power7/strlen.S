@@ -24,7 +24,7 @@
 #ifndef STRLEN
 # define STRLEN strlen
 #endif
-	.machine  power7
+	DOT_MACHINE ("power7")
 ENTRY_TOCLESS (STRLEN)
 	CALL_MCOUNT 1
 	dcbt	0,r3

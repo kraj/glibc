@@ -105,7 +105,7 @@
 #  define VADDUQM_V7_V8	.long	0x11274100
 #endif
 
-	.machine  power7
+	DOT_MACHINE ("power7")
 
 ENTRY (__STRCASECMP)
 #ifdef USE_AS_STRNCASECMP

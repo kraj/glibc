@@ -33,7 +33,7 @@
 	.align 2
 
 
-	.machine  a2
+	DOT_MACHINE ("a2")
 ENTRY (MEMCPY, 5)
 	CALL_MCOUNT 3
 

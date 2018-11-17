@@ -43,7 +43,7 @@
 			| ((b)<<(32-21)) )
 /* TODO: change this to .machine power8 when the minimum required binutils
    allows it.  */
-	.machine  power7
+	DOT_MACHINE ("power7")
 ENTRY_TOCLESS (FUNC_NAME)
 	CALL_MCOUNT 2
 	dcbt	0,r3

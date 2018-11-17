@@ -66,7 +66,7 @@
 # endif
 #endif
 
-	.machine  power7
+	DOT_MACHINE ("power7")
 #ifdef MEMSET_is_local
 ENTRY_TOCLESS (FUNC_NAME, 4)
 #else

@@ -24,7 +24,7 @@
 #endif
 
 /* int [r3] strnlen (char *s [r3], int size [r4])  */
-	.machine  power7
+	DOT_MACHINE ("power7")
 ENTRY_TOCLESS (STRNLEN)
 	CALL_MCOUNT 2
 	dcbt	0,r3

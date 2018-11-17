@@ -84,7 +84,7 @@
 #define	FRAMESIZE	(FRAME_MIN_SIZE+48)
 /* TODO: change this to .machine power8 when the minimum required binutils
    allows it.  */
-	.machine  power7
+	DOT_MACHINE ("power7")
 ENTRY (STRCASESTR, 4)
 	CALL_MCOUNT 2
 	mflr	r0			/* Load link register LR to r0.  */

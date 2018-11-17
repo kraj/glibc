@@ -20,7 +20,7 @@
 #include <sysdep.h>
 
 /* int [r3] memrchr (char *s [r3], int byte [r4], int size [r5])  */
-	.machine  power7
+	DOT_MACHINE ("power7")
 ENTRY (__memrchr)
 	CALL_MCOUNT
 	add	r7,r3,r5      /* Calculate the last acceptable address.  */

@@ -31,7 +31,7 @@
    instruction before we use Floating Convert to Integer Word with
    round to zero instruction.  */
 
-	.machine	"power6"
+	DOT_MACHINE	("power6")
 ENTRY_TOCLESS (__llround)
 	CALL_MCOUNT 0
 	frin	fp2,fp1	/* Round to nearest +-0.5.  */

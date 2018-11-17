@@ -61,7 +61,7 @@
 #endif
 
 #define	FRAMESIZE	(FRAME_MIN_SIZE+32)
-	.machine  power7
+	DOT_MACHINE ("power7")
 /* Can't be ENTRY_TOCLESS due to calling __strstr_ppc which uses r2.  */
 ENTRY (STRSTR, 4)
 	CALL_MCOUNT 2

@@ -25,7 +25,7 @@
 # include <jmpbuf-offsets.h>
 #endif
 
-	.machine	"altivec"
+	DOT_MACHINE ("altivec")
 ENTRY (__longjmp_symbol)
 #ifndef __NO_VMX__
 # ifdef PIC

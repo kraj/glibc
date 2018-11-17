@@ -20,7 +20,7 @@
 #include <math_ldbl_opt.h>
 
 /* int __isnan(x)  */
-	.machine power6
+	DOT_MACHINE ("power6")
 ENTRY_TOCLESS (__isnan, 4)
 	CALL_MCOUNT 0
 	stfd	fp1,-8(r1)	/* copy FPR to GPR */

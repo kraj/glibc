@@ -20,7 +20,7 @@
 #include <math_ldbl_opt.h>
 
 /* int __isnan(x)  */
-	.machine power4
+	DOT_MACHINE ("power4")
 EALIGN (__isnan, 4, 0)
 	mffs	fp0
 	mtfsb0	4*cr6+lt /* reset_fpscr_bit (FPSCR_VE) */

@@ -24,7 +24,7 @@
 # define STRRCHR strrchr
 #endif
 
-	.machine  power7
+	DOT_MACHINE ("power7")
 ENTRY_TOCLESS (STRRCHR)
 	CALL_MCOUNT 2
 	dcbt	0,r3

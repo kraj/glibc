@@ -65,7 +65,7 @@
 /* TODO: change this to .machine power9 when the minimum required binutils
    allows it.  */
 
-	.machine  power7
+	DOT_MACHINE ("power7")
 ENTRY_TOCLESS (STRCMP, 4)
 	li	r0, 0
 

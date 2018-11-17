@@ -25,7 +25,7 @@
    cache line (1024 bits). There is a special case for setting cache lines
    to 0, to take advantage of the dcbz instruction.  */
 
-	.machine power6
+	DOT_MACHINE ("power6")
 EALIGN (memset, 7, 0)
 	CALL_MCOUNT
 

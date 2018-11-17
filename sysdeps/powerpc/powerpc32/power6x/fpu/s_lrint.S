@@ -21,7 +21,7 @@
 #include <libm-alias-float.h>
 #include <libm-alias-double.h>
 
-	.machine	"power6"
+	DOT_MACHINE ("power6")
 /* long int[r3] __lrint (double x[fp1])  */
 ENTRY (__lrint)
 	fctiw	fp13,fp1

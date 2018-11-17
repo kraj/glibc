@@ -43,7 +43,7 @@
 #ifndef MEMCPY
 # define MEMCPY memcpy
 #endif
-	.machine	"power6"
+	DOT_MACHINE	("power6")
 ENTRY_TOCLESS (MEMCPY, 7)
 	CALL_MCOUNT 3
 

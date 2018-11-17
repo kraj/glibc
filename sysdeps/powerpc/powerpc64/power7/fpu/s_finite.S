@@ -26,7 +26,7 @@
 	.tc	    FD_ONE[TC],0x3ff0000000000000
 	.section    ".text"
 	.type	    __finite, @function
-	.machine    power7
+	DOT_MACHINE ("power7")
 ENTRY (__finite, 4)
 	CALL_MCOUNT 0
 	lfd     fp0,.LC0@toc(r2)

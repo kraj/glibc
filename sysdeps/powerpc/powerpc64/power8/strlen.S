@@ -35,7 +35,7 @@
 
 /* TODO: change this to .machine power8 when the minimum required binutils
    allows it.  */
-	.machine  power7
+	DOT_MACHINE ("power7")
 ENTRY_TOCLESS (STRLEN, 4)
 	CALL_MCOUNT 1
 	dcbt	0,r3

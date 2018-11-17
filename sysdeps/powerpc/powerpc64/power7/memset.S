@@ -25,7 +25,7 @@
 #ifndef MEMSET
 # define MEMSET memset
 #endif
-	.machine power7
+	DOT_MACHINE ("power7")
 ENTRY_TOCLESS (MEMSET, 5)
 	CALL_MCOUNT 3
 

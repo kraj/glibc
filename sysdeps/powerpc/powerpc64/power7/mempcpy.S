@@ -26,7 +26,7 @@
 #ifndef MEMPCPY
 # define MEMPCPY __mempcpy
 #endif
-	.machine  power7
+	DOT_MACHINE ("power7")
 ENTRY_TOCLESS (MEMPCPY, 5)
 	CALL_MCOUNT 3
 

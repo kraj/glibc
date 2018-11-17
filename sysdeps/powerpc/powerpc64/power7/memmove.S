@@ -30,7 +30,7 @@
 #ifndef MEMMOVE
 # define MEMMOVE memmove
 #endif
-	.machine power7
+	DOT_MACHINE ("power7")
 ENTRY_TOCLESS (MEMMOVE, 5)
 	CALL_MCOUNT 3
 

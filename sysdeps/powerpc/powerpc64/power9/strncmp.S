@@ -67,7 +67,7 @@
 
 /* TODO: change this to .machine power9 when minimum binutils
    is upgraded to 2.27.  */
-	.machine  power7
+	DOT_MACHINE ("power7")
 ENTRY_TOCLESS (STRNCMP, 4)
 	/* Check if size is 0.  */
 	cmpdi	cr0, r5, 0

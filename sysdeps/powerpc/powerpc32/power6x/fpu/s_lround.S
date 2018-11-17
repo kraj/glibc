@@ -31,7 +31,7 @@
    instruction before we use the Floating Convert to Integer Word with
    round to zero instruction.  */
 
-	.machine	"power6"
+	DOT_MACHINE ("power6")
 ENTRY (__lround)
 	frin	fp2,fp1	/* Pre-round +-0.5.  */
 	fctiwz	fp3,fp2	/* Convert To Integer Word lround toward 0.  */

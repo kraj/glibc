@@ -28,7 +28,7 @@
 #ifndef MEMCMP
 # define MEMCMP memcmp
 #endif
-	.machine power7
+	DOT_MACHINE ("power7")
 ENTRY_TOCLESS (MEMCMP, 4)
 	CALL_MCOUNT 3
 

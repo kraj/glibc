@@ -20,7 +20,7 @@
 #include <math_ldbl_opt.h>
 
 /* int __isnanf(x)  */
-	.machine power6
+	DOT_MACHINE ("power6")
 EALIGN (__isnanf, 4, 0)
 	stwu	r1,-32(r1)
 	cfi_adjust_cfa_offset (32)

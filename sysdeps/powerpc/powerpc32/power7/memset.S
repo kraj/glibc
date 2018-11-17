@@ -22,7 +22,7 @@
 /* void * [r3] memset (void *s [r3], int c [r4], size_t n [r5]));
    Returns 's'.  */
 
-	.machine  power7
+	DOT_MACHINE ("power7")
 EALIGN (memset, 5, 0)
 	CALL_MCOUNT
 

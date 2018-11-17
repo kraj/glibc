@@ -28,7 +28,7 @@
 
 	.section    ".text"
 	.type	    __isinf, @function
-	.machine    power7
+	DOT_MACHINE ("power7")
 ENTRY (__isinf)
 #ifdef SHARED
 	mflr	r11

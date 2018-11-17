@@ -20,7 +20,7 @@
 #include <sysdep.h>
 
 /* int [r3] rawmemchr (void *s [r3], int c [r4])  */
-	.machine  power7
+	DOT_MACHINE ("power7")
 ENTRY (__rawmemchr)
 	CALL_MCOUNT
 	dcbt	0,r3

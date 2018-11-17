@@ -19,7 +19,7 @@
 #include <sysdep.h>
 #include <libm-alias-float.h>
 
-	.machine	"power5"
+	DOT_MACHINE	("power5")
 EALIGN (__ceilf, 4, 0)
 	frip	fp1, fp1	/* The rounding instructions are double.  */
 	frsp	fp1, fp1	/* But we need to set ooverflow for float.  */

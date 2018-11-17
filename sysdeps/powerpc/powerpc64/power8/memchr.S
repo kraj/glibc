@@ -34,7 +34,7 @@
 #endif
 /* TODO: change this to .machine power8 when the minimum required binutils
    allows it.  */
-	.machine  power7
+	DOT_MACHINE ("power7")
 ENTRY_TOCLESS (MEMCHR)
 	CALL_MCOUNT 3
 	dcbt	0, r3

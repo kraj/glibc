@@ -30,7 +30,7 @@
 	/* No need to use .machine power8 since mtvsrd is already
 	   handled by the define.  It avoid breakage on binutils
 	   that does not support this machine specifier.  */
-	.machine power7
+	DOT_MACHINE ("power7")
 ENTRY_TOCLESS (MEMSET, 5)
 	CALL_MCOUNT 3
 

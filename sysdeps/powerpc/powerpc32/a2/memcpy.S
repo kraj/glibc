@@ -22,7 +22,7 @@
 #define PREFETCH_AHEAD 4        /* no cache lines SRC prefetching ahead  */
 #define ZERO_AHEAD 2            /* no cache lines DST zeroing ahead  */
 
-	.machine  a2
+	DOT_MACHINE ("a2")
 EALIGN (memcpy, 5, 0)
 	CALL_MCOUNT
 

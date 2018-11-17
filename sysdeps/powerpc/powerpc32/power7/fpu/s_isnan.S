@@ -28,7 +28,7 @@
 
 	.section    ".text"
 	.type	    __isnan, @function
-	.machine    power7
+	DOT_MACHINE ("power7")
 ENTRY (__isnan)
 #ifdef SHARED
 	mflr	r11

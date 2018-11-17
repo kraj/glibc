@@ -20,7 +20,7 @@
 #include <sysdep.h>
 
 /* int [r3] strlen (char *s [r3])  */
-	.machine  power7
+	DOT_MACHINE ("power7")
 ENTRY (strlen)
 	CALL_MCOUNT
 	dcbt	0,r3

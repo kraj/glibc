@@ -54,7 +54,7 @@
 
    float [fp1] expf (float [fp1] x)  */
 
-	.machine power8
+	DOT_MACHINE ("power8")
 ENTRY (__ieee754_expf, 4)
 	addis	DATA_OFFSET,r2,.Lanchor@toc@ha
 	addi	DATA_OFFSET,DATA_OFFSET,.Lanchor@toc@l

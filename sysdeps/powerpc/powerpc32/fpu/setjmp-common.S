@@ -25,7 +25,7 @@
 # include <jmpbuf-offsets.h>
 #endif
 
-	.machine	"altivec"
+	DOT_MACHINE ("altivec")
 ENTRY (__sigsetjmp_symbol)
 
 #ifdef PTR_MANGLE

@@ -22,7 +22,7 @@
 		    const char *s2 [r4],
 		    size_t size [r5])  */
 
-	.machine power4
+	DOT_MACHINE ("power4")
 EALIGN (memcmp, 4, 0)
 	CALL_MCOUNT
 

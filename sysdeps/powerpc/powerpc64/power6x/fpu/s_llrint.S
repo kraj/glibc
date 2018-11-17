@@ -21,7 +21,7 @@
 #include <libm-alias-float.h>
 #include <libm-alias-double.h>
 
-	.machine	"power6"
+	DOT_MACHINE	("power6")
 /* long long int[r3] __llrint (double x[fp1])  */
 ENTRY_TOCLESS (__llrint)
 	CALL_MCOUNT 0

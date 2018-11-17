@@ -28,7 +28,7 @@
 
 	.section    ".text"
 	.type	    __copysign, @function
-	.machine    power6
+	DOT_MACHINE ("power6")
 EALIGN (__copysign, 4, 0)
 	CALL_MCOUNT
 	fcpsgn	fp1,fp2,fp1

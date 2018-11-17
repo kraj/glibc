@@ -20,7 +20,7 @@
 #include <math_ldbl_opt.h>
 #include <libm-alias-double.h>
 
-	.machine	"power5"
+	DOT_MACHINE ("power5")
 EALIGN (__trunc, 4, 0)
 	friz	fp1, fp1
 	blr

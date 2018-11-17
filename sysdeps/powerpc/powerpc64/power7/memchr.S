@@ -24,7 +24,7 @@
 #ifndef MEMCHR
 # define MEMCHR __memchr
 #endif
-	.machine  power7
+	DOT_MACHINE ("power7")
 ENTRY_TOCLESS (MEMCHR)
 	CALL_MCOUNT 3
 	dcbt	0,r3

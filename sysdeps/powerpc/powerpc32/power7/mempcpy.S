@@ -22,7 +22,7 @@
 /* void * [r3] __mempcpy (void *dst [r3], void *src [r4], size_t len [r5]);
 	Returns 'dst' + 'len'.  */
 
-	.machine  power7
+	DOT_MACHINE ("power7")
 EALIGN (__mempcpy, 5, 0)
 	CALL_MCOUNT
 
