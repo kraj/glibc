@@ -35,31 +35,19 @@
 static long int posix_sysconf (int name);
 
 
-#ifndef HAS_CPUCLOCK
 static long int
-has_cpuclock (int name)
+check_clock_getres (clockid_t clk_id)
 {
-# if defined __NR_clock_getres || HP_TIMING_AVAIL
-  /* If we have HP_TIMING, we will fall back on that if the system
-     call does not work, so we support it either way.  */
-#  if !HP_TIMING_AVAIL
-  /* Check using the clock_getres system call.  */
   struct timespec ts;
   INTERNAL_SYSCALL_DECL (err);
-  int r = INTERNAL_SYSCALL (clock_getres, err, 2,
-			    (name == _SC_CPUTIME
-			     ? CLOCK_PROCESS_CPUTIME_ID
-			     : CLOCK_THREAD_CPUTIME_ID),
-			    &ts);
+  int r = INTERNAL_SYSCALL_CALL (clock_getres, err, clk_id, &ts);
   if (INTERNAL_SYSCALL_ERROR_P (r, err))
     return -1;
-#  endif
   return _POSIX_VERSION;
-# else
-  return -1;
-# endif
 }
-# define HAS_CPUCLOCK(name) has_cpuclock (name)
+
+#ifndef HAS_CPUCLOCK
+# define HAS_CPUCLOCK(name) check_clock_getres (name)
 #endif
 
 
@@ -71,29 +59,22 @@ __sysconf (int name)
 
   switch (name)
     {
-      struct rlimit rlimit;
-#ifdef __NR_clock_getres
     case _SC_MONOTONIC_CLOCK:
-      /* Check using the clock_getres system call.  */
-      {
-	struct timespec ts;
-	INTERNAL_SYSCALL_DECL (err);
-	int r;
-	r = INTERNAL_SYSCALL (clock_getres, err, 2, CLOCK_MONOTONIC, &ts);
-	return INTERNAL_SYSCALL_ERROR_P (r, err) ? -1 : _POSIX_VERSION;
-      }
-#endif
+      return check_clock_getres (CLOCK_MONOTONIC);
 
     case _SC_CPUTIME:
+      return HAS_CPUCLOCK (CLOCK_PROCESS_CPUTIME_ID);
     case _SC_THREAD_CPUTIME:
-      return HAS_CPUCLOCK (name);
+      return HAS_CPUCLOCK (CLOCK_THREAD_CPUTIME_ID);
 
-    case _SC_ARG_MAX:
+    case _SC_ARG_MAX: {
+      struct rlimit rlimit;
       /* Use getrlimit to get the stack limit.  */
       if (__getrlimit (RLIMIT_STACK, &rlimit) == 0)
 	return MAX (legacy_ARG_MAX, rlimit.rlim_cur / 4);
 
       return legacy_ARG_MAX;
+    } break;
 
     case _SC_NGROUPS_MAX:
       /* Try to read the information from the /proc/sys/kernel/ngroups_max
@@ -101,13 +82,14 @@ __sysconf (int name)
       procfname = "/proc/sys/kernel/ngroups_max";
       break;
 
-    case _SC_SIGQUEUE_MAX:
+    case _SC_SIGQUEUE_MAX: {
+      struct rlimit rlimit;
       if (__getrlimit (RLIMIT_SIGPENDING, &rlimit) == 0)
 	return rlimit.rlim_cur;
 
       /* The /proc/sys/kernel/rtsig-max file contains the answer.  */
       procfname = "/proc/sys/kernel/rtsig-max";
-      break;
+    } break;
 
     default:
       break;
