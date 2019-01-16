@@ -70,25 +70,6 @@
 # define __secure_getenv secure_getenv
 #endif
 
-#ifdef _LIBC
-# include <hp-timing.h>
-# if HP_TIMING_AVAIL
-#  define RANDOM_BITS(Var) \
-  if (__glibc_unlikely (value == UINT64_C (0)))				      \
-    {									      \
-      /* If this is the first time this function is used initialize	      \
-	 the variable we accumulate the value in to some somewhat	      \
-	 random value.  If we'd not do this programs at startup time	      \
-	 might have a reduced set of possible names, at least on slow	      \
-	 machines.  */							      \
-      struct timeval tv;						      \
-      __gettimeofday (&tv, NULL);					      \
-      value = ((uint64_t) tv.tv_usec << 16) ^ tv.tv_sec;		      \
-    }									      \
-  HP_TIMING_NOW (Var)
-# endif
-#endif
-
 /* Use the widest available unsigned type if uint64_t is not
    available.  The algorithm below extracts a number less than 62**6
    (approximately 2**35.725) from uint64_t, so ancient hosts where
@@ -227,15 +208,11 @@ __gen_tempname (char *tmpl, int suffixlen, int flags, int kind)
   XXXXXX = &tmpl[len - 6 - suffixlen];
 
   /* Get some more or less random data.  */
-#ifdef RANDOM_BITS
-  RANDOM_BITS (random_time_bits);
-#else
   {
-    struct timeval tv;
-    __gettimeofday (&tv, NULL);
-    random_time_bits = ((uint64_t) tv.tv_usec << 16) ^ tv.tv_sec;
+    struct timespec tv;
+    __clock_gettime (CLOCK_MONOTONIC, &tv);
+    random_time_bits = tv.tv_nsec + UINT64_C(1000000000) * tv.tv_sec;
   }
-#endif
   value += random_time_bits ^ __getpid ();
 
   for (count = 0; count < attempts; value += 7777, ++count)

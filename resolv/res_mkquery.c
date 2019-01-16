@@ -82,6 +82,7 @@
  * SOFTWARE.
  */
 
+#include <stdint.h>
 #include <sys/types.h>
 #include <sys/param.h>
 #include <netinet/in.h>
@@ -93,11 +94,13 @@
 #include <sys/time.h>
 #include <shlib-compat.h>
 
-#include <hp-timing.h>
-#include <stdint.h>
-#if HP_TIMING_AVAIL
-# define RANDOM_BITS(Var) { uint64_t v64; HP_TIMING_NOW (v64); Var = v64; }
-#endif
+static inline int
+random_bits (void)
+{
+  struct timespec tv;
+  __clock_gettime (CLOCK_MONOTONIC, &tv);
+  return tv.tv_nsec + UINT64_C(1000000000) * tv.tv_sec;
+}
 
 int
 __res_context_mkquery (struct resolv_context *ctx, int op, const char *dname,
@@ -121,13 +124,11 @@ __res_context_mkquery (struct resolv_context *ctx, int op, const char *dname,
      by one after the initial randomization which still predictable if
      the application does multiple requests.  */
   int randombits;
-#ifdef RANDOM_BITS
-  RANDOM_BITS (randombits);
-#else
-  struct timeval tv;
-  __gettimeofday (&tv, NULL);
-  randombits = (tv.tv_sec << 8) ^ tv.tv_usec;
-#endif
+  {
+    struct timespec tv;
+    __clock_gettime (CLOCK_MONOTONIC, &tv);
+    randombits = tv.tv_nsec + UINT64_C(1000000000) * tv.tv_sec;
+  }
 
   hp->id = randombits;
   hp->opcode = op;

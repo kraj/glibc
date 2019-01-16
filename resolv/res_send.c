@@ -109,7 +109,6 @@
 #include <unistd.h>
 #include <kernel-features.h>
 #include <libc-diag.h>
-#include <hp-timing.h>
 
 #if PACKETSZ > 65536
 #define MAXPACKET       PACKETSZ
@@ -309,15 +308,9 @@ nameserver_offset (struct __res_state *statp)
   if ((offset & 1) == 0)
     {
       /* Initialization is required.  */
-#if HP_TIMING_AVAIL
-      uint64_t ticks;
-      HP_TIMING_NOW (ticks);
-      offset = ticks;
-#else
-      struct timeval tv;
-      __gettimeofday (&tv, NULL);
-      offset = ((tv.tv_sec << 8) ^ tv.tv_usec);
-#endif
+      struct timespec tv;
+      __clock_gettime (CLOCK_MONOTONIC, &tv);
+      offset = tv.tv_nsec + UINT64_C(1000000000) * tv.tv_sec;
       /* The lowest bit is the most random.  Preserve it.  */
       offset <<= 1;
 
