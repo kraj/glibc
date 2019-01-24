@@ -20,8 +20,6 @@
 /* In case a platform supports timers in the hardware the following macros
    and types must be defined:
 
-   - HP_TIMING_AVAIL: test for availability.
-
    - HP_TIMING_INLINE: this macro is non-zero if the functionality is not
      implemented using function calls but instead uses some inlined code
      which might simply consist of a few assembler instructions.  We have to

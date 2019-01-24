@@ -46,6 +46,21 @@
 
 #include <assert.h>
 
+#if HP_TIMING_INLINE
+# define RLTD_TIMING_DECLARE(var, classifier,...) \
+  classifier hp_timing_t var __VA_ARGS__
+# define RTLD_TIMING_NOW(var)                    HP_TIMING_NOW(var)
+# define RTLD_TIMING_DIFF(diff, start, end)      HP_TIMING_DIFF(diff, start, end)
+# define RTLD_TIMING_ACCUM_NT(sum, diff)         HP_TIMING_ACCUM_NT(sum, diff)
+# define RTLD_TIMING_SET(var, value)             (var) = (value)
+#else
+# define RLTD_TIMING_DECLARE(var, classifier...)
+# define RTLD_TIMING_NOW(var)
+# define RTLD_TIMING_DIFF(diff, start, end)
+# define RTLD_TIMING_ACCUM_NT(sum, diff)
+# define RTLD_TIMING_SET(var, value)
+#endif
+
 /* Avoid PLT use for our local calls at startup.  */
 extern __typeof (__mempcpy) __mempcpy attribute_hidden;
 
@@ -303,11 +318,9 @@ static struct libname_list _dl_rtld_libname;
 static struct libname_list _dl_rtld_libname2;
 
 /* Variable for statistics.  */
-#ifndef HP_TIMING_NONAVAIL
-static hp_timing_t relocate_time;
-static hp_timing_t load_time attribute_relro;
-static hp_timing_t start_time attribute_relro;
-#endif
+RLTD_TIMING_DECLARE (relocate_time, static);
+RLTD_TIMING_DECLARE (load_time,     static, attribute_relro);
+RLTD_TIMING_DECLARE (start_time,    static, attribute_relro);
 
 /* Additional definitions needed by TLS initialization.  */
 #ifdef TLS_INIT_HELPER
@@ -335,9 +348,7 @@ static ElfW(Addr) _dl_start_final (void *arg);
 struct dl_start_final_info
 {
   struct link_map l;
-#if !defined HP_TIMING_NONAVAIL && HP_TIMING_INLINE
-  hp_timing_t start_time;
-#endif
+  RLTD_TIMING_DECLARE (start_time,);
 };
 static ElfW(Addr) _dl_start_final (void *arg,
 				   struct dl_start_final_info *info);
@@ -371,16 +382,10 @@ _dl_start_final (void *arg, struct dl_start_final_info *info)
 {
   ElfW(Addr) start_addr;
 
-  if (HP_SMALL_TIMING_AVAIL)
-    {
-      /* If it hasn't happen yet record the startup time.  */
-      if (! HP_TIMING_INLINE)
-	HP_TIMING_NOW (start_time);
-#if !defined DONT_USE_BOOTSTRAP_MAP && !defined HP_TIMING_NONAVAIL
-      else
-	start_time = info->start_time;
+  /* If it hasn't happen yet record the startup time.  */
+#if !defined DONT_USE_BOOTSTRAP_MAP
+  RTLD_TIMING_SET (start_time, info->start_time);
 #endif
-    }
 
   /* Transfer data about ourselves to the permanent link_map structure.  */
 #ifndef DONT_USE_BOOTSTRAP_MAP
@@ -412,23 +417,16 @@ _dl_start_final (void *arg, struct dl_start_final_info *info)
      entry point on the same stack we entered on.  */
   start_addr = _dl_sysdep_start (arg, &dl_main);
 
-#ifndef HP_TIMING_NONAVAIL
-  hp_timing_t rtld_total_time;
-  if (HP_SMALL_TIMING_AVAIL)
-    {
-      hp_timing_t end_time;
+  RLTD_TIMING_DECLARE (rtld_total_time,);
+  RLTD_TIMING_DECLARE (end_time,);
 
-      /* Get the current time.  */
-      HP_TIMING_NOW (end_time);
+  RTLD_TIMING_NOW (end_time);
 
-      /* Compute the difference.  */
-      HP_TIMING_DIFF (rtld_total_time, start_time, end_time);
-    }
-#endif
+  RTLD_TIMING_DIFF (rtld_total_time, start_time, end_time);
 
   if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_STATISTICS))
     {
-#ifndef HP_TIMING_NONAVAIL
+#if HP_TIMING_INLINE
       print_statistics (&rtld_total_time);
 #else
       print_statistics (NULL);
@@ -457,11 +455,10 @@ _dl_start (void *arg)
 #define RESOLVE_MAP(sym, version, flags) BOOTSTRAP_MAP
 #include "dynamic-link.h"
 
-  if (HP_TIMING_INLINE && HP_SMALL_TIMING_AVAIL)
 #ifdef DONT_USE_BOOTSTRAP_MAP
-    HP_TIMING_NOW (start_time);
+  RTLD_TIMING_NOW (start_time);
 #else
-    HP_TIMING_NOW (info.start_time);
+  RTLD_TIMING_NOW (info.start_time);
 #endif
 
   /* Partly clean the `bootstrap_map' structure up.  Don't use
@@ -876,11 +873,9 @@ dl_main (const ElfW(Phdr) *phdr,
   unsigned int i;
   bool prelinked = false;
   bool rtld_is_main = false;
-#ifndef HP_TIMING_NONAVAIL
-  hp_timing_t start;
-  hp_timing_t stop;
-  hp_timing_t diff;
-#endif
+  RLTD_TIMING_DECLARE (start,);
+  RLTD_TIMING_DECLARE (stop,);
+  RLTD_TIMING_DECLARE (diff,);
   void *tcbp = NULL;
 
   GL(dl_init_static_tls) = &_dl_nothread_init_static_tls;
@@ -1048,12 +1043,12 @@ of this helper program; chances are you did not intend to run this program.\n\
 	}
       else
 	{
-	  HP_TIMING_NOW (start);
+	  RTLD_TIMING_NOW (start);
 	  _dl_map_object (NULL, rtld_progname, lt_executable, 0,
 			  __RTLD_OPENEXEC, LM_ID_BASE);
-	  HP_TIMING_NOW (stop);
+	  RTLD_TIMING_NOW (stop);
 
-	  HP_TIMING_DIFF (load_time, start, stop);
+	  RTLD_TIMING_DIFF (load_time, start, stop);
 	}
 
       /* Now the map for the main executable is available.  */
@@ -1617,11 +1612,11 @@ ERROR: ld.so: object '%s' cannot be loaded as audit interface: %s; ignored.\n",
 
   if (__glibc_unlikely (preloadlist != NULL))
     {
-      HP_TIMING_NOW (start);
+      RTLD_TIMING_NOW (start);
       npreloads += handle_ld_preload (preloadlist, main_map);
-      HP_TIMING_NOW (stop);
-      HP_TIMING_DIFF (diff, start, stop);
-      HP_TIMING_ACCUM_NT (load_time, diff);
+      RTLD_TIMING_NOW (stop);
+      RTLD_TIMING_DIFF (diff, start, stop);
+      RTLD_TIMING_ACCUM_NT (load_time, diff);
     }
 
   /* There usually is no ld.so.preload file, it should only be used
@@ -1681,7 +1676,7 @@ ERROR: ld.so: object '%s' cannot be loaded as audit interface: %s; ignored.\n",
 	      file[file_size - 1] = '\0';
 	    }
 
-	  HP_TIMING_NOW (start);
+	  RTLD_TIMING_NOW (start);
 
 	  if (file != problem)
 	    {
@@ -1699,9 +1694,9 @@ ERROR: ld.so: object '%s' cannot be loaded as audit interface: %s; ignored.\n",
 	      npreloads += do_preload (p, main_map, preload_file);
 	    }
 
-	  HP_TIMING_NOW (stop);
-	  HP_TIMING_DIFF (diff, start, stop);
-	  HP_TIMING_ACCUM_NT (load_time, diff);
+	  RTLD_TIMING_NOW (stop);
+	  RTLD_TIMING_DIFF (diff, start, stop);
+	  RTLD_TIMING_ACCUM_NT (load_time, diff);
 
 	  /* We don't need the file anymore.  */
 	  __munmap (file, file_size);
@@ -1725,11 +1720,11 @@ ERROR: ld.so: object '%s' cannot be loaded as audit interface: %s; ignored.\n",
   /* Load all the libraries specified by DT_NEEDED entries.  If LD_PRELOAD
      specified some libraries to load, these are inserted before the actual
      dependencies in the executable's searchlist for symbol resolution.  */
-  HP_TIMING_NOW (start);
+  RTLD_TIMING_NOW (start);
   _dl_map_object_deps (main_map, preloads, npreloads, mode == trace, 0);
-  HP_TIMING_NOW (stop);
-  HP_TIMING_DIFF (diff, start, stop);
-  HP_TIMING_ACCUM_NT (load_time, diff);
+  RTLD_TIMING_NOW (stop);
+  RTLD_TIMING_DIFF (diff, start, stop);
+  RTLD_TIMING_ACCUM_NT (load_time, diff);
 
   /* Mark all objects as being in the global scope.  */
   for (i = main_map->l_searchlist.r_nlist; i > 0; )
@@ -2122,12 +2117,10 @@ ERROR: ld.so: object '%s' cannot be loaded as audit interface: %s; ignored.\n",
       if (main_map->l_info [ADDRIDX (DT_GNU_CONFLICT)] != NULL)
 	{
 	  ElfW(Rela) *conflict, *conflictend;
-#ifndef HP_TIMING_NONAVAIL
-	  hp_timing_t start;
-	  hp_timing_t stop;
-#endif
+	  RLTD_TIMING_DECLARE (start, );
+	  RLTD_TIMING_DECLARE (stop, );
 
-	  HP_TIMING_NOW (start);
+	  RTLD_TIMING_NOW (start);
 	  assert (main_map->l_info [VALIDX (DT_GNU_CONFLICTSZ)] != NULL);
 	  conflict = (ElfW(Rela) *)
 	    main_map->l_info [ADDRIDX (DT_GNU_CONFLICT)]->d_un.d_ptr;
@@ -2135,8 +2128,8 @@ ERROR: ld.so: object '%s' cannot be loaded as audit interface: %s; ignored.\n",
 	    ((char *) conflict
 	     + main_map->l_info [VALIDX (DT_GNU_CONFLICTSZ)]->d_un.d_val);
 	  _dl_resolve_conflicts (main_map, conflict, conflictend);
-	  HP_TIMING_NOW (stop);
-	  HP_TIMING_DIFF (relocate_time, start, stop);
+	  RTLD_TIMING_NOW (stop);
+	  RTLD_TIMING_DIFF (relocate_time, start, stop);
 	}
 
 
@@ -2164,15 +2157,13 @@ ERROR: ld.so: object '%s' cannot be loaded as audit interface: %s; ignored.\n",
 	 know that because it is self-contained).  */
 
       int consider_profiling = GLRO(dl_profile) != NULL;
-#ifndef HP_TIMING_NONAVAIL
-      hp_timing_t start;
-      hp_timing_t stop;
-#endif
+      RLTD_TIMING_DECLARE (start, );
+      RLTD_TIMING_DECLARE (stop, );
 
       /* If we are profiling we also must do lazy reloaction.  */
       GLRO(dl_lazy) |= consider_profiling;
 
-      HP_TIMING_NOW (start);
+      RTLD_TIMING_NOW (start);
       unsigned i = main_map->l_searchlist.r_nlist;
       while (i-- > 0)
 	{
@@ -2199,9 +2190,9 @@ ERROR: ld.so: object '%s' cannot be loaded as audit interface: %s; ignored.\n",
 	  if (l->l_tls_blocksize != 0 && tls_init_tp_called)
 	    _dl_add_to_slotinfo (l);
 	}
-      HP_TIMING_NOW (stop);
+      RTLD_TIMING_NOW (stop);
 
-      HP_TIMING_DIFF (relocate_time, start, stop);
+      RTLD_TIMING_DIFF (relocate_time, start, stop);
 
       /* Now enable profiling if needed.  Like the previous call,
 	 this has to go here because the calls it makes should use the
@@ -2244,19 +2235,17 @@ ERROR: ld.so: object '%s' cannot be loaded as audit interface: %s; ignored.\n",
 	 re-relocation, we might call a user-supplied function
 	 (e.g. calloc from _dl_relocate_object) that uses TLS data.  */
 
-#ifndef HP_TIMING_NONAVAIL
-      hp_timing_t start;
-      hp_timing_t stop;
-      hp_timing_t add;
-#endif
+      RLTD_TIMING_DECLARE (start,);
+      RLTD_TIMING_DECLARE (stop,);
+      RLTD_TIMING_DECLARE (add,);
 
-      HP_TIMING_NOW (start);
+      RTLD_TIMING_NOW (start);
       /* Mark the link map as not yet relocated again.  */
       GL(dl_rtld_map).l_relocated = 0;
       _dl_relocate_object (&GL(dl_rtld_map), main_map->l_scope, 0, 0);
-      HP_TIMING_NOW (stop);
-      HP_TIMING_DIFF (add, start, stop);
-      HP_TIMING_ACCUM_NT (relocate_time, add);
+      RTLD_TIMING_NOW (stop);
+      RTLD_TIMING_DIFF (add, start, stop);
+      RTLD_TIMING_ACCUM_NT (relocate_time, add);
     }
 
   /* Do any necessary cleanups for the startup OS interface code.
@@ -2694,38 +2683,35 @@ static void
 __attribute ((noinline))
 print_statistics (hp_timing_t *rtld_total_timep)
 {
-#ifndef HP_TIMING_NONAVAIL
+#if HP_TIMING_INLINE
   char buf[200];
+  char pbuf[30];
   char *cp;
   char *wp;
 
   /* Total time rtld used.  */
-  if (HP_SMALL_TIMING_AVAIL)
-    {
-      HP_TIMING_PRINT (buf, sizeof (buf), *rtld_total_timep);
-      _dl_debug_printf ("\nruntime linker statistics:\n"
-			"  total startup time in dynamic loader: %s\n", buf);
+  HP_TIMING_PRINT (buf, sizeof (buf), *rtld_total_timep);
+  _dl_debug_printf ("\nruntime linker statistics:\n"
+		    "  total startup time in dynamic loader: %s\n", buf);
 
-      /* Print relocation statistics.  */
-      char pbuf[30];
-      HP_TIMING_PRINT (buf, sizeof (buf), relocate_time);
-      cp = _itoa ((1000ULL * relocate_time) / *rtld_total_timep,
-		  pbuf + sizeof (pbuf), 10, 0);
-      wp = pbuf;
-      switch (pbuf + sizeof (pbuf) - cp)
-	{
-	case 3:
-	  *wp++ = *cp++;
-	case 2:
-	  *wp++ = *cp++;
-	case 1:
-	  *wp++ = '.';
-	  *wp++ = *cp++;
-	}
-      *wp = '\0';
-      _dl_debug_printf ("\
-	    time needed for relocation: %s (%s%%)\n", buf, pbuf);
+  /* Print relocation statistics.  */
+  HP_TIMING_PRINT (buf, sizeof (buf), relocate_time);
+  cp = _itoa ((1000ULL * relocate_time) / *rtld_total_timep,
+	      pbuf + sizeof (pbuf), 10, 0);
+  wp = pbuf;
+  switch (pbuf + sizeof (pbuf) - cp)
+    {
+    case 3:
+      *wp++ = *cp++;
+    case 2:
+      *wp++ = *cp++;
+    case 1:
+      *wp++ = '.';
+      *wp++ = *cp++;
     }
+  *wp = '\0';
+  _dl_debug_printf ("\
+	    time needed for relocation: %s (%s%%)\n", buf, pbuf);
 #endif
 
   unsigned long int num_relative_relocations = 0;
@@ -2766,29 +2752,24 @@ print_statistics (hp_timing_t *rtld_total_timep)
 		    GL(dl_num_cache_relocations),
 		    num_relative_relocations);
 
-#ifndef HP_TIMING_NONAVAIL
+#if HP_TIMING_INLINE
   /* Time spend while loading the object and the dependencies.  */
-  if (HP_SMALL_TIMING_AVAIL)
+  HP_TIMING_PRINT (buf, sizeof (buf), load_time);
+  cp = _itoa ((1000ULL * load_time) / *rtld_total_timep,
+	      pbuf + sizeof (pbuf), 10, 0);
+  wp = pbuf;
+  switch (pbuf + sizeof (pbuf) - cp)
     {
-      char pbuf[30];
-      HP_TIMING_PRINT (buf, sizeof (buf), load_time);
-      cp = _itoa ((1000ULL * load_time) / *rtld_total_timep,
-		  pbuf + sizeof (pbuf), 10, 0);
-      wp = pbuf;
-      switch (pbuf + sizeof (pbuf) - cp)
-	{
-	case 3:
-	  *wp++ = *cp++;
-	case 2:
-	  *wp++ = *cp++;
-	case 1:
-	  *wp++ = '.';
-	  *wp++ = *cp++;
-	}
-      *wp = '\0';
-      _dl_debug_printf ("\
-	   time needed to load objects: %s (%s%%)\n",
-				buf, pbuf);
+    case 3:
+      *wp++ = *cp++;
+    case 2:
+      *wp++ = *cp++;
+    case 1:
+      *wp++ = '.';
+      *wp++ = *cp++;
     }
+  *wp = '\0';
+  _dl_debug_printf ("\
+	   time needed to load objects: %s (%s%%)\n", buf, pbuf);
 #endif
 }
