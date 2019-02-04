@@ -18,8 +18,11 @@ ifeq ($(build-shared),yes)
 # This is needed for DSO loading from static binaries.
 sysdep-dl-routines += dl-static
 endif
+# lld doesn't support no-tls-get-addr-optimize option (b/73666526#comment23).
+ifeq ($(with-lld),no)
 # Otherwise tst-tls-dlinfo fails due to tst-tlsmod2.so using static tls.
 LDFLAGS-tst-tlsmod2.so += -Wl,--no-tls-get-addr-optimize
+endif
 endif
 
 ifeq ($(subdir),misc)
