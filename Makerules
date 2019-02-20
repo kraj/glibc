@@ -227,7 +227,7 @@ endif
 
 MOARFLAGS =
 ifeq ($(with-clang),yes)
-MOARFLAGS = -no-integrated-as
+MOARFLAGS = -no-integrated-as -funique-section-names
 endif
 
 ifdef gen-py-const-headers

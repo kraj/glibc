@@ -138,7 +138,7 @@ CFLAGS-siglist.c += $(fno-unit-at-a-time)
 
 # The clang integrated assembler does not like the '@@@' trickery here.
 ifeq ($(with-clang),yes)
-CFLAGS-errlist.c += -no-integrated-as
+CFLAGS-errlist.c += -no-integrated-as -funique-section-names
 endif
 
 # The following is a hack since we must compile scanf1{5,7}.c without any

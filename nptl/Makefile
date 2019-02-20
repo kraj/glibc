@@ -227,7 +227,7 @@ CFLAGS-pt-system.c += -fexceptions
 
 # Workaround for clang assembler problem with ifunc relocs, b/119574415
 ifeq ($(with-clang),yes)
-CFLAGS-pt-vfork.c += -no-integrated-as
+CFLAGS-pt-vfork.c += -no-integrated-as -funique-section-names
 endif
 
 LDLIBS-tst-once5 = -lstdc++
