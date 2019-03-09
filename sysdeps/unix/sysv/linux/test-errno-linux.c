@@ -162,7 +162,7 @@ do_test (void)
      CONFIG_QUOTA, and may return EPERM if called within certain types
      of containers.  */
   fails |= test_wrp2 (LIST (ENODEV, ENOSYS, EPERM),
-		      quotactl, Q_GETINFO, NULL, -1, (caddr_t) &dqblk);
+		      quotactl, Q_GETINFO, NULL, -1, (char *) &dqblk);
   fails |= test_wrp (EINVAL, sched_getparam, -1, &sch_param);
   fails |= test_wrp (EINVAL, sched_getscheduler, -1);
   fails |= test_wrp (EINVAL, sched_get_priority_max, -1);
