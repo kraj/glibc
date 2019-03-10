@@ -26,9 +26,6 @@
 /* Get definition of needed basic types.  */
 #include <bits/types.h>
 
-/* Get __FD_* definitions.  */
-#include <bits/select.h>
-
 /* Get sigset_t.  */
 #include <bits/types/sigset_t.h>
 
@@ -40,48 +37,8 @@
 #endif
 #include <bits/types/suseconds_t.h>
 
-/* The fd_set member is required to be an array of longs.  */
-typedef long int __fd_mask;
-
-/* Some versions of <linux/posix_types.h> define this macros.  */
-#undef	__NFDBITS
-/* It's easier to assume 8-bit bytes than to get CHAR_BIT.  */
-#define __NFDBITS	(8 * (int) sizeof (__fd_mask))
-#define	__FD_ELT(d)	((d) / __NFDBITS)
-#define	__FD_MASK(d)	((__fd_mask) (1UL << ((d) % __NFDBITS)))
-
-/* fd_set for select and pselect.  */
-typedef struct
-  {
-    /* XPG4.2 requires this member name.  Otherwise avoid the name
-       from the global namespace.  */
-#ifdef __USE_XOPEN
-    __fd_mask fds_bits[__FD_SETSIZE / __NFDBITS];
-# define __FDS_BITS(set) ((set)->fds_bits)
-#else
-    __fd_mask __fds_bits[__FD_SETSIZE / __NFDBITS];
-# define __FDS_BITS(set) ((set)->__fds_bits)
-#endif
-  } fd_set;
-
-/* Maximum number of file descriptors in `fd_set'.  */
-#define	FD_SETSIZE		__FD_SETSIZE
-
-#ifdef __USE_MISC
-/* Sometimes the fd_set member is assumed to have this type.  */
-typedef __fd_mask fd_mask;
-
-/* Number of bits per word of `fd_set' (some code assumes this is 32).  */
-# define NFDBITS		__NFDBITS
-#endif
-
-
-/* Access macros for `fd_set'.  */
-#define	FD_SET(fd, fdsetp)	__FD_SET (fd, fdsetp)
-#define	FD_CLR(fd, fdsetp)	__FD_CLR (fd, fdsetp)
-#define	FD_ISSET(fd, fdsetp)	__FD_ISSET (fd, fdsetp)
-#define	FD_ZERO(fdsetp)		__FD_ZERO (fdsetp)
-
+/* Get fd_set and its access macros.  */
+#include <bits/fd_set.h>
 
 __BEGIN_DECLS
 
@@ -110,12 +67,6 @@ extern int pselect (int __nfds, fd_set *__restrict __readfds,
 		    fd_set *__restrict __exceptfds,
 		    const struct timespec *__restrict __timeout,
 		    const __sigset_t *__restrict __sigmask);
-#endif
-
-
-/* Define some inlines helping to catch common problems.  */
-#if __USE_FORTIFY_LEVEL > 0 && defined __GNUC__
-# include <bits/select2.h>
 #endif
 
 __END_DECLS

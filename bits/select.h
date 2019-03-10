@@ -15,7 +15,10 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef _SYS_SELECT_H
+#ifndef _BITS_SELECT_H
+#define _BITS_SELECT_H 1
+
+#ifndef _BITS_FD_SET_H
 # error "Never use <bits/select.h> directly; include <sys/select.h> instead."
 #endif
 
@@ -35,3 +38,5 @@
   ((void) (__FDS_BITS (s)[__FD_ELT(d)] &= ~__FD_MASK(d)))
 #define __FD_ISSET(d, s) \
   ((__FDS_BITS (s)[__FD_ELT (d)] & __FD_MASK (d)) != 0)
+
+#endif /* bits/select.h */

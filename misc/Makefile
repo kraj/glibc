@@ -28,12 +28,13 @@ headers :=								\
 	libgen.h limits.h mntent.h paths.h regexp.h search.h sgtty.h	\
 	stab.h stdc-predef.h syscall.h sysexits.h syslog.h ttyent.h	\
 	values.h							\
-	bits/err-ldbl.h bits/error-ldbl.h bits/error.h bits/hwcap.h	\
-	bits/ioctl-types.h bits/ioctls.h bits/libc-header-start.h	\
-	bits/mman.h bits/param.h bits/select.h bits/select2.h		\
-	bits/stab.def bits/syslog-ldbl.h bits/syslog-path.h		\
-	bits/syslog.h bits/sysmacros.h bits/types/struct_iovec.h	\
-	bits/uio-ext.h bits/uio_lim.h bits/xopen_lim.h			\
+	bits/err-ldbl.h bits/error-ldbl.h bits/error.h bits/fd_set.h	\
+	bits/hwcap.h bits/ioctl-types.h bits/ioctls.h			\
+	bits/libc-header-start.h bits/mman.h bits/param.h		\
+	bits/select.h bits/select2.h bits/stab.def bits/syslog-ldbl.h	\
+	bits/syslog-path.h bits/syslog.h bits/sysmacros.h		\
+	bits/types/struct_iovec.h bits/uio-ext.h bits/uio_lim.h		\
+	bits/xopen_lim.h						\
 	gnu/libc-version.h						\
 	sys/auxv.h sys/cdefs.h sys/dir.h sys/file.h sys/ioctl.h		\
 	sys/mman.h sys/param.h sys/ptrace.h sys/queue.h sys/reboot.h	\

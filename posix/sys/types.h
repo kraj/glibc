@@ -97,7 +97,7 @@ __BEGIN_DECLS
 # include <endian.h>
 
 /* It also defines `fd_set' and the FD_* macros for `select'.  */
-# include <sys/select.h>
+# include <bits/fd_set.h>
 #endif /* Use misc.  */
 
 __END_DECLS

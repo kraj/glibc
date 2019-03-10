@@ -34,6 +34,12 @@ Deprecated and removed features, and other changes affecting compatibility:
   named uint8_t, uint16_t, etc. from <stdint.h>.  There is no standardized
   replacement for register_t.
 
+* In the default conformance mode, <sys/types.h> no longer includes all of
+  <sys/select.h>; only the types fd_set and fd_mask, and the macros FD_SET,
+  FD_CLR, FD_ISSET, FD_ZERO, FD_SETSIZE, and NFDBITS, are made available.
+  (In strict conformance modes, <sys/types.h> has never included any of
+  <sys/select.h> and this is unchanged.).
+
 Changes to build and runtime requirements:
 
 * GCC 6.2 or later is required to build the GNU C Library.

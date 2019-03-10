@@ -16,7 +16,10 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef _SYS_SELECT_H
+#ifndef _BITS_SELECT2_H
+#define _BITS_SELECT2_H 1
+
+#ifndef _BITS_FD_SET_H
 # error "Never include <bits/select2.h> directly; use <sys/select.h> instead."
 #endif
 
@@ -33,3 +36,5 @@ extern long int __fdelt_warn (long int __d)
 	 ? (__d / __NFDBITS)						    \
 	 : __fdelt_warn (__d))						    \
       : __fdelt_chk (__d)); })
+
+#endif
