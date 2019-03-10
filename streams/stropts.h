@@ -21,16 +21,8 @@
 #include <features.h>
 #include <bits/types.h>
 #include <bits/xtitypes.h>
-
-#ifndef __gid_t_defined
-typedef __gid_t gid_t;
-# define __gid_t_defined
-#endif
-
-#ifndef __uid_t_defined
-typedef __uid_t uid_t;
-# define __uid_t_defined
-#endif
+#include <bits/types/gid_t.h>
+#include <bits/types/uid_t.h>
 
 typedef __t_scalar_t t_scalar_t;
 typedef __t_uscalar_t t_uscalar_t;
