@@ -1340,10 +1340,14 @@ LIBC_LINKER_FEATURE([-z execstack], [-Wl,-z,execstack],
 		    [libc_cv_z_execstack=yes], [libc_cv_z_execstack=no])
 AC_SUBST(libc_cv_z_execstack)
 
-LIBC_LINKER_FEATURE([--no-dynamic-linker],
-		    [-Wl,--no-dynamic-linker],
-		    [libc_cv_no_dynamic_linker=yes],
-		    [libc_cv_no_dynamic_linker=no])
+if test "$with_lld" = no; then
+  LIBC_LINKER_FEATURE([--no-dynamic-linker],
+		      [-Wl,--no-dynamic-linker],
+		      [libc_cv_no_dynamic_linker=yes],
+		      [libc_cv_no_dynamic_linker=no])
+else
+  libc_cv_no_dynamic_linker=yes
+fi
 LIBC_CONFIG_VAR([have-no-dynamic-linker], [$libc_cv_no_dynamic_linker])
 
 AC_CACHE_CHECK(for -static-pie, libc_cv_static_pie, [dnl
