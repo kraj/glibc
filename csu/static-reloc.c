@@ -19,8 +19,9 @@
 #if ENABLE_STATIC_PIE
 #include <ldsodefs.h>
 
-void
+int
 _dl_relocate_static_pie (void)
 {
+  return 0;
 }
 #endif

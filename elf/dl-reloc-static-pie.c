@@ -30,7 +30,7 @@
 
 /* Relocate static executable with PIE.  */
 
-void
+int
 _dl_relocate_static_pie (void)
 {
   struct link_map *main_map = _dl_get_dl_main_map ();
@@ -61,5 +61,7 @@ _dl_relocate_static_pie (void)
 #endif
                         );
   main_map->l_relocated = 1;
+
+  return 1;
 }
 #endif
