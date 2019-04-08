@@ -16,7 +16,7 @@ Major new features:
 * The dynamic linker accepts the --preload argument to preload shared
   objects, in addition to the LD_PRELOAD environment variable.
 
-* On Linux, the gettid function has been added.
+* On Linux, the gettid and tgkill functions have been added.
 
 * Minguo (Republic of China) calendar support has been added as an
   alternative calendar for the following locales: zh_TW, cmn_TW, hak_TW,
