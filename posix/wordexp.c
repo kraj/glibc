@@ -25,32 +25,17 @@
 #include <libintl.h>
 #include <paths.h>
 #include <pwd.h>
-#include <signal.h>
 #include <stdbool.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <sys/param.h>
-#include <sys/stat.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include <wchar.h>
 #include <wordexp.h>
-#include <kernel-features.h>
+#include <spawn.h>
 #include <scratch_buffer.h>
-
-#include <libc-lock.h>
 #include <_itoa.h>
-
-/* Undefine the following line for the production version.  */
-/* #define NDEBUG 1 */
 #include <assert.h>
-
-/* Get some device information.  */
-#include <device-nrs.h>
 
 /*
  * This is a recursive-descent-style word expansion routine.
@@ -812,61 +797,90 @@ parse_arith (char **word, size_t *word_length, size_t *max_length,
   return WRDE_SYNTAX;
 }
 
-/* Function called by child process in exec_comm() */
-static inline void
-__attribute__ ((always_inline))
-exec_comm_child (char *comm, int *fildes, int showerr, int noexec)
+static char **
+create_environment (void)
 {
-  const char *args[4] = { _PATH_BSHELL, "-c", comm, NULL };
+  size_t s = 0;
 
-  /* Execute the command, or just check syntax? */
-  if (noexec)
-    args[1] = "-nc";
+  /* Calculate total environment size, including 'IFS' if is present.  */
+  for (char **ep = __environ; *ep != NULL; ep++, s++);
 
-  /* Redirect output.  */
-  if (__glibc_likely (fildes[1] != STDOUT_FILENO))
+  /* Include final NULL pointer.  */
+  char **newenviron = malloc (s * sizeof (char*));
+  if (newenviron == NULL)
+    return NULL;
+
+  /* Copy current environment excluding 'IFS', to make sure the subshell
+     doesn't field-split on our behalf. */
+  size_t i, j;
+  for (i = 0, j = 0; i < s; i++)
+    if (strncmp (__environ[i], "IFS=", sizeof ("IFS=")-1) != 0)
+      newenviron[j++] = __strdup (__environ[i]);
+  newenviron[j] = NULL;
+
+  return newenviron;
+}
+
+static void
+free_environment (char **environ)
+{
+  for (char **ep = environ; *ep != NULL; ep++)
+    free (*ep);
+  free (environ);
+}
+
+/* Function called by child process in exec_comm() */
+static pid_t
+exec_comm_child (char *comm, int *fildes, bool showerr, bool noexec)
+{
+  pid_t pid = -1;
+
+  /* Execute the command, or just check syntax?  */
+  const char *args[] = { _PATH_BSHELL, noexec ? "-nc" : "-c", comm, NULL };
+
+  posix_spawn_file_actions_t fa;
+  /* posix_spawn_file_actions_init does not fail.  */
+  __posix_spawn_file_actions_init (&fa);
+
+  /* Redirect output.  For check syntax only (noexec being true), exec_comm
+     explicits sets fildes[1] to -1, so check its value to avoid a failure in
+     __posix_spawn_file_actions_adddup2.  */
+  if (fildes[1] != -1)
     {
-      __dup2 (fildes[1], STDOUT_FILENO);
-      __close (fildes[1]);
+      if (__glibc_likely (fildes[1] != STDOUT_FILENO))
+	{
+	  if (__posix_spawn_file_actions_adddup2 (&fa, fildes[1],
+						  STDOUT_FILENO) != 0
+	      || __posix_spawn_file_actions_addclose (&fa, fildes[1]) != 0)
+	    goto out;
+	}
+      else
+	/* Reset the close-on-exec flag (if necessary).  */
+	if (__posix_spawn_file_actions_adddup2 (&fa, fildes[1], fildes[1])
+	    != 0)
+	  goto out;
     }
-  else
-    /* Reset the close-on-exec flag (if necessary).  */
-    __fcntl (fildes[1], F_SETFD, 0);
 
   /* Redirect stderr to /dev/null if we have to.  */
-  if (showerr == 0)
-    {
-      struct stat64 st;
-      int fd;
-      __close (STDERR_FILENO);
-      fd = __open (_PATH_DEVNULL, O_WRONLY);
-      if (fd >= 0 && fd != STDERR_FILENO)
-	{
-	  __dup2 (fd, STDERR_FILENO);
-	  __close (fd);
-	}
-      /* Be paranoid.  Check that we actually opened the /dev/null
-	 device.  */
-      if (__builtin_expect (__fxstat64 (_STAT_VER, STDERR_FILENO, &st), 0) != 0
-	  || __builtin_expect (S_ISCHR (st.st_mode), 1) == 0
-#if defined DEV_NULL_MAJOR && defined DEV_NULL_MINOR
-	  || st.st_rdev != __gnu_dev_makedev (DEV_NULL_MAJOR, DEV_NULL_MINOR)
-#endif
-	  )
-	/* It's not the /dev/null device.  Stop right here.  The
-	   problem is: how do we stop?  We use _exit() with an
-	   hopefully unusual exit code.  */
-	_exit (90);
-    }
+  if (!showerr)
+    if (__posix_spawn_file_actions_addopen (&fa, STDERR_FILENO, _PATH_DEVNULL,
+					    O_WRONLY, 0) != 0)
+      goto out;
 
-  /* Make sure the subshell doesn't field-split on our behalf. */
-  __unsetenv ("IFS");
+  char **newenv = create_environment ();
+  if (newenv == NULL)
+    goto out;
 
-  __close (fildes[0]);
-  __execve (_PATH_BSHELL, (char *const *) args, __environ);
+  /* pid is unset if posix_spawn fails, so it keep the original value
+     of -1.  */
+  __posix_spawn (&pid, _PATH_BSHELL, &fa, NULL, (char *const *) args, newenv);
 
-  /* Bad.  What now?  */
-  abort ();
+  free_environment (newenv);
+
+out:
+  __posix_spawn_file_actions_destroy (&fa);
+
+  return pid;
 }
 
 /* Function to execute a command and retrieve the results */
@@ -884,13 +898,13 @@ exec_comm (char *comm, char **word, size_t *word_length, size_t *max_length,
   size_t maxnewlines = 0;
   char buffer[bufsize];
   pid_t pid;
-  int noexec = 0;
+  bool noexec = false;
 
   /* Do nothing if command substitution should not succeed.  */
   if (flags & WRDE_NOCMD)
     return WRDE_CMDSUB;
 
-  /* Don't fork() unless necessary */
+  /* Don't posix_spawn() unless necessary */
   if (!comm || !*comm)
     return 0;
 
@@ -898,18 +912,14 @@ exec_comm (char *comm, char **word, size_t *word_length, size_t *max_length,
     return WRDE_NOSPACE;
 
  again:
-  if ((pid = __fork ()) < 0)
+  pid = exec_comm_child (comm, fildes, noexec ? false : flags & WRDE_SHOWERR,
+			 noexec);
+  if (pid < 0)
     {
-      /* Bad */
       __close (fildes[0]);
       __close (fildes[1]);
       return WRDE_NOSPACE;
     }
-
-  if (pid == 0)
-    exec_comm_child (comm, fildes, noexec ? 0 : flags & WRDE_SHOWERR, noexec);
-
-  /* Parent */
 
   /* If we are just testing the syntax, only wait.  */
   if (noexec)
@@ -1091,7 +1101,7 @@ exec_comm (char *comm, char **word, size_t *word_length, size_t *max_length,
   /* Check for syntax error (re-execute but with "-n" flag) */
   if (buflen < 1 && status != 0)
     {
-      noexec = 1;
+      noexec = true;
       goto again;
     }
 
@@ -1143,26 +1153,9 @@ parse_comm (char **word, size_t *word_length, size_t *max_length,
 	      /* Go -- give script to the shell */
 	      if (comm)
 		{
-#ifdef __libc_ptf_call
-		  /* We do not want the exec_comm call to be cut short
-		     by a thread cancellation since cleanup is very
-		     ugly.  Therefore disable cancellation for
-		     now.  */
-		  // XXX Ideally we do want the thread being cancelable.
-		  // XXX If demand is there we'll change it.
-		  int state = PTHREAD_CANCEL_ENABLE;
-		  __libc_ptf_call (__pthread_setcancelstate,
-				   (PTHREAD_CANCEL_DISABLE, &state), 0);
-#endif
-
+		  /* posix_spawn already handles thread cancellation.  */
 		  error = exec_comm (comm, word, word_length, max_length,
 				     flags, pwordexp, ifs, ifs_white);
-
-#ifdef __libc_ptf_call
-		  __libc_ptf_call (__pthread_setcancelstate,
-				   (state, NULL), 0);
-#endif
-
 		  free (comm);
 		}
 
