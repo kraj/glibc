@@ -23,10 +23,11 @@
 #include <not-cancel.h>
 #include <local-setxid.h>
 #include <shlib-compat.h>
-#include <sigsetops.h>
-#include <internal-signals.h>
-#include <ldsodefs.h>
+#include <nptl/pthreadP.h>
 #include <ctype.h>
+#include <dl-sysdep.h>
+#include <libc-pointer-arith.h>
+#include <stackmap.h>
 #include "spawn_int.h"
 
 /* The Linux implementation of posix_spawn{p} uses the clone syscall directly
@@ -70,7 +71,6 @@
 # define STACK(__stack, __stack_size) (__stack + __stack_size)
 #endif
 
-
 struct posix_spawn_args
 {
   sigset_t oldmask;
@@ -79,36 +79,10 @@ struct posix_spawn_args
   const posix_spawn_file_actions_t *fa;
   const posix_spawnattr_t *restrict attr;
   char *const *argv;
-  ptrdiff_t argc;
   char *const *envp;
   int xflags;
   int err;
 };
-
-/* Older version requires that shell script without shebang definition
-   to be called explicitly using /bin/sh (_PATH_BSHELL).  */
-static void
-maybe_script_execute (struct posix_spawn_args *args)
-{
-  if (SHLIB_COMPAT (libc, GLIBC_2_2, GLIBC_2_15)
-      && (args->xflags & SPAWN_XFLAGS_TRY_SHELL) && errno == ENOEXEC)
-    {
-      char *const *argv = args->argv;
-      ptrdiff_t argc = args->argc;
-
-      /* Construct an argument list for the shell.  */
-      char *new_argv[argc + 2];
-      new_argv[0] = (char *) _PATH_BSHELL;
-      new_argv[1] = (char *) args->file;
-      if (argc > 1)
-	memcpy (new_argv + 2, argv + 1, argc * sizeof (char *));
-      else
-	new_argv[2] = NULL;
-
-      /* Execute the shell.  */
-      args->exec (new_argv[0], new_argv, args->envp);
-    }
-}
 
 /* Close all file descriptor up to FROM by interacting /proc/self/fd.  */
 static bool
@@ -152,7 +126,7 @@ spawn_closefrom (int from)
    attributes, and file actions.  It run on its own stack (provided by the
    posix_spawn call).  */
 static int
-__spawni_child (void *arguments)
+spawni_child (void *arguments)
 {
   struct posix_spawn_args *args = arguments;
   const posix_spawnattr_t *restrict attr = args->attr;
@@ -330,11 +304,6 @@ __spawni_child (void *arguments)
 
   args->exec (args->file, args->argv, args->envp);
 
-  /* This is compatibility function required to enable posix_spawn run
-     script without shebang definition for older posix_spawn versions
-     (2.15).  */
-  maybe_script_execute (args);
-
 fail:
   /* errno should have an appropriate non-zero value; otherwise,
      there's a bug in glibc or the kernel.  For lack of an error code
@@ -345,18 +314,92 @@ fail:
   _exit (SPAWN_ERROR);
 }
 
-/* Spawn a new process executing PATH with the attributes describes in *ATTRP.
-   Before running the process perform the actions described in FILE-ACTIONS. */
 static int
-__spawnix (pid_t * pid, const char *file,
-	   const posix_spawn_file_actions_t * file_actions,
-	   const posix_spawnattr_t * attrp, char *const argv[],
-	   char *const envp[], int xflags,
-	   int (*exec) (const char *, char *const *, char *const *))
+spawni_clone (struct posix_spawn_args *args, void *stack, size_t stack_size,
+	      pid_t *pid)
 {
-  pid_t new_pid;
-  struct posix_spawn_args args;
   int ec;
+  pid_t new_pid;
+
+  /* The clone flags used will create a new child that will run in the same
+     memory space (CLONE_VM) and the execution of calling thread will be
+     suspend until the child calls execve or _exit.
+
+     Also since the calling thread execution will be suspend, there is not
+     need for CLONE_SETTLS.  Although parent and child share the same TLS
+     namespace, there will be no concurrent access for TLS variables (errno
+     for instance).  */
+  new_pid = CLONE (spawni_child, STACK (stack, stack_size), stack_size,
+		   CLONE_VM | CLONE_VFORK | SIGCHLD, args);
+
+  /* It needs to collect the case where the auxiliary process was created
+     but failed to execute the file (due either any preparation step or
+     for execve itself).  */
+  if (new_pid > 0)
+    {
+      /* Also, it handles the unlikely case where the auxiliary process was
+	 terminated before calling execve as if it was successfully.  The
+	 args.err is set to 0 as default and changed to a positive value
+	 only in case of failure, so in case of premature termination
+	 due a signal args.err will remain zeroed and it will be up to
+	 caller to actually collect it.  */
+      ec = args->err;
+      if (ec > 0)
+	/* There still an unlikely case where the child is cancelled after
+	   setting args.err, due to a positive error value.  Also there is
+	   possible pid reuse race (where the kernel allocated the same pid
+	   to an unrelated process).  Unfortunately due synchronization
+	   issues where the kernel might not have the process collected
+	   the waitpid below can not use WNOHANG.  */
+	__waitpid (new_pid, NULL, 0);
+    }
+  else
+    ec = -new_pid;
+
+  if ((ec == 0) && (pid != NULL))
+    *pid = new_pid;
+
+  return ec;
+}
+
+#if SHLIB_COMPAT (libc, GLIBC_2_2, GLIBC_2_15)
+/* This is compatibility function required to enable posix_spawn run
+   script without shebang definition for older posix_spawn versions
+   (2.15).  */
+static int
+execve_compat (const char *filename, char *const argv[], char *const envp[])
+{
+  __execve (filename, argv, envp);
+
+  if (errno == ENOEXEC)
+    {
+      char *const *cargv = argv;
+      ptrdiff_t argc = 0;
+      while (cargv[argc++] != NULL);
+
+      /* Construct an argument list for the shell.  */
+      char *new_argv[argc + 2];
+      new_argv[0] = (char *) _PATH_BSHELL;
+      new_argv[1] = (char *) filename;
+      if (argc > 1)
+	memcpy (new_argv + 2, argv + 1, argc * sizeof (char *));
+      else
+	new_argv[2] = NULL;
+
+      /* Execute the shell.  */
+      __execve (new_argv[0], new_argv, envp);
+    }
+
+  return -1;
+}
+
+/* Allocates a stack using mmap to call clone.  The stack size is based on
+   number of arguments since it would be used on compat mode which may call
+   execvpe/execve_compat.  */
+static int
+spawnix_compat (struct posix_spawn_args *args, pid_t *pid)
+{
+  char *const *argv = args->argv;
 
   /* To avoid imposing hard limits on posix_spawn{p} the total number of
      arguments is first calculated to allocate a mmap to hold all possible
@@ -375,9 +418,6 @@ __spawnix (pid_t * pid, const char *file,
 	return errno;
       }
 
-  int prot = (PROT_READ | PROT_WRITE
-	     | ((GL (dl_stack_flags) & PF_X) ? PROT_EXEC : 0));
-
   size_t argv_size = (argc * sizeof (void *));
   /* We need at least a few pages in case the compiler's stack checking is
      enabled.  In some configs, it is known to use at least 24KiB.  We use
@@ -386,74 +426,69 @@ __spawnix (pid_t * pid, const char *file,
      It also acts the slack for spawn_closefrom (including MIPS64 getdents64
      where it might use about 1k extra stack space.  */
   argv_size += (32 * 1024);
-  size_t stack_size = ALIGN_UP (argv_size, GLRO(dl_pagesize));
-  void *stack = __mmap (NULL, stack_size, prot,
-			MAP_PRIVATE | MAP_ANONYMOUS | MAP_STACK, -1, 0);
+
+  /* Allocate a stack with an extra guard page.  */
+  size_t guard_size = stack_guard_size ();
+  size_t stack_size = guard_size + ALIGN_UP (argv_size, __getpagesize ());
+  void *stack = stack_allocate (stack_size, guard_size);
   if (__glibc_unlikely (stack == MAP_FAILED))
     return errno;
 
-  /* Disable asynchronous cancellation.  */
-  int state;
-  __libc_ptf_call (__pthread_setcancelstate,
-                   (PTHREAD_CANCEL_DISABLE, &state), 0);
-
-  /* Child must set args.err to something non-negative - we rely on
-     the parent and child sharing VM.  */
-  args.err = 0;
-  args.file = file;
-  args.exec = exec;
-  args.fa = file_actions;
-  args.attr = attrp ? attrp : &(const posix_spawnattr_t) { 0 };
-  args.argv = argv;
-  args.argc = argc;
-  args.envp = envp;
-  args.xflags = xflags;
-
-  __libc_signal_block_all (&args.oldmask);
-
-  /* The clone flags used will create a new child that will run in the same
-     memory space (CLONE_VM) and the execution of calling thread will be
-     suspend until the child calls execve or _exit.
-
-     Also since the calling thread execution will be suspend, there is not
-     need for CLONE_SETTLS.  Although parent and child share the same TLS
-     namespace, there will be no concurrent access for TLS variables (errno
-     for instance).  */
-  new_pid = CLONE (__spawni_child, STACK (stack, stack_size), stack_size,
-		   CLONE_VM | CLONE_VFORK | SIGCHLD, &args);
-
-  /* It needs to collect the case where the auxiliary process was created
-     but failed to execute the file (due either any preparation step or
-     for execve itself).  */
-  if (new_pid > 0)
-    {
-      /* Also, it handles the unlikely case where the auxiliary process was
-	 terminated before calling execve as if it was successfully.  The
-	 args.err is set to 0 as default and changed to a positive value
-	 only in case of failure, so in case of premature termination
-	 due a signal args.err will remain zeroed and it will be up to
-	 caller to actually collect it.  */
-      ec = args.err;
-      if (ec > 0)
-	/* There still an unlikely case where the child is cancelled after
-	   setting args.err, due to a positive error value.  Also there is
-	   possible pid reuse race (where the kernel allocated the same pid
-	   to an unrelated process).  Unfortunately due synchronization
-	   issues where the kernel might not have the process collected
-	   the waitpid below can not use WNOHANG.  */
-	__waitpid (new_pid, NULL, 0);
-    }
-  else
-    ec = -new_pid;
+  int ec = spawni_clone (args, stack, stack_size, pid);
 
   __munmap (stack, stack_size);
 
-  if ((ec == 0) && (pid != NULL))
-    *pid = new_pid;
+  return ec;
+}
+#endif
 
-  __libc_signal_restore_set (&args.oldmask);
+/* For SPAWN_XFLAGS_TRY_SHELL we need to execute a script even without
+   a shebang.  To accomplish it we pass as callback to spawni_child
+   __execvpe (which call maybe_script_execute for such case) or
+   execve_compat (which mimics the semantic using execve).  */
+static int
+spawn_process (struct posix_spawn_args *args, pid_t *pid)
+{
+  int ec;
 
-  __libc_ptf_call (__pthread_setcancelstate, (state, NULL), 0);
+#if SHLIB_COMPAT (libc, GLIBC_2_2, GLIBC_2_15)
+  if (args->xflags & SPAWN_XFLAGS_TRY_SHELL)
+    {
+      args->exec = args->xflags & SPAWN_XFLAGS_USE_PATH
+		   ? __execvpe  : execve_compat;
+      ec = spawnix_compat (args, pid);
+    }
+  else
+#endif
+    {
+      args->exec = args->xflags & SPAWN_XFLAGS_USE_PATH
+		   ? __execvpex : __execve;
+
+      /* spawni_clone stack usage need to take in consideration spawni_child
+	 stack usage and subsequent functions called:
+
+	 - sigprocmask: might allocate an extra sigset_t (128 bytes).
+	 - __libc_sigaction: allocate a struct kernel_sigaction (144 bytes on
+	   64-bit, 136 on 32-bit).
+	 - __sched_setparam, __sched_setscheduler, __setsig, __setpgid,
+	   local_seteuid, local_setegid, __close_nocancel, __getrlimit64,
+	   __close_nocancel, __open_nocancel, __dup2, __chdir, __fchdir:
+	   and direct syscall.
+	 - __fcntl: wrapper only uses local variables.
+	 - spawn_closefrom: uses up to 1024 bytes as local buffer
+	   - __direntries_read
+	     - __getdents64: MIPS64 uses up to buffer size used, 1024 in this
+	       specific usage.
+	   - __direntries_next: local variables.
+	   - __close_nocancel: direct syscall.
+         - execvpe allocates at least (NAME_MAX + 1) + PATH_MAX to create the
+	   combination of PATH entry and program name (1024 + 255 + 1).
+
+	 It allocates 2048 plus some stack for automatic variables and function
+	 calls.  */
+      char stack[2560];
+      ec = spawni_clone (args, stack, sizeof stack, pid);
+    }
 
   return ec;
 }
@@ -462,12 +497,34 @@ __spawnix (pid_t * pid, const char *file,
    Before running the process perform the actions described in FILE-ACTIONS. */
 int
 __spawni (pid_t * pid, const char *file,
-	  const posix_spawn_file_actions_t * acts,
+	  const posix_spawn_file_actions_t * file_actions,
 	  const posix_spawnattr_t * attrp, char *const argv[],
 	  char *const envp[], int xflags)
 {
-  /* It uses __execvpex to avoid run ENOEXEC in non compatibility mode (it
-     will be handled by maybe_script_execute).  */
-  return __spawnix (pid, file, acts, attrp, argv, envp, xflags,
-		    xflags & SPAWN_XFLAGS_USE_PATH ? __execvpex :__execve);
+  /* Child must set args.err to something non-negative - we rely on
+     the parent and child sharing VM.  */
+  struct posix_spawn_args args = {
+    .err = 0,
+    .file = file,
+    .fa = file_actions,
+    .attr = attrp ? attrp : &(const posix_spawnattr_t) { 0 },
+    .argv = argv,
+    .envp = envp,
+    .xflags = xflags
+  };
+
+  /* Disable asynchronous cancellation.  */
+  int state;
+  __libc_ptf_call (__pthread_setcancelstate,
+                   (PTHREAD_CANCEL_DISABLE, &state), 0);
+
+  __libc_signal_block_all (&args.oldmask);
+
+  int ec = spawn_process (&args, pid);
+
+  __libc_signal_restore_set (&args.oldmask);
+
+  __libc_ptf_call (__pthread_setcancelstate, (state, NULL), 0);
+
+  return ec;
 }

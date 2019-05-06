@@ -30,4 +30,7 @@
 /* Default to a non-executable stack.  */
 #define DEFAULT_STACK_PERMS (PF_R|PF_W)
 
+/* IA-64 uses a normal stack and a register stack.  */
+#define NEED_SEPARATE_REGISTER_STACK
+
 #endif	/* stackinfo.h */

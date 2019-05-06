@@ -18,9 +18,6 @@
 /* Default stack size.  */
 #define ARCH_STACK_DEFAULT_SIZE	(32 * 1024 * 1024)
 
-/* IA-64 uses a normal stack and a register stack.  */
-#define NEED_SEPARATE_REGISTER_STACK
-
 /* Required stack pointer alignment at beginning.  */
 #define STACK_ALIGN		16
 
