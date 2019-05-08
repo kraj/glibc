@@ -20,6 +20,7 @@
 #define _SIGSETOPS_H 1
 
 #include <signal.h>
+#include <atomic.h>
 
 /* Return a mask that includes the bit for SIG only.  */
 # define __sigmask(sig) \
@@ -80,6 +81,12 @@
     (void)0;							\
   }))
 
+# define __sigorset_atomic(dest, left, right)	\
+  (__extension__ ({				\
+     atomic_fetch_or_seq_cst (dest, left, right); \
+    0;						\
+  }))
+
 /* These macros needn't check for a bogus signal number;
    error checking is done in the non-__ versions.  */
 # define __sigismember(set, sig)				\
@@ -94,6 +101,14 @@
     unsigned long int __mask = __sigmask (sig);			\
     unsigned long int __word = __sigword (sig);			\
     (set)->__val[__word] |= __mask;				\
+    (void)0;							\
+  }))
+
+# define __sigaddset_atomic(set, sig)				\
+  (__extension__ ({						\
+    unsigned long int __mask = __sigmask (sig);			\
+    unsigned long int __word = __sigword (sig);			\
+    atomic_fetch_or_seq_cst (&((set)->__val[__word]), __mask);	\
     (void)0;							\
   }))
 

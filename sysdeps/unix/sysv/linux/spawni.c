@@ -132,17 +132,14 @@ spawni_child (void *arguments)
   const posix_spawnattr_t *restrict attr = args->attr;
   const posix_spawn_file_actions_t *file_actions = args->fa;
 
-  /* The child must ensure that no signal handler are enabled because it shared
+  /* The child must ensure that no signal handler are enabled because it share
      memory with parent, so the signal disposition must be either SIG_DFL or
-     SIG_IGN.  It does by iterating over all signals and although it could
-     possibly be more optimized (by tracking which signal potentially have a
-     signal handler), it might requires system specific solutions (since the
-     sigset_t data type can be very different on different architectures).  */
+     SIG_IGN.  */
   struct sigaction sa;
   memset (&sa, '\0', sizeof (sa));
 
   sigset_t hset;
-  __sigprocmask (SIG_BLOCK, 0, &hset);
+  __get_sighandler_set (&hset);
   for (int sig = 1; sig < _NSIG; ++sig)
     {
       if ((attr->__flags & POSIX_SPAWN_SETSIGDEF)

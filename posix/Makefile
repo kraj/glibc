@@ -102,7 +102,8 @@ tests		:= test-errno tstgetopt testfnm runtests runptests \
 		   tst-sysconf-empty-chroot tst-glob_symlinks tst-fexecve \
 		   tst-glob-tilde test-ssize-max tst-spawn4 bug-regex37 \
 		   bug-regex38 tst-regcomp-truncated tst-spawn-chdir \
-		   tst-spawn5
+		   tst-spawn5 \
+		   tst-spawn6
 tests-internal	:= bug-regex5 bug-regex20 bug-regex33 \
 		   tst-rfc3484 tst-rfc3484-2 tst-rfc3484-3 \
 		   tst-glob_lstat_compat tst-spawn4-compat
@@ -255,6 +256,7 @@ tst-exec-ARGS = -- $(host-test-program-cmd)
 tst-exec-static-ARGS = $(tst-exec-ARGS)
 tst-execvpe5-ARGS = -- $(host-test-program-cmd)
 tst-spawn-ARGS = -- $(host-test-program-cmd)
+tst-spawn6-ARGS = -- $(host-test-program-cmd)
 tst-spawn-static-ARGS = $(tst-spawn-ARGS)
 tst-spawn5-ARGS = -- $(host-test-program-cmd)
 tst-dir-ARGS = `pwd` `cd $(common-objdir)/$(subdir); pwd` `cd $(common-objdir); pwd` $(objpfx)tst-dir

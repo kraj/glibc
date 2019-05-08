@@ -66,6 +66,13 @@
     0;						\
   }))
 
+# define __sigorset_atomic(set)			\
+  (__extension__ ({				\
+    __sigset_t __mask = __sigmask (sig);	\
+    atomic_fetch_or_seq_cst (set, mask);	\
+    0;						\
+  }))
+
 # define __sigdelset(set, sig)			\
   (__extension__ ({				\
     __sigset_t __mask = __sigmask (sig);	\

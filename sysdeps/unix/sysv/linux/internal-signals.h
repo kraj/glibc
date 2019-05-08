@@ -88,4 +88,7 @@ __libc_signal_restore_set (const sigset_t *set)
 /* Used to communicate with signal handler.  */
 extern struct xid_command *__xidcmd attribute_hidden;
 
+/* Used to obtained the modified signal handlers.  */
+extern void __get_sighandler_set (sigset_t *set) attribute_hidden;
+
 #endif

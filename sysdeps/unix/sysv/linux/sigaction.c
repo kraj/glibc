@@ -20,6 +20,7 @@
 #include <string.h>
 
 #include <sysdep.h>
+#include <sigsetops.h>
 #include <sys/syscall.h>
 
 /* New ports should not define the obsolete SA_RESTORER, however some
@@ -36,6 +37,13 @@
 # define STUB(act, sigsetsize) (sigsetsize)
 #endif
 
+static sigset_t handler_set;
+
+void __get_sighandler_set (sigset_t *set)
+{
+  *set = handler_set;
+}
+
 /* If ACT is not NULL, change the action for SIG to *ACT.
    If OACT is not NULL, put the old action for SIG in *OACT.  */
 int
@@ -47,6 +55,15 @@ __libc_sigaction (int sig, const struct sigaction *act, struct sigaction *oact)
 
   if (act)
     {
+      /* Tracks which signal had a signal handler set different from default
+	 (SIG_DFL/SIG_IGN).  It allows optimize posix_spawn to reset only
+	 those signals.  It might incur in false positive, since it not easy
+	 to remove bits from the mask without race conditions, but it does not
+	 allow false negative since the mask is updated atomically prior the
+	 syscall.  The false positive incur in just extra sigactions on
+	 posix_spawn.  */
+      if (act->sa_handler != SIG_DFL && act->sa_handler != SIG_IGN)
+	__sigaddset_atomic (&handler_set, sig);
       kact.k_sa_handler = act->sa_handler;
       memcpy (&kact.sa_mask, &act->sa_mask, sizeof (sigset_t));
       kact.sa_flags = act->sa_flags;

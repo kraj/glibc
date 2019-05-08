@@ -646,6 +646,9 @@ void __atomic_link_error (void);
 # define atomic_fetch_or_release(mem, operand) \
   ({ __atomic_check_size((mem));					      \
   __atomic_fetch_or ((mem), (operand), __ATOMIC_RELEASE); })
+# define atomic_fetch_or_seq_cst(mem, operand) \
+  ({ __atomic_check_size((mem));					      \
+  __atomic_fetch_or ((mem), (operand), __ATOMIC_SEQ_CST); })
 
 # define atomic_fetch_xor_release(mem, operand) \
   ({ __atomic_check_size((mem));					      \
@@ -791,6 +794,13 @@ void __atomic_link_error (void);
    ({ atomic_thread_fence_release ();					      \
    atomic_fetch_or_acquire ((mem), (operand)); })
 # endif
+# ifndef atomic_fetch_or_seq_cst
+#  define atomic_fetch_or_seq_cst(mem, operand) \
+   ({ atomic_thread_fence_acquire ();					      \
+   atomic_fetch_or_relaxed ((mem), (operand));				      \
+   atomic_thread_fence_release (); })
+# endif
+
 
 # ifndef atomic_fetch_xor_release
 /* Failing the atomic_compare_exchange_weak_release reloads the value in
