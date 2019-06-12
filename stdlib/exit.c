@@ -25,10 +25,6 @@
 #include "set-hooks.h"
 DEFINE_HOOK (__libc_atexit, (void))
 
-/* Initialize the flag that indicates exit function processing
-   is complete. See concurrency notes in stdlib/exit.h where
-   __exit_funcs_lock is declared.  */
-bool __exit_funcs_done = false;
 
 /* Call all functions registered with `atexit' and `on_exit',
    in the reverse of the order in which they were registered
@@ -81,9 +77,9 @@ __run_exit_handlers (int status, struct exit_function_list **listp,
 	      void (*cxafct) (void *arg, int status);
 
 	    case ef_free:
-	    case ef_us:
 	      break;
 	    case ef_on:
+	      f->flavor = ef_free;
 	      onfct = f->func.on.fn;
 #ifdef PTR_DEMANGLE
 	      PTR_DEMANGLE (onfct);
@@ -91,7 +87,8 @@ __run_exit_handlers (int status, struct exit_function_list **listp,
 	      onfct (status, f->func.on.arg);
 	      break;
 	    case ef_at:
-	      atfct = f->func.at;
+	      f->flavor = ef_free;
+	      atfct = f->func.at.fn;
 #ifdef PTR_DEMANGLE
 	      PTR_DEMANGLE (atfct);
 #endif

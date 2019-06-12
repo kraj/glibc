@@ -32,9 +32,8 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <stdlib.h>
+#include <exit.h>
 #include <dso_handle.h>
-#include "exit.h"
 
 /* Register FUNC to be executed by `exit'.  */
 int
@@ -43,5 +42,5 @@ attribute_hidden
 #endif
 atexit (void (*func) (void))
 {
-  return __cxa_atexit ((void (*) (void *)) func, NULL, __dso_handle);
+  return __atexit (func, __dso_handle);
 }

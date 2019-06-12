@@ -136,6 +136,9 @@ libc {
     strtof32; strtof64; strtof32x;
     strtof32_l; strtof64_l; strtof32x_l;
   }
+  GLIBC_2.29 {
+    __atexit;
+  }
   GLIBC_PRIVATE {
     # functions which have an additional interface since they are
     # are cancelable.

@@ -36,7 +36,7 @@ routines	:=							      \
 	abort								      \
 	bsearch qsort msort						      \
 	getenv putenv setenv secure-getenv				      \
-	exit on_exit atexit cxa_atexit cxa_finalize old_atexit		      \
+	exit on_exit atexit cxa_atexit cxa_finalize old_atexit exitfn	      \
 	quick_exit at_quick_exit cxa_at_quick_exit cxa_thread_atexit_impl     \
 	abs labs llabs							      \
 	div ldiv lldiv							      \

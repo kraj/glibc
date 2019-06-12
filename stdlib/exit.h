@@ -20,12 +20,12 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <assert.h>
 #include <libc-lock.h>
 
-enum
+enum ef_flavor
 {
-  ef_free,	/* `ef_free' MUST be zero!  */
-  ef_us,
+  ef_free = 0,	/* 'ef_free' MUST be zero!  */
   ef_on,
   ef_at,
   ef_cxa
@@ -35,10 +35,13 @@ struct exit_function
   {
     /* `flavour' should be of type of the `enum' above but since we need
        this element in an atomic operation we have to use `long int'.  */
-    long int flavor;
+    enum ef_flavor flavor;
     union
       {
-	void (*at) (void);
+	struct
+	  {
+	    void (*fn) (void);
+	  } at;
 	struct
 	  {
 	    void (*fn) (int status, void *arg);
@@ -48,12 +51,21 @@ struct exit_function
 	  {
 	    void (*fn) (void *arg, int status);
 	    void *arg;
-	    void *dso_handle;
 	  } cxa;
       } func;
+    void *dso_handle;
   };
+
+enum el_type
+{
+  el_none = 0,
+  el_at,
+  el_cxa
+};
+
 struct exit_function_list
   {
+    enum el_type type;
     struct exit_function_list *next;
     size_t idx;
     struct exit_function fns[32];
@@ -76,18 +88,15 @@ extern bool __exit_funcs_done attribute_hidden;
    lock.  */
 __libc_lock_define (extern, __exit_funcs_lock);
 
-
-extern struct exit_function *__new_exitfn (struct exit_function_list **listp)
-  attribute_hidden;
+extern int __new_exitfn (struct exit_function_list **listp,
+			 enum ef_flavor flavor, void *func, void *arg,
+			 void *dso_handle) attribute_hidden;
 
 extern void __run_exit_handlers (int status,
 				 struct exit_function_list **listp,
 				 bool run_list_atexit, bool run_dtors)
   attribute_hidden __attribute__ ((__noreturn__));
 
-extern int __internal_atexit (void (*func) (void *), void *arg, void *d,
-			      struct exit_function_list **listp)
-  attribute_hidden;
 extern int __cxa_at_quick_exit (void (*func) (void *), void *d);
 
 

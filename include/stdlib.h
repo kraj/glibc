@@ -103,6 +103,8 @@ extern int __on_exit (void (*__func) (int __status, void *__arg), void *__arg);
 extern int __cxa_atexit (void (*func) (void *), void *arg, void *d);
 libc_hidden_proto (__cxa_atexit);
 
+extern int __atexit (void (*func) (void), void *);
+
 extern int __cxa_thread_atexit_impl (void (*func) (void *), void *arg,
 				     void *d);
 extern void __call_tls_dtors (void)

@@ -19,6 +19,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <support/xdlfcn.h>
+#include <support/check.h>
 
 int
 main (void)
@@ -28,35 +30,15 @@ main (void)
   void (*fp) (void *);
   int v = 0;
 
-  h = dlopen (fname, RTLD_NOW);
-  if (h == NULL)
-    {
-      printf ("cannot open \"%s\": %s\n", fname, dlerror ());
-      exit (1);
-    }
+  h = xdlopen (fname, RTLD_NOW);
 
-  fp = dlsym (h, "foo");
-  if (fp == NULL)
-    {
-      printf ("cannot find \"foo\": %s\n", dlerror ());
-      exit (1);
-    }
+  fp = xdlsym (h, "foo");
 
   fp (&v);
 
-  if (dlclose (h) != 0)
-    {
-      printf ("cannot close \"%s\": %s\n", fname, dlerror ());
-      exit (1);
-    }
+  xdlclose (h);
 
-  if (v != 1)
-    {
-      puts ("module unload didn't change `v'");
-      exit (1);
-    }
-
-  puts ("finishing now");
+  TEST_COMPARE (v, 1);
 
   return 0;
 }

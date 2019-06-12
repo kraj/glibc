@@ -16,8 +16,8 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include <stdlib.h>
-#include "exit.h"
-
+#include <exit.h>
+#include <assert.h>
 
 static struct exit_function_list initial_quick;
 struct exit_function_list *__quick_exit_funcs = &initial_quick;
@@ -26,5 +26,5 @@ struct exit_function_list *__quick_exit_funcs = &initial_quick;
 int
 __cxa_at_quick_exit (void (*func) (void *), void *d)
 {
-  return __internal_atexit (func, NULL, d, &__quick_exit_funcs);
+  return __new_exitfn (&__quick_exit_funcs, ef_cxa, func, NULL, d);
 }

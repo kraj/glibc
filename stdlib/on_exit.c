@@ -24,28 +24,6 @@
 int
 __on_exit (void (*func) (int status, void *arg), void *arg)
 {
-  struct exit_function *new;
-
-  /* As a QoI issue we detect NULL early with an assertion instead
-     of a SIGSEGV at program exit when the handler is run (bug 20544).  */
-  assert (func != NULL);
-
-   __libc_lock_lock (__exit_funcs_lock);
-  new = __new_exitfn (&__exit_funcs);
-
-  if (new == NULL)
-    {
-      __libc_lock_unlock (__exit_funcs_lock);
-      return -1;
-    }
-
-#ifdef PTR_MANGLE
-  PTR_MANGLE (func);
-#endif
-  new->func.on.fn = func;
-  new->func.on.arg = arg;
-  new->flavor = ef_on;
-  __libc_lock_unlock (__exit_funcs_lock);
-  return 0;
+  return __new_exitfn (&__exit_funcs, ef_on, func, arg, NULL);
 }
 weak_alias (__on_exit, on_exit)
