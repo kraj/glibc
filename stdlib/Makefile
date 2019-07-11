@@ -84,6 +84,7 @@ tests		:= tst-strtol tst-strtod testmb testrand testsort testdiv   \
 		   tst-cxa_atexit tst-on_exit test-atexit-race 		    \
 		   test-at_quick_exit-race test-cxa_atexit-race             \
 		   test-on_exit-race test-dlclose-exit-race 		    \
+		   test-atexit-order					    \
 		   tst-makecontext-align test-bz22786 tst-strtod-nan-sign \
 		   tst-swapcontext1 tst-setcontext4 tst-setcontext5 \
 		   tst-setcontext6 tst-setcontext7 tst-setcontext8 \
@@ -91,6 +92,7 @@ tests		:= tst-strtol tst-strtod testmb testrand testsort testdiv   \
 
 tests-internal	:= tst-strtod1i tst-strtod3 tst-strtod4 tst-strtod5i \
 		   tst-tls-atexit tst-tls-atexit-nodelete
+others		:= test-atexit-order-dabc
 tests-static	:= tst-secure-getenv
 
 ifeq ($(build-hardcoded-path-in-tests),yes)
@@ -116,7 +118,11 @@ else
 tests-unsupported += tst-quick_exit tst-thread-quick_exit
 endif
 
-modules-names	= tst-tls-atexit-lib test-dlclose-exit-race-helper
+modules-names	= tst-tls-atexit-lib test-dlclose-exit-race-helper \
+		  test-atexit-order-liba \
+		  test-atexit-order-libb \
+		  test-atexit-order-libc \
+		  test-atexit-order-libd
 extra-test-objs += $(addsuffix .os, $(modules-names))
 
 ifeq ($(build-shared),yes)
@@ -234,6 +240,14 @@ $(objpfx)tst-tls-atexit.out: $(objpfx)tst-tls-atexit-lib.so
 
 $(objpfx)tst-tls-atexit-nodelete: $(shared-thread-library) $(libdl)
 $(objpfx)tst-tls-atexit-nodelete.out: $(objpfx)tst-tls-atexit-lib.so
+
+$(objpfx)test-atexit-order.out: $(objpfx)test-atexit-order-dabc
+test-atexit-order-ARGS = -- $(host-test-program-cmd)
+$(objpfx)test-atexit-order-dabc: $(objpfx)test-atexit-order-libd.so \
+			    	 $(objpfx)test-atexit-order-liba.so \
+			    	 $(objpfx)test-atexit-order-libb.so \
+			    	 $(objpfx)test-atexit-order-libc.so
+$(objpfx)test-atexit-order-libd.so: $(objpfx)test-atexit-order-libb.so
 
 $(objpfx)tst-setcontext3.out: tst-setcontext3.sh $(objpfx)tst-setcontext3
 	$(SHELL) $< $(common-objpfx) '$(test-program-prefix-before-env)' \
