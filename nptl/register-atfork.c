@@ -20,131 +20,132 @@
 #include <stdlib.h>
 #include <string.h>
 #include <fork.h>
-#include <atomic.h>
 
-#define DYNARRAY_ELEMENT           struct fork_handler
-#define DYNARRAY_STRUCT            fork_handler_list
-#define DYNARRAY_PREFIX            fork_handler_list_
-#define DYNARRAY_INITIAL_SIZE      48
-#include <malloc/dynarray-skeleton.c>
+#include <sys/queue.h>
 
-static struct fork_handler_list fork_handlers;
-static bool fork_handler_init = false;
+struct fork_handler
+{
+  TAILQ_ENTRY (fork_handler) qe;
+  void (*prepare_handler) (void);
+  void (*parent_handler) (void);
+  void (*child_handler) (void);
+  void *dso_handle;
+};
 
+typedef TAILQ_HEAD (fork_handler_list, fork_handler) fork_handler_list;
+static fork_handler_list fork_handlers = TAILQ_HEAD_INITIALIZER (fork_handlers);
 static int atfork_lock = LLL_LOCK_INITIALIZER;
 
 int
 __register_atfork (void (*prepare) (void), void (*parent) (void),
 		   void (*child) (void), void *dso_handle)
 {
+  struct fork_handler *entry = malloc (sizeof (struct fork_handler));
+  if (entry == NULL)
+    return ENOMEM;
+
+  entry->prepare_handler = prepare;
+
+  entry->parent_handler = parent;
+  entry->child_handler = child;
+  entry->dso_handle = dso_handle;
+
   lll_lock (atfork_lock, LLL_PRIVATE);
-
-  if (!fork_handler_init)
-    {
-      fork_handler_list_init (&fork_handlers);
-      fork_handler_init = true;
-    }
-
-  struct fork_handler *newp = fork_handler_list_emplace (&fork_handlers);
-  if (newp != NULL)
-    {
-      newp->prepare_handler = prepare;
-      newp->parent_handler = parent;
-      newp->child_handler = child;
-      newp->dso_handle = dso_handle;
-    }
-
-  /* Release the lock.  */
+  TAILQ_INSERT_TAIL (&fork_handlers, entry, qe);
   lll_unlock (atfork_lock, LLL_PRIVATE);
 
-  return newp == NULL ? ENOMEM : 0;
+  return 0;
 }
 libc_hidden_def (__register_atfork)
-
-static struct fork_handler *
-fork_handler_list_find (struct fork_handler_list *fork_handlers,
-			void *dso_handle)
-{
-  for (size_t i = 0; i < fork_handler_list_size (fork_handlers); i++)
-    {
-      struct fork_handler *elem = fork_handler_list_at (fork_handlers, i);
-      if (elem->dso_handle == dso_handle)
-	return elem;
-    }
-  return NULL;
-}
 
 void
 __unregister_atfork (void *dso_handle)
 {
+  fork_handler_list temp_list = TAILQ_HEAD_INITIALIZER (temp_list);
+  struct fork_handler *it, *it1;
+
   lll_lock (atfork_lock, LLL_PRIVATE);
-
-  struct fork_handler *first = fork_handler_list_find (&fork_handlers,
-						       dso_handle);
-  /* Removing is done by shifting the elements in the way the elements
-     that are not to be removed appear in the beginning in dynarray.
-     This avoid the quadradic run-time if a naive strategy to remove and
-     shift one element at time.  */
-  if (first != NULL)
+  TAILQ_FOREACH_SAFE (it, &fork_handlers, qe, it1)
     {
-      struct fork_handler *new_end = first;
-      first++;
-      for (; first != fork_handler_list_end (&fork_handlers); ++first)
+      if (it->dso_handle == dso_handle)
 	{
-	  if (first->dso_handle != dso_handle)
-	    {
-	      *new_end = *first;
-	      ++new_end;
-	    }
+	  TAILQ_REMOVE (&fork_handlers, it, qe);
+	  TAILQ_INSERT_TAIL (&temp_list, it, qe);
 	}
-
-      ptrdiff_t removed = first - new_end;
-      for (size_t i = 0; i < removed; i++)
-	fork_handler_list_remove_last (&fork_handlers);
     }
-
   lll_unlock (atfork_lock, LLL_PRIVATE);
+
+  while ((it = TAILQ_FIRST (&temp_list)) != NULL)
+    {
+      TAILQ_REMOVE (&temp_list, it, qe);
+      free (it);
+    }
+}
+
+static inline void
+lock_atfork (_Bool do_locking)
+{
+  if (do_locking)
+    lll_lock (atfork_lock, LLL_PRIVATE);
+}
+
+static inline void
+unlock_atfork (_Bool do_locking)
+{
+  if (do_locking)
+    lll_unlock (atfork_lock, LLL_PRIVATE);
 }
 
 void
 __run_fork_handlers (enum __run_fork_handler_type who, _Bool do_locking)
 {
-  struct fork_handler *runp;
+  struct fork_handler *it;
 
   if (who == atfork_run_prepare)
     {
-      if (do_locking)
-	lll_lock (atfork_lock, LLL_PRIVATE);
-      size_t sl = fork_handler_list_size (&fork_handlers);
-      for (size_t i = sl; i > 0; i--)
+      lock_atfork (do_locking);
+      TAILQ_FOREACH_REVERSE (it, &fork_handlers, fork_handler_list, qe)
 	{
-	  runp = fork_handler_list_at (&fork_handlers, i - 1);
-	  if (runp->prepare_handler != NULL)
-	    runp->prepare_handler ();
+	  if (it->prepare_handler != NULL)
+	    {
+	      /* Unlock the list while we call a foreign function.  */
+	      unlock_atfork (do_locking);
+	      it->prepare_handler ();
+	      lock_atfork (do_locking);
+	    }
 	}
     }
   else
     {
-      size_t sl = fork_handler_list_size (&fork_handlers);
-      for (size_t i = 0; i < sl; i++)
+      TAILQ_FOREACH (it, &fork_handlers, qe)
 	{
-	  runp = fork_handler_list_at (&fork_handlers, i);
-	  if (who == atfork_run_child && runp->child_handler)
-	    runp->child_handler ();
-	  else if (who == atfork_run_parent && runp->parent_handler)
-	    runp->parent_handler ();
+	  /* Unlock the list while we call a foreign function.  */
+	  if (who == atfork_run_child && it->child_handler)
+	    {
+	      unlock_atfork (do_locking);
+	      it->child_handler ();
+	      lock_atfork (do_locking);
+	    }
+	  else if (who == atfork_run_parent && it->parent_handler)
+	    {
+	      unlock_atfork (do_locking);
+	      it->parent_handler ();
+	      lock_atfork (do_locking);
+	    }
 	}
-      if (do_locking)
-	lll_unlock (atfork_lock, LLL_PRIVATE);
+      unlock_atfork (do_locking);
     }
 }
 
-
 libc_freeres_fn (free_mem)
 {
+  struct fork_handler *it, *it1;
+
   lll_lock (atfork_lock, LLL_PRIVATE);
-
-  fork_handler_list_free (&fork_handlers);
-
+  TAILQ_FOREACH_SAFE (it, &fork_handlers, qe, it1)
+    {
+      TAILQ_REMOVE (&fork_handlers, it, qe);
+      free (it);
+    }
   lll_unlock (atfork_lock, LLL_PRIVATE);
 }

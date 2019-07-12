@@ -396,7 +396,7 @@ tests += tst-cancelx2 tst-cancelx3 tst-cancelx4 tst-cancelx5 \
 	 tst-oncex3 tst-oncex4
 ifeq ($(build-shared),yes)
 tests += tst-atfork2 tst-tls4 tst-_res1 tst-fini1 tst-compat-forwarder \
-	 tst-audit-threads
+	 tst-audit-threads tst-atfork3
 tests-internal += tst-tls3 tst-tls3-malloc tst-tls5 tst-stackguard1
 tests-nolibpthread += tst-fini1
 ifeq ($(have-z-execstack),yes)
@@ -409,13 +409,14 @@ modules-names = tst-atfork2mod tst-tls3mod tst-tls4moda tst-tls4modb \
 		tst-tls5modd tst-tls5mode tst-tls5modf tst-stack4mod \
 		tst-_res1mod1 tst-_res1mod2 tst-execstack-mod tst-fini1mod \
 		tst-join7mod tst-compat-forwarder-mod tst-audit-threads-mod1 \
-		tst-audit-threads-mod2
+		tst-audit-threads-mod2 tst-atfork3mod
 extra-test-objs += $(addsuffix .os,$(strip $(modules-names))) \
 		   tst-cleanup4aux.o tst-cleanupx4aux.o
 test-extras += tst-cleanup4aux tst-cleanupx4aux
 test-modules = $(addprefix $(objpfx),$(addsuffix .so,$(modules-names)))
 
 tst-atfork2mod.so-no-z-defs = yes
+tst-atfork3mod.so-no-z-defs = yes
 tst-tls3mod.so-no-z-defs = yes
 tst-tls5mod.so-no-z-defs = yes
 tst-tls5moda.so-no-z-defs = yes
@@ -552,9 +553,12 @@ tst-cancelx7-ARGS = $(tst-cancel7-ARGS)
 tst-umask1-ARGS = $(objpfx)tst-umask1.temp
 
 $(objpfx)tst-atfork2: $(libdl) $(shared-thread-library)
+$(objpfx)tst-atfork3: $(libdl) $(shared-thread-library)
 LDFLAGS-tst-atfork2 = -rdynamic
+LDFLAGS-tst-atfork3 = -rdynamic
 tst-atfork2-ENV = MALLOC_TRACE=$(objpfx)tst-atfork2.mtrace
 $(objpfx)tst-atfork2mod.so: $(shared-thread-library)
+$(objpfx)tst-atfork3mod.so: $(shared-thread-library)
 
 tst-stack3-ENV = MALLOC_TRACE=$(objpfx)tst-stack3.mtrace
 $(objpfx)tst-stack3-mem.out: $(objpfx)tst-stack3.out
@@ -654,7 +658,7 @@ $(addprefix $(objpfx), $(tests-reverse)): \
 $(objpfx)../libc.so: $(common-objpfx)libc.so ;
 $(addprefix $(objpfx),$(tests-static) $(xtests-static)): $(objpfx)libpthread.a
 
-$(objpfx)tst-atfork2.out: $(objpfx)tst-atfork2mod.so
+$(objpfx)tst-atfork3.out: $(objpfx)tst-atfork3mod.so
 else
 $(addprefix $(objpfx),$(tests) $(test-srcs)): $(objpfx)libpthread.a
 endif

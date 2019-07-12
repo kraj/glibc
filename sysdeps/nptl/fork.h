@@ -24,15 +24,6 @@ extern unsigned long int __fork_generation attribute_hidden;
 /* Pointer to the fork generation counter in the thread library.  */
 extern unsigned long int *__fork_generation_pointer attribute_hidden;
 
-/* Elements of the fork handler lists.  */
-struct fork_handler
-{
-  void (*prepare_handler) (void);
-  void (*parent_handler) (void);
-  void (*child_handler) (void);
-  void *dso_handle;
-};
-
 /* Function to call to unregister fork handlers.  */
 extern void __unregister_atfork (void *dso_handle) attribute_hidden;
 #define UNREGISTER_ATFORK(dso_handle) __unregister_atfork (dso_handle)
