@@ -597,6 +597,10 @@ __spawni (pid_t *pid, const char *file,
 	  case spawn_do_fchdir:
 	    err = child_fchdir (action->action.fchdir_action.fd);
 	    break;
+
+	  case spawn_do_closefrom:
+	    err = EINVAL;
+	    break;
 	  }
 
 	if (err)

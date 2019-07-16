@@ -146,6 +146,7 @@ libc {
     posix_spawn_file_actions_addfchdir_np;
   }
   GLIBC_2.30 {
+    posix_spawn_file_actions_addclosefrom_np;
   }
   GLIBC_PRIVATE {
     __libc_fork; __libc_pread; __libc_pwrite;

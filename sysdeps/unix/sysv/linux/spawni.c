@@ -17,20 +17,16 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include <spawn.h>
-#include <fcntl.h>
 #include <paths.h>
-#include <string.h>
+#include <dirent.h>
 #include <sys/resource.h>
-#include <sys/wait.h>
-#include <sys/param.h>
-#include <sys/mman.h>
 #include <not-cancel.h>
 #include <local-setxid.h>
 #include <shlib-compat.h>
-#include <nptl/pthreadP.h>
-#include <dl-sysdep.h>
-#include <libc-pointer-arith.h>
+#include <sigsetops.h>
+#include <internal-signals.h>
 #include <ldsodefs.h>
+#include <ctype.h>
 #include "spawn_int.h"
 
 /* The Linux implementation of posix_spawn{p} uses the clone syscall directly
@@ -112,6 +108,44 @@ maybe_script_execute (struct posix_spawn_args *args)
       /* Execute the shell.  */
       args->exec (new_argv[0], new_argv, args->envp);
     }
+}
+
+/* Close all file descriptor up to FROM by interacting /proc/self/fd.  */
+static bool
+spawn_closefrom (int from)
+{
+  struct dirent64 entries[1024 / sizeof (struct dirent64)];
+
+  int dirfd = __open ("/proc/self/fd", O_RDONLY | O_DIRECTORY, 0);
+  if (dirfd == -1)
+    return false;
+
+  ssize_t r;
+  while ((r = __getdents64 (dirfd, entries, sizeof (entries))) > 0)
+    {
+      struct dirent64 *dp = entries;
+      struct dirent64 *edp = (void *)((uintptr_t) dp + r);
+
+      for (struct dirent64 *dp = entries; dp < edp;
+	   dp = (void *)((uintptr_t) dp + dp->d_reclen))
+	{
+	  int fd = 0;
+
+	  if (dp->d_name[0] == '.')
+	    continue;
+
+	  for (const char *s = dp->d_name; isdigit (*s); s++)
+	    fd = 10 * fd + (*s - '0');
+
+	  if (fd == dirfd || fd < from)
+	    continue;
+
+	  __close_nocancel (fd);
+	}
+    }
+
+  __close_nocancel (dirfd);
+  return true;
 }
 
 /* Function used in the clone call to setup the signals mask, posix_spawn
@@ -280,6 +314,11 @@ __spawni_child (void *arguments)
 	      if (__fchdir (action->action.fchdir_action.fd) != 0)
 		goto fail;
 	      break;
+
+	    case spawn_do_closefrom:
+	      if (!spawn_closefrom (action->action.closefrom_action.from))
+		goto fail;
+	      break;
 	    }
 	}
     }
@@ -339,12 +378,13 @@ __spawnix (pid_t * pid, const char *file,
   int prot = (PROT_READ | PROT_WRITE
 	     | ((GL (dl_stack_flags) & PF_X) ? PROT_EXEC : 0));
 
-  /* Add a slack area for child's stack.  */
-  size_t argv_size = (argc * sizeof (void *)) + 512;
+  size_t argv_size = (argc * sizeof (void *));
   /* We need at least a few pages in case the compiler's stack checking is
      enabled.  In some configs, it is known to use at least 24KiB.  We use
      32KiB to be "safe" from anything the compiler might do.  Besides, the
-     extra pages won't actually be allocated unless they get used.  */
+     extra pages won't actually be allocated unless they get used.
+     It also acts the slack for spawn_closefrom (including MIPS64 getdents64
+     where it might use about 1k extra stack space.  */
   argv_size += (32 * 1024);
   size_t stack_size = ALIGN_UP (argv_size, GLRO(dl_pagesize));
   void *stack = __mmap (NULL, stack_size, prot,

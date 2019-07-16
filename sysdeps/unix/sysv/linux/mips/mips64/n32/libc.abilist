@@ -2128,6 +2128,7 @@ GLIBC_2.3.4 xdr_quad_t F
 GLIBC_2.3.4 xdr_u_quad_t F
 GLIBC_2.30 getdents64 F
 GLIBC_2.30 gettid F
+GLIBC_2.30 posix_spawn_file_actions_addclosefrom_np F
 GLIBC_2.30 tgkill F
 GLIBC_2.30 twalk_r F
 GLIBC_2.4 __confstr_chk F
