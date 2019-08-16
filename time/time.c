@@ -15,19 +15,17 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <errno.h>
 #include <time.h>
 
 /* Return the time now, and store it in *TIMER if not NULL.  */
 time_t
 time (time_t *timer)
 {
-  __set_errno (ENOSYS);
+  struct timespec ts;
+  __clock_gettime (CLOCK_REALTIME, &ts);
 
-  if (timer != NULL)
-    *timer = (time_t) -1;
-  return (time_t) -1;
+  if (timer)
+    *timer = ts.tv_sec;
+  return ts.tv_sec;
 }
 libc_hidden_def (time)
-
-stub_warning (time)

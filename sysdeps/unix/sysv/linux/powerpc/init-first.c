@@ -25,7 +25,6 @@ int (*VDSO_SYMBOL(clock_gettime)) (clockid_t, struct timespec *);
 int (*VDSO_SYMBOL(clock_getres)) (clockid_t, struct timespec *);
 unsigned long long (*VDSO_SYMBOL(get_tbfreq)) (void);
 int (*VDSO_SYMBOL(getcpu)) (unsigned *, unsigned *);
-time_t (*VDSO_SYMBOL(time)) (time_t *);
 
 #if defined(__PPC64__) || defined(__powerpc64__)
 void *VDSO_SYMBOL(sigtramp_rt64);
@@ -58,10 +57,6 @@ _libc_vdso_platform_setup (void)
   p = _dl_vdso_vsym ("__kernel_getcpu", &linux2615);
   PTR_MANGLE (p);
   VDSO_SYMBOL (getcpu) = p;
-
-  p = _dl_vdso_vsym ("__kernel_time", &linux2615);
-  PTR_MANGLE (p);
-  VDSO_SYMBOL (time) = p;
 
   /* PPC64 uses only one signal trampoline symbol, while PPC32 will use
      two depending if SA_SIGINFO is used (__kernel_sigtramp_rt32) or not
