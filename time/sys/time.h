@@ -54,23 +54,48 @@ struct timezone
     int tz_minuteswest;		/* Minutes west of GMT.  */
     int tz_dsttime;		/* Nonzero if DST is ever in effect.  */
   };
-
-typedef struct timezone *__restrict __timezone_ptr_t;
-#else
-typedef void *__restrict __timezone_ptr_t;
 #endif
 
-/* Get the current time of day and timezone information,
-   putting it into *TV and *TZ.  If TZ is NULL, *TZ is not filled.
-   Returns 0 on success, -1 on errors.
-   NOTE: This form of timezone information is obsolete.
-   Use the functions and variables declared in <time.h> instead.  */
+/* Get the current time of day, putting it into *TV.
+   If TZ is not null, *TZ must be a struct timezone, and both fields
+   will be set to zero.
+   Calling this function with a non-null TZ is obsolete;
+   use localtime etc. instead.
+   This function itself is semi-obsolete;
+   most callers should use time or clock_gettime instead. */
 extern int gettimeofday (struct timeval *__restrict __tv,
-			 __timezone_ptr_t __tz) __THROW __nonnull ((1));
+			 void *__restrict __tz) __THROW __nonnull ((1));
+
+#if __GNUC_PREREQ (4,3) && defined __REDIRECT && defined __OPTIMIZE__
+/* Issue a warning for use of gettimeofday with a non-null __tz argument.  */
+__warndecl (__warn_gettimeofday_nonnull_timezone,
+            "gettimeofday with non-null or non-constant timezone parameter;"
+            " this is obsolete and inaccurate, use localtime instead");
+
+extern int __REDIRECT_NTH (__gettimeofday_alias,
+                           (struct timeval *__restrict __tv,
+                            void *__restrict __tz), gettimeofday)
+  __nonnull ((1));
+
+/* The double cast below works around a limitation in __builtin_constant_p
+   in all released versions of GCC (as of August 2019).
+   See <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=91554>.  */
+__fortify_function int
+__NTH (gettimeofday (struct timeval *__restrict __tv, void *__restrict __tz))
+{
+  if (! (__builtin_constant_p ((short) (__intptr_t) __tz) && __tz == 0))
+    __warn_gettimeofday_nonnull_timezone ();
+
+  return __gettimeofday_alias (__tv, __tz);
+}
+#endif
 
 #ifdef __USE_MISC
 /* Set the current time of day and timezone information.
-   This call is restricted to the super-user.  */
+   This call is restricted to the super-user.
+   Setting the timezone in this way is obsolete, but we don't yet
+   warn about it because it still has some uses for which there is
+   no alternative.  */
 extern int settimeofday (const struct timeval *__tv,
 			 const struct timezone *__tz)
      __THROW;
