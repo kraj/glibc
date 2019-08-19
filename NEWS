@@ -3,7 +3,7 @@ Copyright (C) 1992-2019 Free Software Foundation, Inc.
 See the end for copying conditions.
 
 Please send GNU C library bug reports via <https://sourceware.org/bugzilla/>
-using `glibc' in the "product" field.
+using ‘glibc’ in the "product" field.
 
 Version 2.31
 
@@ -29,6 +29,66 @@ Deprecated and removed features, and other changes affecting compatibility:
   passing.  This is in accordance with the resolution of Clarification
   Request 25 to TS 18661-1, as applied for C2X.  Existing binaries that pass
   floating-point arguments directly will continue to work.
+
+* The obsolete functions ftime and stime are no longer available to newly
+  linked binaries, and the header <sys/timeb.h> has been removed.  Programs
+  that used these functions should be updated to use clock_gettime and
+  clock_settime, respectively.
+
+* On Linux-based systems, glibc now uses the clock_gettime and clock_settime
+  system calls to implement all of the other functions that get or set
+  the time: time, ftime, gettimeofday, timespec_get, stime, and settimeofday.
+
+  System calls and/or vDSO functions, if any, that directly implement these
+  functions will no longer be used, with one exception: ‘settimeofday’ may
+  still invoke the system call of the same name when its ‘tzp’ argument is
+  not a null pointer (see below).
+
+  This change was made because the Linux kernel maintainers intend to
+  provide only clock_gettime and clock_settime system calls on future new
+  architectures, and to deprecate the other system calls on existing
+  architectures.  It potentially breaks programs that use seccomp filters to
+  limit the set of system calls a process can use.
+
+* The gettimeofday function will no longer report information about a
+  system-wide time zone.
+
+  This 4.2-BSD-era feature has been deprecated for many years, as it cannot
+  handle the full complexity of the world’s timezones, but hitherto we have
+  supported it on a best-effort basis.  Changes required to support 64-bit
+  time_t on 32-bit architectures have made this no longer practical.
+
+  As of this release, callers of gettimeofday with a non-null ‘tzp’ argument
+  will always receive a ‘struct timezone’ whose tz_minuteswest and
+  tz_dsttime fields are zero.  We have also arranged for call sites that
+  pass a non-null ‘tzp’ argument to gettimeofday to receive compile-time
+  warnings, if the compiler makes this possible.
+
+  A similar change has been made to the obsolete function ftime.
+
+* The settimeofday function _can_ still be used to set a system-wide time
+  zone when the operating system supports it.  This is because the Linux
+  kernel reused the API, on some architectures, to describe a system-wide
+  time-zone-like offset between the software clock maintained by the kernel,
+  and the “RTC” clock that keeps time when the system is shut down.
+
+  However, to reduce the odds of this offset being set by accident,
+  settimeofday can no longer be used to set the time and the offset
+  simultaneously.  If both of its two arguments are non-null, the call
+  will fail (setting errno to EINVAL).
+
+  Callers attempting to set this offset should also be prepared for the call
+  to fail and set errno to ENOSYS; this already happens on the Hurd and on
+  some Linux architectures.  The Linux kernel maintainers are discussing a
+  more principled replacement for the reused API.  After a replacement
+  becomes available, we will change settimeofday to fail with ENOSYS on all
+  platforms when its ‘tzp’ argument is not a null pointer.
+
+  Note that settimeofday itself is obsolescent according to POSIX.
+  Programs that set the system time should use clock_settime and/or
+  the adjtime family of functions instead.  We may also cease to make
+  settimeofday available to newly linked binaries after there is a
+  replacement for Linux’s time-zone-like offset API.
 
 Changes to build and runtime requirements:
 
