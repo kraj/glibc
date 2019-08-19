@@ -1,5 +1,4 @@
-/* adjtime -- Adjust the current time of day.  Linux/Alpha/tv64 version.
-   Copyright (C) 2019 Free Software Foundation, Inc.
+/* Copyright (C) 2019 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -16,7 +15,25 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-/* We can use the generic Linux implementation, but we have to override its
-   default symbol version.  */
-#define VERSION_adjtime GLIBC_2.1
-#include <sysdeps/unix/sysv/linux/adjtime.c>
+#include <sys/timex.h>
+#include <sysdep.h>
+
+int
+___adjtimex (struct timex *buf)
+{
+  return INLINE_SYSCALL (adjtimex, 1, buf);
+}
+
+#ifdef VERSION_adjtimex
+weak_alias (___adjtimex, __wadjtimex);
+weak_alias (___adjtimex, __wnadjtime);
+default_symbol_version (___adjtimex,  __adjtimex, VERSION_adjtimex);
+default_symbol_version (__wadjtimex,    adjtimex, VERSION_adjtimex);
+default_symbol_version (__wnadjtime, ntp_adjtime, VERSION_adjtimex);
+libc_hidden_ver (___adjtimex, __adjtimex);
+#else
+strong_alias (___adjtimex, __adjtimex)
+weak_alias (___adjtimex, adjtimex)
+weak_alias (___adjtimex, ntp_adjtime)
+libc_hidden_def (__adjtimex)
+#endif

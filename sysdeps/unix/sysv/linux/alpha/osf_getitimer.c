@@ -1,4 +1,4 @@
-/* adjtime -- Adjust the current time of day.  Linux/Alpha/tv64 version.
+/* getitimer -- Get the state of an interval timer.  Linux/Alpha/tv32 version.
    Copyright (C) 2019 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -16,7 +16,26 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-/* We can use the generic Linux implementation, but we have to override its
-   default symbol version.  */
-#define VERSION_adjtime GLIBC_2.1
-#include <sysdeps/unix/sysv/linux/adjtime.c>
+#include <shlib-compat.h>
+
+#if SHLIB_COMPAT (libc, GLIBC_2_0, GLIBC_2_1)
+
+#include <sys/time.h>
+#include <tv32-compat.h>
+
+int
+attribute_compat_text_section
+__getitimer_tv32 (int which, struct itimerval32 *curr_value)
+{
+  struct itimerval curr_value_64;
+  if (__getitimer (which, &curr_value_64) == -1)
+    return -1;
+
+  /* Write all fields of 'curr_value' regardless of overflow.  */
+  TV64_TO_TV32 (&curr_value->it_interval, &curr_value_64.it_interval);
+  TV64_TO_TV32 (&curr_value->it_value, &curr_value_64.it_value);
+  return 0;
+}
+
+compat_symbol (libc, __getitimer_tv32, getitimer, GLIBC_2_0);
+#endif

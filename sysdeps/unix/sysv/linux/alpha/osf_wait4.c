@@ -1,4 +1,4 @@
-/* adjtime -- Adjust the current time of day.  Linux/Alpha/tv64 version.
+/* wait4 -- wait for process to change state.  Linux/Alpha/tv32 version.
    Copyright (C) 2019 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -16,7 +16,26 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-/* We can use the generic Linux implementation, but we have to override its
-   default symbol version.  */
-#define VERSION_adjtime GLIBC_2.1
-#include <sysdeps/unix/sysv/linux/adjtime.c>
+#include <shlib-compat.h>
+
+#if SHLIB_COMPAT (libc, GLIBC_2_0, GLIBC_2_1)
+
+#include <sys/time.h>
+#include <sys/resource.h>
+#include <sys/wait.h>
+#include <tv32-compat.h>
+
+pid_t
+attribute_compat_text_section
+__wait4_tv32 (pid_t pid, int *status, int options, struct rusage32 *usage32)
+{
+  struct rusage usage64;
+  pid_t child = __wait4 (pid, status, options, &usage64);
+
+  if (child >= 0)
+    RUSAGE64_TO_RUSAGE32 (usage32, &usage64);
+  return child;
+}
+
+compat_symbol (libc, __wait4_tv32, wait4, GLIBC_2_0);
+#endif

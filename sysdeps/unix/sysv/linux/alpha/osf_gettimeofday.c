@@ -1,4 +1,4 @@
-/* adjtime -- Adjust the current time of day.  Linux/Alpha/tv64 version.
+/* gettimeofday -- Get the current time of day.  Linux/Alpha/tv32 version.
    Copyright (C) 2019 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -16,7 +16,28 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-/* We can use the generic Linux implementation, but we have to override its
-   default symbol version.  */
-#define VERSION_adjtime GLIBC_2.1
-#include <sysdeps/unix/sysv/linux/adjtime.c>
+#include <shlib-compat.h>
+
+#if SHLIB_COMPAT (libc, GLIBC_2_0, GLIBC_2_1)
+
+#include <sys/time.h>
+#include <tv32-compat.h>
+
+/* Get the current time of day and timezone information putting it
+   into *TV and *TZ.  */
+
+int
+attribute_compat_text_section
+__gettimeofday_tv32 (struct timeval32 *restrict tv32, void *restrict tz)
+{
+  struct timeval tv;
+  __gettimeofday (&tv, tz);
+
+  TV64_TO_TV32 (tv32, &tv);
+  return 0;
+}
+
+compat_symbol (libc, __gettimeofday_tv32, __gettimeofday, GLIBC_2_0);
+strong_alias (__gettimeofday_tv32, __gettimeofday_tv32_1);
+compat_symbol (libc, __gettimeofday_tv32_1, gettimeofday, GLIBC_2_0);
+#endif
