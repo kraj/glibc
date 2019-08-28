@@ -16,6 +16,7 @@
    <https://www.gnu.org/licenses/>.  */
 
 #include <errno.h>
+#include <time.h>
 #include <sys/time.h>
 
 /* Set the current time of day and timezone information.
@@ -23,9 +24,24 @@
 int
 __settimeofday (const struct timeval *tv, const struct timezone *tz)
 {
-  __set_errno (ENOSYS);
-  return -1;
-}
-stub_warning (settimeofday)
+  if (__glibc_unlikely (tz != 0))
+    {
+      if (tv != 0)
+	{
+	  __set_errno (EINVAL);
+	  return -1;
+	}
+      return __settimezone (tz);
+    }
 
-weak_alias (__settimeofday, settimeofday)
+  struct timespec ts;
+  TIMEVAL_TO_TIMESPEC (tv, &ts);
+  return __clock_settime (CLOCK_REALTIME, &ts);
+}
+
+#ifdef VERSION_settimeofday
+weak_alias (__settimeofday, __settimeofday_w);
+default_symbol_version (__settimeofday_w, settimeofday, VERSION_settimeofday);
+#else
+weak_alias (__settimeofday, settimeofday);
+#endif
