@@ -1,4 +1,4 @@
-/* Copyright (C) 1999-2019 Free Software Foundation, Inc.
+/* Copyright (C) 1991-2019 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -17,38 +17,31 @@
 
 #include <errno.h>
 #include <time.h>
-#include <sys/time.h>
+#include <hurd.h>
+#include <hurd/port.h>
 #include <shlib-compat.h>
 
-/* Set CLOCK to value TP.  */
+/* Set the current time of day.
+   This call is restricted to the super-user.  */
 int
-__clock_settime (clockid_t clock_id, const struct timespec *tp)
+__clock_settime (clockid_t clock_id, const struct timespec *ts)
 {
-  int retval = -1;
+  error_t err;
+  mach_port_t hostpriv;
+  time_value_t tv;
 
-  /* Make sure the time cvalue is OK.  */
-  if (tp->tv_nsec < 0 || tp->tv_nsec >= 1000000000)
-    {
-      __set_errno (EINVAL);
-      return -1;
-    }
+  if (clock_id != CLOCK_REALTIME)
+    return __hurd_fail (EINVAL);
 
-  switch (clock_id)
-    {
-    case CLOCK_REALTIME:
-      {
-	struct timeval tv;
-	TIMESPEC_TO_TIMEVAL (&tv, tp);
-	retval = __settimeofday (&tv, NULL);
-      }
-      break;
+  err = __get_privileged_ports (&hostpriv, NULL);
+  if (err)
+    return __hurd_fail (EPERM);
 
-    default:
-      __set_errno (EINVAL);
-      break;
-    }
+  TIMESPEC_TO_TIME_VALUE (&tv, ts);
+  err = __host_set_time (hostpriv, tv);
+  __mach_port_deallocate (__mach_task_self (), hostpriv);
 
-  return retval;
+  return __hurd_fail (err);
 }
 libc_hidden_def (__clock_settime)
 
