@@ -21,17 +21,14 @@
 #include <libc-vdso.h>
 #include <sysdep-vdso.h>
 
-int (*VDSO_SYMBOL(gettimeofday)) (struct timeval *, void *) attribute_hidden;
 int (*VDSO_SYMBOL(clock_gettime)) (clockid_t, struct timespec *);
 
 static inline void
 _libc_vdso_platform_setup (void)
 {
-  PREPARE_VERSION_KNOWN (linux26, LINUX_2_6);
+  void *p;
 
-  void *p = _dl_vdso_vsym ("__vdso_gettimeofday", &linux26);
-  PTR_MANGLE (p);
-  VDSO_SYMBOL (gettimeofday) = p;
+  PREPARE_VERSION_KNOWN (linux26, LINUX_2_6);
 
   p = _dl_vdso_vsym ("__vdso_clock_gettime", &linux26);
   PTR_MANGLE (p);

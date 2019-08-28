@@ -22,8 +22,6 @@
 
 long int (*VDSO_SYMBOL (getcpu)) (unsigned int *, unsigned int *, void *)
     attribute_hidden;
-long int (*VDSO_SYMBOL (gettimeofday)) (struct timeval *, void *)
-    attribute_hidden;
 long int (*VDSO_SYMBOL (clock_gettime)) (clockid_t, struct timespec *)
     attribute_hidden;
 long int (*VDSO_SYMBOL (clock_getres)) (clockid_t, struct timespec *)
@@ -32,15 +30,13 @@ long int (*VDSO_SYMBOL (clock_getres)) (clockid_t, struct timespec *)
 static inline void
 _libc_vdso_platform_setup (void)
 {
+  void *p;
+
   PREPARE_VERSION_KNOWN (linux_version, LINUX_4_15);
 
-  void *p = _dl_vdso_vsym ("__vdso_getcpu", &linux_version);
+  p = _dl_vdso_vsym ("__vdso_getcpu", &linux_version);
   PTR_MANGLE (p);
   VDSO_SYMBOL (getcpu) = p;
-
-  p = _dl_vdso_vsym ("__vdso_gettimeofday", &linux_version);
-  PTR_MANGLE (p);
-  VDSO_SYMBOL (gettimeofday) = p;
 
   p = _dl_vdso_vsym ("__vdso_clock_gettime", &linux_version);
   PTR_MANGLE (p);

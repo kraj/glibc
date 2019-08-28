@@ -1,5 +1,5 @@
-/* gettimeofday - get the time.  Linux/i386 version.
-   Copyright (C) 2015-2019 Free Software Foundation, Inc.
+/* gettimeofday -- Get the current time of day.  Linux/Alpha/tv64 version.
+   Copyright (C) 2019 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -16,20 +16,7 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifdef SHARED
-# define __gettimeofday __redirect___gettimeofday
-#endif
-
-#include <sys/time.h>
-
-#ifdef SHARED
-# undef __gettimeofday
-# define __gettimeofday_type __redirect___gettimeofday
-
-# undef libc_hidden_def
-# define libc_hidden_def(name) \
-  __hidden_ver1 (__gettimeofday_syscall, __GI___gettimeofday, \
-	       __gettimeofday_syscall);
-#endif
-
-#include <sysdeps/unix/sysv/linux/x86/gettimeofday.c>
+/* We can use the generic implementation, but we have to override its
+   default symbol version.  */
+#define VERSION_gettimeofday GLIBC_2.1
+#include <time/gettimeofday.c>

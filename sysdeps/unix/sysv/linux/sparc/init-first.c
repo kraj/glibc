@@ -20,19 +20,15 @@
 #include <dl-vdso.h>
 #include <libc-vdso.h>
 
-long int (*VDSO_SYMBOL (gettimeofday)) (struct timeval *, void *)
-    attribute_hidden;
 long int (*VDSO_SYMBOL (clock_gettime)) (clockid_t, struct timespec *)
     attribute_hidden;
 
 static inline void
 _libc_vdso_platform_setup (void)
 {
-  PREPARE_VERSION_KNOWN (linux_version, LINUX_2_6);
+  void *p;
 
-  void *p = _dl_vdso_vsym ("__vdso_gettimeofday", &linux_version);
-  PTR_MANGLE (p);
-  VDSO_SYMBOL (gettimeofday) = p;
+  PREPARE_VERSION_KNOWN (linux_version, LINUX_2_6);
 
   p = _dl_vdso_vsym ("__vdso_clock_gettime", &linux_version);
   PTR_MANGLE (p);

@@ -19,8 +19,6 @@
 #include <dl-vdso.h>
 #include <libc-vdso.h>
 
-int (*VDSO_SYMBOL(gettimeofday)) (struct timeval *, void *)
-  attribute_hidden;
 int (*VDSO_SYMBOL(clock_gettime)) (clockid_t, struct timespec *);
 int (*VDSO_SYMBOL(clock_getres)) (clockid_t, struct timespec *);
 unsigned long long (*VDSO_SYMBOL(get_tbfreq)) (void);
@@ -36,11 +34,9 @@ void *VDSO_SYMBOL(sigtramp_rt32);
 static inline void
 _libc_vdso_platform_setup (void)
 {
-  PREPARE_VERSION_KNOWN (linux2615, LINUX_2_6_15);
+  void *p;
 
-  void *p = _dl_vdso_vsym ("__kernel_gettimeofday", &linux2615);
-  PTR_MANGLE (p);
-  VDSO_SYMBOL (gettimeofday) = p;
+  PREPARE_VERSION_KNOWN (linux2615, LINUX_2_6_15);
 
   p = _dl_vdso_vsym ("__kernel_clock_gettime", &linux2615);
   PTR_MANGLE (p);

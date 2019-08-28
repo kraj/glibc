@@ -19,9 +19,6 @@
 #include <dl-vdso.h>
 #include <libc-vdso.h>
 
-long int (*VDSO_SYMBOL(gettimeofday)) (struct timeval *, void *)
-   attribute_hidden;
-
 long int (*VDSO_SYMBOL(clock_gettime)) (clockid_t, struct timespec *)
   __attribute__ ((nocommon));
 
@@ -34,11 +31,9 @@ long int (*VDSO_SYMBOL(getcpu)) (unsigned *, unsigned *, void *)
 static inline void
 _libc_vdso_platform_setup (void)
 {
-  PREPARE_VERSION_KNOWN (linux2629, LINUX_2_6_29);
+  void *p;
 
-  void *p = _dl_vdso_vsym ("__kernel_gettimeofday", &linux2629);
-  PTR_MANGLE (p);
-  VDSO_SYMBOL (gettimeofday) = p;
+  PREPARE_VERSION_KNOWN (linux2629, LINUX_2_6_29);
 
   p = _dl_vdso_vsym ("__kernel_clock_gettime", &linux2629);
   PTR_MANGLE (p);

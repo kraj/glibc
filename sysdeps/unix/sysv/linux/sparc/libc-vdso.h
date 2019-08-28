@@ -22,8 +22,6 @@
 
 #include <sysdep-vdso.h>
 
-extern long int (*VDSO_SYMBOL(gettimeofday)) (struct timeval *, void *)
-   attribute_hidden;
 extern long int (*VDSO_SYMBOL(clock_gettime)) (clockid_t, struct timespec *);
 
 #endif /* _LIBC_VDSO_H */
