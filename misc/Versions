@@ -153,8 +153,7 @@ libc {
     # SHLIB_COMPAT(GLIBC_2_0, GLIBC_2_23) used in regexp.c
   }
   GLIBC_2.25 {
-    # Disable for now, as a workaround for new lld error.
-    # gnu_dev_major; gnu_dev_minor; gnu_dev_makedev;
+    gnu_dev_major; gnu_dev_minor; gnu_dev_makedev;
   }
   GLIBC_2.26 {
     preadv2; preadv64v2; pwritev2; pwritev64v2;
@@ -165,7 +164,6 @@ libc {
     __libc_ifunc_impl_list;
     __tdelete; __tfind; __tsearch; __twalk;
     __mmap; __munmap; __mprotect;
-    # Disable for now, as a workaround for new lld error.
-    # __sched_get_priority_min; __sched_get_priority_max;
+    __sched_get_priority_min; __sched_get_priority_max;
   }
 }

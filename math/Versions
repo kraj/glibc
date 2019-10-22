@@ -169,8 +169,7 @@ libm {
     # in GLIBC_2.1 as it should have on platforms using that
     # implementation file.  On others, sysdeps/CPU/Versions now
     # puts exp2l in GLIBC_2.1, which will override this entry.
-    # Disable for now, as a workaround for new lld error.
-    # exp2l;
+    exp2l;
   }
   GLIBC_2.15 {
     # Optimized -ffinite-math-only entry points

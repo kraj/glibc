@@ -35,8 +35,7 @@ libc {
     accept4;
   }
   GLIBC_2.17 {
-    # Disable for now, as a workaround for new lld error.
-    # recvmmsg; sendmmsg;
+    recvmmsg; sendmmsg;
   }
   GLIBC_PRIVATE {
     __sendmmsg;
