@@ -19,12 +19,6 @@
 
 #include_next <kernel-features.h>
 
-/* 32-bit SPARC kernels do not support
-   futex_atomic_cmpxchg_inatomic.  */
-#if !defined __arch64__ && !defined __sparc_v9__
-# undef __ASSUME_SET_ROBUST_LIST
-#endif
-
 /* These syscalls were added for 32-bit in 4.4 (but present for 64-bit
    in all supported kernel versions); the architecture-independent
    kernel-features.h assumes some of them to be present by default.

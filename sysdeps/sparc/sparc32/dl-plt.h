@@ -47,13 +47,11 @@ sparc_fixup_plt (const Elf32_Rela *reloc, Elf32_Addr *reloc_addr,
     {
       unsigned int insn = OPCODE_BA | ((disp >> 2) & 0x3fffff);
 
-#ifdef __sparc_v9__
       /* On V9 we can do even better by using a branch with
 	 prediction if we fit into the even smaller 19-bit
 	 displacement field.  */
       if (disp >= -0x100000 && disp < 0x100000)
 	insn = OPCODE_BA_PT | ((disp >> 2) & 0x07ffff);
-#endif
 
       /* Even if we are writing just a single branch, we must not
 	 ignore the 't' offset.  Consider a case where we have some

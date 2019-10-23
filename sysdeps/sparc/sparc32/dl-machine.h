@@ -147,7 +147,7 @@ elf_machine_runtime_setup (struct link_map *l, int lazy, int profile)
 	  Elf32_Rela *relaend
 	    = (Elf32_Rela *) ((char *) rela
 			      + l->l_info[DT_PLTRELSZ]->d_un.d_val);
-#if !defined RTLD_BOOTSTRAP && !defined __sparc_v9__
+#if !defined RTLD_BOOTSTRAP
 	  /* Note that we don't mask the hwcap here, as the flush is
 	     essential to functionality on those cpu's that implement it.
 	     For sparcv9 we can assume flush is present.  */
@@ -298,15 +298,8 @@ elf_machine_fixup_plt (struct link_map *map, lookup_t t,
 		       const Elf32_Rela *reloc,
 		       Elf32_Addr *reloc_addr, Elf32_Addr value)
 {
-#ifdef __sparc_v9__
   /* Sparc v9 can assume flush is always present.  */
-  const int do_flush = 1;
-#else
-  /* Note that we don't mask the hwcap here, as the flush is essential to
-     functionality on those cpu's that implement it.  */
-  const int do_flush = GLRO(dl_hwcap) & HWCAP_SPARC_FLUSH;
-#endif
-  return sparc_fixup_plt (reloc, reloc_addr, value, 1, do_flush);
+  return sparc_fixup_plt (reloc, reloc_addr, value, 1, 1);
 }
 
 /* Return the final value of a plt relocation.  */
@@ -433,7 +426,7 @@ elf_machine_rela (struct link_map *map, const Elf32_Rela *reloc,
       /* Fall thru */
     case R_SPARC_JMP_SLOT:
       {
-#if !defined RTLD_BOOTSTRAP && !defined __sparc_v9__
+#if !defined RTLD_BOOTSTRAP
 	/* Note that we don't mask the hwcap here, as the flush is
 	   essential to functionality on those cpu's that implement
 	   it.  For sparcv9 we can assume flush is present.  */

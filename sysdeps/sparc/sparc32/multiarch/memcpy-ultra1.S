@@ -29,5 +29,5 @@
 # define memcpy         __memcpy_ultra1
 # define __memcpy_large __memcpy_large_ultra1
 # define __mempcpy      __mempcpy_ultra1
-# include <sysdeps/sparc/sparc32/sparcv9/memcpy.S>
+# include <sysdeps/sparc/sparc32/memcpy.S>
 #endif

@@ -1,5 +1,5 @@
-/* Float absolute value, sparc32+v9 version.
-   Copyright (C) 2011-2019 Free Software Foundation, Inc.
+/* Default SPARC memset implementation.
+   Copyright (C) 2017-2019 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -16,15 +16,15 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#include <sysdep.h>
-#include <math_ldbl_opt.h>
-#include <libm-alias-double.h>
+#if IS_IN (libc)
+# include <sysdep.h>
 
-ENTRY (__fabs)
-	st	%o0, [%sp+72]
-	st	%o1, [%sp+76]
-	ldd	[%sp+72], %f0
-	retl
-	 fabsd	%f0, %f0
-END (__fabs)
-libm_alias_double (__fabs, fabs)
+# undef libc_hidden_builtin_def
+# define libc_hidden_builtin_def(name)
+# undef weak_alias
+# define weak_alias(x, y)
+
+# define memset  __memset_ultra1
+# define __bzero __bzero_ultra1
+# include <sysdeps/sparc/sparc32/memset.S>
+#endif

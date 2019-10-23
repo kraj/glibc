@@ -15,36 +15,18 @@
 # License along with the GNU C Library; if not, see
 # <https://www.gnu.org/licenses/>.
 
+sysdep-CFLAGS += -mcpu=ultrasparc -Wa,-Av9a -mvis
+
+ASFLAGS-.o += -Wa,-Av9d
+ASFLAGS-.os += -Wa,-Av9d
+ASFLAGS-.op += -Wa,-Av9d
+ASFLAGS-.oS += -Wa,-Av9d
+
 ifeq ($(subdir),gnulib)
 sysdep_routines = dotmul umul $(divrem) alloca
-endif	# gnulib
+endif   # gnulib
 
-# We distribute these files, even though they are generated,
-# so as to avoid the need for a functioning m4 to build the library.
 divrem := sdiv udiv rem urem
-
-+divrem-NAME-sdiv := div
-+divrem-NAME-udiv := udiv
-+divrem-NAME-rem := rem
-+divrem-NAME-urem := urem
-+divrem-NAME = $(+divrem-NAME-$(basename $(notdir $@)))
-+divrem-OP-div := div
-+divrem-OP-udiv := div
-+divrem-OP-rem := rem
-+divrem-OP-urem := rem
-+divrem-S-div := true
-+divrem-S-rem := true
-+divrem-S-udiv := false
-+divrem-S-urem := false
-$(divrem:%=$(sysdep_dir)/sparc/sparc32/%.S): $(sysdep_dir)/sparc/sparc32/divrem.m4
-	(echo -n "define(NAME,\`.$(+divrem-NAME)')"; \
-	 echo -n " define(OP,\`$(+divrem-OP-$(+divrem-NAME))')"; \
-	 echo -n " define(S,\`$(+divrem-S-$(+divrem-NAME))')"; \
-	 echo " /* This file is generated from divrem.m4; DO NOT EDIT! */"; \
-	 cat $<) | $(M4) > $@-tmp
-# Make it unwritable so noone will edit it by mistake.
-	-chmod a-w $@-tmp
-	mv -f $@-tmp $@
 
 sysdep-realclean := $(sysdep-realclean) $(divrem:%=sysdeps/sparc/sparc32/%.S)
 
@@ -55,10 +37,18 @@ sysdep-realclean := $(sysdep-realclean) $(divrem:%=sysdeps/sparc/sparc32/%.S)
 libc.so-gnulib += -Wl,--wrap=.udiv
 
 ifeq ($(subdir),soft-fp)
-sparc32-quad-routines := q_add q_cmp q_cmpe q_div q_dtoq q_feq q_fge	\
-	q_fgt q_fle q_flt q_fne q_itoq q_mul q_neg q_qtod q_qtoi	\
-	q_qtos q_qtou q_qtoull q_qtoll q_sqrt q_stoq q_sub q_utoq	\
-	q_ulltoq q_lltoq q_util
+sparc32-quad-routines := q_add q_cmp q_cmpe q_div q_dtoq q_feq q_fge    \
+        q_fgt q_fle q_flt q_fne q_itoq q_mul q_neg q_qtod q_qtoi        \
+        q_qtos q_qtou q_qtoull q_qtoll q_sqrt q_stoq q_sub q_utoq       \
+        q_ulltoq q_lltoq q_util
 sysdep_routines += $(sparc32-quad-routines)
+endif
 
+# nscd uses atomic_spin_nop which in turn requires cpu_relax
+ifeq ($(subdir),nscd)
+routines += cpu_relax
+endif
+
+ifeq ($(subdir), nptl)
+libpthread-routines += cpu_relax
 endif

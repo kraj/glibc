@@ -1,4 +1,4 @@
-/* Atomic operations.  sparc32 version.
+/* Atomic operations.  sparcv9 version.
    Copyright (C) 2003-2019 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
    Contributed by Jakub Jelinek <jakub@redhat.com>, 2003.
@@ -16,9 +16,6 @@
    You should have received a copy of the GNU Lesser General Public
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
-
-#ifndef _ATOMIC_MACHINE_H
-#define _ATOMIC_MACHINE_H	1
 
 #include <stdint.h>
 
@@ -51,313 +48,61 @@ typedef uintmax_t uatomic_max_t;
 #define USE_ATOMIC_COMPILER_BUILTINS 0
 
 /* XXX Is this actually correct?  */
-#define ATOMIC_EXCHANGE_USES_CAS 1
+#define ATOMIC_EXCHANGE_USES_CAS 0
 
 
-/* We have no compare and swap, just test and set.
-   The following implementation contends on 64 global locks
-   per library and assumes no variable will be accessed using atomic.h
-   macros from two different libraries.  */
+#define __arch_compare_and_exchange_val_8_acq(mem, newval, oldval) \
+  (abort (), (__typeof (*mem)) 0)
 
-__make_section_unallocated
-  (".gnu.linkonce.b.__sparc32_atomic_locks, \"aw\", %nobits");
+#define __arch_compare_and_exchange_val_16_acq(mem, newval, oldval) \
+  (abort (), (__typeof (*mem)) 0)
 
-volatile unsigned char __sparc32_atomic_locks[64]
-  __attribute__ ((nocommon, section (".gnu.linkonce.b.__sparc32_atomic_locks"
-				     __sec_comment),
-		  visibility ("hidden")));
+#define __arch_compare_and_exchange_val_32_acq(mem, newval, oldval) \
+({									      \
+  __typeof (*(mem)) __acev_tmp;						      \
+  __typeof (mem) __acev_mem = (mem);					      \
+  if (__builtin_constant_p (oldval) && (oldval) == 0)			      \
+    __asm __volatile ("cas [%3], %%g0, %0"				      \
+		      : "=r" (__acev_tmp), "=m" (*__acev_mem)		      \
+		      : "m" (*__acev_mem), "r" (__acev_mem),		      \
+		        "0" (newval) : "memory");			      \
+  else									      \
+    __asm __volatile ("cas [%4], %2, %0"				      \
+		      : "=r" (__acev_tmp), "=m" (*__acev_mem)		      \
+		      : "r" (oldval), "m" (*__acev_mem), "r" (__acev_mem),    \
+		        "0" (newval) : "memory");			      \
+  __acev_tmp; })
 
-#define __sparc32_atomic_do_lock(addr) \
-  do								      \
-    {								      \
-      unsigned int __old_lock;					      \
-      unsigned int __idx = (((long) addr >> 2) ^ ((long) addr >> 12)) \
-			   & 63;				      \
-      do							      \
-	__asm __volatile ("ldstub %1, %0"			      \
-			  : "=r" (__old_lock),			      \
-			    "=m" (__sparc32_atomic_locks[__idx])      \
-			  : "m" (__sparc32_atomic_locks[__idx])	      \
-			  : "memory");				      \
-      while (__old_lock);					      \
-    }								      \
-  while (0)
+/* This can be implemented if needed.  */
+#define __arch_compare_and_exchange_val_64_acq(mem, newval, oldval) \
+  (abort (), (__typeof (*mem)) 0)
 
-#define __sparc32_atomic_do_unlock(addr) \
-  do								      \
-    {								      \
-      __sparc32_atomic_locks[(((long) addr >> 2)		      \
-			      ^ ((long) addr >> 12)) & 63] = 0;	      \
-      __asm __volatile ("" ::: "memory");			      \
-    }								      \
-  while (0)
+#define atomic_exchange_acq(mem, newvalue) \
+  ({ __typeof (*(mem)) __oldval;					      \
+     __typeof (mem) __memp = (mem);					      \
+     __typeof (*(mem)) __value = (newvalue);				      \
+									      \
+     if (sizeof (*(mem)) == 4)						      \
+       __asm ("swap %0, %1"						      \
+	      : "=m" (*__memp), "=r" (__oldval)				      \
+	      : "m" (*__memp), "1" (__value) : "memory");		      \
+     else								      \
+       abort ();							      \
+     __oldval; })
 
-#define __sparc32_atomic_do_lock24(addr) \
-  do								      \
-    {								      \
-      unsigned int __old_lock;					      \
-      do							      \
-	__asm __volatile ("ldstub %1, %0"			      \
-			  : "=r" (__old_lock), "=m" (*(addr))	      \
-			  : "m" (*(addr))			      \
-			  : "memory");				      \
-      while (__old_lock);					      \
-    }								      \
-  while (0)
+#define atomic_compare_and_exchange_val_24_acq(mem, newval, oldval) \
+  atomic_compare_and_exchange_val_acq (mem, newval, oldval)
 
-#define __sparc32_atomic_do_unlock24(addr) \
-  do								      \
-    {								      \
-      __asm __volatile ("" ::: "memory");			      \
-      *(char *) (addr) = 0;					      \
-    }								      \
-  while (0)
+#define atomic_exchange_24_rel(mem, newval) \
+  atomic_exchange_rel (mem, newval)
 
+#define atomic_full_barrier() \
+  __asm __volatile ("membar #LoadLoad | #LoadStore"			      \
+			  " | #StoreLoad | #StoreStore" : : : "memory")
+#define atomic_read_barrier() \
+  __asm __volatile ("membar #LoadLoad | #LoadStore" : : : "memory")
+#define atomic_write_barrier() \
+  __asm __volatile ("membar #LoadStore | #StoreStore" : : : "memory")
 
-#ifndef SHARED
-# define __v9_compare_and_exchange_val_32_acq(mem, newval, oldval) \
-({union { __typeof (oldval) a; uint32_t v; } oldval_arg = { .a = (oldval) };  \
-  union { __typeof (newval) a; uint32_t v; } newval_arg = { .a = (newval) };  \
-  register uint32_t __acev_tmp __asm ("%g6");			              \
-  register __typeof (mem) __acev_mem __asm ("%g1") = (mem);		      \
-  register uint32_t __acev_oldval __asm ("%g5");		              \
-  __acev_tmp = newval_arg.v;						      \
-  __acev_oldval = oldval_arg.v;						      \
-  /* .word 0xcde05005 is cas [%g1], %g5, %g6.  Can't use cas here though,     \
-     because as will then mark the object file as V8+ arch.  */		      \
-  __asm __volatile (".word 0xcde05005"					      \
-		    : "+r" (__acev_tmp), "=m" (*__acev_mem)		      \
-		    : "r" (__acev_oldval), "m" (*__acev_mem),		      \
-		      "r" (__acev_mem) : "memory");			      \
-  (__typeof (oldval)) __acev_tmp; })
-#endif
-
-/* The only basic operation needed is compare and exchange.  */
-#define __v7_compare_and_exchange_val_acq(mem, newval, oldval) \
-  ({ __typeof (mem) __acev_memp = (mem);			      \
-     __typeof (*mem) __acev_ret;				      \
-     __typeof (*mem) __acev_newval = (newval);			      \
-								      \
-     __sparc32_atomic_do_lock (__acev_memp);			      \
-     __acev_ret = *__acev_memp;					      \
-     if (__acev_ret == (oldval))				      \
-       *__acev_memp = __acev_newval;				      \
-     __sparc32_atomic_do_unlock (__acev_memp);			      \
-     __acev_ret; })
-
-#define __v7_compare_and_exchange_bool_acq(mem, newval, oldval) \
-  ({ __typeof (mem) __aceb_memp = (mem);			      \
-     int __aceb_ret;						      \
-     __typeof (*mem) __aceb_newval = (newval);			      \
-								      \
-     __sparc32_atomic_do_lock (__aceb_memp);			      \
-     __aceb_ret = 0;						      \
-     if (*__aceb_memp == (oldval))				      \
-       *__aceb_memp = __aceb_newval;				      \
-     else							      \
-       __aceb_ret = 1;						      \
-     __sparc32_atomic_do_unlock (__aceb_memp);			      \
-     __aceb_ret; })
-
-#define __v7_exchange_acq(mem, newval) \
-  ({ __typeof (mem) __acev_memp = (mem);			      \
-     __typeof (*mem) __acev_ret;				      \
-     __typeof (*mem) __acev_newval = (newval);			      \
-								      \
-     __sparc32_atomic_do_lock (__acev_memp);			      \
-     __acev_ret = *__acev_memp;					      \
-     *__acev_memp = __acev_newval;				      \
-     __sparc32_atomic_do_unlock (__acev_memp);			      \
-     __acev_ret; })
-
-#define __v7_exchange_and_add(mem, value) \
-  ({ __typeof (mem) __acev_memp = (mem);			      \
-     __typeof (*mem) __acev_ret;				      \
-								      \
-     __sparc32_atomic_do_lock (__acev_memp);			      \
-     __acev_ret = *__acev_memp;					      \
-     *__acev_memp = __acev_ret + (value);			      \
-     __sparc32_atomic_do_unlock (__acev_memp);			      \
-     __acev_ret; })
-
-/* Special versions, which guarantee that top 8 bits of all values
-   are cleared and use those bits as the ldstub lock.  */
-#define __v7_compare_and_exchange_val_24_acq(mem, newval, oldval) \
-  ({ __typeof (mem) __acev_memp = (mem);			      \
-     __typeof (*mem) __acev_ret;				      \
-     __typeof (*mem) __acev_newval = (newval);			      \
-								      \
-     __sparc32_atomic_do_lock24 (__acev_memp);			      \
-     __acev_ret = *__acev_memp & 0xffffff;			      \
-     if (__acev_ret == (oldval))				      \
-       *__acev_memp = __acev_newval;				      \
-     else							      \
-       __sparc32_atomic_do_unlock24 (__acev_memp);		      \
-     __asm __volatile ("" ::: "memory");			      \
-     __acev_ret; })
-
-#define __v7_exchange_24_rel(mem, newval) \
-  ({ __typeof (mem) __acev_memp = (mem);			      \
-     __typeof (*mem) __acev_ret;				      \
-     __typeof (*mem) __acev_newval = (newval);			      \
-								      \
-     __sparc32_atomic_do_lock24 (__acev_memp);			      \
-     __acev_ret = *__acev_memp & 0xffffff;			      \
-     *__acev_memp = __acev_newval;				      \
-     __asm __volatile ("" ::: "memory");			      \
-     __acev_ret; })
-
-#ifdef SHARED
-
-/* When dynamically linked, we assume pre-v9 libraries are only ever
-   used on pre-v9 CPU.  */
-# define __atomic_is_v9 0
-
-# define atomic_compare_and_exchange_val_acq(mem, newval, oldval) \
-  __v7_compare_and_exchange_val_acq (mem, newval, oldval)
-
-# define atomic_compare_and_exchange_bool_acq(mem, newval, oldval) \
-  __v7_compare_and_exchange_bool_acq (mem, newval, oldval)
-
-# define atomic_exchange_acq(mem, newval) \
-  __v7_exchange_acq (mem, newval)
-
-# define atomic_exchange_and_add(mem, value) \
-  __v7_exchange_and_add (mem, value)
-
-# define atomic_compare_and_exchange_val_24_acq(mem, newval, oldval) \
-  ({								      \
-     if (sizeof (*mem) != 4)					      \
-       abort ();						      \
-     __v7_compare_and_exchange_val_24_acq (mem, newval, oldval); })
-
-# define atomic_exchange_24_rel(mem, newval) \
-  ({								      \
-     if (sizeof (*mem) != 4)					      \
-       abort ();						      \
-     __v7_exchange_24_rel (mem, newval); })
-
-# define atomic_full_barrier() __asm ("" ::: "memory")
-# define atomic_read_barrier() atomic_full_barrier ()
-# define atomic_write_barrier() atomic_full_barrier ()
-
-#else
-
-/* In libc.a/libpthread.a etc. we don't know if we'll be run on
-   pre-v9 or v9 CPU.  To be interoperable with dynamically linked
-   apps on v9 CPUs e.g. with process shared primitives, use cas insn
-   on v9 CPUs and ldstub on pre-v9.  */
-
-extern uint64_t _dl_hwcap __attribute__((weak));
-# define __atomic_is_v9 \
-  (__builtin_expect (&_dl_hwcap != 0, 1) \
-   && __builtin_expect (_dl_hwcap & HWCAP_SPARC_V9, HWCAP_SPARC_V9))
-
-# define atomic_compare_and_exchange_val_acq(mem, newval, oldval) \
-  ({								      \
-     __typeof (*mem) __acev_wret;				      \
-     if (sizeof (*mem) != 4)					      \
-       abort ();						      \
-     if (__atomic_is_v9)					      \
-       __acev_wret						      \
-	 = __v9_compare_and_exchange_val_32_acq (mem, newval, oldval);\
-     else							      \
-       __acev_wret						      \
-	 = __v7_compare_and_exchange_val_acq (mem, newval, oldval);   \
-     __acev_wret; })
-
-# define atomic_compare_and_exchange_bool_acq(mem, newval, oldval) \
-  ({								      \
-     int __acev_wret;						      \
-     if (sizeof (*mem) != 4)					      \
-       abort ();						      \
-     if (__atomic_is_v9)					      \
-       {							      \
-	 __typeof (oldval) __acev_woldval = (oldval);		      \
-	 __acev_wret						      \
-	   = __v9_compare_and_exchange_val_32_acq (mem, newval,	      \
-						   __acev_woldval)    \
-	     != __acev_woldval;					      \
-       }							      \
-     else							      \
-       __acev_wret						      \
-	 = __v7_compare_and_exchange_bool_acq (mem, newval, oldval);  \
-     __acev_wret; })
-
-# define atomic_exchange_rel(mem, newval) \
-  ({								      \
-     __typeof (*mem) __acev_wret;				      \
-     if (sizeof (*mem) != 4)					      \
-       abort ();						      \
-     if (__atomic_is_v9)					      \
-       {							      \
-	 __typeof (mem) __acev_wmemp = (mem);			      \
-	 __typeof (*(mem)) __acev_wval = (newval);		      \
-	 do							      \
-	   __acev_wret = *__acev_wmemp;				      \
-	 while (__builtin_expect				      \
-		  (__v9_compare_and_exchange_val_32_acq (__acev_wmemp,\
-							 __acev_wval, \
-							 __acev_wret) \
-		   != __acev_wret, 0));				      \
-       }							      \
-     else							      \
-       __acev_wret = __v7_exchange_acq (mem, newval);		      \
-     __acev_wret; })
-
-# define atomic_compare_and_exchange_val_24_acq(mem, newval, oldval) \
-  ({								      \
-     __typeof (*mem) __acev_wret;				      \
-     if (sizeof (*mem) != 4)					      \
-       abort ();						      \
-     if (__atomic_is_v9)					      \
-       __acev_wret						      \
-	 = __v9_compare_and_exchange_val_32_acq (mem, newval, oldval);\
-     else							      \
-       __acev_wret						      \
-	 = __v7_compare_and_exchange_val_24_acq (mem, newval, oldval);\
-     __acev_wret; })
-
-# define atomic_exchange_24_rel(mem, newval) \
-  ({								      \
-     __typeof (*mem) __acev_w24ret;				      \
-     if (sizeof (*mem) != 4)					      \
-       abort ();						      \
-     if (__atomic_is_v9)					      \
-       __acev_w24ret = atomic_exchange_rel (mem, newval);	      \
-     else							      \
-       __acev_w24ret = __v7_exchange_24_rel (mem, newval);	      \
-     __acev_w24ret; })
-
-#define atomic_full_barrier()						\
-  do {									\
-     if (__atomic_is_v9)						\
-       /* membar #LoadLoad | #LoadStore | #StoreLoad | #StoreStore */	\
-       __asm __volatile (".word 0x8143e00f" : : : "memory");		\
-     else								\
-       __asm __volatile ("" : : : "memory");				\
-  } while (0)
-
-#define atomic_read_barrier()						\
-  do {									\
-     if (__atomic_is_v9)						\
-       /* membar #LoadLoad | #LoadStore */				\
-       __asm __volatile (".word 0x8143e005" : : : "memory");		\
-     else								\
-       __asm __volatile ("" : : : "memory");				\
-  } while (0)
-
-#define atomic_write_barrier()						\
-  do {									\
-     if (__atomic_is_v9)						\
-       /* membar  #LoadStore | #StoreStore */				\
-       __asm __volatile (".word 0x8143e00c" : : : "memory");		\
-     else								\
-       __asm __volatile ("" : : : "memory");				\
-  } while (0)
-
-#endif
-
-#include <sysdep.h>
-
-#endif	/* atomic-machine.h */
+extern void __cpu_relax (void);
+#define atomic_spin_nop() __cpu_relax ()

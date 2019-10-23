@@ -1,4 +1,4 @@
-/* Float absolute value, sparc32 version.
+/* Float absolute value, sparc32+v9 version.
    Copyright (C) 2011-2019 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -25,6 +25,6 @@ ENTRY (__fabs)
 	st	%o1, [%sp+76]
 	ldd	[%sp+72], %f0
 	retl
-	 fabss	%f0, %f0
+	 fabsd	%f0, %f0
 END (__fabs)
 libm_alias_double (__fabs, fabs)

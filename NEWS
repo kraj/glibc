@@ -80,6 +80,8 @@ Deprecated and removed features, and other changes affecting compatibility:
 * The obsolete functions ftime has been deprecated and will be removed from
   a future version of glibc.  Application should use clock_gettime instead.
 
+* The 32 bit sparc v8 architecture configuration is no longer supported.
+
 Changes to build and runtime requirements:
 
   [Add changes to build and runtime requirements here]
