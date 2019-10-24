@@ -7,12 +7,12 @@
 # include <stdbool.h>
 # include <time/mktime-internal.h>
 # include <endian.h>
+# include <time-internal.h>
 
 extern __typeof (strftime_l) __strftime_l;
 libc_hidden_proto (__strftime_l)
 extern __typeof (strptime_l) __strptime_l;
 
-libc_hidden_proto (time)
 libc_hidden_proto (asctime)
 libc_hidden_proto (mktime)
 libc_hidden_proto (timelocal)
@@ -235,6 +235,15 @@ valid_timespec64_to_timeval (const struct __timespec64 ts64)
   tv.tv_usec = ts64.tv_nsec / 1000;
 
   return tv;
+}
+
+/* Helper function to get time in seconds, similar to time.  */
+static inline time_t
+time_now (void)
+{
+  struct timespec ts;
+  __clock_gettime (TIME_CLOCK_GETTIME_CLOCKID, &ts);
+  return ts.tv_sec;
 }
 #endif
 #endif
