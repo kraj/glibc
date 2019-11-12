@@ -23,16 +23,6 @@
 #include <kernel-features.h>
 #include <sysdep-cancel.h>
 
-
-#ifdef __NR_pselect6
-# ifndef __ASSUME_PSELECT
-static int __generic_pselect (int nfds, fd_set *readfds, fd_set *writefds,
-			      fd_set *exceptfds,
-			      const struct timespec *timeout,
-			      const sigset_t *sigmask);
-# endif
-
-
 int
 __pselect (int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
 	   const struct timespec *timeout, const sigset_t *sigmask)
@@ -59,24 +49,9 @@ __pselect (int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
   data.ss = (__syscall_ulong_t) (uintptr_t) sigmask;
   data.ss_len = _NSIG / 8;
 
-  int result = SYSCALL_CANCEL (pselect6, nfds, readfds, writefds, exceptfds,
-                               timeout, &data);
-
-# ifndef __ASSUME_PSELECT
-  if (result == -1 && errno == ENOSYS)
-    result = __generic_pselect (nfds, readfds, writefds, exceptfds, timeout,
-				sigmask);
-# endif
-
-  return result;
+  return SYSCALL_CANCEL (pselect6, nfds, readfds, writefds, exceptfds,
+                         timeout, &data);
 }
+#ifndef __pselect
 weak_alias (__pselect, pselect)
-
-# ifndef __ASSUME_PSELECT
-#  define __pselect static __generic_pselect
-# endif
-#endif
-
-#ifndef __ASSUME_PSELECT
-# include <misc/pselect.c>
 #endif
