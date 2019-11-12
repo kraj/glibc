@@ -36,7 +36,6 @@
 /* Support for the pselect6, preadv and pwritev syscalls was added in
    3.15.  */
 #if __LINUX_KERNEL_VERSION < 0x030f00
-# undef __ASSUME_PSELECT
 # undef __ASSUME_PREADV
 # undef __ASSUME_PWRITEV
 #endif
