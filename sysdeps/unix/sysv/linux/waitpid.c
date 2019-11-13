@@ -24,11 +24,7 @@
 __pid_t
 __waitpid (__pid_t pid, int *stat_loc, int options)
 {
-#ifdef __NR_waitpid
-  return SYSCALL_CANCEL (waitpid, pid, stat_loc, options);
-#else
-  return SYSCALL_CANCEL (wait4, pid, stat_loc, options, NULL);
-#endif
+  return __wait4 (pid, stat_loc, options, NULL);
 }
 libc_hidden_def (__waitpid)
 weak_alias (__waitpid, waitpid)

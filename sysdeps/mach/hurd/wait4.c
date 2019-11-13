@@ -49,5 +49,5 @@ __wait4 (pid_t pid, int *stat_loc, int options, struct rusage *usage)
       return (pid_t) __hurd_fail (err);
     }
 }
-
+libc_hidden_def (__wait4)
 weak_alias (__wait4, wait4)
