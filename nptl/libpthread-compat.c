@@ -26,12 +26,24 @@
    version or later, the placeholder symbol is not needed because
    there are plenty of other symbols which populate those later
    versions.  */
-#if (SHLIB_COMPAT (libpthread, GLIBC_2_1_2, GLIBC_2_2_6))
+#if (SHLIB_COMPAT (libpthread, GLIBC_2_0, GLIBC_2_1_2) \
+     || SHLIB_COMPAT (libpthread, GLIBC_2_1_2, GLIBC_2_2))
 void
 attribute_compat_text_section
 __libpthread_version_placeholder (void)
 {
 }
-compat_symbol (libpthread, __libpthread_version_placeholder,
+#endif
+
+#if (SHLIB_COMPAT (libpthread, GLIBC_2_0, GLIBC_2_1_2))
+strong_alias (__libpthread_version_placeholder,
+              __libpthread_version_placeholder_20)
+compat_symbol (libpthread, __libpthread_version_placeholder_20,
+               __libpthread_version_placeholder, GLIBC_2_0);
+#endif
+#if (SHLIB_COMPAT (libpthread, GLIBC_2_1_2, GLIBC_2_2))
+strong_alias (__libpthread_version_placeholder,
+              __libpthread_version_placeholder_212)
+compat_symbol (libpthread, __libpthread_version_placeholder_212,
                __libpthread_version_placeholder, GLIBC_2_1_2);
 #endif
