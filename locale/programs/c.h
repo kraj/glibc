@@ -240,7 +240,7 @@ errmsg(char doexit, int excode, char adderr, const char *fmt, ...)
 /* Don't use inline function to avoid '#include "nls.h"' in c.h
  */
 #define errtryhelp(eval) __extension__ ({ \
-	fprintf(stderr, _("Try '%s --help' for more information.\n"), \
+	fprintf(stderr, ("Try '%s --help' for more information.\n"), \
 			program_invocation_short_name); \
 	exit(eval); \
 })
