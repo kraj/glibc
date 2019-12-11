@@ -1217,6 +1217,7 @@ class Config(object):
             cmdlist.push_subdesc('glibc')
             cmdlist.push_subdesc(g.name)
             g.build_glibc(cmdlist, True)
+            cmdlist.cleanup_dir()
             cmdlist.pop_subdesc()
             cmdlist.pop_subdesc()
         self.build_gcc(cmdlist, False)
@@ -1427,6 +1428,7 @@ class Glibc(object):
                              os.path.join(self.compiler.installdir, 'ok')])
         cmdlist.use_path(self.compiler.bindir)
         self.build_glibc(cmdlist, False)
+        cmdlist.cleanup_dir()
         self.ctx.add_makefile_cmdlist('glibcs-%s' % self.name, cmdlist,
                                       logsdir)
 
@@ -1486,7 +1488,6 @@ class Glibc(object):
             cmdlist.add_command('check', ['make', 'check'])
             cmdlist.add_command('save-logs', [self.ctx.save_logs],
                                 always_run=True)
-        cmdlist.cleanup_dir()
 
 
 class Command(object):
