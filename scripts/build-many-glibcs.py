@@ -34,6 +34,7 @@ compilers or glibc are to be built.
 
 """
 
+import abc
 import argparse
 import datetime
 import email.mime.text
@@ -1177,10 +1178,8 @@ class Config(object):
             glibcs = [{'variant': variant}]
         if extra_glibcs is None:
             extra_glibcs = []
-        glibcs = [Glibc(self, **g) for g in glibcs]
-        extra_glibcs = [Glibc(self, **g) for g in extra_glibcs]
-        self.all_glibcs = glibcs + extra_glibcs
-        self.compiler_glibcs = glibcs
+        self.all_glibcs = [Glibc(self, **g) for g in glibcs + extra_glibcs]
+        self.compiler_glibcs = [GlibcForCompiler(self, **g) for g in glibcs]
         self.installdir = ctx.compiler_installdir(self.name)
         self.bindir = ctx.compiler_bindir(self.name)
         self.sysroot = ctx.compiler_sysroot(self.name)
@@ -1216,7 +1215,7 @@ class Config(object):
         for g in self.compiler_glibcs:
             cmdlist.push_subdesc('glibc')
             cmdlist.push_subdesc(g.name)
-            g.build_glibc(cmdlist, True)
+            g.build_glibc(cmdlist)
             cmdlist.cleanup_dir()
             cmdlist.pop_subdesc()
             cmdlist.pop_subdesc()
@@ -1381,8 +1380,8 @@ class Config(object):
         self.build_cross_tool(cmdlist, 'gcc', tool_build, cfg_opts)
 
 
-class Glibc(object):
-    """A configuration for building glibc."""
+class GlibcBase(abc.ABC):
+    """Abstract base class for a configuration for building glibc."""
 
     def __init__(self, compiler, arch=None, os_name=None, variant=None,
                  cfg=None, ccopts=None):
@@ -1427,28 +1426,28 @@ class Glibc(object):
                             ['test', '-f',
                              os.path.join(self.compiler.installdir, 'ok')])
         cmdlist.use_path(self.compiler.bindir)
-        self.build_glibc(cmdlist, False)
+        self.build_glibc(cmdlist)
         cmdlist.cleanup_dir()
         self.ctx.add_makefile_cmdlist('glibcs-%s' % self.name, cmdlist,
                                       logsdir)
 
-    def build_glibc(self, cmdlist, for_compiler):
-        """Generate commands to build this glibc, either as part of a compiler
-        build or with the bootstrapped compiler (and in the latter case, run
-        tests as well)."""
+    @abc.abstractmethod
+    def builddir(self):
+        """Return the build directory (in which glibc is configured)."""
+        pass
+
+    @abc.abstractmethod
+    def installdir(self):
+        """Return the directory into which the built glibc is installed."""
+        pass
+
+    def use_usr(self):
+        """Return True if this configuration uses /usr in the prefix."""
+        return self.os != 'gnu'
+
+    def configure_command(self):
         srcdir = self.ctx.component_srcdir('glibc')
-        if for_compiler:
-            builddir = self.ctx.component_builddir('compilers',
-                                                   self.compiler.name, 'glibc',
-                                                   self.name)
-            installdir = self.compiler.sysroot
-        else:
-            builddir = self.ctx.component_builddir('glibcs', self.name,
-                                                   'glibc')
-            installdir = self.ctx.glibc_installdir(self.name)
-        cmdlist.create_use_dir(builddir)
-        use_usr = self.os != 'gnu'
-        prefix = '/usr' if use_usr else ''
+        prefix = '/usr' if self.use_usr() else ''
         cfg_cmd = [os.path.join(srcdir, 'configure'),
                    '--prefix=%s' % prefix,
                    '--enable-profile',
@@ -1468,7 +1467,13 @@ class Glibc(object):
         if self.os == 'gnu':
             cfg_cmd += ['MIG=%s' % self.tool_name('mig')]
         cfg_cmd += self.cfg
-        cmdlist.add_command('configure', cfg_cmd)
+        return cfg_cmd
+
+    def build_glibc(self, cmdlist):
+        """Generate commands to build this glibc."""
+        installdir = self.installdir()
+        cmdlist.create_use_dir(self.builddir())
+        cmdlist.add_command('configure', self.configure_command())
         cmdlist.add_command('build', ['make'])
         cmdlist.add_command('install', ['make', 'install',
                                         'install_root=%s' % installdir])
@@ -1476,19 +1481,40 @@ class Glibc(object):
         # directories always exist.
         mkdir_cmd = ['mkdir', '-p',
                      os.path.join(installdir, 'lib')]
-        if use_usr:
+        if self.use_usr():
             mkdir_cmd += [os.path.join(installdir, 'usr', 'lib')]
         cmdlist.add_command('mkdir-lib', mkdir_cmd)
-        if not for_compiler:
-            if self.ctx.strip:
-                cmdlist.add_command('strip',
-                                    ['sh', '-c',
-                                     ('%s $(find %s/lib* -name "*.so")' %
-                                      (self.tool_name('strip'), installdir))])
-            cmdlist.add_command('check', ['make', 'check'])
-            cmdlist.add_command('save-logs', [self.ctx.save_logs],
-                                always_run=True)
 
+class GlibcForCompiler(GlibcBase):
+    """Building glibc as part of the compiler builds."""
+
+    def builddir(self):
+        return self.ctx.component_builddir('compilers',
+                                           self.compiler.name, 'glibc',
+                                           self.name)
+    def installdir(self):
+        return self.compiler.sysroot
+
+class Glibc(GlibcBase):
+    """Building and checking glibc, for installation."""
+
+    def builddir(self):
+        return self.ctx.component_builddir('glibcs', self.name, 'glibc')
+
+    def installdir(self):
+        return self.ctx.glibc_installdir(self.name)
+
+    def build_glibc(self, cmdlist):
+        super().build_glibc(cmdlist)
+        if self.ctx.strip:
+            cmdlist.add_command('strip',
+                                ['sh', '-c',
+                                 ('%s $(find %s/lib* -name "*.so")' %
+                                  (self.tool_name('strip'),
+                                   self.installdir()))])
+        cmdlist.add_command('check', ['make', 'check'])
+        cmdlist.add_command('save-logs', [self.ctx.save_logs],
+                            always_run=True)
 
 class Command(object):
     """A command run in the build process."""
