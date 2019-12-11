@@ -488,7 +488,10 @@ class Context(object):
             old_components = ('gmp', 'mpfr', 'mpc', 'binutils', 'gcc', 'linux',
                               'mig', 'gnumach', 'hurd')
             old_versions = self.build_state['compilers']['build-versions']
-            self.build_glibcs(configs)
+            if action == 'update-syscalls':
+                self.update_syscalls(configs)
+            else:
+                self.build_glibcs(configs)
         self.write_files()
         self.do_build()
         if configs:
@@ -678,6 +681,15 @@ class Context(object):
             configs = sorted(self.glibc_configs.keys())
         for c in configs:
             self.glibc_configs[c].build()
+
+    def update_syscalls(self, configs):
+        """Update the glibc syscall lists."""
+        if not configs:
+            self.remove_dirs(os.path.join(self.builddir, 'syscalls'))
+            self.remove_dirs(os.path.join(self.logsdir, 'syscalls'))
+            configs = sorted(self.glibc_configs.keys())
+        for c in configs:
+            self.glibc_configs[c].for_syscalls().update_syscalls()
 
     def load_versions_json(self):
         """Load information about source directory versions."""
@@ -911,7 +923,7 @@ class Context(object):
                 self.build_state = json.load(f)
         else:
             self.build_state = {}
-        for k in ('host-libraries', 'compilers', 'glibcs'):
+        for k in ('host-libraries', 'compilers', 'glibcs', 'update-syscalls'):
             if k not in self.build_state:
                 self.build_state[k] = {}
             if 'build-time' not in self.build_state[k]:
@@ -1408,6 +1420,12 @@ class GlibcBase(abc.ABC):
             self.cfg = cfg
         self.ccopts = ccopts
 
+    def for_syscalls(self):
+        """Return the system call updater for this configuration."""
+        return GlibcForSyscalls(compiler=self.compiler, arch=self.arch,
+                                os_name=self.os, variant=self.variant,
+                                cfg=self.cfg, ccopts=self.ccopts)
+
     def tool_name(self, tool):
         """Return the name of a cross-compilation tool."""
         ctool = '%s-%s' % (self.compiler.triplet, tool)
@@ -1515,6 +1533,30 @@ class Glibc(GlibcBase):
         cmdlist.add_command('check', ['make', 'check'])
         cmdlist.add_command('save-logs', [self.ctx.save_logs],
                             always_run=True)
+
+class GlibcForSyscalls(GlibcBase):
+    def builddir(self):
+        return self.ctx.component_builddir('syscalls', self.name, 'glibc')
+
+    def installdir(self):
+        raise RuntimeError("Installation not supported")
+
+    def update_syscalls(self):
+        """Run make update-syscall-lists for this glibc configuraton."""
+        logsdir = os.path.join(self.ctx.logsdir, 'syscalls', self.name)
+        self.ctx.remove_recreate_dirs(self.builddir(), logsdir)
+        cmdlist = CommandList('syscalls-%s' % self.name, self.ctx.keep)
+        cmdlist.add_command('check-compilers',
+                            ['test', '-f',
+                             os.path.join(self.compiler.installdir, 'ok')])
+        cmdlist.use_path(self.compiler.bindir)
+
+        cmdlist.create_use_dir(self.builddir())
+        cmdlist.add_command('configure', self.configure_command())
+        cmdlist.add_command('build', ['make', 'update-syscall-lists'])
+        cmdlist.cleanup_dir()
+        self.ctx.add_makefile_cmdlist('syscalls-%s' % self.name, cmdlist,
+                                      logsdir)
 
 class Command(object):
     """A command run in the build process."""
@@ -1682,7 +1724,8 @@ def get_parser():
     parser.add_argument('action',
                         help='What to do',
                         choices=('checkout', 'bot-cycle', 'bot',
-                                 'host-libraries', 'compilers', 'glibcs'))
+                                 'host-libraries', 'compilers', 'glibcs',
+                                 'update-syscalls'))
     parser.add_argument('configs',
                         help='Versions to check out or configurations to build',
                         nargs='*')
