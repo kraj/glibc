@@ -19,7 +19,7 @@
 #include <sysdep.h>
 #include <libm-alias-float.h>
 
-	DOT_MACHINE	(""power5"")
+	DOT_MACHINE	("power5")
 ENTRY_TOCLESS (__truncf, 4)
 	CALL_MCOUNT 0
 	friz	fp1, fp1	/* The rounding instructions are double.  */

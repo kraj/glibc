@@ -20,7 +20,7 @@
 #include <math_ldbl_opt.h>
 #include <libm-alias-double.h>
 
-	DOT_MACHINE	(""power5"")
+	DOT_MACHINE	("power5")
 ENTRY_TOCLESS (__round, 4)
 	CALL_MCOUNT 0
 	frin	fp1, fp1
