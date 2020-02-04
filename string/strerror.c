@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include <stdlib.h>
 
 /* Return a string describing the errno code in ERRNUM.
    The storage is good only until the next call to strerror.
