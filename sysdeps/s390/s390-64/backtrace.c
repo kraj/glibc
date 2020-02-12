@@ -17,13 +17,10 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#include <libc-lock.h>
-#include <dlfcn.h>
 #include <execinfo.h>
 #include <stddef.h>
 #include <stdlib.h>
-#include <unwind.h>
-
+#include <unwind-link.h>
 
 /* This is a global variable set at program start time.  It marks the
    highest used stack address.  */
@@ -56,27 +53,11 @@ struct layout
 struct trace_arg
 {
   void **array;
+  struct unwind_link *unwind_link;
   int cnt, size;
 };
 
 #ifdef SHARED
-static _Unwind_Reason_Code (*unwind_backtrace) (_Unwind_Trace_Fn, void *);
-static _Unwind_Ptr (*unwind_getip) (struct _Unwind_Context *);
-
-static void
-init (void)
-{
-  void *handle = __libc_dlopen ("libgcc_s.so.1");
-
-  if (handle == NULL)
-    return;
-
-  unwind_backtrace = __libc_dlsym (handle, "_Unwind_Backtrace");
-  unwind_getip = __libc_dlsym (handle, "_Unwind_GetIP");
-  if (unwind_getip == NULL)
-    unwind_backtrace = NULL;
-}
-
 static int
 __backchain_backtrace (void **array, int size)
 {
@@ -102,9 +83,6 @@ __backchain_backtrace (void **array, int size)
 
   return cnt;
 }
-#else
-# define unwind_backtrace _Unwind_Backtrace
-# define unwind_getip _Unwind_GetIP
 #endif
 
 static _Unwind_Reason_Code
@@ -115,7 +93,8 @@ backtrace_helper (struct _Unwind_Context *ctx, void *a)
   /* We are first called with address in the __backtrace function.
      Skip it.  */
   if (arg->cnt != -1)
-    arg->array[arg->cnt] = (void *) unwind_getip (ctx);
+    arg->array[arg->cnt]
+      = (void *) UNWIND_LINK_PTR (arg->unwind_link, _Unwind_GetIP) (ctx);
   if (++arg->cnt == arg->size)
     return _URC_END_OF_STACK;
   return _URC_NO_REASON;
@@ -124,21 +103,24 @@ backtrace_helper (struct _Unwind_Context *ctx, void *a)
 int
 __backtrace (void **array, int size)
 {
-  struct trace_arg arg = { .array = array, .size = size, .cnt = -1 };
+  struct trace_arg arg =
+    {
+     .array = array,
+     .unwind_link = __libc_unwind_link_get (),
+     .size = size,
+     .cnt = -1
+    };
 
   if (size <= 0)
     return 0;
 
 #ifdef SHARED
-  __libc_once_define (static, once);
-
-  __libc_once (once, init);
-
-  if (unwind_backtrace == NULL)
+  if (arg.unwind_link == NULL)
     return __backchain_backtrace (array, size);
 #endif
 
-  unwind_backtrace (backtrace_helper, &arg);
+  UNWIND_LINK_PTR (arg.unwind_link, _Unwind_Backtrace)
+    (backtrace_helper, &arg);
 
   return arg.cnt != -1 ? arg.cnt : 0;
 }
