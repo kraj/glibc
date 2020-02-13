@@ -1,11 +1,12 @@
-/* Copyright (C) 2003-2020 Free Software Foundation, Inc.
+/* Unwinder function forwarders for libpthread.  Arm version.
+   Copyright (C) 2020 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
    Contributed by Jakub Jelinek <jakub@redhat.com>.
 
    The GNU C Library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Lesser General Public
-   License as published by the Free Software Foundation; either
-   version 2.1 of the License, or (at your option) any later version.
+   modify it under the terms of the GNU Lesser General Public License as
+   published by the Free Software Foundation; either version 2.1 of the
+   License, or (at your option) any later version.
 
    The GNU C Library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,14 +14,13 @@
    Lesser General Public License for more details.
 
    You should have received a copy of the GNU Lesser General Public
-   License along with the GNU C Library; if not, see
-   <https://www.gnu.org/licenses/>.  */
+   License along with the GNU C Library; see the file COPYING.LIB.  If
+   not, see <https://www.gnu.org/licenses/>.  */
 
 #include <sysdeps/nptl/unwind-forcedunwind.c>
 
-_Unwind_Word
-_Unwind_GetBSP (struct _Unwind_Context *context)
+void *
+__unwind_link_get_resume (void)
 {
-  return UNWIND_LINK_PTR (__pthread_unwind_link_get (), _Unwind_GetBSP)
-    (context);
+  return UNWIND_LINK_PTR (__pthread_unwind_link_get (), _Unwind_Resume);
 }

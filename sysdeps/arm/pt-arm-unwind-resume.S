@@ -16,31 +16,5 @@
    License along with the GNU C Library.  If not, see
    <https://www.gnu.org/licenses/>.  */
 
-#include <sysdep.h>
-
-/* This is just implementing exactly what the C version does.
-   We do it in assembly just to ensure that we get an unmolested tail
-   call to the libgcc function, which is necessary for the ARM unwinder.  */
-
-ENTRY (_Unwind_Resume)
-	LDR_HIDDEN (ip, ip, __libgcc_s_resume, 0)
-	cmp	ip, #0
-	beq	1f
-0:	PTR_DEMANGLE (ip, ip, r2, r3)
-	bx	ip
-
-	/* We need to save and restore LR (for our own return address)
-	   and R0 (for the argument to _Unwind_Resume) around the call.  */
-1:	push	{r0, lr}
-	cfi_adjust_cfa_offset (8)
-	cfi_rel_offset (r0, 0)
-	cfi_rel_offset (lr, 4)
-	bl	pthread_cancel_init
-	pop	{r0, lr}
-	cfi_adjust_cfa_offset (-8)
-	cfi_restore (r0)
-	cfi_restore (lr)
-
-	LDR_HIDDEN (ip, ip, __libgcc_s_resume, 0)
-	b	0b
-END (_Unwind_Resume)
+/* The implementation in libpthread is identical to the one in libc.  */
+#include <sysdeps/arm/arm-unwind-resume.S>
