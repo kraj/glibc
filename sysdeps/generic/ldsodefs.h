@@ -811,13 +811,13 @@ rtld_hidden_proto (_dl_exception_free)
 void _dl_signal_exception (int errcode, struct dl_exception *,
 			   const char *occasion)
   __attribute__ ((__noreturn__));
-libc_hidden_proto (_dl_signal_exception)
+rtld_hidden_proto (_dl_signal_exception)
 
 /* Like _dl_signal_exception, but creates the exception first.  */
 extern void _dl_signal_error (int errcode, const char *object,
 			      const char *occasion, const char *errstring)
      __attribute__ ((__noreturn__));
-libc_hidden_proto (_dl_signal_error)
+rtld_hidden_proto (_dl_signal_error)
 
 /* Like _dl_signal_exception, but may return when called in the
    context of _dl_receive_error.  This is only used during ld.so
@@ -870,7 +870,7 @@ extern void _dl_receive_error (receiver_fct fct, void (*operate) (void *),
 extern int _dl_catch_error (const char **objname, const char **errstring,
 			    bool *mallocedp, void (*operate) (void *),
 			    void *args);
-libc_hidden_proto (_dl_catch_error)
+rtld_hidden_proto (_dl_catch_error)
 
 /* Call OPERATE (ARGS).  If no error occurs, set *EXCEPTION to zero.
    Otherwise, store a copy of the raised exception in *EXCEPTION,
@@ -879,7 +879,7 @@ libc_hidden_proto (_dl_catch_error)
    disabled (so that exceptions are fatal).  */
 int _dl_catch_exception (struct dl_exception *exception,
 			 void (*operate) (void *), void *args);
-libc_hidden_proto (_dl_catch_exception)
+rtld_hidden_proto (_dl_catch_exception)
 
 /* Open the shared object NAME and map in its segments.
    LOADER's DT_RPATH is used in searching for NAME.

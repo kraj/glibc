@@ -9,11 +9,6 @@ libc.so: malloc + REL R_386_GLOB_DAT
 libc.so: memalign + REL R_386_GLOB_DAT
 libc.so: realloc + REL R_386_GLOB_DAT
 libm.so: matherr + REL R_386_GLOB_DAT
-# The TLS-enabled version of these functions is interposed from libc.so.
-ld.so: _dl_signal_error + REL R_386_GLOB_DAT
-ld.so: _dl_catch_error + REL R_386_GLOB_DAT
-ld.so: _dl_signal_exception + REL R_386_GLOB_DAT
-ld.so: _dl_catch_exception + REL R_386_GLOB_DAT
 # The dynamic linker has its own versions of basic functions for initial loading
 # of shared libraries.  These need to be overriden by libc once loaded.
 ld.so: __open ?
@@ -40,12 +35,16 @@ ld.so: __errno_location
 # functions above which do need a PLT.  These are thus currently expected.
 ld.so: _dl_allocate_tls
 ld.so: _dl_allocate_tls_init
+ld.so: _dl_catch_error
+ld.so: _dl_catch_exception
 ld.so: _dl_exception_create
 ld.so: _dl_exception_create_format
 ld.so: _dl_exception_free
 ld.so: _dl_find_dso_for_object
 ld.so: _dl_init_first
 ld.so: _dl_mcount
+ld.so: _dl_signal_error
+ld.so: _dl_signal_exception
 ld.so: ___tls_get_addr
 ld.so: __tunable_get_val
 #

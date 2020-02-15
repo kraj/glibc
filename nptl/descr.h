@@ -391,6 +391,9 @@ struct pthread
   /* Resolver state.  */
   struct __res_state res;
 
+  /* Used by the exception handling implementation in the dynamic loader.  */
+  struct rtld_catch *rtld_catch;
+
   /* Indicates whether is a C11 thread created by thrd_creat.  */
   bool c11;
 
