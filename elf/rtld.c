@@ -695,7 +695,7 @@ match_version (const char *string, struct link_map *map)
   return 0;
 }
 
-static bool tls_init_tp_called;
+bool __rtld_tls_init_tp_called;
 
 static void *
 init_tls (void)
@@ -761,7 +761,7 @@ cannot allocate TLS data structures for initial thread\n");
   const char *lossage = TLS_INIT_TP (tcbp);
   if (__glibc_unlikely (lossage != NULL))
     _dl_fatal_printf ("cannot set up thread-local storage: %s\n", lossage);
-  tls_init_tp_called = true;
+  __rtld_tls_init_tp_called = true;
 
   return tcbp;
 }
@@ -1875,7 +1875,7 @@ ERROR: '%s': cannot process note segment.\n", _dl_argv[0]);
      an old kernel that can't perform TLS_INIT_TP, even if no TLS is ever
      used.  Trying to do it lazily is too hairy to try when there could be
      multiple threads (from a non-TLS-using libpthread).  */
-  bool was_tls_init_tp_called = tls_init_tp_called;
+  bool was_tls_init_tp_called = __rtld_tls_init_tp_called;
   if (tcbp == NULL)
     tcbp = init_tls ();
 
@@ -2226,7 +2226,7 @@ ERROR: '%s': cannot process note segment.\n", _dl_argv[0]);
 	    _dl_protect_relro (l);
 
 	  /* Add object to slot information data if necessasy.  */
-	  if (l->l_tls_blocksize != 0 && tls_init_tp_called)
+	  if (l->l_tls_blocksize != 0 && __rtld_tls_init_tp_called)
 	    _dl_add_to_slotinfo (l, true);
 	}
     }
@@ -2271,7 +2271,7 @@ ERROR: '%s': cannot process note segment.\n", _dl_argv[0]);
 				 consider_profiling);
 
 	  /* Add object to slot information data if necessasy.  */
-	  if (l->l_tls_blocksize != 0 && tls_init_tp_called)
+	  if (l->l_tls_blocksize != 0 && __rtld_tls_init_tp_called)
 	    _dl_add_to_slotinfo (l, true);
 	}
       rtld_timer_stop (&relocate_time, start);
@@ -2297,7 +2297,7 @@ ERROR: '%s': cannot process note segment.\n", _dl_argv[0]);
   _dl_allocate_tls_init (tcbp);
 
   /* And finally install it for the main thread.  */
-  if (! tls_init_tp_called)
+  if (! __rtld_tls_init_tp_called)
     {
       const char *lossage = TLS_INIT_TP (tcbp);
       if (__glibc_unlikely (lossage != NULL))
