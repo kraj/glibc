@@ -22,15 +22,6 @@
 #include <sysdep.h>
 #include <kernel_stat.h>
 
-/* Hide the prototypes for __fstatfs and fstatfs so that GCC will not
-   complain about the different function signatures if they are aliased
-   to  __fstat64.  If STATFS_IS_STATFS64 is not zero then the statfs and
-   statfs64 structures have an identical layout but different type names.  */
-
-#if STATFS_IS_STATFS64
-# define __fstatfs __fstatfs_disable
-# define fstatfs fstatfs_disable
-#endif
 #include <sys/statfs.h>
 
 #include <kernel-features.h>
@@ -85,8 +76,3 @@ weak_alias (__fstatfs64, fstatfs64)
 
 #undef __fstatfs
 #undef fstatfs
-
-#if STATFS_IS_STATFS64
-weak_alias (__fstatfs64, __fstatfs)
-weak_alias (__fstatfs64, fstatfs)
-#endif

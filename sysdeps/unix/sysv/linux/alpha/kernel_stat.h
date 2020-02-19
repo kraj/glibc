@@ -86,4 +86,3 @@ struct glibc21_stat
   };
 
 #define XSTAT_IS_XSTAT64 1
-#define STATFS_IS_STATFS64 0

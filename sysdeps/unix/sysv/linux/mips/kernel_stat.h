@@ -57,4 +57,3 @@ struct kernel_stat
 #endif
 
 #define XSTAT_IS_XSTAT64 0
-#define STATFS_IS_STATFS64 0
