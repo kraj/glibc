@@ -23,5 +23,3 @@
 
 /* Nice side-effect of 64-bit time_t switch is these are same.  */
 #define XSTAT_IS_XSTAT64 1
-
-#define STATFS_IS_STATFS64 0

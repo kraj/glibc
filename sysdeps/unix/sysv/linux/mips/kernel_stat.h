@@ -62,6 +62,5 @@ struct kernel_stat
 #define STAT_IS_KERNEL_STAT 0
 #define STAT64_IS_KERNEL_STAT64 0
 #define XSTAT_IS_XSTAT64 0
-#define STATFS_IS_STATFS64 0
 
 #endif
