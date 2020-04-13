@@ -22,6 +22,7 @@
 #include <sys/param.h>	/* For MIN and MAX.  */
 
 #include <not-cancel.h>
+#include <readdir.h>    /* For return_buffer_size.  */
 
 enum {
   opendir_oflags = O_RDONLY|O_NDELAY|O_DIRECTORY|O_LARGEFILE|O_CLOEXEC
@@ -103,8 +104,9 @@ __alloc_dir (int fd, bool close_fd, int flags, const struct stat64 *statp)
   enum { max_buffer_size = 1U << 20 };
 
   const size_t allocation_size = 4 * BUFSIZ;
-  _Static_assert (allocation_size >= sizeof (struct dirent64),
-		  "allocation_size < sizeof (struct dirent64)");
+  _Static_assert (allocation_size >= sizeof (struct dirent64)
+				     + return_buffer_size,
+		  "opendir buffer size smaller than required");
 
   /* Increase allocation if requested, but not if the value appears to
      be bogus.  It will be between 32Kb (for blocksizes smaller than BUFSIZ)
