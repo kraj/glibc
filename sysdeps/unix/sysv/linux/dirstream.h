@@ -21,6 +21,7 @@
 #include <sys/types.h>
 
 #include <libc-lock.h>
+#include <telldir.h>
 
 /* Directory stream type.
 
@@ -37,9 +38,13 @@ struct __dirstream
     size_t size;		/* Total valid data in the block.  */
     size_t offset;		/* Current offset into the block.  */
 
-    off_t filepos;		/* Position of next entry to read.  */
+    off64_t filepos;		/* Position of next entry to read.  */
 
     int errcode;		/* Delayed error code.  */
+
+#ifndef __LP64__
+    struct dirstream_loc_t locs;
+#endif
 
     /* Directory block.  We must make sure that this block starts
        at an address that is aligned adequately enough to store

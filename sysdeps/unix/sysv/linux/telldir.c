@@ -18,16 +18,59 @@
 #include <dirent.h>
 
 #include <dirstream.h>
+#include <telldir.h>
 
 /* Return the current position of DIRP.  */
 long int
 telldir (DIR *dirp)
 {
-  long int ret;
+#ifndef __LP64__
+  /* If the directory position fits in the packet structure returns it.
+     Otherwise, check if the position is already been recorded in the
+     dynamic array.  If not, add the new record.  */
 
+  union dirstream_packed dsp;
+  size_t i;
+
+  __libc_lock_lock (dirp->lock);
+
+  if (dirp->filepos < (1U << 31))
+    {
+      dsp.p.is_packed = 1;
+      dsp.p.info = dirp->filepos;
+      goto out;
+    }
+
+  dsp.l = -1;
+
+  for (i = 0; i < dirstream_loc_size (&dirp->locs); i++)
+    {
+      struct dirstream_loc *loc = dirstream_loc_at (&dirp->locs, i);
+      if (loc->filepos == dirp->filepos)
+	break;
+    }
+  if (i == dirstream_loc_size (&dirp->locs))
+    {
+      dirstream_loc_add (&dirp->locs,
+	(struct dirstream_loc) { dirp->filepos });
+      if (dirstream_loc_has_failed (&dirp->locs))
+	goto out;
+    }
+
+  dsp.p.is_packed = 0;
+  /* This assignment might overflow, however most likely ENOMEM would happen
+     long before.  */
+  dsp.p.info = i;
+
+out:
+  __libc_lock_unlock (dirp->lock);
+
+  return dsp.l;
+#else
+  long int ret;
   __libc_lock_lock (dirp->lock);
   ret = dirp->filepos;
   __libc_lock_unlock (dirp->lock);
-
   return ret;
+#endif
 }

@@ -31,7 +31,7 @@ routines	:= opendir closedir readdir readdir_r rewinddir \
 		   scandir-cancel scandir-tail scandir64-tail
 
 tests	   := list tst-seekdir opendir-tst1 bug-readdir1 tst-fdopendir \
-	      tst-fdopendir2 tst-scandir tst-scandir64
+	      tst-fdopendir2 tst-scandir tst-scandir64 tst-seekdir2 \
 
 CFLAGS-scandir.c += $(uses-callbacks)
 CFLAGS-scandir64.c += $(uses-callbacks)

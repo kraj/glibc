@@ -17,6 +17,7 @@
    <https://www.gnu.org/licenses/>.  */
 
 #include <dirent.h>
+#include <unistd.h>
 
 #if !_DIRENT_MATCHES_DIRENT64
 #include <readdir.h>

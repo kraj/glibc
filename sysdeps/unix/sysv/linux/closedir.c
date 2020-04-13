@@ -43,6 +43,10 @@ __closedir (DIR *dirp)
 
   fd = dirp->fd;
 
+#ifndef __LP64__
+  dirstream_loc_clear (&dirp->locs);
+#endif
+
 #if IS_IN (libc)
   __libc_lock_fini (dirp->lock);
 #endif

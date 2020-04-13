@@ -85,15 +85,12 @@ dirstream_ret_entry (struct __dirstream *ds)
   dp->d_ino = dp64->d_ino;
 
   dp->d_off = dp64->d_off;
-  if (dp->d_off != dp64->d_off)
-    /* Overflow.  */
-    return NULL;
 
   const size_t size_diff = (offsetof (struct dirent64, d_name)
 			    - offsetof (struct dirent, d_name));
   const size_t alignment = _Alignof (struct dirent);
-  size_t new_reclen  = (dp64->d_reclen - size_diff + alignment - 1)
-			& ~(alignment - 1);
+  size_t new_reclen = (dp64->d_reclen - size_diff + alignment - 1)
+		       & ~(alignment - 1);
   if (new_reclen > return_buffer_size)
     /* Overflow.  */
     return NULL;
