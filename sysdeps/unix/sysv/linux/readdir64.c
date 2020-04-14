@@ -112,27 +112,23 @@ weak_alias (__readdir64, readdir64)
 versioned_symbol (libc, __readdir64, readdir64, GLIBC_2_2);
 # endif
 # if SHLIB_COMPAT(libc, GLIBC_2_1, GLIBC_2_2)
-#  include <olddirent.h>
+#  include <readdir.h>
+#  include <unistd.h>
 
 attribute_compat_text_section
 struct __old_dirent64 *
 __old_readdir64_unlocked (DIR *dirp)
 {
   struct __old_dirent64 *dp;
-  int saved_errno = errno;
+  const int saved_errno = errno;
 
   do
     {
-      size_t reclen;
-
       if (dirp->offset >= dirp->size)
 	{
 	  /* We've emptied out our buffer.  Refill it.  */
-
-	  size_t maxread = dirp->allocation;
-	  ssize_t bytes;
-
-	  bytes = __old_getdents64 (dirp->fd, dirp->data, maxread);
+	  ssize_t bytes = __getdents64 (dirp->fd, dirstream_data (dirp),
+					dirstream_alloc_size (dirp));
 	  if (bytes <= 0)
 	    {
 	      /* On some systems getdents fails with ENOENT when the
@@ -153,13 +149,12 @@ __old_readdir64_unlocked (DIR *dirp)
 	  dirp->offset = 0;
 	}
 
-      dp = (struct __old_dirent64 *) &dirp->data[dirp->offset];
-
-      reclen = dp->d_reclen;
-
-      dirp->offset += reclen;
-
-      dirp->filepos = dp->d_off;
+      dp = dirstream_ret_entry64_compat (dirp);
+      if (dp == NULL)
+	{
+	  __set_errno (EOVERFLOW);
+	  break;
+	}
 
       /* Skip deleted files.  */
     } while (dp->d_ino == 0);

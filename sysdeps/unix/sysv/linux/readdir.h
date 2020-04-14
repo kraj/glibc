@@ -21,6 +21,7 @@
 
 #if !_DIRENT_MATCHES_DIRENT64
 # include <dirstream.h>
+# include <olddirent.h>
 
 /* getdents64 is used internally for both LFS and non-LFS implementations.
    The non-LFS interface reserves part of the allocated buffer to return the
@@ -106,9 +107,53 @@ dirstream_ret_entry (struct __dirstream *ds)
 
   return dp;
 }
+
+/* Return the allocated buffer used on LFS compat readdir call.  */
+static inline struct __old_dirent64 *
+dirstream_ret64_compat (struct __dirstream *ds)
+{
+  return (struct __old_dirent64 *) ds->data;
+}
+
+static inline struct __old_dirent64 *
+dirstream_ret_entry64_compat (struct __dirstream *ds)
+{
+  struct dirent64 *dp64 = dirstream_entry (ds);
+  struct __old_dirent64 *dp64_compat = dirstream_ret64_compat (ds);
+
+  dp64_compat->d_ino = dp64->d_ino;
+  if (dp64_compat->d_ino != dp64->d_ino)
+    /* Overflow.  */
+    return NULL;
+
+  dp64_compat->d_off = dp64->d_off;
+
+  const size_t size_diff = (offsetof (struct dirent64, d_name)
+			    - offsetof (struct __old_dirent64, d_name));
+  const size_t alignment = _Alignof (struct __old_dirent64);
+  size_t new_reclen  = (dp64->d_reclen - size_diff + alignment - 1)
+			& ~(alignment - 1);
+  if (new_reclen > return_buffer_size)
+    /* Overflow.  */
+    return NULL;
+
+  /* The compat symbol report the kernel obtained d_reclen, even though
+     it has an incompatible dirent layout.  */
+  dp64_compat->d_reclen = dp64->d_reclen;
+
+  dp64_compat->d_type = dp64->d_type;
+
+  memcpy (dp64_compat->d_name, dp64->d_name,
+	  dp64->d_reclen - offsetof (struct dirent64, d_name));
+
+  ds->offset += dp64->d_reclen;
+  ds->filepos = dp64->d_off;
+
+  return dp64_compat;
+}
+
 #else
 /* No need to reserve an buffer space if dirent has already LFS support.  */
 enum { return_buffer_size = 0 };
 #endif /* _DIRENT_MATCHES_DIRENT64  */
-
 #endif
