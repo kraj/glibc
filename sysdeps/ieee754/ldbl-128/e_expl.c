@@ -66,6 +66,7 @@
 #include <inttypes.h>
 #include <math-barriers.h>
 #include <math_private.h>
+#include <fenv_private.h>
 #include <math-underflow.h>
 #include <stdlib.h>
 #include "t_expl.h"
@@ -146,9 +147,10 @@ __ieee754_expl (_Float128 x)
       union ieee854_long_double ex2_u, scale_u;
       fenv_t oldenv;
 
-      feholdexcept (&oldenv);
 #ifdef FE_TONEAREST
-      fesetround (FE_TONEAREST);
+      libc_feholdexcept_setroundl (&oldenv, FE_TONEAREST);
+#else
+      libc_feholdexceptl (&oldenv);
 #endif
 
       /* Calculate n.  */
@@ -198,7 +200,7 @@ __ieee754_expl (_Float128 x)
       math_force_eval (x22);
 
       /* Return result.  */
-      fesetenv (&oldenv);
+      libc_fesetenvl (&oldenv);
 
       result = x22 * ex2_u.d + ex2_u.d;
 
