@@ -260,6 +260,9 @@ ifeq ($(subdir),dirent)
 sysdep_routines += getdirentries getdirentries64
 tests += tst-getdents64
 tests-internal += tst-readdir64-compat
+
+# Avoid the warning for the weak_alias for _DIRENT_MATCHES_DIRENT64
+CFLAGS-getdirentries64.c = -Wno-deprecated-declarations
 endif
 
 ifeq ($(subdir),nis)

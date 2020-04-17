@@ -33,6 +33,9 @@ Deprecated and removed features, and other changes affecting compatibility:
 * The mallinfo function is marked deprecated.  Callers should call
   mallinfo2 instead.
 
+* The function getdirentries is now deprecated, applications should use
+  either getdents or POSIX readdir instead.
+
 Changes to build and runtime requirements:
 
   [Add changes to build and runtime requirements here]

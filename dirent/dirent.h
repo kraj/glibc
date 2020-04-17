@@ -353,14 +353,15 @@ extern int alphasort64 (const struct dirent64 **__e1,
 extern __ssize_t getdirentries (int __fd, char *__restrict __buf,
 				size_t __nbytes,
 				__off_t *__restrict __basep)
-     __THROW __nonnull ((2, 4));
+     __THROW __nonnull ((2, 4)) __attribute_deprecated__;
 # else
 #  ifdef __REDIRECT
 extern __ssize_t __REDIRECT_NTH (getdirentries,
 				 (int __fd, char *__restrict __buf,
 				  size_t __nbytes,
 				  __off64_t *__restrict __basep),
-				 getdirentries64) __nonnull ((2, 4));
+				 getdirentries64)
+     __THROW __nonnull ((2, 4)) __attribute_deprecated__;
 #  else
 #   define getdirentries getdirentries64
 #  endif
@@ -370,7 +371,7 @@ extern __ssize_t __REDIRECT_NTH (getdirentries,
 extern __ssize_t getdirentries64 (int __fd, char *__restrict __buf,
 				  size_t __nbytes,
 				  __off64_t *__restrict __basep)
-     __THROW __nonnull ((2, 4));
+     __THROW __nonnull ((2, 4)) __attribute_deprecated__;
 # endif
 #endif /* Use misc.  */
 
