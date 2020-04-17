@@ -66,6 +66,16 @@
 # define libc_feupdateenv_testl(ENV, EX) libc_feupdateenv_testf128 (ENV, EX)
 #endif
 
+#ifdef libc_feholdexceptf128
+# undef libc_feholdexceptl
+# define libc_feholdexceptl(ENV) libc_feholdexceptf128 (ENV)
+#endif
+
+#ifdef libc_fesetenvf128
+# undef libc_fesetenvl
+# define libc_fesetenvl(ENV) libc_fesetenvf128 (ENV)
+#endif
+
 /* misc macros from the header below.  */
 #include <fix-fp-int-convert-overflow.h>
 #undef FIX_LDBL_LONG_CONVERT_OVERFLOW

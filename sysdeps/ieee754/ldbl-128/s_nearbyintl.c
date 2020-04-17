@@ -27,6 +27,7 @@
 #include <math.h>
 #include <math-barriers.h>
 #include <math_private.h>
+#include <fenv_private.h>
 #include <libm-alias-ldouble.h>
 #include <math-use-builtins.h>
 
@@ -53,11 +54,11 @@ __nearbyintl (_Float128 x)
     {
       if (j0 < 0)
 	{
-	  feholdexcept (&env);
+	  libc_feholdexceptl (&env);
 	  w = TWO112[sx] + math_opt_barrier (x);
 	  t = w - TWO112[sx];
 	  math_force_eval (t);
-	  fesetenv (&env);
+	  libc_fesetenvl (&env);
 	  GET_LDOUBLE_MSW64 (i0, t);
 	  SET_LDOUBLE_MSW64 (t, (i0 & 0x7fffffffffffffffLL) | (sx << 63));
 	  return t;
@@ -70,11 +71,11 @@ __nearbyintl (_Float128 x)
       else
 	return x;		/* x is integral  */
     }
-  feholdexcept (&env);
+  libc_feholdexceptl (&env);
   w = TWO112[sx] + math_opt_barrier (x);
   t = w - TWO112[sx];
   math_force_eval (t);
-  fesetenv (&env);
+  libc_fesetenvl (&env);
   return t;
 #endif /* ! USE_NEARBYINTL_BUILTIN  */
 }
