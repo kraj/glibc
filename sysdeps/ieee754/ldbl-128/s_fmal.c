@@ -23,6 +23,7 @@
 #include <ieee754.h>
 #include <math-barriers.h>
 #include <math_private.h>
+#include <fenv_private.h>
 #include <libm-alias-ldouble.h>
 #include <tininess.h>
 
@@ -187,8 +188,7 @@ __fmal (_Float128 x, _Float128 y, _Float128 z)
     }
 
   fenv_t env;
-  feholdexcept (&env);
-  fesetround (FE_TONEAREST);
+  libc_feholdexcept_setroundl (&env, FE_TONEAREST);
 
   /* Multiplication m1 + m2 = x * y using Dekker's algorithm.  */
 #define C ((1LL << (LDBL_MANT_DIG + 1) / 2) + 1)
@@ -216,41 +216,44 @@ __fmal (_Float128 x, _Float128 y, _Float128 z)
   /* If the result is an exact zero, ensure it has the correct sign.  */
   if (a1 == 0 && m2 == 0)
     {
-      feupdateenv (&env);
+      libc_feupdateenvl (&env);
       /* Ensure that round-to-nearest value of z + m1 is not reused.  */
       z = math_opt_barrier (z);
       return z + m1;
     }
 
-  fesetround (FE_TOWARDZERO);
+  libc_fesetroundl (FE_TOWARDZERO);
   /* Perform m2 + a2 addition with round to odd.  */
   u.d = a2 + m2;
+
+  if (__glibc_unlikely (adjust < 0))
+    {
+      if ((u.ieee.mantissa3 & 1) == 0)
+	u.ieee.mantissa3 |= libc_fetestexceptl (FE_INEXACT) != 0;
+      v.d = a1 + u.d;
+      /* Ensure the addition is not scheduled after fetestexcept call.  */
+      math_force_eval (v.d);
+    }
+
+  /* Reset rounding mode and test for inexact simultaneously.  */
+  int j = libc_feupdateenv_testl (&env, FE_INEXACT) != 0;
 
   if (__glibc_likely (adjust == 0))
     {
       if ((u.ieee.mantissa3 & 1) == 0 && u.ieee.exponent != 0x7fff)
-	u.ieee.mantissa3 |= fetestexcept (FE_INEXACT) != 0;
-      feupdateenv (&env);
+	u.ieee.mantissa3 |= j;
       /* Result is a1 + u.d.  */
       return a1 + u.d;
     }
   else if (__glibc_likely (adjust > 0))
     {
       if ((u.ieee.mantissa3 & 1) == 0 && u.ieee.exponent != 0x7fff)
-	u.ieee.mantissa3 |= fetestexcept (FE_INEXACT) != 0;
-      feupdateenv (&env);
+	u.ieee.mantissa3 |= j;
       /* Result is a1 + u.d, scaled up.  */
       return (a1 + u.d) * L(0x1p113);
     }
   else
     {
-      if ((u.ieee.mantissa3 & 1) == 0)
-	u.ieee.mantissa3 |= fetestexcept (FE_INEXACT) != 0;
-      v.d = a1 + u.d;
-      /* Ensure the addition is not scheduled after fetestexcept call.  */
-      math_force_eval (v.d);
-      int j = fetestexcept (FE_INEXACT) != 0;
-      feupdateenv (&env);
       /* Ensure the following computations are performed in default rounding
 	 mode instead of just reusing the round to zero computation.  */
       asm volatile ("" : "=m" (u) : "m" (u));

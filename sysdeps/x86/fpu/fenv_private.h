@@ -302,6 +302,8 @@ libc_feresetround_387 (fenv_t *e)
 # define libc_feupdateenv_testf128	libc_feupdateenv_test_sse
 # define libc_feholdexceptf128	libc_feholdexcept_sse
 # define libc_fesetenvf128	libc_fesetenv_sse
+# define libc_feupdateenvf128	libc_feupdateenv_sse
+# define libc_fesetroundf128	libc_fesetround_sse
 #else
 /* The 387 rounding mode is used by soft-fp for 32-bit, but whether
    387 or SSE exceptions are used depends on whether libgcc was built
@@ -310,6 +312,8 @@ libc_feresetround_387 (fenv_t *e)
 # define libc_feupdateenv_testf128	default_libc_feupdateenv_test
 # define libc_feholdexceptf128	default_libc_feholdexcept
 # define libc_fesetenvf128	default_libc_fesetenv
+# define libc_feupdateenvf128	default_libc_feupdateenv
+# define libc_fesetroundf128	default_libc_fesetround
 #endif
 
 /* We have support for rounding mode context.  */
