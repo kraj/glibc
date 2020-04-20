@@ -293,28 +293,28 @@ libc_feresetround_387 (fenv_t *e)
 # define libc_feholdsetround_53bit	libc_feholdsetround_387_53bit
 #endif
 
-#ifdef __x86_64__
-/* The SSE rounding mode is used by soft-fp (libgcc and glibc) on
-   x86_64, so that must be set for float128 computations.  */
-# define SET_RESTORE_ROUNDF128(RM) \
-  SET_RESTORE_ROUND_GENERIC (RM, libc_feholdsetround_sse, libc_feresetround_sse)
-# define libc_feholdexcept_setroundf128	libc_feholdexcept_setround_sse
-# define libc_feupdateenv_testf128	libc_feupdateenv_test_sse
-# define libc_feholdexceptf128	libc_feholdexcept_sse
-# define libc_fesetenvf128	libc_fesetenv_sse
-# define libc_feupdateenvf128	libc_feupdateenv_sse
-# define libc_fesetroundf128	libc_fesetround_sse
-#else
-/* The 387 rounding mode is used by soft-fp for 32-bit, but whether
-   387 or SSE exceptions are used depends on whether libgcc was built
-   for SSE math, which is not known when glibc is being built.  */
-# define libc_feholdexcept_setroundf128	default_libc_feholdexcept_setround
-# define libc_feupdateenv_testf128	default_libc_feupdateenv_test
-# define libc_feholdexceptf128	default_libc_feholdexcept
-# define libc_fesetenvf128	default_libc_fesetenv
-# define libc_feupdateenvf128	default_libc_feupdateenv
-# define libc_fesetroundf128	default_libc_fesetround
-#endif
+/* The rounding mode is used by soft-fp (libgcc and glibc), so that must be
+   set for float128 computations.  For x86_64 it uses SSE mode, while for
+   i386 is uses x87.
+
+   However for exception generation both 387 and SSE exception might be
+   generated even for x86_64: FP_EX_DIVZERO, FP_EX_DIVZERO, and FP_EX_INEXACT
+   uses SSE while FP_EX_DENORM, FP_EX_OVERFLOW, and FP_EX_UNDERFLOW uses x87.
+
+   For i686 it depends whether libgcc was built for SSE math (where it
+   follows x86_64 behaviour) or x87 math (which uses only x87 mode).
+
+   In any case use generic routines to handle float128 since it handles
+   both modes.  */
+#define SET_RESTORE_ROUNDF128(RM) \
+  SET_RESTORE_ROUND_GENERIC (RM, default_libc_feholdsetround, \
+				 default_libc_feresetround)
+#define libc_feholdexcept_setroundf128	default_libc_feholdexcept_setround
+#define libc_feupdateenv_testf128	default_libc_feupdateenv_test
+#define libc_feholdexceptf128		default_libc_feholdexcept
+#define libc_fesetenvf128		default_libc_fesetenv
+#define libc_feupdateenvf128		default_libc_feupdateenv
+#define libc_fesetroundf128		default_libc_fesetround
 
 /* We have support for rounding mode context.  */
 #define HAVE_RM_CTX 1
