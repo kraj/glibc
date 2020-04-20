@@ -34,6 +34,7 @@
 #include <math-barriers.h>
 #include <math-svid-compat.h>
 #include <fenv.h>
+#include <fenv_private.h>
 #include <float.h>
 #include <errno.h>
 
@@ -53,12 +54,12 @@ __kernel_standard_l (long double x, long double y, int type)
   struct exception exc;
   fenv_t env;
 
-  feholdexcept (&env);
+  libc_feholdexceptl (&env);
   dx = x;
   dy = y;
   math_force_eval (dx);
   math_force_eval (dy);
-  fesetenv (&env);
+  libc_fesetenvl (&env);
 
   switch (type)
     {
