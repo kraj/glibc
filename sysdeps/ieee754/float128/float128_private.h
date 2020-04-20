@@ -76,6 +76,16 @@
 # define libc_fesetenvl(ENV) libc_fesetenvf128 (ENV)
 #endif
 
+#ifdef libc_feupdateenvf128
+# undef libc_feupdateenvl
+# define libc_feupdateenvl(ENV) libc_feupdateenvf128 (ENV)
+#endif
+
+#ifdef libc_fesetroundf128
+# undef libc_fesetroundl
+# define libc_fesetroundl(RM) libc_fesetroundf128 (RM)
+#endif
+
 /* misc macros from the header below.  */
 #include <fix-fp-int-convert-overflow.h>
 #undef FIX_LDBL_LONG_CONVERT_OVERFLOW
