@@ -65,7 +65,7 @@ tests		:= tester inl-tester noinl-tester testcopy test-ffs	\
 # This test allocates a lot of memory and can run for a long time.
 xtests = tst-strcoll-overflow
 
-tests-container += tst-strsignal
+tests-container += tst-strsignal tst-strerror
 
 # This test needs libdl.
 ifeq (yes,$(build-shared))
@@ -118,5 +118,6 @@ $(objpfx)tst-strxfrm2.out: $(gen-locales)
 $(objpfx)bug-strcoll2.out: $(gen-locales)
 $(objpfx)tst-strcoll-overflow.out: $(gen-locales)
 $(objpfx)tst-strsignal.out: $(gen-locales)
+$(objpfx)tst-strerror.out: $(gen-locales)
 
 endif
