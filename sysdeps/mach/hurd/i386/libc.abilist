@@ -2181,6 +2181,8 @@ GLIBC_2.3.4 setsourcefilter F
 GLIBC_2.3.4 xdr_quad_t F
 GLIBC_2.3.4 xdr_u_quad_t F
 GLIBC_2.30 twalk_r F
+GLIBC_2.32 errdescr_np F
+GLIBC_2.32 errname_np F
 GLIBC_2.32 mach_print F
 GLIBC_2.32 mremap F
 GLIBC_2.32 sigabbrev_np F
