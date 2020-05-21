@@ -223,9 +223,11 @@
 /* NB: This also works when X is an array.  For an array X,  type of
    (X) - (X) is ptrdiff_t, which is signed, since size of ptrdiff_t
    == size of pointer, cast is a NOP.   */
-#define TYPEFY1(X) __typeof__ ((X) - (X))
+#ifndef ARGIFY
+# define TYPEFY1(X) __typeof__ ((X) - (X))
 /* Explicit cast the argument.  */
-#define ARGIFY(X) ((TYPEFY1 (X)) (X))
+# define ARGIFY(X) ((TYPEFY1 (X)) (X))
+#endif
 /* Create a variable 'name' based on type of variable 'X' to avoid
    explicit types.  */
 #define TYPEFY(X, name) __typeof__ (ARGIFY (X)) name
@@ -366,6 +368,114 @@
     (long int) resultvar;						\
 })
 
+static inline long int
+__internal_syscall0 (long int name)
+{
+  unsigned long int resultvar;
+  asm volatile ("syscall\n\t"
+		: "=a" (resultvar)
+		: "0" (name)
+		: "memory", "cc", "r11", "cx");
+  return resultvar;
+}
+
+static inline long int
+__internal_syscall1 (long int name, __syscall_arg_t arg1)
+{
+  unsigned long int resultvar;
+  register __syscall_arg_t a1 asm ("rdi") = arg1;
+  asm volatile ("syscall\n\t"
+		: "=a" (resultvar)
+		: "0" (name),  "r" (a1)
+		: "memory", "cc", "r11", "cx");
+  return resultvar;
+}
+
+static inline long int
+__internal_syscall2 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2)
+{
+  unsigned long int resultvar;
+  register __syscall_arg_t a1 asm ("rdi") = arg1;
+  register __syscall_arg_t a2 asm ("rsi") = arg2;
+  asm volatile ("syscall\n\t"
+		: "=a" (resultvar)
+		: "0" (name),  "r" (a1), "r" (a2)
+		: "memory", "cc", "r11", "cx");
+  return resultvar;
+}
+
+static inline long int
+__internal_syscall3 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3)
+{
+  unsigned long int resultvar;
+  register __syscall_arg_t a1 asm ("rdi") = arg1;
+  register __syscall_arg_t a2 asm ("rsi") = arg2;
+  register __syscall_arg_t a3 asm ("rdx") = arg3;
+  asm volatile ("syscall\n\t"
+		: "=a" (resultvar)
+		: "0" (name),  "r" (a1), "r" (a2), "r" (a3)
+		: "memory", "cc", "r11", "cx");
+  return resultvar;
+}
+
+static inline long int
+__internal_syscall4 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4)
+{
+  unsigned long int resultvar;
+  register __syscall_arg_t a1 asm ("rdi") = arg1;
+  register __syscall_arg_t a2 asm ("rsi") = arg2;
+  register __syscall_arg_t a3 asm ("rdx") = arg3;
+  register __syscall_arg_t a4 asm ("r10") = arg4;
+  asm volatile ("syscall\n\t"
+		: "=a" (resultvar)
+		: "0" (name),  "r" (a1), "r" (a2), "r" (a3), "r" (a4)
+		: "memory", "cc", "r11", "cx");
+  return resultvar;
+}
+
+static inline long int
+__internal_syscall5 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4, __syscall_arg_t arg5)
+{
+  unsigned long int resultvar;
+  register __syscall_arg_t a1 asm ("rdi") = arg1;
+  register __syscall_arg_t a2 asm ("rsi") = arg2;
+  register __syscall_arg_t a3 asm ("rdx") = arg3;
+  register __syscall_arg_t a4 asm ("r10") = arg4;
+  register __syscall_arg_t a5 asm ("r8") = arg5;
+  asm volatile ("syscall\n\t"
+		: "=a" (resultvar)
+		: "0" (name),  "r" (a1), "r" (a2), "r" (a3), "r" (a4),
+		  "r" (a5)
+		: "memory", "cc", "r11", "cx");
+  return resultvar;
+}
+
+static inline long int
+__internal_syscall6 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4, __syscall_arg_t arg5,
+		     __syscall_arg_t arg6)
+{
+  unsigned long int resultvar;
+  register __syscall_arg_t a1 asm ("rdi") = arg1;
+  register __syscall_arg_t a2 asm ("rsi") = arg2;
+  register __syscall_arg_t a3 asm ("rdx") = arg3;
+  register __syscall_arg_t a4 asm ("r10") = arg4;
+  register __syscall_arg_t a5 asm ("r8") = arg5;
+  register __syscall_arg_t a6 asm ("r9") = arg6;
+  asm volatile ("syscall\n\t"
+		: "=a" (resultvar)
+		: "0" (name),  "r" (a1), "r" (a2), "r" (a3), "r" (a4),
+		  "r" (a5), "r" (a6)
+		: "memory", "cc", "r11", "cx");
+  return resultvar;
+}
 
 # define VDSO_NAME  "LINUX_2.6"
 # define VDSO_HASH  61765110

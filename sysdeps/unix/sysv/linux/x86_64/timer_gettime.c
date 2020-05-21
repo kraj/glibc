@@ -26,7 +26,7 @@ __timer_gettime_new (timer_t timerid, struct itimerspec *value)
 {
   struct timer *kt = (struct timer *) timerid;
 
-  return INLINE_SYSCALL_CALL (timer_gettime, kt->ktimerid, value);
+  return inline_syscall (__NR_timer_gettime, kt->ktimerid, value);
 }
 versioned_symbol (librt, __timer_gettime_new, timer_gettime, GLIBC_2_3_3);
 

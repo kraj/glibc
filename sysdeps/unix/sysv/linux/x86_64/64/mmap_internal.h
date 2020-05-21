@@ -29,10 +29,10 @@
       && ((prot) & PROT_EXEC) != 0					\
       && HAS_ARCH_FEATURE (Prefer_MAP_32BIT_EXEC))			\
     {									\
-      void *ret = (void*) INLINE_SYSCALL_CALL (mmap, (addr), (len),	\
-					      (prot),			\
-					      (flags) | MAP_32BIT,	\
-					      (fd), (offset));		\
+      void *ret = (void*) inline_syscall (__NR_mmap, (addr), (len),	\
+					  (prot),			\
+					  (flags) | MAP_32BIT,		\
+					  (fd), (offset));		\
       if (ret != MAP_FAILED)						\
 	return ret;							\
     }
