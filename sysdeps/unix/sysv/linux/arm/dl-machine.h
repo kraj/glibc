@@ -20,7 +20,7 @@
 
 /* This definition is Linux-specific.  */
 #define CLEAR_CACHE(BEG,END)                                            \
-  INTERNAL_SYSCALL_CALL (cacheflush, (BEG), (END), 0)
+  internal_syscall (__NR_cacheflush, (BEG), (END), 0)
 
 #endif
 

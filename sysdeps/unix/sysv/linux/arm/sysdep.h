@@ -408,6 +408,201 @@ __local_syscall_error:						\
 #define INTERNAL_SYSCALL_NCS(number, nr, args...)              \
   INTERNAL_SYSCALL_RAW (number, nr, args)
 
+static inline long int
+__internal_syscall0 (long int name)
+{
+#if defined(__thumb__)
+  register int a1 asm ("a1");
+  register int nr asm ("ip") = name;
+  asm volatile ("bl __libc_do_syscall"
+		: "=r" (a1)
+		: "r" (nr)
+		: "memory", "lr");
+  return a1;
+#else
+  register int a1 asm ("r0");
+  register int nr asm ("r7") = name;
+  asm volatile ("swi 0x0"
+		: "=r" (a1)
+		: "r" (nr)
+		: "memory");
+  return a1;
+#endif
+}
+
+static inline long int
+__internal_syscall1 (long int name, __syscall_arg_t arg1)
+{
+#if defined(__thumb__)
+  register int a1 asm ("a1") = arg1;
+  register int nr asm ("ip") = name;
+  asm volatile ("bl __libc_do_syscall"
+		: "=r" (a1)
+		: "r" (nr), "r" (a1)
+		: "memory", "lr");
+  return a1;
+#else
+  register int a1 asm ("r0") = arg1;
+  register int nr asm ("r7") = name;
+  asm volatile ("swi 0x0"
+		: "=r" (a1)
+		: "r" (nr), "r" (a1)
+		: "memory");
+  return a1;
+#endif
+}
+
+static inline long int
+__internal_syscall2 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2)
+{
+#if defined(__thumb__)
+  register int a1 asm ("a1") = arg1;
+  register int a2 asm ("a2") = arg1;
+  register int nr asm ("ip") = name;
+  asm volatile ("bl __libc_do_syscall"
+		: "=r" (a1)
+		: "r" (nr), "r" (a1), "r" (a2)
+		: "memory", "lr");
+  return a1;
+#else
+  register int a1 asm ("r0") = arg1;
+  register int a2 asm ("a2") = arg2;
+  register int nr asm ("r7") = name;
+  asm volatile ("swi 0x0"
+		: "=r" (a1)
+		: "r" (nr), "r" (a1), "r" (a2)
+		: "memory");
+  return a1;
+#endif
+}
+
+static inline long int
+__internal_syscall3 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3)
+{
+#if defined(__thumb__)
+  register int a1 asm ("a1") = arg1;
+  register int a2 asm ("a2") = arg1;
+  register int a3 asm ("a3") = arg3;
+  register int nr asm ("ip") = name;
+  asm volatile ("bl __libc_do_syscall"
+		: "=r" (a1)
+		: "r" (nr), "r" (a1), "r" (a2), "r" (a3)
+		: "memory", "lr");
+  return a1;
+#else
+  register int a1 asm ("r0") = arg1;
+  register int a2 asm ("a2") = arg2;
+  register int a3 asm ("a3") = arg3;
+  register int nr asm ("r7") = name;
+  asm volatile ("swi 0x0"
+		: "=r" (a1)
+		: "r" (nr), "r" (a1), "r" (a2), "r" (a3)
+		: "memory");
+  return a1;
+#endif
+}
+
+static inline long int
+__internal_syscall4 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4)
+{
+#if defined(__thumb__)
+  register int a1 asm ("a1") = arg1;
+  register int a2 asm ("a2") = arg1;
+  register int a3 asm ("a3") = arg3;
+  register int a4 asm ("a4") = arg4;
+  register int nr asm ("ip") = name;
+  asm volatile ("bl __libc_do_syscall"
+		: "=r" (a1)
+		: "r" (nr), "r" (a1), "r" (a2), "r" (a3), "r" (a4)
+		: "memory", "lr");
+  return a1;
+#else
+  register int a1 asm ("r0") = arg1;
+  register int a2 asm ("a2") = arg2;
+  register int a3 asm ("a3") = arg3;
+  register int a4 asm ("a4") = arg4;
+  register int nr asm ("r7") = name;
+  asm volatile ("swi 0x0"
+		: "=r" (a1)
+		: "r" (nr), "r" (a1), "r" (a2), "r" (a3), "r" (a4)
+		: "memory");
+  return a1;
+#endif
+}
+
+static inline long int
+__internal_syscall5 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4, __syscall_arg_t arg5)
+{
+#if defined(__thumb__)
+  register int a1 asm ("a1") = arg1;
+  register int a2 asm ("a2") = arg1;
+  register int a3 asm ("a3") = arg3;
+  register int a4 asm ("a4") = arg4;
+  register int a5 asm ("v1") = arg5;
+  register int nr asm ("ip") = name;
+  asm volatile ("bl __libc_do_syscall"
+		: "=r" (a1)
+		: "r" (nr), "r" (a1), "r" (a2), "r" (a3), "r" (a4), "r" (a5)
+		: "memory", "lr");
+  return a1;
+#else
+  register int a1 asm ("r0") = arg1;
+  register int a2 asm ("a2") = arg2;
+  register int a3 asm ("a3") = arg3;
+  register int a4 asm ("a4") = arg4;
+  register int a5 asm ("v1") = arg5;
+  register int nr asm ("r7") = name;
+  asm volatile ("swi 0x0"
+		: "=r" (a1)
+		: "r" (nr), "r" (a1), "r" (a2), "r" (a3), "r" (a4), "r" (a5)
+		: "memory");
+  return a1;
+#endif
+}
+
+static inline long int
+__internal_syscall6 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4, __syscall_arg_t arg5,
+		     __syscall_arg_t arg6)
+{
+#if defined(__thumb__)
+  register int a1 asm ("a1") = arg1;
+  register int a2 asm ("a2") = arg1;
+  register int a3 asm ("a3") = arg3;
+  register int a4 asm ("a4") = arg4;
+  register int a5 asm ("v1") = arg5;
+  register int a6 asm ("v2") = arg6;
+  register int nr asm ("ip") = name;
+  asm volatile ("bl __libc_do_syscall"
+		: "=r" (a1)
+		: "r" (nr), "r" (a1), "r" (a2), "r" (a3), "r" (a4), "r" (a5),
+		  "r" (a6)
+		: "memory", "lr");
+  return a1;
+#else
+  register int a1 asm ("r0") = arg1;
+  register int a2 asm ("a2") = arg2;
+  register int a3 asm ("a3") = arg3;
+  register int a4 asm ("a4") = arg4;
+  register int a5 asm ("v1") = arg5;
+  register int a6 asm ("v2") = arg6;
+  register int nr asm ("r7") = name;
+  asm volatile ("swi 0x0"
+		: "=r" (a1)
+		: "r" (nr), "r" (a1), "r" (a2), "r" (a3), "r" (a4), "r" (a5),
+		  "r" (a6)
+		: "memory");
+  return a1;
+#endif
+}
+
 #define SINGLE_THREAD_BY_GLOBAL	1
 
 #endif	/* __ASSEMBLER__ */

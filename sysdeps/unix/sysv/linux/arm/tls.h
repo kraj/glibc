@@ -29,12 +29,10 @@
 
 /* Code to initially initialize the thread pointer.  This might need
    special attention since 'errno' is not yet available and if the
-   operation can cause a failure 'errno' must not be touched.  */
+   operation can cause a failure 'errno' must not be touched.
+   Note: __NR_set_tls does not fail.  */
 # define TLS_INIT_TP(tcbp) \
-  ({ long int result_var;						\
-     result_var = INTERNAL_SYSCALL_CALL (set_tls, (tcbp));		\
-     INTERNAL_SYSCALL_ERROR_P (result_var)				\
-       ? "unknown error" : NULL; })
+  ({ internal_syscall (__NR_set_tls, (tcbp)); NULL; })
 
 #endif /* __ASSEMBLER__ */
 
