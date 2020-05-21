@@ -59,6 +59,18 @@
     -1l;					\
   })
 
+#ifndef __ASSEMBLER__
+static inline long __syscall_ret (unsigned long int val)
+{
+  if (__glibc_unlikely (val > -4096UL))
+    {
+       __set_errno (-val);
+       return -1;
+    }
+  return val;
+}
+#endif
+
 /* Provide a dummy argument that can be used to force register
    alignment for register pairs if required by the syscall ABI.  */
 #ifdef __ASSUME_ALIGNED_REGISTER_PAIRS

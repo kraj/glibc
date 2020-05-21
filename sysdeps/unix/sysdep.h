@@ -118,6 +118,56 @@
     sc_ret;								     \
   })
 
+
+#ifndef __ASSEMBLER__
+# ifndef ARGIFY
+#  define ARGIFY(__x) ((__syscall_arg_t) (__x))
+typedef long int __syscall_arg_t;
+# endif
+#endif
+
+#define __internal_syscall_0(name) 					\
+  __internal_syscall0 (name)
+#define __internal_syscall_1(name, a1) 					\
+  __internal_syscall1 (name, ARGIFY (a1))
+#define __internal_syscall_2(name, a1, a2) 				\
+  __internal_syscall2 (name, ARGIFY (a1), ARGIFY (a2))
+#define __internal_syscall_3(name, a1, a2, a3) 				\
+  __internal_syscall3 (name, ARGIFY (a1), ARGIFY (a2), ARGIFY (a3))
+#define __internal_syscall_4(name, a1, a2, a3, a4) 			\
+  __internal_syscall4 (name, ARGIFY (a1), ARGIFY (a2), ARGIFY (a3),	\
+		       ARGIFY (a4))
+#define __internal_syscall_5(name, a1, a2, a3, a4, a5) 			\
+  __internal_syscall5 (name, ARGIFY (a1), ARGIFY (a2), ARGIFY (a3),	\
+		       ARGIFY (a4), ARGIFY (a5))
+#define __internal_syscall_6(name, a1, a2, a3, a4, a5, a6) 		\
+  __internal_syscall6 (name, ARGIFY (a1), ARGIFY (a2), ARGIFY (a3),	\
+		       ARGIFY (a4), ARGIFY (a5), ARGIFY (a6))
+#define __internal_syscall_7(name, a1, a2, a3, a4, a5, a6, a7) 		\
+  __internal_syscall7 (name, ARGIFY (a1), ARGIFY (a2), ARGIFY (a3),	\
+		       ARGIFY (a4), ARGIFY (a5), ARGIFY (a6), ARGIFY (a7))
+
+#define internal_syscall(...)						\
+  __INTERNAL_SYSCALL_DISP(__internal_syscall_,__VA_ARGS__)
+
+#define inline_syscall(...)						\
+  __syscall_ret (internal_syscall (__VA_ARGS__))
+
+#define internal_syscall_cancel(...) 					\
+  ({									\
+    long int __sc_ret;							\
+    int __sc_cancel_oldtype = -1;					\
+    if (! SINGLE_THREAD_P)						\
+      __sc_cancel_oldtype = LIBC_CANCEL_ASYNC ();			\
+    __sc_ret = internal_syscall (__VA_ARGS__);				\
+    if (__sc_cancel_oldtype != -1)					\
+      LIBC_CANCEL_RESET (__sc_cancel_oldtype);				\
+    __sc_ret;								\
+  })
+
+#define inline_syscall_cancel(...)					\
+  __syscall_ret (internal_syscall_cancel(__VA_ARGS__))
+
 /* Machine-dependent sysdep.h files are expected to define the macro
    PSEUDO (function_name, syscall_name) to emit assembly code to define the
    C-callable function FUNCTION_NAME to do system call SYSCALL_NAME.
