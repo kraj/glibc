@@ -233,6 +233,115 @@
 # define INTERNAL_SYSCALL_NCS(number, nr, args...)	\
 	INTERNAL_SYSCALL_RAW (number, nr, args)
 
+static inline long int
+__internal_syscall0 (long int name)
+{
+  register long int x8 asm ("x8") = name;
+  register long int x0 asm ("x0");
+  asm volatile ("svc 0"
+		: "=r" (x0)
+		: "r" (x8)
+		: "memory");
+  return x0;
+}
+
+static inline long int
+__internal_syscall1 (long int name, __syscall_arg_t arg1)
+{
+  register long int x8 asm ("x8") = name;
+  register long int x0 asm ("x0") = arg1;
+  asm volatile ("svc 0"
+		: "=r" (x0)
+		: "r" (x8), "r" (x0)
+		: "memory");
+  return x0;
+}
+
+static inline long int
+__internal_syscall2 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2)
+{
+  register long int x8 asm ("x8") = name;
+  register long int x0 asm ("x0") = arg1;
+  register long int x1 asm ("x1") = arg2;
+  asm volatile ("svc 0"
+		: "=r" (x0)
+		: "r" (x8), "r" (x0), "r" (x1)
+		: "memory");
+  return x0;
+}
+
+static inline long int
+__internal_syscall3 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3)
+{
+  register long int x8 asm ("x8") = name;
+  register long int x0 asm ("x0") = arg1;
+  register long int x1 asm ("x1") = arg2;
+  register long int x2 asm ("x2") = arg3;
+  asm volatile ("svc 0"
+		: "=r" (x0)
+		: "r" (x8), "r" (x0), "r" (x1), "r" (x2)
+		: "memory");
+  return x0;
+}
+
+static inline long int
+__internal_syscall4 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4)
+{
+  register long int x8 asm ("x8") = name;
+  register long int x0 asm ("x0") = arg1;
+  register long int x1 asm ("x1") = arg2;
+  register long int x2 asm ("x2") = arg3;
+  register long int x3 asm ("x3") = arg4;
+  asm volatile ("svc 0"
+		: "=r" (x0)
+		: "r" (x8), "r" (x0), "r" (x1), "r" (x2), "r" (x3)
+		: "memory");
+  return x0;
+}
+
+static inline long int
+__internal_syscall5 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4, __syscall_arg_t arg5)
+{
+  register long int x8 asm ("x8") = name;
+  register long int x0 asm ("x0") = arg1;
+  register long int x1 asm ("x1") = arg2;
+  register long int x2 asm ("x2") = arg3;
+  register long int x3 asm ("x3") = arg4;
+  register long int x4 asm ("x4") = arg5;
+  asm volatile ("svc 0"
+		: "=r" (x0)
+		: "r" (x8), "r" (x0), "r" (x1), "r" (x2), "r" (x3), "r" (x4)
+		: "memory");
+  return x0;
+}
+
+static inline long int
+__internal_syscall6 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4, __syscall_arg_t arg5,
+		     __syscall_arg_t arg6)
+{
+  register long int x8 asm ("x8") = name;
+  register long int x0 asm ("x0") = arg1;
+  register long int x1 asm ("x1") = arg2;
+  register long int x2 asm ("x2") = arg3;
+  register long int x3 asm ("x3") = arg4;
+  register long int x4 asm ("x4") = arg5;
+  register long int x5 asm ("x5") = arg6;
+  asm volatile ("svc 0"
+		: "=r" (x0)
+		: "r" (x8), "r" (x0), "r" (x1), "r" (x2), "r" (x3), "r" (x4),
+		  "r" (x5)
+		: "memory");
+  return x0;
+}
+
 #endif	/* __ASSEMBLER__ */
 
 /* Pointer mangling is supported for AArch64.  */
