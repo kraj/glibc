@@ -26,7 +26,7 @@ const fenv_t *
 __fe_mask_env (void)
 {
 #if defined PR_SET_FPEXC && defined PR_FP_EXC_DISABLED
-  INTERNAL_SYSCALL_CALL (prctl, PR_SET_FPEXC, PR_FP_EXC_DISABLED);
+  internal_syscall (__NR_prctl, PR_SET_FPEXC, PR_FP_EXC_DISABLED);
 #else
   __set_errno (ENOSYS);
 #endif

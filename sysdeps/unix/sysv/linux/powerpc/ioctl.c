@@ -53,7 +53,7 @@ __ioctl (int fd, unsigned long int request, ...)
       break;
 
     default:
-      result = INLINE_SYSCALL (ioctl, 3, fd, request, arg);
+      result = inline_syscall (__NR_ioctl, fd, request, arg);
       break;
     }
 

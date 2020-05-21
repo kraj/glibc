@@ -155,6 +155,138 @@
 #define ASM_INPUT_5 ASM_INPUT_4, "5" (r7)
 #define ASM_INPUT_6 ASM_INPUT_5, "6" (r8)
 
+#ifndef __ASSEMBLER__
+static inline long int
+__internal_syscall0 (long int name)
+{
+  register long int r0  __asm__ ("r0") = name;
+  register long int r3  __asm__ ("r3");
+  asm volatile ("sc\n\t"
+		"neg  9, %1\n\t"
+		"isel %1, 9, %1, 3\n\t"
+		: "+r" (r0), "=r" (r3)
+		:
+		: "r4", "r5", "r6", "r7", "r8", "r9", "r10", "r11", "r12",
+		  "cr0", "memory");
+  return r3;
+}
+
+static inline long int
+__internal_syscall1 (long int name, __syscall_arg_t arg1)
+{
+  register long int r0  __asm__ ("r0") = name;
+  register long int r3  __asm__ ("r3") = arg1;
+  asm volatile ("sc\n\t"
+		"neg  9, %1\n\t"
+		"isel %1, 9, %1, 3\n\t"
+		: "+r" (r0), "+r" (r3)
+		:
+		: "r4", "r5", "r6", "r7", "r8", "r9", "r10", "r11", "r12",
+		  "cr0", "memory");
+  return r3;
+}
+
+static inline long int
+__internal_syscall2 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2)
+{
+  register long int r0  __asm__ ("r0") = name;
+  register long int r3  __asm__ ("r3") = arg1;
+  register long int r4  __asm__ ("r4") = arg2;
+  asm volatile ("sc\n\t"
+		"neg  9, %1\n\t"
+		"isel %1, 9, %1, 3\n\t"
+		: "+r" (r0), "+r" (r3), "+r" (r4)
+		:
+		: "r5", "r6", "r7", "r8", "r9", "r10", "r11", "r12",
+		  "cr0", "memory");
+  return r3;
+}
+
+static inline long int
+__internal_syscall3 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3)
+{
+  register long int r0  __asm__ ("r0") = name;
+  register long int r3  __asm__ ("r3") = arg1;
+  register long int r4  __asm__ ("r4") = arg2;
+  register long int r5  __asm__ ("r5") = arg3;
+  asm volatile ("sc\n\t"
+		"neg  9, %1\n\t"
+		"isel %1, 9, %1, 3\n\t"
+		: "+r" (r0), "+r" (r3), "+r" (r4), "+r" (r5)
+		:
+		: "r6", "r7", "r8", "r9", "r10", "r11", "r12",
+		  "cr0", "memory");
+  return r3;
+}
+
+static inline long int
+__internal_syscall4 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4)
+{
+  register long int r0  __asm__ ("r0") = name;
+  register long int r3  __asm__ ("r3") = arg1;
+  register long int r4  __asm__ ("r4") = arg2;
+  register long int r5  __asm__ ("r5") = arg3;
+  register long int r6  __asm__ ("r6") = arg4;
+  asm volatile ("sc\n\t"
+		"neg  9, %1\n\t"
+		"isel %1, 9, %1, 3\n\t"
+		: "+r" (r0), "+r" (r3), "+r" (r4), "+r" (r5), "+r" (r6)
+		:
+		: "r7", "r8", "r9", "r10", "r11", "r12",
+		  "cr0", "memory");
+  return r3;
+}
+
+static inline long int
+__internal_syscall5 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4, __syscall_arg_t arg5)
+{
+  register long int r0  __asm__ ("r0") = name;
+  register long int r3  __asm__ ("r3") = arg1;
+  register long int r4  __asm__ ("r4") = arg2;
+  register long int r5  __asm__ ("r5") = arg3;
+  register long int r6  __asm__ ("r6") = arg4;
+  register long int r7  __asm__ ("r7") = arg5;
+  asm volatile ("sc\n\t"
+		"neg  9, %1\n\t"
+		"isel %1, 9, %1, 3\n\t"
+		: "+r" (r0), "+r" (r3), "+r" (r4), "+r" (r5), "+r" (r6),
+		  "+r" (r7)
+		:
+		: "r8", "r9", "r10", "r11", "r12",
+		  "cr0", "memory");
+  return r3;
+}
+
+static inline long int
+__internal_syscall6 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4, __syscall_arg_t arg5,
+		     __syscall_arg_t arg6)
+{
+  register long int r0  __asm__ ("r0") = name;
+  register long int r3  __asm__ ("r3") = arg1;
+  register long int r4  __asm__ ("r4") = arg2;
+  register long int r5  __asm__ ("r5") = arg3;
+  register long int r6  __asm__ ("r6") = arg4;
+  register long int r7  __asm__ ("r7") = arg5;
+  register long int r8  __asm__ ("r8") = arg6;
+  asm volatile ("sc\n\t"
+		"neg  9, %1\n\t"
+		"isel %1, 9, %1, 3\n\t"
+		: "+r" (r0), "+r" (r3), "+r" (r4), "+r" (r5), "+r" (r6),
+		  "+r" (r7), "+r" (r8)
+		:
+		: "r9", "r10", "r11", "r12",
+		  "cr0", "memory");
+  return r3;
+}
+#endif
 
 /* Pointer mangling support.  */
 #if IS_IN (rtld)
