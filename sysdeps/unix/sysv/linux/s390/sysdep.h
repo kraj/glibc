@@ -110,4 +110,114 @@
 #define HAVE_GETTIMEOFDAY_VSYSCALL	"__kernel_gettimeofday"
 #define HAVE_GETCPU_VSYSCALL		"__kernel_getcpu"
 
+#ifndef __ASSEMBLER__
+static inline long int
+__internal_syscall0 (long int name)
+{
+  register long int r1 asm ("1") = name;
+  register long int r2 asm ("2");
+  asm volatile ("svc   0\n\t"
+		: "=d" (r2)
+		: "d" (r1)
+		: "memory");
+  return r2;
+}
+
+static inline long int
+__internal_syscall1 (long int name, __syscall_arg_t arg1)
+{
+  register long int r1 asm ("1") = name;
+  register long int r2 asm ("2") = arg1;
+  asm volatile ("svc   0\n\t"
+		: "+d" (r2)
+		: "d" (r1)
+		: "memory");
+  return r2;
+}
+
+static inline long int
+__internal_syscall2 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2)
+{
+  register long int r1 asm ("1") = name;
+  register long int r2 asm ("2") = arg1;
+  register long int r3 asm ("3") = arg2;
+  asm volatile ("svc   0\n\t"
+		: "+d" (r2)
+		: "d" (r1), "d" (r3)
+		: "memory");
+  return r2;
+}
+
+static inline long int
+__internal_syscall3 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3)
+{
+  register long int r1 asm ("1") = name;
+  register long int r2 asm ("2") = arg1;
+  register long int r3 asm ("3") = arg2;
+  register long int r4 asm ("4") = arg3;
+  asm volatile ("svc   0\n\t"
+		: "+d" (r2)
+		: "d" (r1), "d" (r3), "d" (r4)
+		: "memory");
+  return r2;
+}
+
+static inline long int
+__internal_syscall4 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4)
+{
+  register long int r1 asm ("1") = name;
+  register long int r2 asm ("2") = arg1;
+  register long int r3 asm ("3") = arg2;
+  register long int r4 asm ("4") = arg3;
+  register long int r5 asm ("5") = arg4;
+  asm volatile ("svc   0\n\t"
+		: "+d" (r2)
+		: "d" (r1), "d" (r3), "d" (r4), "d" (r5)
+		: "memory");
+  return r2;
+}
+
+static inline long int
+__internal_syscall5 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4, __syscall_arg_t arg5)
+{
+  register long int r1 asm ("1") = name;
+  register long int r2 asm ("2") = arg1;
+  register long int r3 asm ("3") = arg2;
+  register long int r4 asm ("4") = arg3;
+  register long int r5 asm ("5") = arg4;
+  register long int r6 asm ("6") = arg5;
+  asm volatile ("svc   0\n\t"
+		: "+d" (r2)
+		: "d" (r1), "d" (r3), "d" (r4), "d" (r5), "d" (r6)
+		: "memory");
+  return r2;
+}
+
+static inline long int
+__internal_syscall6 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4, __syscall_arg_t arg5,
+		     __syscall_arg_t arg6)
+{
+  register long int r1 asm ("1") = name;
+  register long int r2 asm ("2") = arg1;
+  register long int r3 asm ("3") = arg2;
+  register long int r4 asm ("4") = arg3;
+  register long int r5 asm ("5") = arg4;
+  register long int r6 asm ("6") = arg5;
+  register long int r7 asm ("7") = arg6;
+  asm volatile ("svc   0\n\t"
+		: "+d" (r2)
+		: "d" (r1), "d" (r3), "d" (r4), "d" (r5), "d" (r6), "d" (r7)
+		: "memory");
+  return r2;
+}
+#endif /* __ASSEMBLER__  */
+
 #endif

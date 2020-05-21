@@ -24,7 +24,7 @@
     long int __args[6] = { (long int) (__addr), (long int) (__len),	\
 			   (long int) (__prot), (long int) (__flags),	\
 			   (long int) (__fd), (long int) (__offset) };	\
-    INLINE_SYSCALL_CALL (__nr, __args);					\
+    inline_syscall (__NR_##__nr, __args);				\
   })
 
 #include_next <mmap_internal.h>
