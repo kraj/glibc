@@ -16,25 +16,19 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
+#include <sys/times.h>
 #include <sysdep.h>
 
 /* Linux times system call returns 64-bit integer.  */
-#undef internal_syscall1
-#define internal_syscall1(number, arg1)				\
-({									\
-    unsigned long long int resultvar;					\
-    TYPEFY (arg1, __arg1) = ARGIFY (arg1);			 	\
-    register TYPEFY (arg1, _a1) asm ("rdi") = __arg1;			\
-    asm volatile (							\
-    "syscall\n\t"							\
-    : "=a" (resultvar)							\
-    : "0" (number), "r" (_a1)						\
-    : "memory", REGISTERS_CLOBBERED_BY_SYSCALL);			\
-    (long long int) resultvar;						\
-})
-
-#undef INTERNAL_SYSCALL_ERROR_P
-#define INTERNAL_SYSCALL_ERROR_P(val) \
-  ((unsigned long long int) (val) >= -4095LL)
-
-#include <sysdeps/unix/sysv/linux/times.c>
+clock_t
+__times (struct tms *buf)
+{
+  unsigned long long int resultvar;
+  register __syscall_arg_t a1 asm ("rdi") = ARGIFY (buf);
+  asm volatile ("syscall\n\t"
+		: "=a" (resultvar)
+		: "0" (__NR_times),  "r" (a1)
+		: "memory", "cc", "r11", "cx");
+  return __syscall_ret (resultvar);
+}
+weak_alias (__times, times)

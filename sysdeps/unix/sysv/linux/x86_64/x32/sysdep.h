@@ -18,6 +18,27 @@
 #ifndef _LINUX_X32_SYSDEP_H
 #define _LINUX_X32_SYSDEP_H 1
 
+/* Enforce zero-extension for pointers and array system call arguments.
+   For integer types, extend to int64_t (the full register) using a
+   regular cast, resulting in zero or sign extension based on the
+   signedness of the original type.  */
+#ifndef __ASSEMBLER__
+# include <stdint.h>
+/* Enforce zero-extension for pointers and array system call arguments.
+   For integer types, extend to int64_t (the full register) using a
+   regular cast, resulting in zero or sign extension based on the
+   signedness of the original type.  */
+# define ARGIFY(X) \
+ ({									\
+    _Pragma ("GCC diagnostic push");					\
+    _Pragma ("GCC diagnostic ignored \"-Wpointer-to-int-cast\"");	\
+    (__builtin_classify_type (X) == 5					\
+     ? (uintptr_t) (X) : (int64_t) (X));				\
+    _Pragma ("GCC diagnostic pop");					\
+  })
+typedef long long int __syscall_arg_t;
+#endif
+
 /* There is some commonality.  */
 #include <sysdeps/unix/sysv/linux/x86_64/sysdep.h>
 #include <sysdeps/x86_64/x32/sysdep.h>
@@ -45,21 +66,6 @@
 # define ZERO_EXTEND_5 movl %r8d, %r8d;
 # undef ZERO_EXTEND_6
 # define ZERO_EXTEND_6 movl %r9d, %r9d;
-#else /* !__ASSEMBLER__ */
-# include <stdint.h>
-# undef ARGIFY
-/* Enforce zero-extension for pointers and array system call arguments.
-   For integer types, extend to int64_t (the full register) using a
-   regular cast, resulting in zero or sign extension based on the
-   signedness of the original type.  */
-# define ARGIFY(X) \
- ({									\
-    _Pragma ("GCC diagnostic push");					\
-    _Pragma ("GCC diagnostic ignored \"-Wpointer-to-int-cast\"");	\
-    (__builtin_classify_type (X) == 5					\
-     ? (uintptr_t) (X) : (int64_t) (X));				\
-    _Pragma ("GCC diagnostic pop");					\
-  })
 #endif	/* __ASSEMBLER__ */
 
 #endif /* linux/x86_64/x32/sysdep.h */
