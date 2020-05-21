@@ -197,7 +197,7 @@ tls_fill_user_desc (union user_desc_init *desc,
      tls_fill_user_desc (&_segdescr, -1, _thrdescr);			      \
 									      \
      /* Install the TLS.  */						      \
-     _result = INTERNAL_SYSCALL_CALL (set_thread_area, &_segdescr.desc);      \
+     _result = internal_syscall (__NR_set_thread_area, &_segdescr.desc);      \
 									      \
      if (_result == 0)							      \
        /* We know the index in the GDT, now load the segment register.	      \

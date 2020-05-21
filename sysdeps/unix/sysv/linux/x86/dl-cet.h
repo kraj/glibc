@@ -21,12 +21,12 @@
 static inline int __attribute__ ((always_inline))
 dl_cet_disable_cet (unsigned int cet_feature)
 {
-  return (int) INTERNAL_SYSCALL_CALL (arch_prctl, ARCH_CET_DISABLE,
-				      cet_feature);
+  return (int) internal_syscall (__NR_arch_prctl, ARCH_CET_DISABLE,
+				 cet_feature);
 }
 
 static inline int __attribute__ ((always_inline))
 dl_cet_lock_cet (void)
 {
-  return (int) INTERNAL_SYSCALL_CALL (arch_prctl, ARCH_CET_LOCK, 0);
+  return (int) internal_syscall (__NR_arch_prctl, ARCH_CET_LOCK, 0);
 }

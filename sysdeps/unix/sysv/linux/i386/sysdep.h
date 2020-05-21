@@ -24,7 +24,7 @@
 #include <sysdeps/unix/i386/sysdep.h>
 /* Defines RTLD_PRIVATE_ERRNO and USE_DL_SYSINFO.  */
 #include <dl-sysdep.h>
-#include <tls.h>
+#include <tcb-offsets.h>
 
 
 /* For Linux we can use the system call table in the header file
@@ -382,14 +382,14 @@ struct libc_do_syscall_args
     asm volatile (							\
     "call *%%gs:%P2"							\
     : "=a" (resultvar)							\
-    : "a" (__NR_##name), "i" (offsetof (tcbhead_t, sysinfo))		\
+    : "a" (__NR_##name) SYSCALL_CONST					\
       ASMARGS_##nr(args) : "memory", "cc")
 #   define INTERNAL_SYSCALL_MAIN_NCS(name, nr, args...) \
     LOADREGS_##nr(args)							\
     asm volatile (							\
     "call *%%gs:%P2"							\
     : "=a" (resultvar)							\
-    : "a" (name), "i" (offsetof (tcbhead_t, sysinfo))			\
+    : "a" (name) SYSCALL_CONST						\
       ASMARGS_##nr(args) : "memory", "cc")
 #  else
 #   define INTERNAL_SYSCALL_MAIN_INLINE(name, nr, args...) \
@@ -415,7 +415,7 @@ struct libc_do_syscall_args
     "call *%%gs:%P2\n\t"						      \
     RESTOREARGS_##nr							      \
     : "=a" (resultvar)							      \
-    : "i" (__NR_##name), "i" (offsetof (tcbhead_t, sysinfo))		      \
+    : "i" (__NR_##name) SYSCALL_CONST					      \
       ASMFMT_##nr(args) : "memory", "cc")
 #   define INTERNAL_SYSCALL_MAIN_NCS(name, nr, args...) \
     EXTRAVAR_##nr							      \
@@ -424,7 +424,7 @@ struct libc_do_syscall_args
     "call *%%gs:%P2\n\t"						      \
     RESTOREARGS_##nr							      \
     : "=a" (resultvar)							      \
-    : "0" (name), "i" (offsetof (tcbhead_t, sysinfo))			      \
+    : "0" (name) SYSCALL_CONST						      \
       ASMFMT_##nr(args) : "memory", "cc")
 #  else
 #   define INTERNAL_SYSCALL_MAIN_INLINE(name, nr, args...) \
@@ -480,6 +480,188 @@ struct libc_do_syscall_args
     : "0" (name) ASMFMT_##nr(args) : "memory", "cc")
 # endif /* GCC 5  */
 #endif
+
+#if I386_USE_SYSENTER
+# ifdef PIC
+#  define SYSCALL_INSNS "call *%%gs:%P2\n\t"
+//#  define SYSCALL_CONST , "i" (offsetof (tcbhead_t, sysinfo))
+#  define SYSCALL_CONST , "i" (SYSINFO_OFFSET)
+# else
+#  define SYSCALL_INSNS "call *_dl_sysinfo\n\t"
+#  define SYSCALL_CONST
+# endif /* PIC  */
+#else
+# define SYSCALL_INSNS "int $0x80\n\t"
+# define SYSCALL_CONST
+#endif /* I386_USE_SYSENTER  */
+
+#if defined OPTIMIZE_FOR_GCC_5 || !defined PIC
+# define SYSCALL_LOAD_ARGS_1_2
+# define SYSCALL_RESTORE_ARGS_1_2
+# define SYSCALL_LOAD_ARGS_3_4
+# define SYSCALL_RESTORE_ARGS_3_4
+# define SYSCALL_LOAD_ARGS_5
+# define SYSCALL_RESTORE_ARGS_5
+# define SYSCALL_ASMFMT_1(__arg1) \
+       , "b" (__arg1)
+# define SYSCALL_ASMFMT_2(__arg1, __arg2) \
+       , "b" (__arg1), "c" (__arg2)
+# define SYSCALL_ASMFMT_3(__arg1, __arg2, __arg3) \
+       , "b" (__arg1), "c" (__arg2), "d" (__arg3)
+# define SYSCALL_ASMFMT_4(__arg1, __arg2, __arg3, __arg4) \
+       , "b" (__arg1), "c" (__arg2), "d" (__arg3), "S" (__arg4)
+# define SYSCALL_ASMFMT_5(__arg1, __arg2, __arg3, __arg4, __arg5) \
+        , "b" (__arg1), "c" (__arg2), "d" (__arg3), "S" (__arg4), "D" (__arg5)
+#else
+# if I386_USE_SYSENTER
+#  define SYSCALL_LOAD_ARGS_1_2     "bpushl .L__X'%k3, %k3\n\t"
+#  define SYSCALL_RESTORE_ARGS_1_2  "bpopl .L__X'%k3, %k3\n\t"
+#  define SYSCALL_LOAD_ARGS_3_4     "xchgl %%ebx, %%edi\n\t"
+#  define SYSCALL_RESTORE_ARGS_3_4  "xchgl %%edi, %%ebx\n\t"
+#  define SYSCALL_LOAD_ARGS_5       "movl %%ebx, %4\n\t" \
+				    "movl %3, %%ebx\n\t"
+#  define SYSCALL_RESTORE_ARGS_5    "movl %4, %%ebx"
+# else
+#  define SYSCALL_LOAD_ARGS_1_2     "bpushl .L__X'%k2, %k2\n\t"
+#  define SYSCALL_RESTORE_ARGS_1_2  "bpopl .L__X'%k2, %k2\n\t"
+#  define SYSCALL_LOAD_ARGS_3_4     "xchgl %%ebx, %%edi\n\t"
+#  define SYSCALL_RESTORE_ARGS_3_4  "xchgl %%edi, %%ebx\n\t"
+#  define SYSCALL_LOAD_ARGS_5       "movl %%ebx, %3\n\t" \
+				    "movl %2, %%ebx\n\t"
+#  define SYSCALL_RESTORE_ARGS_5    "movl %3, %%ebx"
+# endif /* I386_USE_SYSENTER  */
+# define SYSCALL_ASMFMT_1(__arg1) \
+        , "cd" (__arg1)
+# define SYSCALL_ASMFMT_2(__arg1, __arg2) \
+        , "d" (__arg1), "c" (__arg2)
+# define SYSCALL_ASMFMT_3(__arg1, __arg2, __arg3) \
+        , "D" (__arg1), "c" (__arg2), "d" (__arg3)
+# define SYSCALL_ASMFMT_4(__arg1, __arg2, __arg3, __arg4) \
+        , "D" (__arg1), "c" (__arg2), "d" (__arg3), "S" (__arg4)
+# define SYSCALL_ASMFMT_5(__arg1, __arg2, __arg3, __arg4, __arg5) \
+        , "g" (__arg1), "m" ((long int){0}), "c" (__arg2), "d" (__arg3), \
+	  "S" (__arg4), "D" (__arg5)
+#endif /* OPTIMIZE_FOR_GCC_5 || !defined PIC  */
+
+static inline long int
+__internal_syscall0 (long int name)
+{
+  unsigned long int resultvar;
+  asm volatile (SYSCALL_INSNS
+		: "=a" (resultvar)
+		: "a" (name) SYSCALL_CONST
+		: "memory", "cc");
+  return resultvar;
+}
+
+static inline long int
+__internal_syscall1 (long int name, __syscall_arg_t arg1)
+{
+  unsigned long int resultvar;
+  asm volatile (SYSCALL_LOAD_ARGS_1_2
+		"movl %1, %%eax\n\t"
+		SYSCALL_INSNS
+		SYSCALL_RESTORE_ARGS_1_2
+		: "=a" (resultvar)
+		: "a" (name) SYSCALL_CONST
+		  SYSCALL_ASMFMT_1 (arg1)
+		: "memory", "cc");
+  return resultvar;
+}
+
+static inline long int
+__internal_syscall2 (long int name, __syscall_arg_t arg1, __syscall_arg_t arg2)
+{
+  unsigned long int resultvar;
+  asm volatile (SYSCALL_LOAD_ARGS_1_2
+		"movl %1, %%eax\n\t"
+		SYSCALL_INSNS
+		SYSCALL_RESTORE_ARGS_1_2
+		: "=a" (resultvar)
+		: "a" (name) SYSCALL_CONST
+		  SYSCALL_ASMFMT_2 (arg1, arg2)
+		: "memory", "cc");
+  return resultvar;
+}
+
+static inline long int
+__internal_syscall3 (long int name, __syscall_arg_t arg1, __syscall_arg_t arg2,
+		   __syscall_arg_t arg3)
+{
+  unsigned long int resultvar;
+  asm volatile (SYSCALL_LOAD_ARGS_3_4
+		"movl %1, %%eax\n\t"
+		SYSCALL_INSNS
+		SYSCALL_RESTORE_ARGS_3_4
+		: "=a" (resultvar)
+		: "a" (name) SYSCALL_CONST
+		  SYSCALL_ASMFMT_3 (arg1, arg2, arg3)
+		: "memory", "cc");
+  return resultvar;
+}
+
+static inline long int
+__internal_syscall4 (long int name, __syscall_arg_t arg1, __syscall_arg_t arg2,
+		   __syscall_arg_t arg3, __syscall_arg_t arg4)
+{
+  unsigned long int resultvar;
+  asm volatile (SYSCALL_LOAD_ARGS_3_4
+		"movl %1, %%eax\n\t"
+		SYSCALL_INSNS
+		SYSCALL_RESTORE_ARGS_3_4
+		: "=a" (resultvar)
+		: "a" (name) SYSCALL_CONST
+		  SYSCALL_ASMFMT_4 (arg1, arg2, arg3, arg4)
+		: "memory", "cc");
+  return resultvar;
+}
+
+static inline long int
+__internal_syscall5 (long int name, __syscall_arg_t arg1, __syscall_arg_t arg2,
+		   __syscall_arg_t arg3, __syscall_arg_t arg4,
+		   __syscall_arg_t arg5)
+{
+  unsigned long int resultvar;
+  asm volatile (SYSCALL_LOAD_ARGS_5
+		"movl %1, %%eax\n\t"
+		SYSCALL_INSNS
+		SYSCALL_RESTORE_ARGS_5
+		: "=a" (resultvar)
+		: "a" (name) SYSCALL_CONST
+		  SYSCALL_ASMFMT_5 (arg1, arg2, arg3, arg4, arg5)
+		: "memory", "cc");
+  return resultvar;
+}
+
+static inline long int
+__internal_syscall6 (long int name, __syscall_arg_t arg1, __syscall_arg_t arg2,
+		   __syscall_arg_t arg3, __syscall_arg_t arg4,
+		   __syscall_arg_t arg5, __syscall_arg_t arg6)
+{
+  unsigned long int resultvar;
+# ifdef OPTIMIZE_FOR_GCC_5
+  register unsigned long int a6 asm ("ebp") = arg6;
+  asm volatile (SYSCALL_INSNS
+		: "=a" (resultvar)
+		: "a" (name) SYSCALL_CONST, "b" (arg1), "c" (arg2),
+		  "d" (arg3), "S" (arg4), "D" (arg5), "r" (a6)
+		: "memory", "cc");
+# else
+  /* Six-argument syscalls use an out-of-line helper, because an inline
+     asm using all registers apart from %esp cannot work reliably and
+     the assembler does not support describing an asm that saves and
+     restores %ebp itself as a separate stack frame.  This structure
+     stores the arguments not passed in registers; %edi is passed with a
+     pointer to this structure.  */
+  __syscall_arg_t _xv[] = { arg1, arg5, arg6 };
+  asm volatile ("movl %1, %%eax\n\t"
+		"call __libc_do_syscall"
+		: "=a" (resultvar)
+		: "a" (name), "c" (arg2), "d" (arg3), "S" (arg4), "D" (&_xv)
+		: "memory", "cc");
+# endif /* OPTIMIZE_FOR_GCC_5  */
+  return resultvar;
+}
 
 #define LOADARGS_0
 #ifdef __PIC__

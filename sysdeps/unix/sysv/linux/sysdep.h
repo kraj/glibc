@@ -60,9 +60,14 @@
   })
 
 #ifndef __ASSEMBLER__
+static inline _Bool __syscall_err (unsigned long int val)
+{
+  return val > -4096UL;
+}
+
 static inline long __syscall_ret (unsigned long int val)
 {
-  if (__glibc_unlikely (val > -4096UL))
+  if (__glibc_unlikely (__syscall_err (val)))
     {
        __set_errno (-val);
        return -1;

@@ -40,11 +40,10 @@ __fxstatat (int vers, int fd, const char *file, struct stat *st, int flag)
   int result;
   struct stat64 st64;
 
-  result = INTERNAL_SYSCALL_CALL (fstatat64, fd, file, &st64, flag);
-  if (__glibc_unlikely (INTERNAL_SYSCALL_ERROR_P (result)))
-    return INLINE_SYSCALL_ERROR_RETURN_VALUE (INTERNAL_SYSCALL_ERRNO (result));
-  else
+  result = internal_syscall (__NR_fstatat64, fd, file, &st64, flag);
+  if (__glibc_likely (result == 0))
     return __xstat32_conv (vers, &st64, st);
+  return __syscall_ret (result);
 }
 libc_hidden_def (__fxstatat)
 #if XSTAT_IS_XSTAT64

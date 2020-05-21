@@ -24,7 +24,7 @@ static inline int __attribute__ ((always_inline))
 get_cet_status (void)
 {
   unsigned long long cet_status[3];
-  if (__internal_syscall (__NR_arch_prctl, ARCH_CET_STATUS, cet_status) == 0)
+  if (internal_syscall (__NR_arch_prctl, ARCH_CET_STATUS, cet_status) == 0)
     return cet_status[0];
   return 0;
 }
