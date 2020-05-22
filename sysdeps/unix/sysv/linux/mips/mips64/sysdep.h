@@ -18,6 +18,20 @@
 #ifndef _LINUX_MIPS_SYSDEP_H
 #define _LINUX_MIPS_SYSDEP_H 1
 
+#include <sgidefs.h>  /* For _ABIXX.  */
+
+#ifndef __ASSEMBLER__
+# if _MIPS_SIM == _ABIN32
+/* Convert X to a long long, without losing any bits if it is one
+   already or warning if it is a 32-bit pointer.  */
+#  define ARGIFY(X) ((long long int) (__typeof__ ((X) - (X))) (X))
+typedef long long int __syscall_arg_t;
+# else
+#  define ARGIFY(X) ((long int) (X))
+typedef long int __syscall_arg_t;
+# endif
+#endif
+
 /* There is some commonality.  */
 #include <sysdeps/unix/sysv/linux/mips/sysdep.h>
 #include <sysdeps/unix/sysv/linux/sysdep.h>
@@ -38,16 +52,6 @@
 # define SYSCALL_ERROR_LABEL 99b
 
 #else   /* ! __ASSEMBLER__ */
-
-#if _MIPS_SIM == _ABIN32
-/* Convert X to a long long, without losing any bits if it is one
-   already or warning if it is a 32-bit pointer.  */
-# define ARGIFY(X) ((long long int) (__typeof__ ((X) - (X))) (X))
-typedef long long int __syscall_arg_t;
-#else
-# define ARGIFY(X) ((long int) (X))
-typedef long int __syscall_arg_t;
-#endif
 
 /* Note that the original Linux syscall restart convention required the
    instruction immediately preceding SYSCALL to initialize $v0 with the
@@ -292,6 +296,145 @@ typedef long int __syscall_arg_t;
 # define __SYSCALL_CLOBBERS "$1", "$3", "$10", "$11", "$12", "$13", \
 	 "$14", "$15", "$24", "$25", "hi", "lo", "memory"
 #endif
+
+static inline long int
+__internal_syscall0 (long int name)
+{
+  register __syscall_arg_t s0 asm ("$16") = name;
+  register __syscall_arg_t v0 asm ("$2");
+  register __syscall_arg_t a3 asm ("$7");
+  asm volatile (".set\tnoreorder\n\t"
+		MOVE32 "\t%0, %2\n\t"
+		"syscall\n\t"
+		".set reorder"
+		: "=r" (v0), "=r" (a3)
+		: "r" (s0)
+		: __SYSCALL_CLOBBERS);
+  return a3 != 0 ? -v0 : v0;
+}
+
+static inline long int
+__internal_syscall1 (long int name, __syscall_arg_t arg1)
+{
+  register __syscall_arg_t s0 asm ("$16") = name;
+  register __syscall_arg_t v0 asm ("$2");
+  register __syscall_arg_t a0 asm ("$4") = arg1;
+  register __syscall_arg_t a3 asm ("$7");
+  asm volatile (".set\tnoreorder\n\t"
+		MOVE32 "\t%0, %2\n\t"
+		"syscall\n\t"
+		".set reorder"
+		: "=r" (v0), "=r" (a3)
+		: "r" (s0), "r" (a0)
+		: __SYSCALL_CLOBBERS);
+  return a3 != 0 ? -v0 : v0;
+}
+
+static inline long int
+__internal_syscall2 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2)
+{
+  register __syscall_arg_t s0 asm ("$16") = name;
+  register __syscall_arg_t v0 asm ("$2");
+  register __syscall_arg_t a0 asm ("$4") = arg1;
+  register __syscall_arg_t a1 asm ("$5") = arg2;
+  register __syscall_arg_t a3 asm ("$7");
+  asm volatile (".set\tnoreorder\n\t"
+		MOVE32 "\t%0, %2\n\t"
+		"syscall\n\t"
+		".set reorder"
+		: "=r" (v0), "=r" (a3)
+		: "r" (s0), "r" (a0), "r" (a1)
+		: __SYSCALL_CLOBBERS);
+  return a3 != 0 ? -v0 : v0;
+}
+
+static inline long int
+__internal_syscall3 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3)
+{
+  register __syscall_arg_t s0 asm ("$16") = name;
+  register __syscall_arg_t v0 asm ("$2");
+  register __syscall_arg_t a0 asm ("$4") = arg1;
+  register __syscall_arg_t a1 asm ("$5") = arg2;
+  register __syscall_arg_t a2 asm ("$6") = arg3;
+  register __syscall_arg_t a3 asm ("$7");
+  asm volatile (".set\tnoreorder\n\t"
+		MOVE32 "\t%0, %2\n\t"
+		"syscall\n\t"
+		".set reorder"
+		: "=r" (v0), "=r" (a3)
+		: "r" (s0), "r" (a0), "r" (a1), "r" (a2)
+		: __SYSCALL_CLOBBERS);
+  return a3 != 0 ? -v0 : v0;
+}
+
+static inline long int
+__internal_syscall4 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4)
+{
+  register __syscall_arg_t s0 asm ("$16") = name;
+  register __syscall_arg_t v0 asm ("$2");
+  register __syscall_arg_t a0 asm ("$4") = arg1;
+  register __syscall_arg_t a1 asm ("$5") = arg2;
+  register __syscall_arg_t a2 asm ("$6") = arg3;
+  register __syscall_arg_t a3 asm ("$7") = arg4;
+  asm volatile (".set\tnoreorder\n\t"
+		MOVE32 "\t%0, %2\n\t"
+		"syscall\n\t"
+		".set reorder"
+		: "=r" (v0), "=r" (a3)
+		: "r" (s0), "r" (a0), "r" (a1), "r" (a2)
+		: __SYSCALL_CLOBBERS);
+  return a3 != 0 ? -v0 : v0;
+}
+
+static inline long int
+__internal_syscall5 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4, __syscall_arg_t arg5)
+{
+  register __syscall_arg_t s0 asm ("$16") = name;
+  register __syscall_arg_t v0 asm ("$2");
+  register __syscall_arg_t a0 asm ("$4") = arg1;
+  register __syscall_arg_t a1 asm ("$5") = arg2;
+  register __syscall_arg_t a2 asm ("$6") = arg3;
+  register __syscall_arg_t a3 asm ("$7") = arg4;
+  register __syscall_arg_t a4 asm ("$8") = arg5;
+  asm volatile (".set\tnoreorder\n\t"
+		MOVE32 "\t%0, %2\n\t"
+		"syscall\n\t"
+		".set reorder"
+		: "=r" (v0), "=r" (a3)
+		: "r" (s0), "r" (a0), "r" (a1), "r" (a2), "r" (a4)
+		: __SYSCALL_CLOBBERS);
+  return a3 != 0 ? -v0 : v0;
+}
+
+static inline long int
+__internal_syscall6 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4, __syscall_arg_t arg5,
+		     __syscall_arg_t arg6)
+{
+  register __syscall_arg_t s0 asm ("$16") = name;
+  register __syscall_arg_t v0 asm ("$2");
+  register __syscall_arg_t a0 asm ("$4") = arg1;
+  register __syscall_arg_t a1 asm ("$5") = arg2;
+  register __syscall_arg_t a2 asm ("$6") = arg3;
+  register __syscall_arg_t a3 asm ("$7") = arg4;
+  register __syscall_arg_t a4 asm ("$8") = arg5;
+  register __syscall_arg_t a5 asm ("$9") = arg6;
+  asm volatile (".set\tnoreorder\n\t"
+		MOVE32 "\t%0, %2\n\t"
+		"syscall\n\t"
+		".set reorder"
+		: "=r" (v0), "=r" (a3)
+		: "r" (s0), "r" (a0), "r" (a1), "r" (a2), "r" (a4), "r" (a5)
+		: __SYSCALL_CLOBBERS);
+  return a3 != 0 ? -v0 : v0;
+}
 
 #endif /* __ASSEMBLER__ */
 

@@ -34,7 +34,7 @@ __xstat64 (int vers, const char *name, struct stat64 *buf)
   int result;
   struct kernel_stat kbuf;
 
-  result = INLINE_SYSCALL (stat, 2, name, &kbuf);
+  result = inline_syscall (__NR_stat, name, &kbuf);
   if (result == 0)
     result = __xstat64_conv (vers, &kbuf, buf);
 

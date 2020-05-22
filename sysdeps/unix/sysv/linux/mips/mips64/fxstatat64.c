@@ -42,12 +42,12 @@ __fxstatat64 (int vers, int fd, const char *file, struct stat64 *st, int flag)
   int result;
   struct kernel_stat kst;
 
-  result = INTERNAL_SYSCALL_CALL (newfstatat, fd, file, &kst, flag);
-  if (!__glibc_likely (INTERNAL_SYSCALL_ERROR_P (result)))
+  result = internal_syscall (__NR_newfstatat, fd, file, &kst, flag);
+  if (__glibc_likely (result == 0))
     return __xstat64_conv (vers, &kst, st);
   else
     {
-      __set_errno (INTERNAL_SYSCALL_ERRNO (result));
+      __set_errno (-result);
       return -1;
     }
 }

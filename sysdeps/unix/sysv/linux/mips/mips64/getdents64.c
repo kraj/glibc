@@ -37,7 +37,7 @@ __getdents64 (int fd, void *buf, size_t nbytes)
   static int getdents64_supported = true;
   if (atomic_load_relaxed (&getdents64_supported))
     {
-      ssize_t ret = INLINE_SYSCALL_CALL (getdents64, fd, buf, nbytes);
+      ssize_t ret = inline_syscall (__NR_getdents64, fd, buf, nbytes);
       if (ret >= 0 || errno != ENOSYS)
 	return ret;
 
@@ -81,7 +81,7 @@ __getdents64 (int fd, void *buf, size_t nbytes)
   size_t nb = 0;
   off64_t last_offset = -1;
 
-  ssize_t r = INLINE_SYSCALL_CALL (getdents, fd, kbuf, kbuf_size);
+  ssize_t r = inline_syscall (__NR_getdents, fd, kbuf, kbuf_size);
   if (r <= 0)
     return r;
 
