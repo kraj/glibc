@@ -19,33 +19,31 @@
 #ifndef MIPS16_SYSCALL_H
 #define MIPS16_SYSCALL_H 1
 
-long long int __nomips16 __mips16_syscall0 (long int number);
+long int __nomips16 __mips16_syscall0 (long int number);
 #define __mips16_syscall0(dummy, number)				\
 	__mips16_syscall0 ((long int) (number))
 
-long long int __nomips16 __mips16_syscall1 (long int a0,
-					    long int number);
+long int __nomips16 __mips16_syscall1 (long int a0, long int number);
 #define __mips16_syscall1(a0, number)					\
 	__mips16_syscall1 ((long int) (a0),				\
 			   (long int) (number))
 
-long long int __nomips16 __mips16_syscall2 (long int a0, long int a1,
-					    long int number);
+long int __nomips16 __mips16_syscall2 (long int a0, long int a1,
+				       long int number);
 #define __mips16_syscall2(a0, a1, number)				\
 	__mips16_syscall2 ((long int) (a0), (long int) (a1),		\
 			   (long int) (number))
 
-long long int __nomips16 __mips16_syscall3 (long int a0, long int a1,
-					    long int a2,
-					    long int number);
+long int __nomips16 __mips16_syscall3 (long int a0, long int a1, long int a2,
+				       long int number);
 #define __mips16_syscall3(a0, a1, a2, number)				\
 	__mips16_syscall3 ((long int) (a0), (long int) (a1),		\
 			   (long int) (a2),				\
 			   (long int) (number))
 
-long long int __nomips16 __mips16_syscall4 (long int a0, long int a1,
-					    long int a2, long int a3,
-					    long int number);
+long int __nomips16 __mips16_syscall4 (long int a0, long int a1,
+				       long int a2, long int a3,
+				       long int number);
 #define __mips16_syscall4(a0, a1, a2, a3, number)			\
 	__mips16_syscall4 ((long int) (a0), (long int) (a1),		\
 			   (long int) (a2), (long int) (a3),		\

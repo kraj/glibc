@@ -18,12 +18,10 @@
 
 #include <sysdep.h>
 
-#undef __mips16_syscall0
-
-long long int __nomips16
+long long int
 __mips16_syscall0 (long int number)
 {
   union __mips_syscall_return ret;
-  ret.reg.v0 = INTERNAL_SYSCALL_MIPS16 (number, ret.reg.v1, 0);
+  ret.reg.v0 = internal_syscall (number);
   return ret.val;
 }
