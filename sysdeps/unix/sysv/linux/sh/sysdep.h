@@ -316,6 +316,130 @@
 									      \
     (int) resultvar; })
 
+static inline long int
+__internal_syscall0 (long int name)
+{
+  unsigned long int resultvar;
+  register long int r3 asm ("%r3") = name;
+  asm volatile ("trapa #0x10\n\t" SYSCALL_INST_PAD
+		: "=z" (resultvar)
+		: "r" (r3)
+		: "memory", "t");
+  return resultvar;
+}
+
+static inline long int
+__internal_syscall1 (long int name, __syscall_arg_t arg1)
+{
+  unsigned long int resultvar;
+  register long int r3 asm ("%r3") = name;
+  register long int r4 asm ("%r4") = arg1;
+  asm volatile ("trapa #0x11\n\t"
+		SYSCALL_INST_PAD
+		: "=z" (resultvar)
+		: "r" (r3), "r" (r4)
+		: "memory", "t");
+  return resultvar;
+}
+
+static inline long int
+__internal_syscall2 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2)
+{
+  unsigned long int resultvar;
+  register long int r3 asm ("%r3") = name;
+  register long int r4 asm ("%r4") = arg1;
+  register long int r5 asm ("%r5") = arg2;
+  asm volatile ("trapa #0x12\n\t"
+		SYSCALL_INST_PAD
+		: "=z" (resultvar)
+		: "r" (r3), "r" (r4), "r" (r5)
+		: "memory", "t");
+  return resultvar;
+}
+
+static inline long int
+__internal_syscall3 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3)
+{
+  unsigned long int resultvar;
+  register long int r3 asm ("%r3") = name;
+  register long int r4 asm ("%r4") = arg1;
+  register long int r5 asm ("%r5") = arg2;
+  register long int r6 asm ("%r6") = arg3;
+  asm volatile ("trapa #0x13\n\t"
+		SYSCALL_INST_PAD
+		: "=z" (resultvar)
+		: "r" (r3), "r" (r4), "r" (r5), "r" (r6)
+		: "memory", "t");
+  return resultvar;
+}
+
+static inline long int
+__internal_syscall4 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4)
+{
+  unsigned long int resultvar;
+  register long int r3 asm ("%r3") = name;
+  register long int r4 asm ("%r4") = arg1;
+  register long int r5 asm ("%r5") = arg2;
+  register long int r6 asm ("%r6") = arg3;
+  register long int r7 asm ("%r7") = arg4;
+  asm volatile ("trapa #0x14\n\t"
+		 SYSCALL_INST_PAD
+		: "=z" (resultvar)
+		: "r" (r3), "r" (r4), "r" (r5), "r" (r6), "r" (r7)
+		: "memory", "t");
+  return resultvar;
+}
+
+static inline long int
+__internal_syscall5 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4, __syscall_arg_t arg5)
+{
+  unsigned long int resultvar;
+  register long int r3 asm ("%r3") = name;
+  register long int r4 asm ("%r4") = arg1;
+  register long int r5 asm ("%r5") = arg2;
+  register long int r6 asm ("%r6") = arg3;
+  register long int r7 asm ("%r7") = arg4;
+  register long int r0 asm ("%r0") = arg5;
+  asm volatile ("mov.l @(0,r15),r0\n\t"
+		"trapa #0x15\n\t"
+		SYSCALL_INST_PAD
+		: "=z" (resultvar)
+		: "r" (r3), "r" (r4), "r" (r5), "r" (r6), "r" (r7), "0" (r0)
+		: "memory", "t");
+  return resultvar;
+}
+
+static inline long int
+__internal_syscall6 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4, __syscall_arg_t arg5,
+		     __syscall_arg_t arg6)
+{
+  unsigned long int resultvar;
+  register long int r3 asm ("%r3") = name;
+  register long int r4 asm ("%r4") = arg1;
+  register long int r5 asm ("%r5") = arg2;
+  register long int r6 asm ("%r6") = arg3;
+  register long int r7 asm ("%r7") = arg4;
+  register long int r0 asm ("%r0") = arg5;
+  register long int r1 asm ("%r1") = arg6;
+  asm volatile ("mov.l @(0,r15),r0\n\t"
+		"mov.l @(4,r15),r1\n\t"
+		"trapa #0x16\n\t"
+		SYSCALL_INST_PAD
+		: "=z" (resultvar)
+		: "r" (r3), "r" (r4), "r" (r5), "r" (r6), "r" (r7), "0" (r0),
+		  "r" (r1)
+		: "memory", "t");
+  return resultvar;
+}
+
 #endif	/* __ASSEMBLER__ */
 
 /* Pointer mangling support.  */
