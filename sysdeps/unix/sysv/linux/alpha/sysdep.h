@@ -312,6 +312,129 @@ __LABEL(name)						\
 	   : : internal_syscall_clobbers);			\
 	_sc_19 != 0 ? -_sc_0 : _sc_0;				\
 })
+
+
+static inline long int
+__internal_syscall0 (long int name)
+{
+  register long int sc_19 asm ("$19");
+  register long int sc_0 = name;
+  asm volatile ("callsys # %0 %1 <= %2"
+		: "+v" (sc_0), "=r" (sc_19)
+		:
+		: internal_syscall_clobbers,
+		"$16", "$17", "$18", "$20", "$21");
+  return sc_19 != 0 ? -sc_0 : sc_0;
+}
+
+static inline long int
+__internal_syscall1 (long int name, __syscall_arg_t arg1)
+{
+  register long int sc_16 asm ("$16") = arg1;
+  register long int sc_19 asm ("$19");
+  register long int sc_0 = name;
+  asm volatile ("callsys # %0 %1 <= %2 %3"
+		: "+v" (sc_0), "=r" (sc_19), "+r" (sc_16)
+		:
+		: internal_syscall_clobbers,
+		  "$17", "$18", "$20", "$21");
+  return sc_19 != 0 ? -sc_0 : sc_0;
+}
+
+static inline long int
+__internal_syscall2 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2)
+{
+  register long int sc_16 asm ("$16") = arg1;
+  register long int sc_17 asm ("$17") = arg2;
+  register long int sc_19 asm ("$19");
+  register long int sc_0 = name;
+  asm volatile ("callsys # %0 %1 <= %2 %3 %4"
+		: "+v" (sc_0), "=r" (sc_19), "+r" (sc_16), "+r" (sc_17)
+		:
+		: internal_syscall_clobbers,
+		  "$18", "$20", "$21");
+  return sc_19 != 0 ? -sc_0 : sc_0;
+}
+
+static inline long int
+__internal_syscall3 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3)
+{
+  register long int sc_16 asm ("$16") = arg1;
+  register long int sc_17 asm ("$17") = arg2;
+  register long int sc_18 asm ("$18") = arg3;
+  register long int sc_19 asm ("$19");
+  register long int sc_0 = name;
+  asm volatile ("callsys # %0 %1 <= %2 %3 %4 %5"
+		: "+v" (sc_0), "=r" (sc_19), "+r" (sc_16), "+r" (sc_17),
+		  "+r" (sc_18)
+		:
+		: internal_syscall_clobbers,
+		  "$20", "$21");
+  return sc_19 != 0 ? -sc_0 : sc_0;
+}
+
+static inline long int
+__internal_syscall4 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4)
+{
+  register long int sc_16 asm ("$16") = arg1;
+  register long int sc_17 asm ("$17") = arg2;
+  register long int sc_18 asm ("$18") = arg3;
+  register long int sc_19 asm ("$19") = arg4;
+  register long int sc_0 = name;
+  asm volatile ("callsys # %0 %1 <= %2 %3 %4 %5 %6"
+		: "+v" (sc_0), "+r" (sc_19), "+r" (sc_16), "+r" (sc_17),
+		  "+r" (sc_18)
+		:
+		: internal_syscall_clobbers,
+		  "$20", "$21");
+  return sc_19 != 0 ? -sc_0 : sc_0;
+}
+
+static inline long int
+__internal_syscall5 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4, __syscall_arg_t arg5)
+{
+  register long int sc_16 asm ("$16") = arg1;
+  register long int sc_17 asm ("$17") = arg2;
+  register long int sc_18 asm ("$18") = arg3;
+  register long int sc_19 asm ("$19") = arg4;
+  register long int sc_20 asm ("$20") = arg5;
+  register long int sc_0 = name;
+  asm volatile ("callsys # %0 %1 <= %2 %3 %4 %5 %6 %7"
+		: "+v" (sc_0), "+r" (sc_19), "+r" (sc_16), "+r" (sc_17),
+		  "+r" (sc_18), "+r" (sc_20)
+		:
+		: internal_syscall_clobbers,
+		  "$21");
+  return sc_19 != 0 ? -sc_0 : sc_0;
+}
+
+static inline long int
+__internal_syscall6 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4, __syscall_arg_t arg5,
+		     __syscall_arg_t arg6)
+{
+  register long int sc_16 asm ("$16") = arg1;
+  register long int sc_17 asm ("$17") = arg2;
+  register long int sc_18 asm ("$18") = arg3;
+  register long int sc_19 asm ("$19") = arg4;
+  register long int sc_20 asm ("$20") = arg5;
+  register long int sc_21 asm ("$21") = arg6;
+  register long int sc_0 = name;
+  asm volatile ("callsys # %0 %1 <= %2 %3 %4 %5 %6 %7 %8"
+		: "+v" (sc_0), "+r" (sc_19), "+r" (sc_16), "+r" (sc_17),
+		  "+r" (sc_18), "+r" (sc_20), "+r" (sc_21)
+		:
+		: internal_syscall_clobbers);
+  return sc_19 != 0 ? -sc_0 : sc_0;
+}
+
 #endif /* ASSEMBLER */
 
 /* Pointer mangling support.  Note that tls access is slow enough that

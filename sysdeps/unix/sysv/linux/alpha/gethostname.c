@@ -21,14 +21,13 @@
 #include <unistd.h>
 
 #include <sysdep.h>
-#include <sys/syscall.h>
 
 int
 __gethostname (char *name, size_t len)
 {
   int result;
 
-  result = INLINE_SYSCALL (gethostname, 2, name, len);
+  result = inline_syscall (__NR_gethostname, name, len);
 
   if (result == 0
       /* See whether the string is terminated.  If not we will return

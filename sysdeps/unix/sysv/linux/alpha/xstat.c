@@ -37,19 +37,12 @@ __xstat (int vers, const char *name, struct stat *buf)
   struct kernel_stat kbuf;
 
   if (vers == _STAT_VER_KERNEL64)
-    {
-      result = INTERNAL_SYSCALL_CALL (stat64, name, buf);
-      if (__glibc_likely (!INTERNAL_SYSCALL_ERROR_P (result)))
-	return result;
-      __set_errno (INTERNAL_SYSCALL_ERRNO (result));
-      return -1;
-    }
+    return inline_syscall (__NR_stat64, name, buf);
 
-  result = INTERNAL_SYSCALL_CALL (stat, name, &kbuf);
-  if (__glibc_likely (!INTERNAL_SYSCALL_ERROR_P (result)))
+  result = internal_syscall (__NR_stat, name, &kbuf);
+  if (result == 0)
     return __xstat_conv (vers, &kbuf, buf);
-  __set_errno (INTERNAL_SYSCALL_ERRNO (result));
-  return -1;
+  return __syscall_ret (result);
 }
 hidden_def (__xstat)
 weak_alias (__xstat, _xstat);

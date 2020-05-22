@@ -33,19 +33,12 @@
 int
 __fxstatat (int vers, int fd, const char *file, struct stat *st, int flag)
 {
-  int result, errno_out;
-
   /* ??? The __fxstatat entry point is new enough that it must be using
      vers == _STAT_VER_KERNEL64.  For the benefit of dl-fxstatat64.c, we
      cannot actually check this, lest the compiler not optimize the rest
      of the function away.  */
 
-  result = INTERNAL_SYSCALL_CALL (fstatat64, fd, file, st, flag);
-  if (__glibc_likely (!INTERNAL_SYSCALL_ERROR_P (result)))
-    return result;
-  errno_out = INTERNAL_SYSCALL_ERRNO (result);
-  __set_errno (errno_out);
-  return -1;
+  return inline_syscall (__NR_fstatat64, fd, file, st, flag);
 }
 libc_hidden_def (__fxstatat)
 strong_alias (__fxstatat, __fxstatat64);
