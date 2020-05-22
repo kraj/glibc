@@ -29,6 +29,7 @@
 
 /* In order to get __set_errno() definition in INLINE_SYSCALL.  */
 #ifndef __ASSEMBLER__
+#include <stdint.h>
 #include <tcbhead.h>
 #include <errno.h>
 #endif
@@ -318,6 +319,222 @@
 #else
 # define ASM_CLOBBERS_6	ASM_CLOBBERS_6_COMMON , "b7"
 #endif
+
+#if IS_IN(rtld)
+# define DL_SYSINFO (void *) _dl_sysinfo_break
+#else
+#endif
+
+#ifdef IA64_USE_NEW_STUB
+static inline void *
+__syscall_func (void)
+{
+# ifdef SHARED
+  return ((tcbhead_t *)__thread_self)->__private;
+# else
+  extern uintptr_t _dl_sysinfo attribute_hidden;
+  return (void *) _dl_sysinfo;
+# endif
+}
+#endif
+
+static inline long int
+__internal_syscall0 (long int name)
+{
+  register long int r8 asm ("r8");
+  register long int r10 asm ("r10");
+  register long int r15 asm ("r15") = name;
+#ifdef IA64_USE_NEW_STUB
+  register void *b7 asm ("b7") = __syscall_func ();
+  asm volatile ("br.call.sptk.many b6=%0;;\n"
+		: "=b" (b7), "=r" (r8), "=r" (r10), "=r" (r15)
+		: "0" (b7), "3" (r15)
+		: "memory", "ar.pfs" ASM_CLOBBERS_0);
+#else
+  asm volatile (BREAK_INSN (__IA64_BREAK_SYSCALL)
+		: "=r" (r8), "=r" (r10), "=r" (r15)
+		: "2" (r15)
+		: "memory" ASM_CLOBBERS_0);
+#endif
+  return r10 == -1 ? -r8 : r8;
+}
+
+static inline long int
+__internal_syscall1 (long int name, __syscall_arg_t arg1)
+{
+  register long int out0 asm ("out0") = arg1;
+  register long int r8 asm ("r8");
+  register long int r10 asm ("r10");
+  register long int r15 asm ("r15") = name;
+#ifdef IA64_USE_NEW_STUB
+  register void *b7 asm ("b7") = __syscall_func ();
+  asm volatile ("br.call.sptk.many b6=%0;;\n"
+		: "=b" (b7), "=r" (r8), "=r" (r10), "=r" (r15),
+		  "=r" (out0)
+		: "0" (b7), "3" (r15), "4" (out0)
+		: "memory", "ar.pfs" ASM_CLOBBERS_1);
+#else
+  asm volatile (BREAK_INSN (__IA64_BREAK_SYSCALL)
+		: "=r" (r8), "=r" (r10), "=r" (r15),
+		  "=r" (out0)
+		: "2" (r15), "3" (out0)
+		: "memory" ASM_CLOBBERS_1);
+#endif
+  return r10 == -1 ? -r8 : r8;
+}
+
+static inline long int
+__internal_syscall2 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2)
+{
+  register long int out0 asm ("out0") = arg1;
+  register long int out1 asm ("out1") = arg2;
+  register long int r8 asm ("r8");
+  register long int r10 asm ("r10");
+  register long int r15 asm ("r15") = name;
+#ifdef IA64_USE_NEW_STUB
+  register void *b7 asm ("b7") = __syscall_func ();
+  asm volatile ("br.call.sptk.many b6=%0;;\n"
+		: "=b" (b7), "=r" (r8), "=r" (r10), "=r" (r15),
+		  "=r" (out0), "=r" (out1)
+		: "0" (b7), "3" (r15), "4" (out0), "5" (out1)
+		: "memory", "ar.pfs" ASM_CLOBBERS_2);
+#else
+  asm volatile (BREAK_INSN (__IA64_BREAK_SYSCALL)
+		: "=r" (r8), "=r" (r10), "=r" (r15),
+		  "=r" (out0), "=r" (out1)
+		: "2" (r15), "3" (out0), "4" (out1)
+		: "memory" ASM_CLOBBERS_2);
+#endif
+  return r10 == -1 ? -r8 : r8;
+}
+
+static inline long int
+__internal_syscall3 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3)
+{
+  register long int out0 asm ("out0") = arg1;
+  register long int out1 asm ("out1") = arg2;
+  register long int out2 asm ("out2") = arg3;
+  register long int r8 asm ("r8");
+  register long int r10 asm ("r10");
+  register long int r15 asm ("r15") = name;
+#ifdef IA64_USE_NEW_STUB
+  register void *b7 asm ("b7") = __syscall_func ();
+  asm volatile ("br.call.sptk.many b6=%0;;\n"
+		: "=b" (b7), "=r" (r8), "=r" (r10), "=r" (r15),
+		  "=r" (out0), "=r" (out1), "=r" (out2)
+		: "0" (b7), "3" (r15), "4" (out0), "5" (out1), "6" (out2)
+		: "memory", "ar.pfs" ASM_CLOBBERS_3);
+#else
+  asm volatile (BREAK_INSN (__IA64_BREAK_SYSCALL)
+		: "=r" (r8), "=r" (r10), "=r" (r15),
+		  "=r" (out0), "=r" (out1), "=r" (out2)
+		: "2" (r15), "3" (out0), "4" (out1), "5" (out2)
+		: "memory" ASM_CLOBBERS_3);
+#endif
+  return r10 == -1 ? -r8 : r8;
+}
+
+static inline long int
+__internal_syscall4 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4)
+{
+  register long int out0 asm ("out0") = arg1;
+  register long int out1 asm ("out1") = arg2;
+  register long int out2 asm ("out2") = arg3;
+  register long int out3 asm ("out3") = arg4;
+  register long int r8 asm ("r8");
+  register long int r10 asm ("r10");
+  register long int r15 asm ("r15") = name;
+#ifdef IA64_USE_NEW_STUB
+  register void *b7 asm ("b7") = __syscall_func ();
+  asm volatile ("br.call.sptk.many b6=%0;;\n"
+		: "=b" (b7), "=r" (r8), "=r" (r10), "=r" (r15),
+		  "=r" (out0), "=r" (out1), "=r" (out2), "=r" (out3)
+		: "0" (b7), "3" (r15), "4" (out0), "5" (out1), "6" (out2),
+		  "7" (out3)
+		: "memory", "ar.pfs" ASM_CLOBBERS_4);
+#else
+  asm volatile (BREAK_INSN (__IA64_BREAK_SYSCALL)
+		: "=r" (r8), "=r" (r10), "=r" (r15),
+		  "=r" (out0), "=r" (out1), "=r" (out2), "=r" (out3)
+		: "2" (r15), "3" (out0), "4" (out1), "5" (out2), "6" (out3)
+		: "memory" ASM_CLOBBERS_4);
+#endif
+  return r10 == -1 ? -r8 : r8;
+}
+
+static inline long int
+__internal_syscall5 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4, __syscall_arg_t arg5)
+{
+  register long int out0 asm ("out0") = arg1;
+  register long int out1 asm ("out1") = arg2;
+  register long int out2 asm ("out2") = arg3;
+  register long int out3 asm ("out3") = arg4;
+  register long int out4 asm ("out4") = arg5;
+  register long int r8 asm ("r8");
+  register long int r10 asm ("r10");
+  register long int r15 asm ("r15") = name;
+#ifdef IA64_USE_NEW_STUB
+  register void *b7 asm ("b7") = __syscall_func ();
+  asm volatile ("br.call.sptk.many b6=%0;;\n"
+		: "=b" (b7), "=r" (r8), "=r" (r10), "=r" (r15),
+		  "=r" (out0), "=r" (out1), "=r" (out2), "=r" (out3),
+		  "=r" (out4)
+		: "0" (b7), "3" (r15), "4" (out0), "5" (out1), "6" (out2),
+		  "7" (out3), "8" (out4)
+		: "memory", "ar.pfs" ASM_CLOBBERS_5);
+#else
+  asm volatile (BREAK_INSN (__IA64_BREAK_SYSCALL)
+		: "=r" (r8), "=r" (r10), "=r" (r15),
+		  "=r" (out0), "=r" (out1), "=r" (out2), "=r" (out3),
+		  "=r" (out4)
+		: "2" (r15), "3" (out0), "4" (out1), "5" (out2), "6" (out3),
+		  "7" (out4)
+		: "memory" ASM_CLOBBERS_5);
+#endif
+  return r10 == -1 ? -r8 : r8;
+}
+
+static inline long int
+__internal_syscall6 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4, __syscall_arg_t arg5,
+		     __syscall_arg_t arg6)
+{
+  register long int out0 asm ("out0") = arg1;
+  register long int out1 asm ("out1") = arg2;
+  register long int out2 asm ("out2") = arg3;
+  register long int out3 asm ("out3") = arg4;
+  register long int out4 asm ("out4") = arg5;
+  register long int out5 asm ("out5") = arg6;
+  register long int r8 asm ("r8");
+  register long int r10 asm ("r10");
+  register long int r15 asm ("r15") = name;
+#ifdef IA64_USE_NEW_STUB
+  register void *b7 asm ("b7") = __syscall_func ();
+  asm volatile ("br.call.sptk.many b6=%0;;\n"
+		: "=b" (b7), "=r" (r8), "=r" (r10), "=r" (r15),
+		  "=r" (out0), "=r" (out1), "=r" (out2), "=r" (out3),
+		  "=r" (out4), "=r" (out5)
+		: "0" (b7), "3" (r15), "4" (out0), "5" (out1), "6" (out2),
+		  "7" (out3), "8" (out4), "9" (out5)
+		: "memory", "ar.pfs" ASM_CLOBBERS_6);
+#else
+  asm volatile (BREAK_INSN (__IA64_BREAK_SYSCALL)
+		: "=r" (r8), "=r" (r10), "=r" (r15),
+		  "=r" (out0), "=r" (out1), "=r" (out2), "=r" (out3),
+		  "=r" (out4), "=r" (out5)
+		: "2" (r15), "3" (out0), "4" (out1), "5" (out2), "6" (out3),
+		  "7" (out4), "8" (out5)
+		: "memory" ASM_CLOBBERS_6);
+#endif
+  return r10 == -1 ? -r8 : r8;
+}
 
 #endif /* not __ASSEMBLER__ */
 

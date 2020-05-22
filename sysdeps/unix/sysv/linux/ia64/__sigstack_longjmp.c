@@ -112,7 +112,7 @@ __sigstack_longjmp (__jmp_buf buf, int val)
   jb_sp  = ((unsigned long *)  buf)[JB_SP];
   jb_bsp = ((unsigned long **) buf)[JB_BSP];
 
-  INTERNAL_SYSCALL_CALL (sigaltstack, NULL, &stk);
+  internal_syscall (__NR_sigaltstack, NULL, &stk);
 
   ss_sp = (unsigned long) stk.ss_sp;
   jb_rnat_addr = ia64_rse_rnat_addr (jb_bsp);
