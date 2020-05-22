@@ -220,6 +220,117 @@
 
 #define __SYSCALL_CLOBBERS "memory"
 
+static inline long int
+__internal_syscall0 (long int name)
+{
+  register int r2 asm ("r2") = name;
+  register int err asm ("r7");
+  asm volatile ("trap"
+		: "+r" (r2), "=r" (err)
+                :
+                : __SYSCALL_CLOBBERS);
+  return err != 0 ? -r2 : r2;
+}
+
+static inline long int
+__internal_syscall1 (long int name, __syscall_arg_t arg1)
+{
+  register int r2 asm ("r2") = name;
+  register int r4 asm ("r4") = arg1;
+  register int r7 asm ("r7");
+  asm volatile ("trap"
+		: "+r" (r2), "=r" (r7)
+                : "r" (r4)
+                : __SYSCALL_CLOBBERS);
+  return r7 != 0 ? -r2 : r2;
+}
+
+static inline long int
+__internal_syscall2 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2)
+{
+  register int r2 asm ("r2") = name;
+  register int r4 asm ("r4") = arg1;
+  register int r5 asm ("r5") = arg2;
+  register int r7 asm ("r7");
+  asm volatile ("trap"
+		: "+r" (r2), "=r" (r7)
+                : "r" (r4), "r" (r5)
+                : __SYSCALL_CLOBBERS);
+  return r7 != 0 ? -r2 : r2;
+}
+
+static inline long int
+__internal_syscall3 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3)
+{
+  register int r2 asm ("r2") = name;
+  register int r4 asm ("r4") = arg1;
+  register int r5 asm ("r5") = arg2;
+  register int r6 asm ("r6") = arg3;
+  register int r7 asm ("r7");
+  asm volatile ("trap"
+		: "+r" (r2), "=r" (r7)
+                : "r" (r4), "r" (r5), "r" (r6)
+                : __SYSCALL_CLOBBERS);
+  return r7 != 0 ? -r2 : r2;
+}
+
+static inline long int
+__internal_syscall4 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4)
+{
+  register int r2 asm ("r2") = name;
+  register int r4 asm ("r4") = arg1;
+  register int r5 asm ("r5") = arg2;
+  register int r6 asm ("r6") = arg3;
+  register int r7 asm ("r7") = arg4;
+  asm volatile ("trap"
+		: "+r" (r2), "+r" (r7)
+                : "r" (r4), "r" (r5), "r" (r6)
+                : __SYSCALL_CLOBBERS);
+  return r7 != 0 ? -r2 : r2;
+}
+
+static inline long int
+__internal_syscall5 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4, __syscall_arg_t arg5)
+{
+  register int r2 asm ("r2") = name;
+  register int r4 asm ("r4") = arg1;
+  register int r5 asm ("r5") = arg2;
+  register int r6 asm ("r6") = arg3;
+  register int r7 asm ("r7") = arg4;
+  register int r8 asm ("r8") = arg5;
+  asm volatile ("trap"
+		: "+r" (r2), "+r" (r7)
+                : "r" (r4), "r" (r5), "r" (r6), "r" (r8)
+                : __SYSCALL_CLOBBERS);
+  return r7 != 0 ? -r2 : r2;
+}
+
+static inline long int
+__internal_syscall6 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4, __syscall_arg_t arg5,
+		     __syscall_arg_t arg6)
+{
+  register int r2 asm ("r2") = name;
+  register int r4 asm ("r4") = arg1;
+  register int r5 asm ("r5") = arg2;
+  register int r6 asm ("r6") = arg3;
+  register int r7 asm ("r7") = arg4;
+  register int r8 asm ("r8") = arg5;
+  register int r9 asm ("r9") = arg6;
+  asm volatile ("trap"
+		: "+r" (r2), "+r" (r7)
+                : "r" (r4), "r" (r5), "r" (r6), "r" (r8), "r" (r9)
+                : __SYSCALL_CLOBBERS);
+  return r7 != 0 ? -r2 : r2;
+}
+
 #endif /* __ASSEMBLER__ */
 
 /* Pointer mangling support.  */

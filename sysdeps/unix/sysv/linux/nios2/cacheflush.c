@@ -24,6 +24,6 @@
 int
 _flush_cache (char *addr, const int nbytes, const int op)
 {
-  return INLINE_SYSCALL (cacheflush, 3, addr, nbytes, op);
+  return inline_syscall (__NR_cacheflush, addr, nbytes, op);
 }
 weak_alias (_flush_cache, cacheflush)
