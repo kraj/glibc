@@ -468,6 +468,161 @@ L(pre_end):					ASM_LINE_SEP	\
 #define CLOB_ARGS_1 CLOB_ARGS_2, "%r25"
 #define CLOB_ARGS_0 CLOB_ARGS_1, "%r26"
 
+static inline long int
+__internal_syscall0 (long int name)
+{
+  register unsigned long res asm ("r28");
+  PIC_REG_DEF
+  /* FIXME: HACK save/load r19 around syscall */
+  asm volatile (SAVE_ASM_PIC
+		"ble  0x100(%%sr2, %%r0)\n"
+		"copy %1, %%r20\n"
+		LOAD_ASM_PIC
+		: "=r" (res)
+		: "r" (name) PIC_REG_USE
+		: "memory", CALL_CLOB_REGS,
+		  "%r21", "%r22", "%r22", "%r23", "%r24", "%r25", "%r26");
+  return res;
+}
+
+static inline long int
+__internal_syscall1 (long int name, __syscall_arg_t arg1)
+{
+  register unsigned long res asm ("r28");
+  PIC_REG_DEF
+  register unsigned long r26 asm ("r26") = arg1;
+  /* FIXME: HACK save/load r19 around syscall */
+  asm volatile (SAVE_ASM_PIC
+		"ble  0x100(%%sr2, %%r0)\n"
+		"copy %1, %%r20\n"
+		LOAD_ASM_PIC
+		: "=r" (res)
+		: "r" (name) PIC_REG_USE,
+		  "r" (r26)
+		: "memory", CALL_CLOB_REGS,
+		  "%r21", "%r22", "%r22", "%r23", "%r24", "%r25");
+  return res;
+}
+
+static inline long int
+__internal_syscall2 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2)
+{
+  register unsigned long res asm ("r28");
+  PIC_REG_DEF
+  register unsigned long r26 asm ("r26") = arg1;
+  register unsigned long r25 asm ("r25") = arg2;
+  /* FIXME: HACK save/load r19 around syscall */
+  asm volatile (SAVE_ASM_PIC
+		"ble  0x100(%%sr2, %%r0)\n"
+		"copy %1, %%r20\n"
+		LOAD_ASM_PIC
+		: "=r" (res)
+		: "r" (name) PIC_REG_USE,
+		  "r" (r26), "r" (r25)
+		: "memory", CALL_CLOB_REGS,
+		  "%r21", "%r22", "%r22", "%r23", "%r24");
+  return res;
+}
+
+static inline long int
+__internal_syscall3 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3)
+{
+  register unsigned long res asm ("r28");
+  PIC_REG_DEF
+  register unsigned long r26 asm ("r26") = arg1;
+  register unsigned long r25 asm ("r25") = arg2;
+  register unsigned long r24 asm ("r24") = arg3;
+  /* FIXME: HACK save/load r19 around syscall */
+  asm volatile (SAVE_ASM_PIC
+		"ble  0x100(%%sr2, %%r0)\n"
+		"copy %1, %%r20\n"
+		LOAD_ASM_PIC
+		: "=r" (res)
+		: "r" (name) PIC_REG_USE,
+		  "r" (r26), "r" (r25), "r" (r24)
+		: "memory", CALL_CLOB_REGS,
+		  "%r21", "%r22", "%r22", "%r23");
+  return res;
+}
+
+static inline long int
+__internal_syscall4 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4)
+{
+  register unsigned long res asm ("r28");
+  PIC_REG_DEF
+  register unsigned long r26 asm ("r26") = arg1;
+  register unsigned long r25 asm ("r25") = arg2;
+  register unsigned long r24 asm ("r24") = arg3;
+  register unsigned long r23 asm ("r23") = arg4;
+  /* FIXME: HACK save/load r19 around syscall */
+  asm volatile (SAVE_ASM_PIC
+		"ble  0x100(%%sr2, %%r0)\n"
+		"copy %1, %%r20\n"
+		LOAD_ASM_PIC
+		: "=r" (res)
+		: "r" (name) PIC_REG_USE,
+		  "r" (r26), "r" (r25), "r" (r24), "r" (r23)
+		: "memory", CALL_CLOB_REGS,
+		  "%r21", "%r22");
+  return res;
+}
+
+static inline long int
+__internal_syscall5 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4, __syscall_arg_t arg5)
+{
+  register unsigned long res asm ("r28");
+  PIC_REG_DEF
+  register unsigned long r26 asm ("r26") = arg1;
+  register unsigned long r25 asm ("r25") = arg2;
+  register unsigned long r24 asm ("r24") = arg3;
+  register unsigned long r23 asm ("r23") = arg4;
+  register unsigned long r22 asm ("r22") = arg5;
+  /* FIXME: HACK save/load r19 around syscall */
+  asm volatile (SAVE_ASM_PIC
+		"ble  0x100(%%sr2, %%r0)\n"
+		"copy %1, %%r20\n"
+		LOAD_ASM_PIC
+		: "=r" (res)
+		: "r" (name) PIC_REG_USE,
+		  "r" (r26), "r" (r25), "r" (r24), "r" (r23), "r" (r22)
+		: "memory", CALL_CLOB_REGS,
+		  "%r21");
+  return res;
+}
+
+static inline long int
+__internal_syscall6 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4, __syscall_arg_t arg5,
+		     __syscall_arg_t arg6)
+{
+  register unsigned long res asm ("r28");
+  PIC_REG_DEF
+  register unsigned long r26 asm ("r26") = arg1;
+  register unsigned long r25 asm ("r25") = arg2;
+  register unsigned long r24 asm ("r24") = arg3;
+  register unsigned long r23 asm ("r23") = arg4;
+  register unsigned long r22 asm ("r22") = arg5;
+  register unsigned long r21 asm ("r21") = arg6;
+  /* FIXME: HACK save/load r19 around syscall */
+  asm volatile (SAVE_ASM_PIC
+		"ble  0x100(%%sr2, %%r0)\n"
+		"copy %1, %%r20\n"
+		LOAD_ASM_PIC
+		: "=r" (res)
+		: "r" (name) PIC_REG_USE,
+		  "r" (r26), "r" (r25), "r" (r24), "r" (r23), "r" (r22),
+		  "r" (r21)
+		: "memory", CALL_CLOB_REGS);
+  return res;
+}
+
 #endif	/* __ASSEMBLER__ */
 
 /* Pointer mangling is not yet supported for HPPA.  */
