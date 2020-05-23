@@ -301,6 +301,120 @@ SYSCALL_ERROR_LABEL_DCL:                            \
       : SYSCALL_CLOBBERS_6 ); __ret;                                          \
   })
 
+static inline long int
+__internal_syscall0 (long int name)
+{
+  register long int ret asm ("r3");
+  register long int r12 asm ("r12") = name;
+  asm volatile ("brki r14,8; nop;"
+		: "=r" (ret)
+		: "r" (r12)
+		: "r5", "r6", "r7", "r8", "r9", "r10", "r11", "r4", "memory");
+  return ret;
+}
+
+static inline long int
+__internal_syscall1 (long int name, __syscall_arg_t arg1)
+{
+  register long int ret asm ("r3");
+  register long int r12 asm ("r12") = name;
+  register long int r5 asm ("r5") = arg1;
+  asm volatile ("brki r14,8; nop;"
+		: "=r" (ret)
+		: "r" (r5), "r" (r12)
+		: "r6", "r7", "r8", "r9", "r10", "r11", "r4", "memory");
+  return ret;
+}
+
+static inline long int
+__internal_syscall2 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2)
+{
+  register long int ret asm ("r3");
+  register long int r12 asm ("r12") = name;
+  register long int r5 asm ("r5") = arg1;
+  register long int r6 asm ("r6") = arg2;
+  asm volatile ("brki r14,8; nop;"
+		: "=r" (ret)
+		: "r" (r5), "r" (r6), "r" (r12)
+		: "r7", "r8", "r9", "r10", "r11", "r4", "memory");
+  return ret;
+}
+
+static inline long int
+__internal_syscall3 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3)
+{
+  register long int ret asm ("r3");
+  register long int r12 asm ("r12") = name;
+  register long int r5 asm ("r5") = arg1;
+  register long int r6 asm ("r6") = arg2;
+  register long int r7 asm ("r7") = arg3;
+  asm volatile ("brki r14,8; nop;"
+		: "=r" (ret)
+		: "r" (r5), "r" (r6), "r" (r7), "r" (r12)
+		: "r8", "r9", "r10", "r11", "r4", "memory");
+  return ret;
+}
+
+static inline long int
+__internal_syscall4 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4)
+{
+  register long int ret asm ("r3");
+  register long int r12 asm ("r12") = name;
+  register long int r5 asm ("r5") = arg1;
+  register long int r6 asm ("r6") = arg2;
+  register long int r7 asm ("r7") = arg3;
+  register long int r8 asm ("r8") = arg4;
+  asm volatile ("brki r14,8; nop;"
+		: "=r" (ret)
+		: "r" (r5), "r" (r6), "r" (r7), "r" (r8), "r" (r12)
+		: "r9", "r10", "r11", "r4", "memory");
+  return ret;
+}
+
+static inline long int
+__internal_syscall5 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4, __syscall_arg_t arg5)
+{
+  register long int ret asm ("r3");
+  register long int r12 asm ("r12") = name;
+  register long int r5 asm ("r5") = arg1;
+  register long int r6 asm ("r6") = arg2;
+  register long int r7 asm ("r7") = arg3;
+  register long int r8 asm ("r8") = arg4;
+  register long int r9 asm ("r9") = arg5;
+  asm volatile ("brki r14,8; nop;"
+		: "=r" (ret)
+		: "r" (r5), "r" (r6), "r" (r7), "r" (r8), "r" (r9), "r" (r12)
+		: "r10", "r11", "r4", "memory");
+  return ret;
+}
+
+static inline long int
+__internal_syscall6 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4, __syscall_arg_t arg5,
+		     __syscall_arg_t arg6)
+{
+  register long int ret asm ("r3");
+  register long int r12 asm ("r12") = name;
+  register long int r5 asm ("r5") = arg1;
+  register long int r6 asm ("r6") = arg2;
+  register long int r7 asm ("r7") = arg3;
+  register long int r8 asm ("r8") = arg4;
+  register long int r9 asm ("r9") = arg5;
+  register long int r10 asm ("r10") = arg6;
+  asm volatile ("brki r14,8; nop;"
+		: "=r" (ret)
+		: "r" (r5), "r" (r6), "r" (r7), "r" (r8), "r" (r9),
+		  "r" (r10), "r" (r12)
+		: "r11", "r4", "memory");
+  return ret;
+}
 
 /* Pointer mangling is not yet supported for Microblaze.  */
 # define PTR_MANGLE(var) (void) (var)

@@ -30,7 +30,7 @@ weak_alias (__curbrk, ___brk_addr)
 int
 __brk (void *addr)
 {
-  __curbrk = (void *) INTERNAL_SYSCALL_CALL (brk, addr);
+  __curbrk = (void *) internal_syscall (__NR_brk, addr);
   if (__curbrk < addr)
     {
       __set_errno (ENOMEM);
