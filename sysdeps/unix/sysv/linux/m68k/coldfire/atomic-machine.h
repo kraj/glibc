@@ -61,6 +61,6 @@ typedef uintmax_t uatomic_max_t;
   })
 
 # define atomic_full_barrier()				\
-  (INTERNAL_SYSCALL_CALL (atomic_barrier), (void) 0)
+  (internal_syscall (__NR_atomic_barrier), (void) 0)
 
 #endif

@@ -21,5 +21,5 @@
 void *
 __m68k_read_tp (void)
 {
-  return (void*) INTERNAL_SYSCALL_CALL (get_thread_area);
+  return (void*) internal_syscall (__NR_get_thread_area);
 }

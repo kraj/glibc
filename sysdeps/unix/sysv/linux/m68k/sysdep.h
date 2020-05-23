@@ -291,6 +291,114 @@ SYSCALL_ERROR_LABEL:							      \
   LOAD_REGS_5
 #define ASM_ARGS_6	ASM_ARGS_5, "a" (_a0)
 
+static inline long int
+__internal_syscall0 (long int name)
+{
+  register int d0 asm ("d0") = name;
+  asm volatile ("trap #0"
+		: "=d" (d0)
+		: "0" (d0)
+		: "memory");
+  return d0;
+}
+
+static inline long int
+__internal_syscall1 (long int name, __syscall_arg_t arg1)
+{
+  register int d1 asm ("d1") = arg1;
+  register int d0 asm ("d0") = name;
+  asm volatile ("trap #0"
+		: "=d" (d0)
+		: "0" (d0), "d" (d1)
+		: "memory");
+  return d0;
+}
+
+static inline long int
+__internal_syscall2 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2)
+{
+  register int d1 asm ("d1") = arg1;
+  register int d2 asm ("d2") = arg2;
+  register int d0 asm ("d0") = name;
+  asm volatile ("trap #0"
+		: "=d" (d0)
+		: "0" (d0), "d" (d1), "d" (d2)
+		: "memory");
+  return d0;
+}
+
+static inline long int
+__internal_syscall3 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3)
+{
+  register int d1 asm ("d1") = arg1;
+  register int d2 asm ("d2") = arg2;
+  register int d3 asm ("d3") = arg3;
+  register int d0 asm ("d0") = name;
+  asm volatile ("trap #0"
+		: "=d" (d0)
+		: "0" (d0), "d" (d1), "d" (d2), "d" (d3)
+		: "memory");
+  return d0;
+}
+
+static inline long int
+__internal_syscall4 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4)
+{
+  register int d1 asm ("d1") = arg1;
+  register int d2 asm ("d2") = arg2;
+  register int d3 asm ("d3") = arg3;
+  register int d4 asm ("d4") = arg4;
+  register int d0 asm ("d0") = name;
+  asm volatile ("trap #0"
+		: "=d" (d0)
+		: "0" (d0), "d" (d1), "d" (d2), "d" (d3), "d" (d4)
+		: "memory");
+  return d0;
+}
+
+static inline long int
+__internal_syscall5 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4, __syscall_arg_t arg5)
+{
+  register int d1 asm ("d1") = arg1;
+  register int d2 asm ("d2") = arg2;
+  register int d3 asm ("d3") = arg3;
+  register int d4 asm ("d4") = arg4;
+  register int d5 asm ("d5") = arg5;
+  register int d0 asm ("d0") = name;
+  asm volatile ("trap #0"
+		: "=d" (d0)
+		: "0" (d0), "d" (d1), "d" (d2), "d" (d3), "d" (d4), "d" (d5)
+		: "memory");
+  return d0;
+}
+
+static inline long int
+__internal_syscall6 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4, __syscall_arg_t arg5,
+		     __syscall_arg_t arg6)
+{
+  register int d1 asm ("d1") = arg1;
+  register int d2 asm ("d2") = arg2;
+  register int d3 asm ("d3") = arg3;
+  register int d4 asm ("d4") = arg4;
+  register int d5 asm ("d5") = arg5;
+  register int a0 asm ("a0") = arg6;
+  register int d0 asm ("d0") = name;
+  asm volatile ("trap #0"
+		: "=d" (d0)
+		: "0" (d0), "d" (d1), "d" (d2), "d" (d3), "d" (d4), "d" (d5),
+		  "a" (a0)
+		: "memory");
+  return d0;
+}
+
 #endif /* not __ASSEMBLER__ */
 
 /* Pointer mangling is not yet supported for M68K.  */
