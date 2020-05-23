@@ -460,6 +460,115 @@ __local_syscall_error:				\
 # define INTERNAL_SYSCALL_NCS(number, nr, args...)		\
   INTERNAL_SYSCALL_RAW##nr (number, args)
 
+static inline long int
+__internal_syscall0 (long int name)
+{
+  register int a1 asm ("a0");
+  register int nr asm ("r7") = name;
+  asm volatile ("trap 0\n\t"
+		: "=r" (a1)
+		: "r" (nr)
+		: "memory");
+  return a1;
+}
+
+static inline long int
+__internal_syscall1 (long int name, __syscall_arg_t arg1)
+{
+  register int a1 asm ("a0") = arg1;
+  register int nr asm ("r7") = name;
+  asm volatile ("trap 0\n\t"
+		: "=r" (a1)
+		: "r" (nr), "r" (a1)
+		: "memory");
+  return a1;
+}
+
+static inline long int
+__internal_syscall2 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2)
+{
+  register int a1 asm ("a0") = arg1;
+  register int a2 asm ("a1") = arg2;
+  register int nr asm ("r7") = name;
+  asm volatile ("trap 0\n\t"
+		: "=r" (a1)
+		: "r" (nr), "r" (a1), "r" (a2)
+		: "memory");
+  return a1;
+}
+
+static inline long int
+__internal_syscall3 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3)
+{
+  register int a1 asm ("a0") = arg1;
+  register int a2 asm ("a1") = arg2;
+  register int a3 asm ("a2") = arg3;
+  register int nr asm ("r7") = name;
+  asm volatile ("trap 0\n\t"
+		: "=r" (a1)
+		: "r" (nr), "r" (a1), "r" (a2), "r" (a3)
+		: "memory");
+  return a1;
+}
+
+static inline long int
+__internal_syscall4 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4)
+{
+  register int a1 asm ("a0") = arg1;
+  register int a2 asm ("a1") = arg2;
+  register int a3 asm ("a2") = arg3;
+  register int a4 asm ("a3") = arg4;
+  register int nr asm ("r7") = name;
+  asm volatile ("trap 0\n\t"
+		: "=r" (a1)
+		: "r" (nr), "r" (a1), "r" (a2), "r" (a3), "r" (a4)
+		: "memory");
+  return a1;
+}
+
+static inline long int
+__internal_syscall5 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4, __syscall_arg_t arg5)
+{
+  register int a1 asm ("a0") = arg1;
+  register int a2 asm ("a1") = arg2;
+  register int a3 asm ("a2") = arg3;
+  register int a4 asm ("a3") = arg4;
+  register int a5 asm ("r4") = arg5;
+  register int nr asm ("r7") = name;
+  asm volatile ("trap 0\n\t"
+		: "=r" (a1)
+		: "r" (nr), "r" (a1), "r" (a2), "r" (a3), "r" (a4), "r" (a5)
+		: "memory");
+  return a1;
+}
+
+static inline long int
+__internal_syscall6 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4, __syscall_arg_t arg5,
+		     __syscall_arg_t arg6)
+{
+  register int a1 asm ("a0") = arg1;
+  register int a2 asm ("a1") = arg2;
+  register int a3 asm ("a2") = arg3;
+  register int a4 asm ("a3") = arg4;
+  register int a5 asm ("r4") = arg5;
+  register int a6 asm ("r5") = arg6;
+  register int nr asm ("r7") = name;
+  asm volatile ("trap 0\n\t"
+		: "=r" (a1)
+		: "r" (nr), "r" (a1), "r" (a2), "r" (a3), "r" (a4), "r" (a5),
+		  "r" (a6)
+		: "memory");
+  return a1;
+}
+
 #endif /* __ASSEMBLER__ */
 
 /* Pointer mangling support.  */
