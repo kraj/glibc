@@ -139,7 +139,7 @@ futex_supports_pshared (int pshared)
 static __always_inline int
 futex_wait (unsigned int *futex_word, unsigned int expected, int private)
 {
-  int err = lll_futex_timed_wait (futex_word, expected, NULL, private);
+  int err = lll_futex_timed_wait ((int *) futex_word, expected, NULL, private);
   switch (err)
     {
     case 0:
@@ -181,7 +181,7 @@ futex_wait_cancelable (unsigned int *futex_word, unsigned int expected,
 {
   int oldtype;
   oldtype = __pthread_enable_asynccancel ();
-  int err = lll_futex_timed_wait (futex_word, expected, NULL, private);
+  int err = lll_futex_timed_wait ((int *) futex_word, expected, NULL, private);
   __pthread_disable_asynccancel (oldtype);
   switch (err)
     {
@@ -214,7 +214,8 @@ static __always_inline int
 futex_reltimed_wait (unsigned int* futex_word, unsigned int expected,
 		     const struct timespec* reltime, int private)
 {
-  int err = lll_futex_timed_wait (futex_word, expected, reltime, private);
+  int err = lll_futex_timed_wait ((int *) futex_word, expected, reltime,
+				  private);
   switch (err)
     {
     case 0:
@@ -242,7 +243,8 @@ futex_reltimed_wait_cancelable (unsigned int* futex_word,
 {
   int oldtype;
   oldtype = LIBC_CANCEL_ASYNC ();
-  int err = lll_futex_timed_wait (futex_word, expected, reltime, private);
+  int err = lll_futex_timed_wait ((int *) futex_word, expected, reltime,
+				  private);
   LIBC_CANCEL_RESET (oldtype);
   switch (err)
     {
@@ -282,7 +284,7 @@ futex_abstimed_wait (unsigned int* futex_word, unsigned int expected,
      despite them being valid.  */
   if (__glibc_unlikely ((abstime != NULL) && (abstime->tv_sec < 0)))
     return ETIMEDOUT;
-  int err = lll_futex_clock_wait_bitset (futex_word, expected,
+  int err = lll_futex_clock_wait_bitset ((int *) futex_word, expected,
 					 clockid, abstime,
 					 private);
   switch (err)
@@ -318,7 +320,7 @@ futex_abstimed_wait_cancelable (unsigned int* futex_word,
     return ETIMEDOUT;
   int oldtype;
   oldtype = __pthread_enable_asynccancel ();
-  int err = lll_futex_clock_wait_bitset (futex_word, expected,
+  int err = lll_futex_clock_wait_bitset ((int *) futex_word, expected,
 					clockid, abstime,
 					private);
   __pthread_disable_asynccancel (oldtype);
@@ -362,7 +364,7 @@ futex_abstimed_wait_cancelable (unsigned int* futex_word,
 static __always_inline void
 futex_wake (unsigned int* futex_word, int processes_to_wake, int private)
 {
-  int res = lll_futex_wake (futex_word, processes_to_wake, private);
+  int res = lll_futex_wake ((int *) futex_word, processes_to_wake, private);
   /* No error.  Ignore the number of woken processes.  */
   if (res >= 0)
     return;
@@ -410,7 +412,7 @@ static __always_inline int
 futex_lock_pi (unsigned int *futex_word, const struct timespec *abstime,
 	       int private)
 {
-  int err = lll_futex_timed_lock_pi (futex_word, abstime, private);
+  int err = lll_futex_timed_lock_pi ((int *) futex_word, abstime, private);
   switch (err)
     {
     case 0:
@@ -479,7 +481,7 @@ futex_trylock_pi (unsigned int *futex_word, int private)
 static __always_inline int
 futex_unlock_pi (unsigned int *futex_word, int private)
 {
-  int err = lll_futex_timed_unlock_pi (futex_word, private);
+  int err = lll_futex_timed_unlock_pi ((int *) futex_word, private);
   switch (err)
     {
     case 0:
