@@ -26,7 +26,6 @@
 #include <sys/param.h>
 #include <sys/mman.h>
 #include <not-cancel.h>
-#include <local-setxid.h>
 #include <shlib-compat.h>
 #include <nptl/pthreadP.h>
 #include <dl-sysdep.h>
@@ -139,8 +138,8 @@ __spawni_child (void *arguments)
 
   /* Set the effective user and group IDs.  */
   if ((attr->__flags & POSIX_SPAWN_RESETIDS) != 0
-      && (local_seteuid (__getuid ()) != 0
-	  || local_setegid (__getgid ())) != 0)
+      && (__seteuid (__getuid ()) != 0
+	  || __setegid (__getgid ())) != 0)
     goto fail;
 
   /* Execute the file actions.  */

@@ -25,7 +25,6 @@
 #include <sys/param.h>
 #include <sys/mman.h>
 #include <not-cancel.h>
-#include <local-setxid.h>
 #include <shlib-compat.h>
 #include <nptl/pthreadP.h>
 #include <dl-sysdep.h>
@@ -73,6 +72,24 @@
 #elif _STACK_GROWS_DOWN
 # define STACK(__stack, __stack_size) (__stack + __stack_size)
 #endif
+
+/* SETxID functions which only have to change the local thread and none of the
+   possible other threads.  */
+static int local_seteuid (uid_t euid)
+{
+#ifndef __NR_setresuid32
+# define __NR_setresuid32 __NR_setresuid
+#endif
+  return INLINE_SYSCALL_CALL (setresuid32, -1, euid, -1);
+}
+
+static int local_setegid (uid_t egid)
+{
+#ifndef __NR_setresgid32
+# define __NR_setresgid32 __NR_setresgid
+#endif
+  return INLINE_SYSCALL_CALL (setresgid32, -1, egid, -1);
+}
 
 
 struct posix_spawn_args
@@ -152,8 +169,7 @@ __spawni_child (void *arguments)
 	      if (sa.sa_handler == SIG_IGN)
 		continue;
 	      sa.sa_handler = SIG_DFL;
-	    }
-	}
+	    }}
       else
 	continue;
 
