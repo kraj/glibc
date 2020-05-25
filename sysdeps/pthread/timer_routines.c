@@ -300,30 +300,11 @@ thread_expire_timer (struct thread_node *self, struct timer_node *timer)
       break;
 
     case SIGEV_SIGNAL:
-#ifdef __NR_rt_sigqueueinfo
-      {
-	siginfo_t info;
-
-	/* First, clear the siginfo_t structure, so that we don't pass our
-	   stack content to other tasks.  */
-	memset (&info, 0, sizeof (siginfo_t));
-	/* We must pass the information about the data in a siginfo_t
-           value.  */
-	info.si_signo = timer->event.sigev_signo;
-	info.si_code = SI_TIMER;
-	info.si_pid = timer->creator_pid;
-	info.si_uid = getuid ();
-	info.si_value = timer->event.sigev_value;
-
-	INLINE_SYSCALL (rt_sigqueueinfo, 3, info.si_pid, info.si_signo, &info);
-      }
-#else
       if (pthread_kill (self->captured, timer->event.sigev_signo) != 0)
 	{
 	  if (pthread_kill (self->id, timer->event.sigev_signo) != 0)
 	    abort ();
         }
-#endif
       break;
 
     case SIGEV_THREAD:
