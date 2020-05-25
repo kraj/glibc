@@ -24,11 +24,12 @@
 #include <sysdeps/unix/sysv/linux/sysdep.h>
 #include <sysdeps/ia64/sysdep.h>
 #include <dl-sysdep.h>
-#include <tls.h>
 #include <asm/break.h>
+#include <tcb-offsets.h>
 
 /* In order to get __set_errno() definition in INLINE_SYSCALL.  */
 #ifndef __ASSEMBLER__
+#include <tcbhead.h>
 #include <errno.h>
 #endif
 

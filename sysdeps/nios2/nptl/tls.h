@@ -25,7 +25,7 @@
 # include <stdbool.h>
 # include <stddef.h>
 # include <stdint.h>
-# include <dl-dtv.h>
+# include <tcbhead.h>
 
 #else /* __ASSEMBLER__ */
 # include <tcb-offsets.h>
@@ -43,15 +43,6 @@
 
 /* Get the thread descriptor definition.  */
 # include <nptl/descr.h>
-
-typedef struct
-{
-  dtv_t *dtv;
-  uintptr_t pointer_guard;
-  unsigned spare[6];
-} tcbhead_t;
-
-register struct pthread *__thread_self __asm__("r23");
 
 #define READ_THREAD_POINTER() ((void *) __thread_self)
 
@@ -73,10 +64,6 @@ register struct pthread *__thread_self __asm__("r23");
 # define TLS_PRE_TCB_SIZE \
   (sizeof (struct pthread)						      \
    + ((sizeof (tcbhead_t) + TLS_TCB_ALIGN - 1) & ~(TLS_TCB_ALIGN - 1)))
-
-/* The thread pointer (in hardware register r23) points to the end of
-   the TCB + 0x7000, as for PowerPC and MIPS.  */
-# define TLS_TCB_OFFSET 0x7000
 
 /* Install the dtv pointer.  The pointer passed is to the element with
    index -1 which contain the length.  */
@@ -122,15 +109,12 @@ register struct pthread *__thread_self __asm__("r23");
 # define THREAD_SETMEM_NC(descr, member, idx, value) \
   descr->member[idx] = (value)
 
-# define THREAD_GET_POINTER_GUARD()				\
-  (((tcbhead_t *) (READ_THREAD_POINTER ()			\
-		   - TLS_TCB_OFFSET))[-1].pointer_guard)
-# define THREAD_SET_POINTER_GUARD(value)	\
-  (THREAD_GET_POINTER_GUARD () = (value))
+# define THREAD_GET_POINTER_GUARD() \
+  get_pointer_guard ()
+# define THREAD_SET_POINTER_GUARD(value) \
+  set_pointer_guard (__thread_self, value)
 # define THREAD_COPY_POINTER_GUARD(descr)				\
-  (((tcbhead_t *) ((void *) (descr)					\
-		   + TLS_PRE_TCB_SIZE))[-1].pointer_guard		\
-   = THREAD_GET_POINTER_GUARD())
+  set_pointer_guard (descr, get_pointer_guard ())
 
 /* l_tls_offset == 0 is perfectly valid on Nios II, so we have to use some
    different value to mean unset l_tls_offset.  */

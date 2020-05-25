@@ -25,8 +25,8 @@
 # include <sysdep-vdso.h>
 
 # ifdef SHARED
-# include <dl-vdso.h>
-# include <libc-vdso.h>
+#  include <dl-vdso.h>
+#  include <libc-vdso.h>
 
 static int
 __gettimeofday_syscall (struct timeval *restrict tv, void *restrict tz)

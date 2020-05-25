@@ -18,7 +18,6 @@
    <https://www.gnu.org/licenses/>.  */
 
 #include <sysdeps/unix/sysv/linux/sysdep.h>
-#include <tls.h>
 
 /* Defines RTLD_PRIVATE_ERRNO.  */
 #include <dl-sysdep.h>

@@ -23,7 +23,8 @@
 /* There is some commonality.  */
 #include <sysdeps/unix/sysv/linux/sysdep.h>
 #include <sysdeps/unix/sh/sysdep.h>
-#include <tls.h>
+/* For RTLD_PRIVATE_ERRNO.  */
+#include <dl-sysdep.h>
 
 /* For Linux we can use the system call table in the header file
 	/usr/include/asm/unistd.h
@@ -324,6 +325,7 @@
    is too complicated here since we have no PC-relative addressing mode.  */
 #else
 # ifdef __ASSEMBLER__
+#  include <tcb-offsets.h>
 #  define PTR_MANGLE(reg, tmp) \
      stc gbr,tmp; mov.l @(POINTER_GUARD,tmp),tmp; xor tmp,reg
 #  define PTR_MANGLE2(reg, tmp)	xor tmp,reg

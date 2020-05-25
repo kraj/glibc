@@ -26,17 +26,7 @@
 # include <stdint.h>
 # include <stdlib.h>
 # include <list.h>
-# include <dl-dtv.h>
-
-typedef struct
-{
-  dtv_t *dtv;
-  void *__private;
-} tcbhead_t;
-
-register struct pthread *__thread_self __asm__("r13");
-
-# define TLS_MULTIPLE_THREADS_IN_TCB 1
+# include <tcbhead.h>
 
 #else /* __ASSEMBLER__ */
 # include <tcb-offsets.h>

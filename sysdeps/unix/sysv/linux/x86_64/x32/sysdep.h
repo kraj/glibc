@@ -46,6 +46,7 @@
 # undef ZERO_EXTEND_6
 # define ZERO_EXTEND_6 movl %r9d, %r9d;
 #else /* !__ASSEMBLER__ */
+# include <stdint.h>
 # undef ARGIFY
 /* Enforce zero-extension for pointers and array system call arguments.
    For integer types, extend to int64_t (the full register) using a

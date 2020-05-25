@@ -24,8 +24,6 @@
 #include <sysdeps/unix/sysdep.h>
 #include <dl-sysdep.h>         /* Defines RTLD_PRIVATE_ERRNO.  */
 
-#include <tls.h>
-
 /* For Linux we can use the system call table in the header file
 	/usr/include/asm/unistd.h
    of the kernel.  But these symbols do not follow the SYS_* syntax

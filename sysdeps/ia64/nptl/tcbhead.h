@@ -1,6 +1,6 @@
-/* Copyright (C) 1995-2020 Free Software Foundation, Inc.
+/* Definition for thread control block handling.  IA-64 version.
+   Copyright (C) 2003-2020 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
-   Contributed by Ulrich Drepper <drepper@gnu.ai.mit.edu>, August 1995.
 
    The GNU C Library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -16,20 +16,20 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#include <sys/sem.h>
-#include <ipc_priv.h>
+#ifndef _TCBHEAD_H
+#define _TCBHEAD_H
+
 #include <stddef.h>
-#include <sysdep.h>
+#include <dl-dtv.h>
 
-/* Return identifier for array of NSEMS semaphores associated with
-   KEY.  */
-
-int
-semget (key_t key, int nsems, int semflg)
+typedef struct
 {
-#ifdef __ASSUME_DIRECT_SYSVIPC_SYSCALLS
-  return INLINE_SYSCALL_CALL (semget, key, nsems, semflg);
-#else
-  return INLINE_SYSCALL_CALL (ipc, IPCOP_semget, key, nsems, semflg, NULL);
+  dtv_t *dtv;
+  void *__private;
+} tcbhead_t;
+
+register struct pthread *__thread_self __asm__("r13");
+
+# define TLS_MULTIPLE_THREADS_IN_TCB 1
+
 #endif
-}

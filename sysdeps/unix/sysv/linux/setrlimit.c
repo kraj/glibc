@@ -19,6 +19,7 @@
 #include <sys/resource.h>
 #include <sysdep.h>
 #include <shlib-compat.h>
+#include <sysdep.h>
 
 #if !__RLIM_T_MATCHES_RLIM64_T
 

@@ -23,8 +23,6 @@
 #include <sysdeps/unix/sysv/linux/sysdep.h>
 #include <sysdeps/unix/mips/mips32/sysdep.h>
 
-#include <tls.h>
-
 /* For Linux we can use the system call table in the header file
 	/usr/include/asm/unistd.h
    of the kernel.  But these symbols do not follow the SYS_* syntax

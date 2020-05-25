@@ -21,7 +21,7 @@
 /* There is some commonality.  */
 #include <sysdeps/unix/sysv/linux/sysdep.h>
 #include <sysdeps/unix/x86_64/sysdep.h>
-#include <tls.h>
+#include <tcb-offsets.h>
 
 /* Defines RTLD_PRIVATE_ERRNO.  */
 #include <dl-sysdep.h>

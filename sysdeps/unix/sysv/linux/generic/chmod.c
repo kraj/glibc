@@ -17,7 +17,7 @@
    <https://www.gnu.org/licenses/>.  */
 
 #include <fcntl.h>
-#include <sys/types.h>
+#include <sys/stat.h>
 #include <sysdep.h>
 
 /* Change the protections of FILE to MODE.  */

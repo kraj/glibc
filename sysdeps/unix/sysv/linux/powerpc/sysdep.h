@@ -21,7 +21,6 @@
 
 #include <sysdeps/unix/sysv/linux/sysdep.h>
 #include <sysdeps/unix/powerpc/sysdep.h>
-#include <tls.h>
 /* Define __set_errno() for INLINE_SYSCALL macro below.  */
 #include <errno.h>
 
@@ -162,6 +161,7 @@
 /* We cannot use the thread descriptor because in ld.so we use setjmp
    earlier than the descriptor is initialized.  */
 #else
+# include <tcb-offsets.h>
 # ifdef __ASSEMBLER__
 #  if defined(__PPC64__) || defined(__powerpc64__)
 #   define LOAD  ld

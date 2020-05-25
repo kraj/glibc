@@ -21,13 +21,8 @@
 
 #include <dl-sysdep.h>
 #ifndef __ASSEMBLER__
-# include <stdbool.h>
 # include <stddef.h>
 # include <stdint.h>
-# include <stdlib.h>
-# include <sysdep.h>
-# include <libc-pointer-arith.h> /* For cast_to_integer. */
-# include <kernel-features.h>
 # include <dl-dtv.h>
 
 typedef struct

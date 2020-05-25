@@ -25,8 +25,9 @@
 
 /* For RTLD_PRIVATE_ERRNO.  */
 #include <dl-sysdep.h>
-
-#include <tls.h>
+#ifndef __ASSEMBLER__
+#include <tcbhead.h>
+#endif
 
 /* For Linux we can use the system call table in the header file
         /usr/include/asm/unistd.h
@@ -226,13 +227,14 @@
 /* We cannot use the thread descriptor because in ld.so we use setjmp
    earlier than the descriptor is initialized.  */
 #else
+# include <tcb-offsets.h>
 # ifdef __ASSEMBLER__
 #  define PTR_MANGLE_GUARD(guard) ldw guard, POINTER_GUARD(r23)
 #  define PTR_MANGLE(dst, src, guard) xor dst, src, guard
 #  define PTR_DEMANGLE(dst, src, guard) PTR_MANGLE (dst, src, guard)
 # else
 #  define PTR_MANGLE(var) \
-  (var) = (__typeof (var)) ((uintptr_t) (var) ^ THREAD_GET_POINTER_GUARD ())
+  (var) = (__typeof (var)) ((uintptr_t) (var) ^ get_pointer_guard ())
 #  define PTR_DEMANGLE(var)	PTR_MANGLE (var)
 # endif
 #endif

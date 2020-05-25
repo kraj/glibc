@@ -17,8 +17,7 @@
    <https://www.gnu.org/licenses/>.  */
 
 #include <errno.h>
-#include <sys/prctl.h>
-#include <sys/syscall.h>
+#include <asm/prctl.h>
 #include <sysdep.h>
 #include <stdint.h>
 
