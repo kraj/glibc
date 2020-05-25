@@ -25,10 +25,7 @@
 #define __SETXID_3(cmd, arg1, arg2, arg3) \
   __SETXID_2 (cmd, arg1, arg2); cmd.id[2] = (long int) arg3
 
-#ifdef SINGLE_THREAD
-# define INLINE_SETXID_SYSCALL(name, nr, args...) \
-  INLINE_SYSCALL (name, nr, args)
-#elif defined SHARED
+#ifdef SHARED
 # define INLINE_SETXID_SYSCALL(name, nr, args...) \
   ({									\
     int __result;							\
