@@ -17,11 +17,6 @@
 
 #include <unistd.h>
 #include <sys/param.h>
-#ifdef HAVE_INLINED_SYSCALLS
-# include <errno.h>
-# include <sysdep.h>
-#endif
-
 
 ssize_t
 __readlink_chk (const char *path, void *buf, size_t len, size_t buflen)
