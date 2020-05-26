@@ -22,7 +22,7 @@
 int
 __umount2 (const char *special_file, int flags)
 {
-  return INLINE_SYSCALL_CALL (umount2, special_file, flags);
+  return inline_syscall (__NR_umount2, special_file, flags);
 }
 libc_hidden_def (__umount2)
 

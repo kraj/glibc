@@ -24,5 +24,6 @@
 int
 open_by_handle_at (int mount_fd, struct file_handle *handle, int flags)
 {
-  return SYSCALL_CANCEL (open_by_handle_at, mount_fd, handle, flags);
+  return inline_syscall_cancel (__NR_open_by_handle_at, mount_fd, handle,
+				flags);
 }

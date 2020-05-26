@@ -45,7 +45,7 @@ static uint64_t page_unit;
 /* An architecture may override this.  */
 #ifndef MMAP_CALL
 # define MMAP_CALL(__nr, __addr, __len, __prot, __flags, __fd, __offset) \
-  INLINE_SYSCALL_CALL (__nr, __addr, __len, __prot, __flags, __fd, __offset)
+  inline_syscall (__nr, __addr, __len, __prot, __flags, __fd, __offset)
 #endif
 
 #endif /* MMAP_INTERNAL_LINUX_H  */

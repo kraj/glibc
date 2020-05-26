@@ -26,6 +26,6 @@
 ssize_t
 __readlink (const char *path, char *buf, size_t len)
 {
-  return INLINE_SYSCALL (readlinkat, 4, AT_FDCWD, path, buf, len);
+  return inline_syscall (__NR_readlinkat, AT_FDCWD, path, buf, len);
 }
 weak_alias (__readlink, readlink)

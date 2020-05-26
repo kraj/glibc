@@ -23,9 +23,9 @@ int
 __libc_connect (int fd, __CONST_SOCKADDR_ARG addr, socklen_t len)
 {
 #ifdef __ASSUME_CONNECT_SYSCALL
-  return SYSCALL_CANCEL (connect, fd, addr.__sockaddr__, len);
+  return inline_syscall_cancel (__NR_connect, fd, addr.__sockaddr__, len);
 #else
-  return SOCKETCALL_CANCEL (connect, fd, addr.__sockaddr__, len);
+  return socketcall_cancel (connect, fd, addr.__sockaddr__, len);
 #endif
 }
 weak_alias (__libc_connect, connect)

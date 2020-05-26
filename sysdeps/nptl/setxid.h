@@ -18,42 +18,72 @@
 #include <nptl/pthreadP.h>
 #include <sysdep.h>
 
-#define __SETXID_1(cmd, arg1) \
-  cmd.id[0] = (long int) arg1
-#define __SETXID_2(cmd, arg1, arg2) \
-  __SETXID_1 (cmd, arg1); cmd.id[1] = (long int) arg2
-#define __SETXID_3(cmd, arg1, arg2, arg3) \
-  __SETXID_2 (cmd, arg1, arg2); cmd.id[2] = (long int) arg3
+static inline int (*get_nptl_setxid(void))(struct xid_command *cmdp)
+{
+# ifdef SHARED
+  if (__glibc_likely (__libc_pthread_functions_init))
+    return PTHFCT_PTR (ptr__nptl_setxid);
+  return NULL;
+# else
+  extern __typeof (__nptl_setxid) __nptl_setxid __attribute__((weak));
+  return __nptl_setxid;
+# endif
+}
 
-#ifdef SHARED
-# define INLINE_SETXID_SYSCALL(name, nr, args...) \
-  ({									\
-    int __result;							\
-    if (__builtin_expect (__libc_pthread_functions_init, 0))		\
-      {									\
-	struct xid_command __cmd;					\
-	__cmd.syscall_no = __NR_##name;					\
-	__SETXID_##nr (__cmd, args);					\
-	__result = PTHFCT_CALL (ptr__nptl_setxid, (&__cmd));		\
-	}								\
-    else								\
-      __result = INLINE_SYSCALL (name, nr, args);			\
-    __result;								\
-   })
-#else
-# define INLINE_SETXID_SYSCALL(name, nr, args...) \
-  ({									\
-    extern __typeof (__nptl_setxid) __nptl_setxid __attribute__((weak));\
-    int __result;							\
-    if (__glibc_unlikely (__nptl_setxid	!= NULL))			      \
-      {									\
-	struct xid_command __cmd;					\
-	__cmd.syscall_no = __NR_##name;					\
-	__SETXID_##nr (__cmd, args);					\
-	__result =__nptl_setxid (&__cmd);				\
-      }									\
-    else								\
-      __result = INLINE_SYSCALL (name, nr, args);			\
-    __result;								\
-   })
-#endif
+static inline long int
+__inline_setxid_syscall1 (int name, __syscall_arg_t arg1)
+{
+  int (*nptl_setxid) (struct xid_command *cmdp) = get_nptl_setxid ();
+  if (nptl_setxid != NULL)
+    {
+      struct xid_command cmd = { name, .id = { arg1 }, };
+      return nptl_setxid (&cmd);
+    }
+  return inline_syscall (name, arg1);
+}
+
+static inline long int
+__inline_setxid_syscall2 (int name, __syscall_arg_t arg1,
+			  __syscall_arg_t arg2)
+{
+  int (*nptl_setxid) (struct xid_command *cmdp) = get_nptl_setxid ();
+  if (nptl_setxid != NULL)
+    {
+      struct xid_command cmd = { name, .id = { arg1, arg2 }, };
+      return nptl_setxid (&cmd);
+    }
+  return inline_syscall (name, arg1, arg2);
+}
+
+static inline long int
+__inline_setxid_syscall3 (int name, __syscall_arg_t arg1,
+			   __syscall_arg_t arg2, __syscall_arg_t arg3)
+{
+  int (*nptl_setxid) (struct xid_command *cmdp) = get_nptl_setxid ();
+  if (nptl_setxid != NULL)
+    {
+      struct xid_command cmd = { name, .id = { arg1, arg2, arg3 }, };
+      return nptl_setxid (&cmd);
+    }
+  return inline_syscall (name, arg1, arg2, arg3);
+}
+
+#define __inline_setxid_syscall_0(name) 				\
+  __inline_setxid_syscall0 (name)
+#define __inline_setxid_syscall_1(name, a1) 				\
+  __inline_setxid_syscall1 (name, ARGIFY (a1))
+#define __inline_setxid_syscall_2(name, a1, a2) 			\
+  __inline_setxid_syscall2 (name, ARGIFY (a1), ARGIFY (a2))
+#define __inline_setxid_syscall_3(name, a1, a2, a3) 			\
+  __inline_setxid_syscall3 (name, ARGIFY (a1), ARGIFY (a2), ARGIFY (a3))
+
+#define __INLINE_SETXID_NARGS_X(a,b,c,d,e,f,g,h,n,...) n
+#define __INLINE_SETXID_NARGS(...) \
+  __INLINE_SETXID_NARGS_X (__VA_ARGS__,7,6,5,4,3,2,1,0,)
+#define __INLINE_SETXID_CONCAT_X(a,b)     a##b
+#define __INLINE_SETXID_CONCAT(a,b)       __INLINE_SETXID_CONCAT_X (a, b)
+#define __INLINE_SETXID_DISP(b,...) \
+  __INLINE_SETXID_CONCAT (b,__INLINE_SETXID_NARGS(__VA_ARGS__))(__VA_ARGS__)
+
+#define inline_setxid_syscall(...)					\
+  __INLINE_SETXID_DISP (__inline_setxid_syscall_, __VA_ARGS__)

@@ -25,10 +25,10 @@ int
 __truncate (const char *path, off_t length)
 {
 # ifndef __NR_truncate
-  return INLINE_SYSCALL_CALL (truncate64, path,
-			      __ALIGNMENT_ARG SYSCALL_LL (length));
+  return inline_syscall (__NR_truncate64, path,
+			 __ALIGNMENT_ARG SYSCALL_LL (length));
 # else
-  return INLINE_SYSCALL_CALL (truncate, path, length);
+  return inline_syscall (__NR_truncate, path, length);
 # endif
 }
 weak_alias (__truncate, truncate)

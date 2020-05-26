@@ -23,7 +23,7 @@
 int
 __sigsuspend (const sigset_t *set)
 {
-  return SYSCALL_CANCEL (rt_sigsuspend, set, _NSIG / 8);
+  return inline_syscall_cancel (__NR_rt_sigsuspend, set, _NSIG / 8);
 }
 libc_hidden_def (__sigsuspend)
 weak_alias (__sigsuspend, sigsuspend)

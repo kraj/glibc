@@ -23,6 +23,6 @@
 int
 __close_nocancel (int fd)
 {
-  return INLINE_SYSCALL_CALL (close, fd);
+  return inline_syscall (__NR_close, fd);
 }
 libc_hidden_def (__close_nocancel)

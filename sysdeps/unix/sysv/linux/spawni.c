@@ -80,7 +80,7 @@ static int local_seteuid (uid_t euid)
 #ifndef __NR_setresuid32
 # define __NR_setresuid32 __NR_setresuid
 #endif
-  return INLINE_SYSCALL_CALL (setresuid32, -1, euid, -1);
+  return inline_syscall (__NR_setresuid32, -1, euid, -1);
 }
 
 static int local_setegid (uid_t egid)
@@ -88,7 +88,7 @@ static int local_setegid (uid_t egid)
 #ifndef __NR_setresgid32
 # define __NR_setresgid32 __NR_setresgid
 #endif
-  return INLINE_SYSCALL_CALL (setresgid32, -1, egid, -1);
+  return inline_syscall (__NR_setresgid32, -1, egid, -1);
 }
 
 

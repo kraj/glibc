@@ -24,9 +24,9 @@ int
 __setgid (gid_t gid)
 {
 #ifdef __NR_setgid32
-  return INLINE_SETXID_SYSCALL (setgid32, 1, gid);
+  return inline_setxid_syscall (__NR_setgid32, gid);
 #else
-  return INLINE_SETXID_SYSCALL (setgid, 1, gid);
+  return inline_setxid_syscall (__NR_setgid, gid);
 #endif
 }
 #ifndef __setgid

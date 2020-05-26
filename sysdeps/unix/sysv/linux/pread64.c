@@ -22,7 +22,8 @@
 ssize_t
 __libc_pread64 (int fd, void *buf, size_t count, off64_t offset)
 {
-  return SYSCALL_CANCEL (pread64, fd, buf, count, SYSCALL_LL64_PRW (offset));
+  return inline_syscall_cancel (__NR_pread64, fd, buf, count,
+				SYSCALL_LL64_PRW (offset));
 }
 
 weak_alias (__libc_pread64, __pread64)

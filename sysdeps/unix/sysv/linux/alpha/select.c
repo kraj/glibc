@@ -27,7 +27,8 @@ int
 __new_select (int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
 	      struct timeval *timeout)
 {
-  return SYSCALL_CANCEL (select, nfds, readfds, writefds, exceptfds, timeout);
+  return inline_syscall_cancel (__NR_select, nfds, readfds, writefds,
+				exceptfds, timeout);
 }
 strong_alias (__new_select, __select)
 libc_hidden_def (__select)
@@ -43,8 +44,8 @@ int
 __select_tv32 (int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
 	       struct timeval *timeout)
 {
-  return SYSCALL_CANCEL (osf_select, nfds, readfds, writefds, exceptfds,
-                        timeout);
+  return inline_syscall_cancel (__NR_osf_select, nfds, readfds, writefds,
+				exceptfds, timeout);
 }
 strong_alias (__select_tv32, __select_tv32_1)
 

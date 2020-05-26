@@ -27,9 +27,9 @@ int
 listen (int fd, int backlog)
 {
 #ifdef __ASSUME_LISTEN_SYSCALL
-  return INLINE_SYSCALL (listen, 2, fd, backlog);
+  return inline_syscall (__NR_listen, fd, backlog);
 #else
-  return SOCKETCALL (listen, fd, backlog);
+  return socketcall (listen, fd, backlog);
 #endif
 }
 weak_alias (listen, __listen);

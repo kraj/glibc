@@ -42,26 +42,23 @@ int
 posix_fadvise (int fd, off_t offset, off_t len, int advise)
 {
 # if defined (__NR_fadvise64) && !defined (__ASSUME_FADVISE64_AS_64_64)
-  int ret = INTERNAL_SYSCALL_CALL (fadvise64, fd,
-				   __ALIGNMENT_ARG SYSCALL_LL (offset),
-				   len, advise);
+  return -internal_syscall (__NR_fadvise64, fd,
+			    __ALIGNMENT_ARG SYSCALL_LL (offset),
+			    len, advise);
 # else
 #  ifdef __ASSUME_FADVISE64_64_6ARG
-  int ret = INTERNAL_SYSCALL_CALL (fadvise64_64, fd, advise,
-				   SYSCALL_LL (offset), SYSCALL_LL (len));
+  return -internal_syscall (__NR_fadvise64_64, fd, advise,
+			    SYSCALL_LL (offset), SYSCALL_LL (len));
 #  else
 
 #   ifndef __NR_fadvise64_64
 #    define __NR_fadvise64_64 __NR_fadvise64
 #   endif
 
-  int ret = INTERNAL_SYSCALL_CALL (fadvise64_64, fd,
-				   __ALIGNMENT_ARG SYSCALL_LL (offset),
-				   SYSCALL_LL (len), advise);
+  return -internal_syscall (__NR_fadvise64_64, fd,
+			    __ALIGNMENT_ARG SYSCALL_LL (offset),
+			    SYSCALL_LL (len), advise);
 #  endif
 # endif
-  if (INTERNAL_SYSCALL_ERROR_P (ret))
-    return INTERNAL_SYSCALL_ERRNO (ret);
-  return 0;
 }
 #endif /* __OFF_T_MATCHES_OFF64_T  */

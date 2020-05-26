@@ -26,11 +26,11 @@ int
 __getitimer64 (__itimer_which_t which, struct __itimerval64 *curr_value)
 {
 #if __KERNEL_OLD_TIMEVAL_MATCHES_TIMEVAL64
-  return INLINE_SYSCALL_CALL (getitimer, which, curr_value);
+  return inline_syscall (__NR_getitimer, which, curr_value);
 #else
   struct __itimerval32 curr_value_32;
 
-  if (INLINE_SYSCALL_CALL (getitimer, which, &curr_value_32) == -1)
+  if (inline_syscall (__NR_getitimer, which, &curr_value_32) == -1)
     return -1;
 
   curr_value->it_interval

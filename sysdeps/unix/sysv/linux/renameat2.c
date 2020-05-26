@@ -25,13 +25,13 @@ __renameat2 (int oldfd, const char *old, int newfd, const char *new,
            unsigned int flags)
 {
 #if !defined (__NR_renameat) || defined (__ASSUME_RENAMEAT2)
-  return INLINE_SYSCALL_CALL (renameat2, oldfd, old, newfd, new, flags);
+  return inline_syscall (__NR_renameat2, oldfd, old, newfd, new, flags);
 #else
   if (flags == 0)
     return __renameat (oldfd, old, newfd, new);
 
   /* For non-zero flags, try the renameat2 system call.  */
-  int ret = INLINE_SYSCALL_CALL (renameat2, oldfd, old, newfd, new, flags);
+  int ret = inline_syscall (__NR_renameat2, oldfd, old, newfd, new, flags);
   if (ret != -1 || errno != ENOSYS)
     /* Preserve non-error/non-ENOSYS return values.  */
     return ret;

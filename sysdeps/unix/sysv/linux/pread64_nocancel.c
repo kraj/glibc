@@ -23,6 +23,7 @@
 ssize_t
 __pread64_nocancel (int fd, void *buf, size_t count, off64_t offset)
 {
-  return INLINE_SYSCALL_CALL (pread64, fd, buf, count, SYSCALL_LL64_PRW (offset));
+  return inline_syscall (__NR_pread64, fd, buf, count,
+			 SYSCALL_LL64_PRW (offset));
 }
 hidden_def (__pread64_nocancel)

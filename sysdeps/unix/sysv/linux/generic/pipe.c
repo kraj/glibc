@@ -26,7 +26,7 @@
 int
 __pipe (int __pipedes[2])
 {
-  return INLINE_SYSCALL (pipe2, 2, __pipedes, 0);
+  return inline_syscall (__NR_pipe2, __pipedes, 0);
 }
 libc_hidden_def (__pipe)
 weak_alias (__pipe, pipe)

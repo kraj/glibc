@@ -24,9 +24,9 @@ int
 __access (const char *file, int type)
 {
 #ifdef __NR_access
-  return INLINE_SYSCALL_CALL (access, file, type);
+  return inline_syscall (__NR_access, file, type);
 #else
-  return INLINE_SYSCALL_CALL (faccessat, AT_FDCWD, file, type);
+  return inline_syscall (__NR_faccessat, AT_FDCWD, file, type);
 #endif
 }
 libc_hidden_def (__access)

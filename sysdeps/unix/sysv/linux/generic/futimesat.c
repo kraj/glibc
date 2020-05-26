@@ -47,6 +47,6 @@ futimesat (int fd, const char *file, const struct timeval tvp[2])
       TIMEVAL_TO_TIMESPEC (&tvp[1], &tsp[1]);
     }
 
-  result = INLINE_SYSCALL (utimensat, 4, fd, file, tvp ? tsp : NULL, 0);
+  result = inline_syscall (__NR_utimensat, fd, file, tvp ? tsp : NULL, 0);
   return result;
 }

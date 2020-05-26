@@ -43,12 +43,12 @@ __lseek (int fd, off_t offset, int whence)
 {
 # ifdef __NR__llseek
   loff_t res;
-  int rc = INLINE_SYSCALL_CALL (_llseek, fd,
-				(long) (((uint64_t) (offset)) >> 32),
-				(long) offset, &res, whence);
+  int rc = inline_syscall (__NR__llseek, fd,
+			   (long) (((uint64_t) (offset)) >> 32),
+			   (long) offset, &res, whence);
   return rc ?: lseek_overflow (res);
 # else
-  return INLINE_SYSCALL_CALL (lseek, fd, offset, whence);
+  return inline_syscall (__NR_lseek, fd, offset, whence);
 # endif
 }
 libc_hidden_def (__lseek)

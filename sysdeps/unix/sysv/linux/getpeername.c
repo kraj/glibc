@@ -27,9 +27,9 @@ int
 __getpeername (int fd, __SOCKADDR_ARG addr, socklen_t *len)
 {
 #ifdef __ASSUME_GETPEERNAME_SYSCALL
-  return INLINE_SYSCALL (getpeername, 3, fd, addr.__sockaddr__, len);
+  return inline_syscall (__NR_getpeername, fd, addr.__sockaddr__, len);
 #else
-  return SOCKETCALL (getpeername, fd, addr.__sockaddr__, len);
+  return socketcall (getpeername, fd, addr.__sockaddr__, len);
 #endif
 }
 weak_alias (__getpeername, getpeername)

@@ -45,7 +45,7 @@ __setrlimit (enum __rlimit_resource resource, const struct rlimit *rlim)
   else
     rlim64.rlim_max = rlim->rlim_max;
 
-  return INLINE_SYSCALL_CALL (prlimit64, 0, resource, &rlim64, NULL);
+  return inline_syscall (__NR_prlimit64, 0, resource, &rlim64, NULL);
 }
 
 libc_hidden_def (__setrlimit)

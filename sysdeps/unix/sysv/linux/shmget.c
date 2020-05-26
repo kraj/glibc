@@ -28,8 +28,8 @@ int
 shmget (key_t key, size_t size, int shmflg)
 {
 #ifdef __ASSUME_DIRECT_SYSVIPC_SYSCALLS
-  return INLINE_SYSCALL_CALL (shmget, key, size, shmflg, NULL);
+  return inline_syscall (__NR_shmget, key, size, shmflg, NULL);
 #else
-  return INLINE_SYSCALL_CALL (ipc, IPCOP_shmget, key, size, shmflg, NULL);
+  return inline_syscall (__NR_ipc, IPCOP_shmget, key, size, shmflg, NULL);
 #endif
 }

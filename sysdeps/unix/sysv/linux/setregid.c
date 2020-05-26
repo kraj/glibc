@@ -24,9 +24,9 @@ int
 __setregid (gid_t rgid, gid_t egid)
 {
 #ifdef __NR_setregid32
-  return INLINE_SETXID_SYSCALL (setregid32, 2, rgid, egid);
+  return inline_setxid_syscall (__NR_setregid32, rgid, egid);
 #else
-  return INLINE_SETXID_SYSCALL (setregid, 2, rgid, egid);
+  return inline_setxid_syscall (__NR_setregid, rgid, egid);
 #endif
 }
 #ifndef __setregid

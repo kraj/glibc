@@ -45,8 +45,8 @@ __pselect (int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
   data.ss = (__syscall_ulong_t) (uintptr_t) sigmask;
   data.ss_len = _NSIG / 8;
 
-  return SYSCALL_CANCEL (pselect6, nfds, readfds, writefds, exceptfds,
-                         timeout, &data);
+  return inline_syscall_cancel (__NR_pselect6, nfds, readfds, writefds,
+				exceptfds, timeout, &data);
 }
 #ifndef __pselect
 weak_alias (__pselect, pselect)

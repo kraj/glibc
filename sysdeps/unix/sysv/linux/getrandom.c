@@ -26,7 +26,7 @@
 ssize_t
 __getrandom (void *buffer, size_t length, unsigned int flags)
 {
-  return SYSCALL_CANCEL (getrandom, buffer, length, flags);
+  return inline_syscall_cancel (__NR_getrandom, buffer, length, flags);
 }
 libc_hidden_def (__getrandom)
 weak_alias (__getrandom, getrandom)

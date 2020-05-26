@@ -30,7 +30,7 @@ libc_hidden_proto (__sched_setaffinity_new)
 int
 __sched_setaffinity_new (pid_t pid, size_t cpusetsize, const cpu_set_t *cpuset)
 {
-  int result = INLINE_SYSCALL (sched_setaffinity, 3, pid, cpusetsize, cpuset);
+  int result = inline_syscall (__NR_sched_setaffinity, pid, cpusetsize, cpuset);
 
   return result;
 }

@@ -29,7 +29,7 @@
 static time_t
 time_syscall (time_t *t)
 {
-  return INLINE_SYSCALL_CALL (time, t);
+  return inline_syscall (__NR_time, t);
 }
 
 # undef INIT_ARCH

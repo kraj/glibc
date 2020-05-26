@@ -30,6 +30,6 @@ epoll_create (int size)
       return -1;
     }
 
-  return INLINE_SYSCALL (epoll_create1, 1, 0);
+  return inline_syscall (__NR_epoll_create1, 0);
 }
 libc_hidden_def (epoll_create)

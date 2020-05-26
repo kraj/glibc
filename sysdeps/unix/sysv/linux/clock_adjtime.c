@@ -30,9 +30,9 @@ __clock_adjtime64 (const clockid_t clock_id, struct __timex64 *tx64)
 # ifndef __NR_clock_adjtime64
 #  define __NR_clock_adjtime64 __NR_clock_adjtime
 # endif
-	return INLINE_SYSCALL_CALL (clock_adjtime64, clock_id, tx64);
+  return inline_syscall (__NR_clock_adjtime64, clock_id, tx64);
 #else
-  int ret = INLINE_SYSCALL_CALL (clock_adjtime64, clock_id, tx64);
+  int ret = inline_syscall (__NR_clock_adjtime64, clock_id, tx64);
   if (errno != ENOSYS)
     return ret;
 
@@ -44,7 +44,7 @@ __clock_adjtime64 (const clockid_t clock_id, struct __timex64 *tx64)
     }
 
   struct timex tx32 = valid_timex64_to_timex (*tx64);
-  int retval = INLINE_SYSCALL_CALL (clock_adjtime, clock_id, &tx32);
+  int retval = inline_syscall (__NR_clock_adjtime, clock_id, &tx32);
   if (retval >= 0)
     *tx64 = valid_timex_to_timex64 (tx32);
 

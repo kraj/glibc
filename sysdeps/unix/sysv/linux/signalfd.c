@@ -24,5 +24,5 @@
 int
 signalfd (int fd, const sigset_t *mask, int flags)
 {
-  return INLINE_SYSCALL (signalfd4, 4, fd, mask, _NSIG / 8, flags);
+  return inline_syscall (__NR_signalfd4, fd, mask, _NSIG / 8, flags);
 }

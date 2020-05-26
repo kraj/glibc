@@ -28,7 +28,7 @@
 int
 __fstatfs (int fd, struct statfs *buf)
 {
-  int rc = INLINE_SYSCALL (fstatfs64, 3, fd, sizeof (*buf), buf);
+  int rc = inline_syscall (__NR_fstatfs64, fd, sizeof (*buf), buf);
   return rc ?: statfs_overflow (buf);
 }
 weak_alias (__fstatfs, fstatfs)

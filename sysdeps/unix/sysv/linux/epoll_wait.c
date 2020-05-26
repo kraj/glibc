@@ -27,7 +27,8 @@ int
 epoll_wait (int epfd, struct epoll_event *events, int maxevents, int timeout)
 {
 #ifdef __NR_epoll_wait
-  return SYSCALL_CANCEL (epoll_wait, epfd, events, maxevents, timeout);
+  return inline_syscall_cancel (__NR_epoll_wait, epfd, events, maxevents,
+				timeout);
 #else
   return epoll_pwait (epfd, events, maxevents, timeout, NULL);
 #endif

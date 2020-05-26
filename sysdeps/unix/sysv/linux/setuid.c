@@ -23,9 +23,9 @@ int
 __setuid (uid_t uid)
 {
 #ifdef __NR_setuid32
-  return INLINE_SETXID_SYSCALL (setuid32, 1, uid);
+  return inline_setxid_syscall (__NR_setuid32, uid);
 #else
-  return INLINE_SETXID_SYSCALL (setuid, 1, uid);
+  return inline_setxid_syscall (__NR_setuid, uid);
 #endif
 }
 #ifndef __setuid

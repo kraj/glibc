@@ -35,7 +35,7 @@ __prctl (int option, ...)
   unsigned long int arg4 = va_arg (arg, unsigned long int);
   unsigned long int arg5 = va_arg (arg, unsigned long int);
   va_end (arg);
-  return INLINE_SYSCALL_CALL (prctl, option, arg2, arg3, arg4, arg5);
+  return inline_syscall (__NR_prctl, option, arg2, arg3, arg4, arg5);
 }
 
 libc_hidden_def (__prctl)

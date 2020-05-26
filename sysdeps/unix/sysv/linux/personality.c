@@ -23,14 +23,14 @@ extern __typeof (personality) __personality;
 int
 __personality (unsigned long persona)
 {
-  long int ret = INTERNAL_SYSCALL_CALL (personality, persona);
+  long int ret = internal_syscall (__NR_personality, persona);
 
   /* Starting with kernel commit v2.6.29-6609-g11d06b2, the personality syscall
      never fails.  However, 32-bit kernels might flag valid values as errors, so
      we need to reverse the error setting.  We can't use the raw result as some
      arches split the return/error values.  */
-  if (__glibc_unlikely (INTERNAL_SYSCALL_ERROR_P (ret)))
-    ret = -INTERNAL_SYSCALL_ERRNO (ret);
+  if (__syscall_err (ret))
+    ret = -ret;
   return ret;
 }
 weak_alias (__personality, personality)

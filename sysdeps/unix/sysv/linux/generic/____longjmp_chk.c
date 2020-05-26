@@ -43,7 +43,7 @@ void ____longjmp_chk (__jmp_buf env, int val)
     __longjmp (env, val);
 
   /* If we can't get the current stack state, give up and do the longjmp. */
-  if (INTERNAL_SYSCALL_CALL (sigaltstack, NULL, &ss) != 0)
+  if (internal_syscall (__NR_sigaltstack, NULL, &ss) != 0)
     __longjmp (env, val);
 
   /* If we we are executing on the alternate stack and within the

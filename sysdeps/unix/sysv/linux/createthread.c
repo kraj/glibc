@@ -119,20 +119,20 @@ create_thread (struct pthread *pd, const struct pthread_attr *attr,
 	{
 	  assert (*stopped_start);
 
-	  res = INTERNAL_SYSCALL_CALL (sched_setaffinity, pd->tid,
-				       attr->extension->cpusetsize,
-				       attr->extension->cpuset);
+	  res = internal_syscall (__NR_sched_setaffinity, pd->tid,
+				  attr->extension->cpusetsize,
+				  attr->extension->cpuset);
 
-	  if (__glibc_unlikely (INTERNAL_SYSCALL_ERROR_P (res)))
+	  if (__glibc_unlikely (__syscall_err (res)))
 	  err_out:
 	    {
 	      /* The operation failed.  We have to kill the thread.
 		 We let the normal cancellation mechanism do the work.  */
 
 	      pid_t pid = __getpid ();
-	      INTERNAL_SYSCALL_CALL (tgkill, pid, pd->tid, SIGCANCEL);
+	      internal_syscall (__NR_tgkill, pid, pd->tid, SIGCANCEL);
 
-	      return INTERNAL_SYSCALL_ERRNO (res);
+	      return -res;
 	    }
 	}
 
@@ -141,10 +141,10 @@ create_thread (struct pthread *pd, const struct pthread_attr *attr,
 	{
 	  assert (*stopped_start);
 
-	  res = INTERNAL_SYSCALL_CALL (sched_setscheduler, pd->tid,
-				       pd->schedpolicy, &pd->schedparam);
+	  res = internal_syscall (__NR_sched_setscheduler, pd->tid,
+				  pd->schedpolicy, &pd->schedparam);
 
-	  if (__glibc_unlikely (INTERNAL_SYSCALL_ERROR_P (res)))
+	  if (__syscall_err (res))
 	    goto err_out;
 	}
     }

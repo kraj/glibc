@@ -36,7 +36,7 @@
 int
 __getrlimit64 (enum __rlimit_resource resource, struct rlimit64 *rlimits)
 {
-  return INLINE_SYSCALL_CALL (prlimit64, 0, resource, NULL, rlimits);
+  return inline_syscall (__NR_prlimit64, 0, resource, NULL, rlimits);
 }
 libc_hidden_def (__getrlimit64)
 

@@ -27,9 +27,9 @@ int
 __getsockname (int fd, __SOCKADDR_ARG addr, socklen_t *len)
 {
 #ifdef __ASSUME_GETSOCKNAME_SYSCALL
-  return INLINE_SYSCALL (getsockname, 3, fd, addr.__sockaddr__, len);
+  return inline_syscall (__NR_getsockname, fd, addr.__sockaddr__, len);
 #else
-  return SOCKETCALL (getsockname, fd, addr.__sockaddr__, len);
+  return socketcall (getsockname, fd, addr.__sockaddr__, len);
 #endif
 }
 weak_alias (__getsockname, getsockname)

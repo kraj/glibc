@@ -28,7 +28,7 @@ __setitimer64 (__itimer_which_t which,
                struct __itimerval64 *restrict old_value)
 {
 #if __KERNEL_OLD_TIMEVAL_MATCHES_TIMEVAL64
-  return INLINE_SYSCALL_CALL (setitimer, which, new_value, old_value);
+  return inline_syscall (__NR_setitimer, which, new_value, old_value);
 #else
   struct __itimerval32 new_value_32;
 
@@ -44,10 +44,10 @@ __setitimer64 (__itimer_which_t which,
     = valid_timeval64_to_timeval32 (new_value->it_value);
 
   if (old_value == NULL)
-    return INLINE_SYSCALL_CALL (setitimer, which, &new_value_32, NULL);
+    return inline_syscall (__NR_setitimer, which, &new_value_32, NULL);
 
   struct __itimerval32 old_value_32;
-  if (INLINE_SYSCALL_CALL (setitimer, which, &new_value_32, &old_value_32)
+  if (inline_syscall (__NR_setitimer, which, &new_value_32, &old_value_32)
       == -1)
     return -1;
 

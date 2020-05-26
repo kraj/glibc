@@ -23,11 +23,11 @@ int
 mlock2 (const void *addr, size_t length, unsigned int flags)
 {
 #ifdef __ASSUME_MLOCK2
-  return INLINE_SYSCALL_CALL (mlock2, addr, length, flags);
+  return inline_syscall (__NR_mlock2, addr, length, flags);
 #else
   if (flags == 0)
-    return INLINE_SYSCALL_CALL (mlock, addr, length);
-  int ret = INLINE_SYSCALL_CALL (mlock2, addr, length, flags);
+    return inline_syscall (__NR_mlock, addr, length);
+  int ret = inline_syscall (__NR_mlock2, addr, length, flags);
   if (ret == 0 || errno != ENOSYS)
     return ret;
   /* Treat the missing system call as an invalid (non-zero) flag

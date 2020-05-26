@@ -27,9 +27,9 @@ int
 setsockopt (int fd, int level, int optname, const void *optval, socklen_t len)
 {
 #ifdef __ASSUME_SETSOCKOPT_SYSCALL
-  return INLINE_SYSCALL (setsockopt, 5, fd, level, optname, optval, len);
+  return inline_syscall (__NR_setsockopt, fd, level, optname, optval, len);
 #else
-  return SOCKETCALL (setsockopt, fd, level, optname, optval, len);
+  return socketcall (setsockopt, fd, level, optname, optval, len);
 #endif
 }
 weak_alias (setsockopt, __setsockopt)

@@ -65,13 +65,16 @@ static inline _Bool __syscall_err (unsigned long int val)
   return val > -4096UL;
 }
 
-static inline long __syscall_ret (unsigned long int val)
+static inline long int __syscall_ret_err (int err)
+{
+  __set_errno (err);
+  return -1;
+}
+
+static inline long int __syscall_ret (unsigned long int val)
 {
   if (__glibc_unlikely (__syscall_err (val)))
-    {
-       __set_errno (-val);
-       return -1;
-    }
+    return __syscall_ret_err (-val);
   return val;
 }
 #endif

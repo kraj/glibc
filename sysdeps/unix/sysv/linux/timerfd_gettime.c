@@ -29,15 +29,15 @@ __timerfd_gettime64 (int fd, struct __itimerspec64 *value)
 # ifndef __NR_timerfd_gettime64
 #  define __NR_timerfd_gettime64 __NR_timerfd_gettime
 # endif
-  return INLINE_SYSCALL_CALL (timerfd_gettime64, fd, value);
+  return inline_syscall (__NR_timerfd_gettime64, fd, value);
 #else
 # ifdef __NR_timerfd_gettime64
-  int ret = INLINE_SYSCALL_CALL (timerfd_gettime64, fd, value);
+  int ret = inline_syscall (__NR_timerfd_gettime64, fd, value);
   if (ret == 0 || errno != ENOSYS)
     return ret;
 # endif
   struct itimerspec its32;
-  int retval = INLINE_SYSCALL_CALL (timerfd_gettime, fd, &its32);
+  int retval = inline_syscall (__NR_timerfd_gettime, fd, &its32);
   if (retval == 0)
     {
       value->it_interval = valid_timespec_to_timespec64 (its32.it_interval);

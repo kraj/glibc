@@ -30,10 +30,10 @@ __timerfd_settime64 (int fd, int flags, const struct __itimerspec64 *value,
 # ifndef __NR_timerfd_settime64
 #  define __NR_timerfd_settime64 __NR_timerfd_settime
 # endif
-  return INLINE_SYSCALL_CALL (timerfd_settime64, fd, flags, value, ovalue);
+  return inline_syscall (__NR_timerfd_settime64, fd, flags, value, ovalue);
 #else
 # ifdef __NR_timerfd_settime64
-  int ret = INLINE_SYSCALL_CALL (timerfd_settime64, fd, flags, value, ovalue);
+  int ret = inline_syscall (__NR_timerfd_settime64, fd, flags, value, ovalue);
   if (ret == 0 || errno != ENOSYS)
     return ret;
 # endif
@@ -49,7 +49,7 @@ __timerfd_settime64 (int fd, int flags, const struct __itimerspec64 *value,
   its32.it_interval = valid_timespec64_to_timespec (value->it_interval);
   its32.it_value = valid_timespec64_to_timespec (value->it_value);
 
-  int retval = INLINE_SYSCALL_CALL (timerfd_settime, fd, flags,
+  int retval = inline_syscall (__NR_timerfd_settime, fd, flags,
                                     &its32, ovalue ? &oits32 : NULL);
   if (retval == 0 && ovalue)
     {

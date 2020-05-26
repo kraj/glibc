@@ -37,10 +37,10 @@ __fxstatat (int vers, int fd, const char *file, struct stat *buf, int flag)
   if (vers == _STAT_VER_KERNEL)
     {
 # ifdef __NR_fstatat64
-      int rc = INLINE_SYSCALL (fstatat64, 4, fd, file, buf, flag);
+      int rc = inline_syscall (__NR_fstatat64, fd, file, buf, flag);
 # else
       struct statx tmp;
-      int rc = INLINE_SYSCALL (statx, 5, fd, file,
+      int rc = inline_syscall (__NR_statx, fd, file,
                                AT_NO_AUTOMOUNT | flag,
                                STATX_BASIC_STATS, &tmp);
       if (rc == 0)

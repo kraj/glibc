@@ -26,8 +26,8 @@
 int
 __ftruncate64 (int fd, off64_t length)
 {
-  return INLINE_SYSCALL_CALL (ftruncate64, fd,
-			      __ALIGNMENT_ARG SYSCALL_LL64 (length));
+  return inline_syscall (__NR_ftruncate64, fd,
+			 __ALIGNMENT_ARG SYSCALL_LL64 (length));
 }
 weak_alias (__ftruncate64, ftruncate64)
 

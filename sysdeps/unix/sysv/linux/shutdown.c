@@ -27,9 +27,9 @@ int
 __shutdown (int fd, int how)
 {
 #ifdef __ASSUME_SHUTDOWN_SYSCALL
-  return INLINE_SYSCALL (shutdown, 2, fd, how);
+  return inline_syscall (__NR_shutdown, fd, how);
 #else
-  return SOCKETCALL (shutdown, fd, how);
+  return socketcall (shutdown, fd, how);
 #endif
 }
 weak_alias (__shutdown, shutdown)

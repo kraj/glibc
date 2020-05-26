@@ -22,5 +22,5 @@
 ssize_t
 tee (int src, int dest, size_t len, unsigned int flags)
 {
-  return SYSCALL_CANCEL (tee, src, dest, len, flags);
+  return inline_syscall_cancel (__NR_tee, src, dest, len, flags);
 }

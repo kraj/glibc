@@ -30,11 +30,11 @@ __mq_timedsend_time64 (mqd_t mqdes, const char *msg_ptr, size_t msg_len,
 # ifndef __NR_mq_timedsend_time64
 #  define __NR_mq_timedsend_time64 __NR_mq_timedsend
 # endif
-  return SYSCALL_CANCEL (mq_timedsend_time64, mqdes, msg_ptr, msg_len,
-                         msg_prio, abs_timeout);
+  return inline_syscall_cancel (__NR_mq_timedsend_time64, mqdes, msg_ptr,
+				msg_len, msg_prio, abs_timeout);
 #else
-  int ret = SYSCALL_CANCEL (mq_timedsend_time64, mqdes, msg_ptr, msg_len,
-                            msg_prio, abs_timeout);
+  int ret = inline_syscall_cancel (__NR_mq_timedsend_time64, mqdes, msg_ptr,
+				   msg_len, msg_prio, abs_timeout);
   if (ret == 0 || errno != ENOSYS)
     return ret;
 
@@ -50,8 +50,8 @@ __mq_timedsend_time64 (mqd_t mqdes, const char *msg_ptr, size_t msg_len,
       ts32 = valid_timespec64_to_timespec (*abs_timeout);
     }
 
-  return SYSCALL_CANCEL (mq_timedsend, mqdes, msg_ptr, msg_len, msg_prio,
-                         abs_timeout != NULL ? &ts32 : NULL);
+  return inline_syscall_cancel (__NR_mq_timedsend, mqdes, msg_ptr, msg_len,
+				msg_prio, abs_timeout != NULL ? &ts32 : NULL);
 #endif
 }
 

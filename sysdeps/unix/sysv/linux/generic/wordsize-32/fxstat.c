@@ -37,10 +37,10 @@ __fxstat (int vers, int fd, struct stat *buf)
   if (vers == _STAT_VER_KERNEL)
     {
 # ifdef __NR_fstat64
-      int rc = INLINE_SYSCALL (fstat64, 2, fd, buf);
+      int rc = inline_syscall (__NR_fstat64, fd, buf);
 # else
       struct statx tmp;
-      int rc = INLINE_SYSCALL (statx, 5, fd, "", AT_EMPTY_PATH,
+      int rc = inline_syscall (__NR_statx, fd, "", AT_EMPTY_PATH,
                                STATX_BASIC_STATS, &tmp);
       if (rc == 0)
         __cp_stat64_statx ((struct stat64 *)buf, &tmp);

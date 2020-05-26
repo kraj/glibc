@@ -36,7 +36,7 @@ __openat_nocancel (int fd, const char *file, int oflag, ...)
       va_end (arg);
     }
 
-  return INLINE_SYSCALL_CALL (openat, fd, file, oflag, mode);
+  return inline_syscall (__NR_openat, fd, file, oflag, mode);
 }
 hidden_def (__openat_nocancel)
 

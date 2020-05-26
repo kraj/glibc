@@ -28,14 +28,9 @@ __pthread_setaffinity_new (pthread_t th, size_t cpusetsize,
 			   const cpu_set_t *cpuset)
 {
   const struct pthread *pd = (const struct pthread *) th;
-  int res;
 
-  res = INTERNAL_SYSCALL_CALL (sched_setaffinity, pd->tid, cpusetsize,
-			       cpuset);
-
-  return (INTERNAL_SYSCALL_ERROR_P (res)
-	  ? INTERNAL_SYSCALL_ERRNO (res)
-	  : 0);
+  return -internal_syscall (__NR_sched_setaffinity, pd->tid, cpusetsize,
+			    cpuset);
 }
 versioned_symbol (libpthread, __pthread_setaffinity_new,
 		  pthread_setaffinity_np, GLIBC_2_3_4);

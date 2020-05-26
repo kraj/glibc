@@ -37,7 +37,7 @@
 int
 __setrlimit64 (enum __rlimit_resource resource, const struct rlimit64 *rlimits)
 {
-  return INLINE_SYSCALL_CALL (prlimit64, 0, resource, rlimits, NULL);
+  return inline_syscall (__NR_prlimit64, 0, resource, rlimits, NULL);
 }
 /* Alpha defines a versioned setrlimit{64}.  */
 #ifndef USE_VERSIONED_RLIMIT

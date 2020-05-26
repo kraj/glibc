@@ -27,13 +27,13 @@ __wait4_time64 (pid_t pid, int *stat_loc, int options, struct __rusage64 *usage)
 {
 #ifdef __NR_wait4
 # if __KERNEL_OLD_TIMEVAL_MATCHES_TIMEVAL64
-  return SYSCALL_CANCEL (wait4, pid, stat_loc, options, usage);
+  return inline_syscall_cancel (__NR_wait4, pid, stat_loc, options, usage);
 # else
   pid_t ret;
   struct __rusage32 usage32;
 
-  ret = SYSCALL_CANCEL (wait4, pid, stat_loc, options,
-                        usage != NULL ? &usage32 : NULL);
+  ret = inline_syscall_cancel (__NR_wait4, pid, stat_loc, options,
+			       usage != NULL ? &usage32 : NULL);
 
   if (ret > 0 && usage != NULL)
     rusage32_to_rusage64 (&usage32, usage);
@@ -58,12 +58,14 @@ __wait4_time64 (pid_t pid, int *stat_loc, int options, struct __rusage64 *usage)
   siginfo_t infop;
 
 # if __KERNEL_OLD_TIMEVAL_MATCHES_TIMEVAL64
-  if (SYSCALL_CANCEL (waitid, idtype, pid, &infop, options, usage) < 0)
+  if (inline_syscall_cancel (__NR_waitid, idtype, pid, &infop, options, usage)
+			     < 0)
     return -1;
 # else
   {
     struct __rusage32 usage32;
-    if (SYSCALL_CANCEL (waitid, idtype, pid, &infop, options, &usage32) < 0)
+    if (inline_syscall_cancel (__NR_waitid, idtype, pid, &infop, options,
+			       &usage32) < 0)
       return -1;
     if (usage != NULL)
       rusage32_to_rusage64 (&usage32, usage);

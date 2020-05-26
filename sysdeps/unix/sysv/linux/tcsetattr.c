@@ -58,7 +58,7 @@ __tcsetattr (int fd, int optional_actions, const struct termios *termios_p)
       cmd = TCSETSF;
       break;
     default:
-      return INLINE_SYSCALL_ERROR_RETURN_VALUE (EINVAL);
+      return __syscall_ret_err (EINVAL);
     }
 
   k_termios.c_iflag = termios_p->c_iflag & ~IBAUD0;
@@ -75,7 +75,7 @@ __tcsetattr (int fd, int optional_actions, const struct termios *termios_p)
   memcpy (&k_termios.c_cc[0], &termios_p->c_cc[0],
 	  __KERNEL_NCCS * sizeof (cc_t));
 
-  return INLINE_SYSCALL (ioctl, 3, fd, cmd, &k_termios);
+  return inline_syscall (__NR_ioctl, fd, cmd, &k_termios);
 }
 weak_alias (__tcsetattr, tcsetattr)
 libc_hidden_def (tcsetattr)

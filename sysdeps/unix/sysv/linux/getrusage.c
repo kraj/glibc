@@ -26,10 +26,10 @@ int
 __getrusage64 (enum __rusage_who who, struct __rusage64 *usage)
 {
 #if __KERNEL_OLD_TIMEVAL_MATCHES_TIMEVAL64
-  return INLINE_SYSCALL_CALL (getrusage, who, usage);
+  return inline_syscall (__NR_getrusage, who, usage);
 #else
   struct __rusage32 usage32;
-  if (INLINE_SYSCALL_CALL (getrusage, who, &usage32) == -1)
+  if (inline_syscall (__NR_getrusage, who, &usage32) == -1)
     return -1;
 
   rusage32_to_rusage64 (&usage32, usage);

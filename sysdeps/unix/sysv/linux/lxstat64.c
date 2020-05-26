@@ -29,7 +29,7 @@ int
 ___lxstat64 (int vers, const char *name, struct stat64 *buf)
 {
   int result;
-  result = INLINE_SYSCALL (lstat64, 2, name, buf);
+  result = inline_syscall (__NR_lstat64, name, buf);
   return result;
 }
 

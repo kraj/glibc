@@ -25,10 +25,11 @@ __libc_msgrcv (int msqid, void *msgp, size_t msgsz, long int msgtyp,
 	       int msgflg)
 {
 #ifdef __ASSUME_DIRECT_SYSVIPC_SYSCALLS
-  return SYSCALL_CANCEL (msgrcv, msqid, msgp, msgsz, msgtyp, msgflg);
+  return inline_syscall_cancel (__NR_msgrcv, msqid, msgp, msgsz, msgtyp,
+				msgflg);
 #else
-  return SYSCALL_CANCEL (ipc, IPCOP_msgrcv, msqid, msgsz, msgflg,
-			 MSGRCV_ARGS (msgp, msgtyp));
+  return inline_syscall_cancel (__NR_ipc, IPCOP_msgrcv, msqid, msgsz, msgflg,
+				MSGRCV_ARGS (msgp, msgtyp));
 #endif
 }
 weak_alias (__libc_msgrcv, msgrcv)

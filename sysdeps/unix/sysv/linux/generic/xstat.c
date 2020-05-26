@@ -33,7 +33,7 @@ int
 __xstat (int vers, const char *name, struct stat *buf)
 {
   if (vers == _STAT_VER_KERNEL)
-    return INLINE_SYSCALL (newfstatat, 4, AT_FDCWD, name, buf, 0);
+    return inline_syscall (__NR_newfstatat, AT_FDCWD, name, buf, 0);
 
   errno = EINVAL;
   return -1;

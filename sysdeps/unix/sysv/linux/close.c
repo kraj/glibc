@@ -24,7 +24,7 @@
 int
 __close (int fd)
 {
-  return SYSCALL_CANCEL (close, fd);
+  return inline_syscall_cancel (__NR_close, fd);
 }
 libc_hidden_def (__close)
 strong_alias (__close, __libc_close)

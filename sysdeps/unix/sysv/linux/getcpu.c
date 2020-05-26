@@ -26,7 +26,7 @@ __getcpu (unsigned int *cpu, unsigned int *node)
 #ifdef HAVE_GETCPU_VSYSCALL
   return INLINE_VSYSCALL (getcpu, 3, cpu, node, NULL);
 #else
-  return INLINE_SYSCALL_CALL (getcpu, cpu, node, NULL);
+  return inline_syscall (__NR_getcpu, cpu, node, NULL);
 #endif
 }
 weak_alias (__getcpu, getcpu)

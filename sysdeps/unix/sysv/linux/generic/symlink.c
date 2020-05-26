@@ -24,6 +24,6 @@
 int
 __symlink (const char *from, const char *to)
 {
-  return INLINE_SYSCALL (symlinkat, 3, from, AT_FDCWD, to);
+  return inline_syscall (__NR_symlinkat, from, AT_FDCWD, to);
 }
 weak_alias (__symlink, symlink)

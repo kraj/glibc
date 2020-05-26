@@ -31,7 +31,7 @@
     unsigned long long int k_dev;				\
     k_dev = dev & ((1ULL << 32) - 1);				\
     if (k_dev != dev)						\
-     return INLINE_SYSCALL_ERROR_RETURN_VALUE (EINVAL);		\
+     return __syscall_ret_err (EINVAL);				\
     (unsigned int) k_dev;					\
   })
 # endif
@@ -48,9 +48,9 @@ int
 __old_ustat (dev_t dev, struct ustat *ubuf)
 {
 # ifdef __NR_ustat
-  return INLINE_SYSCALL_CALL (ustat, DEV_TO_KDEV (dev), ubuf);
+  return inline_syscall (__NR_ustat, DEV_TO_KDEV (dev), ubuf);
 # else
-  return INLINE_SYSCALL_ERROR_RETURN_VALUE (ENOSYS);
+  return __syscall_ret_err (ENOSYS);
 # endif
 }
 compat_symbol (libc, __old_ustat, ustat, GLIBC_2_0);

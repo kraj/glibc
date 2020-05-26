@@ -26,7 +26,7 @@ int
 __poll (struct pollfd *fds, nfds_t nfds, int timeout)
 {
 #ifdef __NR_poll
-  return SYSCALL_CANCEL (poll, fds, nfds, timeout);
+  return inline_syscall_cancel (__NR_poll, fds, nfds, timeout);
 #else
   struct timespec timeout_ts;
   struct timespec *timeout_ts_p = NULL;
@@ -38,7 +38,7 @@ __poll (struct pollfd *fds, nfds_t nfds, int timeout)
       timeout_ts_p = &timeout_ts;
     }
 
-  return SYSCALL_CANCEL (ppoll, fds, nfds, timeout_ts_p, NULL, 0);
+  return inline_syscall_cancel (__NR_ppoll, fds, nfds, timeout_ts_p, NULL, 0);
 #endif
 }
 libc_hidden_def (__poll)

@@ -29,8 +29,10 @@ int
 accept4 (int fd, __SOCKADDR_ARG addr, socklen_t *addr_len, int flags)
 {
 #ifdef __ASSUME_ACCEPT4_SYSCALL
-  return SYSCALL_CANCEL (accept4, fd, addr.__sockaddr__, addr_len, flags);
+  return inline_syscall_cancel (__NR_accept4, fd, addr.__sockaddr__, addr_len,
+				flags);
 #else
-  return SOCKETCALL_CANCEL (accept4, fd, addr.__sockaddr__, addr_len, flags);
+  return socketcall_cancel (accept4, fd, addr.__sockaddr__, addr_len,
+			    flags);
 #endif
 }

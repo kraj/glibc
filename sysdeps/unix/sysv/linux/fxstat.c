@@ -36,15 +36,15 @@ int
 __fxstat (int vers, int fd, struct stat *buf)
 {
   if (vers == _STAT_VER_KERNEL)
-    return INLINE_SYSCALL (fstat, 2, fd, buf);
+    return inline_syscall (__NR_fstat, fd, buf);
 
 #ifdef STAT_IS_KERNEL_STAT
-  return INLINE_SYSCALL_ERROR_RETURN_VALUE (EINVAL);
+  return __syscall_ret_err (EINVAL);
 #else
   struct kernel_stat kbuf;
   int result;
 
-  result = INLINE_SYSCALL (fstat, 2, fd, &kbuf);
+  result = inline_syscall (__NR_fstat, fd, &kbuf);
   if (result == 0)
     result = __xstat_conv (vers, &kbuf, buf);
 

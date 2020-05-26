@@ -24,6 +24,6 @@
 int
 __rmdir (const char *path)
 {
-  return INLINE_SYSCALL (unlinkat, 3, AT_FDCWD, path, AT_REMOVEDIR);
+  return inline_syscall (__NR_unlinkat, AT_FDCWD, path, AT_REMOVEDIR);
 }
 weak_alias (__rmdir, rmdir)

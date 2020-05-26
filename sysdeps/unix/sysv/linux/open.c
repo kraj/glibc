@@ -41,7 +41,7 @@ __libc_open (const char *file, int oflag, ...)
       va_end (arg);
     }
 
-  return SYSCALL_CANCEL (openat, AT_FDCWD, file, oflag, mode);
+  return inline_syscall_cancel (__NR_openat, AT_FDCWD, file, oflag, mode);
 }
 libc_hidden_def (__libc_open)
 

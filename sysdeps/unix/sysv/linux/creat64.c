@@ -25,7 +25,7 @@ int
 __creat64 (const char *file, mode_t mode)
 {
 #if defined __OFF_T_MATCHES_OFF64_T && defined __NR_creat
-  return SYSCALL_CANCEL (creat, file, mode);
+  return inline_syscall_cancel (__NR_creat, file, mode);
 #else
   /* We need to pass O_LARGEFILE.  */
   return __open64 (file, O_WRONLY | O_CREAT | O_TRUNC, mode);

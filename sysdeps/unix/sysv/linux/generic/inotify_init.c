@@ -24,6 +24,6 @@ libc_hidden_proto (inotify_init)
 int
 inotify_init (void)
 {
-  return INLINE_SYSCALL (inotify_init1, 1, 0);
+  return inline_syscall (__NR_inotify_init1, 0);
 }
 libc_hidden_def (inotify_init)

@@ -23,7 +23,7 @@
 ssize_t
 __libc_read (int fd, void *buf, size_t nbytes)
 {
-  return SYSCALL_CANCEL (read, fd, buf, nbytes);
+  return inline_syscall_cancel (__NR_read, fd, buf, nbytes);
 }
 libc_hidden_def (__libc_read)
 

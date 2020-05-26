@@ -40,7 +40,7 @@ __fxstatat (int vers, int fd, const char *file, struct stat *st, int flag)
       return -1;
     }
 
-  return INLINE_SYSCALL (newfstatat, 4, fd, file, st, flag);
+  return inline_syscall (__NR_newfstatat, fd, file, st, flag);
 }
 libc_hidden_def (__fxstatat)
 #undef __fxstatat64

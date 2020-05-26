@@ -46,7 +46,7 @@ __libc_fcntl64 (int fd, int cmd, ...)
   cmd = FCNTL_ADJUST_CMD (cmd);
 
   if (cmd == F_SETLKW || cmd == F_SETLKW64 || cmd == F_OFD_SETLKW)
-    return SYSCALL_CANCEL (fcntl64, fd, cmd, arg);
+    return inline_syscall_cancel (__NR_fcntl64, fd, cmd, arg);
 
   return __fcntl64_nocancel_adjusted (fd, cmd, arg);
 }

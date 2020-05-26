@@ -35,7 +35,7 @@
 int
 __new_getrlimit (enum __rlimit_resource resource, struct rlimit *rlim)
 {
-  return INLINE_SYSCALL_CALL (ugetrlimit, resource, rlim);
+  return inline_syscall (__NR_ugetrlimit, resource, rlim);
 }
 weak_alias (__new_getrlimit, __getrlimit)
 hidden_weak (__getrlimit)
@@ -45,7 +45,7 @@ hidden_weak (__getrlimit)
 int
 __old_getrlimit (enum __rlimit_resource resource, struct rlimit *rlim)
 {
-  return INLINE_SYSCALL_CALL (getrlimit, resource, rlim);
+  return inline_syscall (__NR_getrlimit, resource, rlim);
 }
 compat_symbol (libc, __old_getrlimit, getrlimit, GLIBC_2_0);
 versioned_symbol (libc, __new_getrlimit, getrlimit, GLIBC_2_2);

@@ -40,8 +40,8 @@ __openat64_nocancel (int fd, const char *file, int oflag, ...)
       va_end (arg);
     }
 
-  return INLINE_SYSCALL_CALL (openat, fd, file, oflag | EXTRA_OPEN_FLAGS,
-			      mode);
+  return inline_syscall (__NR_openat, fd, file, oflag | EXTRA_OPEN_FLAGS,
+			 mode);
 }
 hidden_def (__openat64_nocancel)
 

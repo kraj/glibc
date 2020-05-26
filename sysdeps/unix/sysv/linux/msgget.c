@@ -28,8 +28,8 @@ int
 msgget (key_t key, int msgflg)
 {
 #ifdef __ASSUME_DIRECT_SYSVIPC_SYSCALLS
-  return INLINE_SYSCALL_CALL (msgget, key, msgflg);
+  return inline_syscall (__NR_msgget, key, msgflg);
 #else
-  return INLINE_SYSCALL_CALL (ipc, IPCOP_msgget, key, msgflg, 0, NULL);
+  return inline_syscall (__NR_ipc, IPCOP_msgget, key, msgflg, 0, NULL);
 #endif
 }

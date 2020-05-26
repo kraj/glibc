@@ -32,10 +32,10 @@ __utimensat64_helper (int fd, const char *file,
 # ifndef __NR_utimensat_time64
 #  define __NR_utimensat_time64 __NR_utimensat
 # endif
-  return INLINE_SYSCALL (utimensat_time64, 4, fd, file, &tsp64[0], flags);
+  return inline_syscall (__NR_utimensat_time64, fd, file, &tsp64[0], flags);
 #else
 # ifdef __NR_utimensat_time64
-  int ret = INLINE_SYSCALL (utimensat_time64, 4, fd, file, &tsp64[0], flags);
+  int ret = inline_syscall (__NR_utimensat_time64, fd, file, &tsp64[0], flags);
   if (ret == 0 || errno != ENOSYS)
     return ret;
 # endif
@@ -54,7 +54,7 @@ __utimensat64_helper (int fd, const char *file,
       tsp32[1] = valid_timespec64_to_timespec (tsp64[1]);
     }
 
-  return INLINE_SYSCALL (utimensat, 4, fd, file, tsp64 ? &tsp32[0] : NULL,
+  return inline_syscall (__NR_utimensat, fd, file, tsp64 ? &tsp32[0] : NULL,
                          flags);
 #endif
 
@@ -70,7 +70,7 @@ __utimensat64 (int fd, const char *file, const struct __timespec64 tsp64[2],
                int flags)
 {
   if (file == NULL)
-    return INLINE_SYSCALL_ERROR_RETURN_VALUE (EINVAL);
+    return __syscall_ret_err (EINVAL);
 
   return __utimensat64_helper (fd, file, &tsp64[0], flags);
 }

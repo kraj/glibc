@@ -42,7 +42,8 @@ __libc_openat64 (int fd, const char *file, int oflag, ...)
       va_end (arg);
     }
 
-  return SYSCALL_CANCEL (openat, fd, file, oflag | EXTRA_OPEN_FLAGS, mode);
+  return inline_syscall_cancel (__NR_openat, fd, file,
+				oflag | EXTRA_OPEN_FLAGS, mode);
 }
 
 strong_alias (__libc_openat64, __openat64)

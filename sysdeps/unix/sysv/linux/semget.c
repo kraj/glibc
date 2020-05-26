@@ -28,8 +28,8 @@ int
 semget (key_t key, int nsems, int semflg)
 {
 #ifdef __ASSUME_DIRECT_SYSVIPC_SYSCALLS
-  return INLINE_SYSCALL_CALL (semget, key, nsems, semflg);
+  return inline_syscall (__NR_semget, key, nsems, semflg);
 #else
-  return INLINE_SYSCALL_CALL (ipc, IPCOP_semget, key, nsems, semflg, NULL);
+  return inline_syscall (__NR_ipc, IPCOP_semget, key, nsems, semflg, NULL);
 #endif
 }

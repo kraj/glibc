@@ -23,7 +23,8 @@
 ssize_t
 pwritev64 (int fd, const struct iovec *vector, int count, off64_t offset)
 {
-  return SYSCALL_CANCEL (pwritev, fd, vector, count, LO_HI_LONG (offset));
+  return inline_syscall_cancel (__NR_pwritev, fd, vector, count,
+				LO_HI_LONG (offset));
 }
 #else
 static ssize_t __atomic_pwritev64_replacement (int, const struct iovec *,
@@ -31,8 +32,8 @@ static ssize_t __atomic_pwritev64_replacement (int, const struct iovec *,
 ssize_t
 pwritev64 (int fd, const struct iovec *vector, int count, off64_t offset)
 {
-  ssize_t result = SYSCALL_CANCEL (pwritev, fd, vector, count,
-				   LO_HI_LONG (offset));
+  ssize_t result = inline_syscall_cancel (__NR_pwritev, fd, vector, count,
+					  LO_HI_LONG (offset));
   if (result >= 0 || errno != ENOSYS)
     return result;
   return __atomic_pwritev64_replacement (fd, vector, count, offset);

@@ -35,15 +35,15 @@ int
 __lxstat (int vers, const char *name, struct stat *buf)
 {
   if (vers == _STAT_VER_KERNEL)
-    return INLINE_SYSCALL (lstat, 2, name, buf);
+    return inline_syscall (__NR_lstat, name, buf);
 
 #ifdef STAT_IS_KERNEL_STAT
-  return INLINE_SYSCALL_ERROR_RETURN_VALUE (EINVAL);
+  return __syscall_ret_err (EINVAL);
 #else
   struct kernel_stat kbuf;
   int result;
 
-  result = INLINE_SYSCALL (lstat, 2, name, &kbuf);
+  result = inline_syscall (__NR_lstat, name, &kbuf);
   if (result == 0)
     result = __xstat_conv (vers, &kbuf, buf);
 

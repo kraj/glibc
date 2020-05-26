@@ -42,5 +42,5 @@ __aio_sigqueue (int sig, const union sigval val, pid_t caller_pid)
   info.si_uid = getuid ();
   info.si_value = val;
 
-  return INLINE_SYSCALL (rt_sigqueueinfo, 3, info.si_pid, sig, &info);
+  return inline_syscall (__NR_rt_sigqueueinfo, info.si_pid, sig, &info);
 }

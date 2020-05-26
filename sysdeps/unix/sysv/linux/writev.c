@@ -23,7 +23,7 @@
 ssize_t
 __writev (int fd, const struct iovec *iov, int iovcnt)
 {
-  return SYSCALL_CANCEL (writev, fd, iov, iovcnt);
+  return inline_syscall_cancel (__NR_writev, fd, iov, iovcnt);
 }
 libc_hidden_def (__writev)
 weak_alias (__writev, writev)

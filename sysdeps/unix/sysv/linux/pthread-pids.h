@@ -25,5 +25,5 @@
 static inline void
 __pthread_initialize_pids (struct pthread *pd)
 {
-  pd->tid = INTERNAL_SYSCALL_CALL (set_tid_address, &pd->tid);
+  pd->tid = internal_syscall (__NR_set_tid_address, &pd->tid);
 }

@@ -75,7 +75,7 @@ __getcwd (char *buf, size_t size)
 
   int retval;
 
-  retval = INLINE_SYSCALL (getcwd, 2, path, alloc_size);
+  retval = inline_syscall (__NR_getcwd, path, alloc_size);
   if (retval > 0 && path[0] == '/')
     {
 #ifndef NO_ALLOCATION

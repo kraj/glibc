@@ -23,7 +23,7 @@
 ssize_t
 __libc_write (int fd, const void *buf, size_t nbytes)
 {
-  return SYSCALL_CANCEL (write, fd, buf, nbytes);
+  return inline_syscall_cancel (__NR_write, fd, buf, nbytes);
 }
 libc_hidden_def (__libc_write)
 

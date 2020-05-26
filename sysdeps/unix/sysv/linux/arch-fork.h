@@ -37,16 +37,16 @@ arch_fork (void *ctid)
 # ifdef INLINE_CLONE_SYSCALL
   ret = INLINE_CLONE_SYSCALL (flags, 0, NULL, 0, ctid);
 # else
-  ret = INLINE_SYSCALL_CALL (clone, flags, 0, NULL, 0, ctid);
+  ret = inline_syscall (__NR_clone, flags, 0, NULL, 0, ctid);
 # endif
 #elif defined(__ASSUME_CLONE_BACKWARDS2)
-  ret = INLINE_SYSCALL_CALL (clone, 0, flags, NULL, ctid, 0);
+  ret = inline_syscall (__NR_clone, 0, flags, NULL, ctid, 0);
 #elif defined(__ASSUME_CLONE_BACKWARDS3)
-  ret = INLINE_SYSCALL_CALL (clone, flags, 0, 0, NULL, ctid, 0);
+  ret = inline_syscall (__NR_clone, flags, 0, 0, NULL, ctid, 0);
 #elif defined(__ASSUME_CLONE2)
-  ret = INLINE_SYSCALL_CALL (clone2, flags, 0, 0, NULL, ctid, 0);
+  ret = inline_syscall (__NR_clone2, flags, 0, 0, NULL, ctid, 0);
 #elif defined(__ASSUME_CLONE_DEFAULT)
-  ret = INLINE_SYSCALL_CALL (clone, flags, 0, NULL, ctid, 0);
+  ret = inline_syscall (__NR_clone, flags, 0, NULL, ctid, 0);
 #else
 # error "Undefined clone variant"
 #endif

@@ -33,5 +33,5 @@
 static inline void
 _dl_writev (int fd, const struct iovec *iov, size_t niov)
 {
-  INTERNAL_SYSCALL_CALL (writev, fd, iov, niov);
+  internal_syscall (__NR_writev, fd, iov, niov);
 }

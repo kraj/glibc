@@ -24,7 +24,7 @@
 int
 __chown (const char *file, uid_t owner, gid_t group)
 {
-  return INLINE_SYSCALL (fchownat, 5, AT_FDCWD, file, owner, group, 0);
+  return inline_syscall (__NR_fchownat, AT_FDCWD, file, owner, group, 0);
 }
 libc_hidden_def (__chown)
 weak_alias (__chown, chown)

@@ -39,6 +39,6 @@ tcsendbreak (int fd, int duration)
   /* ioctl can't send a break of any other duration for us.
      This could be changed to use trickery (e.g. lower speed and
      send a '\0') to send the break, but for now just return an error.  */
-  return INLINE_SYSCALL_ERROR_RETURN_VALUE (EINVAL);
+  return __syscall_ret_err (EINVAL);
 #endif
 }

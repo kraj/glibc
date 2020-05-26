@@ -26,7 +26,8 @@ __sigtimedwait (const sigset_t *set, siginfo_t *info,
 {
   /* XXX The size argument hopefully will have to be changed to the
      real size of the user-level sigset_t.  */
-  int result = SYSCALL_CANCEL (rt_sigtimedwait, set, info, timeout, _NSIG / 8);
+  int result = inline_syscall_cancel (__NR_rt_sigtimedwait, set, info,
+				      timeout, _NSIG / 8);
 
   /* The kernel generates a SI_TKILL code in si_code in case tkill is
      used.  tkill is transparently used in raise().  Since having

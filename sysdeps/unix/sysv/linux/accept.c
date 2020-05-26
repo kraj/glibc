@@ -23,11 +23,11 @@ int
 __libc_accept (int fd, __SOCKADDR_ARG addr, socklen_t *len)
 {
 #ifdef __ASSUME_ACCEPT_SYSCALL
-  return SYSCALL_CANCEL (accept, fd, addr.__sockaddr__, len);
+  return inline_syscall_cancel (__NR_accept, fd, addr.__sockaddr__, len);
 #elif defined __ASSUME_ACCEPT4_SYSCALL
-  return SYSCALL_CANCEL (accept4, fd, addr.__sockaddr__, len, 0);
+  return inline_syscall_cancel (__NR_accept4, fd, addr.__sockaddr__, len, 0);
 #else
-  return SOCKETCALL_CANCEL (accept, fd, addr.__sockaddr__, len);
+  return socketcall_cancel (accept, fd, addr.__sockaddr__, len);
 #endif
 }
 weak_alias (__libc_accept, accept)

@@ -32,6 +32,6 @@ __exit_thread (void)
      of the caller and doing unexpectedly strange things.  */
   while (1)
     {
-      INTERNAL_SYSCALL_CALL (exit, 0);
+      internal_syscall (__NR_exit, 0);
     }
 }

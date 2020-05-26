@@ -26,9 +26,9 @@ int
 __libc_pause (void)
 {
 #ifdef __NR_pause
-  return SYSCALL_CANCEL (pause);
+  return inline_syscall_cancel (__NR_pause);
 #else
-  return SYSCALL_CANCEL (ppoll, NULL, 0, NULL, NULL);
+  return inline_syscall_cancel (__NR_ppoll, NULL, 0, NULL, NULL);
 #endif
 }
 weak_alias (__libc_pause, pause)

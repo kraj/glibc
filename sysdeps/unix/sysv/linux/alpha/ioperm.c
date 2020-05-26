@@ -196,7 +196,7 @@ stl_mb(unsigned int val, unsigned long addr)
 static inline void
 __sethae(unsigned long value)
 {
-  INLINE_SYSCALL_CALL (sethae, value);
+  inline_syscall (__NR_sethae, value);
 }
 
 extern long __pciconfig_iobase(enum __pciconfig_iobase_which __which,

@@ -33,7 +33,7 @@ typedef int (*func_type) (void *, void *, unsigned long int);
 static int
 __riscv_flush_icache_syscall (void *start, void *end, unsigned long int flags)
 {
-  return INLINE_SYSCALL (riscv_flush_icache, 3, start, end, flags);
+  return inline_syscall (__NR_riscv_flush_icache, start, end, flags);
 }
 
 static func_type

@@ -223,7 +223,7 @@ mq_notify (mqd_t mqdes, const struct sigevent *notification)
 
   /* Special treatment needed for SIGEV_THREAD.  */
   if (notification == NULL || notification->sigev_notify != SIGEV_THREAD)
-    return INLINE_SYSCALL (mq_notify, 2, mqdes, notification);
+    return inline_syscall (__NR_mq_notify, mqdes, notification);
 
   /* The kernel cannot directly start threads.  This will have to be
      done at userlevel.  Since we cannot start threads from signal
@@ -266,7 +266,7 @@ mq_notify (mqd_t mqdes, const struct sigevent *notification)
   se.sigev_value.sival_ptr = &data;
 
   /* Tell the kernel.  */
-  int retval = INLINE_SYSCALL (mq_notify, 2, mqdes, &se);
+  int retval = inline_syscall (__NR_mq_notify, mqdes, &se);
 
   /* If it failed, free the allocated memory.  */
   if (__glibc_unlikely (retval != 0))

@@ -25,10 +25,10 @@ int
 __ftruncate (int fd, off_t length)
 {
 # ifndef __NR_ftruncate
-  return INLINE_SYSCALL_CALL (ftruncate64, fd,
+  return inline_syscall (__NR_ftruncate64, fd,
 			      __ALIGNMENT_ARG SYSCALL_LL (length));
 # else
-  return INLINE_SYSCALL_CALL (ftruncate, fd, length);
+  return inline_syscall (__NR_ftruncate, fd, length);
 # endif
 }
 weak_alias (__ftruncate, ftruncate)

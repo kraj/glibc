@@ -30,10 +30,10 @@ __semtimedop (int semid, struct sembuf *sops, size_t nsops,
   /* semtimedop wire-up syscall is not exported for 32-bit ABIs (they have
      semtimedop_time64 instead with uses a 64-bit time_t).  */
 #if defined __ASSUME_DIRECT_SYSVIPC_SYSCALLS && defined __NR_semtimedop
-  return INLINE_SYSCALL_CALL (semtimedop, semid, sops, nsops, timeout);
+  return inline_syscall (__NR_semtimedop, semid, sops, nsops, timeout);
 #else
-  return INLINE_SYSCALL_CALL (ipc, IPCOP_semtimedop, semid,
-			      SEMTIMEDOP_IPC_ARGS (nsops, sops, timeout));
+  return inline_syscall (__NR_ipc, IPCOP_semtimedop, semid,
+			 SEMTIMEDOP_IPC_ARGS (nsops, sops, timeout));
 #endif
 }
 weak_alias (__semtimedop, semtimedop)

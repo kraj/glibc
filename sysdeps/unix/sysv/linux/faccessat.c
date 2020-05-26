@@ -27,10 +27,10 @@ int
 faccessat (int fd, const char *file, int mode, int flag)
 {
   if (flag & ~(AT_SYMLINK_NOFOLLOW | AT_EACCESS))
-    return INLINE_SYSCALL_ERROR_RETURN_VALUE (EINVAL);
+    return __syscall_ret_err (EINVAL);
 
   if ((flag == 0 || ((flag & ~AT_EACCESS) == 0 && ! __libc_enable_secure)))
-    return INLINE_SYSCALL (faccessat, 3, fd, file, mode);
+    return inline_syscall (__NR_faccessat, fd, file, mode);
 
   struct stat64 stats;
   if (__fxstatat64 (_STAT_VER, fd, file, &stats, flag & AT_SYMLINK_NOFOLLOW))
@@ -63,5 +63,5 @@ faccessat (int fd, const char *file, int mode, int flag)
   if (granted == mode)
     return 0;
 
-  return INLINE_SYSCALL_ERROR_RETURN_VALUE (EACCES);
+  return __syscall_ret (-EACCES);
 }

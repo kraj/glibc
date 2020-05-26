@@ -390,8 +390,8 @@ START_THREAD_DEFN
     {
       /* This call should never fail because the initial call in init.c
 	 succeeded.  */
-      INTERNAL_SYSCALL_CALL (set_robust_list, &pd->robust_head,
-			     sizeof (struct robust_list_head));
+      internal_syscall (__NR_set_robust_list, &pd->robust_head,
+			sizeof (struct robust_list_head));
     }
 
   /* This is where the try/finally block should be created.  For

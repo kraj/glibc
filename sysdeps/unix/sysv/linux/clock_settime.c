@@ -36,10 +36,10 @@ __clock_settime64 (clockid_t clock_id, const struct __timespec64 *tp)
 # ifndef __NR_clock_settime64
 #  define __NR_clock_settime64 __NR_clock_settime
 # endif
-  return INLINE_SYSCALL_CALL (clock_settime64, clock_id, tp);
+  return inline_syscall (__NR_clock_settime64, clock_id, tp);
 #else
 # ifdef __NR_clock_settime64
-  int ret = INLINE_SYSCALL_CALL (clock_settime64, clock_id, tp);
+  int ret = inline_syscall (__NR_clock_settime64, clock_id, tp);
   if (ret == 0 || errno != ENOSYS)
     return ret;
 # endif
@@ -50,7 +50,7 @@ __clock_settime64 (clockid_t clock_id, const struct __timespec64 *tp)
     }
 
   struct timespec ts32 = valid_timespec64_to_timespec (*tp);
-  return INLINE_SYSCALL_CALL (clock_settime, clock_id, &ts32);
+  return inline_syscall (__NR_clock_settime, clock_id, &ts32);
 #endif
 }
 

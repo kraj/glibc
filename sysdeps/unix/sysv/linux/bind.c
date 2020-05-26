@@ -27,9 +27,9 @@ int
 __bind (int fd, __CONST_SOCKADDR_ARG addr, socklen_t len)
 {
 #ifdef __ASSUME_BIND_SYSCALL
-  return INLINE_SYSCALL (bind, 3, fd, addr.__sockaddr__, len);
+  return inline_syscall (__NR_bind, fd, addr.__sockaddr__, len);
 #else
-  return SOCKETCALL (bind, fd, addr.__sockaddr__, len, 0, 0, 0);
+  return socketcall (bind, fd, addr.__sockaddr__, len);
 #endif
 }
 weak_alias (__bind, bind)

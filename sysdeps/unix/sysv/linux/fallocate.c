@@ -24,7 +24,7 @@
 int
 fallocate (int fd, int mode, __off_t offset, __off_t len)
 {
-  return SYSCALL_CANCEL (fallocate, fd, mode,
-			 SYSCALL_LL (offset), SYSCALL_LL (len));
+  return inline_syscall_cancel (__NR_fallocate, fd, mode,
+				SYSCALL_LL (offset), SYSCALL_LL (len));
 }
 #endif

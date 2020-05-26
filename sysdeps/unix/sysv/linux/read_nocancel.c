@@ -23,6 +23,6 @@
 ssize_t
 __read_nocancel (int fd, void *buf, size_t nbytes)
 {
-  return INLINE_SYSCALL_CALL (read, fd, buf, nbytes);
+  return inline_syscall (__NR_read, fd, buf, nbytes);
 }
 hidden_def (__read_nocancel)

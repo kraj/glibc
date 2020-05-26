@@ -39,10 +39,10 @@ raise (int sig)
   sigset_t set;
   __libc_signal_block_app (&set);
 
-  pid_t pid = INTERNAL_SYSCALL_CALL (getpid);
-  pid_t tid = INTERNAL_SYSCALL_CALL (gettid);
+  pid_t pid = internal_syscall (__NR_getpid);
+  pid_t tid = internal_syscall (__NR_gettid);
 
-  int ret = INLINE_SYSCALL_CALL (tgkill, pid, tid, sig);
+  int ret = inline_syscall (__NR_tgkill, pid, tid, sig);
 
   __libc_signal_restore_set (&set);
 

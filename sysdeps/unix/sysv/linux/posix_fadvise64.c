@@ -42,16 +42,13 @@ int
 __posix_fadvise64_l64 (int fd, off64_t offset, off64_t len, int advise)
 {
 #ifdef __ASSUME_FADVISE64_64_6ARG
-  int ret = INTERNAL_SYSCALL_CALL (fadvise64_64, fd, advise,
-				   SYSCALL_LL64 (offset), SYSCALL_LL64 (len));
+  return -internal_syscall (__NR_fadvise64_64, fd, advise,
+			    SYSCALL_LL64 (offset), SYSCALL_LL64 (len));
 #else
-  int ret = INTERNAL_SYSCALL_CALL (fadvise64_64, fd,
-				   __ALIGNMENT_ARG SYSCALL_LL64 (offset),
-				   SYSCALL_LL64 (len), advise);
+  return -internal_syscall (__NR_fadvise64_64, fd,
+			    __ALIGNMENT_ARG SYSCALL_LL64 (offset),
+			    SYSCALL_LL64 (len), advise);
 #endif
-  if (!INTERNAL_SYSCALL_ERROR_P (ret))
-    return 0;
-  return INTERNAL_SYSCALL_ERRNO (ret);
 }
 
 /* The type of the len argument was changed from size_t to off_t in

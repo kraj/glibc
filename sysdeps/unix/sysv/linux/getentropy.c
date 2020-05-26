@@ -42,7 +42,7 @@ getentropy (void *buffer, size_t length)
   while (buffer < end)
     {
       /* NB: No cancellation point.  */
-      ssize_t bytes = INLINE_SYSCALL_CALL (getrandom, buffer, end - buffer, 0);
+      ssize_t bytes = inline_syscall (__NR_getrandom, buffer, end - buffer, 0);
       if (bytes < 0)
         {
           if (errno == EINTR)

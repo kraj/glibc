@@ -33,7 +33,7 @@ __gettimeofday_syscall (struct timeval *restrict tv, void *restrict tz)
 {
   if (__glibc_unlikely (tz != 0))
     memset (tz, 0, sizeof *tz);
-  return INLINE_SYSCALL_CALL (gettimeofday, tv, tz);
+  return inline_syscall (__NR_gettimeofday, tv, tz);
 }
 
 # undef INIT_ARCH

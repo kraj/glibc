@@ -32,7 +32,7 @@ libc_hidden_proto (__sched_getaffinity_new)
 int
 __sched_getaffinity_new (pid_t pid, size_t cpusetsize, cpu_set_t *cpuset)
 {
-  int res = INLINE_SYSCALL (sched_getaffinity, 3, pid,
+  int res = inline_syscall (__NR_sched_getaffinity, pid,
 			    MIN (INT_MAX, cpusetsize), cpuset);
   if (res != -1)
     {

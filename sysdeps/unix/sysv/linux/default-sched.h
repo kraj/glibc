@@ -28,13 +28,13 @@ collect_default_sched (struct pthread *pd)
 {
   if ((pd->flags & ATTR_FLAG_POLICY_SET) == 0)
     {
-      pd->schedpolicy = INTERNAL_SYSCALL_CALL (sched_getscheduler, 0);
+      pd->schedpolicy = internal_syscall (__NR_sched_getscheduler, 0);
       pd->flags |= ATTR_FLAG_POLICY_SET;
     }
 
   if ((pd->flags & ATTR_FLAG_SCHED_SET) == 0)
     {
-      INTERNAL_SYSCALL_CALL (sched_getparam, 0, &pd->schedparam);
+      internal_syscall (__NR_sched_getparam, 0, &pd->schedparam);
       pd->flags |= ATTR_FLAG_SCHED_SET;
     }
 }

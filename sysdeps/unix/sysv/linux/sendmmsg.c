@@ -28,9 +28,9 @@ int
 __sendmmsg (int fd, struct mmsghdr *vmessages, unsigned int vlen, int flags)
 {
 #ifdef __ASSUME_SENDMMSG_SYSCALL
-  return SYSCALL_CANCEL (sendmmsg, fd, vmessages, vlen, flags);
+  return inline_syscall_cancel (__NR_sendmmsg, fd, vmessages, vlen, flags);
 #else
-  return SOCKETCALL_CANCEL (sendmmsg, fd, vmessages, vlen, flags);
+  return socketcall_cancel (sendmmsg, fd, vmessages, vlen, flags);
 #endif
 }
 libc_hidden_def (__sendmmsg)

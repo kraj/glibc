@@ -27,9 +27,9 @@ int
 __getsockopt (int fd, int level, int optname, void *optval, socklen_t *len)
 {
 #ifdef __ASSUME_GETSOCKOPT_SYSCALL
-  return INLINE_SYSCALL (getsockopt, 5, fd, level, optname, optval, len);
+  return inline_syscall (__NR_getsockopt, fd, level, optname, optval, len);
 #else
-  return SOCKETCALL (getsockopt, fd, level, optname, optval, len);
+  return socketcall (getsockopt, fd, level, optname, optval, len);
 #endif
 }
 weak_alias (__getsockopt, getsockopt)

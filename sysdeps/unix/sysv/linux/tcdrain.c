@@ -25,6 +25,6 @@ int
 __libc_tcdrain (int fd)
 {
   /* With an argument of 1, TCSBRK for output to be drain.  */
-  return SYSCALL_CANCEL (ioctl, fd, TCSBRK, 1);
+  return inline_syscall_cancel (__NR_ioctl, fd, TCSBRK, 1);
 }
 weak_alias (__libc_tcdrain, tcdrain)

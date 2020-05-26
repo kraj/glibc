@@ -26,8 +26,8 @@
 int
 __truncate64 (const char *path, off64_t length)
 {
-  return INLINE_SYSCALL_CALL (truncate64, path,
-			      __ALIGNMENT_ARG SYSCALL_LL64 (length));
+  return inline_syscall (__NR_truncate64, path,
+			 __ALIGNMENT_ARG SYSCALL_LL64 (length));
 }
 weak_alias (__truncate64, truncate64)
 

@@ -25,7 +25,7 @@ int
 statx (int fd, const char *path, int flags,
        unsigned int mask, struct statx *buf)
 {
-  int ret = INLINE_SYSCALL_CALL (statx, fd, path, flags, mask, buf);
+  int ret = inline_syscall (__NR_statx, fd, path, flags, mask, buf);
 #ifdef __ASSUME_STATX
   return ret;
 #else

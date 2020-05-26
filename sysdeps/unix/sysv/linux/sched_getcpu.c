@@ -28,7 +28,7 @@ sched_getcpu (void)
 #ifdef HAVE_GETCPU_VSYSCALL
   r = INLINE_VSYSCALL (getcpu, 3, &cpu, NULL, NULL);
 #else
-  r = INLINE_SYSCALL_CALL (getcpu, &cpu, NULL, NULL);
+  r = inline_syscall (__NR_getcpu, &cpu, NULL, NULL);
 #endif
   return r == -1 ? r : cpu;
 }

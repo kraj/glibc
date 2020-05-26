@@ -47,7 +47,7 @@ __fstatfs64 (int fd, struct statfs64 *buf)
   if (! __no_statfs64)
 # endif
     {
-      int result = INLINE_SYSCALL (fstatfs64, 3, fd, sizeof (*buf), buf);
+      int result = inline_syscall (__NR_fstatfs64, fd, sizeof (*buf), buf);
 
 # if __ASSUME_STATFS64 == 0
       if (result == 0 || errno != ENOSYS)

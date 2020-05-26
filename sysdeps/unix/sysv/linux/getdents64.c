@@ -29,7 +29,7 @@ __getdents64 (int fd, void *buf, size_t nbytes)
      checks in the kernel use an int type.  */
   if (nbytes > INT_MAX)
     nbytes = INT_MAX;
-  return INLINE_SYSCALL_CALL (getdents64, fd, buf, nbytes);
+  return inline_syscall (__NR_getdents64, fd, buf, nbytes);
 }
 libc_hidden_def (__getdents64)
 weak_alias (__getdents64, getdents64)
@@ -74,7 +74,7 @@ __old_getdents64 (int fd, char *buf, size_t nbytes)
 		  <= __alignof__ (struct dirent64),
 		  "alignment of __old_dirent64 is larger than dirent64");
 
-  ssize_t retval = INLINE_SYSCALL_CALL (getdents64, fd, buf, nbytes);
+  ssize_t retval = inline_syscall (__NR_getdents64, fd, buf, nbytes);
   if (retval > 0)
     {
       /* This is the marker for the first entry.  Offset 0 is reserved

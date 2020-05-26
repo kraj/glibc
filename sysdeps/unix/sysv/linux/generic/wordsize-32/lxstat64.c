@@ -41,11 +41,11 @@ __lxstat64 (int vers, const char *name, struct stat64 *buf)
   if (vers == _STAT_VER_KERNEL)
     {
 #ifdef __NR_fstatat64
-      return INLINE_SYSCALL (fstatat64, 4, AT_FDCWD, name, buf,
+      return inline_syscall (__NR_fstatat64, AT_FDCWD, name, buf,
                              AT_SYMLINK_NOFOLLOW);
 #else
       struct statx tmp;
-      int rc = INLINE_SYSCALL (statx, 5, AT_FDCWD, name,
+      int rc = inline_syscall (__NR_statx, AT_FDCWD, name,
                                AT_NO_AUTOMOUNT | AT_SYMLINK_NOFOLLOW,
                                STATX_BASIC_STATS, &tmp);
       if (rc == 0)

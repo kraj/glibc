@@ -22,5 +22,5 @@
 int
 msync (void *addr, size_t length, int flags)
 {
-  return SYSCALL_CANCEL (msync, addr, length, flags);
+  return inline_syscall_cancel (__NR_msync, addr, length, flags);
 }

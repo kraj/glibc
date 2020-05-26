@@ -29,8 +29,9 @@ recvmmsg (int fd, struct mmsghdr *vmessages, unsigned int vlen, int flags,
 	  struct timespec *tmo)
 {
 #ifdef __ASSUME_RECVMMSG_SYSCALL
-  return SYSCALL_CANCEL (recvmmsg, fd, vmessages, vlen, flags, tmo);
+  return inline_syscall_cancel (__NR_recvmmsg, fd, vmessages, vlen, flags,
+				tmo);
 #else
-  return SOCKETCALL_CANCEL (recvmmsg, fd, vmessages, vlen, flags, tmo);
+  return socketcall_cancel (recvmmsg, fd, vmessages, vlen, flags, tmo);
 #endif
 }

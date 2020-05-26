@@ -28,9 +28,9 @@ int
 setgroups (size_t n, const gid_t *groups)
 {
 #ifdef __NR_setgroups32
-  return INLINE_SETXID_SYSCALL (setgroups32, 2, n, groups);
+  return inline_setxid_syscall (__NR_setgroups32, n, groups);
 #else
-  return INLINE_SETXID_SYSCALL (setgroups, 2, n, groups);
+  return inline_setxid_syscall (__NR_setgroups, n, groups);
 #endif
 }
 libc_hidden_def (setgroups)

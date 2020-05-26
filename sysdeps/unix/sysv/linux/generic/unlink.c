@@ -24,6 +24,6 @@
 int
 __unlink (const char *name)
 {
-  return INLINE_SYSCALL (unlinkat, 3, AT_FDCWD, name, 0);
+  return inline_syscall (__NR_unlinkat, AT_FDCWD, name, 0);
 }
 weak_alias (__unlink, unlink)

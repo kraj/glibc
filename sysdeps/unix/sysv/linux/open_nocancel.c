@@ -39,7 +39,7 @@ __open_nocancel (const char *file, int oflag, ...)
       va_end (arg);
     }
 
-  return INLINE_SYSCALL_CALL (openat, AT_FDCWD, file, oflag, mode);
+  return inline_syscall (__NR_openat, AT_FDCWD, file, oflag, mode);
 }
 hidden_def (__open_nocancel)
 

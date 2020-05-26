@@ -24,9 +24,9 @@ int
 __setresgid (gid_t rgid, gid_t egid, gid_t sgid)
 {
 #ifdef __NR_setresgid32
-  return INLINE_SETXID_SYSCALL (setresgid32, 3, rgid, egid, sgid);
+  return inline_setxid_syscall (__NR_setresgid32, rgid, egid, sgid);
 #else
-  return INLINE_SETXID_SYSCALL (setresgid, 3, rgid, egid, sgid);
+  return inline_setxid_syscall (__NR_setresgid, rgid, egid, sgid);
 #endif
 }
 libc_hidden_def (__setresgid)

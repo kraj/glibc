@@ -29,9 +29,9 @@ int
 fchmodat (int fd, const char *file, mode_t mode, int flag)
 {
   if (flag == 0)
-    return INLINE_SYSCALL (fchmodat, 3, fd, file, mode);
+    return inline_syscall (__NR_fchmodat, fd, file, mode);
   else if (flag != AT_SYMLINK_NOFOLLOW)
-    return INLINE_SYSCALL_ERROR_RETURN_VALUE (EINVAL);
+    return __syscall_ret_err (EINVAL);
   else
     {
       /* The kernel system call does not have a mode argument.

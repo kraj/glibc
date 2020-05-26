@@ -43,7 +43,7 @@ __libc_fcntl (int fd, int cmd, ...)
     {
       case F_SETLKW:
       case F_SETLKW64:
-	return SYSCALL_CANCEL (fcntl64, fd, cmd, arg);
+	return inline_syscall_cancel (__NR_fcntl64, fd, cmd, arg);
       case F_OFD_SETLKW:
 	{
 	  struct flock *flk = (struct flock *) arg;
@@ -55,7 +55,7 @@ __libc_fcntl (int fd, int cmd, ...)
 	    .l_len = flk->l_len,
 	    .l_pid = flk->l_pid
 	  };
-	  return SYSCALL_CANCEL (fcntl64, fd, cmd, &flk64);
+	  return inline_syscall_cancel (__NR_fcntl64, fd, cmd, &flk64);
 	}
       case F_OFD_GETLK:
       case F_OFD_SETLK:
@@ -69,7 +69,7 @@ __libc_fcntl (int fd, int cmd, ...)
 	    .l_len = flk->l_len,
 	    .l_pid = flk->l_pid
 	  };
-	  int ret = INLINE_SYSCALL_CALL (fcntl64, fd, cmd, &flk64);
+	  int ret = inline_syscall (__NR_fcntl64, fd, cmd, &flk64);
 	  if (ret == -1)
 	    return -1;
 	  if ((off_t) flk64.l_start != flk64.l_start

@@ -24,7 +24,7 @@
 int
 __chmod (const char *file, mode_t mode)
 {
-  return INLINE_SYSCALL (fchmodat, 3, AT_FDCWD, file, mode);
+  return inline_syscall (__NR_fchmodat, AT_FDCWD, file, mode);
 }
 
 libc_hidden_def (__chmod)

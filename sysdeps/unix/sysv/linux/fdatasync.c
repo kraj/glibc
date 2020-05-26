@@ -25,5 +25,5 @@
 int
 fdatasync (int fd)
 {
-  return SYSCALL_CANCEL (fdatasync, fd);
+  return inline_syscall_cancel (__NR_fdatasync, fd);
 }

@@ -31,20 +31,19 @@ __clock_getcpuclockid (pid_t pid, clockid_t *clock_id)
 
   const clockid_t pidclock = MAKE_PROCESS_CPUCLOCK (pid, CPUCLOCK_SCHED);
 
-  int r = INTERNAL_SYSCALL_CALL (clock_getres, pidclock, NULL);
-  if (!INTERNAL_SYSCALL_ERROR_P (r))
+  int r = internal_syscall (__NR_clock_getres, pidclock, NULL);
+  if (r == 0)
     {
       *clock_id = pidclock;
       return 0;
     }
 
-  if (INTERNAL_SYSCALL_ERRNO (r) == EINVAL)
+  if (-r == EINVAL)
     {
       /* The clock_getres system call checked the PID for us.  */
       return ESRCH;
     }
-  else
-    return INTERNAL_SYSCALL_ERRNO (r);
+  return -r;
 }
 
 versioned_symbol (libc, __clock_getcpuclockid, clock_getcpuclockid, GLIBC_2_17);

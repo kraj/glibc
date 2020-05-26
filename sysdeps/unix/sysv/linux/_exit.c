@@ -27,8 +27,8 @@ _exit (int status)
 {
   while (1)
     {
-      INLINE_SYSCALL (exit_group, 1, status);
-      INLINE_SYSCALL (exit, 1, status);
+      inline_syscall (__NR_exit_group, status);
+      inline_syscall (__NR_exit, status);
 
 #ifdef ABORT_INSTRUCTION
       ABORT_INSTRUCTION;

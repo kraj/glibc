@@ -29,7 +29,7 @@ int
 __settimezone (const struct timezone *tz)
 {
 #ifdef __NR_settimeofday
-  return INLINE_SYSCALL_CALL (settimeofday, NULL, tz);
+  return inline_syscall (__NR_settimeofday, NULL, tz);
 #else
   __set_errno (ENOSYS);
   return -1;

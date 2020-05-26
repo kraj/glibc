@@ -75,7 +75,7 @@ timer_create (clockid_t clock_id, struct sigevent *evp, timer_t *timerid)
 	  }
 
 	kernel_timer_t ktimerid;
-	int retval = INLINE_SYSCALL (timer_create, 3, syscall_clockid, evp,
+	int retval = inline_syscall (__NR_timer_create, syscall_clockid, evp,
 				     &ktimerid);
 
 	if (retval != -1)
@@ -149,9 +149,9 @@ timer_create (clockid_t clock_id, struct sigevent *evp, timer_t *timerid)
 
 	/* Create the timer.  */
 	int res;
-	res = INTERNAL_SYSCALL_CALL (timer_create,
-				     syscall_clockid, &sev, &newp->ktimerid);
-	if (! INTERNAL_SYSCALL_ERROR_P (res))
+	res = inline_syscall (__NR_timer_create,
+			      syscall_clockid, &sev, &newp->ktimerid);
+	if (res == 0)
 	  {
 	    /* Add to the queue of active timers with thread
 	       delivery.  */
@@ -167,9 +167,7 @@ timer_create (clockid_t clock_id, struct sigevent *evp, timer_t *timerid)
 	/* Free the resources.  */
 	free (newp);
 
-	__set_errno (INTERNAL_SYSCALL_ERRNO (res));
-
-	return -1;
+	return res;
       }
   }
 }

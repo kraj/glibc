@@ -32,7 +32,7 @@ int
 __xstat (int vers, const char *name, struct stat *buf)
 {
   if (vers == _STAT_VER_KERNEL || vers == _STAT_VER_LINUX)
-    return INLINE_SYSCALL (stat, 2, name, buf);
+    return inline_syscall (__NR_stat, name, buf);
 
   __set_errno (EINVAL);
   return -1;

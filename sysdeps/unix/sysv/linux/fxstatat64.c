@@ -34,22 +34,20 @@ int
 __fxstatat64 (int vers, int fd, const char *file, struct stat64 *st, int flag)
 {
   if (__glibc_unlikely (vers != _STAT_VER_LINUX))
-    return INLINE_SYSCALL_ERROR_RETURN_VALUE (EINVAL);
+    return __syscall_ret_err (EINVAL);
 
   int result;
 
 #ifdef __NR_fstatat64
-  result = INTERNAL_SYSCALL_CALL (fstatat64, fd, file, st, flag);
+  result = internal_syscall (__NR_fstatat64, fd, file, st, flag);
 #else
   struct statx tmp;
 
-  result = INTERNAL_SYSCALL_CALL (statx, fd, file, AT_NO_AUTOMOUNT | flag,
-				  STATX_BASIC_STATS, &tmp);
+  result = internal_syscall (__NR_statx, fd, file, AT_NO_AUTOMOUNT | flag,
+			     STATX_BASIC_STATS, &tmp);
   if (result == 0)
     __cp_stat64_statx (st, &tmp);
 #endif
-  if (!__glibc_likely (INTERNAL_SYSCALL_ERROR_P (result)))
-    return 0;
-  return INLINE_SYSCALL_ERROR_RETURN_VALUE (INTERNAL_SYSCALL_ERRNO (result));
+  return __syscall_ret (result);
 }
 libc_hidden_def (__fxstatat64)

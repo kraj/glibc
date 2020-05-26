@@ -36,13 +36,13 @@ __mmap (void *addr, size_t len, int prot, int flags, int fd, off_t offset)
   MMAP_CHECK_PAGE_UNIT ();
 
   if (offset & MMAP_OFF_LOW_MASK)
-    return (void *) INLINE_SYSCALL_ERROR_RETURN_VALUE (EINVAL);
+    return (void *) __syscall_ret_err (EINVAL);
 
 #ifdef __NR_mmap2
-  return (void *) MMAP_CALL (mmap2, addr, len, prot, flags, fd,
+  return (void *) MMAP_CALL (__NR_mmap2, addr, len, prot, flags, fd,
 			     offset / (uint32_t) MMAP2_PAGE_UNIT);
 #else
-  return (void *) MMAP_CALL (mmap, addr, len, prot, flags, fd,
+  return (void *) MMAP_CALL (__NR_mmap, addr, len, prot, flags, fd,
 			     MMAP_ADJUST_OFFSET (offset));
 #endif
 }

@@ -24,7 +24,7 @@
 int
 __lchown (const char *file, uid_t owner, gid_t group)
 {
-  return INLINE_SYSCALL (fchownat, 5, AT_FDCWD, file, owner, group,
+  return inline_syscall (__NR_fchownat, AT_FDCWD, file, owner, group,
                          AT_SYMLINK_NOFOLLOW);
 }
 weak_alias (__lchown, lchown)

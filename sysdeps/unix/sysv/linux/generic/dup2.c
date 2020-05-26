@@ -30,7 +30,7 @@ __dup2 (int fd, int fd2)
   if (fd == fd2)
     return __libc_fcntl (fd, F_GETFL, 0) < 0 ? -1 : fd;
 
-  return INLINE_SYSCALL (dup3, 3, fd, fd2, 0);
+  return inline_syscall (__NR_dup3, fd, fd2, 0);
 }
 libc_hidden_def (__dup2)
 weak_alias (__dup2, dup2)

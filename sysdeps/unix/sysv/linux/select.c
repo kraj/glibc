@@ -38,8 +38,8 @@ __select (int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
 	  struct timeval *timeout)
 {
 #ifdef __NR_select
-  return SYSCALL_CANCEL (select, nfds, readfds, writefds, exceptfds,
-			 timeout);
+  return inline_syscall_cancel (__NR_select, nfds, readfds, writefds,
+				exceptfds, timeout);
 #else
   int result;
   struct timespec ts, *tsp = NULL;
@@ -50,7 +50,8 @@ __select (int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
       tsp = &ts;
     }
 
-  result = SYSCALL_CANCEL (pselect6, nfds, readfds, writefds, exceptfds, tsp,
+  result = inline_syscall_cancel (__NR_pselect6, nfds, readfds, writefds,
+				  exceptfds, tsp,
 			   NULL);
 
   if (timeout)

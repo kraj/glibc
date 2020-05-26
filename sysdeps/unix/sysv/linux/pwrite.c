@@ -24,7 +24,8 @@
 ssize_t
 __libc_pwrite (int fd, const void *buf, size_t count, off_t offset)
 {
-  return SYSCALL_CANCEL (pwrite64, fd, buf, count, SYSCALL_LL_PRW (offset));
+  return inline_syscall_cancel (__NR_pwrite64, fd, buf, count,
+				SYSCALL_LL_PRW (offset));
 }
 
 strong_alias (__libc_pwrite, __pwrite)

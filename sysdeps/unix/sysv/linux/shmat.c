@@ -29,16 +29,14 @@ void *
 shmat (int shmid, const void *shmaddr, int shmflg)
 {
 #ifdef __ASSUME_DIRECT_SYSVIPC_SYSCALLS
-  return (void*) INLINE_SYSCALL_CALL (shmat, shmid, shmaddr, shmflg);
+  return (void*) inline_syscall (__NR_shmat, shmid, shmaddr, shmflg);
 #else
   unsigned long resultvar;
   void *raddr;
 
-  resultvar = INTERNAL_SYSCALL_CALL (ipc, IPCOP_shmat, shmid, shmflg,
-				     &raddr, shmaddr);
-  if (INTERNAL_SYSCALL_ERROR_P (resultvar))
-    return (void *) INLINE_SYSCALL_ERROR_RETURN_VALUE (INTERNAL_SYSCALL_ERRNO (resultvar));
-
-  return raddr;
+  resultvar = internal_syscall (__NR_ipc, IPCOP_shmat, shmid, shmflg,
+				&raddr, shmaddr);
+  return __syscall_err (resultvar) ? (void *)__syscall_ret (resultvar)
+				   : raddr;
 #endif
 }

@@ -23,5 +23,6 @@ ssize_t
 splice (int fd_in, loff_t *off_in, int fd_out, loff_t *off_out, size_t len,
 	unsigned int flags)
 {
-  return SYSCALL_CANCEL (splice, fd_in, off_in, fd_out, off_out, len, flags);
+  return inline_syscall_cancel (__NR_splice, fd_in, off_in, fd_out, off_out,
+				len, flags);
 }

@@ -25,8 +25,8 @@ ssize_t
 preadv2 (int fd, const struct iovec *vector, int count, off_t offset,
 	 int flags)
 {
-  ssize_t result = SYSCALL_CANCEL (preadv2, fd, vector, count,
-				   LO_HI_LONG (offset), flags);
+  ssize_t result = inline_syscall_cancel (__NR_preadv2, fd, vector, count,
+					  LO_HI_LONG (offset), flags);
   if (result >= 0 || errno != ENOSYS)
     return result;
 

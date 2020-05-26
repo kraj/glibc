@@ -102,5 +102,41 @@
     sc_ret;								\
   })
 
+#define __socketcall1(name, a1)						\
+  inline_syscall (__NR_socketcall, SOCKOP_##name,			\
+     ((__syscall_arg_t [1]) { ARGIFY (a1) }))
+#define __socketcall2(name, a1, a2)					\
+  inline_syscall (__NR_socketcall, SOCKOP_##name,			\
+     ((__syscall_arg_t [2]) { ARGIFY (a1), ARGIFY (a2) }))
+#define __socketcall3(name, a1, a2, a3)					\
+  inline_syscall (__NR_socketcall, SOCKOP_##name,			\
+     ((__syscall_arg_t [3]) { ARGIFY (a1), ARGIFY (a2), ARGIFY (a3) }))
+#define __socketcall4(name, a1, a2, a3, a4)				\
+  inline_syscall (__NR_socketcall, SOCKOP_##name,			\
+     ((__syscall_arg_t [4]) { ARGIFY (a1), ARGIFY (a2), ARGIFY (a3),	\
+			      ARGIFY (a4) }))
+#define __socketcall5(name, a1, a2, a3, a4, a5)				\
+  inline_syscall (__NR_socketcall, SOCKOP_##name,			\
+     ((__syscall_arg_t [5]) { ARGIFY (a1), ARGIFY (a2), ARGIFY (a3),	\
+			      ARGIFY (a4), ARGIFY (a5) }))
+#define __socketcall6(name, a1, a2, a3, a4, a5, a6)			\
+  inline_syscall (__NR_socketcall, SOCKOP_##name,			\
+     ((__syscall_arg_t [6]) { ARGIFY (a1), ARGIFY (a2), ARGIFY (a3),	\
+			      ARGIFY (a4), ARGIFY (a5), ARGIFY (a6) }))
+
+#define socketcall(...)							\
+  __SOCKETCALL_DISP (__socketcall, __VA_ARGS__)
+
+#define socketcall_cancel(...) 						\
+  ({									\
+    long int __sc_ret;							\
+    int __sc_cancel_oldtype = -1;					\
+    if (! SINGLE_THREAD_P)						\
+      __sc_cancel_oldtype = LIBC_CANCEL_ASYNC ();			\
+    __sc_ret = socketcall (__VA_ARGS__);				\
+    if (__sc_cancel_oldtype != -1)					\
+      LIBC_CANCEL_RESET (__sc_cancel_oldtype);				\
+    __sc_ret;								\
+  })
 
 #endif /* sys/socketcall.h */

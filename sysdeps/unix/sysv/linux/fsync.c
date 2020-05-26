@@ -24,5 +24,5 @@
 int
 fsync (int fd)
 {
-  return SYSCALL_CANCEL (fsync, fd);
+  return inline_syscall_cancel (__NR_fsync, fd);
 }

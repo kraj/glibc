@@ -23,5 +23,5 @@
 ssize_t
 vmsplice (int fd, const struct iovec *iov, size_t count, unsigned int flags)
 {
-  return SYSCALL_CANCEL (vmsplice, fd, iov, count, flags);
+  return inline_syscall_cancel (__NR_vmsplice, fd, iov, count, flags);
 }

@@ -28,5 +28,5 @@ pkey_mprotect (void *addr, size_t len, int prot, int pkey)
     /* If the key is -1, the system call is precisely equivalent to
        mprotect.  */
     return __mprotect (addr, len, prot);
-  return INLINE_SYSCALL_CALL (pkey_mprotect, addr, len, prot, pkey);
+  return inline_syscall (__NR_pkey_mprotect, addr, len, prot, pkey);
 }

@@ -75,12 +75,17 @@ extern struct pthread_functions __libc_pthread_functions attribute_hidden;
 extern int __libc_pthread_functions_init attribute_hidden;
 
 #ifdef PTR_DEMANGLE
-# define PTHFCT_CALL(fct, params) \
+# define PTHFCT_PTR(fct) \
   ({ __typeof (__libc_pthread_functions.fct) __p;			      \
      __p = __libc_pthread_functions.fct;				      \
      PTR_DEMANGLE (__p);						      \
+     __p; })
+# define PTHFCT_CALL(fct, params) \
+  ({ __typeof (__libc_pthread_functions.fct) __p = PTHFCT_PTR (fct);	      \
      __p params; })
 #else
+# define PTHFCT_PTR(fct) \
+  __libc_pthread_functions.fct
 # define PTHFCT_CALL(fct, params) \
   __libc_pthread_functions.fct params
 #endif

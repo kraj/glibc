@@ -23,6 +23,6 @@
 ssize_t
 __write_nocancel (int fd, const void *buf, size_t nbytes)
 {
-  return INLINE_SYSCALL_CALL (write, fd, buf, nbytes);
+  return inline_syscall (__NR_write, fd, buf, nbytes);
 }
 hidden_def (__write_nocancel)
