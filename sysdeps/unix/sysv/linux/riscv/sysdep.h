@@ -20,7 +20,8 @@
 #define _LINUX_RISCV_SYSDEP_H 1
 
 #include <sysdeps/unix/sysv/linux/generic/sysdep.h>
-#include <tls.h>
+/* Defines RTLD_PRIVATE_ERRNO.  */
+#include <dl-sysdep.h>
 
 #ifdef __ASSEMBLER__
 
@@ -326,6 +327,114 @@
 # define __SYSCALL_CLOBBERS "memory"
 
 extern long int __syscall_error (long int neg_errno);
+
+static inline long int
+__internal_syscall0 (long int name)
+{
+  register long int a7 asm ("a7") = name;
+  register long int a0 asm ("a0");
+  asm volatile ("scall\n\t"
+		: "=r" (a0)
+		: "r" (a7)
+		: "memory");
+  return a0;
+}
+
+static inline long int
+__internal_syscall1 (long int name, __syscall_arg_t arg1)
+{
+  register long int a7 asm ("a7") = name;
+  register long int a0 asm ("a0") = arg1;
+  asm volatile ("scall\n\t"
+		: "+r" (a0)
+		: "r" (a7)
+		: "memory");
+  return a0;
+}
+
+static inline long int
+__internal_syscall2 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2)
+{
+  register long int a7 asm ("a7") = name;
+  register long int a0 asm ("a0") = arg1;
+  register long int a1 asm ("a1") = arg2;
+  asm volatile ("scall\n\t"
+		: "+r" (a0)
+		: "r" (a7), "r" (a1)
+		: "memory");
+  return a0;
+}
+
+static inline long int
+__internal_syscall3 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3)
+{
+  register long int a7 asm ("a7") = name;
+  register long int a0 asm ("a0") = arg1;
+  register long int a1 asm ("a1") = arg2;
+  register long int a2 asm ("a2") = arg3;
+  asm volatile ("scall\n\t"
+		: "+r" (a0)
+		: "r" (a7), "r" (a1), "r" (a2)
+		: "memory");
+  return a0;
+}
+
+static inline long int
+__internal_syscall4 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4)
+{
+  register long int a7 asm ("a7") = name;
+  register long int a0 asm ("a0") = arg1;
+  register long int a1 asm ("a1") = arg2;
+  register long int a2 asm ("a2") = arg3;
+  register long int a3 asm ("a3") = arg4;
+  asm volatile ("scall\n\t"
+		: "+r" (a0)
+		: "r" (a7), "r" (a1), "r" (a2), "r" (a3)
+		: "memory");
+  return a0;
+}
+
+static inline long int
+__internal_syscall5 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4, __syscall_arg_t arg5)
+{
+  register long int a7 asm ("a7") = name;
+  register long int a0 asm ("a0") = arg1;
+  register long int a1 asm ("a1") = arg2;
+  register long int a2 asm ("a2") = arg3;
+  register long int a3 asm ("a3") = arg4;
+  register long int a4 asm ("a4") = arg5;
+  asm volatile ("scall\n\t"
+		: "+r" (a0)
+		: "r" (a7), "r" (a1), "r" (a2), "r" (a3), "r" (a4)
+		: "memory");
+  return a0;
+}
+
+static inline long int
+__internal_syscall6 (long int name, __syscall_arg_t arg1,
+		     __syscall_arg_t arg2, __syscall_arg_t arg3,
+		     __syscall_arg_t arg4, __syscall_arg_t arg5,
+		     __syscall_arg_t arg6)
+{
+  register long int a7 asm ("a7") = name;
+  register long int a0 asm ("a0") = arg1;
+  register long int a1 asm ("a1") = arg2;
+  register long int a2 asm ("a2") = arg3;
+  register long int a3 asm ("a3") = arg4;
+  register long int a4 asm ("a4") = arg5;
+  register long int a5 asm ("a5") = arg6;
+  asm volatile ("scall\n\t"
+		: "+r" (a0)
+		: "r" (a7), "r" (a1), "r" (a2), "r" (a3), "r" (a4), "r" (a5)
+		: "memory");
+  return a0;
+}
 
 #endif /* ! __ASSEMBLER__ */
 
