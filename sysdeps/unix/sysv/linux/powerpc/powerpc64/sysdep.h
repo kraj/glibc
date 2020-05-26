@@ -15,8 +15,6 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-/* Alan Modra <amodra@bigpond.net.au> rewrote the INLINE_SYSCALL macro */
-
 #ifndef _LINUX_POWERPC64_SYSDEP_H
 #define _LINUX_POWERPC64_SYSDEP_H 1
 

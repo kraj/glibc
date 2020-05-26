@@ -28,7 +28,6 @@
 /* Defines RTLD_PRIVATE_ERRNO.  */
 #include <dl-sysdep.h>
 
-/* In order to get __set_errno() definition in INLINE_SYSCALL.  */
 #ifndef __ASSEMBLER__
 #include <errno.h>
 #endif
@@ -282,7 +281,7 @@
 
 /* the cmpb...no_error code below inside DO_CALL
  * is intended to mimic the if (__sys_res...)
- * code inside INLINE_SYSCALL
+ * code inside inline_syscall.
  */
 #define NO_ERROR -0x1000
 
@@ -359,114 +358,6 @@ L(pre_end):					ASM_LINE_SEP	\
 
 #define CALL_CLOB_REGS	"%r1", "%r2", CLOB_TREG \
 			"%r20", "%r29", "%r31"
-
-/* Similar to INLINE_SYSCALL but we don't set errno */
-#undef INTERNAL_SYSCALL
-#define INTERNAL_SYSCALL(name, nr, args...)				\
-({									\
-	long __sys_res;							\
-	{								\
-		LOAD_ARGS_##nr(args)					\
-		register unsigned long __res asm("r28");		\
-		PIC_REG_DEF						\
-		LOAD_REGS_##nr						\
-		/* FIXME: HACK save/load r19 around syscall */		\
-		asm volatile(						\
-			SAVE_ASM_PIC					\
-			"	ble  0x100(%%sr2, %%r0)\n"		\
-			"	ldi %1, %%r20\n"			\
-			LOAD_ASM_PIC					\
-			: "=r" (__res)					\
-			: "i" (SYS_ify(name)) PIC_REG_USE ASM_ARGS_##nr	\
-			: "memory", CALL_CLOB_REGS CLOB_ARGS_##nr	\
-		);							\
-		__sys_res = (long)__res;				\
-	}								\
-	__sys_res;							\
- })
-
-
-/* The _NCS variant allows non-constant syscall numbers.  */
-#undef INTERNAL_SYSCALL_NCS
-#define INTERNAL_SYSCALL_NCS(name, nr, args...)				\
-({									\
-	long __sys_res;							\
-	{								\
-		LOAD_ARGS_##nr(args)					\
-		register unsigned long __res asm("r28");		\
-		PIC_REG_DEF						\
-		LOAD_REGS_##nr						\
-		/* FIXME: HACK save/load r19 around syscall */		\
-		asm volatile(						\
-			SAVE_ASM_PIC					\
-			"	ble  0x100(%%sr2, %%r0)\n"		\
-			"	copy %1, %%r20\n"			\
-			LOAD_ASM_PIC					\
-			: "=r" (__res)					\
-			: "r" (name) PIC_REG_USE ASM_ARGS_##nr		\
-			: "memory", CALL_CLOB_REGS CLOB_ARGS_##nr	\
-		);							\
-		__sys_res = (long)__res;				\
-	}								\
-	__sys_res;							\
- })
-
-#define LOAD_ARGS_0()
-#define LOAD_REGS_0
-#define LOAD_ARGS_1(a1)							\
-  register unsigned long __x26 = (unsigned long)(a1);			\
-  LOAD_ARGS_0()
-#define LOAD_REGS_1							\
-  register unsigned long __r26 __asm__("r26") = __x26;			\
-  LOAD_REGS_0
-#define LOAD_ARGS_2(a1,a2)						\
-  register unsigned long __x25 = (unsigned long)(a2);			\
-  LOAD_ARGS_1(a1)
-#define LOAD_REGS_2							\
-  register unsigned long __r25 __asm__("r25") = __x25;			\
-  LOAD_REGS_1
-#define LOAD_ARGS_3(a1,a2,a3)						\
-  register unsigned long __x24 = (unsigned long)(a3);			\
-  LOAD_ARGS_2(a1,a2)
-#define LOAD_REGS_3							\
-  register unsigned long __r24 __asm__("r24") = __x24;			\
-  LOAD_REGS_2
-#define LOAD_ARGS_4(a1,a2,a3,a4)					\
-  register unsigned long __x23 = (unsigned long)(a4);			\
-  LOAD_ARGS_3(a1,a2,a3)
-#define LOAD_REGS_4							\
-  register unsigned long __r23 __asm__("r23") = __x23;			\
-  LOAD_REGS_3
-#define LOAD_ARGS_5(a1,a2,a3,a4,a5)					\
-  register unsigned long __x22 = (unsigned long)(a5);			\
-  LOAD_ARGS_4(a1,a2,a3,a4)
-#define LOAD_REGS_5							\
-  register unsigned long __r22 __asm__("r22") = __x22;			\
-  LOAD_REGS_4
-#define LOAD_ARGS_6(a1,a2,a3,a4,a5,a6)					\
-  register unsigned long __x21 = (unsigned long)(a6);			\
-  LOAD_ARGS_5(a1,a2,a3,a4,a5)
-#define LOAD_REGS_6							\
-  register unsigned long __r21 __asm__("r21") = __x21;			\
-  LOAD_REGS_5
-
-/* Even with zero args we use r20 for the syscall number */
-#define ASM_ARGS_0
-#define ASM_ARGS_1 ASM_ARGS_0, "r" (__r26)
-#define ASM_ARGS_2 ASM_ARGS_1, "r" (__r25)
-#define ASM_ARGS_3 ASM_ARGS_2, "r" (__r24)
-#define ASM_ARGS_4 ASM_ARGS_3, "r" (__r23)
-#define ASM_ARGS_5 ASM_ARGS_4, "r" (__r22)
-#define ASM_ARGS_6 ASM_ARGS_5, "r" (__r21)
-
-/* The registers not listed as inputs but clobbered */
-#define CLOB_ARGS_6
-#define CLOB_ARGS_5 CLOB_ARGS_6, "%r21"
-#define CLOB_ARGS_4 CLOB_ARGS_5, "%r22"
-#define CLOB_ARGS_3 CLOB_ARGS_4, "%r23"
-#define CLOB_ARGS_2 CLOB_ARGS_3, "%r24"
-#define CLOB_ARGS_1 CLOB_ARGS_2, "%r25"
-#define CLOB_ARGS_0 CLOB_ARGS_1, "%r26"
 
 static inline long int
 __internal_syscall0 (long int name)

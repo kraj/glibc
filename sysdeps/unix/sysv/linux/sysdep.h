@@ -23,42 +23,6 @@
 #include <endian.h>
 #include <errno.h>
 
-#undef INTERNAL_SYSCALL_ERROR_P
-#define INTERNAL_SYSCALL_ERROR_P(val) \
-  ((unsigned long int) (val) > -4096UL)
-
-#ifndef SYSCALL_ERROR_LABEL
-# define SYSCALL_ERROR_LABEL(sc_err)					\
-  ({									\
-    __set_errno (sc_err);						\
-    -1L;								\
-  })
-#endif
-
-/* Define a macro which expands into the inline wrapper code for a system
-   call.  It sets the errno and returns -1 on a failure, or the syscall
-   return value otherwise.  */
-#undef INLINE_SYSCALL
-#define INLINE_SYSCALL(name, nr, args...)				\
-  ({									\
-    long int sc_ret = INTERNAL_SYSCALL (name, nr, args);		\
-    __glibc_unlikely (INTERNAL_SYSCALL_ERROR_P (sc_ret))		\
-    ? SYSCALL_ERROR_LABEL (INTERNAL_SYSCALL_ERRNO (sc_ret))		\
-    : sc_ret;								\
-  })
-
-#undef INTERNAL_SYSCALL_ERRNO
-#define INTERNAL_SYSCALL_ERRNO(val)     (-(val))
-
-/* Set error number and return -1.  A target may choose to return the
-   internal function, __syscall_error, which sets errno and returns -1.
-   We use -1l, instead of -1, so that it can be casted to (void *).  */
-#define INLINE_SYSCALL_ERROR_RETURN_VALUE(err)  \
-  ({						\
-    __set_errno (err);				\
-    -1l;					\
-  })
-
 #ifndef __ASSEMBLER__
 static inline _Bool __syscall_err (unsigned long int val)
 {

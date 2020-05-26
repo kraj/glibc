@@ -21,7 +21,6 @@
 
 #include <sysdeps/unix/sysv/linux/sysdep.h>
 #include <sysdeps/unix/powerpc/sysdep.h>
-/* Define __set_errno() for INLINE_SYSCALL macro below.  */
 #include <errno.h>
 
 /* For Linux we can use the system call table in the header file
@@ -62,33 +61,6 @@
 
 #define INTERNAL_VSYSCALL_CALL(funcptr, nr, args...)			\
   INTERNAL_VSYSCALL_CALL_TYPE(funcptr, long int, nr, args)
-
-
-#undef INTERNAL_SYSCALL
-#define INTERNAL_SYSCALL_NCS(name, nr, args...) \
-  ({									\
-    register long int r0  __asm__ ("r0");				\
-    register long int r3  __asm__ ("r3");				\
-    register long int r4  __asm__ ("r4");				\
-    register long int r5  __asm__ ("r5");				\
-    register long int r6  __asm__ ("r6");				\
-    register long int r7  __asm__ ("r7");				\
-    register long int r8  __asm__ ("r8");				\
-    LOADARGS_##nr (name, ##args);					\
-    __asm__ __volatile__						\
-      ("sc\n\t"								\
-       "mfcr  %0\n\t"							\
-       "0:"								\
-       : "=&r" (r0),							\
-         "=&r" (r3), "=&r" (r4), "=&r" (r5),				\
-         "=&r" (r6), "=&r" (r7), "=&r" (r8)				\
-       : ASM_INPUT_##nr							\
-       : "r9", "r10", "r11", "r12",					\
-         "cr0", "ctr", "memory");					\
-    r0 & (1 << 28) ? -r3 : r3;						\
-  })
-#define INTERNAL_SYSCALL(name, nr, args...)				\
-  INTERNAL_SYSCALL_NCS (__NR_##name, nr, args)
 
 #if defined(__PPC64__) || defined(__powerpc64__)
 # define SYSCALL_ARG_SIZE 8
@@ -146,14 +118,6 @@
 	    && sizeof (__arg6) > SYSCALL_ARG_SIZE) \
 	  __illegally_sized_syscall_arg6 (); \
 	r8 = _arg6
-
-#define ASM_INPUT_0 "0" (r0)
-#define ASM_INPUT_1 ASM_INPUT_0, "1" (r3)
-#define ASM_INPUT_2 ASM_INPUT_1, "2" (r4)
-#define ASM_INPUT_3 ASM_INPUT_2, "3" (r5)
-#define ASM_INPUT_4 ASM_INPUT_3, "4" (r6)
-#define ASM_INPUT_5 ASM_INPUT_4, "5" (r7)
-#define ASM_INPUT_6 ASM_INPUT_5, "6" (r8)
 
 #ifndef __ASSEMBLER__
 static inline long int

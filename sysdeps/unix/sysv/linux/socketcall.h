@@ -49,28 +49,6 @@
 #define SOCKOP_recvmmsg		19
 #define SOCKOP_sendmmsg		20
 
-#define __SOCKETCALL1(name, a1) \
-  INLINE_SYSCALL (socketcall, 2, name, \
-     ((long int [1]) { (long int) (a1) }))
-#define __SOCKETCALL2(name, a1, a2) \
-  INLINE_SYSCALL (socketcall, 2, name, \
-     ((long int [2]) { (long int) (a1), (long int) (a2) }))
-#define __SOCKETCALL3(name, a1, a2, a3) \
-  INLINE_SYSCALL (socketcall, 2, name, \
-     ((long int [3]) { (long int) (a1), (long int) (a2), (long int) (a3) }))
-#define __SOCKETCALL4(name, a1, a2, a3, a4) \
-  INLINE_SYSCALL (socketcall, 2, name, \
-     ((long int [4]) { (long int) (a1), (long int) (a2), (long int) (a3), \
-                       (long int) (a4) }))
-#define __SOCKETCALL5(name, a1, a2, a3, a4, a5) \
-  INLINE_SYSCALL (socketcall, 2, name, \
-     ((long int [5]) { (long int) (a1), (long int) (a2), (long int) (a3), \
-                       (long int) (a4), (long int) (a5) }))
-#define __SOCKETCALL6(name, a1, a2, a3, a4, a5, a6) \
-  INLINE_SYSCALL (socketcall, 2, name, \
-     ((long int [6]) { (long int) (a1), (long int) (a2), (long int) (a3), \
-                       (long int) (a4), (long int) (a5), (long int) (a6) }))
-
 #define __SOCKETCALL_NARGS_X(a,b,c,d,e,f,g,h,n,...) n
 #define __SOCKETCALL_NARGS(...) \
   __SOCKETCALL_NARGS_X (__VA_ARGS__,7,6,5,4,3,2,1,0,)
@@ -79,28 +57,10 @@
 #define __SOCKETCALL_DISP(b,...) \
   __SOCKETCALL_CONCAT (b,__SOCKETCALL_NARGS(__VA_ARGS__))(__VA_ARGS__)
 
-#define __SOCKETCALL(...) __SOCKETCALL_DISP (__SOCKETCALL, __VA_ARGS__)
-
-
-#define SOCKETCALL(name, args...)					\
-  ({									\
-    long int sc_ret = __SOCKETCALL (SOCKOP_##name, args);		\
-    sc_ret;								\
-  })
-
-
 #if IS_IN (libc)
 # define __pthread_enable_asynccancel  __libc_enable_asynccancel
 # define __pthread_disable_asynccancel __libc_disable_asynccancel
 #endif
-
-#define SOCKETCALL_CANCEL(name, args...)				\
-  ({									\
-    int oldtype = LIBC_CANCEL_ASYNC ();					\
-    long int sc_ret = __SOCKETCALL (SOCKOP_##name, args);		\
-    LIBC_CANCEL_RESET (oldtype);					\
-    sc_ret;								\
-  })
 
 #define __socketcall1(name, a1)						\
   inline_syscall (__NR_socketcall, SOCKOP_##name,			\

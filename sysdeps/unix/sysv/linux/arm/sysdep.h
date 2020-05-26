@@ -310,51 +310,6 @@ __local_syscall_error:						\
 
 #else /* not __ASSEMBLER__ */
 
-#if defined(__thumb__)
-/* We can not expose the use of r7 to the compiler.  GCC (as
-   of 4.5) uses r7 as the hard frame pointer for Thumb - although
-   for Thumb-2 it isn't obviously a better choice than r11.
-   And GCC does not support asms that conflict with the frame
-   pointer.
-
-   This would be easier if syscall numbers never exceeded 255,
-   but they do.  For the moment the LOAD_ARGS_7 is sacrificed.
-   We can't use push/pop inside the asm because that breaks
-   unwinding (i.e. thread cancellation) for this frame.  We can't
-   locally save and restore r7, because we do not know if this
-   function uses r7 or if it is our caller's r7; if it is our caller's,
-   then unwinding will fail higher up the stack.  So we move the
-   syscall out of line and provide its own unwind information.  */
-# undef INTERNAL_SYSCALL_RAW
-# define INTERNAL_SYSCALL_RAW(name, nr, args...)		\
-  ({								\
-      register int _a1 asm ("a1");				\
-      int _nametmp = name;					\
-      LOAD_ARGS_##nr (args)					\
-      register int _name asm ("ip") = _nametmp;			\
-      asm volatile ("bl      __libc_do_syscall"			\
-                    : "=r" (_a1)				\
-                    : "r" (_name) ASM_ARGS_##nr			\
-                    : "memory", "lr");				\
-      _a1; })
-#else /* ARM */
-# undef INTERNAL_SYSCALL_RAW
-# define INTERNAL_SYSCALL_RAW(name, nr, args...)		\
-  ({								\
-       register int _a1 asm ("r0"), _nr asm ("r7");		\
-       LOAD_ARGS_##nr (args)					\
-       _nr = name;						\
-       asm volatile ("swi	0x0	@ syscall " #name	\
-		     : "=r" (_a1)				\
-		     : "r" (_nr) ASM_ARGS_##nr			\
-		     : "memory");				\
-       _a1; })
-#endif
-
-#undef INTERNAL_SYSCALL
-#define INTERNAL_SYSCALL(name, nr, args...)			\
-	INTERNAL_SYSCALL_RAW(SYS_ify(name), nr, args)
-
 #define VDSO_NAME  "LINUX_2.6"
 #define VDSO_HASH  61765110
 
@@ -362,51 +317,6 @@ __local_syscall_error:						\
 #define HAVE_CLOCK_GETTIME_VSYSCALL	"__vdso_clock_gettime"
 #define HAVE_CLOCK_GETTIME64_VSYSCALL	"__vdso_clock_gettime64"
 #define HAVE_GETTIMEOFDAY_VSYSCALL	"__vdso_gettimeofday"
-
-#define LOAD_ARGS_0()
-#define ASM_ARGS_0
-#define LOAD_ARGS_1(a1)				\
-  int _a1tmp = (int) (a1);			\
-  LOAD_ARGS_0 ()				\
-  _a1 = _a1tmp;
-#define ASM_ARGS_1	ASM_ARGS_0, "r" (_a1)
-#define LOAD_ARGS_2(a1, a2)			\
-  int _a2tmp = (int) (a2);			\
-  LOAD_ARGS_1 (a1)				\
-  register int _a2 asm ("a2") = _a2tmp;
-#define ASM_ARGS_2	ASM_ARGS_1, "r" (_a2)
-#define LOAD_ARGS_3(a1, a2, a3)			\
-  int _a3tmp = (int) (a3);			\
-  LOAD_ARGS_2 (a1, a2)				\
-  register int _a3 asm ("a3") = _a3tmp;
-#define ASM_ARGS_3	ASM_ARGS_2, "r" (_a3)
-#define LOAD_ARGS_4(a1, a2, a3, a4)		\
-  int _a4tmp = (int) (a4);			\
-  LOAD_ARGS_3 (a1, a2, a3)			\
-  register int _a4 asm ("a4") = _a4tmp;
-#define ASM_ARGS_4	ASM_ARGS_3, "r" (_a4)
-#define LOAD_ARGS_5(a1, a2, a3, a4, a5)		\
-  int _v1tmp = (int) (a5);			\
-  LOAD_ARGS_4 (a1, a2, a3, a4)			\
-  register int _v1 asm ("v1") = _v1tmp;
-#define ASM_ARGS_5	ASM_ARGS_4, "r" (_v1)
-#define LOAD_ARGS_6(a1, a2, a3, a4, a5, a6)	\
-  int _v2tmp = (int) (a6);			\
-  LOAD_ARGS_5 (a1, a2, a3, a4, a5)		\
-  register int _v2 asm ("v2") = _v2tmp;
-#define ASM_ARGS_6	ASM_ARGS_5, "r" (_v2)
-#ifndef __thumb__
-# define LOAD_ARGS_7(a1, a2, a3, a4, a5, a6, a7)	\
-  int _v3tmp = (int) (a7);				\
-  LOAD_ARGS_6 (a1, a2, a3, a4, a5, a6)			\
-  register int _v3 asm ("v3") = _v3tmp;
-# define ASM_ARGS_7	ASM_ARGS_6, "r" (_v3)
-#endif
-
-/* For EABI, non-constant syscalls are actually pretty easy...  */
-#undef INTERNAL_SYSCALL_NCS
-#define INTERNAL_SYSCALL_NCS(number, nr, args...)              \
-  INTERNAL_SYSCALL_RAW (number, nr, args)
 
 static inline long int
 __internal_syscall0 (long int name)

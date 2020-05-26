@@ -138,87 +138,9 @@
 
 #else /* __ASSEMBLER__ */
 
-/* In order to get __set_errno() definition in INLINE_SYSCALL.  */
-#include <errno.h>
-
 /* Previously Nios2 used the generic version without the libc_hidden_def
    which lead in a non existent __send symbol in libc.so.  */
 # undef HAVE_INTERNAL_SEND_SYMBOL
-
-#undef INTERNAL_SYSCALL_RAW
-#define INTERNAL_SYSCALL_RAW(name, nr, args...)                 \
-  ({ unsigned int _sys_result;                                  \
-     {                                                          \
-       /* Load argument values in temporary variables
-	  to perform side effects like function calls
-	  before the call-used registers are set.  */		\
-       LOAD_ARGS_##nr (args)					\
-       LOAD_REGS_##nr						\
-       register int _r2 asm ("r2") = (int)(name);               \
-       register int _err asm ("r7");                            \
-       asm volatile ("trap"                                     \
-                     : "+r" (_r2), "=r" (_err)                  \
-                     : ASM_ARGS_##nr				\
-                     : __SYSCALL_CLOBBERS);                     \
-       _sys_result = _err != 0 ? -_r2 : _r2;                    \
-     }                                                          \
-     (int) _sys_result; })
-
-#undef INTERNAL_SYSCALL
-#define INTERNAL_SYSCALL(name, nr, args...) \
-	INTERNAL_SYSCALL_RAW(SYS_ify(name), nr, args)
-
-#undef INTERNAL_SYSCALL_NCS
-#define INTERNAL_SYSCALL_NCS(number, nr, args...) \
-	INTERNAL_SYSCALL_RAW(number, nr, args)
-
-#define LOAD_ARGS_0()
-#define LOAD_REGS_0
-#define ASM_ARGS_0
-#define LOAD_ARGS_1(a1)				\
-  LOAD_ARGS_0 ()				\
-  int __arg1 = (int) (a1);
-#define LOAD_REGS_1				\
-  register int _r4 asm ("r4") = __arg1;		\
-  LOAD_REGS_0
-#define ASM_ARGS_1                  "r" (_r4)
-#define LOAD_ARGS_2(a1, a2)			\
-  LOAD_ARGS_1 (a1)				\
-  int __arg2 = (int) (a2);
-#define LOAD_REGS_2				\
-  register int _r5 asm ("r5") = __arg2;		\
-  LOAD_REGS_1
-#define ASM_ARGS_2      ASM_ARGS_1, "r" (_r5)
-#define LOAD_ARGS_3(a1, a2, a3)			\
-  LOAD_ARGS_2 (a1, a2)				\
-  int __arg3 = (int) (a3);
-#define LOAD_REGS_3				\
-  register int _r6 asm ("r6") = __arg3;		\
-  LOAD_REGS_2
-#define ASM_ARGS_3      ASM_ARGS_2, "r" (_r6)
-#define LOAD_ARGS_4(a1, a2, a3, a4)		\
-  LOAD_ARGS_3 (a1, a2, a3)			\
-  int __arg4 = (int) (a4);
-#define LOAD_REGS_4				\
-  register int _r7 asm ("r7") = __arg4;		\
-  LOAD_REGS_3
-#define ASM_ARGS_4      ASM_ARGS_3, "r" (_r7)
-#define LOAD_ARGS_5(a1, a2, a3, a4, a5)		\
-  LOAD_ARGS_4 (a1, a2, a3, a4)			\
-  int __arg5 = (int) (a5);
-#define LOAD_REGS_5				\
-  register int _r8 asm ("r8") = __arg5;		\
-  LOAD_REGS_4
-#define ASM_ARGS_5      ASM_ARGS_4, "r" (_r8)
-#define LOAD_ARGS_6(a1, a2, a3, a4, a5, a6)	\
-  LOAD_ARGS_5 (a1, a2, a3, a4, a5)		\
-  int __arg6 = (int) (a6);
-#define LOAD_REGS_6			    \
-  register int _r9 asm ("r9") = __arg6;     \
-  LOAD_REGS_5
-#define ASM_ARGS_6      ASM_ARGS_5, "r" (_r9)
-
-#define __SYSCALL_CLOBBERS "memory"
 
 static inline long int
 __internal_syscall0 (long int name)
@@ -228,7 +150,7 @@ __internal_syscall0 (long int name)
   asm volatile ("trap"
 		: "+r" (r2), "=r" (err)
                 :
-                : __SYSCALL_CLOBBERS);
+                : "memory");
   return err != 0 ? -r2 : r2;
 }
 
@@ -241,7 +163,7 @@ __internal_syscall1 (long int name, __syscall_arg_t arg1)
   asm volatile ("trap"
 		: "+r" (r2), "=r" (r7)
                 : "r" (r4)
-                : __SYSCALL_CLOBBERS);
+                : "memory");
   return r7 != 0 ? -r2 : r2;
 }
 
@@ -256,7 +178,7 @@ __internal_syscall2 (long int name, __syscall_arg_t arg1,
   asm volatile ("trap"
 		: "+r" (r2), "=r" (r7)
                 : "r" (r4), "r" (r5)
-                : __SYSCALL_CLOBBERS);
+                : "memory");
   return r7 != 0 ? -r2 : r2;
 }
 
@@ -272,7 +194,7 @@ __internal_syscall3 (long int name, __syscall_arg_t arg1,
   asm volatile ("trap"
 		: "+r" (r2), "=r" (r7)
                 : "r" (r4), "r" (r5), "r" (r6)
-                : __SYSCALL_CLOBBERS);
+                : "memory");
   return r7 != 0 ? -r2 : r2;
 }
 
@@ -289,7 +211,7 @@ __internal_syscall4 (long int name, __syscall_arg_t arg1,
   asm volatile ("trap"
 		: "+r" (r2), "+r" (r7)
                 : "r" (r4), "r" (r5), "r" (r6)
-                : __SYSCALL_CLOBBERS);
+                : "memory");
   return r7 != 0 ? -r2 : r2;
 }
 
@@ -307,7 +229,7 @@ __internal_syscall5 (long int name, __syscall_arg_t arg1,
   asm volatile ("trap"
 		: "+r" (r2), "+r" (r7)
                 : "r" (r4), "r" (r5), "r" (r6), "r" (r8)
-                : __SYSCALL_CLOBBERS);
+                : "memory");
   return r7 != 0 ? -r2 : r2;
 }
 
@@ -327,7 +249,7 @@ __internal_syscall6 (long int name, __syscall_arg_t arg1,
   asm volatile ("trap"
 		: "+r" (r2), "+r" (r7)
                 : "r" (r4), "r" (r5), "r" (r6), "r" (r8), "r" (r9)
-                : __SYSCALL_CLOBBERS);
+                : "memory");
   return r7 != 0 ? -r2 : r2;
 }
 
