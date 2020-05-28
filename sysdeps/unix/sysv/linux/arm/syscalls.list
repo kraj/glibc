@@ -20,7 +20,6 @@ prlimit64	EXTRA	prlimit64	i:iipp	prlimit64
 fanotify_mark	EXTRA	fanotify_mark	i:iiiiis	fanotify_mark
 
 # proper socket implementations:
-getpeername	-	getpeername	i:ipp	__getpeername	getpeername
 getsockname	-	getsockname	i:ipp	__getsockname	getsockname
 getsockopt	-	getsockopt	i:iiiBN	__getsockopt	getsockopt
 listen		-	listen		i:ii	__listen	listen
