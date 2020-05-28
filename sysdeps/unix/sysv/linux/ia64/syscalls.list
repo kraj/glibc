@@ -3,7 +3,6 @@
 getpriority	-	getpriority	i:ii	__getpriority	getpriority
 
 # proper socket implementations:
-getsockname	-	getsockname	i:ipp	__getsockname	getsockname
 getsockopt	-	getsockopt	i:iiiBN	__getsockopt	getsockopt
 listen		-	listen		i:ii	__listen	listen
 setsockopt	-	setsockopt	i:iiibn	__setsockopt	setsockopt

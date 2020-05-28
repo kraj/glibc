@@ -24,7 +24,6 @@
 # define __ASSUME_LISTEN_SYSCALL             1
 # define __ASSUME_GETSOCKOPT_SYSCALL         1
 # define __ASSUME_SETSOCKOPT_SYSCALL         1
-# define __ASSUME_GETSOCKNAME_SYSCALL        1
 # define __ASSUME_SHUTDOWN_SYSCALL           1
 #endif
 
@@ -41,6 +40,7 @@
 # undef __ASSUME_RECVFROM_SYSCALL
 # undef __ASSUME_SENDTO_SYSCALL
 # undef __ASSUME_GETPEERNAME_SYSCALL
+# undef __ASSUME_GETSOCKNAME_SYSCALL
 #endif
 
 /* i686 only supports ipc syscall before 5.1.  */
