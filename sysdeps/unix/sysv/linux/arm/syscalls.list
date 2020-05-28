@@ -19,8 +19,6 @@ prlimit64	EXTRA	prlimit64	i:iipp	prlimit64
 
 fanotify_mark	EXTRA	fanotify_mark	i:iiiiis	fanotify_mark
 
-personality	EXTRA	personality	Ei:i	__personality	personality
-
 # proper socket implementations:
 bind		-	bind		i:ipi	__bind		bind
 getpeername	-	getpeername	i:ipp	__getpeername	getpeername
