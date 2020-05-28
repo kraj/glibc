@@ -72,6 +72,7 @@
 /* On most architectures, most socket syscalls are supported for all
    supported kernel versions, but on some socketcall architectures
    separate syscalls were only added later.  */
+#define __ASSUME_BIND_SYSCALL           1
 #define __ASSUME_SENDMSG_SYSCALL	1
 #define __ASSUME_RECVMSG_SYSCALL	1
 #define __ASSUME_ACCEPT_SYSCALL		1

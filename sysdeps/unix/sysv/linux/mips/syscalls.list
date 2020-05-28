@@ -12,7 +12,6 @@ sysmips		-	sysmips		i:iiii	__sysmips	sysmips
 # Socket functions; Linux/MIPS doesn't use the socketcall(2) wrapper;
 # it's provided for compatibility, though.
 #
-bind		-	bind		i:ipi	__bind		bind
 getpeername	-	getpeername	i:ipp	__getpeername	getpeername
 getsockname	-	getsockname	i:ipp	__getsockname	getsockname
 getsockopt	-	getsockopt	i:iiiBN	__getsockopt	getsockopt
