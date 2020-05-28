@@ -3,7 +3,6 @@
 getpriority	-	getpriority	i:ii	__getpriority	getpriority
 
 # proper socket implementations:
-socket		-	socket		i:iii	__socket	socket
 socketpair	-	socketpair	i:iiif	__socketpair	socketpair
 
 # DIG-compliant access to PCI configuration space:

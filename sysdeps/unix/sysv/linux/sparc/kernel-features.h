@@ -39,7 +39,6 @@
 # undef __ASSUME_RECVFROM_SYSCALL
 # undef __ASSUME_SENDTO_SYSCALL
 #else
-# define __ASSUME_SOCKET_SYSCALL             1
 # define __ASSUME_SOCKETPAIR_SYSCALL         1
 #endif
 
@@ -50,6 +49,7 @@
 # undef __ASSUME_LISTEN_SYSCALL
 # undef __ASSUME_SETSOCKOPT_SYSCALL
 # undef __ASSUME_SHUTDOWN_SYSCALL
+# undef __ASSUME_SOCKET_SYSCALL
 #endif
 
 #ifdef __arch64__

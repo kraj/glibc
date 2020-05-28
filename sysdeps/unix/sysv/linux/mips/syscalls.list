@@ -12,5 +12,4 @@ sysmips		-	sysmips		i:iiii	__sysmips	sysmips
 # Socket functions; Linux/MIPS doesn't use the socketcall(2) wrapper;
 # it's provided for compatibility, though.
 #
-socket		-	socket		i:iii	__socket	socket
 socketpair	-	socketpair	i:iiif	__socketpair	socketpair
