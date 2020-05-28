@@ -4,9 +4,6 @@ sigstack	-	sigstack	2	sigstack
 
 getpriority	-	getpriority	i:ii	__getpriority	getpriority
 
-# proper socket implementations:
-socketpair	-	socketpair	i:iiif	__socketpair	socketpair
-
 ptrace		-	ptrace		4	__ptrace	ptrace
 
 # access pci space protected from machine checks:

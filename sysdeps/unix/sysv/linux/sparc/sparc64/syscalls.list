@@ -1,3 +1,0 @@
-# File name	Caller	Syscall name	# args	Strong name	Weak names
-
-socketpair	-	socketpair	4	__socketpair	socketpair

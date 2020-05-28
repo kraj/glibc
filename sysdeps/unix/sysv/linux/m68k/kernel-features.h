@@ -17,15 +17,11 @@
    License along with the GNU C Library.  If not, see
    <https://www.gnu.org/licenses/>.  */
 
-/* Direct socketcalls available with kernel 4.3.  */
-#if __LINUX_KERNEL_VERSION >= 0x040300
-# define __ASSUME_SOCKETPAIR_SYSCALL         1
-#endif
-
 #include_next <kernel-features.h>
 
 #undef __ASSUME_ACCEPT_SYSCALL
 
+/* Direct socketcalls available with kernel 4.3.  */
 #if __LINUX_KERNEL_VERSION < 0x040300
 # undef __ASSUME_BIND_SYSCALL
 # undef __ASSUME_ACCEPT4_SYSCALL
@@ -43,6 +39,7 @@
 # undef __ASSUME_SETSOCKOPT_SYSCALL
 # undef __ASSUME_SHUTDOWN_SYSCALL
 # undef __ASSUME_SOCKET_SYSCALL
+# undef __ASSUME_SOCKETPAIR_SYSCALL
 #endif
 
 /* No support for PI futexes or robust mutexes before 3.10 for m68k.  */

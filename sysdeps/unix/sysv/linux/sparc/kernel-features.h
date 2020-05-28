@@ -38,8 +38,6 @@
 # undef __ASSUME_CONNECT_SYSCALL
 # undef __ASSUME_RECVFROM_SYSCALL
 # undef __ASSUME_SENDTO_SYSCALL
-#else
-# define __ASSUME_SOCKETPAIR_SYSCALL         1
 #endif
 
 /* These syscalls were added for both 32-bit and 64-bit in 4.4.  */
@@ -50,6 +48,7 @@
 # undef __ASSUME_SETSOCKOPT_SYSCALL
 # undef __ASSUME_SHUTDOWN_SYSCALL
 # undef __ASSUME_SOCKET_SYSCALL
+# undef __ASSUME_SOCKETPAIR_SYSCALL
 #endif
 
 #ifdef __arch64__
