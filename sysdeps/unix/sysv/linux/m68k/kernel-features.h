@@ -21,7 +21,6 @@
 #if __LINUX_KERNEL_VERSION >= 0x040300
 # define __ASSUME_SOCKET_SYSCALL             1
 # define __ASSUME_SOCKETPAIR_SYSCALL         1
-# define __ASSUME_SHUTDOWN_SYSCALL           1
 #endif
 
 #include_next <kernel-features.h>
@@ -43,6 +42,7 @@
 # undef __ASSUME_GETSOCKOPT_SYSCALL
 # undef __ASSUME_LISTEN_SYSCALL
 # undef __ASSUME_SETSOCKOPT_SYSCALL
+# undef __ASSUME_SHUTDOWN_SYSCALL
 #endif
 
 /* No support for PI futexes or robust mutexes before 3.10 for m68k.  */

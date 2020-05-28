@@ -3,4 +3,3 @@
 # Socket APIs
 socket		-	socket		i:iii	__socket	socket
 socketpair	-	socketpair	i:iiif	__socketpair	socketpair
-shutdown	-	shutdown	i:ii	__shutdown	shutdown
