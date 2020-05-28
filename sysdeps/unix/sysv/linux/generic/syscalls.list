@@ -5,5 +5,4 @@ socket		-	socket		i:iii	__socket	socket
 socketpair	-	socketpair	i:iiif	__socketpair	socketpair
 listen		-	listen		i:ii	__listen	listen
 setsockopt	-	setsockopt	i:iiibn	__setsockopt	setsockopt
-getsockopt	-	getsockopt	i:iiiBN	__getsockopt	getsockopt
 shutdown	-	shutdown	i:ii	__shutdown	shutdown

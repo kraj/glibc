@@ -41,12 +41,12 @@
 #else
 # define __ASSUME_SOCKET_SYSCALL             1
 # define __ASSUME_SOCKETPAIR_SYSCALL         1
-# define __ASSUME_GETSOCKOPT_SYSCALL         1
 # define __ASSUME_SHUTDOWN_SYSCALL           1
 #endif
 
 #if __LINUX_KERNEL_VERSION < 0x040400
 # undef __ASSUME_BIND_SYSCALL
+# undef __ASSUME_GETSOCKOPT_SYSCALL
 #endif
 
 /* These syscalls were added for both 32-bit and 64-bit in 4.4.  */

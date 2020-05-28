@@ -1,5 +1,4 @@
 # File name	Caller	Syscall name	# args	Strong name	Weak names
 
-getsockopt	-	getsockopt	5	__getsockopt	getsockopt
 shutdown	-	shutdown	2	__shutdown	shutdown
 socketpair	-	socketpair	4	__socketpair	socketpair

@@ -22,7 +22,6 @@
 # define __ASSUME_SOCKET_SYSCALL             1
 # define __ASSUME_SOCKETPAIR_SYSCALL         1
 # define __ASSUME_LISTEN_SYSCALL             1
-# define __ASSUME_GETSOCKOPT_SYSCALL         1
 # define __ASSUME_SETSOCKOPT_SYSCALL         1
 # define __ASSUME_SHUTDOWN_SYSCALL           1
 #endif
@@ -43,6 +42,7 @@
 # undef __ASSUME_SENDTO_SYSCALL
 # undef __ASSUME_GETPEERNAME_SYSCALL
 # undef __ASSUME_GETSOCKNAME_SYSCALL
+# undef __ASSUME_GETSOCKOPT_SYSCALL
 #endif
 
 /* No support for PI futexes or robust mutexes before 3.10 for m68k.  */

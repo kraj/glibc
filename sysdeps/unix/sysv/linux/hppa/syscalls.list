@@ -1,7 +1,6 @@
 # File name	Caller	Syscall name	# args	Strong name	Weak names
 
 # proper socket implementations:
-getsockopt	-	getsockopt	i:iiiBN	__getsockopt	getsockopt
 listen		-	listen		i:ii	__listen	listen
 setsockopt	-	setsockopt	i:iiibn	__setsockopt	setsockopt
 shutdown	-	shutdown	i:ii	__shutdown	shutdown
