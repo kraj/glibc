@@ -20,7 +20,6 @@
 /* New syscalls added for PowerPC in 2.6.37.  */
 #define __ASSUME_SOCKET_SYSCALL	1
 #define __ASSUME_CONNECT_SYSCALL	1
-#define __ASSUME_LISTEN_SYSCALL		1
 #define __ASSUME_SOCKETPAIR_SYSCALL	1
 #define __ASSUME_SEND_SYSCALL		1
 #define __ASSUME_RECV_SYSCALL		1

@@ -12,7 +12,6 @@ sysmips		-	sysmips		i:iiii	__sysmips	sysmips
 # Socket functions; Linux/MIPS doesn't use the socketcall(2) wrapper;
 # it's provided for compatibility, though.
 #
-listen		-	listen		i:ii	__listen	listen
 setsockopt	-	setsockopt	i:iiibn	__setsockopt	setsockopt
 shutdown	-	shutdown	i:ii	__shutdown	shutdown
 socket		-	socket		i:iii	__socket	socket
