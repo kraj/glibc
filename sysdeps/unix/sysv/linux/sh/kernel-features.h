@@ -23,7 +23,6 @@
 #include <endian.h>
 
 /* These syscalls were added for SH in 2.6.37.  */
-#define __ASSUME_CONNECT_SYSCALL	1
 #define __ASSUME_SEND_SYSCALL		1
 #define __ASSUME_RECV_SYSCALL		1
 
