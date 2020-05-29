@@ -434,6 +434,42 @@ futex_lock_pi (unsigned int *futex_word, const struct timespec *abstime,
     }
 }
 
+/* This operaration is similar to futex_lock_pi and it is used when the lock
+   information contains stale state (FUTEX_WAITERS and/or FUTEX_OWNER_DIED).
+   User space can not handle this condition in a race-free manner, but kernel
+   might handle it and acquire the futex.
+
+   Returns:
+
+     - 0 if woken by a PI unlock operation or spuriously.
+     - EAGAIN if the futex owner thread ID is about to exit, but has not yet
+       handled the state cleanup.
+     - EDEADLK if the futex is already locked by the caller.
+     - ESRCH if the thread ID int he futex does not exist.
+     - EINVAL is the state is corrupted or if there is a waiter on the
+       futex.
+*/
+static __always_inline int
+futex_trylock_pi (unsigned int *futex_word, int private)
+{
+  int err = lll_futex_trylock_pi ((int *) futex_word, private);
+  switch (err)
+    {
+    case 0:
+    case -EAGAIN: /* EWOULDBLOCK  */
+    case -EINTR:
+    case -ESRCH:
+    case -EDEADLK:
+    case -EPERM:
+      return -err;
+
+    case -EINVAL:
+    case -EFAULT:
+    default:
+      futex_fatal_error ();
+    }
+}
+
 /* Wakes the top priority waiter that called a futex_lock_pi operation on
    the futex.
 

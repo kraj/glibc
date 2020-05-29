@@ -144,6 +144,11 @@
 		     __lll_private_flag (FUTEX_LOCK_PI, private),	\
 		     0, abstime)
 
+#define lll_futex_trylock_pi(futexp, private)				\
+  lll_futex_syscall (4, futexp,						\
+		     __lll_private_flag (FUTEX_TRYLOCK_PI, private),	\
+		     0, 0)
+
 #define lll_futex_timed_unlock_pi(futexp, private) 			\
   lll_futex_syscall (4, futexp,						\
 		     __lll_private_flag (FUTEX_UNLOCK_PI, private),	\
