@@ -18,6 +18,7 @@
 #include <sys/resource.h>
 #include <sysdep.h>
 
+#if !__RLIM_T_MATCHES_RLIM64_T
 int
 prlimit (__pid_t pid, enum __rlimit_resource resource,
 	 const struct rlimit *new_rlimit, struct rlimit *old_rlimit)
@@ -73,3 +74,4 @@ prlimit (__pid_t pid, enum __rlimit_resource resource,
 
   return res;
 }
+#endif /* __RLIM_T_MATCHES_RLIM64_T  */
