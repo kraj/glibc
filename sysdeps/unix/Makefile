@@ -21,6 +21,7 @@ ifndef inhibit-unix-syscalls
 # which specifies objects to be compiled as simple Unix system calls.
 
 -include $(common-objpfx)sysd-syscalls
+-include $(common-objpfx)sysd-syscalls-c
 
 ifeq (misc,$(subdir))
 sysdep_routines += $(unix-extra-syscalls)
@@ -88,6 +89,7 @@ endif
 # The stdin is assembler with cpp using sysdep.h macros.
 compile-syscall = $(COMPILE.S) -o $@ -x assembler-with-cpp - \
 			       $(compile-mkdep-flags)
+compile-syscall-c = $(COMPILE.c) -o $@ $(compile-mkdep-flags)
 
 ifndef avoid-generated
 $(common-objpfx)sysd-syscalls: $(..)sysdeps/unix/make-syscalls.sh \
@@ -102,12 +104,22 @@ $(common-objpfx)sysd-syscalls: $(..)sysdeps/unix/make-syscalls.sh \
 	  test $$dir = $(..)sysdeps/unix && break; \
 	done > $@T
 	mv -f $@T $@
+
+arch-syscall-h = $(firstword $(wildcard $(addsuffix /arch-syscall.h,$(sysdirs) .)))
+
+$(common-objpfx)sysd-syscalls-c: $(..)sysdeps/unix/gen-syscalls.py  \
+			         $(wildcard $(+sysdep_dirs:%=%/syscalls.def)) \
+			         $(wildcard $(+sysdep_dirs:%=%/arch-syscall.h)) \
+			         $(common-objpfx)libc-modules.stmp
+	$(PYTHON) $(dir $<)$(notdir $<) $(arch-syscall-h) $(common-objpfx)misc \
+					$(sysdirs) > $@T
+	mv -f $@T $@
 endif
 
 $(common-objpfx)s-%.d: $(..)sysdeps/unix/s-%.S \
 		       $(wildcard $(+sysdep_dirs:%=%/syscalls.list))
 	$(+make-deps)
 
-postclean-generated += sysd-syscalls
+postclean-generated += sysd-syscalls sysd-syscalls-c
 
 endif
