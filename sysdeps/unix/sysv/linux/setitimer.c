@@ -87,4 +87,5 @@ __setitimer (__itimer_which_t which,
   return ret;
 }
 #endif
+libc_hidden_def (__setitimer)
 weak_alias (__setitimer, setitimer)

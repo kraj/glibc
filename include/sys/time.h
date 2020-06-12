@@ -39,10 +39,9 @@ extern int __getitimer (enum __itimer_which __which,
 			struct itimerval *__value);
 extern int __setitimer (enum __itimer_which __which,
 			const struct itimerval *__restrict __new,
-			struct itimerval *__restrict __old)
-	attribute_hidden;
-extern int __utimes (const char *__file, const struct timeval __tvp[2])
-	attribute_hidden;
+			struct itimerval *__restrict __old);
+libc_hidden_proto (__setitimer)
+extern int __utimes (const char *__file, const struct timeval __tvp[2]);
 extern int __futimes (int fd, const struct timeval tvp[2]) attribute_hidden;
 
 # endif

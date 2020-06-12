@@ -357,6 +357,7 @@ __setitimer (enum __itimer_which which, const struct itimerval *new,
   __spin_lock (&_hurd_itimer_lock);
   return setitimer_locked (new, old, crit, 0);
 }
+libc_hidden_def (__setitimer)
 
 static void
 fork_itimer (void)
