@@ -1,0 +1,92 @@
+# Symbol name     Syscall name    Arguments                                                              Strong         Aliases                          Includes              Flags
+accept            accept          [int, struct sockaddr *r, socklen_t *]                                 $accept        __libc_accept                    sys/socket.h
+access            access          [const char *, int]                                                    access         $__access                        unistd.h
+acct              acct            [const char *]                                                         acct           -                                unistd.h
+adjtime           adjtime         [const struct timeval *, struct timeval *]                             adjtime        __adjtime                        sys/time.h
+bind              bind            [int, const struct sockaddr *, socklen_t]                              bind           __bind                           sys/socket.h
+chdir             chdir           [const char *]                                                         chdir          __chdir                          unistd.h
+chmod             chmod           [const char *, mode_t]                                                 chmod          $__chmod                         sys/stat.h
+chown             chown           [const char *, uid_t, gid_t]                                           chown          $__chown                         unistd.h
+chroot            chroot          [const char *]                                                         chroot         -                                unistd.h
+close             close           [int]                                                                  close          __libc_close,$__close            unistd.h
+connect           connect         [int, const struct sockaddr *,socklen_t]                               connect        __libc_connect,$__connect        sys/socket.h
+dup               dup             [int]                                                                  dup            $__dup                           unistd.h
+dup2              dup2            [int, int]                                                             dup2           $__dup2                          unistd.h
+dup3              dup3            [int, int, int]                                                        dup3           $__dup3                          unistd.h
+fchdir            fchdir          [int]                                                                  fchdir         __fchdir                         unistd.h
+fchmod            fchmod          [int, mode_t]                                                          fchmod         __fchmod                         sys/stat.h
+fchown            fchown          [int, uid_t, gid_t]                                                    fchown         __fchown                         unistd.h
+# fcntl: the third argument for fcntl depends of the second argument.
+fstatfs           fstatfs         [int, struct statfs *]                                                 fstatfs        __fstatfs                        sys/vfs.h
+ftruncate         ftruncate       [int, off_t]                                                           ftruncate      __ftruncate                      unistd.h
+getdomain         getdomainname   [char *, size_t ]                                                      $getdomainname -                                unistd.h
+getgid            getgid          []:gid_t                                                               getgid         __getgid                         unistd.h
+getgroups         getgroups       [int, gid_t *]                                                         getgroups      __getgroups                      unistd.h
+gethostid         gethostid       []:long                                                                gethostid      -                                unistd.h
+gethostname       gethostname     [char *, size_t]                                                       gethostname    __gethostname                    unistd.h
+getpid            getpid          []:pid_t                                                               $getpid        $__getpid                        unistd.h
+getpriority       getpriority     [__priority_which_t, id_t]                                             getpriority    $__getpriority                   sys/resource.h
+getrlimit         getrlimit       [__rlimit_resource_t, struct rlimit *]                                 getrlimit      $__getrlimit                     sys/resource.h
+getsockname       getsockname     [int, struct sockaddr *, socklen_t *]                                  getsockname    __getsockname                    sys/socket.h
+getsockopt        getsockopt      [int, int, int, void *, socklen_t *]                                   getsockopt     -                                sys/socket.h
+getuid            getuid          []:uid_t                                                               getuid         __getuid                         unistd.h
+# ioctl: the third argument for ioctl depends of the second argument value.
+kill              kill            [pid_t, int]                                                           kill           $__kill                          signal.h
+link              link            [const char *, const char *]                                           link           __link                           unistd.h
+listen            listen          [int, int]                                                             listen         __listen                         sys/socket.h
+lseek             lseek           [int, off_t, int]                                                      lseek          __libc_lseek, $__lseek           unistd.h
+madvise           madvise         [void *, size_t, int]                                                  madvise        $__madvise                       sys/mman.h
+mkdir             mkdir           [const char *, mode_t]                                                 mkdir          $__mkdir                         sys/stat.h
+mmap              mmap            [void *, size_t, int, int, int, off_t]                                 mmap           $__mmap                          sys/mman.h
+mprotect          mprotect        [void *, size_t, int]                                                  mprotect       $__mprotect                      sys/mman.h
+munmap            munmap          [void *, size_t]                                                       munmap         $__munmap                        sys/mman.h
+# open: the third argument depends if the second argument value constains either O_CREAT or O_TMPFILE.
+profil            profil          [unsigned short int *, size_t, size_t, unsigned int]                   profil         __profil                         unistd.h
+# ptrace: the third argumentof depends of the second argument value.
+read              read            [int, void *, size_t]                                                  $read          __libc_read, $__read             unistd.h
+readlink          readlink        [const char *, char *, size_t]:ssize_t                                 readlink       __readlink                       unistd.h
+readv             readv           [int, const struct iovec *, int ]:ssize_t                              readv          $__readv                         sys/uio.h
+reboot            reboot          [int]                                                                  reboot         -                                sys/reboot.h
+recv              recv            [int, void *, size_t, int ]:ssize_t                                    recv           __libc_recv, $__recv             sys/socket.h
+recvfrom          recvfrom        [int, void *, size_t, int, struct sockaddr *, socklen_t *]:ssize_t     recvfrom       __libc_recvfrom, __recvfrom      sys/socket.h
+recvmsg           recvmsg         [int sockfd, struct msghdr *msg, int ]:ssize_t                         recvmsg        __libc_recvmsg, __recvmsg        sys/socket.h
+rename            rename          [const char *, const char *]                                           rename         -                                stdio.h
+rmdir             rmdir           [const char *]                                                         rmdir          __rmdir                          unistd.h
+select            select          [int, fd_set *, fd_set *, fd_set *, struct timeval *]                  select         $__select, __libc_select         sys/select.h
+send              send            [int , const void *, size_t, int ]:ssize_t                             send           __libc_send, $__send             sys/socket.h
+sendmsg           sendmsg         [int, const struct msghdr *, int ]:ssize_t                             sendmsg        __libc_sendmsg, __sendmsg        sys/socket.h
+sendto            sendto          [int, const void *, size_t, int, const struct sockaddr *, socklen_t]:ssize_t  sendto  __libc_sendto, __sendto          sys/socket.h
+setdomain         setdomainname   [const char *, size_t]                                                 setdomainname  -                                unistd.h
+setegid           setegid         [gid_t]                                                                $setegid       __setegid                        unistd.h
+seteuid           seteuid         [uid_t]                                                                $seteuid       __seteuid                        unistd.h
+setgid            setgid          [gid_t]                                                             setgid         __setgid                            unistd.h
+setgroups         setgroups       [size_t, const gid_t *]                                                $setgroups     $setgroups                       grp.h
+sethostid         sethostid       [long int]                                                             sethostid      -                                unistd.h
+sethostname       sethostname     [const char *, size_t]                                                 sethostname    -                                unistd.h
+setpgid           setpgrp         [pid_t, pid_t]                                                         setpgid        $__setpgid                       unistd.h
+setpriority       setpriority     [enum __priority_which, id_t, int]                                     setpriority    $__setpriority                   sys/resource.h
+setregid          setregid        [gid_t, gid_t]                                                         setregid       __setregid                       unistd.h
+setreuid          setreuid        [uid_t, uid_t]                                                         setreuid       __setreuid                       unistd.h
+setrlimit         setrlimit       [int, const struct rlimit *]                                           setrlimit      $__setrlimi                      sys/resource.h
+setsid            setsid          []:pid_t                                                               setsid         __setsid                         unistd.h
+setsockopt        setsockopt      [int, int, int, const void *, socklen_t]                               setsockopt     __setsockopt                     sys/socket.h
+setuid            setuid          [uid_t]                                                                setuid         __setuid                         unistd.h
+shutdown          shutdown        [int, int ]                                                            shutdown       -                                sys/socket.h
+sigaction         sigaction       [int, const struct sigaction *, struct sigaction *]                    sigaction      $__libc_sigaction, $__sigaction  signal.h
+sigsuspend        sigsuspend      [const sigset_t *]                                                     sigsuspend     $__sigsuspend                    signal.h
+socket            socket          [int, int, int]                                                        socket         $__socket                        sys/socket.h
+socketpair        socketpair      [int, int, int, int]                                                   socketpair     -                                sys/socket.h
+statfs            statfs          [const char * , struct statfs *]                                       statfs         $__statfs                        sys/vfs.h
+swapoff           swapoff         [const char *]                                                         swapoff        -                                sys/swap.h
+swapon            swapon          [const char *, int]                                                    swapon         -                                sys/swap.h
+symlink           symlink         [const char *, const char *]                                           symlink        __symlink                        unistd.h
+sync              sync            []:void                                                                sync           -                                unistd.h
+syncfs            syncfs          [int]                                                                  syncfs         -                                unistd.h
+truncate          truncate        [const char *, off_t]                                                  truncate       __truncate                       unistd.h
+umask             umask           [mode_t]:mode_t                                                        umask          __umask                          sys/stat.h
+uname             uname           [struct utsname *]                                                     $uname         $__uname                         sys/utsname.h
+unlink            unlink          [const char *]                                                         unlink         __unlink                         unistd.h
+utimes            utimes          [const char *, const struct timeval *]                                 utimes         __utimes                         sys/time.h
+vhangup           vhangup         []                                                                     vhangup        -                                unistd.h
+write             write           [int, const char *, size_t]:ssize_t                                    $write         __libc_write, $__write           unistd.h
+writev            writev          [int, const struct iovec *, int]:ssize_t                               writev         $__writev                        sys/uio.h
