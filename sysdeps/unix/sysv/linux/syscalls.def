@@ -1,0 +1,91 @@
+# Symbol name     Syscall name      Arguments                                               Strong                    Aliases                                Includes            Flags
+alarm             alarm             [unsigned int]:unsigned                                 $alarm                    -                                      unistd.h
+bdflush           bdflush           [int, long int]                                         __compat_bdflush          bdflush@GLIBC_2.0:GLIBC_2.23           -                   E
+capget            capget            [cap_user_header_t, cap_user_data_t]                    capget                    -                                      linux/capability.h  E
+capset            capset            [cap_user_header_t, const cap_user_data_t]              capset                    -                                      linux/capability.h  E
+create_module     create_module     [const char *, size_t]:caddr_t                          __compat_create_module    create_module@GLIBC_2.0:GLIBC_2.23     sys/types.h         E
+delete_module     delete_module     [const char *, int ]                                    delete_module             -                                      -                   E
+epoll_create      epoll_create      [int]                                                   epoll_create              -                                      sys/epoll.h         E
+epoll_create1     epoll_create1     [int]                                                   epoll_create1             -                                      sys/epoll.h         E
+epoll_ctl         epoll_ctl         [int, int, int, struct epoll_event *]                   epoll_ctl                 -                                      sys/epoll.h         E
+eventfd           eventfd2          [unsigned int, int]                                     eventfd                   -                                      sys/eventfd.h       E
+execve            execve            [const char *, char *const *, char *const *]            execve                    __execve                               unistd.h
+flock             flock             [int, int]                                              flock                     __flock                                sys/file.h
+get_kernel_syms   get_kernel_syms   [void *]                                                __compat_get_kernel_syms  get_kernel_syms@GLIBC_2.0:GLIBC_2.23   -                   E
+getegid           getegid           []:gid_t                                                getegid                   __getegid                              unistd.h
+geteuid           geteuid           []:uid_t                                                geteuid                   __geteuid                              unistd.h
+getpgid           getpgid           [pid_t]:pid_t                                           getpgid                   $__getpgid                             unistd.h
+getpgrp           getpgrp           []:pid_t                                                getpgrp                   -                                      unistd.h
+getppid           getppid           []:pid_t                                                getppid                   __getppid                              unistd.h
+getresuid         getresuid         [uid_t *, uid_t *, uid_t *]                             getresuid                 $__getresuid                           unistd.h
+getresgid         getresgid         [gid_t *, gid_t *, gid_t *]                             getresgid                 $__getresgid                           unistd.h
+getsid            getsid            [pid_t]:pid_t                                           $getsid                   -                                      unistd.h
+init_module       init_module       [void *, unsigned long, const char *]                   init_module               -                                      -                   E
+inotify_add_watch inotify_add_watch [int, const char *, uint32_t]                           inotify_add_watch         -                                      sys/inotify.h       E
+inotify_init      inotify_init      []                                                      inotify_init              -                                      sys/inotify.h       E
+inotify_init1     inotify_init1     [int]                                                   inotify_init1             -                                      sys/inotify.h       E
+inotify_rm_watch  inotify_rm_watch  [int, int]                                              inotify_rm_watch          -                                      sys/inotify.h       E
+ioperm            ioperm            [unsigned long int, unsigned long int, int ]            ioperm                    -                                      sys/io.h
+iopl              iopl              [int]                                                   iopl                      -                                      sys/io.h
+klogctl           syslog            [int, char *, int ]                                     klogctl                   -                                      sys/klog.h          E
+lchown            lchown            [const char *, uid_t, gid_t]                            lchown                    __lchown                               unistd.h
+mincore           mincore           [void *, size_t, unsigned char *]                       mincore                   -                                      sys/mman.h
+mlock             mlock             [const void *, size_t]                                  mlock                     -                                      sys/mman.h
+mlockall          mlockall          [int]                                                   mlockall                  -                                      sys/mman.h
+mount             mount             [const char *, const char *, const char *, unsigned long int, const void *] mount __mount                                sys/mount.h         E
+munlock           munlock           [const void *, size_t]                                  munlock                   -                                      sys/mman.h
+munlockall        munlockall        []                                                      munlockall                -                                      sys/mman.h
+# Since Linux 3.1, this system call no longer exists.
+nfsservctl        nfsservctl        [int, void *, void *]                                   __compat_nfsservctl       nfsservctl@GLIBC_2.0:GLIBC_2.28        -                   E
+pipe              pipe              [int *]                                                 pipe                      $__pipe                                unistd.h
+pipe2             pipe2             [int *, int]                                            pipe2                     __pipe2                                unistd.h
+pivot_root        pivot_root        [const char *, const char *]                            pivot_root                -                                      -                   E
+# This system call is present only in kernels before Linux 2.6.
+query_module      query_module      [const char *, int, void *, size_t, size_t *]           __compat_query_module     query_module@GLIBC_2.0:GLIBC_2.23      stddef.h            E
+quotactl          quotactl          [int, const char *, int, caddr_t]                       quotactl                  -                                      sys/quota.h         E
+remap_file_pages  remap_file_pages  [void *, size_t, int, size_t, int]                      remap_file_pages          __remap_file_pages                     sys/mman.h
+sched_getp        sched_getparam    [pid_t, struct sched_param *]                           sched_getparam            $__sched_getparam                      sched.h
+sched_gets        sched_getscheduler [pid_t]                                                sched_getscheduler        $__sched_getscheduler                  sched.h
+sched_primax      sched_get_priority_max [int]                                              sched_get_priority_max    $__sched_get_priority_max              sched.h
+sched_primin      sched_get_priority_min [int]                                              sched_get_priority_min    $__sched_get_priority_min              sched.h
+sched_setp        sched_setparam     [pid_t, const struct sched_param *]                    sched_setparam            $__sched_setparam                      sched.h
+sched_sets        sched_setscheduler [pid_t, int, const struct sched_param *]               sched_setscheduler        $__sched_setscheduler                  sched.h
+sched_yield       sched_yield        []                                                     sched_yield               $__sched_yield                         sched.h
+sendfile          sendfile          [int, int, off_t *, size_t]:ssize_t                     sendfile                  -                                      sys/sendfile.h
+sendfile64        sendfile64        [int, int, off64_t *, size_t]:ssize_t                   sendfile64                -                                      sys/sendfile.h
+setfsgid          setfsgid          [uid_t]                                                 setfsgid                  -                                      sys/fsuid.h        E
+setfsuid          setfsuid          [uid_t]                                                 setfsuid                  -                                      sys/fsuid.h        E
+setpgid           setpgid           [pid_t, pid_t]                                          setpgid                   $__setpgid                             unistd.h
+sigaltstack       sigaltstack       [const stack_t *, stack_t *]                            sigaltstack               $__sigaltstack                         signal.h
+sysinfo           sysinfo           [struct sysinfo *]                                      sysinfo                   $__sysinfo                             sys/sysinfo.h      E
+unshare           unshare           [int]                                                   unshare                   -                                      sched.h            E
+# No declaration of this system call.
+uselib            uselib            [const char *]                                          __compat_uselib           uselib@GLIBC_2.0:GLIBC_2.23            -                  E
+fchownat          fchownat          [int, const char *, uid_t, gid_t, int]                  fchownat                  -                                      unistd.h
+linkat            linkat            [int, const char *, int, const char *, int]             linkat                    -                                      unistd.h
+mkdirat           mkdirat           [int, const char *, mode_t]                             mkdirat                   -                                      sys/stat.h
+readlinkat        readlinkat        [int, const char *, char *, size_t]:ssize_t             $readlinkat               -                                      unistd.h
+symlinkat         symlinkat         [const char *, int, const char *]                       symlinkat                 -                                      unistd.h
+unlinkat          unlinkat          [int, const char *, int]                                unlinkat                  -                                      unistd.h
+setxattr          setxattr          [const char *, const char *, const void *, size_t, int] setxattr                  -                                      sys/xattr.h
+lsetxattr         lsetxattr         [const char *, const char *, const void *, size_t, int] lsetxattr                 -                                      sys/xattr.h
+fsetxattr         fsetxattr         [int, const char *, const void *, size_t, int]          fsetxattr                 -                                      sys/xattr.h
+getxattr          getxattr          [const char *, const char *, void *, size_t]:ssize_t    getxattr                  -                                      sys/xattr.h
+lgetxattr         lgetxattr         [const char *, const char *, void *, size_t]:ssize_t    lgetxattr                 -                                      sys/xattr.h
+fgetxattr         fgetxattr         [int, const char *, void *, size_t]:ssize_t             fgetxattr                 -                                      sys/xattr.h
+listxattr         listxattr         [const char *, char *, size_t]:ssize_t                  listxattr                 -                                      sys/xattr.h
+llistxattr        llistxattr        [const char *, char *, size_t]:ssize_t                  llistxattr                -                                      sys/xattr.h
+flistxattr        flistxattr        [int, char *, size_t]:ssize_t                           flistxattr                -                                      sys/xattr.h
+removexattr       removexattr       [const char *, const char *]                            removexattr               -                                      sys/xattr.h
+lremovexattr      lremovexattr      [const char *, const char *]                            lremovexattr              -                                      sys/xattr.h
+fremovexattr      fremovexattr      [int, const char *]                                     fremovexattr              -                                      sys/xattr.h
+mq_setattr        mq_getsetattr     [mqd_t, const struct mq_attr *, struct mq_attr *]       $mq_setattr               -                                      mqueue.h
+timerfd_create    timerfd_create    [clockid_t, int]                                        timerfd_create            -                                      sys/timerfd.h       E
+fanotify_init     fanotify_init     [unsigned int, unsigned int]                            fanotify_init             -                                      sys/fanotify.h      E
+name_to_handle_at name_to_handle_at [int, const char *, struct file_handle *, int *, int]   name_to_handle_at         -                                      fcntl.h             E
+setns             setns             [int, int]                                              setns                     -                                      sched.h             E
+memfd_create      memfd_create      [const char *, unsigned int]                            memfd_create              -                                      sys/mman.h          E
+pkey_alloc        pkey_alloc        [unsigned int, unsigned int]                            pkey_alloc                -                                      sys/mman.h          E
+pkey_free         pkey_free         [int]                                                   pkey_free                 -                                      sys/mman.h          E
+gettid            gettid            []:pid_t                                                gettid                    __gettid                               unistd.h            E
+tgkill            tgkill            [pid_t, pid_t, int]                                     tgkill                    __tgkill                               signal.h            E
