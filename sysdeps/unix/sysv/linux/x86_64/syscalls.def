@@ -1,0 +1,4 @@
+# Symbol name     Syscall name      Arguments                                               Strong                    Aliases                                Includes            Flags
+
+arch_prctl        arch_prctl        [int, uintptr_t *]                                      arch_prctl                __arch_prctl                           stdint.h            E
+modify_ldt        modify_ldt        [int, void *, unsigned long]                            modify_ldt                __modify_ldt                           -                   E
