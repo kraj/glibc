@@ -1,0 +1,5 @@
+# Symbol name     Syscall name      Arguments                                               Strong                    Aliases                                Includes            Flags
+
+fstatfs           fstatfs           [int, struct statfs *]                                  fstatfs                   __fstatfs,fstatfs64,__fstatfs64        sys/statfs.h
+statfs            statfs            [const char *, struct statfs *]                         statfs                    $__statfs,statfs64                     sys/statfs.h
+sendfile          sendfile          [int, int, off_t *, size_t]:ssize_t                     sendfile                  sendfile64                             sys/sendfile.h
