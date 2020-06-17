@@ -61,7 +61,7 @@ sysdep_routines += adjtimex clone umount umount2 readahead sysctl \
 		   open_by_handle_at mlock2 pkey_mprotect pkey_set pkey_get \
 		   timerfd_gettime timerfd_settime prctl \
 		   process_vm_readv process_vm_writev clock_adjtime \
-		   fanotify_mark
+		   fanotify_mark mremap
 
 CFLAGS-gethostid.c = -fexceptions
 CFLAGS-tee.c = -fexceptions -fasynchronous-unwind-tables
