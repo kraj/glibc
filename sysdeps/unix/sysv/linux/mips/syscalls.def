@@ -1,0 +1,4 @@
+# Symbol name     Syscall name      Arguments                                               Strong                    Aliases                                Includes            Flags
+
+cachectl          cachectl          [void *, const int, const int]                          cachectl                  __cachectl                             sys/cachectl.h
+cacheflush        cacheflush        [void *, const int, const int]                          cacheflush                _flush_cache                           sys/cachectl.h
