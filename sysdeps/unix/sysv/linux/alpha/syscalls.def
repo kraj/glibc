@@ -1,0 +1,20 @@
+# Symbol name     Syscall name      Arguments                                                             Strong            Aliases                            Includes            Flags
+
+sigstack          sigstack          [const stack_t *, stack_t *]                                          sigstack          -                                  signal.h
+
+getpriority       getpriority       [__priority_which_t, id_t]                                            getpriority       $__getpriority                     sys/resource.h
+
+# access pci space protected from machine checks:
+pciconfig_read    pciconfig_read    [unsigned long, unsigned long, unsigned long, unsigned long, void *]  pciconfig_read    pciconfig_read                     -                   E
+pciconfig_write   pciconfig_write   [unsigned long, unsigned long, unsigned long, unsigned long, void *]  pciconfig_write   pciconfig_write                    -                   E
+pciconfig_iobase  pciconfig_read    [unsigned long, unsigned long, unsigned long]                         pciconfig_iobase  __pciconfig_iobase                 -                   E
+
+# timeval64 entry points (see osf_*.c for GLIBC_2.0 timeval32 equivalents)
+getitimer         getitimer         [enum __itimer_which, struct itimerval *]                             getitimer         getitimer@@GLIBC_2.1               sys/time.h
+setitimer         setitimer         [enum __itimer_which, const struct itimerval *, struct itimerval *]   setitimer         $__setitimer,setitimer@@GLIBC_2.1  sys/time.h
+utimes            utimes            [const char *, const struct timeval *]                                utimes            utimes@@GLIBC_2.1                  sys/time.h
+getrusage         getrusage         [int, struct rusage *]                                                getrusage         getrusage@@GLIBC_2.1               sys/resource.h
+
+# avoid 64-bit aliases on 32-bit statfs syscalls
+fstatfs           fstatfs           [int, struct statfs *]                                                fstatfs           __fstatfs                          sys/vfs.h
+statfs            statfs            [const char *, struct statfs *]                                       statfs            $__statfs                          sys/vfs.h
