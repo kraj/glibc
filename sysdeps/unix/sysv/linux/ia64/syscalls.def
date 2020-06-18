@@ -1,0 +1,10 @@
+# Symbol name     Syscall name      Arguments                                                             Strong            Aliases                            Includes            Flags
+
+getpriority       getpriority       [__priority_which_t, id_t]                                            getpriority       $__getpriority                     sys/resource.h
+
+# DIG-compliant access to PCI configuration space:
+pciconfig_read    pciconfig_read    [unsigned long, unsigned long, unsigned long, unsigned long, void *]  pciconfig_read    pciconfig_read                     -                   E
+pciconfig_write   pciconfig_write   [unsigned long, unsigned long, unsigned long, unsigned long, void *]  pciconfig_write   pciconfig_write                    -                   E
+
+# IA-64 specific
+getunwind         getunwind         [void *, size_t]                                                      getunwind         -                                  -                   E
