@@ -1,0 +1,16 @@
+# Symbol name     Syscall name      Arguments                                               Strong                    Aliases                                     Includes            Flags
+
+chown             chown32           [const char *, uid_t, gid_t]                            chown                     $__chown,chown@@GLIBC_2.1                   unistd.h
+lchown            lchown32          [const char *, uid_t, gid_t]                            lchown                    lchown@@GLIBC_2.0,chown@GLIBC_2.0:GLIBC_2.1 unistd.h
+fchown            fchown32          [int, uid_t, gid_t]                                     fchown                    __fchown                                    unistd.h
+
+getegid           getegid32         []:gid_t                                                getegid                   __getegid                                   unistd.h
+geteuid           geteuid32         []:uid_t                                                geteuid                   __geteuid                                   unistd.h
+getgid            getgid32          []:gid_t                                                getgid                    __getgid                                    unistd.h
+getuid            getuid32          []:uid_t                                                getuid                    __getuid                                    unistd.h
+getresgid         getresgid32       [gid_t *, gid_t *, gid_t *]                             getresgid                 $__getresgid                                unistd.h
+getresuid         getresuid32       [uid_t *, uid_t *, uid_t *]                             getresuid                 $__getresuid                                unistd.h
+getgroups         getgroups32       [int, gid_t *]                                          getgroups                 __getgroups                                 unistd.h
+
+setfsgid          setfsgid32        [gid_t]                                                 setfsgid                  -                                           sys/fsuid.h
+setfsuid          setfsuid32        [uid_t]                                                 setfsuid                  -                                           sys/fsuid.h
