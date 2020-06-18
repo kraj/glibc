@@ -1,0 +1,3 @@
+# Symbol name     Syscall name      Arguments                                               Strong                    Aliases                                     Includes            Flags
+chown             chown             [const char *, uid_t, gid_t]                            chown                     $__chown,chown@@GLIBC_2.1                   unistd.h
+lchown            lchown            [const char *, uid_t, gid_t]                            lchown                    lchown@@GLIBC_2.0,chown@GLIBC_2.0:GLIBC_2.1 unistd.h
