@@ -16,25 +16,7 @@
    <https://www.gnu.org/licenses/>.  */
 
 #include <sysdep.h>
-#define _ERRNO_H	1
-#include <bits/errno.h>
 #include <tcb-offsets.h>
-
-#if SHSTK_ENABLED
-/* The shadow stack prevents us from pushing the saved return PC onto
-   the stack and returning normally.  Instead we pop the shadow stack
-   and return directly.  This is the safest way to return and ensures
-   any stack manipulations done by the vfork'd child doesn't cause the
-   parent to terminate when CET is enabled.  */
-# undef SYSCALL_ERROR_HANDLER
-# define SYSCALL_ERROR_HANDLER			\
-0:						\
-  SYSCALL_SET_ERRNO;				\
-  or $-1, %RAX_LP;				\
-  jmp 1b;
-# undef SYSCALL_ERROR_LABEL
-# define SYSCALL_ERROR_LABEL 0f
-#endif
 
 /* Clone the calling process, but without copying the whole address space.
    The calling process is suspended until the new process exits or is
@@ -50,7 +32,7 @@ ENTRY (__vfork)
 	cfi_register(%rip, %rdi)
 
 	/* Stuff the syscall number in RAX and enter into the kernel.  */
-	movl	$SYS_ify (vfork), %eax
+	movl	$__NR_vfork, %eax
 	syscall
 
 #if !SHSTK_ENABLED
@@ -60,9 +42,17 @@ ENTRY (__vfork)
 #endif
 
 	cmpl	$-4095, %eax
-	jae SYSCALL_ERROR_LABEL		/* Branch forward if it failed.  */
-
-#if SHSTK_ENABLED
+#if !SHSTK_ENABLED
+	jae	syscall_error		/* Branch forward if it failed.  */
+	/* Normal return.  */
+	ret
+#else
+/* The shadow stack prevents us from pushing the saved return PC onto
+   the stack and returning normally.  Instead we pop the shadow stack
+   and return directly.  This is the safest way to return and ensures
+   any stack manipulations done by the vfork'd child doesn't cause the
+   parent to terminate when CET is enabled.  */
+	jae	0f
 1:
 	/* Check if shadow stack is in use.  */
 	xorl	%esi, %esi
@@ -81,12 +71,15 @@ L(no_shstk):
 	/* Push back the return PC.  */
 	pushq	%rdi
 	cfi_adjust_cfa_offset(8)
+
+0:
+	movq SYSCALL_ERROR_ERRNO@GOTTPOFF(%rip), %rcx
+	neg %eax
+	movl %eax, %fs:(%rcx)
+	or $-1, %RAX_LP
+	jmp 1b
 #endif
-
-	/* Normal return.  */
-	ret
-
-PSEUDO_END (__vfork)
+END (__vfork)
 libc_hidden_def (__vfork)
 
 weak_alias (__vfork, vfork)

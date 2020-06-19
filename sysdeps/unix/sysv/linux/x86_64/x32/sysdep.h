@@ -47,25 +47,4 @@ typedef long long int __syscall_arg_t;
 #undef LO_HI_LONG
 #define LO_HI_LONG(val) (val)
 
-#ifdef __ASSEMBLER__
-/* Zero-extend 32-bit unsigned long int arguments to 64 bits.  */
-# undef ZERO_EXTEND_1
-# define ZERO_EXTEND_1 movl %edi, %edi;
-# undef ZERO_EXTEND_2
-# define ZERO_EXTEND_2 movl %esi, %esi;
-# undef ZERO_EXTEND_3
-# define ZERO_EXTEND_3 movl %edx, %edx;
-# if SYSCALL_ULONG_ARG_1 == 4 || SYSCALL_ULONG_ARG_2 == 4
-#  undef DOARGS_4
-#  define DOARGS_4 movl %ecx, %r10d;
-# else
-#  undef ZERO_EXTEND_4
-#  define ZERO_EXTEND_4 movl %r10d, %r10d;
-# endif
-# undef ZERO_EXTEND_5
-# define ZERO_EXTEND_5 movl %r8d, %r8d;
-# undef ZERO_EXTEND_6
-# define ZERO_EXTEND_6 movl %r9d, %r9d;
-#endif	/* __ASSEMBLER__ */
-
 #endif /* linux/x86_64/x32/sysdep.h */

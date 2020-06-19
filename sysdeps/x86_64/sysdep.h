@@ -48,14 +48,6 @@
 #define CALL_MCOUNT		/* Do nothing.  */
 #endif
 
-#define	PSEUDO(name, syscall_name, args)				      \
-lose:									      \
-  jmp JUMPTARGET(syscall_error)						      \
-  .globl syscall_error;							      \
-  ENTRY (name)								      \
-  DO_CALL (syscall_name, args);						      \
-  jb lose
-
 #undef JUMPTARGET
 #ifdef SHARED
 # ifdef BIND_NOW

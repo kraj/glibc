@@ -36,7 +36,6 @@ ENTRY (syscall)
 	movq 8(%rsp),%r9	/* arg6 is on the stack.  */
 	syscall			/* Do the system call.  */
 	cmpq $-4095, %rax	/* Check %rax for error.  */
-	jae SYSCALL_ERROR_LABEL	/* Jump to error handler if error.  */
+	jae syscall_error	/* Jump to error handler if error.  */
 	ret			/* Return to caller.  */
-
-PSEUDO_END (syscall)
+END (syscall)

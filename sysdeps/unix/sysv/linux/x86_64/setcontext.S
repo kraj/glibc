@@ -51,7 +51,7 @@ ENTRY(__setcontext)
 	popq	%rdx
 	cfi_adjust_cfa_offset(-8)
 	cmpq	$-4095, %rax		/* Check %rax for error.  */
-	jae	SYSCALL_ERROR_LABEL	/* Jump to error handler if error.  */
+	jae	syscall_error		/* Jump to error handler if error.  */
 
 	/* Restore the floating-point context.  Not the registers, only the
 	   rest.  */
@@ -192,6 +192,6 @@ L(no_shstk):
 	/* Clear rax to indicate success.  */
 	xorl	%eax, %eax
 	ret
-PSEUDO_END(__setcontext)
+END(__setcontext)
 
 weak_alias (__setcontext, setcontext)

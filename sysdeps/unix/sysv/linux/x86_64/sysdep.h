@@ -20,141 +20,11 @@
 
 /* There is some commonality.  */
 #include <sysdeps/unix/sysv/linux/sysdep.h>
-#include <sysdeps/unix/x86_64/sysdep.h>
+#include <sysdeps/x86_64/sysdep.h>
+#include <sysdeps/unix/sysdep.h>
 #include <tcb-offsets.h>
 
-/* Defines RTLD_PRIVATE_ERRNO.  */
-#include <dl-sysdep.h>
-
-/* For Linux we can use the system call table in the header file
-	/usr/include/asm/unistd.h
-   of the kernel.  But these symbols do not follow the SYS_* syntax
-   so we have to redefine the `SYS_ify' macro here.  */
-#undef SYS_ify
-#define SYS_ify(syscall_name)	__NR_##syscall_name
-
-#ifdef __ASSEMBLER__
-
-/* Linux uses a negative return value to indicate syscall errors,
-   unlike most Unices, which use the condition codes' carry flag.
-
-   Since version 2.1 the return value of a system call might be
-   negative even if the call succeeded.	 E.g., the `lseek' system call
-   might return a large offset.	 Therefore we must not anymore test
-   for < 0, but test for a real error by making sure the value in %eax
-   is a real error number.  Linus said he will make sure the no syscall
-   returns a value in -1 .. -4095 as a valid result so we can savely
-   test with -4095.  */
-
-/* We don't want the label for the error handle to be global when we define
-   it here.  */
-# undef SYSCALL_ERROR_LABEL
-# ifdef PIC
-#  undef SYSCALL_ERROR_LABEL
-#  define SYSCALL_ERROR_LABEL 0f
-# else
-#  undef SYSCALL_ERROR_LABEL
-#  define SYSCALL_ERROR_LABEL syscall_error
-# endif
-
-/* PSEUDO and T_PSEUDO macros have 2 extra arguments for unsigned long
-   int arguments.  */
-# define PSEUDOS_HAVE_ULONG_INDICES 1
-
-# ifndef SYSCALL_ULONG_ARG_1
-#  define SYSCALL_ULONG_ARG_1 0
-#  define SYSCALL_ULONG_ARG_2 0
-# endif
-
-# undef	PSEUDO
-# if SYSCALL_ULONG_ARG_1
-#  define PSEUDO(name, syscall_name, args, ulong_arg_1, ulong_arg_2) \
-  .text;							      \
-  ENTRY (name)							      \
-    DO_CALL (syscall_name, args, ulong_arg_1, ulong_arg_2);	      \
-    cmpq $-4095, %rax;						      \
-    jae SYSCALL_ERROR_LABEL
-# else
-#  define PSEUDO(name, syscall_name, args) \
-  .text;							      \
-  ENTRY (name)							      \
-    DO_CALL (syscall_name, args, 0, 0);				      \
-    cmpq $-4095, %rax;						      \
-    jae SYSCALL_ERROR_LABEL
-# endif
-
-# undef	PSEUDO_END
-# define PSEUDO_END(name)						      \
-  SYSCALL_ERROR_HANDLER							      \
-  END (name)
-
-# undef	PSEUDO_NOERRNO
-# if SYSCALL_ULONG_ARG_1
-#  define PSEUDO_NOERRNO(name, syscall_name, args, ulong_arg_1, ulong_arg_2) \
-  .text;							      \
-  ENTRY (name)							      \
-    DO_CALL (syscall_name, args, ulong_arg_1, ulong_arg_2)
-# else
-#  define PSEUDO_NOERRNO(name, syscall_name, args) \
-  .text;							      \
-  ENTRY (name)							      \
-    DO_CALL (syscall_name, args, 0, 0)
-# endif
-
-# undef	PSEUDO_END_NOERRNO
-# define PSEUDO_END_NOERRNO(name) \
-  END (name)
-
-# define ret_NOERRNO ret
-
-# undef	PSEUDO_ERRVAL
-# if SYSCALL_ULONG_ARG_1
-#  define PSEUDO_ERRVAL(name, syscall_name, args, ulong_arg_1, ulong_arg_2) \
-  .text;							\
-  ENTRY (name)							\
-    DO_CALL (syscall_name, args, ulong_arg_1, ulong_arg_2);	\
-    negq %rax
-# else
-#  define PSEUDO_ERRVAL(name, syscall_name, args) \
-  .text;							\
-  ENTRY (name)							\
-    DO_CALL (syscall_name, args, 0, 0);				\
-    negq %rax
-# endif
-
-# undef	PSEUDO_END_ERRVAL
-# define PSEUDO_END_ERRVAL(name) \
-  END (name)
-
-# define ret_ERRVAL ret
-
-# if defined PIC && RTLD_PRIVATE_ERRNO
-#  define SYSCALL_SET_ERRNO			\
-  lea rtld_errno(%rip), %RCX_LP;		\
-  neg %eax;					\
-  movl %eax, (%rcx)
-# else
-#  if IS_IN (libc)
-#   define SYSCALL_ERROR_ERRNO __libc_errno
-#  else
-#   define SYSCALL_ERROR_ERRNO errno
-#  endif
-#  define SYSCALL_SET_ERRNO			\
-  movq SYSCALL_ERROR_ERRNO@GOTTPOFF(%rip), %rcx;\
-  neg %eax;					\
-  movl %eax, %fs:(%rcx);
-# endif
-
-# ifndef PIC
-#  define SYSCALL_ERROR_HANDLER	/* Nothing here; code in sysdep.S is used.  */
-# else
-#  define SYSCALL_ERROR_HANDLER			\
-0:						\
-  SYSCALL_SET_ERRNO;				\
-  or $-1, %RAX_LP;				\
-  ret;
-# endif	/* PIC */
-
+#ifndef __ASSEMBLER__
 /* The Linux/x86-64 kernel expects the system call parameters in
    registers according to the following table:
 
@@ -176,7 +46,6 @@
     registers and the seventh parameter and later on the stack.  The
     register use is as follows:
 
-     system call number	in the DO_CALL macro
      arg 1		rdi
      arg 2		rsi
      arg 3		rdx
@@ -188,34 +57,8 @@
     called the stack is not aligned since the return address has just
     been pushed.
 
-
     Syscalls of more than 6 arguments are not supported.  */
 
-# undef	DO_CALL
-# define DO_CALL(syscall_name, args, ulong_arg_1, ulong_arg_2) \
-    DOARGS_##args				\
-    ZERO_EXTEND_##ulong_arg_1			\
-    ZERO_EXTEND_##ulong_arg_2			\
-    movl $SYS_ify (syscall_name), %eax;		\
-    syscall;
-
-# define DOARGS_0 /* nothing */
-# define DOARGS_1 /* nothing */
-# define DOARGS_2 /* nothing */
-# define DOARGS_3 /* nothing */
-# define DOARGS_4 movq %rcx, %r10;
-# define DOARGS_5 DOARGS_4
-# define DOARGS_6 DOARGS_5
-
-# define ZERO_EXTEND_0 /* nothing */
-# define ZERO_EXTEND_1 /* nothing */
-# define ZERO_EXTEND_2 /* nothing */
-# define ZERO_EXTEND_3 /* nothing */
-# define ZERO_EXTEND_4 /* nothing */
-# define ZERO_EXTEND_5 /* nothing */
-# define ZERO_EXTEND_6 /* nothing */
-
-#else	/* !__ASSEMBLER__ */
 
 /* NB: This also works when X is an array.  For an array X,  type of
    (X) - (X) is ptrdiff_t, which is signed, since size of ptrdiff_t

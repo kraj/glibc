@@ -118,20 +118,20 @@ L(no_shstk):
 	   rt_sigprocmask (SIG_BLOCK, NULL, set,_NSIG/8).  */
 	leaq	oSIGMASK(%rdi), %rdx
 	xorl	%esi,%esi
-#if SIG_BLOCK == 0
+	/* SIG_BLOCK is 0.  */
 	xorl	%edi, %edi
-#else
-	movl	$SIG_BLOCK, %edi
-#endif
 	movl	$_NSIG8,%r10d
 	movl	$__NR_rt_sigprocmask, %eax
 	syscall
+	/* The rt_sigprocmask is highly unlikely to fail, since HOW is a
+	   always valid (SIG_BLOCK) and EFAUT should no happen since
+	   an invalid memory would be triggered by the fnstenv.  */
 	cmpq	$-4095, %rax		/* Check %rax for error.  */
-	jae	SYSCALL_ERROR_LABEL	/* Jump to error handler if error.  */
+	jae	syscall_error
 
 	/* All done, return 0 for success.  */
 	xorl	%eax, %eax
 	ret
-PSEUDO_END(__getcontext)
+END(__getcontext)
 
 weak_alias (__getcontext, getcontext)

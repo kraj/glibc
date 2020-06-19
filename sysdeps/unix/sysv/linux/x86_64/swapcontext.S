@@ -79,7 +79,7 @@ ENTRY(__swapcontext)
 	movl	$__NR_rt_sigprocmask, %eax
 	syscall
 	cmpq	$-4095, %rax		/* Check %rax for error.  */
-	jae	SYSCALL_ERROR_LABEL	/* Jump to error handler if error.  */
+	jae	syscall_error		/* Jump to error handler if error.  */
 
 	/* Restore destroyed register into RDX. The choice is arbitrary,
 	   but leaving RDI and RSI available for use later can avoid
@@ -246,6 +246,7 @@ L(no_shstk):
 	/* Clear rax to indicate success.  */
 	xorl	%eax, %eax
 	ret
-PSEUDO_END(__swapcontext)
+
+END(__swapcontext)
 
 weak_alias (__swapcontext, swapcontext)

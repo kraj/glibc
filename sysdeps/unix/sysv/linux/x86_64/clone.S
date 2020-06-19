@@ -49,11 +49,10 @@
         .text
 ENTRY (__clone)
 	/* Sanity check arguments.  */
-	movq	$-EINVAL,%rax
 	testq	%rdi,%rdi		/* no NULL function pointers */
-	jz	SYSCALL_ERROR_LABEL
+	jz	1f
 	testq	%rsi,%rsi		/* no NULL stack pointers */
-	jz	SYSCALL_ERROR_LABEL
+	jz	1f
 
 	/* Insert the argument onto the new stack.  */
 	subq	$16,%rsi
@@ -68,7 +67,7 @@ ENTRY (__clone)
 	movq	%r8, %rdx
 	movq	%r9, %r8
 	mov	8(%rsp), %R10_LP
-	movl	$SYS_ify(clone),%eax
+	movl	$__NR_clone,%eax
 
 	/* End FDE now, because in the child the unwind info will be
 	   wrong.  */
@@ -76,7 +75,7 @@ ENTRY (__clone)
 	syscall
 
 	testq	%rax,%rax
-	jl	SYSCALL_ERROR_LABEL
+	jl	syscall_error
 	jz	L(thread_start)
 
 	ret
@@ -95,12 +94,15 @@ L(thread_start):
 	call	*%rax
 	/* Call exit with return value from function call. */
 	movq	%rax, %rdi
-	movl	$SYS_ify(exit), %eax
+	movl	$__NR_exit, %eax
 	syscall
 	cfi_endproc;
 
 	cfi_startproc;
-PSEUDO_END (__clone)
+1:
+	movq	$-EINVAL, %rdi
+	jmp	syscall_error
+END (__clone)
 
 libc_hidden_def (__clone)
 weak_alias (__clone, clone)
