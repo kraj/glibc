@@ -96,10 +96,6 @@ enum cf_protection_level
 #define	syscall_error	__syscall_error
 #define mcount		_mcount
 
-#undef	PSEUDO_END
-#define	PSEUDO_END(name)						      \
-  END (name)
-
 /* Local label name for asm code. */
 #ifndef L
 /* ELF-like local names start with `.L'.  */

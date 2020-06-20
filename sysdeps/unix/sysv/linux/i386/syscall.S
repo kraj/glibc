@@ -22,14 +22,46 @@
 
 	.text
 ENTRY (syscall)
+	/* Save register contents.  */
+	pushl %ebp
+ 	cfi_adjust_cfa_offset (4)
+	cfi_rel_offset (ebp, 0)
+	pushl %edi
+ 	cfi_adjust_cfa_offset (4)
+	cfi_rel_offset (edi, 0)
+ 	pushl %esi
+	cfi_adjust_cfa_offset (4)
+	cfi_rel_offset (esi, 0)
+ 	pushl %ebx
+ 	cfi_adjust_cfa_offset (4)
+	cfi_rel_offset (ebx, 0)
 
-	PUSHARGS_6		/* Save register contents.  */
-	_DOARGS_6(44)		/* Load arguments.  */
-	movl 20(%esp), %eax	/* Load syscall number into %eax.  */
+	/* Load arguments.  */
+	movl 44(%esp), %ebp
+ 	movl 40(%esp), %edi
+ 	movl 36(%esp), %esi
+ 	movl 32(%esp), %edx
+	movl 28(%esp), %ecx
+	movl 24(%esp), %ebx
+	movl 20(%esp), %eax
+
 	ENTER_KERNEL		/* Do the system call.  */
-	POPARGS_6		/* Restore register contents.  */
-	cmpl $-4095, %eax	/* Check %eax for error.  */
-	jae SYSCALL_ERROR_LABEL	/* Jump to error handler if error.  */
-	ret			/* Return to caller.  */
 
-PSEUDO_END (syscall)
+	/* Restore register contents.  */
+	popl %ebx
+	cfi_adjust_cfa_offset (-4)
+	cfi_restore (ebx)
+	popl %esi
+	cfi_adjust_cfa_offset (-4)
+	cfi_restore (esi)
+	popl %edi
+	cfi_adjust_cfa_offset (-4)
+	cfi_restore (edi)
+	popl %ebp
+	cfi_adjust_cfa_offset (-4)
+	cfi_restore (ebp)
+
+	cmpl $-4095, %eax	/* Check %eax for error.  */
+	jae __syscall_error	/* Jump to error handler if error.  */
+	ret			/* Return to caller.  */
+END (syscall)

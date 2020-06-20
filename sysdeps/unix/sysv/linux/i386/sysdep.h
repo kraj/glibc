@@ -21,8 +21,8 @@
 
 /* There is some commonality.  */
 #include <sysdeps/unix/sysv/linux/sysdep.h>
-#include <sysdeps/unix/i386/sysdep.h>
-/* Defines RTLD_PRIVATE_ERRNO and USE_DL_SYSINFO.  */
+#include <sysdeps/unix/sysdep.h>
+#include <sysdeps/i386/sysdep.h>
 #include <dl-sysdep.h>
 #include <tcb-offsets.h>
 
@@ -52,77 +52,6 @@
 # define OPTIMIZE_FOR_GCC_5
 #endif
 
-#ifdef __ASSEMBLER__
-
-/* Linux uses a negative return value to indicate syscall errors,
-   unlike most Unices, which use the condition codes' carry flag.
-
-   Since version 2.1 the return value of a system call might be
-   negative even if the call succeeded.  E.g., the `lseek' system call
-   might return a large offset.  Therefore we must not anymore test
-   for < 0, but test for a real error by making sure the value in %eax
-   is a real error number.  Linus said he will make sure the no syscall
-   returns a value in -1 .. -4095 as a valid result so we can savely
-   test with -4095.  */
-
-/* We don't want the label for the error handle to be global when we define
-   it here.  */
-#undef SYSCALL_ERROR_LABEL
-#define SYSCALL_ERROR_LABEL __syscall_error
-
-#undef	PSEUDO
-#define	PSEUDO(name, syscall_name, args)				      \
-  .text;								      \
-  ENTRY (name)								      \
-    DO_CALL (syscall_name, args);					      \
-    cmpl $-4095, %eax;							      \
-    jae SYSCALL_ERROR_LABEL
-
-#undef	PSEUDO_END
-#define	PSEUDO_END(name)						      \
-  SYSCALL_ERROR_HANDLER							      \
-  END (name)
-
-#undef	PSEUDO_NOERRNO
-#define	PSEUDO_NOERRNO(name, syscall_name, args)			      \
-  .text;								      \
-  ENTRY (name)								      \
-    DO_CALL (syscall_name, args)
-
-#undef	PSEUDO_END_NOERRNO
-#define	PSEUDO_END_NOERRNO(name)					      \
-  END (name)
-
-#define ret_NOERRNO ret
-
-/* The function has to return the error code.  */
-#undef	PSEUDO_ERRVAL
-#define	PSEUDO_ERRVAL(name, syscall_name, args) \
-  .text;								      \
-  ENTRY (name)								      \
-    DO_CALL (syscall_name, args);					      \
-    negl %eax
-
-#undef	PSEUDO_END_ERRVAL
-#define	PSEUDO_END_ERRVAL(name) \
-  END (name)
-
-#define ret_ERRVAL ret
-
-#define SYSCALL_ERROR_HANDLER	/* Nothing here; code in sysdep.c is used.  */
-
-/* The original calling convention for system calls on Linux/i386 is
-   to use int $0x80.  */
-#if I386_USE_SYSENTER
-# ifdef PIC
-#  define ENTER_KERNEL call *%gs:SYSINFO_OFFSET
-# else
-#  define ENTER_KERNEL call *_dl_sysinfo
-# endif
-#else
-# define ENTER_KERNEL int $0x80
-#endif
-
 /* Linux takes system call arguments in registers:
 
 	syscall number	%eax	     call-clobbered
@@ -146,96 +75,25 @@
    (Of course a function with say 3 arguments does not have entries for
    arguments 4, 5, and 6.)
 
-   The following code tries hard to be optimal.  A general assumption
-   (which is true according to the data books I have) is that
+   The calling conventions for Linux tell that among the registers used
+   for parameters %ecx and %edx need not be saved.  Beside this we may
+   clobber this registers even when they are not used for parameter
+   passing.  */
 
-	2 * xchg	is more expensive than	pushl + movl + popl
+#ifdef __ASSEMBLER__
+/* The original calling convention for system calls on Linux/i386 is
+   to use int $0x80.  */
+#if I386_USE_SYSENTER
+# ifdef PIC
+#  define ENTER_KERNEL call *%gs:SYSINFO_OFFSET
+# else
+#  define ENTER_KERNEL call *_dl_sysinfo
+# endif
+#else
+# define ENTER_KERNEL int $0x80
+#endif
 
-   Beside this a neat trick is used.  The calling conventions for Linux
-   tell that among the registers used for parameters %ecx and %edx need
-   not be saved.  Beside this we may clobber this registers even when
-   they are not used for parameter passing.
-
-   As a result one can see below that we save the content of the %ebx
-   register in the %edx register when we have less than 3 arguments
-   (2 * movl is less expensive than pushl + popl).
-
-   Second unlike for the other registers we don't save the content of
-   %ecx and %edx when we have more than 1 and 2 registers resp.
-
-   The code below might look a bit long but we have to take care for
-   the pipelined processors (i586).  Here the `pushl' and `popl'
-   instructions are marked as NP (not pairable) but the exception is
-   two consecutive of these instruction.  This gives no penalty on
-   other processors though.  */
-
-#undef	DO_CALL
-#define DO_CALL(syscall_name, args)			      		      \
-    PUSHARGS_##args							      \
-    DOARGS_##args							      \
-    movl $SYS_ify (syscall_name), %eax;					      \
-    ENTER_KERNEL							      \
-    POPARGS_##args
-
-#define PUSHARGS_0	/* No arguments to push.  */
-#define	DOARGS_0	/* No arguments to frob.  */
-#define	POPARGS_0	/* No arguments to pop.  */
-#define	_PUSHARGS_0	/* No arguments to push.  */
-#define _DOARGS_0(n)	/* No arguments to frob.  */
-#define	_POPARGS_0	/* No arguments to pop.  */
-
-#define PUSHARGS_1	movl %ebx, %edx; L(SAVEBX1): PUSHARGS_0
-#define	DOARGS_1	_DOARGS_1 (4)
-#define	POPARGS_1	POPARGS_0; movl %edx, %ebx; L(RESTBX1):
-#define	_PUSHARGS_1	pushl %ebx; cfi_adjust_cfa_offset (4); \
-			cfi_rel_offset (ebx, 0); L(PUSHBX1): _PUSHARGS_0
-#define _DOARGS_1(n)	movl n(%esp), %ebx; _DOARGS_0(n-4)
-#define	_POPARGS_1	_POPARGS_0; popl %ebx; cfi_adjust_cfa_offset (-4); \
-			cfi_restore (ebx); L(POPBX1):
-
-#define PUSHARGS_2	PUSHARGS_1
-#define	DOARGS_2	_DOARGS_2 (8)
-#define	POPARGS_2	POPARGS_1
-#define _PUSHARGS_2	_PUSHARGS_1
-#define	_DOARGS_2(n)	movl n(%esp), %ecx; _DOARGS_1 (n-4)
-#define	_POPARGS_2	_POPARGS_1
-
-#define PUSHARGS_3	_PUSHARGS_2
-#define DOARGS_3	_DOARGS_3 (16)
-#define POPARGS_3	_POPARGS_3
-#define _PUSHARGS_3	_PUSHARGS_2
-#define _DOARGS_3(n)	movl n(%esp), %edx; _DOARGS_2 (n-4)
-#define _POPARGS_3	_POPARGS_2
-
-#define PUSHARGS_4	_PUSHARGS_4
-#define DOARGS_4	_DOARGS_4 (24)
-#define POPARGS_4	_POPARGS_4
-#define _PUSHARGS_4	pushl %esi; cfi_adjust_cfa_offset (4); \
-			cfi_rel_offset (esi, 0); L(PUSHSI1): _PUSHARGS_3
-#define _DOARGS_4(n)	movl n(%esp), %esi; _DOARGS_3 (n-4)
-#define _POPARGS_4	_POPARGS_3; popl %esi; cfi_adjust_cfa_offset (-4); \
-			cfi_restore (esi); L(POPSI1):
-
-#define PUSHARGS_5	_PUSHARGS_5
-#define DOARGS_5	_DOARGS_5 (32)
-#define POPARGS_5	_POPARGS_5
-#define _PUSHARGS_5	pushl %edi; cfi_adjust_cfa_offset (4); \
-			cfi_rel_offset (edi, 0); L(PUSHDI1): _PUSHARGS_4
-#define _DOARGS_5(n)	movl n(%esp), %edi; _DOARGS_4 (n-4)
-#define _POPARGS_5	_POPARGS_4; popl %edi; cfi_adjust_cfa_offset (-4); \
-			cfi_restore (edi); L(POPDI1):
-
-#define PUSHARGS_6	_PUSHARGS_6
-#define DOARGS_6	_DOARGS_6 (40)
-#define POPARGS_6	_POPARGS_6
-#define _PUSHARGS_6	pushl %ebp; cfi_adjust_cfa_offset (4); \
-			cfi_rel_offset (ebp, 0); L(PUSHBP1): _PUSHARGS_5
-#define _DOARGS_6(n)	movl n(%esp), %ebp; _DOARGS_5 (n-4)
-#define _POPARGS_6	_POPARGS_5; popl %ebp; cfi_adjust_cfa_offset (-4); \
-			cfi_restore (ebp); L(POPBP1):
-
-#else	/* !__ASSEMBLER__ */
-
+#else
 extern int __syscall_error (int)
   attribute_hidden __attribute__ ((__regparm__ (1)));
 

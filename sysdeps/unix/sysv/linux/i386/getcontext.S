@@ -123,11 +123,11 @@ L(no_shstk):
 	cfi_adjust_cfa_offset (-4)
 	cfi_restore (ebx)
 	cmpl	$-4095, %eax		/* Check %eax for error.  */
-	jae	SYSCALL_ERROR_LABEL	/* Jump to error handler if error.  */
+	jae	__syscall_error		/* Jump to error handler if error.  */
 
 	/* All done, return 0 for success.  */
 	xorl	%eax, %eax
 	ret
-PSEUDO_END(__getcontext)
+END(__getcontext)
 
 weak_alias (__getcontext, getcontext)

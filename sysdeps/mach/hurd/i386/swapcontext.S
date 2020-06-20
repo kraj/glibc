@@ -105,6 +105,6 @@ ENTRY(__swapcontext)
 
 L(pseudo_end):
 	ret
-PSEUDO_END(__swapcontext)
+END(__swapcontext)
 
 weak_alias (__swapcontext, swapcontext)

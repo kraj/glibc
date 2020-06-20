@@ -64,6 +64,7 @@
    the most useful definitions for assembler syntax details.  */
 #undef ENTRY
 #undef ALIGN
-#include <sysdeps/unix/i386/sysdep.h>
+#include <sysdeps/unix/sysdep.h>
+#include <sysdeps/i386/sysdep.h>
 
 #endif /* mach/i386/sysdep.h */

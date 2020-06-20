@@ -49,14 +49,6 @@
 #define CALL_MCOUNT		/* Do nothing.  */
 #endif
 
-#define	PSEUDO(name, syscall_name, args)				      \
-  .globl syscall_error;							      \
-lose: SYSCALL_PIC_SETUP							      \
-  jmp JUMPTARGET(syscall_error);					      \
-  ENTRY (name)								      \
-  DO_CALL (syscall_name, args);						      \
-  jb lose
-
 # define SETUP_PIC_REG(reg) \
   .ifndef GET_PC_THUNK(reg);						      \
   .section .text.GET_PC_THUNK(reg),"axG",@progbits,GET_PC_THUNK(reg),comdat;  \

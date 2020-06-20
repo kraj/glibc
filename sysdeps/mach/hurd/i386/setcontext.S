@@ -87,7 +87,7 @@ ENTRY(__setcontext)
 
 L(pseudo_end):
 	ret
-PSEUDO_END(__setcontext)
+END(__setcontext)
 libc_hidden_def (__setcontext)
 
 weak_alias (__setcontext, setcontext)

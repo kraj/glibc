@@ -62,7 +62,7 @@ ENTRY(__swapcontext)
 	ENTER_KERNEL
 	popl	%ebx
 	cmpl	$-4095, %eax		/* Check %eax for error.  */
-	jae	SYSCALL_ERROR_LABEL	/* Jump to error handler if error.  */
+	jae	__syscall_error		/* Jump to error handler if error.  */
 
 	/* EAX was modified, reload it.  */
 	movl	8(%esp), %eax
@@ -236,6 +236,6 @@ L(no_shstk):
 	/* The following 'ret' will pop the address of the code and jump
 	   to it.  */
 	ret
-PSEUDO_END(__swapcontext)
+END(__swapcontext)
 
 weak_alias (__swapcontext, swapcontext)

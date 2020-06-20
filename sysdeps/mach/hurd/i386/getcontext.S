@@ -69,6 +69,6 @@ ENTRY(__getcontext)
 	/* Propagate %eax (and errno, in case).  */
 
 	ret
-PSEUDO_END(__getcontext)
+END(__getcontext)
 
 weak_alias (__getcontext, getcontext)

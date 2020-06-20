@@ -45,10 +45,10 @@ ENTRY (__clone)
 	movl	$-EINVAL,%eax
 	movl	FUNC(%esp),%ecx		/* no NULL function pointers */
 	testl	%ecx,%ecx
-	jz	SYSCALL_ERROR_LABEL
+	jz	__syscall_error
 	movl	STACK(%esp),%ecx	/* no NULL stack pointers */
 	testl	%ecx,%ecx
-	jz	SYSCALL_ERROR_LABEL
+	jz	__syscall_error
 
 	/* Insert the argument onto the new stack.  Make sure the new
 	   thread is started with an alignment of (mod 16).  */
@@ -94,7 +94,7 @@ ENTRY (__clone)
 	popl	%ebx
 
 	test	%eax,%eax
-	jl	SYSCALL_ERROR_LABEL
+	jl	__syscall_error
 	jz	L(thread_start)
 
 	ret
@@ -116,7 +116,7 @@ L(here):
 	movl	$SYS_ify(exit), %eax
 	ENTER_KERNEL
 
-PSEUDO_END (__clone)
+END (__clone)
 
 libc_hidden_def (__clone)
 weak_alias (__clone, clone)

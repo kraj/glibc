@@ -42,7 +42,7 @@ ENTRY(__setcontext)
 	cfi_adjust_cfa_offset (-4)
 	cfi_restore (ebx)
 	cmpl	$-4095, %eax		/* Check %eax for error.  */
-	jae	SYSCALL_ERROR_LABEL	/* Jump to error handler if error.  */
+	jae	__syscall_error		/* Jump to error handler if error.  */
 
 	/* EAX was modified, reload it.  */
 	movl	4(%esp), %eax
@@ -182,7 +182,7 @@ L(no_shstk):
 	   to it.  */
 
 	ret
-PSEUDO_END(__setcontext)
+END(__setcontext)
 libc_hidden_def (__setcontext)
 
 weak_alias (__setcontext, setcontext)
