@@ -1,5 +1,5 @@
-/* system call interface.  Linux/RISC-V version.
-   Copyright (C) 2001-2020 Free Software Foundation, Inc.
+/* Indirect system call.  Linux version.
+   Copyright (C) 2020 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -16,12 +16,24 @@
    License along with the GNU C Library.  If not, see
    <https://www.gnu.org/licenses/>.  */
 
+#include <stdarg.h>
 #include <sysdep.h>
 
 long int
-syscall (long int syscall_number, long int arg1, long int arg2, long int arg3,
-	 long int arg4, long int arg5, long int arg6, long int arg7)
+syscall (long int number, ...)
 {
-  return inline_syscall (syscall_number, arg1, arg2, arg3, arg4,
-			 arg5, arg6, arg7);
+  va_list args;
+  __syscall_arg_t arg0, arg1, arg2, arg3, arg4, arg5;
+
+  /* Load varargs */
+  va_start (args, number);
+  arg0 = va_arg (args, __syscall_arg_t);
+  arg1 = va_arg (args, __syscall_arg_t);
+  arg2 = va_arg (args, __syscall_arg_t);
+  arg3 = va_arg (args, __syscall_arg_t);
+  arg4 = va_arg (args, __syscall_arg_t);
+  arg5 = va_arg (args, __syscall_arg_t);
+  va_end (args);
+
+  return inline_syscall (number, arg0, arg1, arg2, arg3, arg4, arg5);
 }
