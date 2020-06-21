@@ -40,5 +40,5 @@ ENTRY (syscall)
 	b.cs	1f
 	RET
 1:
-	b	SYSCALL_ERROR
-PSEUDO_END (syscall)
+	b	__syscall_error
+END (syscall)

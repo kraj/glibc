@@ -23,101 +23,12 @@
 #include <sysdeps/aarch64/sysdep.h>
 #include <sysdeps/unix/sysv/linux/generic/sysdep.h>
 
-/* Defines RTLD_PRIVATE_ERRNO and USE_DL_SYSINFO.  */
-#include <dl-sysdep.h>
-
 #ifndef __ASSEMBLER__
 #include <stdint.h>
 #include <errno.h>
 #endif
 
-/* For Linux we can use the system call table in the header file
-	/usr/include/asm/unistd.h
-   of the kernel.  But these symbols do not follow the SYS_* syntax
-   so we have to redefine the `SYS_ify' macro here.  */
-#undef SYS_ify
-#define SYS_ify(syscall_name)	(__NR_##syscall_name)
-
-#ifdef __ASSEMBLER__
-
-/* Linux uses a negative return value to indicate syscall errors,
-   unlike most Unices, which use the condition codes' carry flag.
-
-   Since version 2.1 the return value of a system call might be
-   negative even if the call succeeded.  E.g., the `lseek' system call
-   might return a large offset.  Therefore we must not anymore test
-   for < 0, but test for a real error by making sure the value in R0
-   is a real error number.  Linus said he will make sure the no syscall
-   returns a value in -1 .. -4095 as a valid result so we can safely
-   test with -4095.  */
-
-# undef	PSEUDO
-# define PSEUDO(name, syscall_name, args)				      \
-  .text;								      \
-  ENTRY (name);								      \
-    DO_CALL (syscall_name, args);					      \
-    cmn x0, #4095;							      \
-    b.cs .Lsyscall_error;
-
-# undef	PSEUDO_END
-# define PSEUDO_END(name)						      \
-  SYSCALL_ERROR_HANDLER							      \
-  END (name)
-
-# undef	PSEUDO_NOERRNO
-# define PSEUDO_NOERRNO(name, syscall_name, args)			      \
-  .text;								      \
-  ENTRY (name);								      \
-    DO_CALL (syscall_name, args);
-
-# undef	PSEUDO_END_NOERRNO
-# define PSEUDO_END_NOERRNO(name)					      \
-  END (name)
-
-# define ret_NOERRNO ret
-
-/* The function has to return the error code.  */
-# undef	PSEUDO_ERRVAL
-# define PSEUDO_ERRVAL(name, syscall_name, args) \
-  .text;								      \
-  ENTRY (name)								      \
-    DO_CALL (syscall_name, args);					      \
-    neg x0, x0
-
-# undef	PSEUDO_END_ERRVAL
-# define PSEUDO_END_ERRVAL(name) \
-  END (name)
-
-# define ret_ERRVAL ret
-
-# if !IS_IN (libc)
-#  define SYSCALL_ERROR  .Lsyscall_error
-#  if RTLD_PRIVATE_ERRNO
-#   define SYSCALL_ERROR_HANDLER				\
-.Lsyscall_error:						\
-	adrp	x1, C_SYMBOL_NAME(rtld_errno);			\
-	neg     w0, w0;						\
-	str     w0, [x1, :lo12:C_SYMBOL_NAME(rtld_errno)];	\
-	mov	x0, -1;						\
-	RET;
-#  else
-
-#   define SYSCALL_ERROR_HANDLER				\
-.Lsyscall_error:						\
-	adrp	x1, :gottprel:errno;				\
-	neg	w2, w0;						\
-	ldr	PTR_REG(1), [x1, :gottprel_lo12:errno];		\
-	mrs	x3, tpidr_el0;					\
-	mov	x0, -1;						\
-	str	w2, [x1, x3];					\
-	RET;
-#  endif
-# else
-#  define SYSCALL_ERROR __syscall_error
-#  define SYSCALL_ERROR_HANDLER                                 \
-.Lsyscall_error:                                                \
-	b	__syscall_error;
-# endif
+#ifndef __ASSEMBLER__
 
 /* Linux takes system call args in registers:
 	syscall number	x8
@@ -128,26 +39,7 @@
 	arg 5		x4
 	arg 6		x5
 	arg 7		x6
-
-   The compiler is going to form a call by coming here, through PSEUDO, with
-   arguments
-	syscall number	in the DO_CALL macro
-	arg 1		x0
-	arg 2		x1
-	arg 3		x2
-	arg 4		x3
-	arg 5		x4
-	arg 6		x5
-	arg 7		x6
-
 */
-
-# undef	DO_CALL
-# define DO_CALL(syscall_name, args)		\
-    mov x8, SYS_ify (syscall_name);		\
-    svc 0
-
-#else /* not __ASSEMBLER__ */
 
 # ifdef __LP64__
 #  define VDSO_NAME  "LINUX_2.6.39"

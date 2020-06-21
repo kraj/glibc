@@ -17,8 +17,6 @@
    <https://www.gnu.org/licenses/>.  */
 
 #include <sysdep.h>
-#define _ERRNO_H	1
-#include <bits/errno.h>
 
 /* Clone the calling process, but without copying the whole address space.
    The calling process is suspended until the new process exits or is
@@ -29,13 +27,14 @@ ENTRY (__vfork)
 
 	mov	x0, #0x4111	/* CLONE_VM | CLONE_VFORK | SIGCHLD */
 	mov	x1, sp
-	DO_CALL (clone, 2)
+	mov	x8, __NR_clone
+	svc	0x0
 
 	cmn	x0, #4095
-	b.cs    .Lsyscall_error
+	b.cs    __syscall_error
 	RET
 
-PSEUDO_END (__vfork)
+END (__vfork)
 libc_hidden_def (__vfork)
 
 weak_alias (__vfork, vfork)

@@ -95,7 +95,7 @@ ENTRY(__getcontext)
 	mov	x0, SIG_BLOCK
 	mov	x1, 0
 	mov	x3, _NSIG8
-	mov	x8, SYS_ify (rt_sigprocmask)
+	mov	x8, __NR_rt_sigprocmask
 	svc	0
 	cbnz	x0, 1f
 
@@ -105,5 +105,5 @@ ENTRY(__getcontext)
 1:
 	b	C_SYMBOL_NAME(__syscall_error)
 
-	PSEUDO_END (__getcontext)
+END (__getcontext)
 weak_alias (__getcontext, getcontext)

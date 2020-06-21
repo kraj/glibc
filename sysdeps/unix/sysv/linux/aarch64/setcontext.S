@@ -44,7 +44,7 @@ ENTRY (__setcontext)
 	add	x1, x9, #UCONTEXT_SIGMASK
 	mov	x2, #0
 	mov	x3, #_NSIG8
-	mov	x8, SYS_ify (rt_sigprocmask)
+	mov	x8, __NR_rt_sigprocmask
 	svc	0
 	cbz	x0, 1f
 	b	C_SYMBOL_NAME (__syscall_error)
@@ -120,7 +120,7 @@ ENTRY (__setcontext)
 	ldp	x0, x1, [x0, oX0 + 0 * SZREG]
 	/* Jump to the new pc value.  */
 	br	x16
-PSEUDO_END (__setcontext)
+END (__setcontext)
 weak_alias (__setcontext, setcontext)
 
 ENTRY (__startcontext)

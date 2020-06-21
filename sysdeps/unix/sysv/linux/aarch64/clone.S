@@ -20,8 +20,6 @@
    and invokes a function in the right context after its all over.  */
 
 #include <sysdep.h>
-#define _ERRNO_H	1
-#include <bits/errno.h>
 
 /* int clone(int (*fn)(void *arg),            x0
 	     void *child_stack,               x1
@@ -47,8 +45,8 @@ ENTRY(__clone)
 
 	/* Sanity check args.  */
 	mov	x0, #-EINVAL
-	cbz	x10, .Lsyscall_error
-	cbz	x1, .Lsyscall_error
+	cbz	x10, 1f
+	cbz	x1, 1f
 
 	/* Do the system call.  */
 	/* X0:flags, x1:newsp, x2:parenttidptr, x3:newtls, x4:childtid.  */
@@ -57,14 +55,17 @@ ENTRY(__clone)
 	mov	x2, x4			/* ptid  */
 	mov	x3, x5			/* tls  */
 	mov	x4, x6			/* ctid  */
-	mov	x8, #SYS_ify(clone)
+	mov	x8, __NR_clone
 	svc	0x0
 
 	cmp	x0, #0
 	beq	thread_start
-	blt	.Lsyscall_error
+	blt	1f
 	RET
-PSEUDO_END (__clone)
+
+1:
+	b	__syscall_error
+END (__clone)
 
 	.align 4
 	.type thread_start, %function
@@ -78,7 +79,7 @@ thread_start:
 	blr	x10
 
 	/* We are done, pass the return value through x0.  */
-	mov	x8, #SYS_ify(exit)
+	mov	x8, __NR_exit
 	svc	0x0
 	cfi_endproc
 	.size thread_start, .-thread_start
