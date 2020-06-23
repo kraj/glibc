@@ -43,7 +43,7 @@ libc_ifunc (time,
 time_t
 time (time_t *t)
 {
-  return INLINE_VSYSCALL (time, 1, t);
+  return inline_vsyscall (time, t);
 }
 # endif /* !SHARED */
 #else /* USE_IFUNC_TIME  */

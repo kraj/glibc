@@ -26,7 +26,7 @@ sched_getcpu (void)
   unsigned int cpu;
   int r = -1;
 #ifdef HAVE_GETCPU_VSYSCALL
-  r = INLINE_VSYSCALL (getcpu, 3, &cpu, NULL, NULL);
+  r = inline_vsyscall (getcpu, &cpu, NULL, NULL);
 #else
   r = inline_syscall (__NR_getcpu, &cpu, NULL, NULL);
 #endif

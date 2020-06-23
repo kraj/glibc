@@ -50,7 +50,7 @@ __gettimeofday (struct timeval *restrict tv, void *restrict tz)
   if (__glibc_unlikely (tz != 0))
     memset (tz, 0, sizeof *tz);
 
-  return INLINE_VSYSCALL (gettimeofday, 2, tv, tz);
+  return inline_vsyscall (gettimeofday, tv, tz);
 }
 # endif
 weak_alias (__gettimeofday, gettimeofday)

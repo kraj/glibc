@@ -19,38 +19,56 @@
 #ifndef SYSDEP_VDSO_LINUX_H
 # define SYSDEP_VDSO_LINUX_H
 
+#include <sysdep.h>
 #include <ldsodefs.h>
 
-#ifndef INTERNAL_VSYSCALL_CALL
-# define INTERNAL_VSYSCALL_CALL(funcptr, nr, args...)		      	      \
-     funcptr (args)
-#endif
+typedef long int (*vdsop0_t)(void);
+typedef long int (*vdsop1_t)(__syscall_arg_t);
+typedef long int (*vdsop2_t)(__syscall_arg_t, __syscall_arg_t);
+typedef long int (*vdsop3_t)(__syscall_arg_t, __syscall_arg_t,
+			     __syscall_arg_t);
+typedef long int (*vdsop4_t)(__syscall_arg_t, __syscall_arg_t,
+			     __syscall_arg_t, __syscall_arg_t);
+typedef long int (*vdsop5_t)(__syscall_arg_t, __syscall_arg_t,
+			     __syscall_arg_t, __syscall_arg_t,
+			     __syscall_arg_t);
+typedef long int (*vdsop6_t)(__syscall_arg_t, __syscall_arg_t,
+			     __syscall_arg_t, __syscall_arg_t,
+			     __syscall_arg_t, __syscall_arg_t);
+typedef long int (*vdsop7_t)(__syscall_arg_t, __syscall_arg_t,
+			     __syscall_arg_t, __syscall_arg_t,
+			     __syscall_arg_t, __syscall_arg_t,
+			     __syscall_arg_t);
 
-#define INLINE_VSYSCALL(name, nr, args...)				      \
-  ({									      \
-    __label__ out;							      \
-    __label__ iserr;							      \
-    long int sc_ret;							      \
-									      \
-    __typeof (GLRO(dl_vdso_##name)) vdsop = GLRO(dl_vdso_##name);	      \
-    if (vdsop != NULL)							      \
-      {									      \
-	sc_ret = INTERNAL_VSYSCALL_CALL (vdsop, nr, ##args);	      	      \
-	if (!__syscall_err (sc_ret))					      \
-	  goto out;							      \
-	if (sc_ret != -ENOSYS)						      \
-	  goto iserr;							      \
-      }									      \
-									      \
-    sc_ret = internal_syscall (__NR_##name, ##args);		      	      \
-    if (__syscall_err (sc_ret))						      \
-      {									      \
-      iserr:								      \
-        __set_errno (-sc_ret);						      \
-        sc_ret = -1L;							      \
-      }									      \
-  out:									      \
-    sc_ret;								      \
-  })
+#include <sysdep-vdso-arch.h>
+
+#define __internal_vsyscall_0(name) 					     \
+  __internal_vsyscall0 ((vdsop0_t) GLRO(dl_vdso_##name), __NR_##name)
+#define __internal_vsyscall_1(name, a1) 				     \
+  __internal_vsyscall1 ((vdsop1_t) GLRO(dl_vdso_##name), __NR_##name,	     \
+			ARGIFY (a1))
+#define __internal_vsyscall_2(name, a1, a2) 				     \
+  __internal_vsyscall2 ((vdsop2_t) GLRO(dl_vdso_##name), __NR_##name,	     \
+			ARGIFY (a1), ARGIFY (a2))
+#define __internal_vsyscall_3(name, a1, a2, a3) 			     \
+  __internal_vsyscall3 ((vdsop3_t) GLRO(dl_vdso_##name), __NR_##name,	     \
+			ARGIFY (a1), ARGIFY (a2), ARGIFY (a3))
+#define __internal_vsyscall_4(name, a1, a2, a3, a4) 			     \
+  __internal_vsyscall4 ((vdsop4_t) GLRO(dl_vdso_##name), __NR_##name,	     \
+			ARGIFY (a1), ARGIFY (a2), ARGIFY (a3), ARGIFY (a4))
+#define __internal_vsyscall_5(name, a1, a2, a3, a4, a5)			     \
+  __internal_vsyscall5 ((vdsop5_t) GLRO(dl_vdso_##name), __NR_##name,	     \
+			ARGIFY (a1), ARGIFY (a2), ARGIFY (a3), ARGIFY (a4),  \
+			ARGIFY (a5))
+#define __internal_vsyscall_6(name, a1, a2, a3, a4, a5, a6)		     \
+  __internal_vsyscall6 ((vdsop6_t) GLRO(dl_vdso_##name), __NR_##name,	     \
+			ARGIFY (a1), ARGIFY (a2), ARGIFY (a3), ARGIFY (a4),  \
+			ARGIFY (a5), ARGIFY (a6))
+
+#define internal_vsyscall(...)						     \
+  __INTERNAL_SYSCALL_DISP(__internal_vsyscall_,__VA_ARGS__)
+
+#define inline_vsyscall(...)						     \
+  __syscall_ret (internal_vsyscall (__VA_ARGS__))
 
 #endif /* SYSDEP_VDSO_LINUX_H  */

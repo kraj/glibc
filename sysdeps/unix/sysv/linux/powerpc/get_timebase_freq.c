@@ -101,10 +101,22 @@ uint64_t
 __get_timebase_freq (void)
 {
   /* The vDSO does not have a fallback mechanism (such calling a syscall).  */
-  uint64_t (*vdsop)(void) = GLRO(dl_vdso_get_tbfreq);
-  if (vdsop == NULL)
+  if (GLRO(dl_vdso_get_tbfreq) == NULL)
     return get_timebase_freq_fallback ();
 
-  return INTERNAL_VSYSCALL_CALL_TYPE (vdsop, uint64_t, 0);
+  /* The __kernel_get_tbfreq does not fail and returns a 64-bit value.  */
+  register void *r0 asm ("r0") = GLRO(dl_vdso_get_tbfreq);
+  register uint64_t r3 asm ("r3");
+  register long int r4 asm ("r4");
+  asm volatile ("mtctr %0\n\t"
+		"bctrl\n\t"
+		: "+r" (r0), "=r" (r3), "=r" (r4)
+		:
+		: "r5", "r6", "r7", "r8", "r9", "r10", "r11", "r12",
+		  "cr0", "ctr", "lr", "memory");
+#ifndef __powerpc64__
+  asm volatile ("" : "=r" (r3) : "r" (r3), "r" (r4));
+#endif
+  return r3;
 }
 weak_alias (__get_timebase_freq, __ppc_get_timebase_freq)
