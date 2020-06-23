@@ -18,9 +18,6 @@
 
 #ifndef __ASSEMBLY__
 
-#undef SYS_ify
-#define SYS_ify(syscall_name)	__NR_##syscall_name
-
 #define SINGLE_THREAD_BY_GLOBAL		1
 
 #define VDSO_NAME  "LINUX_2.6.29"

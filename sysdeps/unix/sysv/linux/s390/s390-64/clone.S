@@ -43,16 +43,16 @@ ENTRY(__clone)
 	lgr	%r4,%r6			/* move parent_tid to %r4 */
 	lg	%r5,168(%r15)		/* load child_tid from stack */
 	lg	%r6,160(%r15)		/* load tls from stack */
-	svc	SYS_ify(clone)
+	svc	__NR_clone
 	ltgr	%r2,%r2			/* check return code */
 	jz	thread_start
 	lg	%r6,48(%r15)		/* restore %r6 */
-	jgm	SYSCALL_ERROR_LABEL
+	jgm	syscall_error
 	br	%r14
 error:
 	lghi	%r2,-EINVAL
-	jg	SYSCALL_ERROR_LABEL
-PSEUDO_END (__clone)
+	jg	syscall_error
+END (__clone)
 
 thread_start:
 	cfi_startproc
@@ -63,7 +63,7 @@ thread_start:
 	aghi	%r15,-160	/* make room on the stack for the save area */
 	xc	0(8,%r15),0(%r15)
 	basr	%r14,%r1	/* jump to fn */
-	DO_CALL	(exit, 1)
+	svc	__NR_exit
 	cfi_endproc
 
 libc_hidden_def (__clone)

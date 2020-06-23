@@ -63,19 +63,6 @@
 #define	syscall_error	__syscall_error
 #define mcount		_mcount
 
-#undef PSEUDO
-#define	PSEUDO(name, syscall_name, args) \
-lose: SYSCALL_PIC_SETUP			\
-  jg JUMPTARGET(syscall_error);		\
-  .globl syscall_error;			\
-  ENTRY (name)				\
-  DO_CALL (syscall_name, args);		\
-  jm lose
-
-#undef	PSEUDO_END
-#define	PSEUDO_END(name)						      \
-  END (name)
-
 #undef JUMPTARGET
 #ifdef SHARED
 #define JUMPTARGET(name)	name##@PLT

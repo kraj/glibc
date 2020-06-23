@@ -38,6 +38,6 @@ ENTRY (syscall)
 
 	lghi   %r0,-4095
 	clgr   %r2,%r0		   /* Check R2 for error.  */
-	jgnl   SYSCALL_ERROR_LABEL
+	jgnl   syscall_error
 	br     %r14		   /* Return to caller.	 */
-PSEUDO_END (syscall)
+END (syscall)

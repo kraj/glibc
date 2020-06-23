@@ -38,6 +38,6 @@ ENTRY (syscall)
 
 	lhi    %r0,-4095
 	clr    %r2,%r0             /* check R2 for error */
-	jnl    SYSCALL_ERROR_LABEL
+	jgnl   syscall_error
 	br     %r14                /* return to caller */
-PSEUDO_END (syscall)
+END (syscall)

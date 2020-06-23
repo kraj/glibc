@@ -38,7 +38,7 @@ ENTRY(__setcontext)
 	la	%r3,SC_MASK(%r1)
 	slr	%r4,%r4
 	lhi	%r5,_NSIG8
-	svc	SYS_ify(rt_sigprocmask)
+	svc	__NR_rt_sigprocmask
 
 	/* Load fpu context.  */
 	lfpc	SC_FPC(%r1)

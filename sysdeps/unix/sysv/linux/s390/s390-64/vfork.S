@@ -29,16 +29,16 @@
 
 ENTRY (__libc_vfork)
 	/* Do vfork system call.  */
-	svc	SYS_ify (vfork)
+	svc	__NR_vfork
 
 	/* Check for error.  */
 	lghi	%r4,-4095
 	clgr	%r2,%r4
-	jgnl	SYSCALL_ERROR_LABEL
+	jgnl	syscall_error
 
 	/* Normal return.  */
 	br	%r14
-PSEUDO_END (__libc_vfork)
+END (__libc_vfork)
 
 #if IS_IN (libc)
 weak_alias (__libc_vfork, vfork)
