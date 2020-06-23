@@ -65,7 +65,8 @@ ENTRY (__clone)
 	cfi_endproc
 
 	/* Do the call.  */
-	DO_CALL(SYS_ify(clone))
+	li	r0,__NR_clone
+	sc
 
 	/* Check for child process.  */
 	cmpwi	cr1,r3,0
@@ -76,18 +77,19 @@ ENTRY (__clone)
 	mtctr	r30
 	mr	r3,r31
 	bctrl
-	DO_CALL(SYS_ify(exit))
+	li	r0,__NR_exit
+	sc
 
 L(parent):
 	/* Parent.  Restore registers & return.  */
 	lmw	r28,16(r1)
 	addi	r1,r1,32
 	bnslr+
-	b	__syscall_error@local
+	TAIL_CALL_SYSCALL_ERROR
 
 L(badargs):
 	li	r3,EINVAL
-	b	__syscall_error@local
+	TAIL_CALL_SYSCALL_ERROR
 
 	cfi_startproc
 END (__clone)

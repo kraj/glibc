@@ -90,10 +90,6 @@ GOT_LABEL:			;					      \
   cfi_endproc;								      \
   ASM_SIZE_DIRECTIVE(name)
 
-#define DO_CALL(syscall)						      \
-    li 0,syscall;							      \
-    sc
-
 #undef JUMPTARGET
 #ifdef PIC
 # define JUMPTARGET(name) name##@plt
@@ -106,45 +102,8 @@ GOT_LABEL:			;					      \
 # define HIDDEN_JUMPTARGET(name) __GI_##name##@local
 #endif
 
-#define PSEUDO(name, syscall_name, args)				      \
-  .section ".text";							      \
-  ENTRY (name)								      \
-    DO_CALL (SYS_ify (syscall_name));
-
-#define PSEUDO_RET							      \
-    bnslr+;								      \
+#define TAIL_CALL_SYSCALL_ERROR \
     b __syscall_error@local
-#define ret PSEUDO_RET
-
-#undef	PSEUDO_END
-#define	PSEUDO_END(name)						      \
-  END (name)
-
-#define PSEUDO_NOERRNO(name, syscall_name, args)			      \
-  .section ".text";							      \
-  ENTRY (name)								      \
-    DO_CALL (SYS_ify (syscall_name));
-
-#define PSEUDO_RET_NOERRNO						      \
-    blr
-#define ret_NOERRNO PSEUDO_RET_NOERRNO
-
-#undef	PSEUDO_END_NOERRNO
-#define	PSEUDO_END_NOERRNO(name)					      \
-  END (name)
-
-#define PSEUDO_ERRVAL(name, syscall_name, args)				      \
-  .section ".text";							      \
-  ENTRY (name)								      \
-    DO_CALL (SYS_ify (syscall_name));
-
-#define PSEUDO_RET_ERRVAL						      \
-    blr
-#define ret_ERRVAL PSEUDO_RET_ERRVAL
-
-#undef	PSEUDO_END_ERRVAL
-#define	PSEUDO_END_ERRVAL(name)						      \
-  END (name)
 
 /* Local labels stripped out by the linker.  */
 #undef L

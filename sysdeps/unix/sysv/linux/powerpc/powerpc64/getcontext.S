@@ -140,7 +140,7 @@ ENTRY(__novec_getcontext)
   addi  r1,r1,128
   mtlr  r0
   blr
-PSEUDO_END(__novec_getcontext)
+END(__novec_getcontext)
 
 compat_symbol (libc, __novec_getcontext, getcontext, GLIBC_2_3)
 
@@ -378,6 +378,6 @@ L(has_no_vec):
   addi  r1,r1,128
   mtlr  r0
   blr
-PSEUDO_END(__getcontext)
+END(__getcontext)
 
 versioned_symbol (libc, __getcontext, getcontext, GLIBC_2_3_4)

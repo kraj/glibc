@@ -26,5 +26,6 @@ ENTRY (syscall)
 	mr   r7,r8
 	mr   r8,r9
 	sc
-	PSEUDO_RET
-PSEUDO_END (syscall)
+	bnslr+
+	TAIL_CALL_SYSCALL_ERROR
+END (syscall)

@@ -28,11 +28,11 @@
 ENTRY (__vfork)
 	CALL_MCOUNT 0
 
-	DO_CALL (SYS_ify (vfork))
-
-	PSEUDO_RET
-
-PSEUDO_END (__vfork)
+	li	r0,__NR_vfork
+	sc
+	bnslr+
+	TAIL_CALL_SYSCALL_ERROR
+END (__vfork)
 libc_hidden_def (__vfork)
 
 weak_alias (__vfork, vfork)

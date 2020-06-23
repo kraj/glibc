@@ -186,7 +186,7 @@ L(nv_error_exit):
   mtlr r0
 	ld   r31,-8(r1)
   blr
-PSEUDO_END(__novec_setcontext)
+END(__novec_setcontext)
 
 compat_symbol (libc, __novec_setcontext, setcontext, GLIBC_2_3)
 
@@ -449,6 +449,6 @@ L(error_exit):
 	ld   r31,-8(r1)
   blr
 
-PSEUDO_END(__setcontext)
+END(__setcontext)
 
 versioned_symbol (libc, __setcontext, setcontext, GLIBC_2_3_4)

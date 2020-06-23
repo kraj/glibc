@@ -274,7 +274,7 @@ L(nv_error_exit):
   ld    r31,-8(r1)
   blr
 
-PSEUDO_END(__novec_swapcontext)
+END(__novec_swapcontext)
 
 compat_symbol (libc, __novec_swapcontext, swapcontext, GLIBC_2_3)
 
@@ -734,6 +734,6 @@ L(error_exit):
   ld    r31,-8(r1)
   blr
 
-PSEUDO_END(__swapcontext)
+END(__swapcontext)
 
 versioned_symbol (libc, __swapcontext, swapcontext, GLIBC_2_3_4)

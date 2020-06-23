@@ -263,19 +263,6 @@ LT_LABELSUFFIX(name,_name_end): ; \
   TRACEBACK_MASK(name,mask);	\
   END_2(name)
 
-#define DO_CALL(syscall) \
-    li 0,syscall; \
-    sc
-
-/* ppc64 is always PIC */
-#undef JUMPTARGET
-#define JUMPTARGET(name) FUNC_LABEL(name)
-
-#define PSEUDO(name, syscall_name, args) \
-  .section ".text";				\
-  ENTRY (name);					\
-  DO_CALL (SYS_ify (syscall_name))
-
 #ifdef SHARED
 #define TAIL_CALL_SYSCALL_ERROR \
     b JUMPTARGET(__syscall_error)
@@ -304,43 +291,9 @@ LT_LABELSUFFIX(name,_name_end): ; \
     .endif
 #endif
 
-#define PSEUDO_RET \
-    bnslr+; \
-    TAIL_CALL_SYSCALL_ERROR
-
-#define ret PSEUDO_RET
-
-#undef	PSEUDO_END
-#define	PSEUDO_END(name) \
-  END (name)
-
-#define PSEUDO_NOERRNO(name, syscall_name, args) \
-  .section ".text";					\
-  ENTRY (name);						\
-  DO_CALL (SYS_ify (syscall_name))
-
-#define PSEUDO_RET_NOERRNO \
-    blr
-
-#define ret_NOERRNO PSEUDO_RET_NOERRNO
-
-#undef	PSEUDO_END_NOERRNO
-#define	PSEUDO_END_NOERRNO(name) \
-  END (name)
-
-#define PSEUDO_ERRVAL(name, syscall_name, args) \
-  .section ".text";					\
-  ENTRY (name);						\
-  DO_CALL (SYS_ify (syscall_name))
-
-#define PSEUDO_RET_ERRVAL \
-    blr
-
-#define ret_ERRVAL PSEUDO_RET_ERRVAL
-
-#undef	PSEUDO_END_ERRVAL
-#define	PSEUDO_END_ERRVAL(name) \
-  END (name)
+/* ppc64 is always PIC */
+#undef JUMPTARGET
+#define JUMPTARGET(name) FUNC_LABEL(name)
 
 #ifdef SHARED
 # if IS_IN (rtld)

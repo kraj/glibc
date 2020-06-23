@@ -35,7 +35,8 @@
 ENTRY (__getcontext)
 	li	r4,0
 	li	r5,_UC_SIZE_2_3_4;
-	DO_CALL (SYS_ify (swapcontext));
+	li	r0,__NR_swapcontext
+	sc
 	bso-	cr0,1f
 /* the kernel does not set the return code for the success case */
 	li	r3,0
