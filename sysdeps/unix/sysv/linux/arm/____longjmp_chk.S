@@ -56,7 +56,7 @@ longjmp_msg:
 	cfi_rel_offset (r7, 0);			\
 	mov	r5, r0;				\
 	cfi_undefined (r5);			\
-	mov	r7, #SYS_ify(sigaltstack);	\
+	mov	r7, #__NR_sigaltstack;		\
 	mov	r0, #0;				\
 	sub	sp, sp, #12; /* == sizeof (stack_t) */ \
 	cfi_adjust_cfa_offset (12);		\

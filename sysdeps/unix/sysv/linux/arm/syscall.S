@@ -45,4 +45,4 @@ ENTRY (syscall)
 	it	cc
 	RETINSTR(cc, lr)
 	b	PLTJMP(syscall_error)
-PSEUDO_END (syscall)
+END (syscall)

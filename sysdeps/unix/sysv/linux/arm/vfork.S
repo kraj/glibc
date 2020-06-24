@@ -28,18 +28,17 @@
    and the process ID of the new process to the old process.  */
 
 ENTRY (__vfork)
-	/* The DO_CALL macro saves r7 on the stack, to enable generation
-	   of ARM unwind info.  Since the stack is initially shared between
-	   parent and child of vfork, that saved value could be corrupted.
-	   To avoid this problem, we save r7 into ip as well, and restore
-	   from there.  */
+	/* Different than generic __internal_syscall macros that saves r7
+	   on the stack, we save r7 into the ip, and restore from there.
+	   It is because the stack is initially shared between parent and
+	   child of vfork, thus the saved value could be corrupted.  */
 	mov	ip, r7
 	cfi_register (r7, ip)
 	.fnstart
 	push	{ r7 }
 	cfi_adjust_cfa_offset (4)
 	.save { r7 }
-	ldr	r7, =SYS_ify (vfork)
+	ldr	r7, =__NR_vfork
 	swi	0x0
 	.fnend
 	add	sp, sp, #4
@@ -51,8 +50,8 @@ ENTRY (__vfork)
 	it	cc
 	RETINSTR(cc, lr)
 
-	b	PLTJMP(SYSCALL_ERROR)
-PSEUDO_END (__vfork)
+	b	PLTJMP(syscall_error)
+END (__vfork)
 libc_hidden_def (__vfork)
 
 weak_alias (__vfork, vfork)

@@ -64,7 +64,7 @@
 	nop
 ENTRY(__default_sa_restorer)
 	CFI
-	mov	r7, $SYS_ify(sigreturn)
+	mov	r7, $__NR_sigreturn
 	swi	0x0
 	.fnend
 END(__default_sa_restorer)
@@ -77,7 +77,7 @@ END(__default_sa_restorer)
 	nop
 ENTRY(__default_rt_sa_restorer)
 	CFI
-	mov	r7, $SYS_ify(rt_sigreturn)
+	mov	r7, $__NR_rt_sigreturn
 	swi	0x0
 	.fnend
 END(__default_rt_sa_restorer)

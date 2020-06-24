@@ -52,7 +52,7 @@ ENTRY(__clone)
 	ldr	r2, [sp, #8]
 	ldr	r3, [sp, #12]
 	ldr	r4, [sp, #16]
-	ldr	r7, =SYS_ify(clone)
+	ldr	r7, =__NR_clone
 	swi	0x0
 	cfi_endproc
 	cmp	r0, #0
@@ -62,7 +62,7 @@ ENTRY(__clone)
 	RETINSTR(, lr)
 
 	cfi_startproc
-PSEUDO_END (__clone)
+END (__clone)
 
 1:
 	.fnstart
@@ -73,7 +73,7 @@ PSEUDO_END (__clone)
 	BLX (ip)
 
 	@ and we are done, passing the return value through r0
-	ldr	r7, =SYS_ify(exit)
+	ldr	r7, =__NR_exit
 	swi	0x0
 
 	.fnend
