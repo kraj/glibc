@@ -299,6 +299,26 @@ __internal_syscall6 (long int name, __syscall_arg_t arg1,
   return sc_19 != 0 ? -sc_0 : sc_0;
 }
 
+struct pair_t
+{
+  long int sc_0;
+  long int sc_20;
+};
+
+static inline struct pair_t
+__internal_syscall_pair (long int name)
+{
+  register long int sc_19 asm ("$19");
+  register long int sc_20 asm ("$20");
+  register long int sc_0 = name;
+  asm volatile ("callsys # %0 %1 <= %2"
+		: "+v" (sc_0), "=r" (sc_19), "=r" (sc_20)
+		:
+		: internal_syscall_clobbers,
+		"$16", "$17", "$18", "$21");
+  return (struct pair_t) { sc_0, sc_20 };
+}
+
 #endif /* ASSEMBLER */
 
 /* Pointer mangling support.  Note that tls access is slow enough that

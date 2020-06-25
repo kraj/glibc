@@ -1,4 +1,4 @@
-/* Change data segment size.  Linux/Alpha.
+/* Get effective group identity.  Linux/Alpha.
    Copyright (C) 2020 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -16,23 +16,12 @@
    License along with the GNU C Library.  If not, see
    <https://www.gnu.org/licenses/>.  */
 
-#include <errno.h>
 #include <unistd.h>
 #include <sysdep.h>
 
-void *__curbrk = 0;
-
-int
-__brk (void *addr)
+gid_t
+__getegid (void)
 {
-  /* Alpha brk returns -ENOMEM in case of failure.  */
-  __curbrk = (void *) internal_syscall (__NR_brk, addr);
-  if ((unsigned long) __curbrk == -ENOMEM)
-    {
-      __set_errno (ENOMEM);
-      return -1;
-    }
-
-  return 0;
+  return __internal_syscall_pair (__NR_getxgid).sc_20;
 }
-weak_alias (__brk, brk)
+weak_alias (__getegid, getegid)

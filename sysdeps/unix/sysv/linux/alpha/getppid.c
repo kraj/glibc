@@ -1,4 +1,5 @@
-/* Copyright (C) 1991-2020 Free Software Foundation, Inc.
+/* Get parent process identification.  Linux/Alpha.
+   Copyright (C) 2020 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -15,12 +16,12 @@
    License along with the GNU C Library.  If not, see
    <https://www.gnu.org/licenses/>.  */
 
+#include <unistd.h>
 #include <sysdep.h>
 
-
-PSEUDO (__getppid, getxpid, 0)
-	MOVE (r1, r0)
-	ret
-PSEUDO_END (__getppid)
-
+pid_t
+__getppid (void)
+{
+  return __internal_syscall_pair (__NR_getxpid).sc_20;
+}
 weak_alias (__getppid, getppid)
