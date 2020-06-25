@@ -21,25 +21,12 @@
 /* There is some commonality.  */
 #include <sysdeps/unix/sysv/linux/mips/sysdep.h>
 #include <sysdeps/unix/sysv/linux/sysdep.h>
-#include <sysdeps/unix/mips/mips32/sysdep.h>
-
-/* For Linux we can use the system call table in the header file
-	/usr/include/asm/unistd.h
-   of the kernel.  But these symbols do not follow the SYS_* syntax
-   so we have to redefine the `SYS_ify' macro here.  */
-#undef SYS_ify
-#define SYS_ify(syscall_name)	__NR_##syscall_name
-
+#include <sysdeps/unix/mips/sysdep.h>
 #ifdef __ASSEMBLER__
-
-/* We don't want the label for the error handler to be visible in the symbol
-   table when we define it here.  */
-#ifdef __PIC__
-# undef SYSCALL_ERROR_LABEL
-# define SYSCALL_ERROR_LABEL 99b
+#include <sys/asm.h>
 #endif
 
-#else   /* ! __ASSEMBLER__ */
+#ifndef __ASSEMBLER__
 
 /* Note that the original Linux syscall restart convention required the
    instruction immediately preceding SYSCALL to initialize $v0 with the

@@ -125,7 +125,7 @@ NESTED (__getcontext, FRAMESZ, ra)
 	move	a1, zero
 	li	a0, SIG_BLOCK
 
-	li	v0, SYS_ify (rt_sigprocmask)
+	li	v0, __NR_rt_sigprocmask
 	syscall
 	bnez	a3, 99f
 	cfi_remember_state
@@ -151,6 +151,6 @@ NESTED (__getcontext, FRAMESZ, ra)
 
 	j	JUMPTARGET (__syscall_error)
 #endif /* ! __PIC__ */
-PSEUDO_END (__getcontext)
+END (__getcontext)
 
 weak_alias (__getcontext, getcontext)

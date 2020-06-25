@@ -85,7 +85,7 @@ NESTED (__setcontext, FRAMESZ, ra)
 	PTR_ADDU a1, a0, UCONTEXT_SIGMASK
 	li	a0, SIG_SETMASK
 
-	li	v0, SYS_ify (rt_sigprocmask)
+	li	v0, __NR_rt_sigprocmask
 	syscall
 	bnez	a3, 99f
 
@@ -160,6 +160,6 @@ NESTED (__setcontext, FRAMESZ, ra)
 
 	j	JUMPTARGET (__syscall_error)
 #endif /* ! __PIC__ */
-PSEUDO_END (__setcontext)
+END (__setcontext)
 
 weak_alias (__setcontext, setcontext)

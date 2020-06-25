@@ -199,6 +199,6 @@ NESTED (__makecontext, FRAMESZ, ra)
 	b	1b
 
 	cfi_startproc
-PSEUDO_END (__makecontext)
+END (__makecontext)
 
 weak_alias (__makecontext, makecontext)
