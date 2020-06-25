@@ -56,7 +56,7 @@ ENTRY(__clone2)
 	 * it returns from clone2() but it's better than the
 	 * alternative.
 	 */
-	mov r15=SYS_ify (clone2)
+	mov r15=__NR_clone2
 	.save rp, r0
 	break __IA64_BREAK_SYSCALL
 	.body
@@ -76,11 +76,11 @@ ENTRY(__clone2)
 	;;
 	mov out0=r8		/* Argument to exit		*/
 	mov gp=loc0
-	mov r15=SYS_ify (exit)
+	mov r15=__NR_exit
 	.save rp, r0
 	break __IA64_BREAK_SYSCALL
 	ret			/* Not reached.		*/
-PSEUDO_END(__clone2)
+END(__clone2)
 
 libc_hidden_def (__clone2)
 

@@ -36,14 +36,14 @@ ENTRY (__libc_vfork)
 	mov out0=CLONE_VM+CLONE_VFORK+SIGCHLD
 	mov out1=0		/* Standard sp value.			*/
 	;;
-	DO_CALL (SYS_ify (clone))
+	SYSCALL (__NR_clone)
 	cmp.eq p6,p0=0,r8
 (p6)	br.cond.dptk 1f
 1:
 	cmp.eq p6,p0=-1,r10
 (p6)	br.cond.spnt.few __syscall_error
 	ret
-PSEUDO_END (__libc_vfork)
+END (__libc_vfork)
 
 strong_alias (__libc_vfork, __vfork)
 libc_hidden_def (__vfork)

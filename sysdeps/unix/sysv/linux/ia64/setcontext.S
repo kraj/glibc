@@ -45,7 +45,7 @@ ENTRY(__setcontext)
 	mov out3 = 8	// sizeof kernel sigset_t
 
 	invala
-	DO_CALL(__NR_rt_sigprocmask)
+	SYSCALL(__NR_rt_sigprocmask)
 	add r2 = SC_NAT, r32
 
 	add r3 = SC_RNAT, r32			// r3 <- &sc_ar_rnat

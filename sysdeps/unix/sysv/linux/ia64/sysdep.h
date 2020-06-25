@@ -27,25 +27,12 @@
 #include <asm/break.h>
 #include <tcb-offsets.h>
 
-#ifndef __ASSEMBLER__
-#include <stdint.h>
-#include <tcbhead.h>
-#include <errno.h>
-#endif
-
 /* As of GAS v2.4.90.0.7, including a ".align" directive inside a
    function will cause bad unwind info to be emitted (GAS doesn't know
    how to account for the padding introduced by the .align directive).
    Turning on this macro will work around this bug by introducing the
    necessary padding explicitly. */
 #define GAS_ALIGN_BREAKS_UNWIND_INFO
-
-/* For Linux we can use the system call table in the header file
-	/usr/include/asm/unistd.h
-   of the kernel.  But these symbols do not follow the SYS_* syntax
-   so we have to redefine the `SYS_ify' macro here.  */
-#undef SYS_ify
-#define SYS_ify(syscall_name)	__NR_##syscall_name
 
 #if defined USE_DL_SYSINFO \
 	&& (IS_IN (libc) \
@@ -54,6 +41,7 @@
 #else
 # undef IA64_USE_NEW_STUB
 #endif
+
 
 #ifdef __ASSEMBLER__
 
@@ -78,35 +66,13 @@
 # define CALL_MCOUNT	/* Do nothing. */
 #endif
 
-/* Linux uses a negative return value to indicate syscall errors, unlike
-   most Unices, which use the condition codes' carry flag.
-
-   Since version 2.1 the return value of a system call might be negative
-   even if the call succeeded.  E.g., the `lseek' system call might return
-   a large offset.  Therefore we must not anymore test for < 0, but test
-   for a real error by making sure the value in %d0 is a real error
-   number.  Linus said he will make sure the no syscall returns a value
-   in -1 .. -4095 as a valid result so we can savely test with -4095.  */
-
-/* We don't want the label for the error handler to be visible in the symbol
-   table when we define it here.  */
-#undef SYSCALL_ERROR_LABEL
-#define SYSCALL_ERROR_LABEL __syscall_error
-
-#undef PSEUDO
-#define	PSEUDO(name, syscall_name, args)	\
-  ENTRY(name)					\
-    DO_CALL (SYS_ify(syscall_name));		\
-	cmp.eq p6,p0=-1,r10;			\
-(p6)	br.cond.spnt.few __syscall_error;
-
-#define DO_CALL_VIA_BREAK(num)			\
+#define SYSCALL_VIA_BREAK(num)			\
 	mov r15=num;				\
 	break __IA64_BREAK_SYSCALL
 
 #ifdef IA64_USE_NEW_STUB
 # ifdef SHARED
-#  define DO_CALL(num)				\
+#  define SYSCALL(num)				\
 	.prologue;				\
 	adds r2 = SYSINFO_OFFSET, r13;;		\
 	ld8 r2 = [r2];				\
@@ -121,7 +87,7 @@
 	.prologue;				\
 	.body
 # else /* !SHARED */
-#  define DO_CALL(num)				\
+#  define SYSCALL(num)				\
 	.prologue;				\
 	mov r15 = num;				\
 	movl r2 = _dl_sysinfo;;			\
@@ -137,41 +103,16 @@
 	.body
 # endif
 #else
-# define DO_CALL(num)				DO_CALL_VIA_BREAK(num)
+# define SYSCALL(num)				SYSCALL_VIA_BREAK(num)
 #endif
 
-#undef PSEUDO_END
-#define PSEUDO_END(name)	.endp C_SYMBOL_NAME(name);
-
-#undef PSEUDO_NOERRNO
-#define	PSEUDO_NOERRNO(name, syscall_name, args)	\
-  ENTRY(name)						\
-    DO_CALL (SYS_ify(syscall_name));
-
-#undef PSEUDO_END_NOERRNO
-#define PSEUDO_END_NOERRNO(name)	.endp C_SYMBOL_NAME(name);
-
-#undef PSEUDO_ERRVAL
-#define	PSEUDO_ERRVAL(name, syscall_name, args)	\
-  ENTRY(name)					\
-    DO_CALL (SYS_ify(syscall_name));		\
-	cmp.eq p6,p0=-1,r10;			\
-(p6)	mov r10=r8;
-
-
-#undef PSEUDO_END_ERRVAL
-#define PSEUDO_END_ERRVAL(name)	.endp C_SYMBOL_NAME(name);
-
-#undef END
-#define END(name)						\
-	.size	C_SYMBOL_NAME(name), . - C_SYMBOL_NAME(name) ;	\
-	.endp	C_SYMBOL_NAME(name)
-
 #define ret			br.ret.sptk.few b0
-#define ret_NOERRNO		ret
-#define ret_ERRVAL		ret
 
-#else /* not __ASSEMBLER__ */
+#else /* __ASSEMBLER__  */
+
+#include <stdint.h>
+#include <tcbhead.h>
+#include <errno.h>
 
 #define BREAK_INSN_1(num) "break " #num ";;\n\t"
 #define BREAK_INSN(num) BREAK_INSN_1(num)
@@ -207,11 +148,6 @@
 # define ASM_CLOBBERS_6	ASM_CLOBBERS_6_COMMON
 #else
 # define ASM_CLOBBERS_6	ASM_CLOBBERS_6_COMMON , "b7"
-#endif
-
-#if IS_IN(rtld)
-# define DL_SYSINFO (void *) _dl_sysinfo_break
-#else
 #endif
 
 #ifdef IA64_USE_NEW_STUB

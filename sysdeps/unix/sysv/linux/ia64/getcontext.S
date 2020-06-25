@@ -47,7 +47,7 @@ ENTRY(__getcontext)
 	add out2 = r3, in0
 
 	mov out3 = 8	// sizeof kernel sigset_t
-	DO_CALL(__NR_rt_sigprocmask)
+	SYSCALL(__NR_rt_sigprocmask)
 
 	mov.m rFPSR = ar.fpsr
 	mov.m rRSC = ar.rsc

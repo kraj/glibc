@@ -50,7 +50,7 @@ longjmp_msg:
 	add out1 = -STACK_SPACE, r12;				\
 	;;							\
 	mov r12 = out1;						\
-	DO_CALL_VIA_BREAK (SYS_ify (sigaltstack));		\
+	SYSCALL_VIA_BREAK (__NR_sigaltstack);			\
 	;;							\
 	/* If the syscall failed, then assume it's OK.  */	\
 	cmp.eq p8, p0 = -1, r10;				\

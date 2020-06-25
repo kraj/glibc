@@ -30,4 +30,4 @@ ENTRY(syscall)
 	cmp.ne p6,p0=-1,r10	/* r10 = -1 on error */
 (p6)	ret
 	br.cond.spnt.few __syscall_error
-PSEUDO_END(syscall)
+END(syscall)
