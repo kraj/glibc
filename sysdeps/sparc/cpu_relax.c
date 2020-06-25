@@ -17,6 +17,7 @@
    <https://www.gnu.org/licenses/>.  */
 
 #include <sparc-ifunc.h>
+#include <atomic-machine.h>
 
 #ifdef __sparc_v9__
 static void

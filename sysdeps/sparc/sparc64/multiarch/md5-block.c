@@ -1,4 +1,5 @@
 #include <sparc-ifunc.h>
+#include <stdbool.h>
 
 #define  __md5_process_block __md5_process_block_generic
 extern void __md5_process_block_generic (const void *buffer, size_t len,

@@ -22,7 +22,7 @@
 	.text
 	.globl	__syscall_error
 ENTRY(__libc_vfork)
-	LOADSYSCALL(vfork)
+	mov	__NR_vfork, %g1
 	ta	0x6d
 	bcc,pt	%xcc, 2f
 	 mov	%o7, %g1

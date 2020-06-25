@@ -46,7 +46,7 @@ ENTRY (____longjmp_chk)
 
 	clr	%o0
 	add	%sp, 64, %o1
-	LOADSYSCALL(sigaltstack)
+	mov	__NR_sigaltstack, %g1
 	ta	0x10
 	bcs	.Lok
 	 ld	[%sp + 64 + 4], %o2

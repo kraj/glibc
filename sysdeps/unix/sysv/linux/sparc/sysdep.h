@@ -23,16 +23,7 @@
 #include <sysdeps/unix/sysv/linux/sysdep.h>
 #include <sysdeps/sparc/sysdep.h>
 
-#ifdef __ASSEMBLER__
-
-#define	ret		retl; nop
-#define	ret_NOERRNO	retl; nop
-#define	ret_ERRVAL	retl; nop
-#define	r0		%o0
-#define	r1		%o1
-#define	MOVE(x,y)	mov x, y
-
-#else	/* __ASSEMBLER__ */
+#ifndef __ASSEMBLER__
 
 # define VDSO_NAME  "LINUX_2.6"
 # define VDSO_HASH  61765110

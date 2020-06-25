@@ -1,4 +1,5 @@
 #include <sparc-ifunc.h>
+#include <stdbool.h>
 
 #define __sha256_process_block __sha256_process_block_generic
 extern void __sha256_process_block_generic (const void *buffer, size_t len,

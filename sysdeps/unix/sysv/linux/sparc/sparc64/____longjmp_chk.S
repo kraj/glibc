@@ -46,7 +46,7 @@ ENTRY (____longjmp_chk)
 	cfi_register(%o7, %i7)
 	add	%fp, 2023, %o1
 	clr	%o0
-	LOADSYSCALL(sigaltstack)
+	mov	__NR_sigaltstack, %g1
 	ta	0x6d
 	bcs,pn	%xcc, .Lok2
 	 lduw	[%fp + 2031], %l2
