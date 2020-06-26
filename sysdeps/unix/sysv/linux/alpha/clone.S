@@ -31,6 +31,12 @@
    However, since a load from top-of-stack better be legal always,
    we don't bother checking FLAGS.  */
 
+#ifdef PIC
+# define SYSCALL_ERROR_LABEL	__syscall_error !samegp
+#else
+# define SYSCALL_ERROR_LABEL	$syscall_error
+#endif
+
         .text
 	.align	4
 	.globl	__clone
@@ -75,8 +81,11 @@ __clone:
 
 	/* Successful return from the parent.  */
 	ret
-
-PSEUDO_END(__clone)
+#ifndef PIC
+$syscall_error:
+	jmp	zero, __syscall_error
+#endif
+END(__clone)
 	cfi_endproc
 
 /* Load up the arguments to the function.  Put this block of code in

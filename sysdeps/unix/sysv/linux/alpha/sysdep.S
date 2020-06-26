@@ -34,10 +34,7 @@
 # define SYSCALL_ERROR_ERRNO errno
 #endif
 
-	.align 4
-	.globl	__syscall_error
-	.ent	__syscall_error
-__syscall_error:
+ENTRY(__syscall_error):
 	/* When building a shared library, we branch here without having
 	   loaded the GP.  Nor, since it was a direct branch, have we
 	   loaded PV with our address.
@@ -61,5 +58,4 @@ __syscall_error:
 
 	stl	t0, 0(t1)
 	ret
-
-	.end __syscall_error
+END(__syscall_error)

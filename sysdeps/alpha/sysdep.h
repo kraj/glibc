@@ -1,5 +1,4 @@
-/* Install given context.
-   Copyright (C) 2004-2020 Free Software Foundation, Inc.
+/* Copyright (C) 2020 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -16,19 +15,39 @@
    License along with the GNU C Library.  If not, see
    <https://www.gnu.org/licenses/>.  */
 
-#include <sysdep.h>
-#include <ucontext-offsets.h>
+#ifndef _ALPHA_SYSDEP_H
+#define _ALPHA_SYSDEP_H 1
 
+#ifdef __ASSEMBLER__
+#include <asm/pal.h>
+#include <alpha/regdef.h>
 
-/* In case the user fiddled it, copy the "official" signal mask
-   from the ucontext_t into the sigcontext structure.  */
-#undef PSEUDO_PREPARE_ARGS
-#define PSEUDO_PREPARE_ARGS			\
-	ldq	$0, UC_SIGMASK($16);		\
-	stq	$0, UC_SIGCTX+SC_MASK($16);	\
-	lda	$16, UC_SIGCTX($16);
+#define __LABEL(x)	x##:
 
-PSEUDO(__setcontext, sigreturn, 1)
-	ret
-PSEUDO_END(__setcontext)
-weak_alias (__setcontext, setcontext)
+#define LEAF(name, framesize)			\
+  .globl name;					\
+  .align 4;					\
+  .ent name, 0;					\
+  __LABEL(name)					\
+  .frame sp, framesize, ra
+
+#define ENTRY(name)				\
+  .globl name;					\
+  .align 4;					\
+  .ent name, 0;					\
+  __LABEL(name)					\
+  .frame sp, 0, ra
+
+/* Mark the end of function SYM.  */
+#undef END
+#define END(sym)	.end sym
+
+#ifdef PROF
+# define USEPV_PROF	std
+#else
+# define USEPV_PROF	no
+#endif
+
+#endif /* __ASSEMBLER__  */
+
+#endif /* _LINUX_ALPHA_SYSDEP_H  */

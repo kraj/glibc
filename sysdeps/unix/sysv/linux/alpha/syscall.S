@@ -40,6 +40,11 @@
  *
  */
 
+#ifdef PIC
+# define SYSCALL_ERROR_LABEL	__syscall_error !samegp
+#else
+# define SYSCALL_ERROR_LABEL	$syscall_error
+#endif
 
 LEAF(__syscall, 0)
 #ifdef PROF
@@ -65,6 +70,10 @@ LEAF(__syscall, 0)
 	bne	a3, SYSCALL_ERROR_LABEL
 	ret
 
-PSEUDO_END(__syscall)
+#ifndef PIC
+$syscall_error:
+	jmp	zero, __syscall_error
+#endif
+END(__syscall)
 
 weak_alias (__syscall, syscall)

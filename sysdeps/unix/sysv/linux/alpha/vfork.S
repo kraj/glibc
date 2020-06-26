@@ -18,21 +18,39 @@
 #include <sysdep.h>
 #include <tcb-offsets.h>
 
+#ifdef PIC
+# define SYSCALL_ERROR_LABEL	__syscall_error !samegp
+#else
+# define SYSCALL_ERROR_LABEL	$syscall_error
+#endif
+
 ENTRY(__libc_vfork)
-	PSEUDO_PROLOGUE
+#ifdef PROF
+	.set noat
+	ldgp	gp,0(pv)
+	lda	AT, _mcount;
+	jsr	AT, (AT), _mcount;
+	.set at
+#else
+	.prologue 0
+#endif
 
 	/* Load the thread pointer value in A1 across the vfork.  */
 	rduniq
 	mov	v0, a1
 
-	lda	v0, SYS_ify(vfork)
+	lda	v0, __NR_vfork
 	call_pal PAL_callsys
 
 	/* Normal error check and return.  */
 	bne	a3, SYSCALL_ERROR_LABEL
 	ret
 
-PSEUDO_END (__libc_vfork)
+#ifndef PIC
+$syscall_error:
+	jmp	zero, __syscall_error
+#endif
+END (__libc_vfork)
 
 #if IS_IN (libc)
 weak_alias (__libc_vfork, vfork)
