@@ -158,6 +158,6 @@ ENTRY(__setcontext)
 	bv	%r0(%r2)
 	ldwm	-64(%r30), %r3
 L(pseudo_end):
-PSEUDO_END(__setcontext)
+END(__setcontext)
 
 weak_alias(__setcontext, setcontext)

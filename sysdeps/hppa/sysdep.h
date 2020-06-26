@@ -34,33 +34,49 @@
    There is currently a bug in gdb which prevents us from specifying
    incomplete stabs information.  Fake some entries here which specify
    the current source file.  */
-#define	ENTRY(name)							      \
-  .SPACE $TEXT$							ASM_LINE_SEP  \
-  .SUBSPA $CODE$,QUAD=0,ALIGN=8,ACCESS=44,CODE_ONLY		ASM_LINE_SEP  \
-  .align ALIGNARG(4)						ASM_LINE_SEP  \
-  .NSUBSPA $CODE$,QUAD=0,ALIGN=8,ACCESS=44,CODE_ONLY		ASM_LINE_SEP  \
-  .EXPORT C_SYMBOL_NAME(name),ENTRY,PRIV_LEV=3,ARGW0=GR,RTNVAL=GR ASM_LINE_SEP\
-  C_LABEL(name)								      \
-  CALL_MCOUNT
+#define	ENTRY(name)							\
+	.text						ASM_LINE_SEP	\
+	.align ALIGNARG(4)				ASM_LINE_SEP	\
+	.export C_SYMBOL_NAME(name)			ASM_LINE_SEP	\
+	.type	C_SYMBOL_NAME(name),@function		ASM_LINE_SEP	\
+	cfi_startproc					ASM_LINE_SEP	\
+	C_LABEL(name)					ASM_LINE_SEP	\
+	.PROC						ASM_LINE_SEP	\
+	.CALLINFO FRAME=64,CALLS,SAVE_RP,ENTRY_GR=3	ASM_LINE_SEP	\
+	.ENTRY						ASM_LINE_SEP	\
+	/* SAVE_RP says we do */			ASM_LINE_SEP	\
+	stw %rp, -20(%sr0,%sp)				ASM_LINE_SEP	\
+	.cfi_offset 2, -20				ASM_LINE_SEP	\
+	/*FIXME: Call mcount? (carefull with stack!) */
 
-#undef	END
-#define END(name)							      \
-  .PROCEND
+/* Some syscall wrappers do not call other functions, and
+   hence are classified as leaf, so add NO_CALLS for gdb */
+#define	ENTRY_LEAF(name)						\
+	.text						ASM_LINE_SEP	\
+	.align ALIGNARG(4)				ASM_LINE_SEP	\
+	.export C_SYMBOL_NAME(name)			ASM_LINE_SEP	\
+	.type	C_SYMBOL_NAME(name),@function		ASM_LINE_SEP	\
+	cfi_startproc					ASM_LINE_SEP	\
+	C_LABEL(name)					ASM_LINE_SEP	\
+	.PROC						ASM_LINE_SEP	\
+	.CALLINFO FRAME=64,NO_CALLS,SAVE_RP,ENTRY_GR=3	ASM_LINE_SEP	\
+	.ENTRY						ASM_LINE_SEP	\
+	/* SAVE_RP says we do */			ASM_LINE_SEP	\
+	stw %rp, -20(%sr0,%sp)				ASM_LINE_SEP	\
+	.cfi_offset 2, -20				ASM_LINE_SEP	\
+	/*FIXME: Call mcount? (carefull with stack!) */
 
-/* GCC does everything for us. */
-#ifdef	PROF
-#define CALL_MCOUNT
-#else
+#undef END
+#define END(name)							\
+	.EXIT						ASM_LINE_SEP	\
+	.PROCEND					ASM_LINE_SEP	\
+	cfi_endproc					ASM_LINE_SEP	\
+.size	C_SYMBOL_NAME(name), .-C_SYMBOL_NAME(name)	ASM_LINE_SEP
+
+/* If compiled for profiling, call `mcount' at the start
+   of each function. No, don't bother.  gcc will put the
+   call in for us.  */
 #define CALL_MCOUNT		/* Do nothing.  */
-#endif
-
-#define	PSEUDO(name, syscall_name, args)				      \
-  ENTRY (name)								      \
-  DO_CALL (syscall_name, args)
-
-#undef	PSEUDO_END
-#define	PSEUDO_END(name)						      \
-  END (name)
 
 #undef JUMPTARGET
 #define JUMPTARGET(name)	name

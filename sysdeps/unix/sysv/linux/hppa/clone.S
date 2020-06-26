@@ -162,7 +162,7 @@ ENTRY(__clone)
            We do not restore r4, or the stack state.  */
 	iitlbp	%r0, (%sr0, %r0)
 
-PSEUDO_END(__clone)
+END(__clone)
 
 libc_hidden_def (__clone)
 weak_alias (__clone, clone)
