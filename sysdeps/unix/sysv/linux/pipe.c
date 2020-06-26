@@ -1,6 +1,6 @@
-/* Copyright (C) 1997-2020 Free Software Foundation, Inc.
+/* Create create pipe.  Linux generic version.
+   Copyright (C) 2020 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
-   Contributed by Miguel de Icaza <miguel@gnu.ai.mit.edu>, 1997.
 
    The GNU C Library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -13,28 +13,20 @@
    Lesser General Public License for more details.
 
    You should have received a copy of the GNU Lesser General Public
-   License along with the GNU C Library; if not, see
+   License along with the GNU C Library.  If not, see
    <https://www.gnu.org/licenses/>.  */
 
+#include <unistd.h>
 #include <sysdep.h>
 
-	.text
-
-	.globl	__syscall_error
-ENTRY(__libc_pipe)
-	mov	%o0, %o2		/* Save PIPEDES. */
-	LOADSYSCALL(pipe)
-	ta	0x6d
-	bcc,pt	%xcc, 1f
-	 mov	%o7, %g1
-	call	__syscall_error
-	 mov	%g1, %o7
-1:	st	%o0, [%o2]		/* PIPEDES[0] = %o0; */
-	st	%o1, [%o2 + 4]		/* PIPEDES[1] = %o1; */
-	retl
-	 clr	%o0
-END(__libc_pipe)
-
-weak_alias (__libc_pipe, __pipe)
+/* Create a one-way communication channel (__pipe).
+   If successful, two file descriptors are stored in PIPEDES;
+   bytes written on PIPEDES[1] can be read from PIPEDES[0].
+   Returns 0 if successful, -1 if not.  */
+int
+__pipe (int __pipedes[2])
+{
+  return inline_syscall (__NR_pipe2, __pipedes, 0);
+}
 libc_hidden_def (__pipe)
-weak_alias (__libc_pipe, pipe)
+weak_alias (__pipe, pipe)
