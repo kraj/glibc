@@ -262,6 +262,8 @@ __internal_syscall7 (long int name, __syscall_arg_t arg1,
   return a0;
 }
 
+#undef HAVE_INTERNAL_BRK_ADDR_SYMBOL
+#define HAVE_INTERNAL_BRK_ADDR_SYMBOL 1
 
 #endif /* ! __ASSEMBLER__ */
 

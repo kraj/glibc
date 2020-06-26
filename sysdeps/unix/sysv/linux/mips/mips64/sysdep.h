@@ -227,6 +227,9 @@ __internal_syscall6 (long int name, __syscall_arg_t arg1,
   return a3 != 0 ? -v0 : v0;
 }
 
+#undef HAVE_INTERNAL_BRK_ADDR_SYMBOL
+#define HAVE_INTERNAL_BRK_ADDR_SYMBOL 1
+
 #endif /* __ASSEMBLER__ */
 
 /* Pointer mangling is not yet supported for MIPS.  */

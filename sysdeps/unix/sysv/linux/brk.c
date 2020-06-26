@@ -1,4 +1,5 @@
-/* Copyright (C) 2011-2020 Free Software Foundation, Inc.
+/* Change data segment.  Linux generic version.
+   Copyright (C) 2020 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -22,10 +23,12 @@
 /* This must be initialized data because commons can't have aliases.  */
 void *__curbrk = 0;
 
+#if HAVE_INTERNAL_BRK_ADDR_SYMBOL
 /* Old braindamage in GCC's crtstuff.c requires this symbol in an attempt
    to work around different old braindamage in the old Linux ELF dynamic
    linker.  */
 weak_alias (__curbrk, ___brk_addr)
+#endif
 
 int
 __brk (void *addr)

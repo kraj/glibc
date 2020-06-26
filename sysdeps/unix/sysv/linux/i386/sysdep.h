@@ -471,6 +471,10 @@ __internal_syscall6 (long int name, __syscall_arg_t arg1, __syscall_arg_t arg2,
 # endif /* OPTIMIZE_FOR_GCC_5  */
   return resultvar;
 }
+
+#undef HAVE_INTERNAL_BRK_ADDR_SYMBOL
+#define HAVE_INTERNAL_BRK_ADDR_SYMBOL 1
+
 #endif	/* __ASSEMBLER__ */
 
 

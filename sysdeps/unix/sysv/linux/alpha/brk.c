@@ -1,5 +1,5 @@
-/* brk system call for Linux/m68k.
-   Copyright (C) 1996-2020 Free Software Foundation, Inc.
+/* Change data segment size.  Linux/Alpha.
+   Copyright (C) 2020 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -22,20 +22,12 @@
 
 void *__curbrk = 0;
 
-/* Old braindamage in GCC's crtstuff.c requires this symbol in an attempt
-   to work around different old braindamage in the old Linux/x86 ELF
-   dynamic linker.  Sigh.  */
-weak_alias (__curbrk, ___brk_addr)
-
 int
 __brk (void *addr)
 {
-  void *newbrk;
-
-  newbrk = (void *) internal_syscall (__NR_brk, addr);
-  __curbrk = newbrk;
-
-  if (newbrk < addr)
+  /* Alpha brk returns -ENOMEM in case of failure.  */
+  __curbrk = (void *) internal_syscall (__NR_brk, addr);
+  if ((unsigned long) __curbrk == -ENOMEM)
     {
       __set_errno (ENOMEM);
       return -1;
