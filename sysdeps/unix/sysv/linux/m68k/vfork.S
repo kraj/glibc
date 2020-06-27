@@ -34,7 +34,7 @@ ENTRY (__vfork)
 	cfi_register (%pc, %a0)
 
 	/* Stuff the syscall number in D0 and trap into the kernel.  */
-	movel	#SYS_ify (vfork), %d0
+	movel	#__NR_vfork, %d0
 	trap	#0
 
 	tstl	%d0
@@ -53,7 +53,8 @@ ENTRY (__vfork)
 	jbra	SYSCALL_ERROR_LABEL
 #endif
 
-PSEUDO_END (__vfork)
+	SYSCALL_ERROR_HANDLER
+END (__vfork)
 libc_hidden_def (__vfork)
 
 weak_alias (__vfork, vfork)

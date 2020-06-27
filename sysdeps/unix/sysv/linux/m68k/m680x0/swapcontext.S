@@ -103,6 +103,8 @@ ENTRY(__swapcontext)
 	jmp	(%a0)
 
 	cfi_offset (%pc, -4)
-PSEUDO_END(__swapcontext)
+
+	SYSCALL_ERROR_HANDLER
+END(__swapcontext)
 
 weak_alias (__swapcontext, swapcontext)

@@ -49,7 +49,7 @@ typedef uintmax_t uatomic_max_t;
     __typeof (mem) _mem = mem;						\
     __typeof (oldval) _oldval = oldval;					\
     __typeof (newval) _newval = newval;					\
-    register uint32_t _d0 asm ("d0") = SYS_ify (atomic_cmpxchg_32);	\
+    register uint32_t _d0 asm ("d0") = __NR_atomic_cmpxchg_32;		\
     register uint32_t *_a0 asm ("a0") = (uint32_t *) _mem;		\
     register uint32_t _d2 asm ("d2") = (uint32_t) _oldval;		\
     register uint32_t _d1 asm ("d1") = (uint32_t) _newval;		\

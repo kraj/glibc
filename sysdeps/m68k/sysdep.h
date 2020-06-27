@@ -54,16 +54,6 @@
 #  define CALL_MCOUNT		/* Do nothing.  */
 # endif
 
-# define PSEUDO(name, syscall_name, args)				      \
-  .globl __syscall_error;						      \
-  ENTRY (name)								      \
-    DO_CALL (syscall_name, args);					      \
-    jcc JUMPTARGET(__syscall_error)
-
-# undef PSEUDO_END
-# define PSEUDO_END(name)						      \
-  END (name)
-
 # undef JUMPTARGET
 # ifdef PIC
 #  define JUMPTARGET(name)	name##@PLTPC

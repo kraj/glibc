@@ -70,7 +70,7 @@ ENTRY (__clone)
 	exg	%d2, %a1		/* save %d2 and get stack pointer */
 	cfi_register (%d2, %a1)
 #endif
-	movel	#SYS_ify (clone), %d0
+	movel	#__NR_clone, %d0
 
 	/* End FDE now, because in the child the unwind info will be
 	   wrong.  */
@@ -98,12 +98,14 @@ ENTRY (__clone)
 	subl	%fp, %fp	/* terminate the stack frame */
 	jsr	(%a0)
 	movel	%d0, %d1
-	movel	#SYS_ify (exit), %d0
+	movel	#__NR_exit, %d0
 	trap	#0
 	cfi_endproc
 
 	cfi_startproc
-PSEUDO_END (__clone)
+
+	SYSCALL_ERROR_HANDLER
+END (__clone)
 
 libc_hidden_def (__clone)
 weak_alias (__clone, clone)

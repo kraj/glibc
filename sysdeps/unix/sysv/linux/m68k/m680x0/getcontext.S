@@ -58,6 +58,8 @@ ENTRY(__getcontext)
 0:	/* All done, return 0 for success.  */
 	clr.l	%d0
 	rts
-PSEUDO_END(__getcontext)
+
+	SYSCALL_ERROR_HANDLER
+END(__getcontext)
 
 weak_alias (__getcontext, getcontext)

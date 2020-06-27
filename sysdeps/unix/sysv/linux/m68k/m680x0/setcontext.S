@@ -89,6 +89,8 @@ ENTRY(__setcontext)
 	jmp	(%a1)
 
 	cfi_offset (%pc, -4)
-PSEUDO_END(__setcontext)
+
+	SYSCALL_ERROR_HANDLER
+END(__setcontext)
 
 weak_alias (__setcontext, setcontext)

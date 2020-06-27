@@ -22,11 +22,41 @@
 
 	.text
 ENTRY (syscall)
-	move.l 4(%sp), %d0	/* Load syscall number.  */
-	_DOARGS_6 (28)		/* Frob arguments.  */
+	move.l	4(%sp), %d0	/* Load syscall number.  */
+	move.l	%d5, -(%sp)
+	cfi_adjust_cfa_offset (4)
+	cfi_rel_offset (%d5, 0)
+	move.l	28 (%sp), %d5
+	move.l	%d4, -(%sp)
+	cfi_adjust_cfa_offset (4)
+	cfi_rel_offset (%d4, 0)
+	move.l	28 (%sp), %d4
+	move.l	%d3, %a1
+	cfi_register (%d3, %a1)
+	move.l	24(%sp), %d3
+	move.l %d2, %a0
+	cfi_register (%d2, %a0)
+	move.l	20(%sp), %d2
+	move.l	16(%sp), %d1
+	move.l	%a0, -(%sp)
+	cfi_adjust_cfa_offset (4)
+	move.l	40(%sp), %a0
 	trap &0			/* Do the system call.  */
-	UNDOARGS_6		/* Unfrob arguments.  */
+	move.l	(%sp)+, %a0
+	cfi_adjust_cfa_offset (-4)
+	move.l	%a0, %d2
+	cfi_restore (%d2)
+	move.l %a1, %d3
+	cfi_restore (%d3)
+	move.l (%sp)+, %d4
+	cfi_adjust_cfa_offset (-4)
+	cfi_restore (%d4)
+	move.l (%sp)+, %d5
+	cfi_adjust_cfa_offset (-4)
+	cfi_restore (%d5)
 	cmp.l &-4095, %d0	/* Check %d0 for error.  */
 	jcc SYSCALL_ERROR_LABEL	/* Jump to error handler if negative.  */
 	rts			/* Return to caller.  */
-PSEUDO_END (syscall)
+
+	SYSCALL_ERROR_HANDLER
+END (syscall)
