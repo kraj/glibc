@@ -66,4 +66,4 @@ ENTRY (syscall)
 #endif /* __PIC__ */
 1:
 	rts
-PSEUDO_END (syscall)
+END (syscall)

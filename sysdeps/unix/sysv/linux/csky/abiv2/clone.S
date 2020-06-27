@@ -79,7 +79,9 @@ __do_syscall_error:
 	jmpi	__syscall_error
 #endif /* __PIC__ */
 	rts
-PSEUDO_END (__clone)
+
+	.align 4
+END (__clone)
 
 ENTRY (__thread_start)
 	.cfi_label .Ldummy
