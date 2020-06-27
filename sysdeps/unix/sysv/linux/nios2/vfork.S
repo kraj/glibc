@@ -23,12 +23,14 @@ ENTRY(__vfork)
 
 	movi	r4, 0x4111 /* (CLONE_VM | CLONE_VFORK | SIGCHLD) */
 	mov	r5, zero
-	DO_CALL (clone, 2)
+	movi	r2, __NR_clone
+	trap
 
 	bne	r7, zero, SYSCALL_ERROR_LABEL
 	ret
 
-PSEUDO_END (__vfork)
+	SYSCALL_ERROR_HANDLER
+END (__vfork)
 libc_hidden_def (__vfork)
 
 weak_alias (__vfork, vfork)

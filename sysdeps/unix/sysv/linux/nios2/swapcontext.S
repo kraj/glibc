@@ -57,7 +57,7 @@ ENTRY(__swapcontext)
 	addi	r6, r4, UCONTEXT_SIGMASK
 	mov	r5, zero
 	movi	r4, SIG_BLOCK
-	movi	r2, SYS_ify (rt_sigprocmask)
+	movi	r2, __NR_rt_sigprocmask
 	trap
 	bne	r7, zero, SYSCALL_ERROR_LABEL
 
@@ -73,7 +73,7 @@ ENTRY(__swapcontext)
 	addi	r5, r10, UCONTEXT_SIGMASK
 	mov	r6, zero
 	movi	r4, SIG_SETMASK
-	movi	r2, SYS_ify (rt_sigprocmask)
+	movi	r2, __NR_rt_sigprocmask
 	trap
 	bne	r7, zero, SYSCALL_ERROR_LABEL
 
@@ -114,12 +114,13 @@ ENTRY(__swapcontext)
 	stw	r5, 0(r7)
 	bgt	r3, zero, 1b
 
-	movi	r2, SYS_ify (rt_sigreturn)
+	movi	r2, __NR_rt_sigreturn
 	trap
 
 	addi	sp, sp, RT_SIGFRAME_SIZE
 	cfi_adjust_cfa_offset (-RT_SIGFRAME_SIZE)
 	br	SYSCALL_ERROR_LABEL
 
-PSEUDO_END (__swapcontext)
+	SYSCALL_ERROR_HANDLER
+END (__swapcontext)
 weak_alias (__swapcontext, swapcontext)

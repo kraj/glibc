@@ -33,4 +33,5 @@ ENTRY (syscall)
 	trap
 	bne	r7, zero, SYSCALL_ERROR_LABEL
         ret
-PSEUDO_END (syscall)
+	SYSCALL_ERROR_HANDLER
+END (syscall)

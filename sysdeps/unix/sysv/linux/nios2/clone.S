@@ -48,7 +48,7 @@ ENTRY(__clone)
 	ldw	r8, 4(sp)
 
 	/* Do the system call.  */
-	movi	r2, SYS_ify (clone)
+	movi	r2, __NR_clone
 
 	/* End FDE now, because in the child the unwind info will be
 	   wrong.  */
@@ -74,11 +74,13 @@ thread_start:
 	callr	r5
 
 	/* exit with the result.  */
-	movi	r2, SYS_ify (exit)
+	movi	r2, __NR_exit
 	trap
 	cfi_endproc
 
 	cfi_startproc
-PSEUDO_END (__clone)
+
+	SYSCALL_ERROR_HANDLER
+END (__clone)
 libc_hidden_def (__clone)
 weak_alias (__clone, clone)

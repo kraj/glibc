@@ -55,12 +55,13 @@ ENTRY(__getcontext)
 	addi	r6, r4, UCONTEXT_SIGMASK
 	mov	r5, zero
 	movi	r4, SIG_BLOCK
-	movi	r2, SYS_ify (rt_sigprocmask)
+	movi	r2, __NR_rt_sigprocmask
 	trap
 	bne	r7, zero, SYSCALL_ERROR_LABEL
 
 	mov	r2, zero
 	ret
 
-PSEUDO_END(__getcontext)
+	SYSCALL_ERROR_HANDLER
+END(__getcontext)
 weak_alias(__getcontext, getcontext)

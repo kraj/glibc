@@ -34,7 +34,7 @@ ENTRY(__setcontext)
 	addi	r5, r4, UCONTEXT_SIGMASK
 	mov	r6, zero
 	movi	r4, SIG_SETMASK
-	movi	r2, SYS_ify (rt_sigprocmask)
+	movi	r2, __NR_rt_sigprocmask
 	trap
 	bne	r7, zero, SYSCALL_ERROR_LABEL
 
@@ -75,14 +75,15 @@ ENTRY(__setcontext)
 	stw	r5, 0(r7)
 	bgt	r3, zero, 1b
 
-	movi	r2, SYS_ify (rt_sigreturn)
+	movi	r2, __NR_rt_sigreturn
 	trap
 
 	addi	sp, sp, RT_SIGFRAME_SIZE
 	cfi_adjust_cfa_offset (-RT_SIGFRAME_SIZE)
 	br	SYSCALL_ERROR_LABEL
 
-PSEUDO_END (__setcontext)
+	SYSCALL_ERROR_HANDLER
+END (__setcontext)
 weak_alias (__setcontext, setcontext)
 
 	/* We add an NOP here to separate between __setcontext/__startcontext.

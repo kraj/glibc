@@ -23,89 +23,27 @@
 #include <sysdeps/nios2/sysdep.h>
 #include <sysdeps/unix/sysv/linux/generic/sysdep.h>
 
-/* For RTLD_PRIVATE_ERRNO.  */
-#include <dl-sysdep.h>
 #ifndef __ASSEMBLER__
 #include <tcbhead.h>
 #endif
 
-/* For Linux we can use the system call table in the header file
-        /usr/include/asm/unistd.h
-   of the kernel.  But these symbols do not follow the SYS_* syntax
-   so we have to redefine the `SYS_ify' macro here.  */
-#undef SYS_ify
-#define SYS_ify(syscall_name)   __NR_##syscall_name
-
 #ifdef __ASSEMBLER__
 
-#undef SYSCALL_ERROR_LABEL
 #define SYSCALL_ERROR_LABEL __local_syscall_error
 
-#undef PSEUDO
-#define PSEUDO(name, syscall_name, args) \
-  ENTRY (name)                           \
-    DO_CALL (syscall_name, args)         \
-    bne r7, zero, SYSCALL_ERROR_LABEL;   \
-
-#undef PSEUDO_END
-#define PSEUDO_END(name) \
-  SYSCALL_ERROR_HANDLER  \
-  END (name)
-
-#undef PSEUDO_NOERRNO
-#define PSEUDO_NOERRNO(name, syscall_name, args) \
-  ENTRY (name)                                   \
-    DO_CALL (syscall_name, args)
-
-#undef PSEUDO_END_NOERRNO
-#define PSEUDO_END_NOERRNO(name) \
-  END (name)
-
-#undef ret_NOERRNO
-#define ret_NOERRNO ret
-
-#undef DO_CALL
-#define DO_CALL(syscall_name, args) \
-    DOARGS_##args                   \
-    movi r2, SYS_ify(syscall_name);  \
-    trap;
-
 #if defined(__PIC__) || defined(PIC)
-
-# if RTLD_PRIVATE_ERRNO
-
-#  define SYSCALL_ERROR_HANDLER			\
-  SYSCALL_ERROR_LABEL:				\
-  nextpc r3;					\
-1:						\
-  movhi r8, %hiadj(rtld_errno - 1b);		\
-  addi r8, r8, %lo(rtld_errno - 1b);		\
-  add r3, r3, r8;				\
-  stw r2, 0(r3);				\
-  movi r2, -1;					\
-  ret;
-
-# else
-
-#  if IS_IN (libc)
-#   define SYSCALL_ERROR_ERRNO __libc_errno
-#  else
-#   define SYSCALL_ERROR_ERRNO errno
-#  endif
-#  define SYSCALL_ERROR_HANDLER			\
+# define SYSCALL_ERROR_HANDLER			\
   SYSCALL_ERROR_LABEL:				\
   nextpc r3;					\
 1:						\
   movhi r8, %hiadj(_gp_got - 1b);		\
   addi r8, r8, %lo(_gp_got - 1b);		\
   add r3, r3, r8;				\
-  ldw r3, %tls_ie(SYSCALL_ERROR_ERRNO)(r3);	\
+  ldw r3, %tls_ie(__libc_errno)(r3);		\
   add r3, r23, r3;				\
   stw r2, 0(r3);				\
   movi r2, -1;					\
   ret;
-
-# endif
 
 #else
 
@@ -113,28 +51,7 @@
 #define SYSCALL_ERROR_HANDLER			\
   SYSCALL_ERROR_LABEL:				\
   jmpi __syscall_error;
-
-#endif
-
-#define DOARGS_0 /* nothing */
-#define DOARGS_1 /* nothing */
-#define DOARGS_2 /* nothing */
-#define DOARGS_3 /* nothing */
-#define DOARGS_4 /* nothing */
-#define DOARGS_5 ldw r8, 0(sp);
-#define DOARGS_6 ldw r9, 4(sp); ldw r8, 0(sp);
-
-/* The function has to return the error code.  */
-#undef  PSEUDO_ERRVAL
-#define PSEUDO_ERRVAL(name, syscall_name, args) \
-  ENTRY (name)                                  \
-    DO_CALL (syscall_name, args)
-
-#undef  PSEUDO_END_ERRVAL
-#define PSEUDO_END_ERRVAL(name) \
-  END (name)
-
-#define ret_ERRVAL ret
+#endif /* __PIC__ || PIC  */
 
 #else /* __ASSEMBLER__ */
 
