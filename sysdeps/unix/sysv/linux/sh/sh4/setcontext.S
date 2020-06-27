@@ -34,7 +34,7 @@ ENTRY(__setcontext)
 	add	#(oSIGMASK/2), r5
 	mov	#SIG_SETMASK, r4
 	mov	#0, r6
-	mov	#+SYS_ify(sigprocmask), r3
+	mov	#+__NR_sigprocmask, r3
 	trapa	#0x13
 	mov     r0, r1
 	mov	#-12, r2
@@ -136,6 +136,6 @@ ENTRY(__setcontext)
 	jmp	@r0
 	 mov.l	@r15+, r0
 
-PSEUDO_END(__setcontext)
+END(__setcontext)
 
 weak_alias (__setcontext, setcontext)

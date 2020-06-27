@@ -38,6 +38,6 @@ ENTRY (__syscall)
 	rts
 	 nop
 
-PSEUDO_END (__syscall)
+END (__syscall)
 
 weak_alias (__syscall, syscall)

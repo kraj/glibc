@@ -155,6 +155,6 @@ ENTRY(__makecontext)
 .Lexit:
 	.long	HIDDEN_JUMPTARGET(exit)
 #endif
-PSEUDO_END(__makecontext)
+END(__makecontext)
 
 weak_alias (__makecontext, makecontext)

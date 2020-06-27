@@ -47,7 +47,7 @@ ENTRY(__clone)
 	mov.l	@r15, r6
 	mov.l	@(8,r15), r7
 	mov.l	@(4,r15), r0
-	mov	#+SYS_ify(clone), r3
+	mov	#+__NR_clone, r3
 	trapa	#0x15
 	mov     r0, r1
 	mov	#-12, r2
@@ -74,14 +74,14 @@ ENTRY(__clone)
 
 	/* we are done, passing the return value through r0  */
 	mov     r0, r4
-	mov	#+SYS_ify(exit), r3
+	mov	#+__NR_exit, r3
 	trapa	#0x15
 	.align	2
 .LG:
 	.long	_GLOBAL_OFFSET_TABLE_
 .L3:
 	.long	PLTJMP(C_SYMBOL_NAME(_exit))
-PSEUDO_END (__clone)
+END (__clone)
 
 libc_hidden_def (__clone)
 weak_alias (__clone, clone)

@@ -29,6 +29,7 @@ ENTRY (__libc_vfork)
 
 	mov.w	.L1, r3
 	trapa	#0x10
+	SYSCALL_INST_PAD
 	mov     r0, r1
 
 	mov	#-12, r2
@@ -43,7 +44,7 @@ ENTRY (__libc_vfork)
 .L1:
 	.word	__NR_vfork
 	.align	2
-PSEUDO_END (__libc_vfork)
+END (__libc_vfork)
 
 #if IS_IN (libc)
 weak_alias (__libc_vfork, vfork)

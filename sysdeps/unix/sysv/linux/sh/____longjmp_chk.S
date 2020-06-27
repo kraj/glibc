@@ -90,7 +90,14 @@ longjmp_msg:
 	cfi_adjust_cfa_offset (sizeSS);					\
 	mov	#0, r4;							\
 	mov	r15, r5;						\
-	DO_CALL (sigaltstack, 2);					\
+	mov.l	1f,r3;							\
+	trapa	#0x12;							\
+	SYSCALL_INST_PAD;						\
+	bra 2f;								\
+	nop;								\
+	.align 2;							\
+  1:	.long __NR_sigaltstack;						\
+  2:									\
 	/* Without working sigaltstack we cannot perform the test.  */	\
 	tst	r0, r0;							\
 	bf	.Lok2;							\

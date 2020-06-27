@@ -112,7 +112,7 @@ ENTRY(__swapcontext)
 	mov	r4, r6
 	add	r1, r6
 	mov	#SIG_SETMASK, r4
-	mov	#+SYS_ify(sigprocmask), r3
+	mov	#+__NR_sigprocmask, r3
 	trapa	#0x13
 	mov     r0, r1
 	mov	#-12, r2
@@ -213,6 +213,6 @@ ENTRY(__swapcontext)
 	jmp	@r0
 	 mov.l	@r15+, r0
 
-PSEUDO_END(__swapcontext)
+END(__swapcontext)
 
 weak_alias (__swapcontext, swapcontext)

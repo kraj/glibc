@@ -65,7 +65,7 @@ ENTRY(__getcontext)
 	add	#oSIGMASK, r6
 	mov	#SIG_BLOCK, r4
 	mov	#0, r5
-	mov	#+SYS_ify(sigprocmask), r3
+	mov	#+__NR_sigprocmask, r3
 	trapa	#0x13
 	mov     r0, r1
 	mov	#-12, r2
@@ -82,6 +82,6 @@ ENTRY(__getcontext)
 	rts
 	 nop
 
-PSEUDO_END(__getcontext)
+END(__getcontext)
 
 weak_alias (__getcontext, getcontext)
