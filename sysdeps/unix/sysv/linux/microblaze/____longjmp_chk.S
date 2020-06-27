@@ -22,8 +22,8 @@
 ENTRY (__revisit_longjmp_chk)
 	rtsd	r15,0
 	nop
-PSEUDO_END (__revisit_longjmp_chk)
+END (__revisit_longjmp_chk)
 ENTRY (____longjmp_chk)
 	rtsd	r15,0
 	nop
-PSEUDO_END (____longjmp_chk)
+END (____longjmp_chk)

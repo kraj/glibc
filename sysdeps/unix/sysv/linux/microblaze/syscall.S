@@ -34,4 +34,6 @@ ENTRY (syscall)
 	bgei	r4,SYSCALL_ERROR_LABEL
 	rtsd	r15,8
 	nop
-PSEUDO_END (syscall)
+
+	SYSCALL_ERROR_HANDLER
+END (syscall)

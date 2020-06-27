@@ -28,14 +28,17 @@
 
 ENTRY (__vfork)
 
-	DO_CALL (vfork, 0)
+	addi	r12,r0,__NR_vfork
+	brki	r14,8
+	addk	r0,r0,r0
 	addik	r12,r0,-4095
 	cmpu	r12,r12,r3
 	bgei	r12,SYSCALL_ERROR_LABEL
 	rtsd	r15,8
 	nop
 
-PSEUDO_END (__vfork)
+	SYSCALL_ERROR_HANDLER
+END (__vfork)
 libc_hidden_def (__vfork)
 
 weak_alias (__vfork, vfork)

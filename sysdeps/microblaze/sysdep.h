@@ -58,18 +58,6 @@
 # define syscall_error   __syscall_error
 # define mcount      _mcount
 
-# define PSEUDO(name, syscall_name, args)     \
-  .globl syscall_error;                       \
-  ENTRY (name)                                \
-    DO_CALL (syscall_name, args);
-
-# define ret                                  \
-  rtsd r15,8; nop;
-
-# undef PSEUDO_END
-# define PSEUDO_END(name)                     \
-  END (name)
-
 # undef JUMPTARGET
 # ifdef PIC
 #  define JUMPTARGET(name)   name##@PLTPC

@@ -48,7 +48,7 @@ ENTRY (__clone)
 	addk	r7,r0,r0
 	addk	r8,r0,r9		; // parent tid ptr
 	lwi	r9,r1,28		; // child tid ptr
-	addik	r12,r0,SYS_ify(clone)
+	addik	r12,r0,__NR_clone
 	brki	r14,8
 	addk	r0,r0,r0
 	addik	r4,r0,-4095
@@ -64,10 +64,12 @@ L(thread_start):
 	brald	r15,r12
 	nop
 	addk	r5,r0,r3
-	addik	r12,r0,SYS_ify(exit)
+	addik	r12,r0,__NR_exit
 	brki	r14,8
 	nop
-PSEUDO_END(__clone)
+
+	SYSCALL_ERROR_HANDLER
+END(__clone)
 
 libc_hidden_def (__clone)
 weak_alias (__clone,clone)
