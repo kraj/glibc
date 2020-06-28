@@ -38,7 +38,7 @@ LEAF (__setcontext)
 	add     a1, a0, UCONTEXT_SIGMASK
 	li	a0, SIG_SETMASK
 
-	li	a7, SYS_ify (rt_sigprocmask)
+	li	a7, __NR_rt_sigprocmask
 	scall
 
 	bltz	a0, 99f

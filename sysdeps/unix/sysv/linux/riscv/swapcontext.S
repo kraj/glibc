@@ -65,7 +65,7 @@ LEAF (__swapcontext)
 	add     a1, t0, UCONTEXT_SIGMASK
 	li	a0, SIG_SETMASK
 
-	li	a7, SYS_ify (rt_sigprocmask)
+	li	a7, __NR_rt_sigprocmask
 	scall
 
 	bltz	a0, 99f
@@ -120,6 +120,6 @@ LEAF (__swapcontext)
 
 99:	j	__syscall_error
 
-PSEUDO_END (__swapcontext)
+END (__swapcontext)
 
 weak_alias (__swapcontext, swapcontext)

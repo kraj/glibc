@@ -51,6 +51,8 @@
 symbol:						\
 		cfi_startproc;
 
+# define ENTRY(name) LEAF(name)
+
 /* Mark end of function.  */
 #undef END
 #define END(function)				\
@@ -59,5 +61,7 @@ symbol:						\
 
 /* Stack alignment.  */
 #define ALMASK	~15
+
+#define L(label) .L ## label
 
 #endif /* sys/asm.h */

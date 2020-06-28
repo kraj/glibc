@@ -20,106 +20,12 @@
 #define _LINUX_RISCV_SYSDEP_H 1
 
 #include <sysdeps/unix/sysv/linux/generic/sysdep.h>
-/* Defines RTLD_PRIVATE_ERRNO.  */
-#include <dl-sysdep.h>
 
 #ifdef __ASSEMBLER__
 
 # include <sys/asm.h>
 
-# define ENTRY(name) LEAF(name)
-
-# define L(label) .L ## label
-
-/* Performs a system call, handling errors by setting errno.  Linux indicates
-   errors by setting a0 to a value between -1 and -4095.  */
-# undef PSEUDO
-# define PSEUDO(name, syscall_name, args)			\
-  .text;							\
-  .align 2;							\
-  ENTRY (name);							\
-  li a7, SYS_ify (syscall_name);				\
-  scall;							\
-  li a7, -4096;							\
-  bgtu a0, a7, .Lsyscall_error ## name;
-
-# undef PSEUDO_END
-# define PSEUDO_END(sym) 					\
-  SYSCALL_ERROR_HANDLER (sym)					\
-  ret;								\
-  END (sym)
-
-# if !IS_IN (libc)
-#  if RTLD_PRIVATE_ERRNO
-#   define SYSCALL_ERROR_HANDLER(name)				\
-.Lsyscall_error ## name:					\
-	li t1, -4096;						\
-	neg a0, a0;						\
-        sw a0, rtld_errno, t1;					\
-        li a0, -1;
-#  elif defined (__PIC__)
-#   define SYSCALL_ERROR_HANDLER(name)				\
-.Lsyscall_error ## name:					\
-        la.tls.ie t1, errno;					\
-	add t1, t1, tp;						\
-	neg a0, a0;						\
-	sw a0, 0(t1);						\
-        li a0, -1;
-#  else
-#   define SYSCALL_ERROR_HANDLER(name)				\
-.Lsyscall_error ## name:					\
-        lui t1, %tprel_hi(errno);				\
-        add t1, t1, tp, %tprel_add(errno);			\
-	neg a0, a0;						\
-        sw a0, %tprel_lo(errno)(t1);				\
-        li a0, -1;
-#  endif
-# else
-#  define SYSCALL_ERROR_HANDLER(name)				\
-.Lsyscall_error ## name:					\
-        j       __syscall_error;
-# endif
-
-/* Performs a system call, not setting errno.  */
-# undef PSEUDO_NEORRNO
-# define PSEUDO_NOERRNO(name, syscall_name, args)	\
-  .align 2;						\
-  ENTRY (name);						\
-  li a7, SYS_ify (syscall_name);			\
-  scall;
-
-# undef PSEUDO_END_NOERRNO
-# define PSEUDO_END_NOERRNO(name)			\
-  END (name)
-
-# undef ret_NOERRNO
-# define ret_NOERRNO ret
-
-/* Perfroms a system call, returning the error code.  */
-# undef PSEUDO_ERRVAL
-# define PSEUDO_ERRVAL(name, syscall_name, args) 	\
-  PSEUDO_NOERRNO (name, syscall_name, args)		\
-  neg a0, a0;
-
-# undef PSEUDO_END_ERRVAL
-# define PSEUDO_END_ERRVAL(name)			\
-  END (name)
-
-# undef ret_ERRVAL
-# define ret_ERRVAL ret
-
-#endif /* __ASSEMBLER__ */
-
-#ifndef __ASSEMBLER__
-# include <errno.h>
-#endif
-
-#include <sysdeps/unix/sysdep.h>
-
-#undef SYS_ify
-#define SYS_ify(syscall_name)	__NR_##syscall_name
-
-#ifndef __ASSEMBLER__
+#else
 
 # define VDSO_NAME  "LINUX_4.15"
 # define VDSO_HASH  182943605

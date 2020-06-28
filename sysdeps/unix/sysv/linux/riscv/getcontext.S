@@ -64,7 +64,7 @@ LEAF (__getcontext)
 	mv	a1, zero
 	li	a0, SIG_BLOCK
 
-	li	a7, SYS_ify (rt_sigprocmask)
+	li	a7, __NR_rt_sigprocmask
 	scall
 	bltz	a0, 99f
 
@@ -72,6 +72,6 @@ LEAF (__getcontext)
 
 99:	j	__syscall_error
 
-PSEUDO_END (__getcontext)
+END (__getcontext)
 
 weak_alias (__getcontext, getcontext)
