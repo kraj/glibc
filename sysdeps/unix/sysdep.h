@@ -77,26 +77,3 @@ typedef long int __syscall_arg_t;
 
 #define inline_syscall_cancel(...)					\
   __syscall_ret (internal_syscall_cancel(__VA_ARGS__))
-
-/* Machine-dependent sysdep.h files are expected to define the macro
-   PSEUDO (function_name, syscall_name) to emit assembly code to define the
-   C-callable function FUNCTION_NAME to do system call SYSCALL_NAME.
-   r0 and r1 are the system call outputs.  MOVE(x, y) should be defined as
-   an instruction such that "MOVE(r1, r0)" works.  ret should be defined
-   as the return instruction.  */
-
-#ifndef SYS_ify
-#define SYS_ify(syscall_name) SYS_##syscall_name
-#endif
-
-/* Terminate a system call named SYM.  This is used on some platforms
-   to generate correct debugging information.  */
-#ifndef PSEUDO_END
-#define PSEUDO_END(sym)
-#endif
-#ifndef PSEUDO_END_NOERRNO
-#define PSEUDO_END_NOERRNO(sym)	PSEUDO_END(sym)
-#endif
-#ifndef PSEUDO_END_ERRVAL
-#define PSEUDO_END_ERRVAL(sym)	PSEUDO_END(sym)
-#endif
