@@ -196,24 +196,27 @@ libc_hidden_def (__semctl64)
 
 /* The 64-bit time_t semid_ds version might have a different layout and
    internal field alignment.  */
-static void
-semid64_ds_to_semid_ds (struct semid_ds *ds, const struct __semid64_ds *ds64)
-{
-  ds->sem_perm = ds64->sem_perm;
-  ds->sem_otime = ds64->sem_otime;
-  ds->sem_ctime = ds64->sem_ctime;
-  ds->sem_nsems = ds64->sem_nsems;
-}
 
 static void
-semid_ds_to_semid64_ds (struct __semid64_ds *ds64, const struct semid_ds *ds)
+semid_to_semid64 (struct __semid64_ds *ds64, const struct semid_ds *ds)
 {
-  ds64->sem_perm = ds->sem_perm;
+  ds64->sem_perm  = ds->sem_perm;
   ds64->sem_otime = ds->sem_otime
 		    | ((__time64_t) ds->__sem_otime_high << 32);
   ds64->sem_ctime = ds->sem_ctime
 		    | ((__time64_t) ds->__sem_ctime_high << 32);
   ds64->sem_nsems = ds->sem_nsems;
+}
+
+static void
+semid64_to_semid (struct semid_ds *ds, const struct __semid64_ds *ds64)
+{
+  ds->sem_perm         = ds64->sem_perm;
+  ds->sem_otime        = ds64->sem_otime;
+  ds->__sem_otime_high = 0;
+  ds->sem_ctime        = ds64->sem_ctime;
+  ds->__sem_ctime_high = 0;
+  ds->sem_nsems        = ds64->sem_nsems;
 }
 
 static union semun64
@@ -232,7 +235,7 @@ semun_to_semun64 (int cmd, union semun semun, struct __semid64_ds *semid64)
     case IPC_STAT:
     case IPC_SET:
       r.buf = semid64;
-      semid_ds_to_semid64_ds (r.buf, semun.buf);
+      semid_to_semid64 (r.buf, semun.buf);
 # ifdef __ASSUME_SYSVIPC_BROKEN_MODE_T
       if (cmd == IPC_SET)
 	r.buf->sem_perm.mode *= 0x10000U;
@@ -282,7 +285,7 @@ __semctl (int semid, int semnum, int cmd, ...)
     case IPC_STAT:
     case SEM_STAT:
     case SEM_STAT_ANY:
-      semid64_ds_to_semid_ds (arg.buf, arg64.buf);
+      semid64_to_semid (arg.buf, arg64.buf);
     }
 
   return ret;
