@@ -19,13 +19,39 @@
 #include <sys/select.h>
 #include <sysdep-cancel.h>
 
+#if !defined (__ASSUME_TIME64_SYSCALLS) && !defined (PSELECT64_FALLBACK)
+static int
+__pselect64_fallback (int nfds, fd_set *readfds, fd_set *writefds,
+		      fd_set *exceptfds, const struct __timespec64 *timeout,
+		      const sigset_t *sigmask)
+{
+  struct timespec ts32, *pts32 = NULL;
+  if (timeout != NULL)
+    {
+      if (! in_time_t_range (timeout->tv_sec))
+	{
+	  __set_errno (EINVAL);
+	  return -1;
+	}
+
+      ts32 = valid_timespec64_to_timespec (*timeout);
+      pts32 = &ts32;
+    }
+
+  return INLINE_SYSCALL_CALL (pselect6, nfds, readfds, writefds, exceptfds,
+			      pts32,
+			      ((__syscall_ulong_t[]){ (uintptr_t) sigmask,
+						      __NSIG_BYTES }));
+}
+#endif
+
 int
-__pselect (int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
-	   const struct timespec *timeout, const sigset_t *sigmask)
+__pselect64 (int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
+	     const struct __timespec64 *timeout, const sigset_t *sigmask)
 {
   /* The Linux kernel can in some situations update the timeout value.
      We do not want that so use a local variable.  */
-  struct timespec tval;
+  struct __timespec64 tval;
   if (timeout != NULL)
     {
       tval = *timeout;
@@ -36,18 +62,41 @@ __pselect (int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
      we can only pass in 6 directly.  If there is an architecture with
      support for more parameters a new version of this file needs to
      be created.  */
-  struct
-  {
-    __syscall_ulong_t ss;
-    __syscall_ulong_t ss_len;
-  } data;
 
-  data.ss = (__syscall_ulong_t) (uintptr_t) sigmask;
-  data.ss_len = __NSIG_BYTES;
+#ifndef __NR_pselect6_time64
+# define __NR_pselect6_time64 __NR_pselect6
+#endif
+  int r = SYSCALL_CANCEL (pselect6_time64, nfds, readfds, writefds, exceptfds,
+			  timeout,
+			  ((__syscall_ulong_t[]){ (uintptr_t) sigmask,
+						  __NSIG_BYTES }));
+#ifndef __ASSUME_TIME64_SYSCALLS
+  if (r >= 0 || errno != ENOSYS)
+    return r;
 
-  return SYSCALL_CANCEL (pselect6, nfds, readfds, writefds, exceptfds,
-                         timeout, &data);
+  r = __pselect64_fallback (nfds, readfds, writefds, exceptfds, timeout,
+			    sigmask);
+#endif
+  return r;
 }
+
+#if __TIMESIZE != 64
+libc_hidden_def (__pselect64)
+
+int
+__pselect (int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
+	   const struct timespec *timeout, const sigset_t *sigmask)
+{
+  struct __timespec64 ts64, *pts64 = NULL;
+  if (timeout != NULL)
+    {
+      ts64 = valid_timespec_to_timespec64 (*timeout);
+      pts64 = &ts64;
+    }
+  return __pselect64 (nfds, readfds, writefds, exceptfds, pts64, sigmask);
+}
+#endif
+
 #ifndef __pselect
 weak_alias (__pselect, pselect)
 #endif
