@@ -29,10 +29,7 @@ esac
 # directive which shows up, and try using it.
 case "${machine}:${submachine}" in
 *powerpc*:)
-  archcpu=`echo "int foo () { return 0; }" \
-	   | $CC $CFLAGS $CPPFLAGS -S -frecord-gcc-switches -xc -o - - \
-	   | grep -E "mcpu=|.machine" -m 1 \
-	   | sed -e "s/.*machine //" -e "s/.*mcpu=\(.*\)\"/\1/"`
+  archcpu=''
   # Note if you add patterns here you must ensure that an appropriate
   # directory exists in sysdeps/powerpc.  Likewise, if we find a
   # cpu, don't let the generic configure append extra compiler options.
