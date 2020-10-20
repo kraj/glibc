@@ -65,6 +65,9 @@ all-rtld-routines = $(rtld-routines) $(sysdep-rtld-routines)
 # Hack around a clang alias+optimization problem.
 CFLAGS-rtld.c += -O0
 
+# elf_get_dynamic_info reads _dl_debug_mask before relocations are applied. Work around with R_X86_64_REX_GOTPCRELX.
+CFLAGS-dl-reloc-static-pie.c += -Wa,-mrelax-relocations=yes
+
 CFLAGS-dl-runtime.c += -fexceptions -fasynchronous-unwind-tables
 CFLAGS-dl-lookup.c += -fexceptions -fasynchronous-unwind-tables
 CFLAGS-dl-iterate-phdr.c += $(uses-callbacks)
