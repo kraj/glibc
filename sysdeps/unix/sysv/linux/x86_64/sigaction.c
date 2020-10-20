@@ -122,7 +122,7 @@ asm									\
    "	movq $" #syscall ", %rax\n"					\
    "	syscall\n"							\
    ".LEND_" #name ":\n"							\
-   ".section .eh_frame,\"a\",@progbits\n"				\
+   ".section .eh_frame,\"a\",@unwind\n"					\
    ".LSTARTFRAME_" #name ":\n"						\
    "	.long .LENDCIE_" #name "-.LSTARTCIE_" #name "\n"		\
    ".LSTARTCIE_" #name ":\n"						\
