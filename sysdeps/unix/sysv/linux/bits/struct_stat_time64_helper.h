@@ -1,4 +1,4 @@
-/* Definition for helper to define struct stat with 64 bit time.
+/* Common defitions for struct stat with 64 bit time.
    Copyright (C) 2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
