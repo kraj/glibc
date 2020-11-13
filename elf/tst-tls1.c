@@ -39,7 +39,9 @@ do_test (void)
       result = 1;
     }
 
-
+  /* clang integrated assembler does not handle the tlsgd reloc needed by TLS_LD
+     and TLS_GD macros, so just skip this part of the test.  */
+#if !defined(__clang__) || !defined(__aarch64__)
   /* Get variables using local dynamic model.  */
   fputs ("get sum of foo and bar (LD)", stdout);
   ap = TLS_LD (foo);
@@ -56,8 +58,9 @@ do_test (void)
       printf ("bar = %d\n", *bp);
       result = 1;
     }
+#endif
 
-
+#if !defined(__clang__) || !defined(__aarch64__)
   /* Get variables using generic dynamic model.  */
   fputs ("get sum of foo and bar (GD)", stdout);
   ap = TLS_GD (foo);
@@ -74,6 +77,7 @@ do_test (void)
       printf ("bar = %d\n", *bp);
       result = 1;
     }
+#endif
 
   return result;
 }

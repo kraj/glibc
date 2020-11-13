@@ -20,6 +20,7 @@ in_dso2 (void)
   puts ("foo");			/* Make sure PLT is used before macros.  */
   asm ("" ::: "memory");
 
+#if !defined(__clang__) || !defined(__aarch64__)
   foop = TLS_GD (foo);
   np = TLS_GD (comm_n);
 
@@ -32,6 +33,7 @@ in_dso2 (void)
   result |= in_dso (*foop = 42 + n++, foop);
 
   *foop = 16;
+#endif
 
   return result;
 }

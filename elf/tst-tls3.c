@@ -33,7 +33,7 @@ do_test (void)
   bp = TLS_IE (bar);
   *bp = 2;
 
-
+#if !defined(__clang__) || !defined(__aarch64__)
   /* Get variables using local dynamic model.  */
   fputs ("get sum of foo, bar (GD) and baz (LD)", stdout);
   ap = TLS_GD (foo);
@@ -56,7 +56,7 @@ do_test (void)
       printf ("baz = %d\n", *cp);
       result = 1;
     }
-
+#endif
 
   result |= in_dso ();
 

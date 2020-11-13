@@ -34,7 +34,7 @@ in_dso (void)
       result = 1;
     }
 
-
+#if !defined(__clang__) || !defined(__aarch64__)
   /* Get variables using generic dynamic model.  */
   fputs ("get sum of foo and bar and baz (GD)", stdout);
   ap = TLS_GD (foo);
@@ -57,6 +57,7 @@ in_dso (void)
       printf ("baz = %d\n", *cp);
       result = 1;
     }
+#endif
 
   return result;
 }
