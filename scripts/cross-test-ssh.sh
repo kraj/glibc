@@ -22,7 +22,7 @@
 
 progname="$(basename $0)"
 
-usage="usage: ${progname} [--ssh SSH] HOST COMMAND ..."
+usage="usage: ${progname} [--ssh SSH][--allow-time-setting] HOST COMMAND ..."
 help="Run a glibc test COMMAND on the remote machine HOST, via ssh,
 preserving the current working directory, and respecting quoting.
 
@@ -31,6 +31,11 @@ instead of ordinary 'ssh'.
 
 If the '--timeoutfactor FACTOR' flag is present, set TIMEOUTFACTOR on
 the remote machine to the specified FACTOR.
+
+If the '--allow-time-setting' flag is present, set
+GLIBC_TEST_ALLOW_TIME_SETTING on the remote machine to inform that
+time can be safely adjusted when e.g. tests are run in a virtual
+machine.
 
 To use this to run glibc tests, invoke the tests as follows:
 
@@ -81,6 +86,10 @@ while [ $# -gt 0 ]; do
       timeoutfactor="$1"
       ;;
 
+    "--allow-time-setting")
+      settimeallowed="1"
+      ;;
+
     "--help")
       echo "$usage"
       echo "$help"
@@ -125,6 +134,17 @@ ${command}"
 if [ "$timeoutfactor" ]; then
   command="export TIMEOUTFACTOR=$(bourne_quote "$timeoutfactor")
 ${command}"
+fi
+
+# Add command to set the info that time on target can be adjusted,
+# if required.
+# Serialize execution of this script on host to prevent from unintended
+# change of target time.
+FLOCK_PATH="/var/lock/clock_settime"
+if [ "$settimeallowed" ]; then
+  exec 99<>${FLOCK_PATH}
+  flock 99 || { echo "Cannot lock ${FLOCK_PATH}"; exit 1; }
+  command="export GLIBC_TEST_ALLOW_TIME_SETTING=1 ${command}"
 fi
 
 # HOST's sshd simply concatenates its arguments with spaces and
