@@ -40,9 +40,11 @@ __libc_fork (void)
 {
   /* Determine if we are running multiple threads.  We skip some fork
      handlers in the single-thread case, to make fork safer to use in
-     signal handlers.  POSIX requires that fork is async-signal-safe,
-     but our current fork implementation is not.  */
-  bool multiple_threads = __libc_single_threaded;
+     signal handlers.  Although POSIX has dropped async-signal-safe
+     requirement for fork (Austin Group tracker issue #62) this is
+     best effort to make is async-signal-safe at least for single-thread
+     case.  */
+  bool multiple_threads = __libc_single_threaded == 0;
 
   __run_fork_handlers (atfork_run_prepare, multiple_threads);
 

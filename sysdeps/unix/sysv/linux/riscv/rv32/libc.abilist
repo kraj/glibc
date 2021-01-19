@@ -1,4 +1,5 @@
 GLIBC_2.33 _Exit F
+GLIBC_2.33 _Fork F
 GLIBC_2.33 _IO_2_1_stderr_ D 0xa0
 GLIBC_2.33 _IO_2_1_stdin_ D 0xa0
 GLIBC_2.33 _IO_2_1_stdout_ D 0xa0
