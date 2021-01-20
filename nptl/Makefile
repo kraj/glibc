@@ -38,7 +38,6 @@ routines = \
   libc_pthread_init \
   old_pthread_cond_destroy \
   old_pthread_cond_init \
-  pthread_atfork \
   pthread_attr_copy \
   pthread_attr_destroy \
   pthread_attr_extension \
@@ -70,7 +69,6 @@ routines = \
   pthread_sigmask \
 
 shared-only-routines = forward
-static-only-routines = pthread_atfork
 
 # We need to provide certain routines for compatibility with existing
 # binaries.
@@ -134,7 +132,6 @@ libpthread-routines = nptl-init nptlfreeres vars events version pt-interp \
 		      pthread_cancel pthread_testcancel \
 		      pthread_setcancelstate pthread_setcanceltype \
 		      pthread_once \
-		      old_pthread_atfork \
 		      pthread_getcpuclockid \
 		      shm-directory \
 		      sem_init sem_destroy \
