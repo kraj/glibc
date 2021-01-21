@@ -68,7 +68,7 @@ __libc_fork (void)
     }
 
   pid_t pid = _Fork ();
-
+  int save_errno = errno;
   if (pid == 0)
     {
       /* Reset the lock state in the multi-threaded case.  */
@@ -107,6 +107,8 @@ __libc_fork (void)
   __run_fork_handlers (pid == 0 ? atfork_run_child : atfork_run_parent,
 		       multiple_threads);
 
+  if (pid < 0)
+    __set_errno (save_errno);
   return pid;
 }
 weak_alias (__libc_fork, __fork)
