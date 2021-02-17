@@ -49,6 +49,14 @@ tests := tst-shm tst-timer tst-timer2 \
 	 tst-shm-cancel
 tests-internal := tst-timer-sigmask
 
+tests-y2038 := \
+  tst-cpuclock2-y2038 \
+  tst-mqueue1-y2038 \
+  tst-mqueue2-y2038 \
+  tst-mqueue4-y2038 \
+  tst-mqueue8-y2038 \
+  tst-timer4-y2038
+
 extra-libs := librt
 extra-libs-others := $(extra-libs)
 

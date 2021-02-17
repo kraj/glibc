@@ -771,7 +771,7 @@ endif
 	     $(patsubst %.o,%.d,$(filter %.o,$(extra-objs:.os=.o))) \
 	     $(patsubst %.oS,%.d,$(filter %.oS,$(extra-objs))) \
 	     $(patsubst %.o,%.d,$(filter %.o,$(extra-test-objs:.os=.o))) \
-	     $(addsuffix .d,$(tests) $(tests-internal) $(xtests) $(test-srcs))
+	     $(addsuffix .d,$(tests) $(tests-internal) $(xtests) $(test-srcs) $(tests-y2038))
 ifeq ($(build-programs),yes)
 +depfiles += $(addsuffix .d,$(others) $(sysdep-others))
 endif
@@ -1285,6 +1285,17 @@ check: tests
 # Maintainers should use this target.
 .PHONY: xcheck
 xcheck: xtests
+
+# Handle tests-y2038 tests they should be built with LFS and 64-bit time
+# support.
+include $(o-iterator)
+define o-iterator-doit
+$(foreach f,$(tests-y2038),$(objpfx)$(f)$(o)): CFLAGS += -D_TIME_BITS=64 -D_FILE_OFFSET_BITS=64
+endef
+object-suffixes-left := $(all-object-suffixes)
+include $(o-iterator)
+
+tests += $(foreach t,$(tests-y2038),$(t))
 
 # The only difference between MODULE_NAME=testsuite and MODULE_NAME=nonlib is
 # that almost all internal declarations from config.h, libc-symbols.h, and
