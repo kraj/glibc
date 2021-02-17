@@ -211,3 +211,17 @@ GLIBC_2.30 pthread_rwlock_clockrdlock F
 GLIBC_2.30 pthread_rwlock_clockwrlock F
 GLIBC_2.30 sem_clockwait F
 GLIBC_2.31 pthread_clockjoin_np F
+GLIBC_2.34 __cnd_timedwait64 F
+GLIBC_2.34 __mtx_timedlock64 F
+GLIBC_2.34 __pthread_clockjoin_np64 F
+GLIBC_2.34 __pthread_cond_clockwait64 F
+GLIBC_2.34 __pthread_cond_timedwait64 F
+GLIBC_2.34 __pthread_mutex_clocklock64 F
+GLIBC_2.34 __pthread_mutex_timedlock64 F
+GLIBC_2.34 __pthread_rwlock_clockrdlock64 F
+GLIBC_2.34 __pthread_rwlock_clockwrlock64 F
+GLIBC_2.34 __pthread_rwlock_timedrdlock64 F
+GLIBC_2.34 __pthread_rwlock_timedwrlock64 F
+GLIBC_2.34 __pthread_timedjoin_np64 F
+GLIBC_2.34 __sem_clockwait64 F
+GLIBC_2.34 __sem_timedwait64 F

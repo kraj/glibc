@@ -1,6 +1,8 @@
 # The default ABI is 32.
 default-abi := 32
 
+extra-version := Versions-y2038
+
 ifeq ($(subdir),misc)
 sysdep_routines += ioperm iopl vm86
 

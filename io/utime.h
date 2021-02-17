@@ -50,6 +50,16 @@ extern int utime (const char *__file,
 		  const struct utimbuf *__file_times)
      __THROW __nonnull ((1));
 
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT_NTH)
+extern int __REDIRECT_NTH (utime, (const char *__file,
+                                   const struct utimbuf *__file_times),
+                           __utime64);
+# else
+# define utime __utime64
+# endif
+#endif
+
 __END_DECLS
 
 #endif /* utime.h */

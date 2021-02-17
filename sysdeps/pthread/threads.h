@@ -91,6 +91,16 @@ extern thrd_t thrd_current (void);
 extern int thrd_sleep (const struct timespec *__time_point,
 		       struct timespec *__remaining);
 
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern int __REDIRECT (thrd_sleep, (const struct timespec *__time_point,
+                                    struct timespec *__remaining),
+                       __thrd_sleep64);
+# else
+#  define thrd_sleep __thrd_sleep64
+# endif
+#endif
+
 /* Terminate current thread execution, cleaning up any thread local
    storage and freeing resources.  Returns the value specified in __RES.  */
 extern void thrd_exit (int __res) __attribute__ ((__noreturn__));
@@ -134,6 +144,17 @@ extern int mtx_lock (mtx_t *__mutex);
 extern int mtx_timedlock (mtx_t *__restrict __mutex,
 			  const struct timespec *__restrict __time_point);
 
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern int __REDIRECT (mtx_timedlock, (mtx_t *__restrict __mutex,
+                                       const struct timespec *__restrict
+                                       __time_point),
+                       __mtx_timedlock64);
+# else
+#  define mtx_timedlock __mtx_timedlock64
+# endif
+#endif
+
 /* Try to lock the mutex pointed by __MUTEX without blocking.  If the mutex
    is free the current threads takes control of it, otherwise it returns
    immediately.  */
@@ -174,6 +195,18 @@ extern int cnd_wait (cnd_t *__cond, mtx_t *__mutex);
 extern int cnd_timedwait (cnd_t *__restrict __cond,
 			  mtx_t *__restrict __mutex,
 			  const struct timespec *__restrict __time_point);
+
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT)
+extern int __REDIRECT (cnd_timedwait, (cnd_t *__restrict __cond,
+                                       mtx_t *__restrict __mutex,
+                                       const struct timespec *__restrict
+                                       __time_point),
+                       __cnd_timedwait64);
+# else
+#  define cnd_timedwait __cnd_timedwait64
+# endif
+#endif
 
 /* Destroy condition variable pointed by __cond and free all of its
    resources.  */

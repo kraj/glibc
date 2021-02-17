@@ -14,6 +14,10 @@ Major new features:
   constant on Linux.  MINSIGSTKSZ is redefined to sysconf(_SC_MINSIGSTKSZ)
   and SIGSTKSZ is redefined to sysconf (_SC_SIGSTKSZ).
 
+* Add support for 64 bit time_t support for ABIs with defaults to 32 bit
+  time_t.  This is enabled with the _TIME_BITS flag set to 64 and it
+  is support on Linux with a minimum version of 5.1.
+
 Deprecated and removed features, and other changes affecting compatibility:
 
   [Add deprecations, removals and changes affecting compatibility here]

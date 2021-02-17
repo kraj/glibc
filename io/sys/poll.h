@@ -63,6 +63,17 @@ extern int poll (struct pollfd *__fds, nfds_t __nfds, int __timeout);
 extern int ppoll (struct pollfd *__fds, nfds_t __nfds,
 		  const struct timespec *__timeout,
 		  const __sigset_t *__ss);
+
+# ifdef __USE_TIME_BITS64
+#  if defined(__REDIRECT)
+extern int __REDIRECT (ppoll, (struct pollfd *__fds, nfds_t __nfds,
+                               const struct timespec *__timeout,
+                               const __sigset_t *__ss),
+                       __ppoll64);
+#  else
+#  define ppoll __ppoll64
+#  endif
+# endif
 #endif
 
 __END_DECLS

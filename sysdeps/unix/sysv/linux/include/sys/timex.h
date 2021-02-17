@@ -27,6 +27,7 @@ libc_hidden_proto (__adjtimex)
 
 #  include <time.h>
 #  include <struct___timeval64.h>
+
 /* Local definition of 64 bit time supporting timex struct */
 #  if __TIMESIZE == 64
 #   define __timex64 timex

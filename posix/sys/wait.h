@@ -146,12 +146,32 @@ struct rusage;
    otherwise don't.  */
 extern __pid_t wait3 (int *__stat_loc, int __options,
 		      struct rusage * __usage) __THROWNL;
+
+# ifdef __USE_TIME_BITS64
+#  if defined(__REDIRECT_NTHNL)
+extern __pid_t __REDIRECT_NTHNL (wait3, (int *__stat_loc, int __options,
+                                         struct rusage * __usage),
+                                 __wait3_time64);
+#  else
+#  define wait3 __wait3_time64
+#  endif
+# endif
 #endif
 
 #ifdef __USE_MISC
 /* PID is like waitpid.  Other args are like wait3.  */
 extern __pid_t wait4 (__pid_t __pid, int *__stat_loc, int __options,
 		      struct rusage *__usage) __THROWNL;
+
+# ifdef __USE_TIME_BITS64
+#  if defined(__REDIRECT_NTHNL)
+extern __pid_t __REDIRECT_NTHNL (wait4, (__pid_t __pid, int *__stat_loc,
+                                         int __options, struct rusage *__usage),
+                                 __wait4_time64);
+#  else
+#  define wait4 __wait4_time64
+#  endif
+# endif
 #endif /* Use misc.  */
 
 

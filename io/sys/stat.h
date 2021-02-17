@@ -361,11 +361,31 @@ extern int utimensat (int __fd, const char *__path,
 		      const struct timespec __times[2],
 		      int __flags)
      __THROW __nonnull ((2));
+
+# ifdef __USE_TIME_BITS64
+#  if defined(__REDIRECT_NTH)
+extern int __REDIRECT_NTH (utimensat, (int fd, const char *__path,
+                                       const struct timespec __times[2],
+                                       int flags),
+                           __utimensat64) __nonnull ((2));
+#  else
+#  define utimensat __utimensat64
+#  endif
+# endif
 #endif
 
 #ifdef __USE_XOPEN2K8
 /* Set file access and modification times of the file associated with FD.  */
 extern int futimens (int __fd, const struct timespec __times[2]) __THROW;
+
+# ifdef __USE_TIME_BITS64
+#  if defined(__REDIRECT_NTH)
+extern int __REDIRECT_NTH (futimens, (int fd, const struct timespec __times[2]),
+                           __futimens64);
+#  else
+#  define futimens __futimens64
+#  endif
+# endif
 #endif
 
 #ifdef __USE_GNU

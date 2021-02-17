@@ -199,6 +199,17 @@ extern ssize_t recvmsg (int __fd, struct msghdr *__message, int __flags);
 extern int recvmmsg (int __fd, struct mmsghdr *__vmessages,
 		     unsigned int __vlen, int __flags,
 		     struct timespec *__tmo);
+
+# ifdef __USE_TIME_BITS64
+#  if defined(__REDIRECT)
+extern int __REDIRECT (recvmmsg, (int __fd, struct mmsghdr *__vmessages,
+                                  unsigned int __vlen, int __flags,
+                                  struct timespec *__tmo),
+                       __recvmmsg64);
+#  else
+#   define recvmmsg __recvmmsg64
+#  endif
+# endif
 #endif
 
 

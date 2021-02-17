@@ -62,6 +62,17 @@ extern int sem_wait (sem_t *__sem) __nonnull ((1));
 extern int sem_timedwait (sem_t *__restrict __sem,
 			  const struct timespec *__restrict __abstime)
   __nonnull ((1, 2));
+
+# ifdef __USE_TIME_BITS64
+#  if defined(__REDIRECT)
+extern int __REDIRECT (sem_timedwait,
+                       (sem_t *__restrict __sem,
+                        const struct timespec *__restrict __abstime),
+                        __sem_timedwait64);
+#  else
+#   define sem_timedwait __sem_timedwait64
+#  endif
+# endif
 #endif
 
 #ifdef __USE_GNU
@@ -69,6 +80,18 @@ extern int sem_clockwait (sem_t *__restrict __sem,
 			  clockid_t clock,
 			  const struct timespec *__restrict __abstime)
   __nonnull ((1, 3));
+
+# ifdef __USE_TIME_BITS64
+#  if defined(__REDIRECT)
+extern int __REDIRECT (sem_clockwait,
+                       (sem_t *__restrict __sem,
+                        clockid_t clock,
+                        const struct timespec *__restrict __abstime),
+                        __sem_clockwait64);
+#  else
+#   define sem_clockwait __sem_clockwait64
+#  endif
+# endif
 #endif
 
 /* Test whether SEM is posted.  */

@@ -274,6 +274,18 @@ extern int sigtimedwait (const sigset_t *__restrict __set,
 			 const struct timespec *__restrict __timeout)
      __nonnull ((1));
 
+#  ifdef __USE_TIME_BITS64
+#   if defined(__REDIRECT)
+extern int __REDIRECT (sigtimedwait,
+                       (const sigset_t *__restrict __set,
+                        siginfo_t *__restrict __info,
+                        const struct timespec *__restrict __timeout),
+                       __sigtimedwait64);
+#   else
+#    define sigtimedwait __sigtimedwait64
+#   endif
+#  endif
+
 /* Send signal SIG to the process PID.  Associate data in VAL with the
    signal.  */
 extern int sigqueue (__pid_t __pid, int __sig, const union sigval __val)

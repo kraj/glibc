@@ -50,6 +50,16 @@ __BEGIN_DECLS
 /* Semaphore control operation.  */
 extern int semctl (int __semid, int __semnum, int __cmd, ...) __THROW;
 
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT_NTH)
+extern int __REDIRECT_NTH (semctl,
+                           (int __semid, int __semnum, int __cmd, ...),
+                           __semctl64);
+# else
+# define semctl __semctl64
+# endif
+#endif
+
 /* Get semaphore.  */
 extern int semget (key_t __key, int __nsems, int __semflg) __THROW;
 
@@ -60,6 +70,17 @@ extern int semop (int __semid, struct sembuf *__sops, size_t __nsops) __THROW;
 /* Operate on semaphore with timeout.  */
 extern int semtimedop (int __semid, struct sembuf *__sops, size_t __nsops,
 		       const struct timespec *__timeout) __THROW;
+
+# ifdef __USE_TIME_BITS64
+#  if defined(__REDIRECT_NTH)
+extern int __REDIRECT_NTH (semtimedop, (int __semid, struct sembuf *__sops,
+                                        size_t __nsops,
+                                        const struct timespec *__timeout),
+                           __semtimedop64);
+#  else
+#  define semtimedop __semtimedop64
+#  endif
+# endif
 #endif
 
 __END_DECLS

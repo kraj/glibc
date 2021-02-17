@@ -60,6 +60,16 @@ __BEGIN_DECLS
 /* Message queue control operation.  */
 extern int msgctl (int __msqid, int __cmd, struct msqid_ds *__buf) __THROW;
 
+#ifdef __USE_TIME_BITS64
+# if defined(__REDIRECT_NTH)
+extern int __REDIRECT_NTH (msgctl,
+                           (int __msqid, int __cmd, struct msqid_ds *__buf),
+                           __msgctl64);
+# else
+# define msgctl __msgctl64
+# endif
+#endif
+
 /* Get messages queue.  */
 extern int msgget (key_t __key, int __msgflg) __THROW;
 

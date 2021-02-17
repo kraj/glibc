@@ -230,6 +230,17 @@ extern int pthread_tryjoin_np (pthread_t __th, void **__thread_return) __THROW;
 extern int pthread_timedjoin_np (pthread_t __th, void **__thread_return,
 				 const struct timespec *__abstime);
 
+# ifdef __USE_TIME_BITS64
+#  if defined(__REDIRECT)
+extern int __REDIRECT (pthread_timedjoin_np,
+                       (pthread_t __th, void **__thread_return,
+                        const struct timespec *__abstime),
+                       __pthread_timedjoin_np64);
+#  else
+#  define pthread_timedjoin_np __pthread_timedjoin_np64
+#  endif
+# endif
+
 /* Make calling thread wait for termination of the thread TH, but only
    until TIMEOUT measured against the clock specified by CLOCKID.  The
    exit status of the thread is stored in *THREAD_RETURN, if
@@ -240,6 +251,18 @@ extern int pthread_timedjoin_np (pthread_t __th, void **__thread_return,
 extern int pthread_clockjoin_np (pthread_t __th, void **__thread_return,
                                  clockid_t __clockid,
 				 const struct timespec *__abstime);
+
+# ifdef __USE_TIME_BITS64
+#  if defined(__REDIRECT)
+extern int __REDIRECT (pthread_clockjoin_np,
+                       (pthread_t __th, void **__thread_return,
+                        clockid_t __clockid,
+                        const struct timespec *__abstime),
+                       __pthread_clockjoin_np64);
+#  else
+#  define pthread_clockjoin_np __pthread_clockjoin_np64
+#  endif
+# endif
 #endif
 
 /* Indicate that the thread TH is never to be joined with PTHREAD_JOIN.
@@ -776,6 +799,17 @@ extern int pthread_mutex_lock (pthread_mutex_t *__mutex)
 extern int pthread_mutex_timedlock (pthread_mutex_t *__restrict __mutex,
 				    const struct timespec *__restrict
 				    __abstime) __THROWNL __nonnull ((1, 2));
+
+# ifdef __USE_TIME_BITS64
+#  if defined(__REDIRECT_NTHNL)
+extern int __REDIRECT_NTHNL (pthread_mutex_timedlock,
+                             (pthread_mutex_t *__restrict __mutex,
+                              const struct timespec *__restrict __abstime),
+                             __pthread_mutex_timedlock64);
+#  else
+#   define pthread_mutex_timedlock __pthread_mutex_timedlock64
+#  endif
+# endif
 #endif
 
 #ifdef __USE_GNU
@@ -783,6 +817,18 @@ extern int pthread_mutex_clocklock (pthread_mutex_t *__restrict __mutex,
 				    clockid_t __clockid,
 				    const struct timespec *__restrict
 				    __abstime) __THROWNL __nonnull ((1, 3));
+
+# ifdef __USE_TIME_BITS64
+#  if defined(__REDIRECT_NTHNL)
+extern int __REDIRECT_NTHNL (pthread_mutex_clocklock,
+                             (pthread_mutex_t *__restrict __mutex,
+                              clockid_t __clockid,
+                              const struct timespec *__restrict __abstime),
+                             __pthread_mutex_clocklock64);
+#  else
+#   define pthread_mutex_clocklock __pthread_mutex_clocklock64
+#  endif
+# endif
 #endif
 
 /* Unlock a mutex.  */
@@ -922,6 +968,17 @@ extern int pthread_rwlock_tryrdlock (pthread_rwlock_t *__rwlock)
 extern int pthread_rwlock_timedrdlock (pthread_rwlock_t *__restrict __rwlock,
 				       const struct timespec *__restrict
 				       __abstime) __THROWNL __nonnull ((1, 2));
+
+#  ifdef __USE_TIME_BITS64
+#   if defined(__REDIRECT_NTHNL)
+extern int __REDIRECT_NTHNL (pthread_rwlock_timedrdlock,
+                             (pthread_rwlock_t *__restrict __rwlock,
+                              const struct timespec *__restrict __abstime),
+                             __pthread_rwlock_timedrdlock64);
+#   else
+#    define pthread_rwlock_timedrdlock __pthread_rwlock_timedrdlock64
+#   endif
+#  endif
 # endif
 
 # ifdef __USE_GNU
@@ -929,6 +986,18 @@ extern int pthread_rwlock_clockrdlock (pthread_rwlock_t *__restrict __rwlock,
 				       clockid_t __clockid,
 				       const struct timespec *__restrict
 				       __abstime) __THROWNL __nonnull ((1, 3));
+
+#  ifdef __USE_TIME_BITS64
+#   if defined(__REDIRECT_NTHNL)
+extern int __REDIRECT_NTHNL (pthread_rwlock_clockrdlock,
+                             (pthread_rwlock_t *__restrict __rwlock,
+                              clockid_t __clockid,
+                              const struct timespec *__restrict __abstime),
+                             __pthread_rwlock_clockrdlock64);
+#   else
+#    define pthread_rwlock_clockrdlock __pthread_rwlock_clockrdlock64
+#   endif
+#  endif
 # endif
 
 /* Acquire write lock for RWLOCK.  */
@@ -944,6 +1013,17 @@ extern int pthread_rwlock_trywrlock (pthread_rwlock_t *__rwlock)
 extern int pthread_rwlock_timedwrlock (pthread_rwlock_t *__restrict __rwlock,
 				       const struct timespec *__restrict
 				       __abstime) __THROWNL __nonnull ((1, 2));
+
+#  ifdef __USE_TIME_BITS64
+#   if defined(__REDIRECT_NTHNL)
+extern int __REDIRECT_NTHNL (pthread_rwlock_timedwrlock,
+                             (pthread_rwlock_t *__restrict __rwlock,
+                              const struct timespec *__restrict __abstime),
+                             __pthread_rwlock_timedwrlock64);
+#   else
+#    define pthread_rwlock_timedwrlock __pthread_rwlock_timedwrlock64
+#   endif
+#  endif
 # endif
 
 # ifdef __USE_GNU
@@ -951,6 +1031,18 @@ extern int pthread_rwlock_clockwrlock (pthread_rwlock_t *__restrict __rwlock,
 				       clockid_t __clockid,
 				       const struct timespec *__restrict
 				       __abstime) __THROWNL __nonnull ((1, 3));
+
+#  ifdef __USE_TIME_BITS64
+#   if defined(__REDIRECT_NTHNL)
+extern int __REDIRECT_NTHNL (pthread_rwlock_clockwrlock,
+                             (pthread_rwlock_t *__restrict __rwlock,
+                              clockid_t __clockid,
+                              const struct timespec *__restrict __abstime),
+                             __pthread_rwlock_clockwrlock64);
+#   else
+#    define pthread_rwlock_clockwrlock __pthread_rwlock_clockwrlock64
+#   endif
+#  endif
 # endif
 
 /* Unlock RWLOCK.  */
@@ -1032,6 +1124,18 @@ extern int pthread_cond_timedwait (pthread_cond_t *__restrict __cond,
 				   const struct timespec *__restrict __abstime)
      __nonnull ((1, 2, 3));
 
+# ifdef __USE_TIME_BITS64
+#  if defined(__REDIRECT)
+extern int __REDIRECT (pthread_cond_timedwait,
+                       (pthread_cond_t *__restrict __cond,
+                        pthread_mutex_t *__restrict __mutex,
+                        const struct timespec *__restrict __abstime),
+                       __pthread_cond_timedwait64);
+#  else
+#  define pthread_cond_timedwait __pthread_cond_timedwait64
+#  endif
+# endif
+
 # ifdef __USE_GNU
 /* Wait for condition variable COND to be signaled or broadcast until
    ABSTIME measured by the specified clock. MUTEX is assumed to be
@@ -1045,6 +1149,19 @@ extern int pthread_cond_clockwait (pthread_cond_t *__restrict __cond,
 				   __clockid_t __clock_id,
 				   const struct timespec *__restrict __abstime)
      __nonnull ((1, 2, 4));
+
+#  ifdef __USE_TIME_BITS64
+#   if defined(__REDIRECT)
+extern int __REDIRECT (pthread_cond_clockwait,
+                       (pthread_cond_t *__restrict __cond,
+                        pthread_mutex_t *__restrict __mutex,
+                        __clockid_t __clock_id,
+                        const struct timespec *__restrict __abstime),
+                       __pthread_cond_clockwait64);
+#   else
+#   define pthread_cond_clockwait __pthread_cond_clockwait64
+#   endif
+#  endif
 # endif
 
 /* Functions for handling condition variable attributes.  */
