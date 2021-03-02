@@ -44,7 +44,7 @@ libc_hidden_def (__file_is_unchanged)
 
 void
 __file_change_detection_for_stat (struct file_change_detection *file,
-                                  const struct stat64 *st)
+                                  const struct __stat64_t64 *st)
 {
   if (S_ISDIR (st->st_mode))
     /* Treat as empty file.  */
@@ -56,8 +56,10 @@ __file_change_detection_for_stat (struct file_change_detection *file,
     {
       file->size = st->st_size;
       file->ino = st->st_ino;
-      file->mtime = st->st_mtim;
-      file->ctime = st->st_ctim;
+      file->mtime = (struct __timespec64 ) { .tv_sec  = st->st_mtim.tv_sec,
+					     .tv_nsec = st->st_mtim.tv_nsec };
+      file->ctime = (struct __timespec64 ) { .tv_sec  = st->st_ctim.tv_sec,
+					     .tv_nsec = st->st_mtim.tv_nsec };
     }
 }
 libc_hidden_def (__file_change_detection_for_stat)
@@ -66,8 +68,8 @@ bool
 __file_change_detection_for_path (struct file_change_detection *file,
                                   const char *path)
 {
-  struct stat64 st;
-  if (__stat64 (path, &st) != 0)
+  struct __stat64_t64 st;
+  if (__stat64_time64 (path, &st) != 0)
     switch (errno)
       {
       case EACCES:
@@ -104,8 +106,8 @@ __file_change_detection_for_fp (struct file_change_detection *file,
     }
   else
     {
-      struct stat64 st;
-      if (__fstat64 (__fileno (fp), &st) != 0)
+      struct __stat64_t64 st;
+      if (__fstat64_time64 (__fileno (fp), &st) != 0)
         /* If we already have a file descriptor, all errors are fatal.  */
         return false;
       else
