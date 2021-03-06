@@ -30,7 +30,11 @@ __faccessat (int fd, const char *file, int mode, int flag)
 #if __ASSUME_FACCESSAT2
   return ret;
 #else
-  if (ret == 0 || errno != ENOSYS)
+  /* Fedora-specific workaround:
+     As a workround for a broken systemd-nspawn that returns
+     EPERM when a syscall is not allowed instead of ENOSYS
+     we must check for EPERM here and fall back to faccessat.  */
+  if (ret == 0 || !(errno == ENOSYS || errno == EPERM))
     return ret;
 
   if (flag & ~(AT_SYMLINK_NOFOLLOW | AT_EACCESS))
