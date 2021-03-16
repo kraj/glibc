@@ -5,7 +5,6 @@ GLIBC_2.0 __errno_location F
 GLIBC_2.0 __h_errno_location F
 GLIBC_2.0 __lseek F
 GLIBC_2.0 __open F
-GLIBC_2.0 __pthread_getspecific F
 GLIBC_2.0 __pthread_mutex_destroy F
 GLIBC_2.0 __pthread_mutex_init F
 GLIBC_2.0 __pthread_mutex_lock F
@@ -30,7 +29,6 @@ GLIBC_2.0 pthread_cond_timedwait F
 GLIBC_2.0 pthread_cond_wait F
 GLIBC_2.0 pthread_create F
 GLIBC_2.0 pthread_detach F
-GLIBC_2.0 pthread_getspecific F
 GLIBC_2.0 pthread_join F
 GLIBC_2.0 pthread_key_delete F
 GLIBC_2.0 pthread_kill F
