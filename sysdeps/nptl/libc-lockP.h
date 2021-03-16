@@ -238,15 +238,7 @@ _Static_assert (LLL_LOCK_INITIALIZER == 0, "LLL_LOCK_INITIALIZER != 0");
 
 /* Call handler iff the first call.  */
 #define __libc_once(ONCE_CONTROL, INIT_FUNCTION) \
-  do {									      \
-    if (PTFAVAIL (__pthread_once))					      \
-      __libc_ptf_call_always (__pthread_once, (&(ONCE_CONTROL),		      \
-					       INIT_FUNCTION));		      \
-    else if ((ONCE_CONTROL) == PTHREAD_ONCE_INIT) {			      \
-      INIT_FUNCTION ();							      \
-      (ONCE_CONTROL) |= 2;						      \
-    }									      \
-  } while (0)
+  __pthread_once (&(ONCE_CONTROL), INIT_FUNCTION)
 
 /* Get once control variable.  */
 #define __libc_once_get(ONCE_CONTROL)	((ONCE_CONTROL) != PTHREAD_ONCE_INIT)
@@ -342,6 +334,7 @@ extern void *__pthread_getspecific (pthread_key_t __key);
 
 extern int __pthread_once (pthread_once_t *__once_control,
 			   void (*__init_routine) (void));
+libc_hidden_proto (__pthread_once)
 
 extern int __pthread_atfork (void (*__prepare) (void),
 			     void (*__parent) (void),
@@ -372,7 +365,6 @@ weak_extern (__pthread_rwlock_unlock)
 weak_extern (__pthread_key_create)
 weak_extern (__pthread_setspecific)
 weak_extern (__pthread_getspecific)
-weak_extern (__pthread_once)
 weak_extern (__pthread_initialize)
 weak_extern (__pthread_atfork)
 weak_extern (__pthread_setcancelstate)
@@ -394,7 +386,6 @@ weak_extern (__pthread_setcancelstate)
 #  pragma weak __pthread_key_create
 #  pragma weak __pthread_setspecific
 #  pragma weak __pthread_getspecific
-#  pragma weak __pthread_once
 #  pragma weak __pthread_initialize
 #  pragma weak __pthread_atfork
 #  pragma weak __pthread_setcancelstate

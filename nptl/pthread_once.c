@@ -19,7 +19,9 @@
 #include "pthreadP.h"
 #include <futex-internal.h>
 #include <atomic.h>
-
+#include <libc-lockP.h>
+#include <fork.h>
+#include <shlib-compat.h>
 
 unsigned long int __fork_generation attribute_hidden;
 
@@ -132,7 +134,7 @@ __pthread_once_slow (pthread_once_t *once_control, void (*init_routine) (void))
 }
 
 int
-__pthread_once (pthread_once_t *once_control, void (*init_routine) (void))
+__pthread_once_1 (pthread_once_t *once_control, void (*init_routine) (void))
 {
   /* Fast path.  See __pthread_once_slow.  */
   int val;
@@ -142,5 +144,16 @@ __pthread_once (pthread_once_t *once_control, void (*init_routine) (void))
   else
     return __pthread_once_slow (once_control, init_routine);
 }
-weak_alias (__pthread_once, pthread_once)
-hidden_def (__pthread_once)
+versioned_symbol (libc, __pthread_once_1, __pthread_once, GLIBC_2_34);
+libc_hidden_ver (__pthread_once_1, __pthread_once)
+
+/* Several aliases for setting different symbol versions.  */
+strong_alias (__pthread_once_1, __pthread_once_2)
+strong_alias (__pthread_once_1, __pthread_once_3)
+strong_alias (__pthread_once_1, __pthread_once_4)
+
+versioned_symbol (libc, __pthread_once_2, pthread_once, GLIBC_2_34);
+#if SHLIB_COMPAT (libc, GLIBC_2_0, GLIBC_2_34)
+compat_symbol (libc, __pthread_once_3, __pthread_once, GLIBC_2_0);
+compat_symbol (libc, __pthread_once_4, pthread_once, GLIBC_2_0);
+#endif

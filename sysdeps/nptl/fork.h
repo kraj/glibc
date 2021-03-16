@@ -21,6 +21,3 @@
 
 /* The fork generation counter, defined in libpthread.  */
 extern unsigned long int __fork_generation attribute_hidden;
-
-/* Pointer to the fork generation counter in the thread library.  */
-extern unsigned long int *__fork_generation_pointer attribute_hidden;
