@@ -23,6 +23,7 @@
 #include <lowlevellock.h>
 #include <stap-probe.h>
 #include <futex-internal.h>
+#include <shlib-compat.h>
 
 static int
 __pthread_mutex_unlock_full (pthread_mutex_t *mutex, int decr)
@@ -44,7 +45,6 @@ lll_mutex_unlock_optimized (pthread_mutex_t *mutex)
 }
 
 int
-attribute_hidden
 __pthread_mutex_unlock_usercnt (pthread_mutex_t *mutex, int decr)
 {
   /* See concurrency notes regarding mutex type which is loaded from __kind
@@ -103,6 +103,7 @@ __pthread_mutex_unlock_usercnt (pthread_mutex_t *mutex, int decr)
       goto normal;
     }
 }
+libc_hidden_def (__pthread_mutex_unlock_usercnt)
 
 
 static int
@@ -363,9 +364,19 @@ __pthread_mutex_unlock_full (pthread_mutex_t *mutex, int decr)
 
 
 int
-__pthread_mutex_unlock (pthread_mutex_t *mutex)
+__pthread_mutex_unlock_1 (pthread_mutex_t *mutex)
 {
   return __pthread_mutex_unlock_usercnt (mutex, 1);
 }
-weak_alias (__pthread_mutex_unlock, pthread_mutex_unlock)
-hidden_def (__pthread_mutex_unlock)
+versioned_symbol (libc, __pthread_mutex_unlock_1, __pthread_mutex_unlock,
+		  GLIBC_2_34);
+libc_hidden_ver (__pthread_mutex_unlock_1, __pthread_mutex_unlock)
+strong_alias (__pthread_mutex_unlock_1, __pthread_mutex_unlock_2)
+versioned_symbol (libc, __pthread_mutex_unlock_2, pthread_mutex_unlock,
+		  GLIBC_2_0);
+
+#if SHLIB_COMPAT (libc, GLIBC_2_0, GLIBC_2_34)
+strong_alias (__pthread_mutex_unlock_1, __pthread_mutex_unlock_3)
+compat_symbol (libc, __pthread_mutex_unlock_3, __pthread_mutex_unlock,
+	       GLIBC_2_0);
+#endif

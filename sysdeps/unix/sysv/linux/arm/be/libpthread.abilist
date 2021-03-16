@@ -44,11 +44,7 @@ GLIBC_2.4 __lseek F
 GLIBC_2.4 __open F
 GLIBC_2.4 __open64 F
 GLIBC_2.4 __pread64 F
-GLIBC_2.4 __pthread_mutex_destroy F
-GLIBC_2.4 __pthread_mutex_init F
-GLIBC_2.4 __pthread_mutex_lock F
 GLIBC_2.4 __pthread_mutex_trylock F
-GLIBC_2.4 __pthread_mutex_unlock F
 GLIBC_2.4 __pthread_mutexattr_destroy F
 GLIBC_2.4 __pthread_mutexattr_init F
 GLIBC_2.4 __pthread_mutexattr_settype F
@@ -105,14 +101,10 @@ GLIBC_2.4 pthread_getcpuclockid F
 GLIBC_2.4 pthread_join F
 GLIBC_2.4 pthread_kill F
 GLIBC_2.4 pthread_kill_other_threads_np F
-GLIBC_2.4 pthread_mutex_destroy F
 GLIBC_2.4 pthread_mutex_getprioceiling F
-GLIBC_2.4 pthread_mutex_init F
-GLIBC_2.4 pthread_mutex_lock F
 GLIBC_2.4 pthread_mutex_setprioceiling F
 GLIBC_2.4 pthread_mutex_timedlock F
 GLIBC_2.4 pthread_mutex_trylock F
-GLIBC_2.4 pthread_mutex_unlock F
 GLIBC_2.4 pthread_mutexattr_destroy F
 GLIBC_2.4 pthread_mutexattr_getkind_np F
 GLIBC_2.4 pthread_mutexattr_getprioceiling F

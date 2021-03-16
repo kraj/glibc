@@ -25,6 +25,7 @@
 #include <atomic.h>
 #include <pthread-offsets.h>
 #include <futex-internal.h>
+#include <shlib-compat.h>
 
 #include <stap-probe.h>
 
@@ -48,7 +49,7 @@ prio_inherit_missing (void)
 }
 
 int
-__pthread_mutex_init (pthread_mutex_t *mutex,
+__pthread_mutex_init_1 (pthread_mutex_t *mutex,
 		      const pthread_mutexattr_t *mutexattr)
 {
   const struct pthread_mutexattr *imutexattr;
@@ -150,5 +151,14 @@ __pthread_mutex_init (pthread_mutex_t *mutex,
 
   return 0;
 }
-weak_alias (__pthread_mutex_init, pthread_mutex_init)
-hidden_def (__pthread_mutex_init)
+versioned_symbol (libc, __pthread_mutex_init_1, __pthread_mutex_init,
+		  GLIBC_2_34);
+libc_hidden_ver (__pthread_mutex_init_1, __pthread_mutex_init)
+strong_alias (__pthread_mutex_init_1, __pthread_mutex_init_2)
+versioned_symbol (libc, __pthread_mutex_init_2, pthread_mutex_init,
+		  GLIBC_2_0);
+# if SHLIB_COMPAT (libc, GLIBC_2_0, GLIBC_2_34)
+strong_alias (__pthread_mutex_init_1, __pthread_mutex_init_3)
+compat_symbol (libc, __pthread_mutex_init_3, __pthread_mutex_init,
+	       GLIBC_2_0);
+#endif

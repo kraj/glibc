@@ -18,12 +18,12 @@
 
 #include <errno.h>
 #include "pthreadP.h"
-
+#include <shlib-compat.h>
 #include <stap-probe.h>
 
 
 int
-__pthread_mutex_destroy (pthread_mutex_t *mutex)
+__pthread_mutex_destroy_1 (pthread_mutex_t *mutex)
 {
   LIBC_PROBE (mutex_destroy, 1, mutex);
 
@@ -41,5 +41,15 @@ __pthread_mutex_destroy (pthread_mutex_t *mutex)
 
   return 0;
 }
-weak_alias (__pthread_mutex_destroy, pthread_mutex_destroy)
-hidden_def (__pthread_mutex_destroy)
+versioned_symbol (libc, __pthread_mutex_destroy_1, __pthread_mutex_destroy,
+                  GLIBC_2_34);
+libc_hidden_ver (__pthread_mutex_destroy_1, __pthread_mutex_destroy)
+strong_alias (__pthread_mutex_destroy_1, __pthread_mutex_destroy_2)
+versioned_symbol (libc, __pthread_mutex_destroy_2, pthread_mutex_destroy,
+                  GLIBC_2_0);
+
+#if SHLIB_COMPAT (libc, GLIBC_2_0, GLIBC_2_34)
+strong_alias (__pthread_mutex_destroy_1, __pthread_mutex_destroy_3)
+compat_symbol (libc, __pthread_mutex_destroy_3, __pthread_mutex_destroy,
+               GLIBC_2_0);
+#endif
