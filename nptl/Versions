@@ -55,6 +55,12 @@ libc {
   GLIBC_2.3.4 {
     pthread_attr_setaffinity_np;
   }
+  GLIBC_2.4 {
+    pthread_mutex_consistent_np;
+  }
+  GLIBC_2.12 {
+    pthread_mutex_consistent;
+  }
   # C11 thread symbols.
   GLIBC_2.28 {
     thrd_current;
@@ -69,6 +75,9 @@ libc {
     pthread_getaffinity_np;
     pthread_getattr_np;
     pthread_sigmask;
+  }
+  GLIBC_2.34 {
+    pthread_mutex_consistent;
   }
   GLIBC_PRIVATE {
     __futex_abstimed_wait64;
@@ -304,7 +313,6 @@ libpthread {
   }
 
   GLIBC_2.4 {
-    pthread_mutex_consistent_np;
     pthread_mutex_getprioceiling;
     pthread_mutex_setprioceiling;
     pthread_mutexattr_getprioceiling;
@@ -321,7 +329,6 @@ libpthread {
 
   GLIBC_2.12 {
     pthread_getname_np;
-    pthread_mutex_consistent;
     pthread_mutexattr_getrobust;
     pthread_mutexattr_setrobust;
     pthread_setname_np;

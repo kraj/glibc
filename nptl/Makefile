@@ -71,6 +71,7 @@ routines = \
   pthread_getaffinity \
   pthread_getattr_np \
   pthread_getschedparam \
+  pthread_mutex_consistent \
   pthread_self \
   pthread_setschedparam \
   pthread_sigmask \
@@ -155,7 +156,6 @@ libpthread-routines = \
   pthread_kill_other_threads \
   pthread_mutex_cond_lock \
   pthread_mutex_conf \
-  pthread_mutex_consistent \
   pthread_mutex_destroy \
   pthread_mutex_getprioceiling \
   pthread_mutex_init \
