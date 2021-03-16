@@ -19,10 +19,10 @@
 #include <errno.h>
 #include "pthreadP.h"
 #include <atomic.h>
-
+#include <shlib-compat.h>
 
 int
-__pthread_key_delete (pthread_key_t key)
+__pthread_key_delete_1 (pthread_key_t key)
 {
   int result = EINVAL;
 
@@ -39,4 +39,15 @@ __pthread_key_delete (pthread_key_t key)
 
   return result;
 }
-weak_alias (__pthread_key_delete, pthread_key_delete)
+versioned_symbol (libc, __pthread_key_delete_1, pthread_key_delete,
+		  GLIBC_2_34);
+libc_hidden_ver (__pthread_key_delete_1, __pthread_key_delete)
+
+strong_alias (__pthread_key_delete_1, __pthread_key_delete_2)
+versioned_symbol (libc, __pthread_key_delete_2, __pthread_key_delete,
+		  GLIBC_PRIVATE);
+
+#if SHLIB_COMPAT (libc, GLIBC_2_0, GLIBC_2_34)
+strong_alias (__pthread_key_delete_1, __pthread_key_delete_3)
+compat_symbol (libc, __pthread_key_delete_3, pthread_key_delete, GLIBC_2_0);
+#endif

@@ -80,6 +80,7 @@ routines = \
   pthread_getschedparam \
   pthread_getspecific \
   pthread_key_create \
+  pthread_key_delete \
   pthread_keys \
   pthread_mutex_consistent \
   pthread_once \
@@ -158,7 +159,6 @@ libpthread-routines = \
   pthread_getname \
   pthread_join \
   pthread_join_common \
-  pthread_key_delete \
   pthread_kill \
   pthread_kill_other_threads \
   pthread_mutex_cond_lock \
