@@ -49,6 +49,7 @@ libc {
     pthread_cond_wait;
   }
   GLIBC_2.3.3 {
+    __pthread_cleanup_routine;
     pthread_attr_setaffinity_np;
     pthread_getaffinity_np;
   }
@@ -77,6 +78,7 @@ libc {
     pthread_sigmask;
   }
   GLIBC_2.34 {
+    __pthread_cleanup_routine;
     pthread_mutex_consistent;
   }
   GLIBC_PRIVATE {
@@ -290,7 +292,6 @@ libpthread {
   }
 
   GLIBC_2.3.3 {
-    __pthread_cleanup_routine;
     __pthread_register_cancel;
     __pthread_register_cancel_defer;
     __pthread_unregister_cancel;

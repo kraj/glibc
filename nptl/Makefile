@@ -30,6 +30,7 @@ extra-libs-others := $(extra-libs)
 
 routines = \
   alloca_cutoff \
+  cleanup_routine \
   elision-conf \
   elision-lock \
   elision-timed \
@@ -96,7 +97,6 @@ libpthread-routines = \
   cleanup_compat \
   cleanup_defer \
   cleanup_defer_compat \
-  cleanup_routine \
   events \
   flockfile \
   ftrylockfile \
