@@ -82,6 +82,7 @@ routines = \
   pthread_mutex_consistent \
   pthread_once \
   pthread_self \
+  pthread_setcancelstate \
   pthread_setschedparam \
   pthread_sigmask \
   unwind \
@@ -199,7 +200,6 @@ libpthread-routines = \
   pthread_rwlockattr_setpshared \
   pthread_setaffinity \
   pthread_setattr_default_np \
-  pthread_setcancelstate \
   pthread_setcanceltype \
   pthread_setconcurrency \
   pthread_setname \
