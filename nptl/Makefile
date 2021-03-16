@@ -30,6 +30,8 @@ extra-libs-others := $(extra-libs)
 
 routines = \
   alloca_cutoff \
+  cleanup_compat \
+  cleanup_defer_compat \
   cleanup_routine \
   elision-conf \
   elision-lock \
@@ -94,9 +96,7 @@ libpthread-routines = \
   $(pthread-compat-wrappers) \
   cancellation \
   cleanup \
-  cleanup_compat \
   cleanup_defer \
-  cleanup_defer_compat \
   events \
   flockfile \
   ftrylockfile \
@@ -323,7 +323,6 @@ tests = tst-attr2 tst-attr3 tst-default-attr \
 	tst-tsd3 tst-tsd4 \
 	tst-cancel4_1 tst-cancel4_2 \
 	tst-cancel7 tst-cancel17 tst-cancel24 \
-	tst-cleanup4 \
 	tst-signal3 \
 	tst-exec4 tst-exec5 \
 	tst-stack2 tst-stack3 tst-stack4 \
@@ -397,7 +396,7 @@ endif
 
 LDFLAGS-pthread.so = -Wl,--enable-new-dtags,-z,nodelete,-z,initfirst
 
-tests += tst-cancelx7 tst-cancelx17 tst-cleanupx4
+tests += tst-cancelx7 tst-cancelx17
 
 ifeq ($(build-shared),yes)
 tests += tst-compat-forwarder tst-audit-threads
@@ -416,6 +415,14 @@ modules-names = tst-tls3mod \
 extra-test-objs += $(addsuffix .os,$(strip $(modules-names))) \
 		   tst-cleanup4aux.o tst-cleanupx4aux.o
 test-extras += tst-cleanup4aux tst-cleanupx4aux
+
+# This test exercises compat symbols removed in glibc 2.34.
+ifdef have-GLIBC_2.33
+tests += tst-cleanup4
+ifeq ($(build-shared),yes)
+tests += tst-cleanupx4
+endif
+endif
 
 tst-tls3mod.so-no-z-defs = yes
 tst-tls5mod.so-no-z-defs = yes

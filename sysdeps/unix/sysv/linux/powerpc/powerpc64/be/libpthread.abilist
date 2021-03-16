@@ -61,10 +61,6 @@ GLIBC_2.3 __pwrite64 F
 GLIBC_2.3 __res_state F
 GLIBC_2.3 __send F
 GLIBC_2.3 __sigaction F
-GLIBC_2.3 _pthread_cleanup_pop F
-GLIBC_2.3 _pthread_cleanup_pop_restore F
-GLIBC_2.3 _pthread_cleanup_push F
-GLIBC_2.3 _pthread_cleanup_push_defer F
 GLIBC_2.3 flockfile F
 GLIBC_2.3 ftrylockfile F
 GLIBC_2.3 funlockfile F
