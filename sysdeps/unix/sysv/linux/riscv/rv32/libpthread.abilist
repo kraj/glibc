@@ -11,7 +11,6 @@ GLIBC_2.33 __open F
 GLIBC_2.33 __open64 F
 GLIBC_2.33 __pread64 F
 GLIBC_2.33 __pthread_getspecific F
-GLIBC_2.33 __pthread_key_create F
 GLIBC_2.33 __pthread_mutex_destroy F
 GLIBC_2.33 __pthread_mutex_init F
 GLIBC_2.33 __pthread_mutex_lock F
@@ -93,7 +92,6 @@ GLIBC_2.33 pthread_getcpuclockid F
 GLIBC_2.33 pthread_getname_np F
 GLIBC_2.33 pthread_getspecific F
 GLIBC_2.33 pthread_join F
-GLIBC_2.33 pthread_key_create F
 GLIBC_2.33 pthread_key_delete F
 GLIBC_2.33 pthread_kill F
 GLIBC_2.33 pthread_kill_other_threads_np F

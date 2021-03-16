@@ -19,10 +19,10 @@
 #include <errno.h>
 #include "pthreadP.h"
 #include <atomic.h>
-
+#include <shlib-compat.h>
 
 int
-__pthread_key_create (pthread_key_t *key, void (*destr) (void *))
+__pthread_key_create_1 (pthread_key_t *key, void (*destr) (void *))
 {
   /* Find a slot in __pthread_keys which is unused.  */
   for (size_t cnt = 0; cnt < PTHREAD_KEYS_MAX; ++cnt)
@@ -47,5 +47,18 @@ __pthread_key_create (pthread_key_t *key, void (*destr) (void *))
 
   return EAGAIN;
 }
-weak_alias (__pthread_key_create, pthread_key_create)
-hidden_def (__pthread_key_create)
+versioned_symbol (libc, __pthread_key_create_1, __pthread_key_create,
+		  GLIBC_2_34);
+libc_hidden_ver (__pthread_key_create_1, __pthread_key_create)
+
+/* Several aliases for setting different symbol versions.  */
+strong_alias (__pthread_key_create_1, __pthread_key_create_2)
+strong_alias (__pthread_key_create_1, __pthread_key_create_3)
+strong_alias (__pthread_key_create_1, __pthread_key_create_4)
+
+versioned_symbol (libc, __pthread_key_create_2, pthread_key_create,
+		  GLIBC_2_34);
+#if SHLIB_COMPAT (libc, GLIBC_2_0, GLIBC_2_34)
+compat_symbol (libc, __pthread_key_create_3, __pthread_key_create, GLIBC_2_0);
+compat_symbol (libc, __pthread_key_create_4, pthread_key_create, GLIBC_2_0);
+#endif
