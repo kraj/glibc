@@ -19,10 +19,10 @@
 #include <errno.h>
 #include <stdlib.h>
 #include "pthreadP.h"
-
+#include <shlib-compat.h>
 
 int
-__pthread_setspecific (pthread_key_t key, const void *value)
+__pthread_setspecific_1 (pthread_key_t key, const void *value)
 {
   struct pthread *self;
   unsigned int idx1st;
@@ -89,5 +89,19 @@ __pthread_setspecific (pthread_key_t key, const void *value)
 
   return 0;
 }
-weak_alias (__pthread_setspecific, pthread_setspecific)
-hidden_def (__pthread_setspecific)
+versioned_symbol (libc, __pthread_setspecific_1, __pthread_setspecific,
+		  GLIBC_2_34);
+libc_hidden_ver (__pthread_setspecific_1, __pthread_setspecific)
+
+/* Several aliases for setting different symbol versions.  */
+strong_alias (__pthread_setspecific_1, __pthread_setspecific_2)
+strong_alias (__pthread_setspecific_1, __pthread_setspecific_3)
+strong_alias (__pthread_setspecific_1, __pthread_setspecific_4)
+
+versioned_symbol (libc, __pthread_setspecific_2, pthread_setspecific,
+		  GLIBC_2_34);
+#if SHLIB_COMPAT (libc, GLIBC_2_0, GLIBC_2_34)
+compat_symbol (libc, __pthread_setspecific_3,
+	       __pthread_setspecific, GLIBC_2_0);
+compat_symbol (libc, __pthread_setspecific_4, pthread_setspecific, GLIBC_2_0);
+#endif

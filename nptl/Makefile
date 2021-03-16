@@ -87,6 +87,7 @@ routines = \
   pthread_setcancelstate \
   pthread_setcanceltype \
   pthread_setschedparam \
+  pthread_setspecific \
   pthread_sigmask \
   unwind \
 
@@ -204,7 +205,6 @@ libpthread-routines = \
   pthread_setconcurrency \
   pthread_setname \
   pthread_setschedprio \
-  pthread_setspecific \
   pthread_sigqueue \
   pthread_spin_destroy \
   pthread_spin_init \
