@@ -66,7 +66,6 @@ GLIBC_2.4 __pthread_rwlock_wrlock F
 GLIBC_2.4 __pthread_setspecific F
 GLIBC_2.4 __pthread_unregister_cancel F
 GLIBC_2.4 __pthread_unregister_cancel_restore F
-GLIBC_2.4 __pthread_unwind_next F
 GLIBC_2.4 __pwrite64 F
 GLIBC_2.4 __res_state F
 GLIBC_2.4 __send F
