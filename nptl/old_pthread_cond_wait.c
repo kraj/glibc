@@ -23,7 +23,7 @@
 #include <shlib-compat.h>
 
 
-#if SHLIB_COMPAT(libpthread, GLIBC_2_0, GLIBC_2_3_2)
+#if SHLIB_COMPAT(libc, GLIBC_2_0, GLIBC_2_3_2)
 int
 __pthread_cond_wait_2_0 (pthread_cond_2_0_t *cond, pthread_mutex_t *mutex)
 {
@@ -42,6 +42,6 @@ __pthread_cond_wait_2_0 (pthread_cond_2_0_t *cond, pthread_mutex_t *mutex)
 
   return __pthread_cond_wait (cond->cond, mutex);
 }
-compat_symbol (libpthread, __pthread_cond_wait_2_0, pthread_cond_wait,
+compat_symbol (libc, __pthread_cond_wait_2_0, pthread_cond_wait,
 	       GLIBC_2_0);
 #endif
