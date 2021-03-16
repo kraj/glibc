@@ -22,7 +22,6 @@ GLIBC_2.0 __sigaction F
 GLIBC_2.0 flockfile F
 GLIBC_2.0 ftrylockfile F
 GLIBC_2.0 funlockfile F
-GLIBC_2.0 longjmp F
 GLIBC_2.0 lseek F
 GLIBC_2.0 open F
 GLIBC_2.0 pthread_atfork F
@@ -63,7 +62,6 @@ GLIBC_2.0 sem_trywait F
 GLIBC_2.0 sem_wait F
 GLIBC_2.0 send F
 GLIBC_2.0 sigaction F
-GLIBC_2.0 siglongjmp F
 GLIBC_2.1 __libc_allocate_rtsig F
 GLIBC_2.1 __libc_current_sigrtmax F
 GLIBC_2.1 __libc_current_sigrtmin F
@@ -187,11 +185,9 @@ GLIBC_2.3.3 pthread_condattr_setclock F
 GLIBC_2.3.3 pthread_setaffinity_np F
 GLIBC_2.3.3 pthread_timedjoin_np F
 GLIBC_2.3.3 pthread_tryjoin_np F
-GLIBC_2.3.4 longjmp F
 GLIBC_2.3.4 pthread_attr_getaffinity_np F
 GLIBC_2.3.4 pthread_setaffinity_np F
 GLIBC_2.3.4 pthread_setschedprio F
-GLIBC_2.3.4 siglongjmp F
 GLIBC_2.30 pthread_cond_clockwait F
 GLIBC_2.30 pthread_mutex_clocklock F
 GLIBC_2.30 pthread_rwlock_clockrdlock F

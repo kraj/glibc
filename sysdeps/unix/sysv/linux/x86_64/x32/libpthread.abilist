@@ -41,7 +41,6 @@ GLIBC_2.16 __sigaction F
 GLIBC_2.16 flockfile F
 GLIBC_2.16 ftrylockfile F
 GLIBC_2.16 funlockfile F
-GLIBC_2.16 longjmp F
 GLIBC_2.16 lseek F
 GLIBC_2.16 lseek64 F
 GLIBC_2.16 open F
@@ -157,7 +156,6 @@ GLIBC_2.16 sem_unlink F
 GLIBC_2.16 sem_wait F
 GLIBC_2.16 send F
 GLIBC_2.16 sigaction F
-GLIBC_2.16 siglongjmp F
 GLIBC_2.18 pthread_getattr_default_np F
 GLIBC_2.18 pthread_setattr_default_np F
 GLIBC_2.28 call_once F

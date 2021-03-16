@@ -145,7 +145,6 @@ libpthread {
     flockfile;
     ftrylockfile;
     funlockfile;
-    longjmp;
     lseek;
     open;
     pthread_atfork;
@@ -187,7 +186,6 @@ libpthread {
     sem_wait;
     send;
     sigaction;
-    siglongjmp;
   }
 
   GLIBC_2.1 {

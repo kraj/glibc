@@ -41,7 +41,6 @@ GLIBC_2.18 __sigaction F
 GLIBC_2.18 flockfile F
 GLIBC_2.18 ftrylockfile F
 GLIBC_2.18 funlockfile F
-GLIBC_2.18 longjmp F
 GLIBC_2.18 lseek F
 GLIBC_2.18 lseek64 F
 GLIBC_2.18 open F
@@ -159,7 +158,6 @@ GLIBC_2.18 sem_unlink F
 GLIBC_2.18 sem_wait F
 GLIBC_2.18 send F
 GLIBC_2.18 sigaction F
-GLIBC_2.18 siglongjmp F
 GLIBC_2.28 call_once F
 GLIBC_2.28 cnd_broadcast F
 GLIBC_2.28 cnd_destroy F
