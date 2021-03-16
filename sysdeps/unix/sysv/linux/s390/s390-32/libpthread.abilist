@@ -65,11 +65,8 @@ GLIBC_2.1 pthread_mutexattr_gettype F
 GLIBC_2.1 pthread_mutexattr_settype F
 GLIBC_2.1 pthread_rwlock_destroy F
 GLIBC_2.1 pthread_rwlock_init F
-GLIBC_2.1 pthread_rwlock_rdlock F
 GLIBC_2.1 pthread_rwlock_tryrdlock F
 GLIBC_2.1 pthread_rwlock_trywrlock F
-GLIBC_2.1 pthread_rwlock_unlock F
-GLIBC_2.1 pthread_rwlock_wrlock F
 GLIBC_2.1 pthread_rwlockattr_destroy F
 GLIBC_2.1 pthread_rwlockattr_getkind_np F
 GLIBC_2.1 pthread_rwlockattr_getpshared F
@@ -99,11 +96,8 @@ GLIBC_2.2 __open64 F
 GLIBC_2.2 __pread64 F
 GLIBC_2.2 __pthread_rwlock_destroy F
 GLIBC_2.2 __pthread_rwlock_init F
-GLIBC_2.2 __pthread_rwlock_rdlock F
 GLIBC_2.2 __pthread_rwlock_tryrdlock F
 GLIBC_2.2 __pthread_rwlock_trywrlock F
-GLIBC_2.2 __pthread_rwlock_unlock F
-GLIBC_2.2 __pthread_rwlock_wrlock F
 GLIBC_2.2 __pwrite64 F
 GLIBC_2.2 __res_state F
 GLIBC_2.2 lseek64 F

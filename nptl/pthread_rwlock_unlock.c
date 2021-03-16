@@ -27,7 +27,7 @@
 
 /* See pthread_rwlock_common.c for an overview.  */
 int
-__pthread_rwlock_unlock (pthread_rwlock_t *rwlock)
+__pthread_rwlock_unlock_1 (pthread_rwlock_t *rwlock)
 {
   LIBC_PROBE (rwlock_unlock, 1, rwlock);
 
@@ -43,6 +43,22 @@ __pthread_rwlock_unlock (pthread_rwlock_t *rwlock)
     __pthread_rwlock_rdunlock (rwlock);
   return 0;
 }
+versioned_symbol (libc, __pthread_rwlock_unlock_1, __pthread_rwlock_unlock,
+		  GLIBC_2_34);
+libc_hidden_ver (__pthread_rwlock_unlock_1, __pthread_rwlock_unlock)
 
-weak_alias (__pthread_rwlock_unlock, pthread_rwlock_unlock)
-hidden_def (__pthread_rwlock_unlock)
+/* Several aliases for setting different symbol versions.  */
+strong_alias (__pthread_rwlock_unlock_1, __pthread_rwlock_unlock_2)
+strong_alias (__pthread_rwlock_unlock_1, __pthread_rwlock_unlock_3)
+strong_alias (__pthread_rwlock_unlock_1, __pthread_rwlock_unlock_4)
+
+versioned_symbol (libc, __pthread_rwlock_unlock_2, pthread_rwlock_unlock,
+		  GLIBC_2_34);
+#if SHLIB_COMPAT (libc, GLIBC_2_1, GLIBC_2_34)
+compat_symbol (libc, __pthread_rwlock_unlock_3, pthread_rwlock_unlock,
+	       GLIBC_2_1);
+#endif
+#if SHLIB_COMPAT (libc, GLIBC_2_2, GLIBC_2_34)
+compat_symbol (libc, __pthread_rwlock_unlock_4, __pthread_rwlock_unlock,
+	       GLIBC_2_2);
+#endif
