@@ -93,6 +93,7 @@ routines = \
   pthread_setschedparam \
   pthread_setspecific \
   pthread_sigmask \
+  tpp \
   unwind \
 
 shared-only-routines = forward
@@ -118,6 +119,7 @@ libpthread-routines = \
   ftrylockfile \
   funlockfile \
   herrno \
+  libc_sigaction \
   libpthread-compat \
   nptl-init \
   nptlfreeres \
@@ -228,8 +230,6 @@ libpthread-routines = \
   sem_unlink \
   sem_wait \
   sigaction \
-  libc_sigaction \
-  tpp \
   vars \
   version \
 
