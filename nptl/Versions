@@ -86,6 +86,8 @@ libc {
     __futex_abstimed_wait_cancelable64;
     __libc_alloca_cutoff;
     __libc_allocate_rtsig_private;
+    __libc_cleanup_pop_restore;
+    __libc_cleanup_push_defer;
     __libc_current_sigrtmax_private;
     __libc_current_sigrtmin_private;
     __libc_dl_error_tsd;
