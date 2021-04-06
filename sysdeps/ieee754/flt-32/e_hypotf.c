@@ -20,9 +20,12 @@
 #include <math_private.h>
 #include "math_config.h"
 #include <libm-alias-finite.h>
+#include <libm-alias-float.h>
+#include <math-svid-compat.h>
+#include <errno.h>
 
 float
-__ieee754_hypotf (float x, float y)
+__hypotf (float x, float y)
 {
    if (!isfinite(x) || !isfinite(y))
      {
@@ -32,8 +35,16 @@ __ieee754_hypotf (float x, float y)
        return x + y;
      }
 
-  return sqrt ((double) x * (double) x + (double) y * (double) y);
+  float r = sqrt ((double) x * (double) x + (double) y * (double) y);
+  if (!isfinite (r))
+    __set_errno (ERANGE);
+  return r;
 }
-#ifndef __ieee754_hypotf
-libm_alias_finite (__ieee754_hypotf, __hypotf)
+strong_alias (__hypotf, __ieee754_hypotf)
+#if LIBM_SVID_COMPAT
+versioned_symbol (libm, __hypotf, hypotf, GLIBC_2_35);
+libm_alias_float_other (__hypot, hypot)
+#else
+libm_alias_float (__hypot, hypot)
 #endif
+libm_alias_finite (__ieee754_hypotf, __hypotf)
