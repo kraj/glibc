@@ -50,7 +50,7 @@ struct __locale_data
 {
   const char *name;
   const char *filedata;		/* Region mapping the file data.  */
-  off_t filesize;		/* Size of the file (and the region).  */
+  __off_t filesize;		/* Size of the file (and the region).  */
   enum				/* Flavor of storage used for those.  */
   {
     ld_malloced,		/* Both are malloc'd.  */
