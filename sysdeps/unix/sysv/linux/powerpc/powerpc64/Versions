@@ -18,6 +18,7 @@ libc {
     getcontext;
     setcontext;
     swapcontext;
+    longjmp; siglongjmp;
   }
   GLIBC_2.17 {
     __ppc_get_timebase_freq;
@@ -29,11 +30,5 @@ librt {
     # Changed timer_t.
     timer_create; timer_delete; timer_getoverrun; timer_gettime;
     timer_settime;
-  }
-}
-
-libpthread {
-  GLIBC_2.3.4 {
-    longjmp; siglongjmp;
   }
 }
