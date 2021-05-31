@@ -306,7 +306,8 @@ tests = tst-attr2 tst-attr3 tst-default-attr \
 	tst-pthread-gdb-attach tst-pthread-gdb-attach-static \
 	tst-pthread_exit-nothreads \
 	tst-pthread_exit-nothreads-static \
-	tst-thread-setspecific
+	tst-thread-setspecific \
+	tst-cleanup5
 
 tests-nolibpthread = \
   tst-pthread_exit-nothreads \

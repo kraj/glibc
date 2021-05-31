@@ -107,7 +107,6 @@ __pthread_cancel (pthread_t th)
       __libc_multiple_threads = 1;
 #endif
 
-      THREAD_SETMEM (pd, result, PTHREAD_CANCELED);
       if (pd->cancelstate == PTHREAD_CANCEL_ENABLE
 	  && pd->canceltype == PTHREAD_CANCEL_ASYNCHRONOUS)
 	__do_cancel ();

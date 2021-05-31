@@ -29,7 +29,6 @@ ___pthread_testcancel (void)
       && !(cancelhandling & EXITING_BITMASK)
       && !(cancelhandling & TERMINATED_BITMASK))
     {
-      THREAD_SETMEM (self, result, PTHREAD_CANCELED);
       __do_cancel ();
     }
 }

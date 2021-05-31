@@ -267,19 +267,29 @@ extern void __pthread_unregister_cancel (__pthread_unwind_buf_t *__buf)
      __cleanup_fct_attribute;
 libc_hidden_proto (__pthread_unregister_cancel)
 
-/* Called when a thread reacts on a cancellation request.  */
-static inline void
-__attribute ((noreturn, always_inline))
-__do_cancel (void)
+static _Noreturn inline void
+__exit_thread (void *value)
 {
   struct pthread *self = THREAD_SELF;
 
   /* Make sure we get no more cancellations.  */
   THREAD_ATOMIC_BIT_SET (self, cancelhandling, EXITING_BIT);
 
+  THREAD_SETMEM (self, result, value);
+
+  /* It is required by POSIX XSH 2.9.5 Thread Cancellation under the heading
+     Thread Cancellation Cleanup Handlers and also avoid further cancellation
+     wrapper to act on cancellation.  */
+  THREAD_SETMEM (self, cancelstate, PTHREAD_CANCEL_DISABLE);
+  THREAD_SETMEM (self, canceltype, PTHREAD_CANCEL_DEFERRED);
+
   __pthread_unwind ((__pthread_unwind_buf_t *)
 		    THREAD_GETMEM (self, cleanup_jmp_buf));
 }
+
+/* It is a wrapper over __exit_thread (PTHREAD_CANCELED).  It is has its own
+   implementation because it might be called by arch-specific asm code.  */
+_Noreturn void __do_cancel (void) attribute_hidden;
 
 
 /* Internal prototypes.  */
