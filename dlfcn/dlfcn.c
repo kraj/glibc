@@ -19,24 +19,6 @@
 #include <dlfcn.h>
 #include <shlib-compat.h>
 
-int __dlfcn_argc attribute_hidden;
-char **__dlfcn_argv attribute_hidden;
-
-
-static void
-init (int argc, char *argv[])
-{
-  __dlfcn_argc = argc;
-  __dlfcn_argv = argv;
-}
-
-static void (*const init_array []) (int argc, char *argv[])
-     __attribute__ ((section (".init_array"), aligned (sizeof (void *))))
-     __attribute_used__ =
-{
-  init
-};
-
 /* The remainder of this file is used to keep specific symbol versions
    occupied, so that ld does not generate weak symbol version
    definitions.  */
