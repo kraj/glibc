@@ -1,3 +1,4 @@
+!libc_abi_extension
 libc {
   GLIBC_2.0 {
     # Exception handling support functions from libgcc
