@@ -1,8 +1,10 @@
 libc {
   GLIBC_2.0 {
+    dlclose;
     dlerror;
   }
   GLIBC_2.34 {
+    dlclose;
     dlerror;
   }
   GLIBC_PRIVATE {
@@ -13,7 +15,7 @@ libc {
 }
 libdl {
   GLIBC_2.0 {
-    dladdr; dlclose; dlopen; dlsym;
+    dladdr; dlopen; dlsym;
   }
   GLIBC_2.1 {
     dlopen; dlvsym;
