@@ -520,7 +520,6 @@ extern int __pthread_once (pthread_once_t *once_control,
 libc_hidden_proto (__pthread_once)
 extern int __pthread_atfork (void (*prepare) (void), void (*parent) (void),
 			     void (*child) (void));
-extern pthread_t __pthread_self (void);
 extern int __pthread_equal (pthread_t thread1, pthread_t thread2);
 extern int __pthread_detach (pthread_t th);
 libc_hidden_proto (__pthread_detach)
@@ -697,6 +696,10 @@ int __pthread_attr_extension (struct pthread_attr *attr) attribute_hidden
    positive error code otherwise.  */
 int __pthread_attr_copy (pthread_attr_t *target, const pthread_attr_t *source);
 libc_hidden_proto (__pthread_attr_copy)
+
+/* This cannot be an inline function because a static inline conflict
+   on hppa.  */
+#define pthread_self() ((pthread_t) THREAD_SELF)
 
 /* Returns 0 if POL is a valid scheduling policy.  */
 static inline int

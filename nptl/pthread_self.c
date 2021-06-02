@@ -20,7 +20,7 @@
 #include <tls.h>
 
 pthread_t
-pthread_self (void)
+(pthread_self) (void)
 {
   return (pthread_t) THREAD_SELF;
 }
