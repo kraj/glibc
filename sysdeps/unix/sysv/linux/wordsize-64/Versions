@@ -4,6 +4,7 @@ libc {
     timer_create;
     timer_delete;
     timer_getoverrun;
+    timer_gettime;
   }
   GLIBC_2.10 {
     fallocate64;

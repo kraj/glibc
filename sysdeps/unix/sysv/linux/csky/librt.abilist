@@ -1,2 +1,1 @@
-GLIBC_2.29 timer_gettime F
 GLIBC_2.29 timer_settime F
