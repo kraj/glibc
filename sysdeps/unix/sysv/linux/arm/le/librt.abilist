@@ -1,5 +1,3 @@
-GLIBC_2.4 lio_listio F
-GLIBC_2.4 lio_listio64 F
 GLIBC_2.4 mq_close F
 GLIBC_2.4 mq_getattr F
 GLIBC_2.4 mq_notify F
