@@ -1364,7 +1364,9 @@ GLIBC_2.18 mq_close F
 GLIBC_2.18 mq_getattr F
 GLIBC_2.18 mq_notify F
 GLIBC_2.18 mq_open F
+GLIBC_2.18 mq_receive F
 GLIBC_2.18 mq_setattr F
+GLIBC_2.18 mq_timedreceive F
 GLIBC_2.18 mrand48 F
 GLIBC_2.18 mrand48_r F
 GLIBC_2.18 mremap F
@@ -2402,7 +2404,9 @@ GLIBC_2.34 mq_close F
 GLIBC_2.34 mq_getattr F
 GLIBC_2.34 mq_notify F
 GLIBC_2.34 mq_open F
+GLIBC_2.34 mq_receive F
 GLIBC_2.34 mq_setattr F
+GLIBC_2.34 mq_timedreceive F
 GLIBC_2.34 mtx_destroy F
 GLIBC_2.34 mtx_init F
 GLIBC_2.34 mtx_lock F
