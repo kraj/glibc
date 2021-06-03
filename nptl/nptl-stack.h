@@ -31,7 +31,7 @@ extern size_t __nptl_stack_cache_maxsize attribute_hidden;
 static inline bool
 __nptl_stack_in_use (struct pthread *pd)
 {
-  return pd->tid <= 0;
+  return atomic_load_relaxed (&pd->joinstate) == THREAD_STATE_EXITED;
 }
 
 /* Remove the stack ELEM from its list.  */

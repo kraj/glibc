@@ -20,14 +20,14 @@
 #include <time.h>
 #include <stdio.h>
 #include <unistd.h>
-
+#include <limits.h>
 #include <support/check.h>
 
 static int
 detach_thrd (void *arg)
 {
-  if (thrd_detach (thrd_current ()) != thrd_success)
-    FAIL_EXIT1 ("thrd_detach failed");
+  thrd_sleep (&(struct timespec) { .tv_sec = INT_MAX }, NULL);
+
   thrd_exit (thrd_success);
 }
 
@@ -36,15 +36,11 @@ do_test (void)
 {
   thrd_t id;
 
-  /* Create new thread.  */
-  if (thrd_create (&id, detach_thrd, NULL) != thrd_success)
-    FAIL_EXIT1 ("thrd_create failed");
+  TEST_COMPARE (thrd_create (&id, detach_thrd, NULL), thrd_success);
 
-  /* Give some time so the thread can finish.  */
-  thrd_sleep (&(struct timespec) {.tv_sec = 2}, NULL);
+  TEST_COMPARE (thrd_detach (id), thrd_success);
 
-  if (thrd_join (id, NULL) == thrd_success)
-    FAIL_EXIT1 ("thrd_join succeed where it should fail");
+  TEST_COMPARE (thrd_join (id, NULL), thrd_error);
 
   return 0;
 }

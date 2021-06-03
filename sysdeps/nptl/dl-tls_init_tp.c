@@ -62,7 +62,7 @@ __tls_init_tp (void)
 
    /* Early initialization of the TCB.   */
    struct pthread *pd = THREAD_SELF;
-   pd->tid = INTERNAL_SYSCALL_CALL (set_tid_address, &pd->tid);
+   pd->tid = INTERNAL_SYSCALL_CALL (set_tid_address, &pd->joinstate);
    THREAD_SETMEM (pd, specific[0], &pd->specific_1stblock[0]);
    THREAD_SETMEM (pd, user_stack, true);
 
@@ -97,4 +97,6 @@ __tls_init_tp (void)
 
   THREAD_SETMEM (pd, cancelstate, PTHREAD_CANCEL_ENABLE);
   THREAD_SETMEM (pd, canceltype, PTHREAD_CANCEL_DEFERRED);
+
+  THREAD_SETMEM (pd, joinstate, THREAD_STATE_JOINABLE);
 }
