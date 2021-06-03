@@ -1,4 +1,4 @@
-/* Placeholder definitions to pull in removed symbol versions.  sparc version.
+/* Placeholder definitions to pull in removed symbol versions.  Linux version.
    Copyright (C) 2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -16,9 +16,10 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#include <sysdeps/unix/sysv/linux/librt-compat.c>
+#include <rt/librt-compat.c>
 
-#if SHLIB_COMPAT (librt, GLIBC_2_3, GLIBC_2_34)
+/* GLIBC_2.3.3 symbols were added for the int -> timer_t ABI transition.  */
+#if __WORDSIZE == 64 && OTHER_SHLIB_COMPAT (librt, GLIBC_2_2, GLIBC_2_3_3)
 compat_symbol (librt, __librt_version_placeholder_1,
-               __librt_version_placeholder, GLIBC_2_3);
+               __librt_version_placeholder, GLIBC_2_3_3);
 #endif

@@ -19,20 +19,27 @@
 #include <shlib-compat.h>
 #include <sysdep.h>
 #include "kernel-posix-timers.h"
-#include "compat-timer.h"
+
+extern __typeof (timer_settime) __timer_settime_new;
+libc_hidden_proto (__timer_settime_new)
 
 int
-__timer_settime_new (timer_t timerid, int flags, const struct itimerspec *value,
-                     struct itimerspec *ovalue)
+___timer_settime_new (timer_t timerid, int flags,
+		      const struct itimerspec *value,
+		      struct itimerspec *ovalue)
 {
   kernel_timer_t ktimerid = timerid_to_kernel_timer (timerid);
 
   return INLINE_SYSCALL_CALL (timer_settime, ktimerid, flags, value, ovalue);
 }
-versioned_symbol (librt, __timer_settime_new, timer_settime, GLIBC_2_3_3);
+versioned_symbol (libc, ___timer_settime_new, timer_settime, GLIBC_2_34);
+libc_hidden_ver (___timer_settime_new, __timer_settime_new)
 
+#if OTHER_SHLIB_COMPAT (librt, GLIBC_2_3_3, GLIBC_2_34)
+compat_symbol (librt, ___timer_settime_new, timer_settime, GLIBC_2_3_3);
+#endif
 
-#if SHLIB_COMPAT (librt, GLIBC_2_2, GLIBC_2_3_3)
+#if OTHER_SHLIB_COMPAT (librt, GLIBC_2_2, GLIBC_2_3_3)
 int
 __timer_settime_old (int timerid, int flags, const struct itimerspec *value,
 		     struct itimerspec *ovalue)

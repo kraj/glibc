@@ -22,6 +22,11 @@
 #include <sysdep.h>
 #include <kernel-features.h>
 #include "kernel-posix-timers.h"
+#include <shlib-compat.h>
+
+#if __WORDSIZE != 32
+# error "wordsize-64 has its own implementation"
+#endif
 
 int
 __timer_settime64 (timer_t timerid, int flags,
@@ -67,8 +72,14 @@ __timer_settime64 (timer_t timerid, int flags,
 #endif
 }
 
-#if __TIMESIZE != 64
-librt_hidden_def (__timer_settime64)
+#if __TIMESIZE == 64
+versioned_symbol (libc, __timer_settime64, timer_settime, GLIBC_2_34);
+# if OTHER_SHLIB_COMPAT (librt, GLIBC_2_2, GLIBC_2_34)
+compat_symbol (librt, __timer_settime64, timer_settime, GLIBC_2_2);
+# endif
+
+#else /* __TIMESIZE != 64 */
+libc_hidden_def (__timer_settime64)
 
 int
 __timer_settime (timer_t timerid, int flags, const struct itimerspec *value,
@@ -89,5 +100,9 @@ __timer_settime (timer_t timerid, int flags, const struct itimerspec *value,
 
   return retval;
 }
-#endif
-weak_alias (__timer_settime, timer_settime)
+versioned_symbol (libc, __timer_settime, timer_settime, GLIBC_2_34);
+
+# if OTHER_SHLIB_COMPAT (librt, GLIBC_2_2, GLIBC_2_34)
+compat_symbol (librt, __timer_settime, timer_settime, GLIBC_2_2);
+# endif
+#endif /* __TIMESIZE != 64 */

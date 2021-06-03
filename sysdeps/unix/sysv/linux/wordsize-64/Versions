@@ -5,8 +5,17 @@ libc {
     timer_delete;
     timer_getoverrun;
     timer_gettime;
+    timer_settime;
   }
   GLIBC_2.10 {
     fallocate64;
+  }
+}
+librt {
+  GLIBC_2.3.3 {
+    # Leftover from the int -> timer_t transition.  For ABIs that came later
+    # and do not have the symbol version, this version node is merged with
+    # the baseline version.
+    __librt_version_placeholder;
   }
 }
