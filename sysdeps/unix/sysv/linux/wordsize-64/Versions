@@ -1,4 +1,9 @@
 libc {
+  GLIBC_2.3.3 {
+    # Changed timer_t.
+    timer_create;
+    timer_delete;
+  }
   GLIBC_2.10 {
     fallocate64;
   }
