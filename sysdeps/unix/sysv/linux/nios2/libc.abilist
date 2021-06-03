@@ -338,6 +338,7 @@ GLIBC_2.21 __mempcpy_small F
 GLIBC_2.21 __memset_chk F
 GLIBC_2.21 __monstartup F
 GLIBC_2.21 __morecore D 0x4
+GLIBC_2.21 __mq_open_2 F
 GLIBC_2.21 __muldf3 F
 GLIBC_2.21 __mulsf3 F
 GLIBC_2.21 __nanosleep F
@@ -1405,6 +1406,7 @@ GLIBC_2.21 mprotect F
 GLIBC_2.21 mq_close F
 GLIBC_2.21 mq_getattr F
 GLIBC_2.21 mq_notify F
+GLIBC_2.21 mq_open F
 GLIBC_2.21 mq_setattr F
 GLIBC_2.21 mrand48 F
 GLIBC_2.21 mrand48_r F
@@ -2391,6 +2393,7 @@ GLIBC_2.33 mknodat F
 GLIBC_2.33 stat F
 GLIBC_2.33 stat64 F
 GLIBC_2.34 __libc_start_main F
+GLIBC_2.34 __mq_open_2 F
 GLIBC_2.34 __pthread_cleanup_routine F
 GLIBC_2.34 __pthread_key_create F
 GLIBC_2.34 __pthread_mutex_lock F
@@ -2437,6 +2440,7 @@ GLIBC_2.34 lio_listio64 F
 GLIBC_2.34 mq_close F
 GLIBC_2.34 mq_getattr F
 GLIBC_2.34 mq_notify F
+GLIBC_2.34 mq_open F
 GLIBC_2.34 mq_setattr F
 GLIBC_2.34 mtx_destroy F
 GLIBC_2.34 mtx_init F
