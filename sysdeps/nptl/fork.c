@@ -37,6 +37,7 @@
 #include <sys/single_threaded.h>
 #include <list.h>
 #include <mqueue.h>
+#include <kernel-posix-timers.h>
 
 static void
 fresetlockfiles (void)
@@ -231,6 +232,7 @@ __libc_fork (void)
 	  _IO_list_resetlock ();
 
 	  call_function_static_weak (__mq_notify_fork_subprocess);
+	  call_function_static_weak (__timer_fork_subprocess);
 
 	  call_function_static_weak (__nss_database_fork_subprocess,
 				     &nss_database_data);
