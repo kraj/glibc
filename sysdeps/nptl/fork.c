@@ -36,6 +36,7 @@
 #include <unwind-link.h>
 #include <sys/single_threaded.h>
 #include <list.h>
+#include <mqueue.h>
 
 static void
 fresetlockfiles (void)
@@ -228,6 +229,8 @@ __libc_fork (void)
 
 	  /* Reset locks in the I/O code.  */
 	  _IO_list_resetlock ();
+
+	  call_function_static_weak (__mq_notify_fork_subprocess);
 
 	  call_function_static_weak (__nss_database_fork_subprocess,
 				     &nss_database_data);
