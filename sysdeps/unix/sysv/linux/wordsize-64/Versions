@@ -3,6 +3,7 @@ libc {
     # Changed timer_t.
     timer_create;
     timer_delete;
+    timer_getoverrun;
   }
   GLIBC_2.10 {
     fallocate64;
