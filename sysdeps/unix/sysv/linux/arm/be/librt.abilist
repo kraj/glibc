@@ -1,4 +1,3 @@
-GLIBC_2.4 mq_getattr F
 GLIBC_2.4 mq_notify F
 GLIBC_2.4 mq_open F
 GLIBC_2.4 mq_receive F
