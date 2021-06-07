@@ -499,35 +499,35 @@ start_thread (void *arg)
   __libc_lock_unlock (pd->exit_lock);
 
 #ifndef __ASSUME_SET_ROBUST_LIST
-  /* If this thread has any robust mutexes locked, handle them now.  */
-# if __PTHREAD_MUTEX_HAVE_PREV
-  void *robust = pd->robust_head.list;
-# else
-  __pthread_slist_t *robust = pd->robust_list.__next;
-# endif
-  /* We let the kernel do the notification if it is able to do so.
-     If we have to do it here there for sure are no PI mutexes involved
-     since the kernel support for them is even more recent.  */
-  if (!__nptl_set_robust_list_avail
-      && __builtin_expect (robust != (void *) &pd->robust_head, 0))
+  /* We let the kernel do the notification if it is able to do so on the exit
+     syscall.  Otherwise we need to handle before the thread terminates.  */
+  void **robust;
+  while ((robust = pd->robust_head.list)
+	 && robust != (void *) &pd->robust_head)
     {
-      do
+      /* Note: robust PI futexes are signaled by setting bit 0.  */
+      void **robustp = (void **) ((uintptr_t) robust & ~1UL);
+
+      struct __pthread_mutex_s *mtx = (struct __pthread_mutex_s *)
+	((char *) robustp - offsetof (struct __pthread_mutex_s,
+				      __list.__next));
+      int shared = mtx->__kind & 128;
+
+      pd->robust_head.list_op_pending = robust;
+      pd->robust_head.list = *robustp;
+      /* Although the list will not be changed at this point, it follows the
+         expected kernel ABI.  */
+      __asm ("" ::: "memory");
+
+      int lock = atomic_exchange_relaxed (&mtx->__lock, FUTEX_OWNER_DIED);
+      /* Wake any users if mutex is acquired.  */
+      if (lock > 1)
 	{
-	  struct __pthread_mutex_s *this = (struct __pthread_mutex_s *)
-	    ((char *) robust - offsetof (struct __pthread_mutex_s,
-					 __list.__next));
-	  robust = *((void **) robust);
-
-# if __PTHREAD_MUTEX_HAVE_PREV
-	  this->__list.__prev = NULL;
-# endif
-	  this->__list.__next = NULL;
-
-	  atomic_or (&this->__lock, FUTEX_OWNER_DIED);
-	  futex_wake ((unsigned int *) &this->__lock, 1,
-		      /* XYZ */ FUTEX_SHARED);
+	  if ((uintptr_t) robust & 1)
+	    futex_unlock_pi ((unsigned int *) &mtx->__lock, shared);
+	  else
+	    futex_wake ((unsigned int *) &mtx->__lock, 1, shared);
 	}
-      while (robust != (void *) &pd->robust_head);
     }
 #endif
 
