@@ -554,7 +554,7 @@ start_thread (void *arg)
     advise_stack_range (pd->stackblock, pd->stackblock_size, (uintptr_t) pd,
 			pd->guardsize);
 
-  if (__glibc_unlikely (pd->cancelhandling & SETXID_BITMASK))
+  if (__glibc_unlikely (atomic_load_relaxed (&pd->setxid_flag) == 1))
     {
       /* Some other thread might call any of the setXid functions and expect
 	 us to reply.  In this case wait until we did that.  */
@@ -564,7 +564,7 @@ start_thread (void *arg)
 	   condition used in the surrounding loop (cancelhandling).  We need
 	   to check and document why this is correct.  */
 	futex_wait_simple (&pd->setxid_futex, 0, FUTEX_PRIVATE);
-      while (pd->cancelhandling & SETXID_BITMASK);
+      while (atomic_load_relaxed (&pd->setxid_flag) == 1);
 
       /* Reset the value so that the stack can be reused.  */
       pd->setxid_futex = 0;

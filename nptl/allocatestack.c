@@ -99,6 +99,7 @@ get_cached_stack (size_t *sizep, void **memp)
     }
 
   /* Don't allow setxid until cloned.  */
+  result->setxid_flag = 0;
   result->setxid_futex = -1;
 
   /* Dequeue the entry.  */
@@ -303,6 +304,7 @@ allocate_stack (const struct pthread_attr *attr, struct pthread **pdp,
 #endif
 
       /* Don't allow setxid until cloned.  */
+      pd->setxid_flag = 0;
       pd->setxid_futex = -1;
 
       /* Allocate the DTV for this thread.  */
@@ -424,6 +426,7 @@ allocate_stack (const struct pthread_attr *attr, struct pthread **pdp,
 #endif
 
 	  /* Don't allow setxid until cloned.  */
+	  pd->setxid_flag = 0;
 	  pd->setxid_futex = -1;
 
 	  /* Allocate the DTV for this thread.  */

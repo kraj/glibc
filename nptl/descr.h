@@ -296,9 +296,6 @@ struct pthread
   /* Bit set if thread terminated and TCB is freed.  */
 #define TERMINATED_BIT		5
 #define TERMINATED_BITMASK	(0x01 << TERMINATED_BIT)
-  /* Bit set if thread is supposed to change XID.  */
-#define SETXID_BIT		6
-#define SETXID_BITMASK		(0x01 << SETXID_BIT)
 
   /* Flags.  Including those copied from the thread attribute.  */
   int flags;
@@ -338,6 +335,9 @@ struct pthread
   /* Lock to synchronize access to the descriptor.  */
   int lock;
 
+  /* Indicate whether thread is supposed to change XID, it acts a boolean
+     variable (0 means no operation pending).  */
+  int setxid_flag;
   /* Lock for synchronizing setxid calls.  */
   unsigned int setxid_futex;
 
