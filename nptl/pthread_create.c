@@ -478,12 +478,6 @@ start_thread (void *arg)
 	}
     }
 
-  /* The thread is exiting now.  Don't set this bit until after we've hit
-     the event-reporting breakpoint, so that td_thr_get_info on us while at
-     the breakpoint reports TD_THR_RUN state rather than TD_THR_ZOMBIE.  */
-  atomic_bit_set (&pd->cancelhandling, EXITING_BIT);
-
-
   /* CONCURRENCY NOTES:
 
      Concurrent pthread_detach() will either set state to
@@ -561,8 +555,8 @@ start_thread (void *arg)
       do
 	/* XXX This differs from the typical futex_wait_simple pattern in that
 	   the futex_wait condition (setxid_futex) is different from the
-	   condition used in the surrounding loop (cancelhandling).  We need
-	   to check and document why this is correct.  */
+	   condition used in the surrounding loop.  We need to check and
+	   document why this is correct.  */
 	futex_wait_simple (&pd->setxid_futex, 0, FUTEX_PRIVATE);
       while (atomic_load_relaxed (&pd->setxid_flag) == 1);
 

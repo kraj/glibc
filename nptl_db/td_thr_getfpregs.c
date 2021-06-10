@@ -22,7 +22,7 @@
 td_err_e
 td_thr_getfpregs (const td_thrhandle_t *th, prfpregset_t *regset)
 {
-  psaddr_t cancelhandling, tid;
+  psaddr_t joinstate, tid;
   td_err_e err;
 
   LOG ("td_thr_getfpregs");
@@ -33,13 +33,14 @@ td_thr_getfpregs (const td_thrhandle_t *th, prfpregset_t *regset)
 			  regset) != PS_OK ? TD_ERR : TD_OK;
 
   /* We have to get the state and the PID for this thread.  */
-  err = DB_GET_FIELD (cancelhandling, th->th_ta_p, th->th_unique, pthread,
-		      cancelhandling, 0);
+  err = DB_GET_FIELD (joinstate, th->th_ta_p, th->th_unique, pthread,
+		      joinstate, 0);
   if (err != TD_OK)
     return err;
 
   /* If the thread already terminated we return all zeroes.  */
-  if (((int) (uintptr_t) cancelhandling) & TERMINATED_BITMASK)
+  int js = (int) (uintptr_t) joinstate;
+  if (js == THREAD_STATE_EXITING || js == THREAD_STATE_EXITED)
     memset (regset, '\0', sizeof (*regset));
   /* Otherwise get the register content through the callback.  */
   else

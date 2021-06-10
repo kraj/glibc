@@ -271,9 +271,6 @@ __exit_thread (void *value)
 {
   struct pthread *self = THREAD_SELF;
 
-  /* Make sure we get no more cancellations.  */
-  THREAD_ATOMIC_BIT_SET (self, cancelhandling, EXITING_BIT);
-
   THREAD_SETMEM (self, result, value);
 
   /* It is required by POSIX XSH 2.9.5 Thread Cancellation under the heading

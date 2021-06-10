@@ -22,7 +22,7 @@
 td_err_e
 td_thr_setgregs (const td_thrhandle_t *th, prgregset_t gregs)
 {
-  psaddr_t cancelhandling, tid;
+  psaddr_t joinstate, tid;
   td_err_e err;
 
   LOG ("td_thr_setgregs");
@@ -33,13 +33,14 @@ td_thr_setgregs (const td_thrhandle_t *th, prgregset_t gregs)
 			gregs) != PS_OK ? TD_ERR : TD_OK;
 
   /* We have to get the state and the PID for this thread.  */
-  err = DB_GET_FIELD (cancelhandling, th->th_ta_p, th->th_unique, pthread,
-		      cancelhandling, 0);
+  err = DB_GET_FIELD (joinstate, th->th_ta_p, th->th_unique, pthread,
+		      joinstate, 0);
   if (err != TD_OK)
     return err;
 
   /* Only set the registers if the thread hasn't yet terminated.  */
-  if ((((int) (uintptr_t) cancelhandling) & TERMINATED_BITMASK) == 0)
+  int js = (int) (uintptr_t) joinstate;
+  if (js != THREAD_STATE_EXITING || js != THREAD_STATE_EXITED)
     {
       err = DB_GET_FIELD (tid, th->th_ta_p, th->th_unique, pthread, tid, 0);
       if (err != TD_OK)

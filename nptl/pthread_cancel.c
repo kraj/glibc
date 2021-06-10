@@ -42,11 +42,8 @@ sigcancel_handler (int sig, siginfo_t *si, void *ctx)
 
   struct pthread *self = THREAD_SELF;
 
-  int ch = atomic_load_relaxed (&self->cancelhandling);
-  /* Cancelation not enabled, not cancelled, or already exitting.  */
   if (self->cancelstate == PTHREAD_CANCEL_DISABLE
-      || (ch & CANCELED_BITMASK) == 0
-      || (ch & EXITING_BITMASK) != 0)
+      || atomic_load_relaxed (&self->joinstate) == THREAD_STATE_EXITING)
     return;
 
   /* Set the return value.  */
@@ -93,8 +90,9 @@ __pthread_cancel (pthread_t th)
   }
 #endif
 
-  int oldch = atomic_fetch_or_acquire (&pd->cancelhandling, CANCELED_BITMASK);
-  if ((oldch & CANCELED_BITMASK) != 0)
+  /* If already cancelled just return (cancellation will be acted upon in next
+     cancellation entrypoint).  */
+  if (atomic_exchange_relaxed (&pd->cancel_requested, 1) == 1)
     return 0;
 
   if (pd == THREAD_SELF)

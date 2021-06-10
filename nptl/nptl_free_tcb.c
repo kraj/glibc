@@ -23,22 +23,18 @@
 void
 __nptl_free_tcb (struct pthread *pd)
 {
-  /* The thread is exiting now.  */
-  if (atomic_bit_test_set (&pd->cancelhandling, TERMINATED_BIT) == 0)
-    {
-      /* Free TPP data.  */
-      if (pd->tpp != NULL)
-        {
-          struct priority_protection_data *tpp = pd->tpp;
+   /* Free TPP data.  */
+   if (pd->tpp != NULL)
+     {
+	struct priority_protection_data *tpp = pd->tpp;
 
-          pd->tpp = NULL;
-          free (tpp);
-        }
+	pd->tpp = NULL;
+        free (tpp);
+     }
 
-      /* Queue the stack memory block for reuse and exit the process.  The
-         kernel will signal via writing to the address returned by
-         QUEUE-STACK when the stack is available.  */
-      __nptl_deallocate_stack (pd);
-    }
+  /* Queue the stack memory block for reuse and exit the process.  The kernel
+     will signal via writing to the address of pthread 'joinstate' member
+     (due CLONE_CHILD_CLEARTID) when the child exits.  */
+  __nptl_deallocate_stack (pd);
 }
 libc_hidden_def (__nptl_free_tcb)

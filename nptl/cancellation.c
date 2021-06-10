@@ -34,15 +34,9 @@ __pthread_enable_asynccancel (void)
   int oldval = THREAD_GETMEM (self, canceltype);
   THREAD_SETMEM (self, canceltype, PTHREAD_CANCEL_ASYNCHRONOUS);
 
-  int ch = THREAD_GETMEM (self, cancelhandling);
-
   if (self->cancelstate == PTHREAD_CANCEL_ENABLE
-      && (ch & CANCELED_BITMASK)
-      && !(ch & EXITING_BITMASK)
-      && !(ch & TERMINATED_BITMASK))
-    {
-      __do_cancel ();
-    }
+      && self->cancel_requested == 1)
+    __do_cancel ();
 
   return oldval;
 }

@@ -413,6 +413,7 @@ libc {
     _thread_db_pthread_eventbuf;
     _thread_db_pthread_eventbuf_eventmask;
     _thread_db_pthread_eventbuf_eventmask_event_bits;
+    _thread_db_pthread_joinstate;
     _thread_db_pthread_key_data_data;
     _thread_db_pthread_key_data_level2_data;
     _thread_db_pthread_key_data_seq;

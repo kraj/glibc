@@ -27,7 +27,7 @@ td_thr_get_info (const td_thrhandle_t *th, td_thrinfo_t *infop)
 {
   td_err_e err;
   void *copy;
-  psaddr_t tls, schedpolicy, schedprio, cancelhandling, tid, report_events;
+  psaddr_t tls, schedpolicy, schedprio, joinstate, tid, report_events;
 
   LOG ("td_thr_get_info");
 
@@ -36,7 +36,7 @@ td_thr_get_info (const td_thrhandle_t *th, td_thrinfo_t *infop)
       /* Special case for the main thread before initialization.  */
       copy = NULL;
       tls = 0;
-      cancelhandling = 0;
+      joinstate = 0;
       schedpolicy = SCHED_OTHER;
       schedprio = 0;
       tid = 0;
@@ -75,8 +75,8 @@ td_thr_get_info (const td_thrhandle_t *th, td_thrinfo_t *infop)
       err = DB_GET_FIELD_LOCAL (tid, th->th_ta_p, copy, pthread, tid, 0);
       if (err != TD_OK)
 	return err;
-      err = DB_GET_FIELD_LOCAL (cancelhandling, th->th_ta_p, copy, pthread,
-				cancelhandling, 0);
+      err = DB_GET_FIELD_LOCAL (joinstate, th->th_ta_p, copy, pthread,
+				joinstate, 0);
       if (err != TD_OK)
 	return err;
       err = DB_GET_FIELD_LOCAL (report_events, th->th_ta_p, copy, pthread,
@@ -95,13 +95,11 @@ td_thr_get_info (const td_thrhandle_t *th, td_thrinfo_t *infop)
 		   ? 0 : (uintptr_t) schedprio);
   infop->ti_type = TD_THR_USER;
 
-  if ((((int) (uintptr_t) cancelhandling) & EXITING_BITMASK) == 0)
-    /* XXX For now there is no way to get more information.  */
+  int js = (int) (uintptr_t) joinstate;
+  if (js == THREAD_STATE_JOINABLE || js == THREAD_STATE_DETACHED)
     infop->ti_state = TD_THR_ACTIVE;
-  else if ((((int) (uintptr_t) cancelhandling) & TERMINATED_BITMASK) == 0)
-    infop->ti_state = TD_THR_ZOMBIE;
   else
-    infop->ti_state = TD_THR_UNKNOWN;
+    infop->ti_state = TD_THR_ZOMBIE;
 
   /* Initialization which are the same in both cases.  */
   infop->ti_ta_p = th->th_ta_p;

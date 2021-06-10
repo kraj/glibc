@@ -23,14 +23,8 @@ void
 ___pthread_testcancel (void)
 {
   struct pthread *self = THREAD_SELF;
-  int cancelhandling = THREAD_GETMEM (self, cancelhandling);
-  if (self->cancelstate == PTHREAD_CANCEL_ENABLE
-      && (cancelhandling & CANCELED_BITMASK)
-      && !(cancelhandling & EXITING_BITMASK)
-      && !(cancelhandling & TERMINATED_BITMASK))
-    {
-      __do_cancel ();
-    }
+  if (self->cancelstate == PTHREAD_CANCEL_ENABLE && self->cancel_requested == 1)
+    __do_cancel ();
 }
 versioned_symbol (libc, ___pthread_testcancel, pthread_testcancel, GLIBC_2_34);
 libc_hidden_ver (___pthread_testcancel, __pthread_testcancel)

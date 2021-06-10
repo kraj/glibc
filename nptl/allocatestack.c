@@ -119,7 +119,7 @@ get_cached_stack (size_t *sizep, void **memp)
   *memp = result->stackblock;
 
   /* Cancellation handling is back to the default.  */
-  result->cancelhandling = 0;
+  result->cancel_requested = 0;
   result->cancelstate = PTHREAD_CANCEL_ENABLE;
   result->canceltype = PTHREAD_CANCEL_DEFERRED;
   result->cleanup = NULL;

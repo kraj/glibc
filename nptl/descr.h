@@ -285,17 +285,8 @@ struct pthread
   struct pthread_unwind_buf *cleanup_jmp_buf;
 #define HAVE_CLEANUP_JMP_BUF
 
-  /* Flags determining processing of cancellation.  */
-  int cancelhandling;
-  /* Bit set if canceled.  */
-#define CANCELED_BIT		3
-#define CANCELED_BITMASK	(0x01 << CANCELED_BIT)
-  /* Bit set if thread is exiting.  */
-#define EXITING_BIT		4
-#define EXITING_BITMASK		(0x01 << EXITING_BIT)
-  /* Bit set if thread terminated and TCB is freed.  */
-#define TERMINATED_BIT		5
-#define TERMINATED_BITMASK	(0x01 << TERMINATED_BIT)
+  /* Flag to determine whether the thread is signaled to be cancelled.  */
+  int cancel_requested;
 
   /* Flags.  Including those copied from the thread attribute.  */
   int flags;
