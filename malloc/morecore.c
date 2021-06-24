@@ -38,16 +38,27 @@ libc_hidden_proto (__sbrk)
 # define NULL 0
 #endif
 
+#if defined(SHARED) || defined(USE_MTAG)
+bool __always_fail_morecore = false;
+#endif
+
 /* Allocate INCREMENT more bytes of data space,
    and return the start of data space, or NULL on errors.
    If INCREMENT is negative, shrink data space.  */
 void *
-__default_morecore (ptrdiff_t increment)
+__glibc_morecore (ptrdiff_t increment)
 {
+#if defined(SHARED) || defined(USE_MTAG)
+  if (__always_fail_morecore)
+    return NULL;
+#endif
+
   void *result = (void *) __sbrk (increment);
   if (result == (void *) -1)
     return NULL;
 
   return result;
 }
-libc_hidden_def (__default_morecore)
+#if SHLIB_COMPAT (libc, GLIBC_2_0, GLIBC_2_34)
+compat_symbol (libc, __glibc_morecore, __default_morecore, GLIBC_2_0);
+#endif

@@ -382,10 +382,8 @@ __malloc_assert (const char *assertion, const char *file, unsigned int line,
 
 
 /* Definition for getting more memory from the OS.  */
-#define MORECORE         (*__morecore)
+#define MORECORE         (*__glibc_morecore)
 #define MORECORE_FAILURE 0
-void * __default_morecore (ptrdiff_t);
-void *(*__morecore)(ptrdiff_t) = __default_morecore;
 
 /* Memory tagging.  */
 

@@ -21,6 +21,7 @@
 
 #include <malloc-machine.h>
 #include <malloc-sysdep.h>
+#include <stdbool.h>
 
 /* INTERNAL_SIZE_T is the word-size used for internal bookkeeping of
    chunk sizes.
@@ -62,6 +63,8 @@
 #define MALLOC_ALIGN_MASK (MALLOC_ALIGNMENT - 1)
 
 
+extern bool __always_fail_morecore attribute_hidden;
+
 /* Called in the parent process before a fork.  */
 void __malloc_fork_lock_parent (void) attribute_hidden;
 
@@ -76,5 +79,7 @@ void __malloc_arena_thread_freeres (void) attribute_hidden;
 
 /* Activate a standard set of debugging hooks. */
 void __malloc_check_init (void) attribute_hidden;
+
+extern void *__glibc_morecore (ptrdiff_t) attribute_hidden;
 
 #endif /* _MALLOC_INTERNAL_H */

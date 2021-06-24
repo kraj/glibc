@@ -46,6 +46,8 @@ compat_symbol (libc, __memalign_hook, __memalign_hook, GLIBC_2_0);
 
 void weak_variable (*__after_morecore_hook) (void) = NULL;
 compat_symbol (libc, __after_morecore_hook, __after_morecore_hook, GLIBC_2_0);
+void *(*__morecore)(ptrdiff_t);
+compat_symbol (libc, __morecore, __morecore, GLIBC_2_0);
 
 /* This is interposed by libc_malloc_debug.so to match with a compatible libc.
    We don't use dlsym or equivalent because the dlsym symbol version got bumped
