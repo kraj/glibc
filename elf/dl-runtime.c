@@ -131,6 +131,37 @@ _dl_fixup (
       && __builtin_expect (ELFW(ST_TYPE) (sym->st_info) == STT_GNU_IFUNC, 0))
     value = elf_ifunc_invoke (DL_FIXUP_VALUE_ADDR (value));
 
+#ifdef SHARED
+  /* Auditing checkpoint: we have a new binding.  Provide the auditing
+     libraries the possibility to change the value and tell us whether further
+     auditing is wanted.
+     The l_reloc_result is only allocated if there is an audit module which
+     provides a la_symbind().  */
+  if (l->l_reloc_result != NULL)
+    {
+      /* This is the address in the array where we store the result of previous
+	 relocations.  */
+      struct reloc_result *reloc_result
+	= &l->l_reloc_result[reloc_index (pltgot, reloc_arg, sizeof (PLTREL))];
+      unsigned int init = atomic_load_acquire (&reloc_result->init);
+      if (init == 0)
+	{
+	  _dl_audit_symbind (l, reloc_result, sym, &value, result);
+
+	  /* Store the result for later runs.  */
+	  if (__glibc_likely (! GLRO(dl_bind_not)))
+	    {
+	      reloc_result->addr = value;
+	      /* Guarantee all previous writes complete before init is
+		 updated.  See CONCURRENCY NOTES below.  */
+	      atomic_store_release (&reloc_result->init, 1);
+	    }
+	}
+      else
+	value = reloc_result->addr;
+    }
+#endif
+
   /* Finally, fix up the plt itself.  */
   if (__glibc_unlikely (GLRO(dl_bind_not)))
     return value;
@@ -290,84 +321,7 @@ _dl_profile_fixup (
 	 auditing libraries the possibility to change the value and
 	 tell us whether further auditing is wanted.  */
       if (defsym != NULL && GLRO(dl_naudit) > 0)
-	{
-	  reloc_result->bound = result;
-	  /* Compute index of the symbol entry in the symbol table of
-	     the DSO with the definition.  */
-	  reloc_result->boundndx = (defsym
-				    - (ElfW(Sym) *) D_PTR (result,
-							   l_info[DT_SYMTAB]));
-
-	  /* Determine whether any of the two participating DSOs is
-	     interested in auditing.  */
-	  if ((l->l_audit_any_plt | result->l_audit_any_plt) != 0)
-	    {
-	      unsigned int flags = 0;
-	      struct audit_ifaces *afct = GLRO(dl_audit);
-	      /* Synthesize a symbol record where the st_value field is
-		 the result.  */
-	      ElfW(Sym) sym = *defsym;
-	      sym.st_value = DL_FIXUP_VALUE_ADDR (value);
-
-	      /* Keep track whether there is any interest in tracing
-		 the call in the lower two bits.  */
-	      assert (DL_NNS * 2 <= sizeof (reloc_result->flags) * 8);
-	      assert ((LA_SYMB_NOPLTENTER | LA_SYMB_NOPLTEXIT) == 3);
-	      reloc_result->enterexit = LA_SYMB_NOPLTENTER | LA_SYMB_NOPLTEXIT;
-
-	      const char *strtab2 = (const void *) D_PTR (result,
-							  l_info[DT_STRTAB]);
-
-	      for (unsigned int cnt = 0; cnt < GLRO(dl_naudit); ++cnt)
-		{
-		  /* XXX Check whether both DSOs must request action or
-		     only one */
-		  struct auditstate *l_state = link_map_audit_state (l, cnt);
-		  struct auditstate *result_state
-		    = link_map_audit_state (result, cnt);
-		  if ((l_state->bindflags & LA_FLG_BINDFROM) != 0
-		      && (result_state->bindflags & LA_FLG_BINDTO) != 0)
-		    {
-		      if (afct->symbind != NULL)
-			{
-			  uintptr_t new_value
-			    = afct->symbind (&sym, reloc_result->boundndx,
-					     &l_state->cookie,
-					     &result_state->cookie,
-					     &flags,
-					     strtab2 + defsym->st_name);
-			  if (new_value != (uintptr_t) sym.st_value)
-			    {
-			      flags |= LA_SYMB_ALTVALUE;
-			      sym.st_value = new_value;
-			    }
-			}
-
-		      /* Remember the results for every audit library and
-			 store a summary in the first two bits.  */
-		      reloc_result->enterexit
-			&= flags & (LA_SYMB_NOPLTENTER | LA_SYMB_NOPLTEXIT);
-		      reloc_result->enterexit
-			|= ((flags & (LA_SYMB_NOPLTENTER | LA_SYMB_NOPLTEXIT))
-			    << ((cnt + 1) * 2));
-		    }
-		  else
-		    /* If the bind flags say this auditor is not interested,
-		       set the bits manually.  */
-		    reloc_result->enterexit
-		      |= ((LA_SYMB_NOPLTENTER | LA_SYMB_NOPLTEXIT)
-			  << ((cnt + 1) * 2));
-
-		  afct = afct->next;
-		}
-
-	      reloc_result->flags = flags;
-	      value = DL_FIXUP_ADDR_VALUE (sym.st_value);
-	    }
-	  else
-	    /* Set all bits since this symbol binding is not interesting.  */
-	    reloc_result->enterexit = (1u << DL_NNS) - 1;
-	}
+	_dl_audit_symbind (l, reloc_result, defsym, &value, result);
 #endif
 
       /* Store the result for later runs.  */

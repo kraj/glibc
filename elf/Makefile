@@ -231,6 +231,8 @@ tests += restest1 preloadtest loadfail multiload origtest resolvfail \
 	 tst-tls20 tst-tls21 tst-dlmopen-dlerror tst-dlmopen-gethostbyname \
 	 tst-dl-is_dso tst-ro-dynamic \
 	 tst-audit18 \
+	 tst-audit19a \
+	 tst-audit19b \
 #	 reldep9
 tests-internal += loadtest unload unload2 circleload1 \
 	 neededtest neededtest2 neededtest3 neededtest4 \
@@ -373,6 +375,9 @@ modules-names = testobj1 testobj2 testobj3 testobj4 testobj5 testobj6 \
 		tst-dlmopen-gethostbyname-mod tst-ro-dynamic-mod \
 		tst-auditmod18 \
 		tst-audit18mod \
+		tst-auditmod19a \
+		tst-auditmod19b \
+		tst-audit19bmod \
 
 # Most modules build with _ISOMAC defined, but those filtered out
 # depend on internal headers.
@@ -1543,6 +1548,13 @@ $(objpfx)tst-audit16-cmp.out: tst-audit16.exp $(objpfx)tst-audit16.out
 $(objpfx)tst-audit18.out: $(objpfx)tst-auditmod18.so \
 			  $(objpfx)tst-audit18mod.so
 tst-audit18-ARGS = -- $(host-test-program-cmd)
+
+$(objpfx)tst-audit19a.out: $(objpfx)tst-auditmod19a.so
+tst-audit19a-ENV = LD_AUDIT=$(objpfx)tst-auditmod19a.so
+
+$(objpfx)tst-audit19b.out: $(objpfx)tst-auditmod19b.so
+$(objpfx)tst-audit19b: $(objpfx)tst-audit19bmod.so
+tst-audit19b-ARGS = -- $(host-test-program-cmd)
 
 # tst-sonamemove links against an older implementation of the library.
 LDFLAGS-tst-sonamemove-linkmod1.so = \
