@@ -380,6 +380,20 @@ modules-names += tst-gnu2-tls1mod
 $(objpfx)tst-gnu2-tls1: $(objpfx)tst-gnu2-tls1mod.so
 tst-gnu2-tls1mod.so-no-z-defs = yes
 CFLAGS-tst-gnu2-tls1mod.c += -mtls-dialect=gnu2
+
+tests += tst-audit-tlsdesc tst-audit-tlsdesc-dlopen
+modules-names += tst-auditmod-tlsdesc1 tst-auditmod-tlsdesc2 tst-audit-tlsdesc-audit
+$(objpfx)tst-audit-tlsdesc: $(objpfx)tst-auditmod-tlsdesc1.so \
+			    $(objpfx)tst-auditmod-tlsdesc2.so \
+			    $(shared-thread-library)
+CFLAGS-tst-auditmod-tlsdesc1.c += -mtls-dialect=gnu2
+CFLAGS-tst-auditmod-tlsdesc2.c += -mtls-dialect=gnu2
+$(objpfx)tst-audit-tlsdesc-dlopen: $(shared-thread-library)
+$(objpfx)tst-audit-tlsdesc-dlopen.out: $(objpfx)tst-auditmod-tlsdesc1.so \
+				       $(objpfx)tst-auditmod-tlsdesc2.so
+$(objpfx)tst-auditmod-tlsdesc1.so: $(objpfx)tst-auditmod-tlsdesc2.so
+tst-audit-tlsdesc-ENV = LD_AUDIT=$(objpfx)tst-audit-tlsdesc-audit.so
+tst-audit-tlsdesc-dlopen-ENV = LD_AUDIT=$(objpfx)tst-audit-tlsdesc-audit.so
 endif
 ifeq (yes,$(have-protected-data))
 modules-names += tst-protected1moda tst-protected1modb
