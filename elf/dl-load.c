@@ -1067,8 +1067,11 @@ _dl_map_object_from_fd (const char *name, const char *origname, int fd,
 	  && __glibc_unlikely (GLRO(dl_naudit) > 0))
 	{
 	  struct link_map *head = GL(dl_ns)[nsid]._ns_loaded;
-	  /* Do not call the functions for any auditing object.  */
-	  if (head->l_auditing == 0)
+	  /* Do not call the functions for any auditing object and also do not
+	     try to call auditing functions if the namespace is currently
+	     empty.  This happens when opening the first DSO in a new
+	     namespace.  */
+	  if (head != NULL && head->l_auditing == 0)
 	    {
 	      struct audit_ifaces *afct = GLRO(dl_audit);
 	      for (unsigned int cnt = 0; cnt < GLRO(dl_naudit); ++cnt)
