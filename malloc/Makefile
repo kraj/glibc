@@ -42,11 +42,11 @@ tests := mallocbug tst-malloc tst-valloc tst-calloc tst-obstack \
 	 tst-malloc-stats-cancellation \
 	 tst-tcfree1 tst-tcfree2 tst-tcfree3 \
 	 tst-safe-linking \
+	 tst-compathooks-off tst-compathooks-on
 
 tests-static := \
 	 tst-interpose-static-nothread \
-	 tst-interpose-static-thread \
-	 tst-malloc-usable-static \
+	 tst-interpose-static-thread
 
 # Test for the malloc_set_state symbol removed in glibc 2.25.
 ifeq ($(have-GLIBC_2.24)$(build-shared),yesyes)
@@ -63,7 +63,6 @@ tests-internal += \
 
 ifneq (no,$(have-tunables))
 tests += tst-malloc-usable-tunables tst-mxfast
-tests-static += tst-malloc-usable-static-tunables
 endif
 
 tests += $(tests-static)
@@ -72,7 +71,8 @@ test-srcs = tst-mtrace
 # These tests either are run with MALLOC_CHECK_=3 by default or do not work
 # with MALLOC_CHECK_=3 because they expect a specific failure.
 tests-exclude-malloc-check = tst-malloc-check tst-malloc-usable \
-	tst-mxfast tst-safe-linking
+	tst-mxfast tst-safe-linking \
+	tst-compathooks-off tst-compathooks-on
 
 # Run all tests with MALLOC_CHECK_=3
 tests-malloc-check = $(filter-out $(tests-exclude-malloc-check),$(tests))
@@ -88,13 +88,12 @@ tests-exclude-mcheck = tst-mallocstate \
 	tst-malloc-tcache-leak \
 	tst-malloc-thread-exit \
 	tst-malloc-thread-fail \
-	tst-malloc-usable-static \
-	tst-malloc-usable-static-tunables \
 	tst-malloc-usable-tunables \
 	tst-malloc_info \
 	tst-memalign \
 	tst-posix_memalign \
-	tst-posix-realloc
+	tst-posix-realloc \
+	tst-compathooks-off tst-compathooks-on
 
 tests-mcheck = $(filter-out $(tests-exclude-mcheck), $(tests))
 
@@ -116,8 +115,8 @@ routines = malloc morecore mcheck mtrace obstack reallocarray \
 install-lib := libmcheck.a
 non-lib.a := libmcheck.a
 
-# Additional library.
-extra-libs = libmemusage
+# Additional libraries.
+extra-libs = libmemusage libc_malloc_debug
 extra-libs-others = $(extra-libs)
 
 # Helper objects for some tests.
@@ -131,6 +130,9 @@ test-extras = \
 
 libmemusage-routines = memusage
 libmemusage-inhibit-o = $(filter-out .os,$(object-suffixes))
+
+libc_malloc_debug-routines = malloc-debug
+libc_malloc_debug-inhibit-o = $(filter-out .os,$(object-suffixes))
 
 $(objpfx)tst-malloc-backtrace: $(shared-thread-library)
 $(objpfx)tst-malloc-thread-exit: $(shared-thread-library)
@@ -237,11 +239,12 @@ endif
 endif
 endif
 
-tst-malloc-check-ENV = MALLOC_CHECK_=3
-tst-malloc-usable-ENV = MALLOC_CHECK_=3
-tst-malloc-usable-static-ENV = $(tst-malloc-usable-ENV)
-tst-malloc-usable-tunables-ENV = GLIBC_TUNABLES=glibc.malloc.check=3
-tst-malloc-usable-static-tunables-ENV = $(tst-malloc-usable-tunables-ENV)
+tst-malloc-check-ENV = MALLOC_CHECK_=3 \
+		       LD_PRELOAD=$(objpfx)/libc_malloc_debug.so
+tst-malloc-usable-ENV = MALLOC_CHECK_=3 \
+		       LD_PRELOAD=$(objpfx)/libc_malloc_debug.so
+tst-malloc-usable-tunables-ENV = GLIBC_TUNABLES=glibc.malloc.check=3 \
+				 LD_PRELOAD=$(objpfx)/libc_malloc_debug.so
 
 tst-mxfast-ENV = GLIBC_TUNABLES=glibc.malloc.tcache_count=0:glibc.malloc.mxfast=0
 
@@ -296,12 +299,14 @@ $(objpfx)tst-interpose-static-thread-mcheck: \
 $(objpfx)tst-interpose-static-thread-malloc-check: \
   $(objpfx)tst-interpose-aux-thread.o $(static-thread-library)
 
-tst-dynarray-ENV = MALLOC_TRACE=$(objpfx)tst-dynarray.mtrace
+tst-dynarray-ENV = MALLOC_TRACE=$(objpfx)tst-dynarray.mtrace \
+		   LD_PRELOAD=$(objpfx)libc_malloc_debug.so
 $(objpfx)tst-dynarray-mem.out: $(objpfx)tst-dynarray.out
 	$(common-objpfx)malloc/mtrace $(objpfx)tst-dynarray.mtrace > $@; \
 	$(evaluate-test)
 
-tst-dynarray-fail-ENV = MALLOC_TRACE=$(objpfx)tst-dynarray-fail.mtrace
+tst-dynarray-fail-ENV = MALLOC_TRACE=$(objpfx)tst-dynarray-fail.mtrace \
+			LD_PRELOAD=$(objpfx)libc_malloc_debug.so
 $(objpfx)tst-dynarray-fail-mem.out: $(objpfx)tst-dynarray-fail.out
 	$(common-objpfx)malloc/mtrace $(objpfx)tst-dynarray-fail.mtrace > $@; \
 	$(evaluate-test)
@@ -315,3 +320,10 @@ $(objpfx)tst-mallocfork2-mcheck: $(shared-thread-library)
 $(objpfx)tst-malloc-tcache-leak-malloc-check: $(shared-thread-library)
 $(objpfx)tst-malloc_info-malloc-check: $(shared-thread-library)
 $(objpfx)tst-mallocfork2-malloc-check: $(shared-thread-library)
+
+tst-compathooks-on-ENV = LD_PRELOAD=$(objpfx)libc_malloc_debug.so
+tst-compathooks-on-mcheck-ENV = LD_PRELOAD=$(objpfx)libc_malloc_debug.so
+tst-compathooks-on-malloc-check-ENV = \
+	LD_PRELOAD=$(objpfx)libc_malloc_debug.so
+tst-mallocstate-ENV = LD_PRELOAD=$(objpfx)libc_malloc_debug.so
+tst-mallocstate-malloc-check-ENV = LD_PRELOAD=$(objpfx)libc_malloc_debug.so
