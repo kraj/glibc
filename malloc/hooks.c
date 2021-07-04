@@ -59,7 +59,6 @@ generic_hook_ini (void)
   if (hook != NULL)
     (*hook)();
 #endif
-  __malloc_initialized = 1;
 }
 
 static void *

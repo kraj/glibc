@@ -43,6 +43,35 @@ DEBUG_FN(valloc);
 DEBUG_FN(pvalloc);
 DEBUG_FN(calloc);
 
+static bool malloc_called;
+
+enum malloc_debug_hooks
+{
+  MALLOC_NONE_HOOK = 0,
+  MALLOC_MCHECK_HOOK = 1 << 0, /* mcheck()  */
+};
+static unsigned __malloc_debugging_hooks;
+
+static __always_inline bool
+__is_malloc_debug_enabled (enum malloc_debug_hooks flag)
+{
+  return __malloc_debugging_hooks & flag;
+}
+
+static __always_inline void
+__malloc_debug_enable (enum malloc_debug_hooks flag)
+{
+  __malloc_debugging_hooks |= flag;
+}
+
+static __always_inline void
+__malloc_debug_disable (enum malloc_debug_hooks flag)
+{
+  __malloc_debugging_hooks &= ~flag;
+}
+
+#include "mcheck.c"
+
 extern void (*__free_hook) (void *, const void *);
 compat_symbol_reference (libc, __free_hook, __free_hook, GLIBC_2_0);
 extern void * (*__malloc_hook) (size_t, const void *);
@@ -63,7 +92,19 @@ __debug_malloc (size_t bytes)
   if (__builtin_expect (hook != NULL, 0))
     return (*hook)(bytes, RETURN_ADDRESS (0));
 
-  return __libc_malloc (bytes);
+  malloc_called = true;
+
+  void *victim = NULL;
+  size_t orig_bytes = bytes;
+  if (!__is_malloc_debug_enabled (MALLOC_MCHECK_HOOK)
+      || !malloc_mcheck_before (&bytes, &victim))
+    {
+      victim = __libc_malloc (bytes);
+    }
+  if (__is_malloc_debug_enabled (MALLOC_MCHECK_HOOK) && victim != NULL)
+    victim = malloc_mcheck_after (victim, orig_bytes);
+
+  return victim;
 }
 strong_alias (__debug_malloc, malloc)
 
@@ -76,6 +117,10 @@ __debug_free (void *mem)
       (*hook)(mem, RETURN_ADDRESS (0));
       return;
     }
+
+  if (__is_malloc_debug_enabled (MALLOC_MCHECK_HOOK))
+    mem = free_mcheck (mem);
+
   __libc_free (mem);
 }
 strong_alias (__debug_free, free)
@@ -88,7 +133,21 @@ __debug_realloc (void *oldmem, size_t bytes)
   if (__builtin_expect (hook != NULL, 0))
     return (*hook)(oldmem, bytes, RETURN_ADDRESS (0));
 
-  return __libc_realloc (oldmem, bytes);
+  malloc_called = true;
+
+  size_t orig_bytes = bytes, oldsize = 0;
+  void *victim = NULL;
+
+  if (!__is_malloc_debug_enabled (MALLOC_MCHECK_HOOK)
+      || !realloc_mcheck_before (&oldmem, &bytes, &oldsize, &victim))
+    {
+      victim = __libc_realloc (oldmem, bytes);
+    }
+  if (__is_malloc_debug_enabled (MALLOC_MCHECK_HOOK) && victim != NULL)
+    victim = realloc_mcheck_after (victim, oldmem, orig_bytes,
+				   oldsize);
+
+  return victim;
 }
 strong_alias (__debug_realloc, realloc)
 
@@ -100,7 +159,20 @@ _mid_memalign (size_t alignment, size_t bytes, const void *address)
   if (__builtin_expect (hook != NULL, 0))
     return (*hook)(alignment, bytes, address);
 
-  return __libc_memalign (alignment, bytes);
+  malloc_called = true;
+
+  void *victim = NULL;
+  size_t orig_bytes = bytes;
+
+  if (!__is_malloc_debug_enabled (MALLOC_MCHECK_HOOK)
+      || !memalign_mcheck_before (alignment, &bytes, &victim))
+    {
+      victim = __libc_memalign (alignment, bytes);
+    }
+  if (__is_malloc_debug_enabled (MALLOC_MCHECK_HOOK) && victim != NULL)
+    victim = memalign_mcheck_after (victim, alignment, orig_bytes);
+
+  return victim;
 }
 
 static void *
@@ -165,17 +237,17 @@ strong_alias (__debug_posix_memalign, posix_memalign)
 static void *
 __debug_calloc (size_t nmemb, size_t size)
 {
+  size_t bytes;
+
+  if (__glibc_unlikely (__builtin_mul_overflow (nmemb, size, &bytes)))
+    {
+      errno = ENOMEM;
+      return NULL;
+    }
+
   void *(*hook) (size_t, const void *) = atomic_forced_read (__malloc_hook);
   if (__builtin_expect (hook != NULL, 0))
     {
-      size_t bytes;
-
-      if (__glibc_unlikely (__builtin_mul_overflow (nmemb, size, &bytes)))
-	{
-	  errno = ENOMEM;
-	  return NULL;
-	}
-
       void *mem = (*hook)(bytes, RETURN_ADDRESS (0));
 
       if (mem != NULL)
@@ -184,6 +256,22 @@ __debug_calloc (size_t nmemb, size_t size)
       return mem;
     }
 
-  return __libc_calloc (nmemb, size);
+  malloc_called = true;
+
+  size_t orig_bytes = bytes;
+  void *victim = NULL;
+
+  if (!__is_malloc_debug_enabled (MALLOC_MCHECK_HOOK)
+      || !malloc_mcheck_before (&bytes, &victim))
+    {
+      victim = __libc_malloc (bytes);
+    }
+  if (victim != NULL)
+    {
+      if (__is_malloc_debug_enabled (MALLOC_MCHECK_HOOK))
+	victim = malloc_mcheck_after (victim, orig_bytes);
+      memset (victim, 0, orig_bytes);
+    }
+  return victim;
 }
 strong_alias (__debug_calloc, calloc)
