@@ -24,6 +24,10 @@ compat_symbol (libc, __malloc_initialize_hook,
 #endif
 
 #if SHLIB_COMPAT (libc, GLIBC_2_0, GLIBC_2_34)
+# ifndef weak_variable
+#  define weak_variable weak_function
+# endif
+
 static void *malloc_hook_ini (size_t, const void *) __THROW;
 static void *realloc_hook_ini (void *, size_t, const void *) __THROW;
 static void *memalign_hook_ini (size_t, size_t, const void *) __THROW;
@@ -39,6 +43,9 @@ compat_symbol (libc, __realloc_hook, __realloc_hook, GLIBC_2_0);
 void *weak_variable (*__memalign_hook)
   (size_t, size_t, const void *) = memalign_hook_ini;
 compat_symbol (libc, __memalign_hook, __memalign_hook, GLIBC_2_0);
+
+void weak_variable (*__after_morecore_hook) (void) = NULL;
+compat_symbol (libc, __after_morecore_hook, __after_morecore_hook, GLIBC_2_0);
 
 /* This is interposed by libc_malloc_debug.so to match with a compatible libc.
    We don't use dlsym or equivalent because the dlsym symbol version got bumped

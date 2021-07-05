@@ -164,10 +164,5 @@ extern void malloc_stats (void) __THROW;
 /* Output information about state of allocator to stream FP.  */
 extern int malloc_info (int __options, FILE *__fp) __THROW;
 
-/* Hooks for debugging and user-defined versions. */
-extern void (*__MALLOC_HOOK_VOLATILE __after_morecore_hook) (void)
-  __MALLOC_DEPRECATED;
-
-
 __END_DECLS
 #endif /* malloc.h */

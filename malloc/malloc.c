@@ -1988,16 +1988,6 @@ static void     malloc_consolidate (mstate);
 
 /* -------------- Early definitions for debugging hooks ---------------- */
 
-/* Define and initialize the hook variables.  These weak definitions must
-   appear before any use of the variables in a function (arena.c uses one).  */
-#ifndef weak_variable
-/* In GNU libc we want the hook variables to be weak definitions to
-   avoid a problem with Emacs.  */
-# define weak_variable weak_function
-#endif
-
-void weak_variable (*__after_morecore_hook) (void) = NULL;
-
 /* This function is called from the arena shutdown hook, to free the
    thread cache (if it exists).  */
 static void tcache_thread_shutdown (void);
@@ -2623,14 +2613,7 @@ sysmalloc (INTERNAL_SIZE_T nb, mstate av)
           LIBC_PROBE (memory_sbrk_more, 2, brk, size);
         }
 
-      if (brk != (char *) (MORECORE_FAILURE))
-        {
-          /* Call the `morecore' hook if necessary.  */
-          void (*hook) (void) = atomic_forced_read (__after_morecore_hook);
-          if (__builtin_expect (hook != NULL, 0))
-            (*hook)();
-        }
-      else
+      if (brk == (char *) (MORECORE_FAILURE))
         {
           /*
              If have mmap, try using it as a backup when MORECORE fails or
@@ -2768,13 +2751,6 @@ sysmalloc (INTERNAL_SIZE_T nb, mstate av)
                     {
                       correction = 0;
                       snd_brk = (char *) (MORECORE (0));
-                    }
-                  else
-                    {
-                      /* Call the `morecore' hook if necessary.  */
-                      void (*hook) (void) = atomic_forced_read (__after_morecore_hook);
-                      if (__builtin_expect (hook != NULL, 0))
-                        (*hook)();
                     }
                 }
 
@@ -2934,10 +2910,6 @@ systrim (size_t pad, mstate av)
        */
 
       MORECORE (-extra);
-      /* Call the `morecore' hook if necessary.  */
-      void (*hook) (void) = atomic_forced_read (__after_morecore_hook);
-      if (__builtin_expect (hook != NULL, 0))
-        (*hook)();
       new_brk = (char *) (MORECORE (0));
 
       LIBC_PROBE (memory_sbrk_less, 2, new_brk, extra);
