@@ -23,17 +23,22 @@ compat_symbol (libc, __malloc_initialize_hook,
 	       __malloc_initialize_hook, GLIBC_2_0);
 #endif
 
+#if SHLIB_COMPAT (libc, GLIBC_2_0, GLIBC_2_34)
 static void *malloc_hook_ini (size_t, const void *) __THROW;
 static void *realloc_hook_ini (void *, size_t, const void *) __THROW;
 static void *memalign_hook_ini (size_t, size_t, const void *) __THROW;
 
 void weak_variable (*__free_hook) (void *, const void *) = NULL;
+compat_symbol (libc, __free_hook, __free_hook, GLIBC_2_0);
 void *weak_variable (*__malloc_hook)
   (size_t, const void *) = malloc_hook_ini;
+compat_symbol (libc, __malloc_hook, __malloc_hook, GLIBC_2_0);
 void *weak_variable (*__realloc_hook)
   (void *, size_t, const void *) = realloc_hook_ini;
+compat_symbol (libc, __realloc_hook, __realloc_hook, GLIBC_2_0);
 void *weak_variable (*__memalign_hook)
   (size_t, size_t, const void *) = memalign_hook_ini;
+compat_symbol (libc, __memalign_hook, __memalign_hook, GLIBC_2_0);
 
 /* This is interposed by libc_malloc_debug.so to match with a compatible libc.
    We don't use dlsym or equivalent because the dlsym symbol version got bumped
@@ -87,6 +92,7 @@ memalign_hook_ini (size_t alignment, size_t sz, const void *caller)
   generic_hook_ini ();
   return memalign (alignment, sz);
 }
+#endif
 
 static bool force_malloc_check_off = false;
 
