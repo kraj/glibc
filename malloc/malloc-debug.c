@@ -23,6 +23,14 @@
 #include <unistd.h>
 #include <sys/param.h>
 
+#define TUNABLE_NAMESPACE malloc
+#include <elf/dl-tunables.h>
+
+/* A compatible libc will set this totem to a non-zero value.  This is
+   needed for __malloc_check at the moment because the new __malloc_check_*
+   functions are not available in older libc.  */
+unsigned __malloc_debug_totem = 0;
+
 /* Support only the glibc allocators.  */
 extern void *__libc_malloc (size_t);
 extern void __libc_free (void *);
@@ -50,6 +58,7 @@ enum malloc_debug_hooks
   MALLOC_NONE_HOOK = 0,
   MALLOC_MCHECK_HOOK = 1 << 0, /* mcheck()  */
   MALLOC_MTRACE_HOOK = 1 << 1, /* mtrace()  */
+  MALLOC_CHECK_HOOK = 1 << 2,  /* MALLOC_CHECK_ or glibc.malloc.check.  */
 };
 static unsigned __malloc_debugging_hooks;
 
@@ -73,6 +82,7 @@ __malloc_debug_disable (enum malloc_debug_hooks flag)
 
 #include "mcheck.c"
 #include "mtrace.c"
+#include "malloc-check.h"
 
 extern void (*__free_hook) (void *, const void *);
 compat_symbol_reference (libc, __free_hook, __free_hook, GLIBC_2_0);
@@ -85,6 +95,32 @@ compat_symbol_reference (libc, __memalign_hook, __memalign_hook, GLIBC_2_0);
 
 static size_t pagesize;
 
+static void
+TUNABLE_CALLBACK (set_mallopt_check) (tunable_val_t *valp)
+{
+  int32_t value = (int32_t) valp->numval;
+  if (value != 0 && __malloc_debug_totem)
+    __malloc_debug_enable (MALLOC_CHECK_HOOK);
+}
+
+static __always_inline void
+maybe_initialize (void)
+{
+  if (!malloc_called)
+    {
+#if HAVE_TUNABLES
+      TUNABLE_GET (check, int32_t, TUNABLE_CALLBACK (set_mallopt_check));
+#else
+      const char *s = secure_getenv ("MALLOC_CHECK_");
+      if (s && s[0] != '\0' && s[0] != '0' && __malloc_debug_totem)
+	__malloc_debug_enable (MALLOC_CHECK_HOOK);
+#endif
+      /* The mcheck initializer runs before this through the initializer
+	 hook so it is safe to set this here.  */
+      malloc_called = true;
+    }
+}
+
 /* The allocator functions.  */
 
 static void *
@@ -94,12 +130,14 @@ __debug_malloc (size_t bytes)
   if (__builtin_expect (hook != NULL, 0))
     return (*hook)(bytes, RETURN_ADDRESS (0));
 
-  malloc_called = true;
+  maybe_initialize ();
 
   void *victim = NULL;
   size_t orig_bytes = bytes;
-  if (!__is_malloc_debug_enabled (MALLOC_MCHECK_HOOK)
-      || !malloc_mcheck_before (&bytes, &victim))
+  if ((!__is_malloc_debug_enabled (MALLOC_MCHECK_HOOK)
+       || !malloc_mcheck_before (&bytes, &victim))
+      && (!__is_malloc_debug_enabled (MALLOC_CHECK_HOOK)
+	  || !__malloc_check_malloc (bytes, &victim)))
     {
       victim = __libc_malloc (bytes);
     }
@@ -124,10 +162,13 @@ __debug_free (void *mem)
 
   if (__is_malloc_debug_enabled (MALLOC_MCHECK_HOOK))
     mem = free_mcheck (mem);
+  if (!__is_malloc_debug_enabled (MALLOC_CHECK_HOOK)
+      || !__malloc_check_free (mem))
+    {
+      __libc_free (mem);
+    }
   if (__is_malloc_debug_enabled (MALLOC_MTRACE_HOOK))
     free_mtrace (mem, RETURN_ADDRESS (0));
-
-  __libc_free (mem);
 }
 strong_alias (__debug_free, free)
 
@@ -139,13 +180,15 @@ __debug_realloc (void *oldmem, size_t bytes)
   if (__builtin_expect (hook != NULL, 0))
     return (*hook)(oldmem, bytes, RETURN_ADDRESS (0));
 
-  malloc_called = true;
+  maybe_initialize ();
 
   size_t orig_bytes = bytes, oldsize = 0;
   void *victim = NULL;
 
-  if (!__is_malloc_debug_enabled (MALLOC_MCHECK_HOOK)
-      || !realloc_mcheck_before (&oldmem, &bytes, &oldsize, &victim))
+  if ((!__is_malloc_debug_enabled (MALLOC_MCHECK_HOOK)
+       || !realloc_mcheck_before (&oldmem, &bytes, &oldsize, &victim))
+      && (!__is_malloc_debug_enabled (MALLOC_CHECK_HOOK)
+	  || !__malloc_check_realloc (oldmem, bytes, &victim)))
     {
       victim = __libc_realloc (oldmem, bytes);
     }
@@ -167,13 +210,15 @@ _mid_memalign (size_t alignment, size_t bytes, const void *address)
   if (__builtin_expect (hook != NULL, 0))
     return (*hook)(alignment, bytes, address);
 
-  malloc_called = true;
+  maybe_initialize ();
 
   void *victim = NULL;
   size_t orig_bytes = bytes;
 
-  if (!__is_malloc_debug_enabled (MALLOC_MCHECK_HOOK)
-      || !memalign_mcheck_before (alignment, &bytes, &victim))
+  if ((!__is_malloc_debug_enabled (MALLOC_MCHECK_HOOK)
+       || !memalign_mcheck_before (alignment, &bytes, &victim))
+      && (!__is_malloc_debug_enabled (MALLOC_CHECK_HOOK)
+	  || !__malloc_check_memalign (alignment, bytes, &victim)))
     {
       victim = __libc_memalign (alignment, bytes);
     }
@@ -266,13 +311,15 @@ __debug_calloc (size_t nmemb, size_t size)
       return mem;
     }
 
-  malloc_called = true;
+  maybe_initialize ();
 
   size_t orig_bytes = bytes;
   void *victim = NULL;
 
-  if (!__is_malloc_debug_enabled (MALLOC_MCHECK_HOOK)
-      || !malloc_mcheck_before (&bytes, &victim))
+  if ((!__is_malloc_debug_enabled (MALLOC_MCHECK_HOOK)
+       || !malloc_mcheck_before (&bytes, &victim))
+      && (!__is_malloc_debug_enabled (MALLOC_CHECK_HOOK)
+	  || !__malloc_check_malloc (bytes, &victim)))
     {
       victim = __libc_malloc (bytes);
     }
@@ -288,3 +335,12 @@ __debug_calloc (size_t nmemb, size_t size)
   return victim;
 }
 strong_alias (__debug_calloc, calloc)
+
+size_t
+malloc_usable_size (void *mem)
+{
+  if (__is_malloc_debug_enabled (MALLOC_CHECK_HOOK))
+    return __malloc_check_malloc_usable_size (mem);
+
+  return __malloc_usable_size (mem);
+}

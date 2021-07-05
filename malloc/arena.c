@@ -207,14 +207,6 @@ __malloc_fork_unlock_child (void)
 }
 
 #if HAVE_TUNABLES
-static void
-TUNABLE_CALLBACK (set_mallopt_check) (tunable_val_t *valp)
-{
-  int32_t value = (int32_t) valp->numval;
-  if (value != 0)
-    __malloc_check_init ();
-}
-
 # define TUNABLE_CALLBACK_FNDECL(__name, __type) \
 static inline int do_ ## __name (__type value);				      \
 static void									      \
@@ -323,7 +315,6 @@ ptmalloc_init (void)
   malloc_init_state (&main_arena);
 
 #if HAVE_TUNABLES
-  TUNABLE_GET (check, int32_t, TUNABLE_CALLBACK (set_mallopt_check));
   TUNABLE_GET (top_pad, size_t, TUNABLE_CALLBACK (set_top_pad));
   TUNABLE_GET (perturb, int32_t, TUNABLE_CALLBACK (set_perturb_byte));
   TUNABLE_GET (mmap_threshold, size_t, TUNABLE_CALLBACK (set_mmap_threshold));
@@ -401,8 +392,6 @@ ptmalloc_init (void)
             }
         }
     }
-  if (s && s[0] != '\0' && s[0] != '0')
-    __malloc_check_init ();
 #endif
 }
 

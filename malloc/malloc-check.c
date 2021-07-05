@@ -18,20 +18,6 @@
    not, see <https://www.gnu.org/licenses/>.  */
 
 
-/* Whether we are using malloc checking.  */
-static int using_malloc_checking;
-
-/* Activate a standard set of debugging hooks. */
-void
-__malloc_check_init (void)
-{
-  using_malloc_checking = 1;
-  __malloc_hook = malloc_check;
-  __free_hook = free_check;
-  __realloc_hook = realloc_check;
-  __memalign_hook = memalign_check;
-}
-
 /* When memory is tagged, the checking data is stored in the user part
    of the chunk.  We can't rely on the user not having modified the
    tags, so fetch the tag at each location before dereferencing
@@ -62,14 +48,13 @@ magicbyte (const void *p)
    memory.  Our magic byte is right at the end of the requested size, so we
    must reach it with this iteration, otherwise we have witnessed a memory
    corruption.  */
-static size_t
-malloc_check_get_size (mchunkptr p)
+size_t
+__malloc_check_malloc_usable_size (void *mem)
 {
   size_t size;
   unsigned char c;
+  mchunkptr p = mem2chunk (mem);
   unsigned char magic = magicbyte (p);
-
-  assert (using_malloc_checking == 1);
 
   for (size = CHUNK_HDR_SZ + memsize (p) - 1;
        (c = *SAFE_CHAR_OFFSET (p, size)) != magic;
@@ -202,32 +187,42 @@ top_check (void)
   malloc_printerr ("malloc: top chunk is corrupt");
 }
 
-static void *
-malloc_check (size_t sz, const void *caller)
+static bool
+malloc_check (size_t sz, void **victimp)
 {
   void *victim;
   size_t nb;
 
+  if (force_malloc_check_off)
+    return false;
+
   if (__builtin_add_overflow (sz, 1, &nb))
     {
       __set_errno (ENOMEM);
-      return NULL;
+      *victimp = NULL;
+      return true;
     }
 
   __libc_lock_lock (main_arena.mutex);
   top_check ();
   victim = _int_malloc (&main_arena, nb);
   __libc_lock_unlock (main_arena.mutex);
-  return mem2mem_check (tag_new_usable (victim), sz);
-}
+  *victimp = mem2mem_check (tag_new_usable (victim), sz);
 
-static void
-free_check (void *mem, const void *caller)
+  return true;
+}
+strong_alias (malloc_check, __malloc_check_malloc)
+
+static bool
+free_check (void *mem)
 {
   mchunkptr p;
 
+  if (force_malloc_check_off)
+    return false;
+
   if (!mem)
-    return;
+    return true;
 
   int err = errno;
 
@@ -253,28 +248,36 @@ free_check (void *mem, const void *caller)
       __libc_lock_unlock (main_arena.mutex);
     }
   __set_errno (err);
-}
 
-static void *
-realloc_check (void *oldmem, size_t bytes, const void *caller)
+  return true;
+}
+strong_alias (free_check, __malloc_check_free)
+
+bool
+__malloc_check_realloc (void *oldmem, size_t bytes, void **victimp)
 {
   INTERNAL_SIZE_T chnb;
   void *newmem = 0;
   unsigned char *magic_p;
   size_t rb;
 
+  if (force_malloc_check_off)
+    return false;
+
   if (__builtin_add_overflow (bytes, 1, &rb))
     {
       __set_errno (ENOMEM);
-      return NULL;
+      *victimp = NULL;
+      return true;
     }
   if (oldmem == 0)
-    return malloc_check (bytes, NULL);
+    return malloc_check (bytes, victimp);
 
   if (bytes == 0)
     {
-      free_check (oldmem, NULL);
-      return NULL;
+      free_check (oldmem);
+      *victimp = NULL;
+      return true;
     }
 
   /* Quickly check that the freed pointer matches the tag for the memory.
@@ -344,16 +347,20 @@ invert:
 
   __libc_lock_unlock (main_arena.mutex);
 
-  return mem2mem_check (tag_new_usable (newmem), bytes);
+  *victimp = mem2mem_check (tag_new_usable (newmem), bytes);
+  return true;
 }
 
-static void *
-memalign_check (size_t alignment, size_t bytes, const void *caller)
+bool
+__malloc_check_memalign (size_t alignment, size_t bytes, void **victimp)
 {
   void *mem;
 
+  if (force_malloc_check_off)
+    return false;
+
   if (alignment <= MALLOC_ALIGNMENT)
-    return malloc_check (bytes, NULL);
+    return malloc_check (bytes, victimp);
 
   if (alignment < MINSIZE)
     alignment = MINSIZE;
@@ -363,14 +370,16 @@ memalign_check (size_t alignment, size_t bytes, const void *caller)
   if (alignment > SIZE_MAX / 2 + 1)
     {
       __set_errno (EINVAL);
-      return 0;
+      *victimp = NULL;
+      return true;
     }
 
   /* Check for overflow.  */
   if (bytes > SIZE_MAX - alignment - MINSIZE)
     {
       __set_errno (ENOMEM);
-      return 0;
+      *victimp = NULL;
+      return true;
     }
 
   /* Make sure alignment is power of 2.  */
@@ -386,5 +395,6 @@ memalign_check (size_t alignment, size_t bytes, const void *caller)
   top_check ();
   mem = _int_memalign (&main_arena, alignment, bytes + 1);
   __libc_lock_unlock (main_arena.mutex);
-  return mem2mem_check (tag_new_usable (mem), bytes);
+  *victimp = mem2mem_check (tag_new_usable (mem), bytes);
+  return true;
 }

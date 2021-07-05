@@ -1114,13 +1114,6 @@ static void munmap_chunk(mchunkptr p);
 static mchunkptr mremap_chunk(mchunkptr p, size_t new_size);
 #endif
 
-static void*   malloc_check(size_t sz, const void *caller);
-static void      free_check(void* mem, const void *caller);
-static void*   realloc_check(void* oldmem, size_t bytes,
-			       const void *caller);
-static void*   memalign_check(size_t alignment, size_t bytes,
-				const void *caller);
-
 /* ------------------ MMAP support ------------------  */
 
 
@@ -5053,9 +5046,6 @@ musable (void *mem)
       size_t result = 0;
 
       p = mem2chunk (mem);
-
-      if (__builtin_expect (using_malloc_checking == 1, 0))
-	return malloc_check_get_size (p);
 
       if (chunk_is_mmapped (p))
 	{

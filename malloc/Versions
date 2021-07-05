@@ -96,5 +96,14 @@ libc {
     __libc_alloc_buffer_copy_bytes;
     __libc_alloc_buffer_copy_string;
     __libc_alloc_buffer_create_failure;
+
+    # Malloc debugging support
+    __malloc_debug_totem;
+    __malloc_check_malloc_usable_size;
+    __malloc_check_free;
+    __malloc_check_malloc;
+    __malloc_check_realloc;
+    __malloc_check_memalign;
+    __malloc_usable_size;
   }
 }

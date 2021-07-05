@@ -35,6 +35,11 @@ void *weak_variable (*__realloc_hook)
 void *weak_variable (*__memalign_hook)
   (size_t, size_t, const void *) = memalign_hook_ini;
 
+/* This is interposed by libc_malloc_debug.so to match with a compatible libc.
+   We don't use dlsym or equivalent because the dlsym symbol version got bumped
+   in 2.34 and is hence unusable in libc_malloc_debug.so.  */
+unsigned __malloc_debug_totem = 0;
+
 /* Hooks for debugging versions.  The initial hooks just call the
    initialization routine, then do the normal work. */
 
@@ -59,6 +64,7 @@ generic_hook_ini (void)
   if (hook != NULL)
     (*hook)();
 #endif
+  __malloc_debug_totem = 1;
 }
 
 static void *
@@ -81,6 +87,8 @@ memalign_hook_ini (size_t alignment, size_t sz, const void *caller)
   generic_hook_ini ();
   return memalign (alignment, sz);
 }
+
+static bool force_malloc_check_off = false;
 
 #include "malloc-check.c"
 
@@ -156,7 +164,7 @@ malloc_set_state (void *msptr)
   __realloc_hook = NULL;
   __free_hook = NULL;
   __memalign_hook = NULL;
-  using_malloc_checking = 0;
+  force_malloc_check_off = true;
 
   /* Patch the dumped heap.  We no longer try to integrate into the
      existing heap.  Instead, we mark the existing chunks as mmapped.
