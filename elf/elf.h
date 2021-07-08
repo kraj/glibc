@@ -898,6 +898,7 @@ typedef struct
    Dyn.d_un.d_val field of the Elf*_Dyn structure.  This follows Sun's
    approach.  */
 #define DT_VALRNGLO	0x6ffffd00
+#define DT_GNU_FLAGS_1   0x6ffffdf4	/* GNU extension flags */
 #define DT_GNU_PRELINKED 0x6ffffdf5	/* Prelinking timestamp */
 #define DT_GNU_CONFLICTSZ 0x6ffffdf6	/* Size of conflict section */
 #define DT_GNU_LIBLISTSZ 0x6ffffdf7	/* Size of library list */
@@ -912,7 +913,7 @@ typedef struct
 #define DT_SYMINENT	0x6ffffdff	/* Entry size of syminfo */
 #define DT_VALRNGHI	0x6ffffdff
 #define DT_VALTAGIDX(tag)	(DT_VALRNGHI - (tag))	/* Reverse order! */
-#define DT_VALNUM 12
+#define DT_VALNUM 13
 
 /* DT_* entries which fall between DT_ADDRRNGHI & DT_ADDRRNGLO use the
    Dyn.d_un.d_ptr field of the Elf*_Dyn structure.
@@ -1000,6 +1001,10 @@ typedef struct
 #define	DF_1_KMOD       0x10000000
 #define	DF_1_WEAKFILTER 0x20000000
 #define	DF_1_NOCOMMON   0x40000000
+
+/* State flags selectable in the `d_un.d_val' element of the DT_GNU_FLAGS_1
+   entry in the dynamic section.  */
+#define DF_GNU_1_UNIQUE 0x00000001	/* Load max 1 copy of this DSO.  */
 
 /* Flags for the feature selection in DT_FEATURE_1.  */
 #define DTF_1_PARINIT	0x00000001

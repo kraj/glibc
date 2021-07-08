@@ -25,5 +25,7 @@
    (DF_1_NOW | DF_1_NODELETE | DF_1_INITFIRST | DF_1_NOOPEN \
     | DF_1_ORIGIN | DF_1_NODEFLIB | DF_1_PIE)
 
+#define DT_GNU_1_SUPPORTED_MASK DF_GNU_1_UNIQUE
+
 #endif /* !_ISOMAC */
 #endif /* elf.h */
