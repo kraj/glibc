@@ -1294,6 +1294,10 @@ extern void _dl_show_scope (struct link_map *new, int from)
 extern struct link_map *_dl_find_dso_for_object (const ElfW(Addr) addr);
 rtld_hidden_proto (_dl_find_dso_for_object)
 
+extern struct link_map *_dl_find_dso (const char *name, Lmid_t nsid);
+rtld_hidden_proto (_dl_find_dso)
+
+
 /* Initialization which is normally done by the dynamic linker.  */
 extern void _dl_non_dynamic_init (void)
      attribute_hidden;

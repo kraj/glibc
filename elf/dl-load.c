@@ -2028,24 +2028,13 @@ open_path (const char *name, size_t namelen, int mode,
   return -1;
 }
 
-/* Map in the shared object file NAME.  */
-
+/* Search for a shared object in a given namespace.  */
 struct link_map *
-_dl_map_object (struct link_map *loader, const char *name,
-		int type, int trace_mode, int mode, Lmid_t nsid)
+_dl_find_dso (const char *name, Lmid_t nsid)
 {
-  int fd;
-  const char *origname = NULL;
-  char *realname;
-  char *name_copy;
   struct link_map *l;
-  struct filebuf fb;
 
-  assert (nsid >= 0);
-  assert (nsid < GL(dl_nns));
-
-  /* Look for this name among those already loaded.  */
-  for (l = GL(dl_ns)[nsid]._ns_loaded; l; l = l->l_next)
+  for (l = GL(dl_ns)[nsid]._ns_loaded; l != NULL; l = l->l_next)
     {
       /* If the requested name matches the soname of a loaded object,
 	 use that object.  Elide this check for names that have not
@@ -2071,6 +2060,33 @@ _dl_map_object (struct link_map *loader, const char *name,
 	}
 
       /* We have a match.  */
+      return l;
+    }
+
+  return NULL;
+}
+
+/* Map in the shared object file NAME.  */
+
+struct link_map *
+_dl_map_object (struct link_map *loader, const char *name,
+		int type, int trace_mode, int mode, Lmid_t nsid)
+{
+  int fd;
+  const char *origname = NULL;
+  char *realname;
+  char *name_copy;
+  struct link_map *l;
+  struct filebuf fb;
+
+  assert (nsid >= 0);
+  assert (nsid < GL(dl_nns));
+
+  /* Look for this name among those already loaded.  */
+  l = _dl_find_dso (name, nsid);
+
+  if (l != NULL)
+    {
       return l;
     }
 
