@@ -101,6 +101,9 @@ $(objpfx)$(lib).so: $(firstword $($(lib)-map) \
 				$(addprefix $(common-objpfx), \
 					    $(filter $(lib).map, \
 						     $(version-maps))))
+ifneq ($(ld-zunique),yes)
+$(objpfx)$(lib).so: $(common-objpfx)/elf/dynamic-notes.os
+endif
 endif
 
 endif

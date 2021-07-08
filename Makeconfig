@@ -398,6 +398,9 @@ LDFLAGS-lib.so += -Wl,-z,now
 # Extra flags for dynamically linked non-test main programs.
 link-extra-flags += -Wl,-z,now
 endif
+ifeq ($(ld-zunique),yes)
+LDFLAGS-lib.so += -Wl,-z,unique
+endif
 
 # Command to run after every final link (executable or shared object).
 # This is invoked with $(call after-link,...), so it should operate on

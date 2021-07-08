@@ -1389,9 +1389,21 @@ fi
 rm -f conftest*])
 AC_SUBST(libc_cv_hashstyle)
 
+old_LDFLAGS="$LDFLAGS"
+LDFLAGS="-Wl,--fatal-warnings -Wl,-z,unique -shared"
+AC_CACHE_CHECK([for linker DT_GNU_FLAGS_1 / DF_GNU_1_UNIQUE support],
+	       AC_LINK_IFELSE([AC_LANG_SOURCE([void foo (void) { }])],
+			      libc_cv_ld_zunique=yes,
+			      libc_cv_ld_zunique=no))
+LDFLAGS="$old_LDFLAGS"
+AC_SUBST(libc_cv_ld_zunique)
+LIBC_CONFIG_VAR([ld_zunique], [$libc_cv_ld_zunique])
+
 # The linker's default -shared behavior is good enough if it
 # does these things that our custom linker scripts ensure that
-# all allocated NOTE sections come first.
+# all allocated NOTE sections come first AND it understands
+# -z unique should result in DT_GNU_FLAGS_1/DF_GNU_1_UNIQUE
+# sections in its output.
 if test "$use_default_link" = default; then
   AC_CACHE_CHECK([for sufficient default -shared layout],
 		  libc_cv_use_default_link, [dnl
@@ -1427,9 +1439,15 @@ EOF
       esac
       shift 2
     done
-    case "$libc_seen_a$libc_seen_b" in
-    yesyes)
+    case "$libc_seen_a$libc_seen_b$libc_cv_ld_zunique" in
+    yesyesyes)
       libc_cv_use_default_link=yes
+      ;;
+    yesyesno)
+      echo >&AS_MESSAGE_LOG_FD "\
+shared layout from:
+$ac_try
+is OK but -Wl,-z,unique is unsupported so linker scripts are required"
       ;;
     *)
       echo >&AS_MESSAGE_LOG_FD "\

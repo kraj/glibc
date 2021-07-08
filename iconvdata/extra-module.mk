@@ -7,6 +7,10 @@ $(objpfx)$(mod).so: $(addprefix $(objpfx),$(addsuffix .os,$($(mod)-routines)))\
 		    $(shlib-lds) $(link-libc-deps)
 	$(build-module-asneeded)
 
+ifneq ($(ld-zunique),yes)
+$(objpfx)$(mod).so: $(common-objpfx)/elf/dynamic-notes.os
+endif
+
 ifneq (,$(extra-modules-left))
 include extra-module.mk
 endif

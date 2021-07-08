@@ -104,6 +104,9 @@ endif
 
 ifeq (yes,$(build-shared))
 extra-objs	= $(all-rtld-routines:%=%.os) sofini.os interp.os
+ifneq (yes,$(ld-zunique))
+extra-objs      += dynamic-notes.os
+endif
 generated	+= librtld.os dl-allobjs.os ld.so ldd
 install-others	= $(inst_rtlddir)/$(rtld-installed-name)
 install-bin-script = ldd

@@ -625,6 +625,7 @@ libc_cv_cc_nofma
 libc_cv_mtls_dialect_gnu2
 fno_unit_at_a_time
 libc_cv_has_glob_dat
+libc_cv_ld_zunique
 libc_cv_hashstyle
 libc_cv_fpie
 libc_cv_z_execstack
@@ -6181,9 +6182,46 @@ fi
 $as_echo "$libc_cv_hashstyle" >&6; }
 
 
+old_LDFLAGS="$LDFLAGS"
+LDFLAGS="-Wl,--fatal-warnings -Wl,-z,unique -shared"
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for linker DT_GNU_FLAGS_1 / DF_GNU_1_UNIQUE support" >&5
+$as_echo_n "checking for linker DT_GNU_FLAGS_1 / DF_GNU_1_UNIQUE support... " >&6; }
+if { as_var=cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+void foo (void) { }
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  libc_cv_ld_zunique=yes
+else
+  libc_cv_ld_zunique=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext; eval \${$as_var+:} false; }; then :
+  $as_echo_n "(cached) " >&6
+fi
+eval ac_res=\$cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+void foo (void) { }
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  libc_cv_ld_zunique=yes
+else
+  libc_cv_ld_zunique=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+LDFLAGS="$old_LDFLAGS"
+
+config_vars="$config_vars
+ld_zunique = $libc_cv_ld_zunique"
+
 # The linker's default -shared behavior is good enough if it
 # does these things that our custom linker scripts ensure that
-# all allocated NOTE sections come first.
+# all allocated NOTE sections come first AND it understands
+# -z unique should result in DT_GNU_FLAGS_1/DF_GNU_1_UNIQUE
+# sections in its output.
 if test "$use_default_link" = default; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for sufficient default -shared layout" >&5
 $as_echo_n "checking for sufficient default -shared layout... " >&6; }
@@ -6226,9 +6264,15 @@ EOF
       esac
       shift 2
     done
-    case "$libc_seen_a$libc_seen_b" in
-    yesyes)
+    case "$libc_seen_a$libc_seen_b$libc_cv_ld_zunique" in
+    yesyesyes)
       libc_cv_use_default_link=yes
+      ;;
+    yesyesno)
+      echo >&5 "\
+shared layout from:
+$ac_try
+is OK but -Wl,-z,unique is unsupported so linker scripts are required"
       ;;
     *)
       echo >&5 "\

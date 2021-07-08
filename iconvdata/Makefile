@@ -67,6 +67,9 @@ modules	:= ISO8859-1 ISO8859-2 ISO8859-3 ISO8859-4 ISO8859-5		 \
 ifeq ($(bind-now),yes)
 LDFLAGS.so += -Wl,-z,now
 endif
+ifeq ($(ld-zunique),yes)
+LDFLAGS.so += -Wl,-z,unique
+endif
 
 modules.so := $(addsuffix .so, $(modules))
 

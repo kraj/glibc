@@ -581,7 +581,8 @@ $(common-objpfx)shlib.lds: $(common-objpfx)config.make $(..)Makerules
 		 PROVIDE(__start___libc_IO_vtables = .);\
 		 __libc_IO_vtables : { *(__libc_IO_vtables) }\
 		 PROVIDE(__stop___libc_IO_vtables = .);\
-		 /DISCARD/ : { *(.gnu.glibc-stub.*) }@'
+		 /DISCARD/ : { *(.gnu.glibc-stub.*) }@' \
+	      -e 's/^.*\*(\.dynamic).*$$/   .dynamic : { *dynamic-notes.os(.dynamic) *(.dynamic) }/'
 	test -s $@T
 	mv -f $@T $@
 common-generated += shlib.lds
@@ -636,6 +637,16 @@ build-shlib-objlist = $(build-module-helper-objlist) \
 # Also omits crti.o and crtn.o, which we do not want
 # since we define our own `.init' section specially.
 LDFLAGS-c.so = -nostdlib -nostartfiles
+
+# The stub dynamic-notes.os should not have weak/undefined symbol magic in it.
+# It's not really part of the internals, rather it is a vector for linker magic
+# which we need when the linker isn't new enough:
+%/dynamic-notes.os: CPPFLAGS += -UMODULE_NAME
+
+ifeq ($(ld-zunique),yes)
+LDFLAGS-c.so += -Wl,-z,unique
+endif
+
 # But we still want to link libc.so against $(libc.so-gnulib).
 LDLIBS-c.so += $(libc.so-gnulib)
 # Give libc.so an entry point and make it directly runnable itself.
@@ -705,6 +716,11 @@ $(common-objpfx)linkobj/libc.so: $(common-objpfx)linkobj/libc_pic.a \
 			 $(shlib-lds)
 	$(build-shlib)
 	$(call after-link,$@)
+
+ifneq ($(ld-zunique),yes)
+$(common-objpfx)libc.so: $(common-objpfx)elf/dynamic-notes.os
+$(common-objpfx)linkobj/libc.so: $(common-objpfx)elf/dynamic-notes.os
+endif
 
 ifeq ($(build-shared),yes)
 $(common-objpfx)libc.so: $(common-objpfx)libc.map
