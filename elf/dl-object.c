@@ -175,6 +175,9 @@ _dl_new_object (char *realname, const char *libname, int type,
 
   new->l_local_scope[0] = &new->l_searchlist;
 
+  if (mode & __RTLD_AUDIT)
+    new->l_dont_set_tls_static = 1;
+
   /* Determine the origin.  If allocating the link map for the main
      executable, the realname is not known and "".  In this case, the
      origin needs to be determined by other means.  However, in case

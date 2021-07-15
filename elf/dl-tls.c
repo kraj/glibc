@@ -593,10 +593,18 @@ _dl_allocate_tls_init (void *result)
 	     some platforms use in static programs requires it.  */
 	  dtv[map->l_tls_modid].pointer.val = dest;
 
-	  /* Copy the initialization image and clear the BSS part.  */
-	  memset (__mempcpy (dest, map->l_tls_initimage,
-			     map->l_tls_initimage_size), '\0',
-		  map->l_tls_blocksize - map->l_tls_initimage_size);
+	  /* Copy the initialization image and clear the BSS part.  For
+	     ldaudit modules or depedencies with initial-exec TLS, we can not
+	     set the initial TLS image on default loader initialization
+	     because it would already be set by the ldaudit setup.  However,
+	     subsequent thread creation would need to follow the default
+	     behaviour.   */
+	  if (__glibc_unlikely (!map->l_dont_set_tls_static))
+	    memset (__mempcpy (dest, map->l_tls_initimage,
+			       map->l_tls_initimage_size), '\0',
+		    map->l_tls_blocksize - map->l_tls_initimage_size);
+	  else
+	    map->l_dont_set_tls_static = 0;
 	}
 
       total += cnt;
