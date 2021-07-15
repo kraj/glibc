@@ -1055,6 +1055,8 @@ ERROR: audit interface '%s' requires version %d (maximum supported version %d); 
 
   /* Mark the DSO as being used for auditing.  */
   dlmargs.map->l_auditing = 1;
+  /* Mark the DSO to not clear the TLS bss in tls initialization.  */
+  dlmargs.map->l_dont_set_tls_static = 1;
 }
 
 /* Notify the the audit modules that the object MAP has already been

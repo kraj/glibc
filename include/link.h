@@ -195,6 +195,8 @@ struct link_map
     unsigned int l_need_tls_init:1; /* Nonzero if GL(dl_init_static_tls)
 				       should be called on this link map
 				       when relocation finishes.  */
+    unsigned int l_dont_set_tls_static:1; /* Non zero if static TLS setup should
+					     not be initialized.  */
     unsigned int l_auditing:1;	/* Nonzero if the DSO is used in auditing.  */
     unsigned int l_audit_any_plt:1; /* Nonzero if at least one audit module
 				       is interested in the PLT interception.*/
