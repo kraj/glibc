@@ -36,7 +36,7 @@ dl-routines	= $(addprefix dl-,load lookup object reloc deps \
 				  exception sort-maps lookup-direct \
 				  call-libc-early-init write \
 				  thread_gscope_wait tls_init_tp \
-				  debug-symbols)
+				  debug-symbols audit)
 ifeq (yes,$(use-ldconfig))
 dl-routines += dl-cache
 endif
