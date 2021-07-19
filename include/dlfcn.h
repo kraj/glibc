@@ -12,6 +12,7 @@
 #define __RTLD_AUDIT	0x08000000
 #define __RTLD_SECURE	0x04000000 /* Apply additional security checks.  */
 #define __RTLD_NOIFUNC	0x02000000 /* Suppress calling ifunc functions.  */
+#define __RTLD_VDSO	0x01000000
 
 #define __LM_ID_CALLER	-2
 
