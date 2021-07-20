@@ -1392,6 +1392,13 @@ link_map_audit_state (struct link_map *l, size_t index)
     }
 }
 
+/* Call the la_activity() from the audit modules from the link map L
+   and issues the ACTION argument.  */
+void _dl_audit_activity_map (struct link_map *l, int action)
+  attribute_hidden;
+/* Call the la_activity() from the audit modules from the link map
+   from the namespace NSSID and issues the ACTION argument.  */
+void _dl_audit_activity_nsid (Lmid_t nsid, int action);
 /* Call the la_objopen() from the audit modules for the link_map L on the
    namespace identification NSID.  If CHECK_AUDIT is set it will also check
    if main mapping of the namespace is a audit modules.  */
