@@ -231,6 +231,9 @@ _dl_sysdep_start (void **start_argptr,
 
   __tunables_init (_environ);
 
+  /* It should initialized after tunables.  */
+  _dl_sort_maps_init ();
+
 #ifdef DL_SYSDEP_INIT
   DL_SYSDEP_INIT;
 #endif
