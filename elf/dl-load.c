@@ -1062,28 +1062,12 @@ _dl_map_object_from_fd (const char *name, const char *origname, int fd,
   if (r->r_state == RT_CONSISTENT)
     {
 #ifdef SHARED
-      /* Auditing checkpoint: we are going to add new objects.  */
-      if ((mode & __RTLD_AUDIT) == 0
-	  && __glibc_unlikely (GLRO(dl_naudit) > 0))
-	{
-	  struct link_map *head = GL(dl_ns)[nsid]._ns_loaded;
-	  /* Do not call the functions for any auditing object and also do not
-	     try to call auditing functions if the namespace is currently
-	     empty.  This happens when opening the first DSO in a new
-	     namespace.  */
-	  if (head != NULL && head->l_auditing == 0)
-	    {
-	      struct audit_ifaces *afct = GLRO(dl_audit);
-	      for (unsigned int cnt = 0; cnt < GLRO(dl_naudit); ++cnt)
-		{
-		  if (afct->activity != NULL)
-		    afct->activity (&link_map_audit_state (head, cnt)->cookie,
-				    LA_ACT_ADD);
-
-		  afct = afct->next;
-		}
-	    }
-	}
+      /* Auditing checkpoint: we are going to add new objects.  Do not call
+	 the functions for any auditing object and also do not try to call
+	 auditing functions if the namespace is currently empty.  This
+	 happens when opening the first DSO in a new namespace.  */
+      if ((mode & __RTLD_AUDIT) == 0)
+	_dl_audit_activity_nsid (nsid, LA_ACT_ADD);
 #endif
 
       /* Notify the debugger we have added some objects.  We need to

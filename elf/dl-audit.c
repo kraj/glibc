@@ -20,6 +20,29 @@
 
 #ifdef SHARED
 void
+_dl_audit_activity_map (struct link_map *l, int action)
+{
+  struct audit_ifaces *afct = GLRO(dl_audit);
+  for (unsigned int cnt = 0; cnt < GLRO(dl_naudit); ++cnt)
+    {
+      if (afct->activity != NULL)
+	afct->activity (&link_map_audit_state (l, cnt)->cookie, action);
+      afct = afct->next;
+    }
+}
+
+void
+_dl_audit_activity_nsid (Lmid_t nsid, int action)
+{
+  struct link_map *head = GL(dl_ns)[nsid]._ns_loaded;
+  if (__glibc_likely (GLRO(dl_naudit) == 0)
+      || head == NULL || head->l_auditing)
+    return;
+
+  _dl_audit_activity_map (head, action);
+}
+
+void
 _dl_audit_objopen (struct link_map *l, Lmid_t nsid, bool check_audit)
 {
   if (__glibc_likely (GLRO(dl_naudit) == 0)
