@@ -1405,6 +1405,7 @@ void _dl_audit_activity_nsid (Lmid_t nsid, int action);
    namespace identification NSID.  If CHECK_AUDIT is set it will also check
    if main mapping of the namespace is a audit modules.  */
 void _dl_audit_objopen (struct link_map *l, Lmid_t nsid, bool check_audit);
+void _dl_audit_objclose (struct link_map *l, Lmid_t nsid);
 #endif /* SHARED */
 
 #if PTHREAD_IN_LIBC && defined SHARED
