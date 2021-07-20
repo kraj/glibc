@@ -1392,6 +1392,8 @@ link_map_audit_state (struct link_map *l, size_t index)
     }
 }
 
+bool _dl_audit_objsearch (const char **name, const char **origname,
+			  struct link_map *l, unsigned int code);
 /* Call the la_activity() from the audit modules from the link map L
    and issues the ACTION argument.  */
 void _dl_audit_activity_map (struct link_map *l, int action)

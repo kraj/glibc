@@ -42,6 +42,43 @@ _dl_audit_activity_nsid (Lmid_t nsid, int action)
   _dl_audit_activity_map (head, action);
 }
 
+bool
+_dl_audit_objsearch (const char **name, const char **origname,
+		     struct link_map *l, unsigned int code)
+{
+  if (__glibc_likely (GLRO(dl_naudit) == 0)
+      || l == NULL || l->l_auditing
+      || code == 0)
+    return true;
+
+  struct audit_ifaces *afct = GLRO(dl_audit);
+  for (unsigned int cnt = 0; cnt < GLRO(dl_naudit); ++cnt)
+    {
+      if (afct->objsearch != NULL)
+	{
+	  const char *before = *name;
+	  struct auditstate *state = link_map_audit_state (l, cnt);
+	  *name = afct->objsearch (*name, &state->cookie, code);
+	  if (*name == NULL)
+	    return false;
+
+	  if (origname != NULL && before != *name
+	      && strcmp (before, *name) != 0)
+	    {
+	      if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_FILES))
+		_dl_debug_printf ("audit changed filename %s -> %s\n",
+				  before, *name);
+
+	      if (*origname == NULL)
+		*origname = before;
+	    }
+	}
+      afct = afct->next;
+   }
+
+  return true;
+}
+
 void
 _dl_audit_objopen (struct link_map *l, Lmid_t nsid, bool check_audit)
 {
