@@ -338,6 +338,7 @@ rtld_hidden_def (_dl_fatal_printf)
 int
 _dl_name_match_p (const char *name, const struct link_map *map)
 {
+  /* Filter out the main executable.  */
   if (strcmp (name, map->l_name) == 0)
     return 1;
 

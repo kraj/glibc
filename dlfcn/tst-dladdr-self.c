@@ -1,4 +1,4 @@
-/* Check DTAUDIT and vDSO interaction.
+/* Check dladdr with the reference to own exectuable.
    Copyright (C) 2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -16,30 +16,40 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#include <link.h>
-#include <inttypes.h>
 #include <stdio.h>
 #include <string.h>
-#include <sys/auxv.h>
+#include <stdint.h>
+#include <support/check.h>
+#include <support/xdlfcn.h>
 
-unsigned int
-la_version (unsigned int version)
+void
+test_symbol (void)
 {
-  return LAV_CURRENT;
 }
 
-unsigned int
-la_objopen (struct link_map *map, Lmid_t lmid, uintptr_t *cookie)
+static int
+do_test (void)
 {
+  void *handle = xdlopen (NULL, RTLD_NOW);
+  int (*sym)(void) = xdlsym (handle, "test_symbol");
+
+  Dl_info info = { 0 };
   {
-    const char *p = strrchr (map->l_name, '/');
-    const char *l_name = p == NULL ? map->l_name : p + 1;
-    if (strcmp (l_name, "tst-audit22") == 0)
-      fprintf (stderr, "mainapp found\n");
+    int r = dladdr (sym, &info);
+    TEST_VERIFY_EXIT (r != 0);
   }
 
-  if (map->l_addr == getauxval (AT_SYSINFO_EHDR))
-    fprintf (stderr, "vdso found: %" PRIxPTR "\n", (uintptr_t) map->l_addr);
+  {
+    const char *p = strrchr (info.dli_fname, '/');
+    const char *dli_name = p == NULL ? info.dli_fname : p + 1;
+
+    TEST_COMPARE_STRING (dli_name, "tst-dladdr-self");
+  }
+
+  TEST_COMPARE_STRING (info.dli_sname, "test_symbol");
+  TEST_COMPARE ((uintptr_t) info.dli_saddr, (uintptr_t) test_symbol);
 
   return 0;
 }
+
+#include <support/test-driver.c>

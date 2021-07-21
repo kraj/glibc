@@ -48,16 +48,16 @@
 
 #ifdef PIC
 # include <link.h>
+# include <ldsodefs.h>
 
 static int
 callback (struct dl_phdr_info *info, size_t size, void *data)
 {
-  if (info->dlpi_name[0] == '\0')
+  if (info->dlpi_name == _dl_argv[0])
     {
-      /* The link map for the executable is created by calling
-	 _dl_new_object with "" as filename.  dl_iterate_phdr
-	 calls the callback function with filename from the
-	 link map as dlpi_name.  */
+      /* The link map l_name for the executable is set to the _dl_argv[0]
+	 after argument processing.  dl_iterate_phdr() calls the callback
+	 function with filename from the link map as dlpi_name.  */
       u_long *load_address = data;
       *load_address = (u_long) info->dlpi_addr;
       return 1;

@@ -44,7 +44,7 @@
 	   auditing, in ld.so.  */					      \
 	if ((l)->l_origin == NULL)					      \
 	  {								      \
-	    assert ((l)->l_name[0] == '\0' || IS_RTLD (l));		      \
+	    assert ((l)->l_type == lt_executable || IS_RTLD (l));	      \
 	    (l)->l_origin = _dl_get_origin ();				      \
 	    dst_len = ((l)->l_origin && (l)->l_origin != (char *) -1	      \
 			  ? strlen ((l)->l_origin) : 0);		      \

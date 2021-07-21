@@ -1998,13 +1998,18 @@ _dl_map_object (struct link_map *loader, const char *name,
   assert (nsid >= 0);
   assert (nsid < GL(dl_nns));
 
+  /* Special case: trying to map itself.  */
+  if (name[0] == '\0')
+    return GL(dl_ns)[nsid]._ns_loaded;
+
   /* Look for this name among those already loaded.  */
   for (l = GL(dl_ns)[nsid]._ns_loaded; l; l = l->l_next)
     {
       /* If the requested name matches the soname of a loaded object,
 	 use that object.  Elide this check for names that have not
-	 yet been opened.  */
-      if (__glibc_unlikely ((l->l_faked | l->l_removed) != 0))
+	 yet been opened or the executable itself.  */
+      if (__glibc_unlikely ((l->l_faked | l->l_removed
+			     || l->l_type == lt_executable) != 0))
 	continue;
       if (!_dl_name_match_p (name, l))
 	{
