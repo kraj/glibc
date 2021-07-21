@@ -94,6 +94,7 @@ do_test (int argc, char *argv[])
   uintptr_t vdso_process = 0;
   bool vdso_audit_found = false;
   uintptr_t vdso_audit = 0;
+  bool mainapp_found = false;
 
   FILE *out = fmemopen (result.err.buffer, result.err.length, "r");
   TEST_VERIFY (out != NULL);
@@ -108,11 +109,14 @@ do_test (int argc, char *argv[])
 	  vdso_audit = parse_address (buffer + strlen ("vdso found: "));
           vdso_audit_found = true;
 	}
+      else if (startswith (buffer, "mainapp found"))
+	mainapp_found = true;
     }
 
   TEST_COMPARE (vdso_audit_found, true);
   if (vdso_audit != 0)
     TEST_COMPARE (vdso_process, vdso_audit);
+  TEST_COMPARE (mainapp_found, true);
 
   free (buffer);
   xfclose (out);

@@ -39,8 +39,7 @@ call_init (struct link_map *l, int argc, char **argv, char **env)
   l->l_init_called = 1;
 
   /* Check for object which constructors we do not run here.  */
-  if (__builtin_expect (l->l_name[0], 'a') == '\0'
-      && l->l_type == lt_executable)
+  if (l->l_type == lt_executable)
     return;
 
   /* Print a debug message if wanted.  */

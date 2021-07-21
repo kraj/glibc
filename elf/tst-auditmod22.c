@@ -21,6 +21,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <stdio.h>
+#include <string.h>
 #include <sys/auxv.h>
 
 static inline bool
@@ -46,6 +47,13 @@ la_objopen (struct link_map *map, Lmid_t lmid, uintptr_t *cookie)
     fprintf (stderr, "vdso found: %p\n", NULL);
   else if (map->l_addr == getauxval (AT_SYSINFO_EHDR))
     fprintf (stderr, "vdso found: %p\n", (void*) map->l_addr);
+
+  {
+    const char *p = strrchr (map->l_name, '/');
+    const char *l_name = p == NULL ? map->l_name : p + 1;
+    if (strcmp (l_name, "tst-audit22") == 0)
+      fprintf (stderr, "mainapp found\n");
+  }
 
   return 0;
 }
