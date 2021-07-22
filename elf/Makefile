@@ -226,6 +226,7 @@ tests += restest1 preloadtest loadfail multiload origtest resolvfail \
 	 tst-audit20 \
 	 tst-audit21 \
 	 tst-audit22 \
+	 tst-audit23 \
 	 tst-single_threaded tst-single_threaded-pthread \
 	 tst-tls-ie tst-tls-ie-dlmopen argv0test \
 	 tst-glibc-hwcaps tst-glibc-hwcaps-prepend tst-glibc-hwcaps-mask \
@@ -319,6 +320,7 @@ modules-names = testobj1 testobj2 testobj3 testobj4 testobj5 testobj6 \
 		tst-auditmod20 tst-audit20mod \
 		tst-auditmod21 \
 		tst-auditmod22 \
+		tst-auditmod23 tst-audit23mod \
 		$(if $(CXX),tst-unique3lib tst-unique3lib2 tst-unique4lib \
 		  tst-nodelete-uniquemod tst-nodelete-rtldmod \
 		  tst-nodelete-zmod \
@@ -1576,6 +1578,10 @@ tst-audit21-ENV = LD_AUDIT=$(objpfx)tst-auditmod21.so
 
 $(objpfx)tst-audit22.out: $(objpfx)tst-auditmod22.so
 tst-audit22-ARGS = -- $(host-test-program-cmd)
+
+$(objpfx)tst-audit23.out: $(objpfx)tst-auditmod23.so \
+			  $(objpfx)tst-audit23mod.so
+tst-audit23-ARGS = -- $(host-test-program-cmd)
 
 # tst-sonamemove links against an older implementation of the library.
 LDFLAGS-tst-sonamemove-linkmod1.so = \
