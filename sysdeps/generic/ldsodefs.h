@@ -1406,6 +1406,7 @@ void _dl_audit_activity_nsid (Lmid_t nsid, int action);
    if main mapping of the namespace is a audit modules.  */
 void _dl_audit_objopen (struct link_map *l, Lmid_t nsid, bool check_audit);
 void _dl_audit_objclose (struct link_map *l, Lmid_t nsid);
+void _dl_audit_preinit (struct link_map *l);
 void _dl_audit_symbind (struct link_map *l, struct reloc_result *reloc_result,
 			const ElfW(Sym) *defsym, DL_FIXUP_VALUE_TYPE *value,
 			lookup_t result);
