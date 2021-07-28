@@ -146,7 +146,7 @@ _dl_fixup (
       unsigned int init = atomic_load_acquire (&reloc_result->init);
       if (init == 0)
 	{
-	  _dl_audit_symbind (l, reloc_result, sym, &value, result);
+	  _dl_audit_symbind (l, reloc_result, sym, &value, result, false);
 
 	  /* Store the result for later runs.  */
 	  if (__glibc_likely (! GLRO(dl_bind_not)))
@@ -321,7 +321,7 @@ _dl_profile_fixup (
 	 auditing libraries the possibility to change the value and
 	 tell us whether further auditing is wanted.  */
       if (defsym != NULL && GLRO(dl_naudit) > 0)
-	_dl_audit_symbind (l, reloc_result, defsym, &value, result);
+	_dl_audit_symbind (l, reloc_result, defsym, &value, result, false);
 #endif
 
       /* Store the result for later runs.  */

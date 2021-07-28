@@ -190,7 +190,7 @@ rtld_hidden_def (_dl_audit_symbind_alt)
 void
 _dl_audit_symbind (struct link_map *l, struct reloc_result *reloc_result,
 		   const ElfW(Sym) *defsym, DL_FIXUP_VALUE_TYPE *value,
-		   lookup_t result)
+		   lookup_t result, bool bindnow)
 {
   reloc_result->bound = result;
   /* Compute index of the symbol entry in the symbol table of the DSO with the
@@ -219,6 +219,7 @@ _dl_audit_symbind (struct link_map *l, struct reloc_result *reloc_result,
 
   unsigned int flags = 0;
   struct audit_ifaces *afct = GLRO(dl_audit);
+  uintptr_t new_value = (uintptr_t) sym.st_value;
   for (unsigned int cnt = 0; cnt < GLRO(dl_naudit); ++cnt)
     {
       /* XXX Check whether both DSOs must request action or only one */
@@ -229,16 +230,16 @@ _dl_audit_symbind (struct link_map *l, struct reloc_result *reloc_result,
 	{
 	  if (afct->symbind != NULL)
 	    {
-	      uintptr_t new_value = afct->symbind (&sym,
-						   reloc_result->boundndx,
-						   &l_state->cookie,
-						   &result_state->cookie,
-						   &flags,
-						   strtab2 + defsym->st_name);
+	      flags |= bindnow ? LA_SYMB_NOPLTENTER | LA_SYMB_NOPLTEXIT : 0;
+	      new_value = afct->symbind (&sym, reloc_result->boundndx,
+					 &l_state->cookie,
+					 &result_state->cookie, &flags,
+					 strtab2 + defsym->st_name);
 	      if (new_value != (uintptr_t) sym.st_value)
 		{
 		  flags |= LA_SYMB_ALTVALUE;
-		  sym.st_value = new_value;
+		  sym.st_value = bindnow
+		    ? DL_FIXUP_BINDNOW_ADDR_VALUE (new_value) : new_value;
 		}
 	    }
 
@@ -259,7 +260,7 @@ _dl_audit_symbind (struct link_map *l, struct reloc_result *reloc_result,
     }
 
   reloc_result->flags = flags;
-  *value = DL_FIXUP_ADDR_VALUE (sym.st_value);
+  DL_FIXUP_BINDNOW_RELOC (value, new_value, sym.st_value);
 }
 
 void
