@@ -1,4 +1,4 @@
-/* Check DTAUDIT and vDSO interaction.
+/* Audit modules for tst-audit24b.
    Copyright (C) 2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -18,9 +18,15 @@
 
 #include <link.h>
 #include <inttypes.h>
-#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include <sys/auxv.h>
+
+#define TEST_NAME "tst-audit24b"
+#define TEST_FUNC "tst_audit24b"
+
+#define AUDIT24_COOKIE     0x1
+#define AUDIT24MOD1_COOKIE 0x2
+#define AUDIT24MOD2_COOKIE 0x3
 
 unsigned int
 la_version (unsigned int version)
@@ -31,17 +37,30 @@ la_version (unsigned int version)
 unsigned int
 la_objopen (struct link_map *map, Lmid_t lmid, uintptr_t *cookie)
 {
-  {
-    const char *p = strrchr (map->l_name, '/');
-    const char *l_name = p == NULL ? map->l_name : p + 1;
-    if (strcmp (l_name, "tst-audit22") == 0)
-      fprintf (stderr, "mainapp found\n");
-  }
+  const char *p = strrchr (map->l_name, '/');
+  const char *l_name = p == NULL ? map->l_name : p + 1;
+  uintptr_t ck = -1;
+  if (strcmp (l_name, TEST_NAME "mod1.so") == 0)
+    ck = AUDIT24MOD1_COOKIE;
+  else if (strcmp (l_name, TEST_NAME "mod2.so") == 0)
+    ck = AUDIT24MOD2_COOKIE;
+  else if (strcmp (l_name, TEST_NAME) == 0)
+    ck = AUDIT24_COOKIE;
 
-  if (map->l_addr == getauxval (AT_SYSINFO_EHDR))
-    fprintf (stderr, "vdso found: %" PRIxPTR "\n", (uintptr_t) map->l_addr);
+  *cookie = ck;
+  return ck == -1 ? 0 : LA_FLG_BINDFROM | LA_FLG_BINDTO;
+}
 
-  return LA_FLG_BINDFROM | LA_FLG_BINDTO;
+static int
+tst_func1 (void)
+{
+  return 1;
+}
+
+static int
+tst_func2 (void)
+{
+  return 2;
 }
 
 #if __ELF_NATIVE_CLASS == 64
@@ -49,17 +68,32 @@ uintptr_t
 la_symbind64 (Elf64_Sym *sym, unsigned int ndx,
 	      uintptr_t *refcook, uintptr_t *defcook,
 	      unsigned int *flags, const char *symname)
-{
-  fprintf (stderr, "%s: %s\n", __func__, symname);
-  return sym->st_value;
-}
 #else
 uintptr_t
 la_symbind32 (Elf32_Sym *sym, unsigned int ndx,
 	      uintptr_t *refcook, uintptr_t *defcook,
 	      unsigned int *flags, const char *symname)
-{
-  fprintf (stderr, "%s: %s\n", __func__, symname);
-  return sym->st_value;
-}
 #endif
+{
+  if (*refcook == AUDIT24_COOKIE)
+    {
+      if (*defcook == AUDIT24MOD1_COOKIE)
+	  {
+	    if (strcmp (symname, TEST_FUNC "mod1_func1") == 0)
+	      return (uintptr_t) tst_func1;
+	    else if (strcmp (symname, TEST_FUNC "mod1_func2") == 0)
+	      return sym->st_value;
+	    abort ();
+	  }
+      /* malloc functions.  */
+      return sym->st_value;
+    }
+  else if (*refcook == AUDIT24MOD1_COOKIE)
+    {
+      if (*defcook == AUDIT24MOD2_COOKIE
+	  && (strcmp (symname, TEST_FUNC "mod2_func1") == 0))
+	return (uintptr_t) tst_func2;
+    }
+
+  abort ();
+}

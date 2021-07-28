@@ -227,6 +227,7 @@ tests += restest1 preloadtest loadfail multiload origtest resolvfail \
 	 tst-audit21 \
 	 tst-audit22 \
 	 tst-audit23 \
+	 tst-audit24a tst-audit24b tst-audit24c tst-audit24d \
 	 tst-single_threaded tst-single_threaded-pthread \
 	 tst-tls-ie tst-tls-ie-dlmopen argv0test \
 	 tst-glibc-hwcaps tst-glibc-hwcaps-prepend tst-glibc-hwcaps-mask \
@@ -321,6 +322,11 @@ modules-names = testobj1 testobj2 testobj3 testobj4 testobj5 testobj6 \
 		tst-auditmod21 \
 		tst-auditmod22 \
 		tst-auditmod23 tst-audit23mod \
+		tst-auditmod24a tst-audit24amod1 tst-audit24amod2 \
+		tst-auditmod24b tst-audit24bmod1 tst-audit24bmod2 \
+		tst-auditmod24c \
+		tst-auditmod24d tst-audit24dmod1 tst-audit24dmod2 \
+		tst-audit24dmod3 tst-audit24dmod4 \
 		$(if $(CXX),tst-unique3lib tst-unique3lib2 tst-unique4lib \
 		  tst-nodelete-uniquemod tst-nodelete-rtldmod \
 		  tst-nodelete-zmod \
@@ -1582,6 +1588,50 @@ tst-audit22-ARGS = -- $(host-test-program-cmd)
 $(objpfx)tst-audit23.out: $(objpfx)tst-auditmod23.so \
 			  $(objpfx)tst-audit23mod.so
 tst-audit23-ARGS = -- $(host-test-program-cmd)
+
+$(objpfx)tst-audit24a.out: $(objpfx)tst-auditmod24a.so
+$(objpfx)tst-audit24a: $(objpfx)tst-audit24amod1.so \
+		       $(objpfx)tst-audit24amod2.so
+tst-audit24a-ENV = LD_AUDIT=$(objpfx)tst-auditmod24a.so
+LDFLAGS-tst-audit24a = -Wl,-z,now
+
+$(objpfx)tst-audit24b.out: $(objpfx)tst-auditmod24b.so
+$(objpfx)tst-audit24b: $(objpfx)tst-audit24bmod1.so \
+		       $(objpfx)tst-audit24bmod2.so
+$(objpfx)tst-audit24bmod1: $(objpfx)tst-audit24bmod2.so
+# The test check if a library without .gnu.version correctly calls the
+# audit callbacks.  So it uses an explicit link rule to avoid linking
+# against libc.so.
+$(objpfx)tst-audit24bmod1.so: $(objpfx)tst-audit24bmod1.os
+	$(CC) -nostdlib -nostartfiles -shared -o $@.new $(objpfx)tst-audit24bmod1.os \
+	  -Wl,-z,now
+	$(call after-link,$@.new)
+	mv -f $@.new $@
+CFLAGS-.os += $(call elide-stack-protector,.os,tst-audit24bmod1)
+$(objpfx)tst-audit24bmod2.so: $(objpfx)tst-audit24bmod2.os
+	$(CC) -nostdlib -nostartfiles -shared -o $@.new $(objpfx)tst-audit24bmod2.os
+	$(call after-link,$@.new)
+	mv -f $@.new $@
+CFLAGS-.os += $(call elide-stack-protector,.os,tst-audit24bmod2)
+tst-audit24b-ENV = LD_AUDIT=$(objpfx)tst-auditmod24b.so
+LDFLAGS-tst-audit24b = -Wl,-z,now
+
+# Same as tst-audit24a, but tests LD_BIND_NOW
+$(objpfx)tst-audit24c.out: $(objpfx)tst-auditmod24c.so
+$(objpfx)tst-audit24c: $(objpfx)tst-audit24amod1.so \
+		       $(objpfx)tst-audit24amod2.so
+tst-audit24c-ENV = LD_BIND_NOW=1 LD_AUDIT=$(objpfx)tst-auditmod24c.so
+LDFLAGS-tst-audit24b = -Wl,-z,lazy
+
+$(objpfx)tst-audit24d.out: $(objpfx)tst-auditmod24d.so
+$(objpfx)tst-audit24d: $(objpfx)tst-audit24dmod1.so \
+		       $(objpfx)tst-audit24dmod2.so
+$(objpfx)tst-audit24dmod1.so: $(objpfx)tst-audit24dmod3.so
+LDFLAGS-tst-audit24dmod1.so = -Wl,-z,now
+$(objpfx)tst-audit24dmod2.so: $(objpfx)tst-audit24dmod4.so
+LDFLAGS-tst-audit24dmod2.so = -Wl,-z,lazy
+tst-audit24d-ENV = LD_AUDIT=$(objpfx)tst-auditmod24d.so
+LDFLAGS-tst-audit24d = -Wl,-z,lazy
 
 # tst-sonamemove links against an older implementation of the library.
 LDFLAGS-tst-sonamemove-linkmod1.so = \

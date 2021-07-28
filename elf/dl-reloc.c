@@ -232,9 +232,7 @@ _dl_relocate_object (struct link_map *l, struct r_scope_elem *scope[],
 
   /* If DT_BIND_NOW is set relocate all references in this object.  We
      do not do this if we are profiling, of course.  */
-  // XXX Correct for auditing?
-  if (!consider_profiling
-      && __builtin_expect (l->l_info[DT_BIND_NOW] != NULL, 0))
+  if (!consider_profiling && l->l_info[DT_BIND_NOW] != NULL)
     lazy = 0;
 
   if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_RELOC))
@@ -283,8 +281,6 @@ _dl_relocate_object (struct link_map *l, struct r_scope_elem *scope[],
   {
     /* Do the actual relocation of the object's GOT and other data.  */
 
-    ELF_DYNAMIC_RELOCATE (l, scope, lazy, consider_profiling, skip_ifunc);
-
 #ifndef PROF
     if (consider_profiling | consider_symbind
 	&& l->l_info[DT_PLTRELSZ] != NULL)
@@ -307,6 +303,8 @@ _dl_relocate_object (struct link_map *l, struct r_scope_elem *scope[],
 	  }
       }
 #endif
+
+    ELF_DYNAMIC_RELOCATE (l, scope, lazy, consider_profiling, skip_ifunc);
   }
 
   /* Mark the object so we know this work has been done.  */

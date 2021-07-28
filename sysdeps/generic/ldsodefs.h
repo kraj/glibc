@@ -1410,7 +1410,7 @@ void _dl_audit_objclose (struct link_map *l, Lmid_t nsid);
 void _dl_audit_preinit (struct link_map *l);
 void _dl_audit_symbind (struct link_map *l, struct reloc_result *reloc_result,
 			const ElfW(Sym) *defsym, DL_FIXUP_VALUE_TYPE *value,
-			lookup_t result);
+			lookup_t result, bool bindnow);
 void _dl_audit_symbind_alt (struct link_map *l, const ElfW(Sym) *ref,
 			    void **value, lookup_t result);
 rtld_hidden_proto (_dl_audit_symbind_alt)
