@@ -228,6 +228,7 @@ tests += restest1 preloadtest loadfail multiload origtest resolvfail \
 	 tst-audit22 \
 	 tst-audit23 \
 	 tst-audit24a tst-audit24b tst-audit24c tst-audit24d \
+	 tst-audit25a tst-audit25b \
 	 tst-single_threaded tst-single_threaded-pthread \
 	 tst-tls-ie tst-tls-ie-dlmopen argv0test \
 	 tst-glibc-hwcaps tst-glibc-hwcaps-prepend tst-glibc-hwcaps-mask \
@@ -327,6 +328,8 @@ modules-names = testobj1 testobj2 testobj3 testobj4 testobj5 testobj6 \
 		tst-auditmod24c \
 		tst-auditmod24d tst-audit24dmod1 tst-audit24dmod2 \
 		tst-audit24dmod3 tst-audit24dmod4 \
+		tst-auditmod25 tst-audit25mod1 tst-audit25mod2 \
+		tst-audit25mod3 tst-audit25mod4 \
 		$(if $(CXX),tst-unique3lib tst-unique3lib2 tst-unique4lib \
 		  tst-nodelete-uniquemod tst-nodelete-rtldmod \
 		  tst-nodelete-zmod \
@@ -1632,6 +1635,25 @@ $(objpfx)tst-audit24dmod2.so: $(objpfx)tst-audit24dmod4.so
 LDFLAGS-tst-audit24dmod2.so = -Wl,-z,lazy
 tst-audit24d-ENV = LD_AUDIT=$(objpfx)tst-auditmod24d.so
 LDFLAGS-tst-audit24d = -Wl,-z,lazy
+
+$(objpfx)tst-audit25a.out: $(objpfx)tst-auditmod25.so
+$(objpfx)tst-audit25a: $(objpfx)tst-audit25mod1.so \
+		       $(objpfx)tst-audit25mod2.so \
+		       $(objpfx)tst-audit25mod3.so \
+		       $(objpfx)tst-audit25mod4.so
+$(objpfx)tst-audit25mod1.so: $(objpfx)tst-audit25mod3.so
+LDFLAGS-tst-audit25mod1.so = -Wl,-z,now
+$(objpfx)tst-audit25mod2.so: $(objpfx)tst-audit25mod4.so
+LDFLAGS-tst-audit25mod2.so = -Wl,-z,lazy
+tst-audit25a-ARGS = -- $(host-test-program-cmd)
+
+$(objpfx)tst-audit25b.out: $(objpfx)tst-auditmod25.so
+$(objpfx)tst-audit25b: $(objpfx)tst-audit25mod1.so \
+		       $(objpfx)tst-audit25mod2.so \
+		       $(objpfx)tst-audit25mod3.so \
+		       $(objpfx)tst-audit25mod4.so
+LDFLAGS-tst-audit25b = -Wl,-z,now
+tst-audit25b-ARGS = -- $(host-test-program-cmd)
 
 # tst-sonamemove links against an older implementation of the library.
 LDFLAGS-tst-sonamemove-linkmod1.so = \

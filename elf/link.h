@@ -148,8 +148,11 @@ enum
     LA_SYMB_NOPLTEXIT = 0x02,	/* la_pltexit will not be called.  */
     LA_SYMB_STRUCTCALL = 0x04,	/* Return value is a structure.  */
     LA_SYMB_DLSYM = 0x08,	/* Binding due to dlsym call.  */
-    LA_SYMB_ALTVALUE = 0x10	/* Value has been changed by a previous
+    LA_SYMB_ALTVALUE = 0x10,	/* Value has been changed by a previous
 				   la_symbind call.  */
+    LA_SYMB_BINDNOW = 0x20,	/* The symbol is resolved at loading time
+				   and it will not call neither la_pltenter
+				   not la_pltexit.  */
   };
 
 struct dl_phdr_info
