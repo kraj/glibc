@@ -990,10 +990,10 @@ file=%s [%lu]; audit interface function la_version returned zero; ignored.\n",
       return;
     }
 
-  if (lav > LAV_CURRENT)
+  if (lav != LAV_CURRENT)
     {
       _dl_debug_printf ("\
-ERROR: audit interface '%s' requires version %d (maximum supported version %d); ignored.\n",
+ERROR: audit interface '%s' requires version %d (current supported version %d); ignored.\n",
 			name, lav, LAV_CURRENT);
       unload_audit_module (dlmargs.map, original_tls_idx);
       return;
