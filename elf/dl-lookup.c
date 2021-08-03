@@ -24,6 +24,7 @@
 #include <ldsodefs.h>
 #include <dl-hash.h>
 #include <dl-machine.h>
+#include <dl-dst.h>
 #include <sysdep-cancel.h>
 #include <libc-lock.h>
 #include <tls.h>
@@ -917,11 +918,25 @@ _dl_lookup_symbol_x (const char *undef_name, struct link_map *undef_map,
 	}
     }
 
+  /* Found a candidate symbol but it resides in the base namespace BUT we are
+     in another namespace.  Therefore we want a proxy (which should already
+     have been created by this point.  */
+  if (current_value.m != NULL && !(IS_RTLD (current_value.m))
+      && undef_map->l_ns != LM_ID_BASE && current_value.m->l_name == LM_ID_BASE)
+    {
+      struct link_map *proxy = _dl_find_proxy (undef_map->l_ns,
+					       current_value.m->l_name);
+      if (proxy != NULL)
+	current_value.m = proxy;
+      else if (GLRO(dl_debug_mask) & DL_DEBUG_SYMBOLS)
+	_dl_debug_printf ("Failed to find proxy for %s\n", current_value.m->l_name);
+    }
+
   /* We have to check whether this would bind UNDEF_MAP to an object
      in the global scope which was dynamically loaded.  In this case
      we have to prevent the latter from being unloaded unless the
      UNDEF_MAP object is also unloaded.  */
-  if (__glibc_unlikely (current_value.m->l_type == lt_loaded)
+  if (__glibc_unlikely (current_value.m->l_real->l_type == lt_loaded)
       /* Don't do this for explicit lookups as opposed to implicit
 	 runtime lookups.  */
       && (flags & DL_LOOKUP_ADD_DEPENDENCY) != 0
@@ -935,8 +950,8 @@ _dl_lookup_symbol_x (const char *undef_name, struct link_map *undef_map,
 				  version, type_class, flags, skip_map);
 
   /* The object is used.  */
-  if (__glibc_unlikely (current_value.m->l_used == 0))
-    current_value.m->l_used = 1;
+  if (__glibc_unlikely (current_value.m->l_real->l_used == 0))
+    current_value.m->l_real->l_used = 1;
 
   if (__glibc_unlikely (GLRO(dl_debug_mask)
 			& (DL_DEBUG_BINDINGS|DL_DEBUG_PRELINK)))
@@ -944,7 +959,7 @@ _dl_lookup_symbol_x (const char *undef_name, struct link_map *undef_map,
 			&current_value, version, type_class, protected);
 
   *ref = current_value.s;
-  return LOOKUP_VALUE (current_value.m);
+  return LOOKUP_VALUE (current_value.m->l_real);
 }
 
 

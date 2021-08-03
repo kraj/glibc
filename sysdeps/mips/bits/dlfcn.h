@@ -32,6 +32,16 @@
    visible as if the object were linked directly into the program.  */
 #define RTLD_GLOBAL	0x0004
 
+/* If the following bit is set in the MODE argument to dlmopen
+   then the target object is loaded into the main namespace (if
+   it is not already there) and a shallow copy (proxy) is placed
+   in the target namespace: This allows multiple namespaces to
+   share a single instance of a DSO.  */
+#define RTLD_SHARED 0x00020
+
+/* Suppress RTLD_SHARED and/or DT_GNU_FLAGS_1/DF_GNU_1_UNIQUE  */
+#define RTLD_ISOLATE 0x00040
+
 /* Unix98 demands the following flag which is the inverse to RTLD_GLOBAL.
    The implementation does this by default and so we can define the
    value to zero.  */

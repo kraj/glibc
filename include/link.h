@@ -107,8 +107,9 @@ struct link_map
        They may change without notice.  */
 
     /* This is an element which is only ever different from a pointer to
-       the very same copy of this type for ld.so when it is used in more
-       than one namespace.  */
+       the very same copy of this type when:
+       - A shallow copy of ld.so is placed in namespaces other than LM_ID_BASE.
+       - An object is proxied into a namespace by dlmopen with RTLD_SHARED.  */
     struct link_map *l_real;
 
     /* Number of the namespace this link map belongs to.  */
@@ -180,6 +181,7 @@ struct link_map
     unsigned int l_relocated:1;	/* Nonzero if object's relocations done.  */
     unsigned int l_init_called:1; /* Nonzero if DT_INIT function called.  */
     unsigned int l_global:1;	/* Nonzero if object in _dl_global_scope.  */
+    unsigned int l_proxy:1;    /* Nonzero if object is a shallow copy.  */
     unsigned int l_reserved:2;	/* Reserved for internal use.  */
     unsigned int l_phdr_allocated:1; /* Nonzero if the data structure pointed
 					to by `l_phdr' is allocated.  */

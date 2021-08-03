@@ -66,6 +66,23 @@ openaux (void *a)
 			       ? lt_library : args->map->l_type),
 			      args->trace_mode, args->open_mode,
 			      args->map->l_ns);
+
+  /* This implies that we need to prepare a proxy in the target namespace.  */
+  if (__glibc_unlikely (args->map->l_ns != LM_ID_BASE &&
+                        args->aux->l_ns == LM_ID_BASE))
+    {
+      if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_FILES))
+	_dl_debug_printf ("need proxy for file=%s [%lu]; initstate=%d\n\n",
+			  args->aux->l_name, args->aux->l_ns,
+			  args->aux->l_real->l_relocated);
+
+      args->aux = _dl_new_proxy (args->aux, args->open_mode, args->map->l_ns);
+
+      if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_FILES))
+	_dl_debug_printf ("proxying dependency=%s [%lu]; direct_opencount=%u\n\n",
+			  args->aux->l_name, args->aux->l_ns,
+			  args->aux->l_direct_opencount);
+    }
 }
 
 static ptrdiff_t

@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <ldsodefs.h>
+#include <libintl.h>
 
 #include <assert.h>
 
@@ -50,6 +51,83 @@ _dl_add_to_namespace_list (struct link_map *new, Lmid_t nsid)
   __rtld_lock_unlock_recursive (GL(dl_load_write_lock));
 }
 
+/* Proxy an existing link map entry into a new link map:
+   This is based on _dl_new_object, skipping the steps we know we won't need
+   because this is mostly just a shell for the l_real pointer holding the real
+   link map entry (normally l == l->l_real, but not for ld.so in non-main
+   link maps or RTLD_SHARED proxies).
+   It also flags the proxy by setting l_proxy, and sets the the no-delete
+   flag in the original if it is an lt_loaded.  */
+struct link_map *
+_dl_new_proxy (struct link_map *old, int mode, Lmid_t nsid)
+{
+  const char *name;
+  struct link_map *new;
+  struct libname_list *newname;
+#ifdef SHARED
+  unsigned int na = GLRO(dl_naudit);
+
+  if ((mode & __RTLD_OPENEXEC) != 0)
+    na = DL_NNS;
+
+  size_t audit_space = na * sizeof (struct auditstate);
+#else
+# define audit_space 0
+#endif
+
+  name = old->l_name;
+
+  /* Find the original link map entry if 'old' is itself a proxy. */
+  while (old != NULL && old->l_proxy)
+    old = old->l_real;
+
+  if (old == NULL)
+    _dl_signal_error (EINVAL, name, NULL, N_("cannot proxy NULL link_map"));
+
+  /* Object already exists in the target namespace.  This should get handled
+     by dl_open_worker but just in case we get this far, handle it:  */
+  if (__glibc_unlikely (old->l_ns == nsid))
+    _dl_signal_error (EEXIST, name, NULL,
+                      N_("existing object cannot be demoted to a proxy"));
+
+  /* Now duplicate as little of _dl_new_object as possible to get a
+     working proxied object in the target link map.  */
+  new = (struct link_map *) calloc (sizeof (*new) + audit_space
+                                    + sizeof (struct link_map *)
+                                    + sizeof (*newname), 1);
+
+  if (new == NULL)
+    _dl_signal_error (ENOMEM, name, NULL,
+                      N_("cannot create shared object descriptor"));
+
+  /* Specific to the proxy.  */
+  new->l_real = old;
+  new->l_proxy = 1;
+  new->l_ns = nsid;
+
+  /* Copied from the origin.  */
+  new->l_libname = old->l_libname;
+  new->l_name = old->l_name;
+  /* Proxies are considered lt_loaded if the real entry type is lt_library.  */
+  new->l_type = (old->l_type == lt_library) ? lt_loaded : old->l_type;
+
+  if (__glibc_unlikely (mode & RTLD_NODELETE))
+    new->l_flags_1 |= DF_1_NODELETE;
+
+  /* Specific to the origin.  Ideally we'd do some accounting here but
+     for now it's easier to pin the original so the proxy remains valid.  */
+  if (old->l_type == lt_loaded)
+    old->l_flags_1 |= DF_1_NODELETE;
+
+  /* Fix up the searchlist so that relocations work.  */
+  _dl_map_object_deps (new, NULL, 0, 0,
+		       mode & (__RTLD_DLOPEN | RTLD_DEEPBIND | __RTLD_AUDIT));
+
+  /* And finally put the proxy in the target namespace.  */
+  _dl_add_to_namespace_list (new, nsid);
+
+  return new;
+}
 
 /* Allocate a `struct link_map' for a new object being loaded,
    and enter it into the _dl_loaded list.  */

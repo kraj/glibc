@@ -96,6 +96,10 @@ do_sym (void *handle, const char *name, void *who,
     {
       match = _dl_sym_find_caller_link_map (caller);
 
+      /* Proxies don't contain any symbols: Need to look at the real DSO.  */
+      if (__glibc_unlikely (match->l_proxy))
+	match = match->l_real;
+
       /* Search the global scope.  We have the simple case where
 	 we look up in the scope of an object which was part of
 	 the initial binary.  And then the more complex part
@@ -140,6 +144,11 @@ RTLD_NEXT used in code not dynamically loaded"));
 	}
 
       struct link_map *l = match;
+
+      /* Proxies don't contain any symbols: Need to look at the real DSO.  */
+      if (__glibc_unlikely (l->l_proxy))
+	l = l->l_real;
+
       while (l->l_loader != NULL)
 	l = l->l_loader;
 
@@ -150,6 +159,11 @@ RTLD_NEXT used in code not dynamically loaded"));
     {
       /* Search the scope of the given object.  */
       struct link_map *map = handle;
+
+      /* Proxies don't contain any symbols: Need to look at the real DSO.  */
+      if (__glibc_unlikely (map->l_proxy))
+	map = map->l_real;
+
       result = GLRO(dl_lookup_symbol_x) (name, map, &ref, map->l_local_scope,
 					 vers, 0, flags, NULL);
     }

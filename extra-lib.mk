@@ -102,7 +102,9 @@ $(objpfx)$(lib).so: $(firstword $($(lib)-map) \
 					    $(filter $(lib).map, \
 						     $(version-maps))))
 ifneq ($(ld-zunique),yes)
+ifneq ($(lib),libpthread)
 $(objpfx)$(lib).so: $(common-objpfx)/elf/dynamic-notes.os
+endif
 endif
 endif
 

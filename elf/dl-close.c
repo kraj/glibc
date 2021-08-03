@@ -286,8 +286,9 @@ _dl_close_worker (struct link_map *map, bool force)
 
 	  /* Call its termination function.  Do not do it for
 	     half-cooked objects.  Temporarily disable exception
-	     handling, so that errors are fatal.  */
-	  if (imap->l_init_called)
+	     handling, so that errors are fatal.
+	     Proxies should never have this flag set, but we double check.  */
+	  if (imap->l_init_called && !imap->l_proxy)
 	    {
 	      /* When debugging print a message first.  */
 	      if (__builtin_expect (GLRO(dl_debug_mask) & DL_DEBUG_IMPCALLS,
@@ -363,7 +364,9 @@ _dl_close_worker (struct link_map *map, bool force)
 	     one for the terminating NULL pointer.  */
 	  size_t remain = (new_list != NULL) + 1;
 	  bool removed_any = false;
-	  for (size_t cnt = 0; imap->l_scope[cnt] != NULL; ++cnt)
+	  for (size_t cnt = 0;
+	       imap->l_scope && imap->l_scope[cnt] != NULL;
+	       ++cnt)
 	    /* This relies on l_scope[] entries being always set either
 	       to its own l_symbolic_searchlist address, or some map's
 	       l_searchlist address.  */
@@ -691,8 +694,10 @@ _dl_close_worker (struct link_map *map, bool force)
 
 	  /* We can unmap all the maps at once.  We determined the
 	     start address and length when we loaded the object and
-	     the `munmap' call does the rest.  */
-	  DL_UNMAP (imap);
+	     the `munmap' call does the rest. Proxies do not have
+             any segments of their own to unmap.  */
+          if (!imap->l_proxy)
+            DL_UNMAP (imap);
 
 	  /* Finally, unlink the data structure and free it.  */
 #if DL_NNS == 1
@@ -732,19 +737,23 @@ _dl_close_worker (struct link_map *map, bool force)
 	    _dl_debug_printf ("\nfile=%s [%lu];  destroying link map\n",
 			      imap->l_name, imap->l_ns);
 
-	  /* This name always is allocated.  */
-	  free (imap->l_name);
-	  /* Remove the list with all the names of the shared object.  */
-
-	  struct libname_list *lnp = imap->l_libname;
-	  do
+	  /* Skip structures borrowed by proxies from the real map.  */
+	  if (!imap->l_proxy)
 	    {
-	      struct libname_list *this = lnp;
-	      lnp = lnp->next;
-	      if (!this->dont_free)
-		free (this);
+	      /* This name always is allocated.  */
+	      free (imap->l_name);
+
+	      /* Remove the list with all the names of the shared object.  */
+	      struct libname_list *lnp = imap->l_libname;
+	      do
+		{
+		  struct libname_list *this = lnp;
+		  lnp = lnp->next;
+		  if (!this->dont_free)
+		    free (this);
+		}
+	      while (lnp != NULL);
 	    }
-	  while (lnp != NULL);
 
 	  /* Remove the searchlists.  */
 	  free (imap->l_initfini);

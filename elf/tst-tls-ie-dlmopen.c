@@ -52,8 +52,9 @@ blocked_thread_func (void *closure)
 static void *
 load_and_access (Lmid_t lmid, const char *mod, const char *func)
 {
-  /* Load module with TLS.  */
-  void *p = xdlmopen (lmid, mod, RTLD_NOW);
+  /* Load module with TLS, the RTLD_ISOLATE is to force the libc.so to be
+     loaded in a separated namespace.  */
+  void *p = xdlmopen (lmid, mod, RTLD_NOW | RTLD_ISOLATE);
   /* Access the TLS variable to ensure it is allocated.  */
   void (*f) (void) = (void (*) (void))xdlsym (p, func);
   f ();
@@ -95,7 +96,7 @@ do_test (void)
      than 1024 bytes are available (exact number depends on TLS optimizations
      and the libc TLS use).  */
   printf ("The next dlmopen should fail...\n");
-  void *p = dlmopen (LM_ID_BASE, "tst-tls-ie-mod4.so", RTLD_NOW);
+  void *p = dlmopen (LM_ID_BASE, "tst-tls-ie-mod4.so", RTLD_NOW | RTLD_ISOLATE);
   if (p != NULL)
     FAIL_EXIT1 ("error: expected dlmopen to fail because there is "
 		"not enough surplus static TLS.\n");

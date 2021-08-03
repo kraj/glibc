@@ -854,7 +854,6 @@ _dl_init_paths (const char *llp, const char *source,
     __rtld_env_path_list.dirs = (void *) -1;
 }
 
-
 /* Process PT_GNU_PROPERTY program header PH in module L after
    PT_LOAD segments are mapped.  Only one NT_GNU_PROPERTY_TYPE_0
    note is handled which contains processor specific properties.
@@ -935,7 +934,7 @@ static struct link_map *
 _dl_map_object_from_fd (const char *name, const char *origname, int fd,
 			struct filebuf *fbp, char *realname,
 			struct link_map *loader, int l_type, int mode,
-			void **stack_endp, Lmid_t nsid)
+			void **stack_endp, bool has_gnu_unique, Lmid_t nsid)
 {
   struct link_map *l = NULL;
   const ElfW(Ehdr) *header;
@@ -1034,6 +1033,32 @@ _dl_map_object_from_fd (const char *name, const char *origname, int fd,
     }
 #endif
 
+  /* DSOs in the main namespace which are flagged DF_GNU_1_UNIQUE should only
+     be opened into the main namespace.  Other namespaces should only get
+     proxies.  */
+  if (__glibc_unlikely ((nsid != LM_ID_BASE) && !(mode & RTLD_ISOLATE)))
+    {
+      /* Check base ns to see if the name matched another already loaded.  */
+      for (l = GL(dl_ns)[LM_ID_BASE]._ns_loaded; l != NULL; l = l->l_next)
+	if (!l->l_removed && _dl_file_id_match_p (&l->l_file_id, &id))
+	  {
+	    if (!(l->l_gnu_flags_1 & DF_GNU_1_UNIQUE))
+	      continue;
+
+	    /* Already loaded. Bump its reference count and return it.  */
+	    __close_nocancel (fd);
+
+	    /* If the name is not listed for this object add it.  */
+	    free (realname);
+	    add_name_to_object (l, name);
+
+	    /* NB: It is important that our caller picks up on the fact that
+	       we have NOT returned an object in the requested namespace
+               and handles the proxying correctly.  */
+	    return l;
+	  }
+    }
+
   if (mode & RTLD_NOLOAD)
     {
       /* We are not supposed to load the object unless it is already
@@ -1059,8 +1084,11 @@ _dl_map_object_from_fd (const char *name, const char *origname, int fd,
 	  && __glibc_unlikely (GLRO(dl_naudit) > 0))
 	{
 	  struct link_map *head = GL(dl_ns)[nsid]._ns_loaded;
-	  /* Do not call the functions for any auditing object.  */
-	  if (head->l_auditing == 0)
+	  /* Do not call the functions for any auditing object neither try to
+	     call auditing functions if the namespace is currently empty.
+	     This can happen when opening the first DSO in a new namespace.
+	   */
+	  if ((head != NULL) && !head->l_auditing)
 	    {
 	      struct audit_ifaces *afct = GLRO(dl_audit);
 	      for (unsigned int cnt = 0; cnt < GLRO(dl_naudit); ++cnt)
@@ -1086,6 +1114,32 @@ _dl_map_object_from_fd (const char *name, const char *origname, int fd,
   else
     assert (r->r_state == RT_ADD);
 
+  /* Load the ELF header using preallocated struct space if it's big enough.  */
+  maplength = header->e_phnum * sizeof (ElfW(Phdr));
+  if (header->e_phoff + maplength <= (size_t) fbp->len)
+    phdr = (void *) (fbp->buf + header->e_phoff);
+  else
+    {
+      phdr = alloca (maplength);
+      if ((size_t) __pread64_nocancel (fd, (void *) phdr, maplength,
+				       header->e_phoff) != maplength)
+	{
+	  errstring = N_("cannot read file data");
+	  goto lose_errno;
+	}
+    }
+
+  /* We need to check for DT_GNU_FLAGS_1/DF_GNU_1_UNIQUE before we start
+     initialising any namespace dependent metatada.  */
+  if (__glibc_unlikely ((nsid != LM_ID_BASE) && !(mode & RTLD_ISOLATE)))
+    {
+      /* Target DSO is flagged as unique: Make sure it gets loaded into
+         the base namespace.  It is up to our caller to generate a proxy
+         in the target nsid.  */
+      if (has_gnu_unique)
+        nsid = LM_ID_BASE;
+    }
+
   /* Enter the new object in the list of loaded objects.  */
   l = _dl_new_object (realname, name, l_type, loader, mode, nsid);
   if (__glibc_unlikely (l == NULL))
@@ -1102,20 +1156,6 @@ _dl_map_object_from_fd (const char *name, const char *origname, int fd,
   l->l_entry = header->e_entry;
   type = header->e_type;
   l->l_phnum = header->e_phnum;
-
-  maplength = header->e_phnum * sizeof (ElfW(Phdr));
-  if (header->e_phoff + maplength <= (size_t) fbp->len)
-    phdr = (void *) (fbp->buf + header->e_phoff);
-  else
-    {
-      phdr = alloca (maplength);
-      if ((size_t) __pread64_nocancel (fd, (void *) phdr, maplength,
-				       header->e_phoff) != maplength)
-	{
-	  errstring = N_("cannot read file data");
-	  goto lose_errno;
-	}
-    }
 
    /* On most platforms presume that PT_GNU_STACK is absent and the stack is
     * executable.  Other platforms default to a nonexecutable stack and don't
@@ -1581,7 +1621,8 @@ print_search_path (struct r_search_path_elem **list,
 static int
 open_verify (const char *name, int fd,
              struct filebuf *fbp, struct link_map *loader,
-	     int whatcode, int mode, bool *found_other_class, bool free_name)
+	     int whatcode, int mode, bool *found_other_class,
+	     bool *has_gnu_unique, bool free_name)
 {
   /* This is the expected ELF header.  */
 #define ELF32_CLASS ELFCLASS32
@@ -1860,6 +1901,31 @@ open_verify (const char *name, int fd,
 
 	    break;
 	  }
+	else if (ph->p_type == PT_DYNAMIC)
+	  {
+	    off64_t pos = ph->p_offset;
+	    off64_t end = pos + ph->p_filesz;
+
+	    while (pos < end)
+	      {
+		ElfW (Dyn) entry;
+		ssize_t bytes = __pread64_nocancel (fd, &entry,
+						    sizeof (ElfW (Dyn)), pos);
+		if (bytes != sizeof (entry))
+		  goto read_error;
+		pos += bytes;
+
+		switch (entry.d_tag)
+		  {
+		  case DT_GNU_FLAGS_1:
+		    *has_gnu_unique = entry.d_un.d_val & DF_GNU_1_UNIQUE;
+		    /* fallthrough  */
+		  case DT_NULL:
+		    break;
+		  }
+	      }
+
+	  }
       free (abi_note_malloced);
     }
 
@@ -1877,7 +1943,7 @@ static int
 open_path (const char *name, size_t namelen, int mode,
 	   struct r_search_path_struct *sps, char **realname,
 	   struct filebuf *fbp, struct link_map *loader, int whatcode,
-	   bool *found_other_class)
+	   bool *found_other_class, bool *has_gnu_unique)
 {
   struct r_search_path_elem **dirs = sps->dirs;
   char *buf;
@@ -1931,7 +1997,7 @@ open_path (const char *name, size_t namelen, int mode,
 	    _dl_debug_printf ("  trying file=%s\n", buf);
 
 	  fd = open_verify (buf, -1, fbp, loader, whatcode, mode,
-			    found_other_class, false);
+			    found_other_class, has_gnu_unique, false);
 	  if (this_dir->status[cnt] == unknown)
 	    {
 	      if (fd != -1)
@@ -2025,6 +2091,37 @@ open_path (const char *name, size_t namelen, int mode,
   return -1;
 }
 
+/* Search for a link map proxy in the given namespace by name.
+   Consider it to be an error if the found object is not a proxy.  */
+struct link_map *
+_dl_find_proxy (Lmid_t nsid, const char *name)
+{
+  struct link_map *l;
+
+  for (l = GL(dl_ns)[nsid]._ns_loaded; l != NULL; l = l->l_next)
+    {
+      if (__glibc_unlikely ((l->l_faked | l->l_removed) != 0))
+	continue;
+
+      if (!_dl_name_match_p (name, l))
+	continue;
+
+      /* We have a match - stop searching.  */
+      break;
+    }
+
+  if (l != NULL)
+    {
+      if (l->l_proxy)
+	return l;
+
+      _dl_signal_error (EEXIST, name, NULL,
+			N_("object cannot be demoted to a proxy"));
+    }
+
+  return NULL;
+}
+
 /* Search for a shared object in a given namespace.  */
 struct link_map *
 _dl_find_dso (const char *name, Lmid_t nsid)
@@ -2078,12 +2175,42 @@ _dl_map_object (struct link_map *loader, const char *name,
 
   assert (nsid >= 0);
   assert (nsid < GL(dl_nns));
+  assert (!((mode & RTLD_ISOLATE) && (mode & RTLD_SHARED)));
+
+#ifdef SHARED
+  /* Only need to do proxy checks if 'nsid' is not LM_ID_BASE.  */
+  if (__glibc_unlikely ((mode & RTLD_SHARED) && (nsid != LM_ID_BASE)))
+    {
+      /* Search the namespace in case the object is already proxied.  */
+      l = _dl_find_proxy (nsid, name);
+      if (l != NULL)
+	return l;
+
+      /* Further searches should be in the base ns, we will proxy the
+         resulting object in dl_open_worker *after* it is initialised.  */
+      nsid = LM_ID_BASE;
+    }
+#endif
 
   /* Look for this name among those already loaded.  */
   l = _dl_find_dso (name, nsid);
 
   if (l != NULL)
     {
+#ifdef SHARED
+      /* If we are trying to load a DF_GNU_1_UNIQUE flagged DSO which WAS
+         already opened in the target NS but with RTLD_ISOLATE so it WAS NOT
+         created as a proxy we need to error out since we cannot satisfy the
+         DF_GNU_1_UNIQUE is-equivalent-to RTLD_SHARED semantics.  */
+      if (!(mode & RTLD_ISOLATE) &&
+          (l->l_ns != LM_ID_BASE) &&
+          (l->l_gnu_flags_1 & DF_GNU_1_UNIQUE) &&
+          !l->l_proxy)
+      {
+        _dl_signal_error (EEXIST, name, NULL,
+			  N_("object cannot be demoted to a proxy"));
+      }
+#endif
       return l;
     }
 
@@ -2133,6 +2260,8 @@ _dl_map_object (struct link_map *loader, const char *name,
 
   /* Will be true if we found a DSO which is of the other ELF class.  */
   bool found_other_class = false;
+  /* Will be true if the DSO has a DT_GNU_FLAGS_1/DF_GNU_1_UNIQUE.  */
+  bool has_gnu_unique = false;
 
   if (strchr (name, '/') == NULL)
     {
@@ -2162,7 +2291,7 @@ _dl_map_object (struct link_map *loader, const char *name,
 		fd = open_path (name, namelen, mode,
 				&l->l_rpath_dirs,
 				&realname, &fb, loader, LA_SER_RUNPATH,
-				&found_other_class);
+				&found_other_class, &has_gnu_unique);
 		if (fd != -1)
 		  break;
 
@@ -2178,7 +2307,7 @@ _dl_map_object (struct link_map *loader, const char *name,
 	    fd = open_path (name, namelen, mode,
 			    &main_map->l_rpath_dirs,
 			    &realname, &fb, loader ?: main_map, LA_SER_RUNPATH,
-			    &found_other_class);
+			    &found_other_class, &has_gnu_unique);
 	}
 
       /* Try the LD_LIBRARY_PATH environment variable.  */
@@ -2186,7 +2315,7 @@ _dl_map_object (struct link_map *loader, const char *name,
 	fd = open_path (name, namelen, mode, &__rtld_env_path_list,
 			&realname, &fb,
 			loader ?: GL(dl_ns)[LM_ID_BASE]._ns_loaded,
-			LA_SER_LIBPATH, &found_other_class);
+			LA_SER_LIBPATH, &found_other_class, &has_gnu_unique);
 
       /* Look at the RUNPATH information for this binary.  */
       if (fd == -1 && loader != NULL
@@ -2194,7 +2323,7 @@ _dl_map_object (struct link_map *loader, const char *name,
 			  DT_RUNPATH, "RUNPATH"))
 	fd = open_path (name, namelen, mode,
 			&loader->l_runpath_dirs, &realname, &fb, loader,
-			LA_SER_RUNPATH, &found_other_class);
+			LA_SER_RUNPATH, &found_other_class, &has_gnu_unique);
 
       if (fd == -1)
         {
@@ -2204,7 +2333,7 @@ _dl_map_object (struct link_map *loader, const char *name,
               fd = open_verify (realname, fd,
                                 &fb, loader ?: GL(dl_ns)[nsid]._ns_loaded,
                                 LA_SER_CONFIG, mode, &found_other_class,
-                                false);
+                                &has_gnu_unique, false);
               if (fd == -1)
                 free (realname);
             }
@@ -2258,7 +2387,7 @@ _dl_map_object (struct link_map *loader, const char *name,
 		  fd = open_verify (cached, -1,
 				    &fb, loader ?: GL(dl_ns)[nsid]._ns_loaded,
 				    LA_SER_CONFIG, mode, &found_other_class,
-				    false);
+				    &has_gnu_unique, false);
 		  if (__glibc_likely (fd != -1))
 		    realname = cached;
 		  else
@@ -2274,7 +2403,8 @@ _dl_map_object (struct link_map *loader, const char *name,
 	      || __glibc_likely (!(l->l_flags_1 & DF_1_NODEFLIB)))
 	  && __rtld_search_dirs.dirs != (void *) -1)
 	fd = open_path (name, namelen, mode, &__rtld_search_dirs,
-			&realname, &fb, l, LA_SER_DEFAULT, &found_other_class);
+			&realname, &fb, l, LA_SER_DEFAULT, &found_other_class,
+			&has_gnu_unique);
 
       /* Add another newline when we are tracing the library loading.  */
       if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_LIBS))
@@ -2292,7 +2422,7 @@ _dl_map_object (struct link_map *loader, const char *name,
 	{
 	  fd = open_verify (realname, -1, &fb,
 			    loader ?: GL(dl_ns)[nsid]._ns_loaded, 0, mode,
-			    &found_other_class, true);
+			    &found_other_class, &has_gnu_unique, true);
 	  if (__glibc_unlikely (fd == -1))
 	    free (realname);
 	}
@@ -2353,7 +2483,7 @@ _dl_map_object (struct link_map *loader, const char *name,
 
   void *stack_end = __libc_stack_end;
   return _dl_map_object_from_fd (name, origname, fd, &fb, realname, loader,
-				 type, mode, &stack_end, nsid);
+				 type, mode, &stack_end, has_gnu_unique, nsid);
 }
 
 struct add_path_state

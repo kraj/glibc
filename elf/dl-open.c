@@ -488,6 +488,16 @@ dl_open_worker (void *a)
   const char *file = args->file;
   int mode = args->mode;
   struct link_map *call_map = NULL;
+  struct link_map *preloaded = NULL;
+  bool want_proxy = false;
+  bool dl_isolate = mode & RTLD_ISOLATE;
+  Lmid_t proxy_ns = LM_ID_BASE;
+
+  /* Isolation means we should suppress all inter-namespace sharing.  */
+  if (dl_isolate)
+    mode &= ~RTLD_SHARED;
+  else
+    want_proxy = mode & RTLD_SHARED;
 
   /* Determine the caller's map if necessary.  This is needed in case
      we have a DST, when we don't know the namespace ID we have to put
@@ -512,6 +522,15 @@ dl_open_worker (void *a)
 	args->nsid = call_map->l_ns;
     }
 
+  /* Now that we know the NS for sure, sanity check the mode.  */
+  if (__glibc_likely (args->nsid == LM_ID_BASE) &&
+      __glibc_unlikely (mode & RTLD_SHARED))
+    {
+      args->mode &= ~RTLD_SHARED;
+      mode &= ~RTLD_SHARED;
+      want_proxy = 0;
+    }
+
   /* The namespace ID is now known.  Keep track of whether libc.so was
      already loaded, to determine whether it is necessary to call the
      early initialization routine (or clear libc_map on error).  */
@@ -524,6 +543,24 @@ dl_open_worker (void *a)
   /* One might be tempted to assert that we are RT_CONSISTENT at this point, but that
      may not be true if this is a recursive call to dlopen.  */
   _dl_debug_initialize (0, args->nsid);
+
+  /* Target Lmid is not the base and we haven't explicitly asked for a proxy:
+     We need to check for a matching DSO in the base Lmid in case it is flagged
+     DT_GNU_FLAGS_1/DF_GNU_1_UNIQUE in which case we add RTLD_SHARED to the
+     mode and set want_proxy.
+     NOTE: RTLD_ISOLATE in the mode suppresses this behaviour.  */
+  if (__glibc_unlikely (args->nsid != LM_ID_BASE) &&
+      __glibc_likely (!dl_isolate) &&
+      __glibc_likely (!want_proxy))
+    {
+      preloaded = _dl_find_dso (file, LM_ID_BASE);
+
+      if ((preloaded != NULL) && (preloaded->l_gnu_flags_1 & DF_GNU_1_UNIQUE))
+	{
+	  want_proxy = true;
+	  mode |= RTLD_SHARED;
+        }
+    }
 
   /* Load the named object.  */
   struct link_map *new;
@@ -544,6 +581,35 @@ dl_open_worker (void *a)
 
   /* This object is directly loaded.  */
   ++new->l_direct_opencount;
+
+  /* Proxy already existed in the target ns, nothing left to do.  */
+  if (__glibc_unlikely (new->l_proxy))
+    {
+      if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_FILES))
+	_dl_debug_printf ("proxied file=%s [%lu]; direct_opencount=%u\n\n",
+			  new->l_name, new->l_ns, new->l_direct_opencount);
+      return;
+    }
+
+  /* If we are trying to load a DF_GNU_1_UNIQUE flagged DSO which was
+     NOT ALREADY LOADED (or not loaded with the name we are using) then
+     _dl_map_object will have returned an instance from the main namespace.
+     We need to detect this and set up the RTLD_SHARED flags.  */
+  if (__glibc_unlikely (args->nsid != LM_ID_BASE && new->l_ns == LM_ID_BASE))
+    {
+      want_proxy = RTLD_SHARED;
+      mode |= RTLD_SHARED;
+    }
+
+  /* If we want proxy and we get this far then the entry in 'new' will
+     be in the main namespace: we should revert to the main namespace code
+     path(s), but remember the namespace we want the proxy to be in.  */
+  if (__glibc_unlikely (want_proxy))
+    {
+      proxy_ns = args->nsid;
+      args->nsid = LM_ID_BASE;
+      args->libc_already_loaded = GL(dl_ns)[LM_ID_BASE].libc_map != NULL;
+    }
 
   /* It was already open.  */
   if (__glibc_unlikely (new->l_searchlist.r_list != NULL))
@@ -576,6 +642,16 @@ dl_open_worker (void *a)
 
       assert (_dl_debug_update (args->nsid)->r_state == RT_CONSISTENT);
 
+      if (__glibc_unlikely (want_proxy))
+        {
+          args->map = new = _dl_new_proxy (new, mode, proxy_ns);
+          ++new->l_direct_opencount;
+
+          if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_FILES))
+	    _dl_debug_printf ("proxying file=%s [%lu]; direct_opencount=%u\n\n",
+			      new->l_name, new->l_ns, new->l_direct_opencount);
+        }
+
       return;
     }
 
@@ -586,7 +662,8 @@ dl_open_worker (void *a)
 
   /* Load that object's dependencies.  */
   _dl_map_object_deps (new, NULL, 0, 0,
-		       mode & (__RTLD_DLOPEN | RTLD_DEEPBIND | __RTLD_AUDIT));
+		       mode & (__RTLD_DLOPEN | RTLD_DEEPBIND | __RTLD_AUDIT |
+			       RTLD_ISOLATE));
 
   /* So far, so good.  Now check the versions.  */
   for (unsigned int i = 0; i < new->l_searchlist.r_nlist; ++i)
@@ -680,7 +757,10 @@ dl_open_worker (void *a)
     {
       l = new->l_initfini[i];
 
-      if (l->l_real->l_relocated)
+      if (l->l_proxy)
+	l = l->l_real;
+
+      if (l->l_relocated)
 	continue;
 
       if (! relocation_in_progress)
@@ -792,10 +872,27 @@ dl_open_worker (void *a)
   if (mode & RTLD_GLOBAL)
     add_to_global_update (new);
 
+  if (__glibc_unlikely (want_proxy))
+    {
+      /* args->map is the return slot which the caller sees, but keep
+	 the original value of new hanging around so we can see the
+	 real link map entry (for logging etc).  */
+      args->map = _dl_new_proxy (new, mode, proxy_ns);
+      ++args->map->l_direct_opencount;
+    }
+
   /* Let the user know about the opencount.  */
   if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_FILES))
-    _dl_debug_printf ("opening file=%s [%lu]; direct_opencount=%u\n\n",
-		      new->l_name, new->l_ns, new->l_direct_opencount);
+    {
+      _dl_debug_printf ("opening file=%s [%lu]; direct_opencount=%u\n\n",
+			new->l_name, new->l_ns, new->l_direct_opencount);
+
+      if (args->map->l_proxy)
+        _dl_debug_printf ("proxying file=%s [%lu]; direct_opencount=%u\n\n",
+			  args->map->l_name,
+			  args->map->l_ns,
+			  args->map->l_direct_opencount);
+    }
 }
 
 void *
@@ -884,8 +981,11 @@ no more namespaces available for dlmopen()"));
   if (__glibc_unlikely (exception.errstring != NULL))
     {
       /* Avoid keeping around a dangling reference to the libc.so link
-	 map in case it has been cached in libc_map.  */
-      if (!args.libc_already_loaded)
+	 map in case it has been cached in libc_map.
+         If this is a secondary namespace opened with LM_ID_NEWLM and
+	 WITHOUT RTLD_ISOLATE then nsid can still be -1 (LM_ID_NEWLM)
+	 at this point.  */
+      if (!args.libc_already_loaded && nsid >= LM_ID_BASE)
 	GL(dl_ns)[nsid].libc_map = NULL;
 
       /* Remove the object from memory.  It may be in an inconsistent

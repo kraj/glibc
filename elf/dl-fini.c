@@ -73,7 +73,7 @@ _dl_fini (void)
 	  assert (nloaded != 0 || GL(dl_ns)[ns]._ns_loaded == NULL);
 	  for (l = GL(dl_ns)[ns]._ns_loaded, i = 0; l != NULL; l = l->l_next)
 	    /* Do not handle ld.so in secondary namespaces.  */
-	    if (l == l->l_real)
+	    if (l == l->l_real || l->l_proxy)
 	      {
 		assert (i < nloaded);
 
@@ -111,7 +111,9 @@ _dl_fini (void)
 	    {
 	      struct link_map *l = maps[i];
 
-	      if (l->l_init_called)
+	      /* Do not call fini functions via proxies, or for
+		 objects which are not marked as initialised.  */
+	      if (l->l_init_called && !l->l_proxy)
 		{
 		  /* Make sure nothing happens if we are called twice.  */
 		  l->l_init_called = 0;
