@@ -1,0 +1,36 @@
+static dlmopen_test_spec dltest[] =
+  {
+   {
+    .name = "dlmopen-preload:X:none--nsX",
+    .desc = "preload a DSO into nsX to prepare for other tests",
+    .is_prep_stage = 1,
+    .args.dso_path = DSO_NORMAL,
+    .args.ns = LM_ID_NEWLM,
+    .handle_ns = EXPECTED_NS,
+    .handle_type = DSO,
+    .preloaded = { },
+    .loaded = { [EXPECTED_NS] = DSO|NEW },
+   },
+   {
+    .name = "dlmopen:X:nsX--nsX",
+    .desc = "dlmopen a dso in nsX while already loaded there",
+    .args.dso_path = DSO_NORMAL,
+    .args.ns = EXPECTED_NS,
+    .handle_ns = EXPECTED_NS,
+    .handle_type = DSO,
+    .preloaded = { [EXPECTED_NS] = DSO },
+    .loaded = { [EXPECTED_NS] = DSO },
+   },
+   {
+    .name = "dlmopen-shared:X:nsX--nsX",
+    .desc = "dlmopen RTLD_SHARED a dso in nsX while already loaded there",
+    .failure = 1,
+    .args.dso_path = DSO_NORMAL,
+    .args.ns = EXPECTED_NS,
+    .args.flags = RTLD_SHARED,
+    .handle_ns = EXPECTED_NS,
+    .handle_type = DSO,
+    .preloaded = { [EXPECTED_NS] = DSO },
+    .loaded = { [EXPECTED_NS] = DSO },
+   },
+  };

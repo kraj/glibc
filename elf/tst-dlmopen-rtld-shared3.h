@@ -1,0 +1,43 @@
+static dlmopen_test_spec dltest[] =
+  {
+   {
+    .name = "dlmopen:X:none--nsX",
+    .desc = "dlmopen into nsX, no copies preloaded",
+    .args.dso_path = DSO_NORMAL,
+    .args.ns = LM_ID_NEWLM,
+    .handle_ns = EXPECTED_NS,
+    .handle_type = DSO,
+    .preloaded = { },
+    .loaded = { [EXPECTED_NS] = DSO|NEW },
+   },
+   {
+    .name = "dlmopen:0:nsX--ns0-nsX",
+    .desc = "dlmopen into ns 0, copy already loaded in ns X",
+    .args.dso_path = DSO_NORMAL,
+    .args.ns = LM_ID_BASE,
+    .handle_ns = 0,
+    .handle_type = DSO,
+    .preloaded = { [EXPECTED_NS] = DSO },
+    .loaded = { [0] = DSO|NEW, [EXPECTED_NS] = DSO },
+   },
+   {
+    .name = "dlmopen:X:ns0-nsX--nsX",
+    .desc = "dlmopen into ns X, copies already in ns 0 and ns X",
+    .args.dso_path = DSO_NORMAL,
+    .args.ns = EXPECTED_NS,
+    .handle_ns = EXPECTED_NS,
+    .handle_type = DSO,
+    .preloaded = { [0] = DSO, [EXPECTED_NS] = DSO },
+    .loaded = { [0] = DSO, [EXPECTED_NS] = DSO },
+   },
+   {
+    .name = "dlmopen-shared:X:ns0-nsX--nsX",
+    .desc = "dlmopen RTLD_SHARED into nsX with a DSO already in NS0 and NSX",
+    .args.dso_path = DSO_NORMAL,
+    .args.ns = EXPECTED_NS,
+    .args.flags = RTLD_SHARED,
+    .failure = 1,
+    .preloaded = { [0] = DSO, [EXPECTED_NS] = DSO },
+    .loaded = { [0] = DSO, [EXPECTED_NS] = DSO },
+   },
+  };

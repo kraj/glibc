@@ -197,6 +197,38 @@ static-dlopen-environment = \
 tst-tls9-static-ENV = $(static-dlopen-environment)
 tst-single_threaded-static-dlopen-ENV = $(static-dlopen-environment)
 
+dlmopen-rtld-tests-norm := \
+	 tst-dlmopen-rtld-shared1 \
+	 tst-dlmopen-rtld-shared2 \
+	 tst-dlmopen-rtld-shared3 \
+	 tst-dlmopen-rtld-shared4 \
+	 tst-dlmopen-rtld-shared5 \
+	 tst-dlmopen-rtld-shared6
+
+dlmopen-rtld-tests-uniq := \
+	 tst-dlmopen-rtld-unique1 \
+	 tst-dlmopen-rtld-unique2 \
+	 tst-dlmopen-rtld-unique3 \
+	 tst-dlmopen-rtld-unique4 \
+	 tst-dlmopen-rtld-unique5 \
+	 tst-dlmopen-rtld-unique6
+
+dlmopen-rtld-audit-tests-norm := \
+	 tst-dlmopen-rtld-audit-shared1 \
+	 tst-dlmopen-rtld-audit-shared2 \
+	 tst-dlmopen-rtld-audit-shared3 \
+	 tst-dlmopen-rtld-audit-shared4 \
+	 tst-dlmopen-rtld-audit-shared5 \
+	 tst-dlmopen-rtld-audit-shared6
+
+dlmopen-rtld-audit-tests-uniq := \
+	 tst-dlmopen-rtld-audit-unique1 \
+	 tst-dlmopen-rtld-audit-unique2 \
+	 tst-dlmopen-rtld-audit-unique3 \
+	 tst-dlmopen-rtld-audit-unique4 \
+	 tst-dlmopen-rtld-audit-unique5 \
+	 tst-dlmopen-rtld-audit-unique6
+
 tests += restest1 preloadtest loadfail multiload origtest resolvfail \
 	 constload1 order noload filter \
 	 reldep reldep2 reldep3 reldep4 nodelete nodelete2 \
@@ -233,7 +265,11 @@ tests-internal += loadtest unload unload2 circleload1 \
 	 neededtest neededtest2 neededtest3 neededtest4 \
 	 tst-tls3 tst-tls6 tst-tls7 tst-tls8 tst-dlmopen2 \
 	 tst-ptrguard1 tst-stackguard1 \
-	 tst-create_format1 tst-tls-surplus tst-dl-hwcaps_split
+	 tst-create_format1 tst-tls-surplus tst-dl-hwcaps_split \
+	 $(dlmopen-rtld-tests-norm) \
+	 $(dlmopen-rtld-tests-uniq) \
+	 $(dlmopen-rtld-audit-tests-norm) \
+	 $(dlmopen-rtld-audit-tests-uniq)
 tests-container += tst-pldd tst-dlopen-tlsmodid-container \
   tst-dlopen-self-container tst-preload-pthread-libc
 test-srcs = tst-pathopt
@@ -298,6 +334,9 @@ modules-names = testobj1 testobj2 testobj3 testobj4 testobj5 testobj6 \
 		$(modules-execstack-$(have-z-execstack)) \
 		tst-dlopenrpathmod tst-deep1mod1 tst-deep1mod2 tst-deep1mod3 \
 		tst-dlmopen1mod tst-auditmod1 \
+		tst-dlmopen-sharedmod-norm \
+		tst-dlmopen-sharedmod-uniq \
+		tst-dlmopen-auditmod \
 		unload3mod1 unload3mod2 unload3mod3 unload3mod4 \
 		unload4mod1 unload4mod2 unload4mod3 unload4mod4 \
 		unload6mod1 unload6mod2 unload6mod3 \
@@ -337,6 +376,7 @@ modules-names = testobj1 testobj2 testobj3 testobj4 testobj5 testobj6 \
 		tst-tlsalign-lib tst-nodelete-opened-lib tst-nodelete2mod \
 		tst-audit11mod1 tst-audit11mod2 tst-auditmod11 \
 		tst-audit12mod1 tst-audit12mod2 tst-audit12mod3 tst-auditmod12 \
+		tst-dlmopen-auditmod \
 		tst-latepthreadmod $(tst-tls-many-dynamic-modules) \
 		$(tst-tls-many-dynamic-modules-dep) \
 		$(tst-tls-many-dynamic-modules-dep-bad) \
@@ -832,6 +872,9 @@ tst-nodelete-uniquemod.so-no-z-defs = yes
 tst-nodelete-rtldmod.so-no-z-defs = yes
 tst-nodelete-zmod.so-no-z-defs = yes
 tst-nodelete2mod.so-no-z-defs = yes
+tst-dlmopen-sharedmod-norm.so-no-z-defs = yes
+tst-dlmopen-sharedmod-uniq.so-no-z-defs = yes
+tst-dlmopen-auditmod.so-no-z-defs = yes
 
 ifeq ($(build-shared),yes)
 # Build all the modules even when not actually running test programs.
@@ -1250,6 +1293,58 @@ $(objpfx)tst-dlmopen2.out: $(objpfx)tst-dlmopen1mod.so
 $(objpfx)tst-dlmopen3.out: $(objpfx)tst-dlmopen1mod.so
 
 $(objpfx)tst-dlmopen4.out: $(objpfx)tst-dlmopen1mod.so
+
+ifneq ($(ld-zunique),yes)
+$(objpfx)tst-dlmopen-sharedmod-uniq.so: $(common-objpfx)elf/dynamic-notes.os
+else
+LDFLAGS-tst-dlmopen-sharedmod-uniq.so = -Wl,-z,unique
+endif
+
+# Add a DT_NEEDED entry for a DF_GNU_1_UNIQUE library to the test modules.
+LDFLAGS-tst-dlmopen-sharedmod-norm.so += -Wl,-lrt
+LDFLAGS-tst-dlmopen-sharedmod-uniq.so += -Wl,-lrt
+
+dlmopen-rtld-tests-norm-executables := \
+	 $(foreach x,$(dlmopen-rtld-tests-norm),$(objpfx)$(x))
+dlmopen-rtld-tests-norm-out := \
+	 $(foreach x,$(dlmopen-rtld-tests-norm),$(objpfx)$(x).out)
+
+dlmopen-rtld-tests-uniq-executables := \
+	 $(foreach x,$(dlmopen-rtld-tests-uniq),$(objpfx)$(x))
+dlmopen-rtld-tests-uniq-out := \
+	 $(foreach x,$(dlmopen-rtld-tests-uniq),$(objpfx)$(x).out)
+
+dlmopen-rtld-audit-tests-norm-executables := \
+	 $(foreach x,$(dlmopen-rtld-audit-tests-norm),$(objpfx)$(x))
+dlmopen-rtld-audit-tests-norm-out := \
+	 $(foreach x,$(dlmopen-rtld-audit-tests-norm),$(objpfx)$(x).out)
+
+dlmopen-rtld-audit-tests-uniq-executables := \
+	 $(foreach x,$(dlmopen-rtld-audit-tests-uniq),$(objpfx)$(x))
+dlmopen-rtld-audit-tests-uniq-out := \
+	 $(foreach x,$(dlmopen-rtld-audit-tests-uniq),$(objpfx)$(x).out)
+
+$(dlmopen-rtld-tests-norm-out): $(objpfx)tst-dlmopen-sharedmod-norm.so
+
+$(dlmopen-rtld-tests-uniq-out): $(objpfx)tst-dlmopen-sharedmod-uniq.so
+
+$(dlmopen-rtld-audit-tests-norm-out): $(objpfx)tst-dlmopen-sharedmod-norm.so
+$(dlmopen-rtld-audit-tests-norm-out): $(objpfx)tst-dlmopen-auditmod.so
+tst-dlmopen-rtld-audit-shared1-ENV = LD_AUDIT=$(objpfx)tst-dlmopen-auditmod.so
+tst-dlmopen-rtld-audit-shared2-ENV = LD_AUDIT=$(objpfx)tst-dlmopen-auditmod.so
+tst-dlmopen-rtld-audit-shared3-ENV = LD_AUDIT=$(objpfx)tst-dlmopen-auditmod.so
+tst-dlmopen-rtld-audit-shared4-ENV = LD_AUDIT=$(objpfx)tst-dlmopen-auditmod.so
+tst-dlmopen-rtld-audit-shared5-ENV = LD_AUDIT=$(objpfx)tst-dlmopen-auditmod.so
+tst-dlmopen-rtld-audit-shared6-ENV = LD_AUDIT=$(objpfx)tst-dlmopen-auditmod.so
+
+$(dlmopen-rtld-audit-tests-uniq-out): $(objpfx)tst-dlmopen-sharedmod-uniq.so
+$(dlmopen-rtld-audit-tests-uniq-out): $(objpfx)tst-dlmopen-auditmod.so
+tst-dlmopen-rtld-audit-unique1-ENV = LD_AUDIT=$(objpfx)tst-dlmopen-auditmod.so
+tst-dlmopen-rtld-audit-unique2-ENV = LD_AUDIT=$(objpfx)tst-dlmopen-auditmod.so
+tst-dlmopen-rtld-audit-unique3-ENV = LD_AUDIT=$(objpfx)tst-dlmopen-auditmod.so
+tst-dlmopen-rtld-audit-unique4-ENV = LD_AUDIT=$(objpfx)tst-dlmopen-auditmod.so
+tst-dlmopen-rtld-audit-unique5-ENV = LD_AUDIT=$(objpfx)tst-dlmopen-auditmod.so
+tst-dlmopen-rtld-audit-unique6-ENV = LD_AUDIT=$(objpfx)tst-dlmopen-auditmod.so
 
 $(objpfx)tst-audit1.out: $(objpfx)tst-auditmod1.so
 tst-audit1-ENV = LD_AUDIT=$(objpfx)tst-auditmod1.so
