@@ -509,7 +509,7 @@ static inline void
 __attribute__ ((always_inline))
 elf_machine_lazy_rel (struct link_map *map, struct r_scope_elem *scope[],
 		      Elf64_Addr l_addr, const Elf64_Rela *reloc,
-		      int skip_ifunc)
+		      int profile, int skip_ifunc)
 {
   Elf64_Addr * const reloc_addr = (void *)(l_addr + reloc->r_offset);
   unsigned long int const r_type = ELF64_R_TYPE (reloc->r_info);

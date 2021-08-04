@@ -54,11 +54,13 @@ elf_machine_rela_relative (ElfW(Addr) l_addr, const ElfW(Rela) *reloc,
 static inline void __attribute__((always_inline))
 elf_machine_lazy_rel (struct link_map *map, struct r_scope_elem *scope[],
 		      ElfW(Addr) l_addr, const ElfW(Rel) *reloc,
+		      int profile,
 		      int skip_ifunc);
 # else
 static inline void __attribute__((always_inline))
 elf_machine_lazy_rel (struct link_map *map, struct r_scope_elem *scope[],
 		      ElfW(Addr) l_addr, const ElfW(Rela) *reloc,
+		      int profile,
 		      int skip_ifunc);
 # endif
 #endif
@@ -78,7 +80,8 @@ elf_machine_lazy_rel (struct link_map *map, struct r_scope_elem *scope[],
    consumes precisely the very end of the DT_REL*, or DT_JMPREL and DT_REL*
    are completely separate and there is a gap between them.  */
 
-# define _ELF_DYNAMIC_DO_RELOC(RELOC, reloc, map, scope, do_lazy, skip_ifunc, test_rel) \
+# define _ELF_DYNAMIC_DO_RELOC(RELOC, reloc, map, scope, do_lazy, do_profile, \
+			       skip_ifunc, test_rel) \
   do {									      \
     struct { ElfW(Addr) start, size;					      \
 	     __typeof (((ElfW(Dyn) *) 0)->d_un.d_val) nrelative; int lazy; }  \
@@ -120,6 +123,7 @@ elf_machine_lazy_rel (struct link_map *map, struct r_scope_elem *scope[],
 				ranges[ranges_index].size,		      \
 				ranges[ranges_index].nrelative,		      \
 				ranges[ranges_index].lazy,		      \
+				do_profile,				      \
 				skip_ifunc);				      \
   } while (0)
 
@@ -131,19 +135,21 @@ elf_machine_lazy_rel (struct link_map *map, struct r_scope_elem *scope[],
 
 # if ! ELF_MACHINE_NO_REL
 #  include "do-rel.h"
-#  define ELF_DYNAMIC_DO_REL(map, scope, lazy, skip_ifunc)	      \
-  _ELF_DYNAMIC_DO_RELOC (REL, Rel, map, scope, lazy, skip_ifunc, _ELF_CHECK_REL)
+#  define ELF_DYNAMIC_DO_REL(map, scope, lazy, profiling, skip_ifunc)	      \
+  _ELF_DYNAMIC_DO_RELOC (REL, Rel, map, scope, lazy, profiling,	      	      \
+			 skip_ifunc, _ELF_CHECK_REL)
 # else
-#  define ELF_DYNAMIC_DO_REL(map, scope, lazy, skip_ifunc) /* Nothing to do.  */
+#  define ELF_DYNAMIC_DO_REL(map, scope, lazy, profiling, skip_ifunc) /* Nothing to do.  */
 # endif
 
 # if ! ELF_MACHINE_NO_RELA
 #  define DO_RELA
 #  include "do-rel.h"
-#  define ELF_DYNAMIC_DO_RELA(map, scope, lazy, skip_ifunc)	      \
-  _ELF_DYNAMIC_DO_RELOC (RELA, Rela, map, scope, lazy, skip_ifunc, _ELF_CHECK_REL)
+#  define ELF_DYNAMIC_DO_RELA(map, scope, lazy, profiling, skip_ifunc)	      \
+  _ELF_DYNAMIC_DO_RELOC (RELA, Rela, map, scope, lazy, profiling, skip_ifunc, \
+			 _ELF_CHECK_REL)
 # else
-#  define ELF_DYNAMIC_DO_RELA(map, scope, lazy, skip_ifunc) /* Nothing to do.  */
+#  define ELF_DYNAMIC_DO_RELA(map, scope, lazy, profiling, skip_ifunc) /* Nothing to do.  */
 # endif
 
 /* This can't just be an inline function because GCC is too dumb
@@ -152,8 +158,10 @@ elf_machine_lazy_rel (struct link_map *map, struct r_scope_elem *scope[],
   do {									      \
     int edr_lazy = elf_machine_runtime_setup ((map), (scope), (lazy),	      \
 					      (consider_profile));	      \
-    ELF_DYNAMIC_DO_REL ((map), (scope), edr_lazy, skip_ifunc);		      \
-    ELF_DYNAMIC_DO_RELA ((map), (scope), edr_lazy, skip_ifunc);		      \
+    ELF_DYNAMIC_DO_REL ((map), (scope), edr_lazy, (consider_profile),	      \
+		       	skip_ifunc);					      \
+    ELF_DYNAMIC_DO_RELA ((map), (scope), edr_lazy, (consider_profile),	      \
+			 skip_ifunc);		      \
   } while (0)
 
 #endif

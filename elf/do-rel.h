@@ -43,7 +43,7 @@ static inline void __attribute__ ((always_inline))
 elf_dynamic_do_Rel (struct link_map *map, struct r_scope_elem *scope[],
 		    ElfW(Addr) reladdr, ElfW(Addr) relsize,
 		    __typeof (((ElfW(Dyn) *) 0)->d_un.d_val) nrelative,
-		    int lazy, int skip_ifunc)
+		    int lazy, int profile, int skip_ifunc)
 {
   const ElfW(Rel) *r = (const void *) reladdr;
   const ElfW(Rel) *end = (const void *) (reladdr + relsize);
@@ -70,13 +70,13 @@ elf_dynamic_do_Rel (struct link_map *map, struct r_scope_elem *scope[],
 	  }
 	else
 # endif
-	  elf_machine_lazy_rel (map, scope, l_addr, r, skip_ifunc);
+	  elf_machine_lazy_rel (map, scope, l_addr, r, profile, skip_ifunc);
 
 # ifdef ELF_MACHINE_IRELATIVE
       if (r2 != NULL)
 	for (; r2 <= end2; ++r2)
 	  if (ELFW(R_TYPE) (r2->r_info) == ELF_MACHINE_IRELATIVE)
-	    elf_machine_lazy_rel (map, scope, l_addr, r2, skip_ifunc);
+	    elf_machine_lazy_rel (map, scope, l_addr, r2, profile, skip_ifunc);
 # endif
     }
   else

@@ -449,7 +449,7 @@ elf_machine_rela_relative (Elf32_Addr l_addr, const Elf32_Rela *reloc,
 static inline void __attribute__ ((always_inline))
 elf_machine_lazy_rel (struct link_map *map, struct r_scope_elem *scope[],
 		      Elf32_Addr l_addr, const Elf32_Rela *reloc,
-		      int skip_ifunc)
+		      int profile, int skip_ifunc)
 {
   /* elf_machine_runtime_setup handles this. */
 }

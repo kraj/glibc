@@ -12,13 +12,16 @@ ifeq ($(subdir),elf)
 sysdep-dl-routines += dl-bti
 
 tests += tst-audit26 \
-	 tst-audit27
+	 tst-audit27 \
+	 tst-audit28
 
 modules-names += \
     tst-audit26mod \
     tst-auditmod26 \
     tst-audit27mod \
-    tst-auditmod27
+    tst-auditmod27 \
+    tst-audit28mod \
+    tst-auditmod28
 
 $(objpfx)tst-audit26: $(objpfx)tst-audit26mod.so \
 		      $(objpfx)tst-auditmod26.so
@@ -30,6 +33,15 @@ $(objpfx)tst-audit27: $(objpfx)tst-audit27mod.so \
 $(objpfx)tst-audit27mod.so: $(libsupport)
 LDFLAGS-tst-audit27 += -Wl,-z,lazy
 tst-audit27-ENV = LD_AUDIT=$(objpfx)tst-auditmod27.so
+
+$(objpfx)tst-audit28: $(objpfx)tst-audit28mod.so \
+		      $(objpfx)tst-auditmod28.so
+CFLAGS-tst-audit28.c += -march=armv8.2-a+sve
+CFLAGS-tst-audit28mod.c += -march=armv8.2-a+sve
+CFLAGS-tst-auditmod28.c += -march=armv8.2-a+sve
+$(objpfx)tst-audit28mod.so: $(libsupport)
+LDFLAGS-tst-audit28 += -Wl,-z,lazy
+tst-audit28-ENV = LD_AUDIT=$(objpfx)tst-auditmod28.so
 endif
 
 ifeq ($(subdir),elf)
