@@ -16,17 +16,81 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
+#include <array_length.h>
 #include <assert.h>
 #include <link.h>
 #include <string.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "tst-audit.h"
 #include "tst-audit27mod.h"
 
 #define TEST_NAME  "tst-audit27"
 
 #define AUDIT27_COOKIE 0
+
+static inline float regs_vec_to_float (const La_aarch64_regs *regs, int i)
+{
+  float r;
+  if (regs->lr_sve == 0)
+    r = regs->lr_vreg[i].s;
+  else
+    memcpy (&r, &regs->lr_vreg[i].z[0], sizeof (r));
+  return r;
+}
+
+static inline double regs_vec_to_double (const La_aarch64_regs *regs, int i)
+{
+  double r;
+  if (regs->lr_sve == 0)
+    r = regs->lr_vreg[i].d;
+  else
+    memcpy (&r, &regs->lr_vreg[i].z[0], sizeof (r));
+  return r;
+}
+
+static inline long double regs_vec_to_ldouble (const La_aarch64_regs *regs,
+					       int i)
+{
+  long double r;
+  if (regs->lr_sve == 0)
+    r = regs->lr_vreg[i].q;
+  else
+    memcpy (&r, &regs->lr_vreg[i].z[0], sizeof (r));
+  return r;
+}
+
+static inline float ret_vec_to_float (const La_aarch64_retval *regs, int i)
+{
+  float r;
+  if (regs->lrv_sve == 0)
+    r = regs->lrv_vreg[i].s;
+  else
+    memcpy (&r, &regs->lrv_vreg[i].z[0], sizeof (r));
+  return r;
+}
+
+static inline double ret_vec_to_double (const La_aarch64_retval *regs, int i)
+{
+  double r;
+  if (regs->lrv_sve == 0)
+    r = regs->lrv_vreg[i].d;
+  else
+    memcpy (&r, &regs->lrv_vreg[i].z[0], sizeof (r));
+  return r;
+}
+
+static inline long double ret_vec_to_ldouble (const La_aarch64_retval *regs,
+					      int i)
+{
+  long double r;
+  if (regs->lrv_sve == 0)
+    r = regs->lrv_vreg[i].q;
+  else
+    memcpy (&r, &regs->lrv_vreg[i].z[0], sizeof (r));
+  return r;
+}
 
 unsigned int
 la_version (unsigned int v)
@@ -47,6 +111,7 @@ la_objopen (struct link_map *map, Lmid_t lmid, uintptr_t *cookie)
   return ck == -1 ? 0 : LA_FLG_BINDFROM | LA_FLG_BINDTO;
 }
 
+
 ElfW(Addr)
 la_aarch64_gnu_pltenter (ElfW(Sym) *sym, unsigned int ndx, uintptr_t *refcook,
 			 uintptr_t *defcook, La_aarch64_regs *regs,
@@ -55,39 +120,43 @@ la_aarch64_gnu_pltenter (ElfW(Sym) *sym, unsigned int ndx, uintptr_t *refcook,
 {
   printf ("pltenter: symname=%s, st_value=%#lx, ndx=%u, flags=%u\n",
 	  symname, (long int) sym->st_value, ndx, *flags);
+  printf ("  regs->lr_sve=%d\n", regs->lr_sve);
+  if (regs->lr_sve > 0)
+    for (int i = 0; i < array_length (regs->lr_vreg); i++)
+      printf ("  inregs->lr_vreg[%d]=%p\n", i, regs->lr_vreg[i].z);
 
   if (strcmp (symname, "tst_audit27_func_float") == 0)
     {
-      assert (regs->lr_vreg[0].s == FUNC_FLOAT_ARG0);
-      assert (regs->lr_vreg[1].s == FUNC_FLOAT_ARG1);
-      assert (regs->lr_vreg[2].s == FUNC_FLOAT_ARG2);
-      assert (regs->lr_vreg[3].s == FUNC_FLOAT_ARG3);
-      assert (regs->lr_vreg[4].s == FUNC_FLOAT_ARG4);
-      assert (regs->lr_vreg[5].s == FUNC_FLOAT_ARG5);
-      assert (regs->lr_vreg[6].s == FUNC_FLOAT_ARG6);
-      assert (regs->lr_vreg[7].s == FUNC_FLOAT_ARG7);
+      assert (regs_vec_to_float (regs, 0) == FUNC_FLOAT_ARG0);
+      assert (regs_vec_to_float (regs, 1) == FUNC_FLOAT_ARG1);
+      assert (regs_vec_to_float (regs, 2) == FUNC_FLOAT_ARG2);
+      assert (regs_vec_to_float (regs, 3) == FUNC_FLOAT_ARG3);
+      assert (regs_vec_to_float (regs, 4) == FUNC_FLOAT_ARG4);
+      assert (regs_vec_to_float (regs, 5) == FUNC_FLOAT_ARG5);
+      assert (regs_vec_to_float (regs, 6) == FUNC_FLOAT_ARG6);
+      assert (regs_vec_to_float (regs, 7) == FUNC_FLOAT_ARG7);
     }
   else if (strcmp (symname, "tst_audit27_func_double") == 0)
     {
-      assert (regs->lr_vreg[0].d == FUNC_DOUBLE_ARG0);
-      assert (regs->lr_vreg[1].d == FUNC_DOUBLE_ARG1);
-      assert (regs->lr_vreg[2].d == FUNC_DOUBLE_ARG2);
-      assert (regs->lr_vreg[3].d == FUNC_DOUBLE_ARG3);
-      assert (regs->lr_vreg[4].d == FUNC_DOUBLE_ARG4);
-      assert (regs->lr_vreg[5].d == FUNC_DOUBLE_ARG5);
-      assert (regs->lr_vreg[6].d == FUNC_DOUBLE_ARG6);
-      assert (regs->lr_vreg[7].d == FUNC_DOUBLE_ARG7);
+      assert (regs_vec_to_double (regs, 0) == FUNC_DOUBLE_ARG0);
+      assert (regs_vec_to_double (regs, 1) == FUNC_DOUBLE_ARG1);
+      assert (regs_vec_to_double (regs, 2) == FUNC_DOUBLE_ARG2);
+      assert (regs_vec_to_double (regs, 3) == FUNC_DOUBLE_ARG3);
+      assert (regs_vec_to_double (regs, 4) == FUNC_DOUBLE_ARG4);
+      assert (regs_vec_to_double (regs, 5) == FUNC_DOUBLE_ARG5);
+      assert (regs_vec_to_double (regs, 6) == FUNC_DOUBLE_ARG6);
+      assert (regs_vec_to_double (regs, 7) == FUNC_DOUBLE_ARG7);
     }
   else if (strcmp (symname, "tst_audit27_func_ldouble") == 0)
     {
-      assert (regs->lr_vreg[0].q == FUNC_LDOUBLE_ARG0);
-      assert (regs->lr_vreg[1].q == FUNC_LDOUBLE_ARG1);
-      assert (regs->lr_vreg[2].q == FUNC_LDOUBLE_ARG2);
-      assert (regs->lr_vreg[3].q == FUNC_LDOUBLE_ARG3);
-      assert (regs->lr_vreg[4].q == FUNC_LDOUBLE_ARG4);
-      assert (regs->lr_vreg[5].q == FUNC_LDOUBLE_ARG5);
-      assert (regs->lr_vreg[6].q == FUNC_LDOUBLE_ARG6);
-      assert (regs->lr_vreg[7].q == FUNC_LDOUBLE_ARG7);
+      assert (regs_vec_to_ldouble (regs, 0) == FUNC_LDOUBLE_ARG0);
+      assert (regs_vec_to_ldouble (regs, 1) == FUNC_LDOUBLE_ARG1);
+      assert (regs_vec_to_ldouble (regs, 2) == FUNC_LDOUBLE_ARG2);
+      assert (regs_vec_to_ldouble (regs, 3) == FUNC_LDOUBLE_ARG3);
+      assert (regs_vec_to_ldouble (regs, 4) == FUNC_LDOUBLE_ARG4);
+      assert (regs_vec_to_ldouble (regs, 5) == FUNC_LDOUBLE_ARG5);
+      assert (regs_vec_to_ldouble (regs, 6) == FUNC_LDOUBLE_ARG6);
+      assert (regs_vec_to_ldouble (regs, 7) == FUNC_LDOUBLE_ARG7);
     }
   else
     abort ();
@@ -117,48 +186,56 @@ la_aarch64_gnu_pltexit (ElfW(Sym) *sym, unsigned int ndx, uintptr_t *refcook,
 {
   printf ("pltexit: symname=%s, st_value=%#lx, ndx=%u\n",
 	  symname, (long int) sym->st_value, ndx);
+  printf ("  inregs->lr_sve=%d\n", inregs->lr_sve);
+  if (inregs->lr_sve > 0)
+    for (int i = 0; i < array_length (inregs->lr_vreg); i++)
+      printf ("  inregs->lr_vreg[%d]=%p\n", i, inregs->lr_vreg[i].z);
+  printf ("  outregs->lr_sve=%d\n", outregs->lrv_sve);
+  if (outregs->lrv_sve > 0)
+    for (int i = 0; i < array_length (outregs->lrv_vreg); i++)
+      printf ("  outregs->lr_vreg[%d]=%p\n", i, outregs->lrv_vreg[i].z);
 
   if (strcmp (symname, "tst_audit27_func_float") == 0)
     {
-      assert (inregs->lr_vreg[0].s == FUNC_FLOAT_ARG0);
-      assert (inregs->lr_vreg[1].s == FUNC_FLOAT_ARG1);
-      assert (inregs->lr_vreg[2].s == FUNC_FLOAT_ARG2);
-      assert (inregs->lr_vreg[3].s == FUNC_FLOAT_ARG3);
-      assert (inregs->lr_vreg[4].s == FUNC_FLOAT_ARG4);
-      assert (inregs->lr_vreg[5].s == FUNC_FLOAT_ARG5);
-      assert (inregs->lr_vreg[6].s == FUNC_FLOAT_ARG6);
-      assert (inregs->lr_vreg[7].s == FUNC_FLOAT_ARG7);
+      assert (regs_vec_to_float (inregs, 0) == FUNC_FLOAT_ARG0);
+      assert (regs_vec_to_float (inregs, 1) == FUNC_FLOAT_ARG1);
+      assert (regs_vec_to_float (inregs, 2) == FUNC_FLOAT_ARG2);
+      assert (regs_vec_to_float (inregs, 3) == FUNC_FLOAT_ARG3);
+      assert (regs_vec_to_float (inregs, 4) == FUNC_FLOAT_ARG4);
+      assert (regs_vec_to_float (inregs, 5) == FUNC_FLOAT_ARG5);
+      assert (regs_vec_to_float (inregs, 6) == FUNC_FLOAT_ARG6);
+      assert (regs_vec_to_float (inregs, 7) == FUNC_FLOAT_ARG7);
 
-      assert (outregs->lrv_vreg[0].s == FUNC_FLOAT_RET);
+      assert (ret_vec_to_float (outregs, 0) == FUNC_FLOAT_RET);
     }
   else if (strcmp (symname, "tst_audit27_func_double") == 0)
     {
-      assert (inregs->lr_vreg[0].d == FUNC_DOUBLE_ARG0);
-      assert (inregs->lr_vreg[1].d == FUNC_DOUBLE_ARG1);
-      assert (inregs->lr_vreg[2].d == FUNC_DOUBLE_ARG2);
-      assert (inregs->lr_vreg[3].d == FUNC_DOUBLE_ARG3);
-      assert (inregs->lr_vreg[4].d == FUNC_DOUBLE_ARG4);
-      assert (inregs->lr_vreg[5].d == FUNC_DOUBLE_ARG5);
-      assert (inregs->lr_vreg[6].d == FUNC_DOUBLE_ARG6);
-      assert (inregs->lr_vreg[7].d == FUNC_DOUBLE_ARG7);
+      assert (regs_vec_to_double (inregs, 0) == FUNC_DOUBLE_ARG0);
+      assert (regs_vec_to_double (inregs, 1) == FUNC_DOUBLE_ARG1);
+      assert (regs_vec_to_double (inregs, 2) == FUNC_DOUBLE_ARG2);
+      assert (regs_vec_to_double (inregs, 3) == FUNC_DOUBLE_ARG3);
+      assert (regs_vec_to_double (inregs, 4) == FUNC_DOUBLE_ARG4);
+      assert (regs_vec_to_double (inregs, 5) == FUNC_DOUBLE_ARG5);
+      assert (regs_vec_to_double (inregs, 6) == FUNC_DOUBLE_ARG6);
+      assert (regs_vec_to_double (inregs, 7) == FUNC_DOUBLE_ARG7);
 
-      assert (outregs->lrv_vreg[0].d == FUNC_DOUBLE_RET);
+      assert (ret_vec_to_double (outregs, 0) == FUNC_DOUBLE_RET);
     }
   else if (strcmp (symname, "tst_audit27_func_ldouble") == 0)
     {
-      assert (inregs->lr_vreg[0].q == FUNC_LDOUBLE_ARG0);
-      assert (inregs->lr_vreg[1].q == FUNC_LDOUBLE_ARG1);
-      assert (inregs->lr_vreg[2].q == FUNC_LDOUBLE_ARG2);
-      assert (inregs->lr_vreg[3].q == FUNC_LDOUBLE_ARG3);
-      assert (inregs->lr_vreg[4].q == FUNC_LDOUBLE_ARG4);
-      assert (inregs->lr_vreg[5].q == FUNC_LDOUBLE_ARG5);
-      assert (inregs->lr_vreg[6].q == FUNC_LDOUBLE_ARG6);
-      assert (inregs->lr_vreg[7].q == FUNC_LDOUBLE_ARG7);
+      assert (regs_vec_to_ldouble (inregs, 0) == FUNC_LDOUBLE_ARG0);
+      assert (regs_vec_to_ldouble (inregs, 1) == FUNC_LDOUBLE_ARG1);
+      assert (regs_vec_to_ldouble (inregs, 2) == FUNC_LDOUBLE_ARG2);
+      assert (regs_vec_to_ldouble (inregs, 3) == FUNC_LDOUBLE_ARG3);
+      assert (regs_vec_to_ldouble (inregs, 4) == FUNC_LDOUBLE_ARG4);
+      assert (regs_vec_to_ldouble (inregs, 5) == FUNC_LDOUBLE_ARG5);
+      assert (regs_vec_to_ldouble (inregs, 6) == FUNC_LDOUBLE_ARG6);
+      assert (regs_vec_to_ldouble (inregs, 7) == FUNC_LDOUBLE_ARG7);
 
-      assert (outregs->lrv_vreg[0].q == FUNC_LDOUBLE_RET);
+      assert (ret_vec_to_ldouble (outregs, 0) == FUNC_LDOUBLE_RET);
     }
   else
-    abort ();
+    return 0;
 
   /* Clobber the q registers on exit.  */
   uint8_t v = 0xff;

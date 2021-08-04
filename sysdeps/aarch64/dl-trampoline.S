@@ -205,6 +205,9 @@ _dl_runtime_profile:
 	cfi_rel_offset (q6, OFFSET_RG + DL_OFFSET_RG_V0 + 32*3 + 0)
 	cfi_rel_offset (q7, OFFSET_RG + DL_OFFSET_RG_V0 + 32*3 + 16)
 
+	strb	wzr, [x29, #OFFSET_RG + DL_OFFSET_RG_SVE]
+	strb	wzr, [x29, #OFFSET_RV + DL_OFFSET_RV_SVE]
+
 	add     x0, x29, #SF_SIZE + 16
 	ldr	x1, [x29, #OFFSET_LR]
 	stp	x0, x1, [x29, #OFFSET_RG + DL_OFFSET_RG_SP]
@@ -341,3 +344,296 @@ _dl_runtime_profile:
 	.size _dl_runtime_profile, .-_dl_runtime_profile
 #endif
 	.previous
+
+
+#define HWCAP_SVE		22
+#define ZCR_ELx_LEN_MASK        0x1ff
+
+#if HAVE_AARCH64_SVE_ASM
+	.arch armv8.2-a+sve
+	.globl _dl_runtime_profile_sve
+	.type _dl_runtime_profile_sve, #function
+	cfi_startproc
+	.align 2
+_dl_runtime_profile_sve:
+# if HAVE_AARCH64_PAC_RET
+	PACIASP
+	cfi_window_save
+# else
+	BTI_C
+# endif
+        /* AArch64 we get called with:
+           ip0          &PLTGOT[2]
+           ip1          temp(dl resolver entry point)
+           [sp, #8]     lr
+           [sp, #0]     &PLTGOT[n]
+
+           Stack frame layout:
+           [sp,   #...] lr
+           [sp,   #...] &PLTGOT[n]
+           -------------------------
+	   TODO
+           [sp,   #  0] x29, lr   <- x29
+	 */
+
+# define OFFSET_SVE_T1			16
+# define OFFSET_SVE_SAVED_CALL_X0	OFFSET_SVE_T1 + 8
+# define OFFSET_SVE_FS			OFFSET_SVE_SAVED_CALL_X0 + 16
+# define OFFSET_SVE_RV			OFFSET_SVE_FS + 8
+# define OFFSET_SVE_RG			OFFSET_SVE_RV + DL_SIZEOF_RV
+/* Maximum supported z and pregisters size in bytes.  */
+# define SIZEOF_SVE_Z_REG		512
+# define SIZEOF_SVE_P_REG		SIZEOF_SVE_Z_REG / 8
+/* z0-z7 for argument passing.  */
+# define SIZEOF_SVE_RG_Z		8 * SIZEOF_SVE_Z_REG
+/* p0-p3 for argument passing.  */
+# define SIZEOF_SVE_RG_P		4 * SIZEOF_SVE_P_REG
+/* z0-z7 for function return.  */
+# define SIZEOF_SVE_RV_P		8 * SIZEOF_SVE_Z_REG
+/* SVE registers contents for La_aarch64_regs.lr_vreg  */
+# define OFFSET_SVE_RG_Z		OFFSET_SVE_RG + DL_SIZEOF_RG
+/* SVE registers contents for La_aarch64.regs.lr_sve_pregs  */
+# define OFFSET_SVE_RG_P		OFFSET_SVE_RG_Z + SIZEOF_SVE_RG_Z
+/* SVE registers contents for La_aarch64_retval.lrv_vreg  */
+# define OFFSET_SVE_RV_Z		OFFSET_SVE_RG_P + SIZEOF_SVE_RG_P
+
+# define SF_SVE_SIZE			OFFSET_SVE_RV_Z + SIZEOF_SVE_RV_P
+
+# define OFFSET_SVE_PLTGOTN		SF_SVE_SIZE
+# define OFFSET_SVE_LR			OFFSET_SVE_PLTGOTN + 8
+
+	.macro save_sve_z_reg zreg idx offset save_addr
+	.ifc \zreg, z0
+	.if \offset < 4096
+	add	x0, x29, \offset
+	.else
+	mov	x0, \offset
+	add	x0, x29, x0
+	.endif
+	.else
+	add	x0, x0, SIZEOF_SVE_Z_REG
+	.endif
+	str	\zreg, [x0, #0]
+	.if \save_addr == 1
+	str	x0, [X29, #OFFSET_RG + DL_OFFSET_RG_V0 + 16*\idx]
+	.else
+	str	x0, [X29, #OFFSET_RV + DL_OFFSET_RV_V0 + 16*\idx]
+	.endif
+	.endm
+
+	.macro save_sve_regs offset save_addr
+	save_sve_z_reg z0 0 \offset \save_addr
+	save_sve_z_reg z1 1 \offset \save_addr
+	save_sve_z_reg z2 2 \offset \save_addr
+	save_sve_z_reg z3 3 \offset \save_addr
+	save_sve_z_reg z4 4 \offset \save_addr
+	save_sve_z_reg z5 5 \offset \save_addr
+	save_sve_z_reg z6 6 \offset \save_addr
+	save_sve_z_reg z7 7 \offset \save_addr
+	.if \save_addr  == 1
+	add	x0, x0, SIZEOF_SVE_P_REG
+	str	p0, [x0, #0]
+	add	x0, x0, SIZEOF_SVE_P_REG
+	str	p1, [x0, #0]
+	add	x0, x0, SIZEOF_SVE_P_REG
+	str	p2, [x0, #0]
+	add	x0, x0, SIZEOF_SVE_P_REG
+	str	p3, [x0, #0]
+	.endif
+	.endm
+
+	.macro load_sve_regs offset
+	.if \offset < 4096
+	add	x12, x29, \offset
+	.else
+	mov	x12, \offset
+	add	x12, x29, x12
+	.endif
+	ldr	z0, [x12, #0]
+	add	x12, x12, SIZEOF_SVE_Z_REG
+	ldr	z1, [x12, #0]
+	add	x12, x12, SIZEOF_SVE_Z_REG
+	ldr	z2, [x12, #0]
+	add	x12, x12, SIZEOF_SVE_Z_REG
+	ldr	z3, [x12, #0]
+	add	x12, x12, SIZEOF_SVE_Z_REG
+	ldr	z4, [x12, #0]
+	add	x12, x12, SIZEOF_SVE_Z_REG
+	ldr	z5, [x12, #0]
+	add	x12, x12, SIZEOF_SVE_Z_REG
+	ldr	z6, [x12, #0]
+	add	x12, x12, SIZEOF_SVE_Z_REG
+	ldr	z7, [x12, #0]
+	add	x12, x12, SIZEOF_SVE_P_REG
+	ldr	p0, [x12, #0]
+	add	x12, x12, SIZEOF_SVE_P_REG
+	ldr	p1, [x12, #0]
+	add	x12, x12, SIZEOF_SVE_P_REG
+	ldr	p2, [x12, #0]
+	add	x12, x12, SIZEOF_SVE_P_REG
+	ldr	p3, [x12, #0]
+	.endm
+
+
+	/* Save arguments.  */
+	mov	x12, #SF_SVE_SIZE
+	sub	sp, sp, x12
+	cfi_adjust_cfa_offset (SF_SVE_SIZE)
+	stp	x29, x30, [SP, #0]
+	mov	x29, sp
+	cfi_def_cfa_register (x29)
+	cfi_rel_offset (x29, 0)
+	cfi_rel_offset (lr, 8)
+
+	stp	x0, x1, [x29, #OFFSET_SVE_RG + DL_OFFSET_RG_X0 + 16*0]
+	cfi_rel_offset (x0, OFFSET_SVE_RG + DL_OFFSET_RG_X0 + 16*0 + 0)
+	cfi_rel_offset (x1, OFFSET_SVE_RG + DL_OFFSET_RG_X0 + 16*0 + 8)
+	stp	x2, x3, [x29, #OFFSET_SVE_RG + DL_OFFSET_RG_X0 + 16*1]
+	cfi_rel_offset (x2, OFFSET_SVE_RG + DL_OFFSET_RG_X0 + 16*1 + 0)
+	cfi_rel_offset (x3, OFFSET_SVE_RG + DL_OFFSET_RG_X0 + 16*1 + 8)
+	stp	x4, x5, [x29, #OFFSET_SVE_RG + DL_OFFSET_RG_X0 + 16*2]
+	cfi_rel_offset (x4, OFFSET_SVE_RG + DL_OFFSET_RG_X0 + 16*2 + 0)
+	cfi_rel_offset (x5, OFFSET_SVE_RG + DL_OFFSET_RG_X0 + 16*2 + 8)
+	stp	x6, x7, [x29, #OFFSET_SVE_RG + DL_OFFSET_RG_X0 + 16*3]
+	cfi_rel_offset (x6, OFFSET_SVE_RG + DL_OFFSET_RG_X0 + 16*3 + 0)
+	cfi_rel_offset (x7, OFFSET_SVE_RG + DL_OFFSET_RG_X0 + 16*3 + 8)
+	str	x8, [x29, #OFFSET_SVE_RG + DL_OFFSET_RG_X0 + 16*4 + 0]
+	cfi_rel_offset (x8, OFFSET_SVE_RG + DL_OFFSET_RG_X0 + 16*4 + 0)
+	/* Note 8 bytes of padding is in the stack frame for alignment */
+	save_sve_regs OFFSET_SVE_RG_Z 1
+
+	/* Store the vector length on lr_sve  */
+	mov	x0, #0
+	addvl	x0, x0, #1
+	strb	w0, [x29, #OFFSET_RG + DL_OFFSET_RG_SVE]
+	strb	w0, [x29, #OFFSET_RV + DL_OFFSET_RV_SVE]
+
+	mov	x0, #SF_SVE_SIZE + 16
+	add     x0, x29, x0
+	ldr	x1, [x29, #OFFSET_SVE_LR]
+	stp	x0, x1, [x29, #OFFSET_SVE_RG + DL_OFFSET_RG_SP]
+
+	/* Get pointer to linker struct.  */
+	ldr	PTR_REG (0), [ip0, #-PTR_SIZE]
+
+	/* Prepare to call _dl_profile_fixup().  */
+	ldr	x1, [x29, OFFSET_SVE_PLTGOTN]	/* Recover &PLTGOT[n] */
+
+	sub     x1, x1, ip0
+	add     x1, x1, x1, lsl #1
+	lsl     x1, x1, #3
+	sub     x1, x1, #(RELA_SIZE<<3)
+	lsr     x1, x1, #3
+
+	stp	x0, x1, [x29, #OFFSET_SVE_SAVED_CALL_X0]
+
+	/* Set up extra args for _dl_profile_fixup */
+	ldr	x2, [x29, #OFFSET_SVE_LR]	/* load saved LR */
+	add	x3, x29, #OFFSET_SVE_RG		/* address of La_aarch64_reg */
+	add	x4, x29, #OFFSET_SVE_FS		/* address of framesize */
+	bl	_dl_profile_fixup
+
+	ldr	ip0l, [x29, #OFFSET_SVE_FS]	/* framesize == 0 */
+	cmp	ip0l, #0
+	bge	1f
+	cfi_remember_state
+
+	/* Save the return.  */
+	mov	ip0, x0
+
+	/* Get arguments and return address back.  */
+	ldp	x0, x1, [x29, #OFFSET_SVE_RG + DL_OFFSET_RG_X0 + 16*0]
+	ldp	x2, x3, [x29, #OFFSET_SVE_RG + DL_OFFSET_RG_X0 + 16*1]
+	ldp	x4, x5, [x29, #OFFSET_SVE_RG + DL_OFFSET_RG_X0 + 16*2]
+	ldp	x6, x7, [x29, #OFFSET_SVE_RG + DL_OFFSET_RG_X0 + 16*3]
+	ldr	x8,     [x29, #OFFSET_SVE_RG + DL_OFFSET_RG_X0 + 16*4]
+	load_sve_regs OFFSET_SVE_RG_Z
+
+	cfi_def_cfa_register (sp)
+	ldp	x29, x30, [x29, #0]
+	cfi_restore (x29)
+	cfi_restore (x30)
+
+# if HAVE_AARCH64_PAC_RET
+	mov	x12, SF_SVE_SIZE
+	add	sp, sp, x12
+	cfi_adjust_cfa_offset (-SF_SVE_SIZE)
+	AUTIASP
+	cfi_window_save
+	add	sp, sp, 16
+	cfi_adjust_cfa_offset (-16)
+# else
+	mov	x12, SF_SVE_SIZE + 16
+	add	sp, sp, x12
+	cfi_adjust_cfa_offset (- SF_SVE_SIZE - 16)
+# endif
+
+	/* Jump to the newly found address.  */
+	br	ip0
+
+	cfi_restore_state
+1:
+	/* The new frame size is in ip0.  */
+
+	sub	PTR_REG (1), PTR_REG (29), ip0l
+	and	sp, x1, #0xfffffffffffffff0
+
+	str	x0, [x29, #OFFSET_SVE_T1]
+
+	mov	x0, sp
+	mov	x1, #SF_SVE_SIZE + 16
+	add	x1, x29, x1
+	mov	x2, ip0
+	bl	memcpy
+
+	ldr	ip0, [x29, #OFFSET_SVE_T1]
+
+	/* Call the function.  */
+	ldp	x0, x1, [x29, #OFFSET_SVE_RG + DL_OFFSET_RG_X0 + 16*0]
+	ldp	x2, x3, [x29, #OFFSET_SVE_RG + DL_OFFSET_RG_X0 + 16*1]
+	ldp	x4, x5, [x29, #OFFSET_SVE_RG + DL_OFFSET_RG_X0 + 16*2]
+	ldp	x6, x7, [x29, #OFFSET_SVE_RG + DL_OFFSET_RG_X0 + 16*3]
+	ldr	x8,     [x29, #OFFSET_SVE_RG + DL_OFFSET_RG_X0 + 16*4]
+	load_sve_regs OFFSET_SVE_RG_Z
+	blr	ip0
+	stp	x0, x1, [x29, #OFFSET_SVE_RV + DL_OFFSET_RV_X0 + 16*0]
+	stp	x2, x3, [x29, #OFFSET_SVE_RV + DL_OFFSET_RV_X0 + 16*1]
+	stp	x4, x5, [x29, #OFFSET_SVE_RV + DL_OFFSET_RV_X0 + 16*2]
+	stp	x6, x7, [x29, #OFFSET_SVE_RV + DL_OFFSET_RV_X0 + 16*3]
+	str	x8,     [x29, #OFFSET_SVE_RG + DL_OFFSET_RG_X0 + 16*4]
+	save_sve_regs OFFSET_SVE_RV_Z 0
+
+	/* Setup call to pltexit  */
+	ldp	x0, x1, [x29, #OFFSET_SVE_SAVED_CALL_X0]
+	add	x2, x29, #OFFSET_SVE_RG
+	add	x3, x29, #OFFSET_SVE_RV
+	bl	_dl_audit_pltexit
+
+	ldp	x0, x1, [x29, #OFFSET_SVE_RV + DL_OFFSET_RV_X0 + 16*0]
+	ldp	x2, x3, [x29, #OFFSET_SVE_RV + DL_OFFSET_RV_X0 + 16*1]
+	ldp	x4, x5, [x29, #OFFSET_SVE_RV + DL_OFFSET_RV_X0 + 16*2]
+	ldp	x6, x7, [x29, #OFFSET_SVE_RV + DL_OFFSET_RV_X0 + 16*3]
+	ldr	x8,     [x29, #OFFSET_SVE_RV + DL_OFFSET_RV_X0 + 16*4]
+	load_sve_regs OFFSET_SVE_RV_Z
+
+	/* LR from within La_aarch64_reg */
+	ldr	lr, [x29, #OFFSET_SVE_RG + DL_OFFSET_RG_LR]
+	cfi_restore(lr)
+# if HAVE_AARCH64_PAC_RET
+	/* Note: LR restored from La_aarch64_reg has no PAC.  */
+	cfi_window_save
+# endif
+	mov	sp, x29
+	cfi_def_cfa_register (sp)
+	ldr	x29, [x29, #0]
+	cfi_restore(x29)
+	mov	x12, SF_SVE_SIZE + 16
+	add	sp, sp, x12
+	cfi_adjust_cfa_offset (- SF_SVE_SIZE - 16)
+
+	br	lr
+
+	cfi_endproc
+	.size _dl_runtime_profile_sve, .-_dl_runtime_profile_sve
+	.previous
+#endif /* HAVE_AARCH64_SVE_ASM  */

@@ -25,6 +25,7 @@ typedef union
   float s;
   double d;
   long double q;
+  long double *z;
 } La_aarch64_vector;
 
 /* Registers for entry into PLT on AArch64.  */
@@ -34,6 +35,8 @@ typedef struct La_aarch64_regs
   La_aarch64_vector lr_vreg[8];
   uint64_t          lr_sp;
   uint64_t          lr_lr;
+  uint8_t           lr_sve;
+  uint16_t          *lr_sve_pregs[4];
 } La_aarch64_regs;
 
 /* Return values for calls from PLT on AArch64.  */
@@ -43,6 +46,7 @@ typedef struct La_aarch64_retval
   uint64_t          lrv_xreg[8];
   /* Up to eight V registers can be used for a return value.  */
   La_aarch64_vector lrv_vreg[8];
+  uint8_t           lrv_sve;
 } La_aarch64_retval;
 __BEGIN_DECLS
 

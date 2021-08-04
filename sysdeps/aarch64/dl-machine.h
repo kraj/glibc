@@ -69,6 +69,9 @@ elf_machine_runtime_setup (struct link_map *l, struct r_scope_elem *scope[],
       ElfW(Addr) *got;
       extern void _dl_runtime_resolve (ElfW(Word));
       extern void _dl_runtime_profile (ElfW(Word));
+#if HAVE_AARCH64_SVE_ASM
+      extern void _dl_runtime_profile_sve (ElfW(Word));
+#endif
 
       got = (ElfW(Addr) *) D_PTR (l, l_info[DT_PLTGOT]);
       if (got[1])
@@ -85,7 +88,12 @@ elf_machine_runtime_setup (struct link_map *l, struct r_scope_elem *scope[],
 	 end in this function.  */
       if ( profile)
 	{
-	   got[2] = (ElfW(Addr)) &_dl_runtime_profile;
+#if HAVE_AARCH64_SVE_ASM
+	  if (GLRO(dl_hwcap) & HWCAP_SVE)
+	    got[2] = (ElfW(Addr)) &_dl_runtime_profile_sve;
+	  else
+#endif
+	    got[2] = (ElfW(Addr)) &_dl_runtime_profile;
 
 	  if (GLRO(dl_profile) != NULL
 	      && _dl_name_match_p (GLRO(dl_profile), l))
@@ -383,6 +391,7 @@ __attribute__ ((always_inline))
 elf_machine_lazy_rel (struct link_map *map, struct r_scope_elem *scope[],
 		      ElfW(Addr) l_addr,
 		      const ElfW(Rela) *reloc,
+		      int profile,
 		      int skip_ifunc)
 {
   ElfW(Addr) *const reloc_addr = (void *) (l_addr + reloc->r_offset);
@@ -390,7 +399,8 @@ elf_machine_lazy_rel (struct link_map *map, struct r_scope_elem *scope[],
   /* Check for unexpected PLT reloc type.  */
   if (__builtin_expect (r_type == AARCH64_R(JUMP_SLOT), 1))
     {
-      if (__glibc_unlikely (map->l_info[DT_AARCH64 (VARIANT_PCS)] != NULL))
+      if (__glibc_unlikely (map->l_info[DT_AARCH64 (VARIANT_PCS)] != NULL)
+	  && profile == 0)
 	{
 	  /* Check the symbol table for variant PCS symbols.  */
 	  const Elf_Symndx symndx = ELFW (R_SYM) (reloc->r_info);
