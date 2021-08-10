@@ -167,8 +167,6 @@ $(inst_libdir)/libc.so: $(rpcuserlibs)
 # objects directly into the shared object.
 ifeq (elf,$(subdir))
 $(objpfx)librtld.map: $(rpcuserlibs:.so=_pic.a)
-
-CFLAGS-dl-load.c = -DEXTERNAL_MAP_FROM_FD
 endif
 
 # Override the generic Makeconfig values so we link against the RPC libs.

@@ -931,10 +931,7 @@ _dl_process_pt_gnu_property (struct link_map *l, int fd, const ElfW(Phdr) *ph)
 /* Map in the shared object NAME, actually located in REALNAME, and already
    opened on FD.  */
 
-#ifndef EXTERNAL_MAP_FROM_FD
-static
-#endif
-struct link_map *
+static struct link_map *
 _dl_map_object_from_fd (const char *name, const char *origname, int fd,
 			struct filebuf *fbp, char *realname,
 			struct link_map *loader, int l_type, int mode,

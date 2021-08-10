@@ -116,53 +116,6 @@ _dl_sysdep_start (void **start_argptr,
 	  && _dl_hurd_data->user_entry == 0)
 	_dl_hurd_data->user_entry = (vm_address_t) ENTRY_POINT;
 
-#if 0				/* XXX make this work for real someday... */
-      if (_dl_hurd_data->user_entry == (vm_address_t) ENTRY_POINT)
-	/* We were invoked as a command, not as the program interpreter.
-	   The generic ld.so code supports this: it will parse the args
-	   as "ld.so PROGRAM [ARGS...]".  For booting the Hurd, we
-	   support an additional special syntax:
-	     ld.so [-LIBS...] PROGRAM [ARGS...]
-	   Each LIBS word consists of "FILENAME=MEMOBJ";
-	   for example "-/lib/libc.so=123" says that the contents of
-	   /lib/libc.so are found in a memory object whose port name
-	   in our task is 123.  */
-	while (_dl_argc > 2 && _dl_argv[1][0] == '-' && _dl_argv[1][1] != '-')
-	  {
-	    char *lastslash, *memobjname, *p;
-	    struct link_map *l;
-	    mach_port_t memobj;
-	    error_t err;
-
-	    ++_dl_skip_args;
-	    --_dl_argc;
-	    p = _dl_argv++[1] + 1;
-
-	    memobjname = strchr (p, '=');
-	    if (! memobjname)
-	      _dl_sysdep_fatal ("Bogus library spec: ", p, "\n", NULL);
-	    *memobjname++ = '\0';
-	    memobj = 0;
-	    while (*memobjname != '\0')
-	      memobj = (memobj * 10) + (*memobjname++ - '0');
-
-	    /* Add a user reference on the memory object port, so we will
-	       still have one after _dl_map_object_from_fd calls our
-	       `close'.  */
-	    err = __mach_port_mod_refs (__mach_task_self (), memobj,
-					MACH_PORT_RIGHT_SEND, +1);
-	    assert_perror (err);
-
-	    lastslash = strrchr (p, '/');
-	    l = _dl_map_object_from_fd (lastslash ? lastslash + 1 : p, NULL,
-					memobj, strdup (p), 0);
-
-	    /* Squirrel away the memory object port where it
-	       can be retrieved by the program later.  */
-	    l->l_info[DT_NULL] = (void *) memobj;
-	  }
-#endif
-
       /* Call elf/rtld.c's main program.  It will set everything
 	 up and leave us to transfer control to USER_ENTRY.  */
       (*dl_main) ((const ElfW(Phdr) *) _dl_hurd_data->phdr,
