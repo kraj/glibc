@@ -995,18 +995,28 @@ AC_CHECK_PROG_VER(AS, $AS, --version,
 		  [2.1[0-9][0-9]*|2.2[5-9]*|2.[3-9][0-9]*|[3-9].*|[1-9][0-9]*],
 		  AS=: critic_missing="$critic_missing as")
 
-if test -n "`$LD --version | sed -n 's/^GNU \(gold\).*$/\1/p'`"; then
+case $($LD --version) in
+  "GNU gold"*)
   # Accept gold 1.14 or higher
-  AC_CHECK_PROG_VER(LD, $LD, --version,
+    AC_CHECK_PROG_VER(LD, $LD, --version,
 		    [GNU gold.* \([0-9][0-9]*\.[0-9.]*\)],
 		    [1.1[4-9]*|1.[2-9][0-9]*|1.1[0-9][0-9]*|[2-9].*|[1-9][0-9]*],
 		    LD=: critic_missing="$critic_missing GNU gold")
-else
-  AC_CHECK_PROG_VER(LD, $LD, --version,
+    ;;
+  "LLD"*)
+  # Accept LLD 13.0.0 or higher
+    AC_CHECK_PROG_VER(LD, $LD, --version,
+		    [LLD.* \([0-9][0-9]*\.[0-9.]*\)],
+		    [1[3-9].*|[2-9][0-9].*],
+		    LD=: critic_missing="$critic_missing LLD")
+    ;;
+  *)
+    AC_CHECK_PROG_VER(LD, $LD, --version,
 		    [GNU ld.* \([0-9][0-9]*\.[0-9.]*\)],
 		    [2.1[0-9][0-9]*|2.2[5-9]*|2.[3-9][0-9]*|[3-9].*|[1-9][0-9]*],
 		    LD=: critic_missing="$critic_missing GNU ld")
-fi
+    ;;
+esac
 
 # These programs are version sensitive.
 AC_CHECK_PROG_VER(MAKE, gnumake gmake make, --version,
