@@ -68,6 +68,11 @@ Major new features:
   to be used by compilers for optimizing usage of 'memcmp' when its
   return value is only used for its boolean status.
 
+* On Linux, a new tunable, glibc.malloc.hugetlb, can be used to
+  make malloc issue madvise plus MADV_HUGEPAGE on mmap and sbrk calls.
+  It might improve performance with Transparent Huge Pages madvise mode
+  depending of the workload.
+
 Deprecated and removed features, and other changes affecting compatibility:
 
 * The r_version update in the debugger interface makes the glibc binary
