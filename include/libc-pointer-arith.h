@@ -37,6 +37,16 @@
 /* Cast an integer or a pointer VAL to integer with proper type.  */
 # define cast_to_integer(val) ((__integer_if_pointer_type (val)) (val))
 
+/* Check if SIZE is aligned on SIZE  */
+#define IS_ALIGNED(base, size) \
+  (((base) & (size - 1)) == 0)
+
+#define PTR_IS_ALIGNED(base, size) \
+  ((((uintptr_t) (base)) & (size - 1)) == 0)
+
+#define PTR_DIFF(p1, p2) \
+  ((ptrdiff_t)((uintptr_t)(p1) - (uintptr_t)(p2)))
+
 /* Cast an integer VAL to void * pointer.  */
 # define cast_to_pointer(val) ((void *) (uintptr_t) (val))
 
