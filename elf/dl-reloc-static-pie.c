@@ -23,6 +23,13 @@
 #include <ldsodefs.h>
 #include "dynamic-link.h"
 
+#ifndef NESTING
+# define STATIC_PIE_BOOTSTRAP
+# define BOOTSTRAP_MAP (main_map)
+# define RESOLVE_MAP(sym, version, flags) BOOTSTRAP_MAP
+# include "dynamic-link.h"
+#endif /* n NESTING */
+
 /* Relocate static executable with PIE.  */
 
 void
@@ -30,10 +37,12 @@ _dl_relocate_static_pie (void)
 {
   struct link_map *main_map = _dl_get_dl_main_map ();
 
+#ifdef NESTING
 # define STATIC_PIE_BOOTSTRAP
 # define BOOTSTRAP_MAP (main_map)
 # define RESOLVE_MAP(sym, version, flags) BOOTSTRAP_MAP
 # include "dynamic-link.h"
+#endif /* NESTING */
 
   /* Figure out the run-time load address of static PIE.  */
   main_map->l_addr = elf_machine_load_address ();
@@ -48,7 +57,11 @@ _dl_relocate_static_pie (void)
 
   /* Relocate ourselves so we can do normal function calls and
      data access using the global offset table.  */
-  ELF_DYNAMIC_RELOCATE (main_map, 0, 0, 0);
+  ELF_DYNAMIC_RELOCATE (main_map, 0, 0, 0
+#ifndef NESTING
+                        , main_map
+#endif
+                        );
   main_map->l_relocated = 1;
 
   /* Initialize _r_debug.  */

@@ -162,6 +162,42 @@ _dl_nothread_init_static_tls (struct link_map *map)
 }
 #endif /* !THREAD_GSCOPE_IN_TCB */
 
+#ifndef NESTING
+/* Used by RESOLVE_MAP. _dl_relocate_object is either called at init time or
+ * by dlopen with a global lock, so the variables cannot be accessed
+ * concurrently.  */
+static struct link_map *cur_l;
+static struct r_scope_elem **cur_scope;
+static const char *cur_strtab;
+
+/* This macro is used as a callback from the ELF_DYNAMIC_RELOCATE code.  */
+#define RESOLVE_MAP(ref, version, r_type) \
+    ({ struct link_map *l = cur_l;					      \
+      (ELFW(ST_BIND) ((*ref)->st_info) != STB_LOCAL			      \
+      && __glibc_likely (!dl_symbol_visibility_binds_local_p (*ref)))	      \
+     ? ((__builtin_expect ((*ref) == l->l_lookup_cache.sym, 0)		      \
+	 && elf_machine_type_class (r_type) == l->l_lookup_cache.type_class)  \
+	? (bump_num_cache_relocations (),				      \
+	   (*ref) = l->l_lookup_cache.ret,				      \
+	   l->l_lookup_cache.value)					      \
+	: ({ lookup_t _lr;						      \
+	     int _tc = elf_machine_type_class (r_type);			      \
+	     l->l_lookup_cache.type_class = _tc;			      \
+	     l->l_lookup_cache.sym = (*ref);				      \
+	     const struct r_found_version *v = NULL;			      \
+	     if ((version) != NULL && (version)->hash != 0)		      \
+	       v = (version);						      \
+	     _lr = _dl_lookup_symbol_x (cur_strtab + (*ref)->st_name, l,      \
+					(ref), cur_scope, v, _tc,	      \
+					DL_LOOKUP_ADD_DEPENDENCY, NULL);      \
+	     l->l_lookup_cache.ret = (*ref);				      \
+	     l->l_lookup_cache.value = _lr; }))				      \
+     : l; })
+
+#include "dynamic-link.h"
+
+#endif /* n NESTING */
+
 void
 _dl_relocate_object (struct link_map *l, struct r_scope_elem *scope[],
 		     int reloc_mode, int consider_profiling)
@@ -243,6 +279,8 @@ _dl_relocate_object (struct link_map *l, struct r_scope_elem *scope[],
   {
     /* Do the actual relocation of the object's GOT and other data.  */
 
+#ifdef NESTING
+
     /* String table object symbols.  */
     const char *strtab = (const void *) D_PTR (l, l_info[DT_STRTAB]);
 
@@ -272,7 +310,19 @@ _dl_relocate_object (struct link_map *l, struct r_scope_elem *scope[],
 
 #include "dynamic-link.h"
 
-    ELF_DYNAMIC_RELOCATE (l, lazy, consider_profiling, skip_ifunc);
+#else /* n NESTING */
+
+    cur_l = l;
+    cur_scope = scope;
+    cur_strtab = (const void *) D_PTR (cur_l, l_info[DT_STRTAB]);
+
+#endif /* n NESTING */
+
+    ELF_DYNAMIC_RELOCATE (l, lazy, consider_profiling, skip_ifunc
+#ifndef NESTING
+			  , NULL
+#endif
+			  );
 
 #ifndef PROF
     if (__glibc_unlikely (consider_profiling)

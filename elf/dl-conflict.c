@@ -27,6 +27,23 @@
 #include <sys/types.h>
 #include "dynamic-link.h"
 
+#ifndef NESTING
+    /* This macro is used as a callback from the ELF_DYNAMIC_RELOCATE code.  */
+#define RESOLVE_MAP(ref, version, flags) (*ref = NULL, NULL)
+#define RESOLVE(ref, version, flags) (*ref = NULL, 0)
+#define RESOLVE_CONFLICT_FIND_MAP(map, r_offset) \
+  do {									      \
+    while ((resolve_conflict_map->l_map_end < (ElfW(Addr)) (r_offset))	      \
+	   || (resolve_conflict_map->l_map_start > (ElfW(Addr)) (r_offset)))  \
+      resolve_conflict_map = resolve_conflict_map->l_next;		      \
+									      \
+    (map) = resolve_conflict_map;					      \
+  } while (0)
+
+#include "dynamic-link.h"
+
+#endif /* NESTING */
+
 void
 _dl_resolve_conflicts (struct link_map *l, ElfW(Rela) *conflict,
 		       ElfW(Rela) *conflictend)
@@ -38,6 +55,8 @@ _dl_resolve_conflicts (struct link_map *l, ElfW(Rela) *conflict,
   {
     /* Do the conflict relocation of the object and library GOT and other
        data.  */
+
+#ifdef NESTING
 
     /* This macro is used as a callback from the ELF_DYNAMIC_RELOCATE code.  */
 #define RESOLVE_MAP(ref, version, flags) (*ref = NULL, NULL)
@@ -51,12 +70,18 @@ _dl_resolve_conflicts (struct link_map *l, ElfW(Rela) *conflict,
     (map) = resolve_conflict_map;					      \
   } while (0)
 
+#endif /* NESTING */
+
     /* Prelinking makes no sense for anything but the main namespace.  */
     assert (l->l_ns == LM_ID_BASE);
     struct link_map *resolve_conflict_map __attribute__ ((__unused__))
       = GL(dl_ns)[LM_ID_BASE]._ns_loaded;
 
+#ifdef NESTING
+
 #include "dynamic-link.h"
+
+#endif /* NESTING */
 
     /* Override these, defined in dynamic-link.h.  */
 #undef CHECK_STATIC_TLS
@@ -68,7 +93,11 @@ _dl_resolve_conflicts (struct link_map *l, ElfW(Rela) *conflict,
 
     for (; conflict < conflictend; ++conflict)
       elf_machine_rela (l, conflict, NULL, NULL, (void *) conflict->r_offset,
-			0);
+			0
+#ifndef NESTING
+			, NULL
+#endif
+			);
   }
 #endif
 }
