@@ -18,10 +18,12 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <libc-lock.h>
 #include <pthreadP.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <intprops.h>
 #include <sys/prctl.h>
 #include <not-cancel.h>
 #include <shlib-compat.h>
@@ -29,7 +31,7 @@
 int
 __pthread_getname_np (pthread_t th, char *buf, size_t len)
 {
-  const struct pthread *pd = (const struct pthread *) th;
+  struct pthread *pd = (struct pthread *) th;
 
   /* Unfortunately the kernel headers do not export the TASK_COMM_LEN
      macro.  So we have to define it here.  */
@@ -40,29 +42,38 @@ __pthread_getname_np (pthread_t th, char *buf, size_t len)
   if (pd == THREAD_SELF)
     return __prctl (PR_GET_NAME, buf) ? errno : 0;
 
-#define FMT "/proc/self/task/%u/comm"
-  char fname[sizeof (FMT) + 8];
-  sprintf (fname, FMT, (unsigned int) pd->tid);
+  /* Block all signals, as required by pd->exit_lock.  */
+  sigset_t old_mask;
+  __libc_signal_block_all (&old_mask);
+  __libc_lock_lock (pd->exit_lock);
 
-  int fd = __open64_nocancel (fname, O_RDONLY);
-  if (fd == -1)
-    return errno;
+  char fname[sizeof ("/proc/self/task//comm" ) + INT_BUFSIZE_BOUND (pid_t)];
+  __snprintf (fname, sizeof (fname), "/proc/self/task/%d/comm", pd->tid);
 
   int res = 0;
-  ssize_t n = TEMP_FAILURE_RETRY (__read_nocancel (fd, buf, len));
-  if (n < 0)
-    res = errno;
-  else
+  int fd = __open64_nocancel (fname, O_RDONLY);
+  if (fd != -1)
     {
-      if (buf[n - 1] == '\n')
-	buf[n - 1] = '\0';
-      else if (n == len)
-	res = ERANGE;
+      ssize_t n = TEMP_FAILURE_RETRY (__read_nocancel (fd, buf, len));
+      if (n > 0)
+	{
+	  if (buf[n - 1] == '\n')
+	    buf[n - 1] = '\0';
+	  else if (n == len)
+	    res = ERANGE;
+	  else
+	    buf[n] = '\0';
+	}
       else
-	buf[n] = '\0';
-    }
+	res = errno;
 
-  __close_nocancel_nostatus (fd);
+      __close_nocancel_nostatus (fd);
+    }
+  else
+    res = errno == ENOENT ? ESRCH : errno;
+
+  __libc_lock_unlock (pd->exit_lock);
+  __libc_signal_restore_set (&old_mask);
 
   return res;
 }

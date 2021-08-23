@@ -70,6 +70,12 @@ do_test (void)
     TEST_COMPARE (r, ESRCH);
   }
 
+  {
+    char thread_name[32];
+    int r = pthread_getname_np (thr, thread_name, 32);
+    TEST_COMPARE (r, ESRCH);
+  }
+
   xpthread_join (thr);
 
   return 0;
