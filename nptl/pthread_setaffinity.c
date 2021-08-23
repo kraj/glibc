@@ -15,10 +15,8 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#include <errno.h>
+#include <libc-lock.h>
 #include <pthreadP.h>
-#include <sysdep.h>
-#include <sys/types.h>
 #include <shlib-compat.h>
 
 
@@ -26,15 +24,22 @@ int
 __pthread_setaffinity_new (pthread_t th, size_t cpusetsize,
 			   const cpu_set_t *cpuset)
 {
-  const struct pthread *pd = (const struct pthread *) th;
-  int res;
+  struct pthread *pd = (struct pthread *) th;
 
-  res = INTERNAL_SYSCALL_CALL (sched_setaffinity, pd->tid, cpusetsize,
-			       cpuset);
+  /* Block all signals, as required by pd->exit_lock.  */
+  sigset_t old_mask;
+  __libc_signal_block_all (&old_mask);
+  __libc_lock_lock (pd->exit_lock);
 
-  return (INTERNAL_SYSCALL_ERROR_P (res)
-	  ? INTERNAL_SYSCALL_ERRNO (res)
-	  : 0);
+  int res = pd->tid == 0
+	    ? ESRCH
+	    : -INTERNAL_SYSCALL_CALL (sched_setaffinity, pd->tid, cpusetsize,
+				      cpuset);
+
+  __libc_lock_unlock (pd->exit_lock);
+  __libc_signal_restore_set (&old_mask);
+
+  return res;
 }
 versioned_symbol (libc, __pthread_setaffinity_new,
 		  pthread_setaffinity_np, GLIBC_2_34);

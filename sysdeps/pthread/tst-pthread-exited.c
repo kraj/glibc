@@ -43,6 +43,13 @@ do_test (void)
     TEST_COMPARE (r, ESRCH);
   }
 
+  {
+    cpu_set_t cpuset;
+    CPU_ZERO (&cpuset);
+    int r = pthread_setaffinity_np (thr, sizeof (cpuset), &cpuset);
+    TEST_COMPARE (r, ESRCH);
+  }
+
   xpthread_join (thr);
 
   return 0;
