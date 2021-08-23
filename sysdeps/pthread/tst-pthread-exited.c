@@ -57,6 +57,12 @@ do_test (void)
     TEST_COMPARE (r, ESRCH);
   }
 
+  {
+    struct sched_param sch = { 0 };
+    int r = pthread_setschedparam (thr, SCHED_FIFO, &sch);
+    TEST_COMPARE (r, ESRCH);
+  }
+
   xpthread_join (thr);
 
   return 0;
