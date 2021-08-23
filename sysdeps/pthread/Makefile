@@ -122,6 +122,7 @@ tests += tst-cnd-basic tst-mtx-trylock tst-cnd-broadcast \
 	 tst-pthread_cancel-select-loop \
 	 tst-pthread_kill-exited \
 	 tst-pthread_kill-exiting \
+	 tst-pthread-exited
 	 # tests
 
 tests-time64 := \
