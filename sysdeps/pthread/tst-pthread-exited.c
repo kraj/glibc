@@ -76,6 +76,12 @@ do_test (void)
     TEST_COMPARE (r, ESRCH);
   }
 
+  {
+    char thread_name[] = "test";
+    int r = pthread_setname_np (thr, thread_name);
+    TEST_COMPARE (r, ESRCH);
+  }
+
   xpthread_join (thr);
 
   return 0;

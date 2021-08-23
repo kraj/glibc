@@ -18,19 +18,20 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <libc-lock.h>
 #include <pthreadP.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/prctl.h>
-
+#include <intprops.h>
 #include <not-cancel.h>
 
 
 int
 __pthread_setname_np (pthread_t th, const char *name)
 {
-  const struct pthread *pd = (const struct pthread *) th;
+  struct pthread *pd = (struct pthread *) th;
 
   /* Unfortunately the kernel headers do not export the TASK_COMM_LEN
      macro.  So we have to define it here.  */
@@ -42,22 +43,31 @@ __pthread_setname_np (pthread_t th, const char *name)
   if (pd == THREAD_SELF)
     return __prctl (PR_SET_NAME, name) ? errno : 0;
 
-#define FMT "/proc/self/task/%u/comm"
-  char fname[sizeof (FMT) + 8];
-  sprintf (fname, FMT, (unsigned int) pd->tid);
+  /* Block all signals, as required by pd->exit_lock.  */
+  sigset_t old_mask;
+  __libc_signal_block_all (&old_mask);
+  __libc_lock_lock (pd->exit_lock);
 
-  int fd = __open64_nocancel (fname, O_RDWR);
-  if (fd == -1)
-    return errno;
+  char fname[sizeof ("/proc/self/task//comm" ) + INT_BUFSIZE_BOUND (pid_t)];
+  __snprintf (fname, sizeof (fname), "/proc/self/task/%d/comm", pd->tid);
 
   int res = 0;
-  ssize_t n = TEMP_FAILURE_RETRY (__write_nocancel (fd, name, name_len));
-  if (n < 0)
-    res = errno;
-  else if (n != name_len)
-    res = EIO;
+  int fd = __open64_nocancel (fname, O_RDWR);
+  if (fd != -1)
+    {
+      ssize_t n = TEMP_FAILURE_RETRY (__write_nocancel (fd, name, name_len));
+      if (n < 0)
+	res = errno;
+      else if (n != name_len)
+	res = EIO;
 
-  __close_nocancel_nostatus (fd);
+      __close_nocancel_nostatus (fd);
+    }
+  else
+    res = errno == ENOENT ? ESRCH : errno;
+
+  __libc_lock_unlock (pd->exit_lock);
+  __libc_signal_restore_set (&old_mask);
 
   return res;
 }
