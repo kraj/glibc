@@ -19,7 +19,6 @@
 #if ENABLE_STATIC_PIE
 #include <unistd.h>
 #include <ldsodefs.h>
-#include "dynamic-link.h"
 
 #ifndef NESTING
 # define STATIC_PIE_BOOTSTRAP
