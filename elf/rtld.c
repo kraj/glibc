@@ -519,16 +519,6 @@ _dl_start (void *arg)
 
   /* Read our own dynamic section and fill in the info array.  */
   bootstrap_map.l_ld = (void *) bootstrap_map.l_addr + elf_machine_dynamic ();
-  /* As a workaround for lld placing _GLOBAL_OFFSET_TABLE at an
-     unexpected location, detect when the bootstrap map base and
-     dynamic section have the same address, and patch the base value
-     back to something plausible.  This is probably x86_64-specific,
-     and should go away once lld does the right thing.  */
-#ifdef HAVE_EHDR_START
-  extern const ElfW(Ehdr) __ehdr_start __attribute__ ((visibility ("hidden")));
-  if (bootstrap_map.l_ld == ((void *) bootstrap_map.l_addr))
-    bootstrap_map.l_addr -= (((char *) bootstrap_map.l_addr) - ((char *) &__ehdr_start));
-#endif
   elf_get_dynamic_info (&bootstrap_map, NULL);
 
 #if NO_TLS_OFFSET != 0
