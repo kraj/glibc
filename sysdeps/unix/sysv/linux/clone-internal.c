@@ -98,7 +98,7 @@ __clone_internal (struct clone_args *cl_args,
 #ifdef HAVE_CLONE3_WRAPPER
   int saved_errno = errno;
   int ret = __clone3_internal (cl_args, func, arg);
-  if (ret != -1 || errno != ENOSYS)
+  if (ret != -1 || (errno != ENOSYS && errno != EPERM))
     return ret;
 
   /* NB: Restore errno since errno may be checked against non-zero
