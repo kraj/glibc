@@ -42,7 +42,6 @@
 static const struct option default_options[] =
 {
   TEST_DEFAULT_OPTIONS
-  { NULL, 0, NULL, 0 }
 };
 
 /* Show people how to run the program.  */

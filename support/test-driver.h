@@ -60,6 +60,7 @@ enum
   { "verbose", no_argument, NULL, 'v' },                \
   { "direct", no_argument, NULL, OPT_DIRECT },          \
   { "test-dir", required_argument, NULL, OPT_TESTDIR }, \
+  { NULL, 0, NULL, 0 }
 
 /* The directory the test should use for temporary files.  */
 extern const char *test_dir;
