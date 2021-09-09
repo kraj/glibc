@@ -63,6 +63,13 @@ do_test (void)
     TEST_COMPARE (r, ESRCH);
   }
 
+  {
+    struct sched_param sch;
+    int policy;
+    int r = pthread_getschedparam (thr, &policy, &sch);
+    TEST_COMPARE (r, ESRCH);
+  }
+
   xpthread_join (thr);
 
   return 0;
