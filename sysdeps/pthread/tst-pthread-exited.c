@@ -88,6 +88,11 @@ do_test (void)
     TEST_COMPARE (r, ESRCH);
   }
 
+  {
+    int r = pthread_setschedprio (thr, 0);
+    TEST_COMPARE (r, ESRCH);
+  }
+
   xpthread_join (thr);
 
   return 0;
