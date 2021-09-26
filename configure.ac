@@ -1636,7 +1636,7 @@ __attribute__ ((__optimize__ ("-fno-tree-loop-distribute-patterns")))
 foo (void) {}
 EOF
 libc_cv_cc_loop_to_function=no
-if AC_TRY_COMMAND([${CC-cc} $CFLAGS $CPPFLAGS -c conftest.c])
+if AC_TRY_COMMAND([${CC-cc} $CFLAGS $CPPFLAGS -Werror -c conftest.c])
 then
   libc_cv_cc_loop_to_function=yes
 fi
