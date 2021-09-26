@@ -222,7 +222,7 @@ typedef uintmax_t uatomic_max_t;
      else if (__HAVE_64B_ATOMICS)					      \
        __asm __volatile (lock "xaddq %q0, %1"				      \
 			 : "=r" (__result), "=m" (*mem)			      \
-			 : "0" ((atomic64_t) cast_to_integer (__addval)),     \
+			 : "0" (cast_to_integer (__addval)),     \
 			   "m" (*mem),					      \
 			   "i" (offsetof (tcbhead_t, multiple_threads)));     \
      else								      \
