@@ -5292,7 +5292,7 @@ int
 main ()
 {
 
-#if !defined __GNUC__ || __GNUC__ < 6 || (__GNUC__ == 6 && __GNUC_MINOR__ < 2)
+#if (__GNUC__ < 6 || (__GNUC__ == 6 && __GNUC_MINOR__ < 2)) && !defined __clang__
 #error insufficient compiler
 #endif
   ;
@@ -6450,7 +6450,7 @@ else
 extern char *strstr (const char *, const char *) __asm ("my_strstr");
 char *foo (const char *a, const char *b)
 {
-  return __builtin_strstr (a, b);
+  return strstr (a, b);
 }
 EOF
 if { ac_try='${CC-cc} -O3 -S conftest.c -o - | grep -F "my_strstr" > /dev/null'

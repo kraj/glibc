@@ -1060,7 +1060,7 @@ AC_CHECK_PROG_VER(BISON, bison, --version,
 
 AC_CACHE_CHECK([if $CC is sufficient to build libc], libc_cv_compiler_ok, [
 AC_PREPROC_IFELSE([AC_LANG_PROGRAM([[]], [[
-#if !defined __GNUC__ || __GNUC__ < 6 || (__GNUC__ == 6 && __GNUC_MINOR__ < 2)
+#if (__GNUC__ < 6 || (__GNUC__ == 6 && __GNUC_MINOR__ < 2)) && !defined __clang__
 #error insufficient compiler
 #endif]])],
 	       [libc_cv_compiler_ok=yes],
@@ -1562,7 +1562,7 @@ cat > conftest.c <<\EOF
 extern char *strstr (const char *, const char *) __asm ("my_strstr");
 char *foo (const char *a, const char *b)
 {
-  return __builtin_strstr (a, b);
+  return strstr (a, b);
 }
 EOF
 dnl
