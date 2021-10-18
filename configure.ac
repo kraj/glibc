@@ -1354,6 +1354,10 @@ LIBC_LINKER_FEATURE([--depaudit], [-Wl,--depaudit,x],
 		    [libc_cv_depaudit=yes], [libc_cv_depaudit=no])
 LIBC_CONFIG_VAR([have-depaudit], [$libc_cv_depaudit])
 
+LIBC_LINKER_FEATURE([--pack-dyn-relocs=relr], [-Wl,--pack-dyn-relocs=relr],
+		    [libc_cv_relr=yes], [libc_cv_relr=no])
+LIBC_CONFIG_VAR([have-relr], [$libc_cv_relr])
+
 LIBC_LINKER_FEATURE([--no-dynamic-linker],
 		    [-Wl,--no-dynamic-linker],
 		    [libc_cv_no_dynamic_linker=yes],

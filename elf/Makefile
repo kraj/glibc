@@ -251,6 +251,13 @@ tests-special += $(objpfx)tst-audit14-cmp.out $(objpfx)tst-audit15-cmp.out \
 		 $(objpfx)tst-audit16-cmp.out
 endif
 endif
+ifeq ($(have-relr),yes)
+tests += tst-relr tst-relr-no-pie
+tests-pie += tst-relr
+tests-no-pie += tst-relr-no-pie
+LDFLAGS-tst-relr += -Wl,--pack-dyn-relocs=relr
+LDFLAGS-tst-relr-no-pie += -Wl,--pack-dyn-relocs=relr
+endif
 endif
 tests += $(tests-execstack-$(have-z-execstack))
 ifeq ($(run-built-tests),yes)
