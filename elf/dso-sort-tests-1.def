@@ -50,7 +50,10 @@ output: e>d>c>b>a>{}<a<b<c<d<e
 # Test if init/fini ordering behavior is proper, despite main program with
 # an soname that may cause confusion
 tst-dso-ordering10: {}->a->b->c;soname({})=c
-output: b>a>{}<a<b
+output: c>b>a>{}<a<b<c
+# Same as before, but setting the soname as a direct dependency.
+tst-dso-ordering11: {}->a->b->c;soname({})=a
+output: c>b>a>{}<a<b<c
 
 # Complex example from Bugzilla #15311, under-linked and with circular
 # relocation(dynamic) dependencies. While this is technically unspecified, the
