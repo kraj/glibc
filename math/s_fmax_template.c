@@ -17,10 +17,37 @@
    <https://www.gnu.org/licenses/>.  */
 
 #include <math.h>
+#include <math-use-builtins.h>
+
+#if __HAVE_FLOAT128
+# define USE_BUILTIN_F128 , _Float128 : USE_FMAXF128_BUILTIN
+# define BUILTIN_F128     , _Float128 :__builtin_fmaxf128
+#else
+# define USE_BUILTIN_F128
+# define BUILTIN_F128
+#endif
+
+#define USE_BUILTIN(X, Y)                   \
+  _Generic((X),                             \
+	   float       : USE_FMAXF_BUILTIN, \
+	   double      : USE_FMAX_BUILTIN,  \
+	   long double : USE_FMAXL_BUILTIN  \
+	   USE_BUILTIN_F128)
+
+#define BUILTIN(X, Y)                       \
+  _Generic((X),                             \
+	   float       : __builtin_fmaxf,   \
+	   double      : __builtin_fmax,    \
+	   long double : __builtin_fmaxl    \
+	   BUILTIN_F128)                    \
+  (X, Y)
 
 FLOAT
 M_DECL_FUNC (__fmax) (FLOAT x, FLOAT y)
 {
+  if (USE_BUILTIN (x, y))
+    return BUILTIN (x, y);
+
   if (isgreaterequal (x, y))
     return x;
   else if (isless (x, y))
