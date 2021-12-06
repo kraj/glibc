@@ -68,6 +68,12 @@ Major new features:
   to be used by compilers for optimizing usage of 'memcmp' when its
   return value is only used for its boolean status.
 
+* All programs and tests in glibc are now built as position independent
+  executables (PIE) by default.  Further, if static-pie is available in the
+  toolchain and the architecture, it is also enabled and static programs also
+  built as executable.  A new option --disable-default-pie has been added to
+  disable this behavior and get a non-PIE build.
+
 Deprecated and removed features, and other changes affecting compatibility:
 
 * The r_version update in the debugger interface makes the glibc binary
@@ -79,6 +85,10 @@ Deprecated and removed features, and other changes affecting compatibility:
   when audit modules or dlmopen are used.
 
 * Intel MPX support (lazy PLT, ld.so profile, and LD_AUDIT) has been removed.
+
+* The --enable-static-pie option is no longer available.  The glibc build
+  configuration script now automatically detects static-pie support in the
+  toolchain and architecture and enables it if available.
 
 Changes to build and runtime requirements:
 
