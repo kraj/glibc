@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # Ask the user about the time zone, and output the resulting TZ value to stdout.
 # Interact with the user via stderr and stdin.
 
