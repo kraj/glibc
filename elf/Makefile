@@ -209,6 +209,13 @@ tests-execstack-yes = tst-execstack tst-execstack-needed tst-execstack-prog
 endif
 endif
 endif
+ifeq ($(have-relr),yes)
+tests += tst-relr tst-relr-no-pie
+tests-pie += tst-relr
+tests-no-pie += tst-relr-no-pie
+LDFLAGS-tst-relr += -Wl,--pack-dyn-relocs=relr
+LDFLAGS-tst-relr-no-pie += -Wl,--pack-dyn-relocs=relr -no-pie
+endif
 ifeq ($(run-built-tests),yes)
 tests-special += $(objpfx)tst-leaks1-mem.out \
 		 $(objpfx)tst-leaks1-static-mem.out $(objpfx)noload-mem.out \
