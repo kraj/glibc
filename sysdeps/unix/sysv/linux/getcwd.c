@@ -50,6 +50,13 @@ __getcwd (char *buf, size_t size)
   char *path;
   char *result;
 
+  /* A size of 1 byte is never useful.  */
+  if (size == 1)
+    {
+      __set_errno (ERANGE);
+      return NULL;
+    }
+
 #ifndef NO_ALLOCATION
   size_t alloc_size = size;
   if (size == 0)
