@@ -25,19 +25,6 @@
 
 __BEGIN_DECLS
 
-/* Return the maximum size of path on the target.  */
-static inline size_t
-support_get_path_max (void)
-{
-#ifdef PATH_MAX
-  return PATH_MAX;
-#else
-  size_t path_max = pathconf ("/", _PC_PATH_MAX);
-  return (path_max < 0 ? 1024
-	  : path_max <= PTRDIFF_MAX ? path_max : PTRDIFF_MAX);
-#endif
-}
-
 /* Schedule a temporary file for deletion on exit.  */
 void add_temp_file (const char *name);
 

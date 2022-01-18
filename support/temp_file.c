@@ -46,6 +46,19 @@ static const char *test_dir = _PATH_TMP;
 /* Name of subdirectories in a too long temporary directory tree.  */
 static char toolong_subdir[NAME_MAX + 1];
 
+/* Return the maximum size of path on the target.  */
+static inline size_t
+get_path_max (void)
+{
+#ifdef PATH_MAX
+  return PATH_MAX;
+#else
+  size_t path_max = pathconf ("/", _PC_PATH_MAX);
+  return (path_max < 0 ? 1024
+	  : path_max <= PTRDIFF_MAX ? path_max : PTRDIFF_MAX);
+#endif
+}
+
 static void
 add_temp_file_internal (const char *name, bool toolong)
 {
@@ -134,7 +147,7 @@ ensure_toolong_subdir_initialized (void)
 char *
 support_create_and_chdir_toolong_temp_directory (const char *basename)
 {
-  size_t path_max = support_get_path_max ();
+  size_t path_max = get_path_max ();
 
   char *base = create_temp_directory_internal (basename, true);
 
@@ -170,7 +183,7 @@ support_create_and_chdir_toolong_temp_directory (const char *basename)
 void
 support_chdir_toolong_temp_directory (const char *base)
 {
-  size_t path_max = support_get_path_max ();
+  size_t path_max = get_path_max ();
   ensure_toolong_subdir_initialized ();
 
   if (chdir (base) != 0)
@@ -192,7 +205,7 @@ support_chdir_toolong_temp_directory (const char *base)
 static void
 remove_toolong_subdirs (const char *base)
 {
-  size_t path_max = support_get_path_max ();
+  size_t path_max = get_path_max ();
 
   ensure_toolong_subdir_initialized ();
 
