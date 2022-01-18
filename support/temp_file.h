@@ -33,7 +33,8 @@ support_get_path_max (void)
   return PATH_MAX;
 #else
   size_t path_max = pathconf ("/", _PC_PATH_MAX);
-  path_max = path_max < 0 ? 1024 : path_max <  ? path_max : PTRDIFF_MAX;
+  return (path_max < 0 ? 1024
+	  : path_max <= PTRDIFF_MAX ? path_max : PTRDIFF_MAX);
 #endif
 }
 
