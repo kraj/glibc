@@ -36,14 +36,18 @@ static struct temp_name_list
   struct temp_name_list *next;
   char *name;
   pid_t owner;
+  bool toolong;
 } *temp_name_list;
 
 /* Location of the temporary files.  Set by the test skeleton via
    support_set_test_dir.  The string is not be freed.  */
 static const char *test_dir = _PATH_TMP;
 
-void
-add_temp_file (const char *name)
+/* Name of subdirectories in a too long temporary directory tree.  */
+static char toolong_subdir[NAME_MAX + 1];
+
+static void
+add_temp_file_internal (const char *name, bool toolong)
 {
   struct temp_name_list *newp
     = (struct temp_name_list *) xcalloc (sizeof (*newp), 1);
@@ -53,10 +57,17 @@ add_temp_file (const char *name)
       newp->name = newname;
       newp->next = temp_name_list;
       newp->owner = getpid ();
+      newp->toolong = toolong;
       temp_name_list = newp;
     }
   else
     free (newp);
+}
+
+void
+add_temp_file (const char *name)
+{
+  add_temp_file_internal (name, false);
 }
 
 int
@@ -90,8 +101,8 @@ create_temp_file (const char *base, char **filename)
   return create_temp_file_in_dir (base, test_dir, filename);
 }
 
-char *
-support_create_temp_directory (const char *base)
+static char *
+create_temp_directory_internal (const char *base, bool toolong)
 {
   char *path = xasprintf ("%s/%sXXXXXX", test_dir, base);
   if (mkdtemp (path) == NULL)
@@ -99,16 +110,124 @@ support_create_temp_directory (const char *base)
       printf ("error: mkdtemp (\"%s\"): %m", path);
       exit (1);
     }
-  add_temp_file (path);
+  add_temp_file_internal (path, toolong);
   return path;
+}
+
+char *
+support_create_temp_directory (const char *base)
+{
+  return create_temp_directory_internal (base, false);
+}
+
+static void
+ensure_toolong_subdir_initialized (void)
+{
+  for (size_t i = 0; i < NAME_MAX; i++)
+    if (toolong_subdir[i] != 'X')
+      {
+	printf ("uninitialized toolong directory tree\n");
+	exit (1);
+      }
+}
+
+char *
+support_create_and_chdir_toolong_temp_directory (const char *basename)
+{
+  size_t path_max = support_get_path_max ();
+
+  char *base = create_temp_directory_internal (basename, true);
+
+  if (chdir (base) != 0)
+    {
+      printf ("error creating toolong base: chdir (\"%s\"): %m", base);
+      exit (1);
+    }
+
+  memset (toolong_subdir, 'X', sizeof (toolong_subdir) - 1);
+  toolong_subdir[NAME_MAX] = '\0';
+
+  /* Create directories and descend into them so that the final path is larger
+     than PATH_MAX.  */
+  for (size_t i = 0; i <= path_max / sizeof (toolong_subdir); i++)
+    {
+      if (mkdir (toolong_subdir, S_IRWXU) != 0)
+	{
+	  printf ("error creating toolong subdir: mkdir (\"%s\"): %m",
+		  toolong_subdir);
+	  exit (1);
+	}
+      if (chdir (toolong_subdir) != 0)
+	{
+	  printf ("error creating toolong subdir: chdir (\"%s\"): %m",
+		  toolong_subdir);
+	  exit (1);
+	}
+    }
+  return base;
+}
+
+void
+support_chdir_toolong_temp_directory (const char *base)
+{
+  size_t path_max = support_get_path_max ();
+  ensure_toolong_subdir_initialized ();
+
+  if (chdir (base) != 0)
+    {
+      printf ("error: chdir (\"%s\"): %m", base);
+      exit (1);
+    }
+
+  for (size_t i = 0; i <= path_max / sizeof (toolong_subdir); i++)
+    if (chdir (toolong_subdir) != 0)
+      {
+	printf ("error subdir: chdir (\"%s\"): %m", toolong_subdir);
+	exit (1);
+      }
 }
 
 /* Helper functions called by the test skeleton follow.  */
 
-void
-support_set_test_dir (const char *path)
+static void
+remove_toolong_subdirs (const char *base)
 {
-  test_dir = path;
+  size_t path_max = support_get_path_max ();
+
+  ensure_toolong_subdir_initialized ();
+
+  if (chdir (base) != 0)
+    {
+      printf ("warning: toolong cleanup base failed: chdir (\"%s\"): %m\n",
+	      base);
+      return;
+    }
+
+  /* Descend.  */
+  int levels = 0;
+  for (levels = 0; levels <= path_max / sizeof (toolong_subdir); levels++)
+    if (chdir (toolong_subdir) != 0)
+      {
+	printf ("warning: toolong cleanup failed: chdir (\"%s\"): %m\n",
+		toolong_subdir);
+	return;
+      }
+
+  /* Ascend and remove.  */
+  while (--levels >= 0)
+    {
+      if (chdir ("..") != 0)
+	{
+	  printf ("warning: toolong cleanup failed: chdir (\"..\"): %m\n");
+	  return;
+	}
+      if (remove (toolong_subdir) != 0)
+	{
+	  printf ("warning: could not remove subdirectory: %s: %m\n",
+		  toolong_subdir);
+	  return;
+	}
+    }
 }
 
 void
@@ -123,6 +242,9 @@ support_delete_temp_files (void)
 	 around, to prevent PID reuse.)  */
       if (temp_name_list->owner == pid)
 	{
+	  if (temp_name_list->toolong)
+	    remove_toolong_subdirs (temp_name_list->name);
+
 	  if (remove (temp_name_list->name) != 0)
 	    printf ("warning: could not remove temporary file: %s: %m\n",
 		    temp_name_list->name);
@@ -146,4 +268,10 @@ support_print_temp_files (FILE *f)
         fprintf (f, "  '%s'\n", n->name);
       fprintf (f, ")\n");
     }
+}
+
+void
+support_set_test_dir (const char *path)
+{
+  test_dir = path;
 }
