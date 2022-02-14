@@ -1064,7 +1064,6 @@ gaih_getanswer_slice (const querybuf *answer, int anslen, const char *qname,
   cp += n + QFIXEDSZ;
 
   int haveanswer = 0;
-  int had_error = 0;
   char *canon = NULL;
   char *h_name = NULL;
   int h_namelen = 0;
@@ -1075,7 +1074,7 @@ gaih_getanswer_slice (const querybuf *answer, int anslen, const char *qname,
       return NSS_STATUS_NOTFOUND;
     }
 
-  while (ancount-- > 0 && cp < end_of_message && had_error == 0)
+  while (ancount-- > 0 && cp < end_of_message)
     {
       n = __ns_name_unpack (answer->buf, end_of_message, cp,
 			    packtmp, sizeof packtmp);
@@ -1088,10 +1087,8 @@ gaih_getanswer_slice (const querybuf *answer, int anslen, const char *qname,
 	  n = -1;
 	}
       if (__glibc_unlikely (n < 0 || __libc_res_hnok (buffer) == 0))
-	{
-	  ++had_error;
-	  continue;
-	}
+	break;
+
       if (*firstp && canon == NULL)
 	{
 	  h_name = buffer;
@@ -1102,10 +1099,7 @@ gaih_getanswer_slice (const querybuf *answer, int anslen, const char *qname,
       cp += n;				/* name */
 
       if (__glibc_unlikely (cp + 10 > end_of_message))
-	{
-	  ++had_error;
-	  continue;
-	}
+	break;
 
       uint16_t type;
       NS_GET16 (type, cp);
@@ -1116,11 +1110,8 @@ gaih_getanswer_slice (const querybuf *answer, int anslen, const char *qname,
       NS_GET16 (n, cp);		/* RDATA length.  */
 
       if (end_of_message - cp < n)
-	{
-	  /* RDATA extends beyond the end of the packet.  */
-	  ++had_error;
-	  continue;
-	}
+	/* RDATA extends beyond the end of the packet.  */
+	break;
 
       if (class != C_IN)
 	{
@@ -1139,10 +1130,7 @@ gaih_getanswer_slice (const querybuf *answer, int anslen, const char *qname,
 	  n = __libc_dn_expand (answer->buf, end_of_message, cp,
 				tbuf, sizeof tbuf);
 	  if (__glibc_unlikely (n < 0 || __libc_res_hnok (tbuf) == 0))
-	    {
-	      ++had_error;
-	      continue;
-	    }
+	    break;
 	  cp += n;
 
 	  if (*firstp)
@@ -1158,10 +1146,7 @@ gaih_getanswer_slice (const querybuf *answer, int anslen, const char *qname,
 	      if (__glibc_unlikely (n > buflen))
 		goto too_small;
 	      if (__glibc_unlikely (n >= MAXHOSTNAMELEN))
-		{
-		  ++had_error;
-		  continue;
-		}
+		break;
 
 	      canon = buffer;
 	      buffer = __mempcpy (buffer, tbuf, n);
@@ -1176,10 +1161,7 @@ gaih_getanswer_slice (const querybuf *answer, int anslen, const char *qname,
       if (type == T_A || type == T_AAAA)
 	{
 	  if (n != rrtype_to_rdata_length (type))
-	    {
-	      ++had_error;
-	      continue;
-	    }
+	    break;
 	}
       else
 	{
