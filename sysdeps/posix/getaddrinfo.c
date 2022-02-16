@@ -516,6 +516,66 @@ get_numeric_res (const char *name, const struct addrinfo *req,
   return NULL;
 }
 
+/* Call the simple, old functions, which do not support IPv6 scope ids, nor
+   retrieving the canonical name.  Return address tuples on success and error
+   code in RETP on failure.  */
+
+static struct gaih_addrtuple *
+simple_gethostbyname (const char *name, const struct addrinfo *req,
+		      struct scratch_buffer *tmpbuf, int *retp)
+{
+  int rc;
+  struct hostent th;
+  struct hostent *h;
+  struct gaih_addrtuple *at = NULL;
+
+  while (1)
+    {
+      rc = __gethostbyname2_r (name, AF_INET, &th,
+			       tmpbuf->data, tmpbuf->length,
+			       &h, &h_errno);
+      if (rc != ERANGE || h_errno != NETDB_INTERNAL)
+	break;
+      if (!scratch_buffer_grow (tmpbuf))
+	{
+	  *retp = -EAI_MEMORY;
+	  return NULL;
+	}
+    }
+
+  if (rc == 0)
+    {
+      if (h != NULL)
+	{
+	  /* We found data, convert it.  */
+	  if (!convert_hostent_to_gaih_addrtuple (req, AF_INET, h, &at))
+	    *retp = -EAI_MEMORY;
+	  else
+	    *retp = 0;
+	}
+      else
+	{
+	  if (h_errno == NO_DATA)
+	    *retp = -EAI_NODATA;
+	  else
+	    *retp = -EAI_NONAME;
+	}
+    }
+  else
+    {
+      if (h_errno == NETDB_INTERNAL)
+	*retp = -EAI_SYSTEM;
+      else if (h_errno == TRY_AGAIN)
+	*retp = -EAI_AGAIN;
+      else
+	/* We made requests but they turned out no data.
+	   The name is known, though.  */
+	*retp = -EAI_NODATA;
+    }
+
+  return at;
+}
+
 static int
 gaih_inet (const char *name, const struct gaih_service *service,
 	   const struct addrinfo *req, struct addrinfo **pai,
@@ -562,6 +622,20 @@ gaih_inet (const char *name, const struct gaih_service *service,
       else if (result != 0)
 	goto free_and_return;
 
+      /* If we do not have to look for IPv6 addresses or the canonical
+	 name, use the simple, old functions, which do not support
+	 IPv6 scope ids, nor retrieving the canonical name.  */
+      if (req->ai_family == AF_INET && (req->ai_flags & AI_CANONNAME) == 0)
+	{
+	  if ((at = simple_gethostbyname (name, req, tmpbuf, &result)) != NULL)
+	    {
+	      addrmem = at;
+	      goto process_list;
+	    }
+	  else if (result != 0)
+	    goto free_and_return;
+	}
+
       struct gaih_addrtuple **pat = &at;
       int no_data = 0;
       int no_inet6_data = 0;
@@ -570,69 +644,6 @@ gaih_inet (const char *name, const struct gaih_service *service,
       enum nss_status status = NSS_STATUS_UNAVAIL;
       int no_more;
       struct resolv_context *res_ctx = NULL;
-
-      /* If we do not have to look for IPv6 addresses or the canonical
-	 name, use the simple, old functions, which do not support
-	 IPv6 scope ids, nor retrieving the canonical name.  */
-      if (req->ai_family == AF_INET
-	  && (req->ai_flags & AI_CANONNAME) == 0)
-	{
-	  int rc;
-	  struct hostent th;
-	  struct hostent *h;
-
-	  while (1)
-	    {
-	      rc = __gethostbyname2_r (name, AF_INET, &th,
-				       tmpbuf->data, tmpbuf->length,
-				       &h, &h_errno);
-	      if (rc != ERANGE || h_errno != NETDB_INTERNAL)
-		break;
-	      if (!scratch_buffer_grow (tmpbuf))
-		{
-		  result = -EAI_MEMORY;
-		  goto free_and_return;
-		}
-	    }
-
-	  if (rc == 0)
-	    {
-	      if (h != NULL)
-		{
-		  /* We found data, convert it.  */
-		  if (!convert_hostent_to_gaih_addrtuple
-		      (req, AF_INET, h, &addrmem))
-		    {
-		      result = -EAI_MEMORY;
-		      goto free_and_return;
-		    }
-		  *pat = addrmem;
-		}
-	      else
-		{
-		  if (h_errno == NO_DATA)
-		    result = -EAI_NODATA;
-		  else
-		    result = -EAI_NONAME;
-		  goto free_and_return;
-		}
-	    }
-	  else
-	    {
-	      if (h_errno == NETDB_INTERNAL)
-		result = -EAI_SYSTEM;
-	      else if (h_errno == TRY_AGAIN)
-		result = -EAI_AGAIN;
-	      else
-		/* We made requests but they turned out no data.
-		   The name is known, though.  */
-		result = -EAI_NODATA;
-
-	      goto free_and_return;
-	    }
-
-	  goto process_list;
-	}
 
 #ifdef USE_NSCD
       if (__nss_not_use_nscd_hosts > 0
