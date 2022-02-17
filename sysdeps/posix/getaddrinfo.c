@@ -409,6 +409,122 @@ get_servtuples (const struct gaih_service *service, const struct addrinfo *req,
   return 0;
 }
 
+#ifdef USE_NSCD
+/* Query addresses from nscd cache, return true if a result is found and no
+   more further lookups are needed.  RC contains the result code that is zero
+   on successful lookup.  PAT points to a tuple list that must be NULL on
+   entry.  */
+
+static struct gaih_addrtuple *
+get_nscd_addresses (const char *name, const struct addrinfo *req,
+		    bool *got_ipv6, int *rc)
+{
+  if (__nss_not_use_nscd_hosts > 0
+      && ++__nss_not_use_nscd_hosts > NSS_NSCD_RETRY)
+    __nss_not_use_nscd_hosts = 0;
+
+  if (!__nss_not_use_nscd_hosts
+      && !__nss_database_custom[NSS_DBSIDX_hosts])
+    {
+      /* Try to use nscd.  */
+      struct nscd_ai_result *air = NULL;
+      int err = __nscd_getai (name, &air, &h_errno);
+      if (air != NULL)
+	{
+	  /* Transform into gaih_addrtuple list.  */
+	  char *addrs = air->addrs;
+
+	  struct gaih_addrtuple *at = calloc (air->naddrs, sizeof (*at));
+
+	  if (at == NULL)
+	    {
+	      *rc = -EAI_MEMORY;
+	      return NULL;
+	    }
+
+	  int count = 0;
+	  for (int i = 0; i < air->naddrs; ++i)
+	    {
+	      socklen_t size = (air->family[i] == AF_INET
+				? INADDRSZ : IN6ADDRSZ);
+
+	      if (!((air->family[i] == AF_INET
+		     && req->ai_family == AF_INET6
+		     && (req->ai_flags & AI_V4MAPPED) != 0)
+		    || req->ai_family == AF_UNSPEC
+		    || air->family[i] == req->ai_family))
+		{
+		  /* Skip over non-matching result.  */
+		  addrs += size;
+		  continue;
+		}
+
+	      if (air->family[i] == AF_INET && req->ai_family == AF_INET6
+		  && (req->ai_flags & AI_V4MAPPED))
+		{
+		  at[count].family = AF_INET6;
+		  at[count].addr[3] = *(uint32_t *) addrs;
+		  at[count].addr[2] = htonl (0xffff);
+		}
+	      else if (req->ai_family == AF_UNSPEC
+		       || air->family[count] == req->ai_family)
+		{
+		  at[count].family = air->family[count];
+		  memcpy (at[count].addr, addrs, size);
+		  if (air->family[count] == AF_INET6)
+		    *got_ipv6 = true;
+		}
+	      at[count].next = at + count + 1;
+	      count++;
+	      addrs += size;
+	    }
+
+	  if ((req->ai_flags & AI_CANONNAME) && air->canon != NULL)
+	    {
+	      char *canonbuf = __strdup (air->canon);
+	      if (canonbuf == NULL)
+		{
+		  free (at);
+		  *rc = -EAI_MEMORY;
+		  return NULL;
+		}
+	      at[0].name = canonbuf;
+	    }
+
+	  if (count == 0)
+	    {
+	      free (at);
+	      *rc = -EAI_NONAME;
+	      return NULL;
+	    }
+	  at[count - 1].next = NULL;
+
+	  free (air);
+
+	  return at;
+	}
+      else if (err == 0)
+	/* The database contains a negative entry.  */
+	return NULL;
+      else if (__nss_not_use_nscd_hosts == 0)
+	{
+	  if (h_errno == NETDB_INTERNAL && errno == ENOMEM)
+	    *rc = -EAI_MEMORY;
+	  else if (h_errno == TRY_AGAIN)
+	    *rc = -EAI_AGAIN;
+	  else
+	    *rc = -EAI_SYSTEM;
+
+	  return NULL;
+	}
+    }
+
+  *rc = 0;
+  return NULL;
+}
+#endif
+
+
 /* Return a numeric result in a dynamically allocated address tuple to be freed
    by the caller. Also set *CANONP if successful.  On failure, set RETP to the
    error code, except when AI_NUMERICHOST is not requested, where NULL is
@@ -636,6 +752,17 @@ gaih_inet (const char *name, const struct gaih_service *service,
 	    goto free_and_return;
 	}
 
+#ifdef USE_NSCD
+      if ((at = get_nscd_addresses (name, req, &got_ipv6, &result)) != NULL)
+	{
+	  canon = canonbuf = at->name;
+	  addrmem = at;
+	  goto process_list;
+	}
+      else if (result != 0)
+	goto free_and_return;
+#endif
+
       struct gaih_addrtuple **pat = &at;
       int no_data = 0;
       int no_inet6_data = 0;
@@ -644,113 +771,6 @@ gaih_inet (const char *name, const struct gaih_service *service,
       enum nss_status status = NSS_STATUS_UNAVAIL;
       int no_more;
       struct resolv_context *res_ctx = NULL;
-
-#ifdef USE_NSCD
-      if (__nss_not_use_nscd_hosts > 0
-	  && ++__nss_not_use_nscd_hosts > NSS_NSCD_RETRY)
-	__nss_not_use_nscd_hosts = 0;
-
-      if (!__nss_not_use_nscd_hosts
-	  && !__nss_database_custom[NSS_DBSIDX_hosts])
-	{
-	  /* Try to use nscd.  */
-	  struct nscd_ai_result *air = NULL;
-	  int err = __nscd_getai (name, &air, &h_errno);
-	  if (air != NULL)
-	    {
-	      /* Transform into gaih_addrtuple list.  */
-	      bool added_canon = (req->ai_flags & AI_CANONNAME) == 0;
-	      char *addrs = air->addrs;
-
-	      addrmem = calloc (air->naddrs, sizeof (*addrmem));
-	      if (addrmem == NULL)
-		{
-		  result = -EAI_MEMORY;
-		  goto free_and_return;
-		}
-
-	      struct gaih_addrtuple *addrfree = addrmem;
-	      for (int i = 0; i < air->naddrs; ++i)
-		{
-		  socklen_t size = (air->family[i] == AF_INET
-				    ? INADDRSZ : IN6ADDRSZ);
-
-		  if (!((air->family[i] == AF_INET
-			 && req->ai_family == AF_INET6
-			 && (req->ai_flags & AI_V4MAPPED) != 0)
-			|| req->ai_family == AF_UNSPEC
-			|| air->family[i] == req->ai_family))
-		    {
-		      /* Skip over non-matching result.  */
-		      addrs += size;
-		      continue;
-		    }
-
-		  if (*pat == NULL)
-		    {
-		      *pat = addrfree++;
-		      (*pat)->scopeid = 0;
-		    }
-		  uint32_t *pataddr = (*pat)->addr;
-		  (*pat)->next = NULL;
-		  if (added_canon || air->canon == NULL)
-		    (*pat)->name = NULL;
-		  else if (canonbuf == NULL)
-		    {
-		      canonbuf = __strdup (air->canon);
-		      if (canonbuf == NULL)
-			{
-			  result = -EAI_MEMORY;
-			  goto free_and_return;
-			}
-		      canon = (*pat)->name = canonbuf;
-		    }
-
-		  if (air->family[i] == AF_INET
-		      && req->ai_family == AF_INET6
-		      && (req->ai_flags & AI_V4MAPPED))
-		    {
-		      (*pat)->family = AF_INET6;
-		      pataddr[3] = *(uint32_t *) addrs;
-		      pataddr[2] = htonl (0xffff);
-		      pataddr[1] = 0;
-		      pataddr[0] = 0;
-		      pat = &((*pat)->next);
-		      added_canon = true;
-		    }
-		  else if (req->ai_family == AF_UNSPEC
-			   || air->family[i] == req->ai_family)
-		    {
-		      (*pat)->family = air->family[i];
-		      memcpy (pataddr, addrs, size);
-		      pat = &((*pat)->next);
-		      added_canon = true;
-		      if (air->family[i] == AF_INET6)
-			got_ipv6 = true;
-		    }
-		  addrs += size;
-		}
-
-	      free (air);
-
-	      goto process_list;
-	    }
-	  else if (err == 0)
-	    /* The database contains a negative entry.  */
-	    goto free_and_return;
-	  else if (__nss_not_use_nscd_hosts == 0)
-	    {
-	      if (h_errno == NETDB_INTERNAL && errno == ENOMEM)
-		result = -EAI_MEMORY;
-	      else if (h_errno == TRY_AGAIN)
-		result = -EAI_AGAIN;
-	      else
-		result = -EAI_SYSTEM;
-
-	      goto free_and_return;
-	    }
-	}
-#endif
 
       no_more = !__nss_database_get (nss_database_hosts, &nip);
 
