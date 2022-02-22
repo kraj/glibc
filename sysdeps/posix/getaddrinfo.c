@@ -692,6 +692,33 @@ simple_gethostbyname (const char *name, const struct addrinfo *req,
   return at;
 }
 
+/* Record PTR in the ALLOCSP scratch buffer to be freed later in FUNC_CLEANUP.
+   Increment NALLOCSP by 1 and return true if successful, false otherwise.  */
+
+static bool
+func_cleanup_push (struct scratch_buffer *allocsp, size_t *nallocsp, void *ptr)
+{
+  size_t nallocs = *nallocsp + 1;
+  if (nallocs * sizeof (void *) > allocsp->length
+      && !scratch_buffer_grow_preserve (allocsp))
+    return false;
+
+  ((void **) allocsp->data)[nallocs - 1] = ptr;
+  *nallocsp = nallocs;
+  return true;
+}
+
+/* Free NALLOCS pointers recorded in ALLOCSP.  */
+
+static void
+func_cleanup (struct scratch_buffer *allocsp, size_t nallocs)
+{
+  while (nallocs-- > 0)
+    free (((void **) allocsp->data)[nallocs]);
+
+  scratch_buffer_free (allocsp);
+}
+
 static int
 gaih_inet (const char *name, const struct gaih_service *service,
 	   const struct addrinfo *req, struct addrinfo **pai,
@@ -718,6 +745,10 @@ gaih_inet (const char *name, const struct gaih_service *service,
   char *canonbuf = NULL;
   int result = 0;
 
+  struct scratch_buffer allocs;
+  size_t nallocs = 0;
+  scratch_buffer_init (&allocs);
+
   if (name != NULL)
     {
       if (req->ai_flags & AI_IDN)
@@ -732,7 +763,12 @@ gaih_inet (const char *name, const struct gaih_service *service,
 
       if ((at = get_numeric_res (name, req, &canon, &result)) != NULL)
 	{
-	  addrmem = at;
+	  if (!func_cleanup_push (&allocs, &nallocs, at))
+	    {
+	      result = -EAI_MEMORY;
+	      goto free_and_return;
+	    }
+
 	  goto process_list;
 	}
       else if (result != 0)
@@ -745,7 +781,12 @@ gaih_inet (const char *name, const struct gaih_service *service,
 	{
 	  if ((at = simple_gethostbyname (name, req, tmpbuf, &result)) != NULL)
 	    {
-	      addrmem = at;
+	      if (!func_cleanup_push (&allocs, &nallocs, at))
+		{
+		  result = -EAI_MEMORY;
+		  goto free_and_return;
+		}
+
 	      goto process_list;
 	    }
 	  else if (result != 0)
@@ -756,7 +797,12 @@ gaih_inet (const char *name, const struct gaih_service *service,
       if ((at = get_nscd_addresses (name, req, &got_ipv6, &result)) != NULL)
 	{
 	  canon = canonbuf = at->name;
-	  addrmem = at;
+	  if (!func_cleanup_push (&allocs, &nallocs, at))
+	    {
+	      result = -EAI_MEMORY;
+	      goto free_and_return;
+	    }
+
 	  goto process_list;
 	}
       else if (result != 0)
@@ -782,10 +828,6 @@ gaih_inet (const char *name, const struct gaih_service *service,
       if (res_ctx == NULL)
 	no_more = 1;
 
-      at = __alloca (sizeof (*at));
-      at->next = NULL;
-      at->family = AF_UNSPEC;
-
       while (!no_more)
 	{
 	  no_data = 0;
@@ -798,10 +840,14 @@ gaih_inet (const char *name, const struct gaih_service *service,
 
 	  if (fct4 != NULL)
 	    {
+	      size_t length = 1024;
+	      char *buf = malloc (length);
+
 	      while (1)
 		{
+		  *pat = NULL;
 		  status = DL_CALL_FCT (fct4, (name, pat,
-					       tmpbuf->data, tmpbuf->length,
+					       buf, length,
 					       &errno, &h_errno,
 					       NULL));
 		  if (status == NSS_STATUS_SUCCESS)
@@ -816,12 +862,20 @@ gaih_inet (const char *name, const struct gaih_service *service,
 		      break;
 		    }
 
-		  if (!scratch_buffer_grow (tmpbuf))
+		  length *= 2;
+		  free (buf);
+		  if ((buf = malloc (length)) == NULL)
 		    {
 		      __resolv_context_put (res_ctx);
 		      result = -EAI_MEMORY;
 		      goto free_and_return;
 		    }
+		}
+
+	      if (!func_cleanup_push (&allocs, &nallocs, buf))
+		{
+		  result = -EAI_MEMORY;
+		  goto free_and_return;
 		}
 
 	      if (status == NSS_STATUS_SUCCESS)
@@ -1152,7 +1206,7 @@ gaih_inet (const char *name, const struct gaih_service *service,
  free_and_return:
   if (malloc_name)
     free ((char *) name);
-  free (addrmem);
+  func_cleanup (&allocs, nallocs);
   free (canonbuf);
 
   return result;
