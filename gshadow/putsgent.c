@@ -42,7 +42,7 @@ putsgent (const struct sgrp *g, FILE *stream)
 
   _IO_flockfile (stream);
 
-  if (fprintf (stream, "%s:%s:", g->sg_namp, _S (g->sg_passwd)) < 0)
+  if (__fprintf (stream, "%s:%s:", g->sg_namp, _S (g->sg_passwd)) < 0)
     ++errors;
 
   bool first = true;
@@ -50,7 +50,7 @@ putsgent (const struct sgrp *g, FILE *stream)
   if (sp != NULL)
     while (*sp != NULL)
       {
-	if (fprintf (stream, "%s%s", first ? "" : ",", *sp++) < 0)
+	if (__fprintf (stream, "%s%s", first ? "" : ",", *sp++) < 0)
 	  {
 	    ++errors;
 	    break;
@@ -65,7 +65,7 @@ putsgent (const struct sgrp *g, FILE *stream)
   if (sp != NULL)
     while (*sp != NULL)
       {
-	if (fprintf (stream, "%s%s", first ? "" : ",", *sp++) < 0)
+	if (__fprintf (stream, "%s%s", first ? "" : ",", *sp++) < 0)
 	  {
 	    ++errors;
 	    break;

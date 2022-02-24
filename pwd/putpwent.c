@@ -48,11 +48,11 @@ putpwent (const struct passwd *p, FILE *stream)
     return -1;
 
   if (p->pw_name[0] == '+' || p->pw_name[0] == '-')
-      ret = fprintf (stream, "%s:%s:::%s:%s:%s\n",
+      ret = __fprintf (stream, "%s:%s:::%s:%s:%s\n",
 		     p->pw_name, _S (p->pw_passwd),
 		     gecos, _S (p->pw_dir), _S (p->pw_shell));
   else
-      ret = fprintf (stream, "%s:%s:%lu:%lu:%s:%s:%s\n",
+      ret = __fprintf (stream, "%s:%s:%lu:%lu:%s:%s:%s\n",
 		     p->pw_name, _S (p->pw_passwd),
 		     (unsigned long int) p->pw_uid,
 		     (unsigned long int) p->pw_gid,

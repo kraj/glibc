@@ -18,8 +18,8 @@
 
 /* When in IEEE long double mode, call ___ieee128_sprintf.  */
 #include <stdio.h>
-typeof (sprintf) ___ieee128_sprintf attribute_hidden;
-#define SPRINTF ___ieee128_sprintf
+typeof (sprintf) __sprintfieee128 attribute_hidden;
+#define SPRINTF __sprintfieee128
 
 /* Declare internal functions: ___qecvtieee128_r and ___qfcvtieee128_r,
    built from a different compiling unit, and called from here.  */

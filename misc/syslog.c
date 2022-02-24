@@ -200,7 +200,7 @@ __vsyslog_internal(int pri, const char *fmt, va_list ap,
 	else
 	  {
 	    __fsetlocking (f, FSETLOCKING_BYCALLER);
-	    fprintf (f, "<%d>", pri);
+	    __fprintf (f, "<%d>", pri);
 	    now = time_now ();
 	    f->_IO_write_ptr += __strftime_l (f->_IO_write_ptr,
 					      f->_IO_write_end
@@ -214,7 +214,7 @@ __vsyslog_internal(int pri, const char *fmt, va_list ap,
 	    if (LogTag != NULL)
 	      __fputs_unlocked (LogTag, f);
 	    if (LogStat & LOG_PID)
-	      fprintf (f, "[%d]", (int) __getpid ());
+	      __fprintf (f, "[%d]", (int) __getpid ());
 	    if (LogTag != NULL)
 	      {
 		__putc_unlocked (':', f);

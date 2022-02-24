@@ -45,10 +45,10 @@ putgrent (const struct group *gr, FILE *stream)
   flockfile (stream);
 
   if (gr->gr_name[0] == '+' || gr->gr_name[0] == '-')
-    retval = fprintf (stream, "%s:%s::",
+    retval = __fprintf (stream, "%s:%s::",
 		      gr->gr_name, _S (gr->gr_passwd));
   else
-    retval = fprintf (stream, "%s:%s:%lu:",
+    retval = __fprintf (stream, "%s:%s:%lu:",
 		      gr->gr_name, _S (gr->gr_passwd),
 		      (unsigned long int) gr->gr_gid);
   if (__builtin_expect (retval, 0) < 0)
@@ -60,7 +60,7 @@ putgrent (const struct group *gr, FILE *stream)
   if (gr->gr_mem != NULL)
     {
       for (size_t i = 0; gr->gr_mem[i] != NULL; i++)
-	if (fprintf (stream, i == 0 ? "%s" : ",%s", gr->gr_mem[i]) < 0)
+	if (__fprintf (stream, i == 0 ? "%s" : ",%s", gr->gr_mem[i]) < 0)
 	  {
 	    /* What else can we do?  */
 	    funlockfile (stream);

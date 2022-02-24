@@ -22,13 +22,17 @@
 /*  Some libc_hidden_ldbl_proto's do not map to a unique symbol when
     redirecting ldouble to _Float128 variants.  We can therefore safely
     directly alias them to their internal name.  */
-# if __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI == 1 && IS_IN (libc)
-#  define stdio_hidden_ldbl_proto(p, f) \
-  extern __typeof (p ## f) p ## f __asm (__ASMNAME ("___ieee128_" #f));
-# elif __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI == 1
-#  define stdio_hidden_ldbl_proto(p,f) __LDBL_REDIR1_DECL (p ## f, p ## f ## ieee128)
+# if __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI == 1 && IS_IN (libc) && defined SHARED
+#  define __stdio_hidden_ldbl_proto(name, alias) \
+  extern __typeof (name) __##name __asm__ (__hidden_asmname (#alias));
+#  define stdio_hidden_ldbl_proto(name) \
+  extern typeof (name) __##name##ieee128; \
+  libc_hidden_proto (__##name##ieee128); \
+  __stdio_hidden_ldbl_proto (name, __GI___##name##ieee128)
 # else
-#  define stdio_hidden_ldbl_proto(p,f) libc_hidden_proto (p ## f)
+#  define stdio_hidden_ldbl_proto(name) \
+  extern __typeof (name) __##name; \
+  libc_hidden_proto (__##name)
 # endif
 
 /* Set the error indicator on FP.  */
@@ -39,10 +43,7 @@ fseterr_unlocked (FILE *fp)
 }
 
 extern int __fcloseall (void) attribute_hidden;
-extern int __snprintf (char *__restrict __s, size_t __maxlen,
-		       const char *__restrict __format, ...)
-     __attribute__ ((__format__ (__printf__, 3, 4)));
-stdio_hidden_ldbl_proto (__, snprintf)
+stdio_hidden_ldbl_proto (snprintf);
 
 extern int __vfscanf (FILE *__restrict __s,
 		      const char *__restrict __format,
@@ -183,7 +184,7 @@ extern const char *const _sys_errlist_internal[] attribute_hidden;
 extern const char *__get_errlist (int) attribute_hidden;
 extern const char *__get_errname (int) attribute_hidden;
 
-libc_hidden_ldbl_proto (__asprintf)
+stdio_hidden_ldbl_proto (asprintf);
 
 #  if IS_IN (libc)
 extern FILE *_IO_new_fopen (const char*, const char*);
@@ -205,13 +206,10 @@ extern int _IO_new_fgetpos (FILE *, __fpos_t *);
 #   define fgetpos(fp, posp) _IO_new_fgetpos (fp, posp)
 #  endif
 
-extern __typeof (dprintf) __dprintf
-     __attribute__ ((__format__ (__printf__, 2, 3)));
-stdio_hidden_ldbl_proto (__, dprintf)
-libc_hidden_ldbl_proto (dprintf)
-libc_hidden_ldbl_proto (fprintf)
-libc_hidden_ldbl_proto (vfprintf)
-libc_hidden_ldbl_proto (sprintf)
+stdio_hidden_ldbl_proto (dprintf);
+stdio_hidden_ldbl_proto (fprintf);
+stdio_hidden_ldbl_proto (vfprintf);
+stdio_hidden_ldbl_proto (sprintf);
 libc_hidden_proto (ungetc)
 libc_hidden_proto (__getdelim)
 libc_hidden_proto (fwrite)

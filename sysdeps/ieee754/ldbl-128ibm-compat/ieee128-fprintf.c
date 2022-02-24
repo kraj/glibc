@@ -19,8 +19,8 @@
 #include <stdarg.h>
 #include <libio/libioP.h>
 
-extern int
-___ieee128_fprintf (FILE *fp, const char *format, ...)
+int
+__fprintfieee128 (FILE *fp, const char *format, ...)
 {
   va_list ap;
   int done;
@@ -31,5 +31,4 @@ ___ieee128_fprintf (FILE *fp, const char *format, ...)
 
   return done;
 }
-strong_alias (___ieee128_fprintf, __fprintfieee128)
-hidden_def (___ieee128_fprintf)
+libc_hidden_def (__fprintfieee128)

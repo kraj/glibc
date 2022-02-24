@@ -44,7 +44,7 @@ __pthread_setname_np (pthread_t th, const char *name)
 
 #define FMT "/proc/self/task/%u/comm"
   char fname[sizeof (FMT) + 8];
-  sprintf (fname, FMT, (unsigned int) pd->tid);
+  __sprintf (fname, FMT, (unsigned int) pd->tid);
 
   int fd = __open64_nocancel (fname, O_RDWR);
   if (fd == -1)

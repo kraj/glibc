@@ -83,10 +83,10 @@ __backtrace_symbols (void *const *array, int size)
 		info[cnt].dli_saddr = info[cnt].dli_fbase;
 
 	      if (info[cnt].dli_sname == NULL && info[cnt].dli_saddr == 0)
-		last += 1 + sprintf (last, "%s(%s) [%p]",
-				     info[cnt].dli_fname ?: "",
-				     info[cnt].dli_sname ?: "",
-				     array[cnt]);
+		last += 1 + __sprintf (last, "%s(%s) [%p]",
+				       info[cnt].dli_fname ?: "",
+				       info[cnt].dli_sname ?: "",
+				       array[cnt]);
 	      else
 		{
 		  char sign;
@@ -102,14 +102,14 @@ __backtrace_symbols (void *const *array, int size)
 		      offset = info[cnt].dli_saddr - array[cnt];
 		    }
 
-		  last += 1 + sprintf (last, "%s(%s%c%#tx) [%p]",
-				       info[cnt].dli_fname ?: "",
-				       info[cnt].dli_sname ?: "",
-				       sign, offset, array[cnt]);
+		  last += 1 + __sprintf (last, "%s(%s%c%#tx) [%p]",
+					 info[cnt].dli_fname ?: "",
+					 info[cnt].dli_sname ?: "",
+					 sign, offset, array[cnt]);
 		}
 	    }
 	  else
-	    last += 1 + sprintf (last, "[%p]", array[cnt]);
+	    last += 1 + __sprintf (last, "[%p]", array[cnt]);
 	}
       assert (last <= (char *) result + size * sizeof (char *) + total);
     }

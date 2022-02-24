@@ -507,8 +507,8 @@ _nss_dns_gethostbyaddr2_r (const void *addr, socklen_t len, int af,
   switch (af)
     {
     case AF_INET:
-      sprintf (qbuf, "%u.%u.%u.%u.in-addr.arpa", (uaddr[3] & 0xff),
-	       (uaddr[2] & 0xff), (uaddr[1] & 0xff), (uaddr[0] & 0xff));
+      __sprintf (qbuf, "%u.%u.%u.%u.in-addr.arpa", (uaddr[3] & 0xff),
+		 (uaddr[2] & 0xff), (uaddr[1] & 0xff), (uaddr[0] & 0xff));
       break;
     case AF_INET6:
       qp = qbuf;

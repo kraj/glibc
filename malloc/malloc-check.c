@@ -17,6 +17,7 @@
    not, see <https://www.gnu.org/licenses/>.  */
 
 #define __mremap mremap
+#define __fprintf fprintf
 #include "malloc.c"
 
 /* When memory is tagged, the checking data is stored in the user part
