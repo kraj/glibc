@@ -18,8 +18,8 @@
 
 /* When in IEEE long double mode, call ___ieee128_snprintf.  */
 #include <stdio.h>
-typeof (snprintf) ___ieee128_snprintf attribute_hidden;
-#define SNPRINTF ___ieee128_snprintf
+typeof (snprintf) __snprintfieee128 attribute_hidden;
+#define SNPRINTF __snprintfieee128
 
 #define ECVT_R __qecvtieee128_r
 #define FCVT_R __qfcvtieee128_r

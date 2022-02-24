@@ -24,4 +24,4 @@ __vfprintf (FILE *fp, const char *format, va_list ap)
 }
 ldbl_strong_alias (__vfprintf, _IO_vfprintf);
 ldbl_strong_alias (__vfprintf, vfprintf);
-ldbl_hidden_def (__vfprintf, vfprintf)
+libc_hidden_def (__vfprintf)

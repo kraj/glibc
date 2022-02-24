@@ -28,9 +28,9 @@
 #include <string.h>
 
 #ifdef SPRINTF_CHAR
-# define SPRINTF(x) strlen(sprintf/**/x)
+# define SPRINTF(x) strlen(__sprintf/**/x)
 #else
-# define SPRINTF(x) ((size_t)sprintf x)
+# define SPRINTF(x) ((size_t)__sprintf x)
 #endif
 
 /*

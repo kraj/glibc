@@ -19,8 +19,8 @@
 #include <stdarg.h>
 #include <libio/libioP.h>
 
-extern int
-___ieee128_snprintf (char *s, size_t maxlen, const char *format, ...)
+int
+__snprintfieee128 (char *s, size_t maxlen, const char *format, ...)
 {
   va_list ap;
   int done;
@@ -32,4 +32,4 @@ ___ieee128_snprintf (char *s, size_t maxlen, const char *format, ...)
 
   return done;
 }
-strong_alias (___ieee128_snprintf, __snprintfieee128)
+libc_hidden_def (__snprintfieee128)

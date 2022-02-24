@@ -50,9 +50,9 @@ __getpw (__uid_t uid, char *buf)
   if (p == NULL)
     return -1;
 
-  if (sprintf (buf, "%s:%s:%lu:%lu:%s:%s:%s", p->pw_name, p->pw_passwd,
-	       (unsigned long int) p->pw_uid, (unsigned long int) p->pw_gid,
-	       p->pw_gecos, p->pw_dir, p->pw_shell) < 0)
+  if (__sprintf (buf, "%s:%s:%lu:%lu:%s:%s:%s", p->pw_name, p->pw_passwd,
+		 (unsigned long int) p->pw_uid, (unsigned long int) p->pw_gid,
+		 p->pw_gecos, p->pw_dir, p->pw_shell) < 0)
     return -1;
 
   return 0;

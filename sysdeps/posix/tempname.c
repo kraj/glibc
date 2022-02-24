@@ -161,7 +161,7 @@ __path_search (char *tmpl, size_t tmpl_len, const char *dir, const char *pfx,
       return -1;
     }
 
-  sprintf (tmpl, "%.*s/%.*sXXXXXX", (int) dlen, dir, (int) plen, pfx);
+  __sprintf (tmpl, "%.*s/%.*sXXXXXX", (int) dlen, dir, (int) plen, pfx);
   return 0;
 }
 #endif /* _LIBC */

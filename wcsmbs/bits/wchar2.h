@@ -233,10 +233,13 @@ extern int __swprintf_chk (wchar_t *__restrict __s, size_t __n,
 			   const wchar_t *__restrict __format, ...)
      __THROW /* __attribute__ ((__format__ (__wprintf__, 5, 6))) */;
 
-extern int __REDIRECT_NTH_LDBL (__swprintf_alias,
-				(wchar_t *__restrict __s, size_t __n,
-				 const wchar_t *__restrict __fmt, ...),
-				swprintf);
+extern int __swprintf_alias (wchar_t *__restrict __s, size_t __n,
+			     const wchar_t *__restrict __fmt, ...)
+#if __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI == 1
+     __asm__ (__ASMNAME ("swprintf"))
+#endif
+     ;
+
 
 #ifdef __va_arg_pack
 __fortify_function int
@@ -264,10 +267,13 @@ extern int __vswprintf_chk (wchar_t *__restrict __s, size_t __n,
 			    __gnuc_va_list __arg)
      __THROW /* __attribute__ ((__format__ (__wprintf__, 5, 0))) */;
 
-extern int __REDIRECT_NTH_LDBL (__vswprintf_alias,
-				(wchar_t *__restrict __s, size_t __n,
-				 const wchar_t *__restrict __fmt,
-				 __gnuc_va_list __ap), vswprintf);
+extern int __vswprintf_alias (wchar_t *__restrict __s, size_t __n,
+			      const wchar_t *__restrict __fmt,
+			      __gnuc_va_list __ap)
+#if __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI == 1
+     __asm__ (__ASMNAME ("vswprintf"))
+#endif
+     ;
 
 __fortify_function int
 __NTH (vswprintf (wchar_t *__restrict __s, size_t __n,

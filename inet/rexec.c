@@ -135,7 +135,7 @@ retry:
 				 NULL, 0, servbuff, sizeof(servbuff),
 				 NI_NUMERICSERV))
 			port = (int) __strtol (servbuff, NULL, 10);
-		(void) sprintf(num, "%u", port);
+		(void) __sprintf(num, "%u", port);
 		(void) __write(s, num, strlen(num)+1);
 		{ socklen_t len = sizeof (from);
 		  s3 = TEMP_FAILURE_RETRY (accept(s2, (struct sockaddr *)&from,

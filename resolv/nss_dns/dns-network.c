@@ -191,21 +191,21 @@ _nss_dns_getnetbyaddr_r (uint32_t net, int type, struct netent *result,
     {
     case 3:
       /* Class A network.  */
-      sprintf (qbuf, "0.0.0.%u.in-addr.arpa", net_bytes[3]);
+      __sprintf (qbuf, "0.0.0.%u.in-addr.arpa", net_bytes[3]);
       break;
     case 2:
       /* Class B network.  */
-      sprintf (qbuf, "0.0.%u.%u.in-addr.arpa", net_bytes[3], net_bytes[2]);
+      __sprintf (qbuf, "0.0.%u.%u.in-addr.arpa", net_bytes[3], net_bytes[2]);
       break;
     case 1:
       /* Class C network.  */
-      sprintf (qbuf, "0.%u.%u.%u.in-addr.arpa", net_bytes[3], net_bytes[2],
-	       net_bytes[1]);
+      __sprintf (qbuf, "0.%u.%u.%u.in-addr.arpa", net_bytes[3], net_bytes[2],
+		 net_bytes[1]);
       break;
     case 0:
       /* Class D - E network.  */
-      sprintf (qbuf, "%u.%u.%u.%u.in-addr.arpa", net_bytes[3], net_bytes[2],
-	       net_bytes[1], net_bytes[0]);
+      __sprintf (qbuf, "%u.%u.%u.%u.in-addr.arpa", net_bytes[3], net_bytes[2],
+		 net_bytes[1], net_bytes[0]);
       break;
     }
 

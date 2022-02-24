@@ -23,12 +23,17 @@
 # error "Never include <bits/stdio2.h> directly; use <stdio.h> instead."
 #endif
 
-extern int __sprintf_chk (char *__restrict __s, int __flag, size_t __slen,
-			  const char *__restrict __format, ...) __THROW
+extern int __REDIRECT_LDBL_NTHNL (__sprintf_chk, (char *__restrict __s,
+						  int __flag, size_t __slen,
+						  const char *__restrict __format,
+						  ...),
+				  __sprintf_chkieee128, __nldbl___sprintf_chk)
     __attr_access ((__write_only__, 1, 3));
-extern int __vsprintf_chk (char *__restrict __s, int __flag, size_t __slen,
-			   const char *__restrict __format,
-			   __gnuc_va_list __ap) __THROW
+extern int __REDIRECT_LDBL_NTHNL (__vsprintf_chk, (char *__restrict __s,
+						   int __flag, size_t __slen,
+						   const char *__restrict __format,
+						   __gnuc_va_list __ap),
+				  __vsprintf_chkieee128, __nldbl___vsprintf_chk)
     __attr_access ((__write_only__, 1, 3));
 
 #ifdef __va_arg_pack
@@ -54,14 +59,19 @@ __NTH (vsprintf (char *__restrict __s, const char *__restrict __fmt,
 }
 
 #if defined __USE_ISOC99 || defined __USE_UNIX98
-
-extern int __snprintf_chk (char *__restrict __s, size_t __n, int __flag,
-			   size_t __slen, const char *__restrict __format,
-			   ...) __THROW
+extern int __REDIRECT_LDBL_NTHNL (__snprintf_chk, (char *__restrict __s,
+						   size_t __n, int __flag,
+						   size_t __slen,
+						   const char *__restrict __format,
+						   ...),
+				  __snprintf_chkieee128, __nldbl___snprintf_chk)
     __attr_access ((__write_only__, 1, 2));
-extern int __vsnprintf_chk (char *__restrict __s, size_t __n, int __flag,
-			    size_t __slen, const char *__restrict __format,
-			    __gnuc_va_list __ap) __THROW;
+extern int __REDIRECT_LDBL_NTHNL (__vsnprintf_chk, (char *__restrict __s,
+						    size_t __n, int __flag,
+						    size_t __slen,
+						    const char *__restrict __format,
+						    __gnuc_va_list __ap),
+				  __vsnprintf_chkieee128, __nldbl___vsnprintf_chk);
 
 # ifdef __va_arg_pack
 __fortify_function int
@@ -86,17 +96,25 @@ __NTH (vsnprintf (char *__restrict __s, size_t __n,
 				    __glibc_objsize (__s), __fmt, __ap);
 }
 
-#endif
-
 #if __USE_FORTIFY_LEVEL > 1
-
-extern int __fprintf_chk (FILE *__restrict __stream, int __flag,
-			  const char *__restrict __format, ...);
-extern int __printf_chk (int __flag, const char *__restrict __format, ...);
-extern int __vfprintf_chk (FILE *__restrict __stream, int __flag,
-			   const char *__restrict __format, __gnuc_va_list __ap);
-extern int __vprintf_chk (int __flag, const char *__restrict __format,
-			  __gnuc_va_list __ap);
+extern int __REDIRECT_LDBL (__fprintf_chk, (FILE *__restrict __stream,
+					    int __flag,
+					    const char *__restrict __format,
+					    ...),
+			    __fprintf_chkieee128, __nldbl___fprintf_chk);
+extern int __REDIRECT_LDBL (__printf_chk, (int __flag,
+					   const char *__restrict __format,
+					   ...),
+			    __printf_chkieee128, __nldbl___printf_chk);
+extern int __REDIRECT_LDBL (__vfprintf_chk, (FILE *__restrict __stream,
+					     int __flag,
+					     const char *__restrict __format,
+					     __gnuc_va_list __ap),
+			    __vfprintf_chkieee128, __nldbl___vfprintf_chk);
+extern int __REDIRECT_LDBL (__vprintf_chk, (int __flag,
+					    const char *__restrict __format,
+					    __gnuc_va_list __ap),
+			    __vprintf_chkieee128, __nldbl___vprintf_chk);
 
 # ifdef __va_arg_pack
 __fortify_function int
@@ -136,11 +154,17 @@ vfprintf (FILE *__restrict __stream,
 }
 
 # ifdef __USE_XOPEN2K8
-extern int __dprintf_chk (int __fd, int __flag, const char *__restrict __fmt,
-			  ...) __attribute__ ((__format__ (__printf__, 3, 4)));
-extern int __vdprintf_chk (int __fd, int __flag,
-			   const char *__restrict __fmt, __gnuc_va_list __arg)
+extern int __REDIRECT_LDBL (__dprintf_chk, (int __fd, int __flag,
+					    const char *__restrict __fmt,
+					    ...),
+			    __dprintf_chkieee128, __nldbl___dprintf_chk)
+     __attribute__ ((__format__ (__printf__, 3, 4)));
+extern int __REDIRECT_LDBL (__vdprintf_chk, (int __fd, int __flag,
+					     const char *__restrict __fmt,
+					     __gnuc_va_list __arg),
+			    __vdprintf_chkieee128, __nldbl___vdprintf_chk)
      __attribute__ ((__format__ (__printf__, 3, 0)));
+# endif
 
 #  ifdef __va_arg_pack
 __fortify_function int
@@ -162,22 +186,32 @@ vdprintf (int __fd, const char *__restrict __fmt, __gnuc_va_list __ap)
 # endif
 
 # ifdef __USE_GNU
-
-extern int __asprintf_chk (char **__restrict __ptr, int __flag,
-			   const char *__restrict __fmt, ...)
-     __THROW __attribute__ ((__format__ (__printf__, 3, 4))) __wur;
-extern int __vasprintf_chk (char **__restrict __ptr, int __flag,
-			    const char *__restrict __fmt, __gnuc_va_list __arg)
-     __THROW __attribute__ ((__format__ (__printf__, 3, 0))) __wur;
-extern int __obstack_printf_chk (struct obstack *__restrict __obstack,
-				 int __flag, const char *__restrict __format,
-				 ...)
-     __THROW __attribute__ ((__format__ (__printf__, 3, 4)));
-extern int __obstack_vprintf_chk (struct obstack *__restrict __obstack,
-				  int __flag,
-				  const char *__restrict __format,
-				  __gnuc_va_list __args)
-     __THROW __attribute__ ((__format__ (__printf__, 3, 0)));
+extern int __REDIRECT_LDBL_NTHNL (__asprintf_chk, (char **__restrict __ptr,
+						   int __flag,
+						   const char *__restrict __fmt,
+						   ...),
+				  __asprintf_chkieee128, __nldbl___asprintf_chk)
+     __attribute__ ((__format__ (__printf__, 3, 4))) __wur;
+extern int __REDIRECT_LDBL_NTHNL (__vasprintf_chk, (char **__restrict __ptr,
+						    int __flag,
+						    const char *__restrict __fmt,
+						    __gnuc_va_list __arg),
+				  __vasprintf_chkieee128, __nldbl___vasnprintf_chk)
+     __attribute__ ((__format__ (__printf__, 3, 0))) __wur;
+extern int __REDIRECT_LDBL_NTHNL (__obstack_printf_chk, (struct obstack *__restrict __obstack,
+							 int __flag,
+							 const char *__restrict __format,
+							 ...),
+				  __obstack_printf_chkieee128,
+				  __nldbl___obstack_printf_chk)
+     __attribute__ ((__format__ (__printf__, 3, 4)));
+extern int __REDIRECT_LDBL_NTHNL (__obstack_vprintf_chk, (struct obstack *__restrict __obstack,
+							  int __flag,
+							  const char *__restrict __format,
+							  __gnuc_va_list __args),
+				  __obstack_vprintf_chkieee128,
+				  __nldbl___obstack_vprintf_chk)
+     __attribute__ ((__format__ (__printf__, 3, 0)));
 
 #  ifdef __va_arg_pack
 __fortify_function int

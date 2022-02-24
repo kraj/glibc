@@ -34,7 +34,7 @@ __fprintf (FILE *stream, const char *format, ...)
 
   return done;
 }
-ldbl_hidden_def (__fprintf, fprintf)
+libc_hidden_def (__fprintf)
 ldbl_strong_alias (__fprintf, fprintf)
 
 /* We define the function with the real name here.  But deep down in

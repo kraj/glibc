@@ -560,6 +560,54 @@
 # include <bits/long-double.h>
 #endif
 
+#if (defined __GNUC__ && __GNUC__ >= 2) || (__clang_major__ >= 4)
+# define __REDIRECT_LDBL1(name, prenth, posnth, proto, alias) \
+    name proto prenth __asm__ (__ASMNAME (__ASMNAME (#alias))) posnth
+# if __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI == 1
+#  ifdef __REDIRECT
+#   define __REDIRECT_LDBL(name, proto, ieee128, compat) \
+      __REDIRECT_LDBL1 (name, , , proto, ieee128)
+#   ifdef __cplusplus
+#    define __REDIRECT_LDBL_NTH(name, proto, ieee128, compat) \
+      __REDIRECT_LDBL1 (name, __THROW, , proto, ieee128)
+#    define __REDIRECT_LDBL_NTHNL(name, proto, ieee128, compat) \
+      __REDIRECT_LDBL1 (name, __THROWNL, , proto, ieee128)
+#   else
+#    define __REDIRECT_LDBL_NTH(name, proto, ieee128, compat) \
+      __REDIRECT_LDBL1 (name, , __THROW, proto, ieee128)
+#    define __REDIRECT_LDBL_NTHNL(name, proto, ieee128, compat) \
+      __REDIRECT_LDBL1 (name, , __THROWNL, proto, ieee128)
+#   endif /* __cplusplus */
+#  else
+_Static_assert (0, "IEEE 128-bits long double requires redirection on this platform");
+#  endif /* __REDIRECT */
+# elif defined __LONG_DOUBLE_MATH_OPTIONAL && defined __NO_LONG_DOUBLE_MATH
+#  ifdef __REDIRECT
+#   define __REDIRECT_LDBL(name, proto, ieee128, compat) \
+      __REDIRECT_LDBL1 (name, , , proto, compat)
+#   ifdef __cplusplus
+#    define __REDIRECT_LDBL_NTH(name, proto, ieee128, compat) \
+      __REDIRECT_LDBL1 (name, __THROW, , proto, compat)
+#    define __REDIRECT_LDBL_NTHNL(name, proto, ieee128, compat) \
+      __REDIRECT_LDBL1 (name, __THROWNL, , proto, compat)
+#   else
+#    define __REDIRECT_LDBL_NTH(name, proto, ieee128, compat) \
+      __REDIRECT_LDBL1 (name, , __THROW, proto, compat)
+#    define __REDIRECT_LDBL_NTHNL(name, proto, ieee128, compat) \
+      __REDIRECT_LDBL1 (name, , __THROWNL, proto, compat)
+#   endif /* __cplusplus */
+#  else
+_Static_assert (0, "Compat long double requires redirection on this platform");
+#  endif /* __REDIRECT */
+# endif
+#endif
+
+#ifndef __REDIRECT_LDBL
+# define __REDIRECT_LDBL(name, proto, ieee128, compat) name proto
+# define __REDIRECT_LDBL_NTH(name, proto, ieee128, compat) name proto __THROW
+# define __REDIRECT_LDBL_NTHNL(name, proto, ieee128, compat) name proto __THROWNL
+#endif
+
 #if __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI == 1
 # ifdef __REDIRECT
 
@@ -583,10 +631,6 @@
 #  define __REDIRECT_NTH_LDBL(name, proto, alias) \
   __LDBL_REDIR1_NTH (name, proto, __##alias##ieee128)
 
-/* Unused.  */
-#  define __REDIRECT_LDBL(name, proto, alias) ... unused__redirect_ldbl
-#  define __LDBL_REDIR_NTH(name, proto) ... unused__ldbl_redir_nth
-
 # else
 _Static_assert (0, "IEEE 128-bits long double requires redirection on this platform");
 # endif
@@ -605,24 +649,6 @@ _Static_assert (0, "IEEE 128-bits long double requires redirection on this platf
   extern __typeof (name) name __asm (__ASMNAME (#alias));
 #  define __LDBL_REDIR_DECL(name) \
   extern __typeof (name) name __asm (__ASMNAME ("__nldbl_" #name));
-#  define __REDIRECT_LDBL(name, proto, alias) \
-  __LDBL_REDIR1 (name, proto, __nldbl_##alias)
-#  define __REDIRECT_NTH_LDBL(name, proto, alias) \
-  __LDBL_REDIR1_NTH (name, proto, __nldbl_##alias)
-# endif
-#endif
-#if (!defined __LDBL_COMPAT && __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI == 0) \
-    || !defined __REDIRECT
-# define __LDBL_REDIR1(name, proto, alias) name proto
-# define __LDBL_REDIR(name, proto) name proto
-# define __LDBL_REDIR1_NTH(name, proto, alias) name proto __THROW
-# define __LDBL_REDIR_NTH(name, proto) name proto __THROW
-# define __LDBL_REDIR2_DECL(name)
-# define __LDBL_REDIR_DECL(name)
-# ifdef __REDIRECT
-#  define __REDIRECT_LDBL(name, proto, alias) __REDIRECT (name, proto, alias)
-#  define __REDIRECT_NTH_LDBL(name, proto, alias) \
-  __REDIRECT_NTH (name, proto, alias)
 # endif
 #endif
 

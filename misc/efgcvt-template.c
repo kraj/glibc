@@ -24,7 +24,7 @@
 #include <math_ldbl_opt.h>
 
 #ifndef SPRINTF
-# define SPRINTF sprintf
+# define SPRINTF __sprintf
 #endif
 
 #define APPEND(a, b) APPEND2 (a, b)

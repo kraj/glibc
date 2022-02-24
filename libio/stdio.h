@@ -41,6 +41,7 @@ __BEGIN_DECLS
 #include <bits/types/__FILE.h>
 #include <bits/types/FILE.h>
 #include <bits/types/struct_FILE.h>
+#include <bits/floatn.h>
 
 #ifdef __USE_GNU
 # include <bits/types/cookie_io_functions_t.h>
@@ -342,78 +343,143 @@ extern void setbuffer (FILE *__restrict __stream, char *__restrict __buf,
 extern void setlinebuf (FILE *__stream) __THROW;
 #endif
 
-
 /* Write formatted output to STREAM.
 
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
-extern int fprintf (FILE *__restrict __stream,
-		    const char *__restrict __format, ...);
+extern int __REDIRECT_LDBL (fprintf, (FILE *__restrict __stream,
+				      const char *__restrict __format, ...),
+			    __fprintfieee128, __nldbl_fprintf);
 /* Write formatted output to stdout.
 
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
-extern int printf (const char *__restrict __format, ...);
+extern int __REDIRECT_LDBL (printf, (const char *__restrict __format, ...),
+			    __printfieee128, __nldbl_printf);
 /* Write formatted output to S.  */
-extern int sprintf (char *__restrict __s,
-		    const char *__restrict __format, ...) __THROWNL;
+extern int __REDIRECT_LDBL_NTHNL (sprintf, (char *__restrict __s,
+					    const char *__restrict __format,
+					    ...),
+				  __sprintfieee128, __nldbl_sprintf);
 
 /* Write formatted output to S from argument list ARG.
 
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
-extern int vfprintf (FILE *__restrict __s, const char *__restrict __format,
-		     __gnuc_va_list __arg);
+extern int __REDIRECT_LDBL (vfprintf, (FILE *__restrict __s,
+				       const char *__restrict __format,
+				       __gnuc_va_list __arg),
+			    __vfprintfieee128, __nldbl_vfprintf);
 /* Write formatted output to stdout from argument list ARG.
 
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
-extern int vprintf (const char *__restrict __format, __gnuc_va_list __arg);
+extern int __REDIRECT_LDBL (vprintf, (const char *__restrict __format,
+				      __gnuc_va_list __arg),
+			    __vprintfieee128, __nldbl_vprintf);
 /* Write formatted output to S from argument list ARG.  */
-extern int vsprintf (char *__restrict __s, const char *__restrict __format,
-		     __gnuc_va_list __arg) __THROWNL;
+extern int __REDIRECT_LDBL_NTHNL (vsprintf, (char *__restrict __s,
+					     const char *__restrict __format,
+					     __gnuc_va_list __arg),
+				  __vsprintfieee128, __nldbl_vsprintf);
 
 #if defined __USE_ISOC99 || defined __USE_UNIX98
 /* Maximum chars of output to write in MAXLEN.  */
-extern int snprintf (char *__restrict __s, size_t __maxlen,
-		     const char *__restrict __format, ...)
-     __THROWNL __attribute__ ((__format__ (__printf__, 3, 4)));
-
-extern int vsnprintf (char *__restrict __s, size_t __maxlen,
-		      const char *__restrict __format, __gnuc_va_list __arg)
-     __THROWNL __attribute__ ((__format__ (__printf__, 3, 0)));
+extern int __REDIRECT_LDBL_NTHNL (snprintf, (char *__restrict __s,
+					     size_t __maxlen,
+					     const char *__restrict __format,
+					     ...),
+				  __snprintfieee128, __nldbl_snprintf)
+     __attribute__ ((__format__ (__printf__, 3, 4)));
+extern int __REDIRECT_LDBL_NTHNL (vsnprintf, (char *__restrict __s,
+					      size_t __maxlen,
+					      const char *__restrict __format,
+					      __gnuc_va_list __arg),
+				  __vsnprintfieee128, __nldbl_vsnprintf)
+     __attribute__ ((__format__ (__printf__, 3, 0)));
 #endif
 
 #if __GLIBC_USE (LIB_EXT2)
 /* Write formatted output to a string dynamically allocated with `malloc'.
    Store the address of the string in *PTR.  */
-extern int vasprintf (char **__restrict __ptr, const char *__restrict __f,
-		      __gnuc_va_list __arg)
-     __THROWNL __attribute__ ((__format__ (__printf__, 2, 0))) __wur;
-extern int __asprintf (char **__restrict __ptr,
-		       const char *__restrict __fmt, ...)
-     __THROWNL __attribute__ ((__format__ (__printf__, 2, 3))) __wur;
-extern int asprintf (char **__restrict __ptr,
-		     const char *__restrict __fmt, ...)
-     __THROWNL __attribute__ ((__format__ (__printf__, 2, 3))) __wur;
+extern int __REDIRECT_LDBL_NTHNL (vasprintf, (char **__restrict __ptr,
+					      const char *__restrict __f,
+					      __gnuc_va_list __arg),
+				  __vasprintfieee128, __nldbl_vasprintf)
+     __attribute__ ((__format__ (__printf__, 2, 0))) __wur;
+extern int __REDIRECT_LDBL_NTHNL (asprintf, (char **__restrict __ptr,
+					     const char *__restrict __fmt,
+					     ...),
+				  __asprintfieee128, __nldbl_asprintf)
+     __attribute__ ((__format__ (__printf__, 2, 3))) __wur;
 #endif
 
 #ifdef __USE_XOPEN2K8
 /* Write formatted output to a file descriptor.  */
-extern int vdprintf (int __fd, const char *__restrict __fmt,
-		     __gnuc_va_list __arg)
+extern int __REDIRECT_LDBL (vdprintf, (int __fd, const char *__restrict __fmt,
+				       __gnuc_va_list __arg),
+			    __vdprintfieee128, __nldbl_vdprintf)
      __attribute__ ((__format__ (__printf__, 2, 0)));
-extern int dprintf (int __fd, const char *__restrict __fmt, ...)
+extern int __REDIRECT_LDBL (dprintf, (int __fd, const char *__restrict __fmt,
+				      ...),
+			    __dprintfieee128, __nldbl_dprintf)
      __attribute__ ((__format__ (__printf__, 2, 3)));
 #endif
 
-
+#if !__GLIBC_USE (DEPRECATED_SCANF)
+# if __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI == 1 || defined __LDBL_COMPAT
+extern int __REDIRECT_LDBL (fscanf, (FILE *__restrict __stream,
+				     const char *__restrict __format,
+				     ...),
+			    __isoc99_fscanfieee128, __nldbl___isoc99_fscanf) __wur;
+extern int __REDIRECT_LDBL (scanf, (const char *__restrict __format,
+				    ...),
+			    __isoc99_scanfieee128, __nldbl___isoc99_scanf) __wur;
+extern int __REDIRECT_LDBL_NTH (sscanf, (const char *__restrict __s,
+					 const char *__restrict __format,
+					 ...),
+			    __isoc99_sscanfieee128, __nldbl___isoc99_sscanf);
+# else
+#  ifdef __REDIRECT
+extern int __REDIRECT (fscanf, (FILE *__restrict __stream,
+                                const char *__restrict __format, ...),
+                       __isoc99_fscanf) __wur;
+extern int __REDIRECT (scanf, (const char *__restrict __format, ...),
+                       __isoc99_scanf) __wur;
+extern int __REDIRECT_NTH (sscanf, (const char *__restrict __s,
+                                    const char *__restrict __format, ...),
+                           __isoc99_sscanf);
+#  else
+extern int __isoc99_fscanf (FILE *__restrict __stream,
+                            const char *__restrict __format, ...) __wur;
+extern int __isoc99_scanf (const char *__restrict __format, ...) __wur;
+extern int __isoc99_sscanf (const char *__restrict __s,
+                            const char *__restrict __format, ...) __THROW;
+#   define fscanf __isoc99_fscanf
+#   define scanf __isoc99_scanf
+#   define sscanf __isoc99_sscanf
+#  endif /* __REDIRECT */
+# endif
+#else
+# if __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI == 1 || defined __LDBL_COMPAT
+extern int __REDIRECT_LDBL (fscanf, (FILE *__restrict __stream,
+				     const char *__restrict __format,
+				     ...),
+			    __fscanfieee128, __nldbl_fscanf) __wur;
+extern int __REDIRECT_LDBL (scanf, (const char *__restrict __format,
+				    ...),
+			    __scanfieee128, __nldbl_scanf) __wur;
+extern int __REDIRECT_LDBL_NTH (sscanf, (const char *__restrict __s,
+					 const char *__restrict __format,
+					 ...),
+				__sscanfieee128, __nldbl_sscanf) __wur;
+# else
 /* Read formatted input from STREAM.
 
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
 extern int fscanf (FILE *__restrict __stream,
-		   const char *__restrict __format, ...) __wur;
+                   const char *__restrict __format, ...) __wur;
 /* Read formatted input from stdin.
 
    This function is a possible cancellation point and therefore not
@@ -421,43 +487,81 @@ extern int fscanf (FILE *__restrict __stream,
 extern int scanf (const char *__restrict __format, ...) __wur;
 /* Read formatted input from S.  */
 extern int sscanf (const char *__restrict __s,
-		   const char *__restrict __format, ...) __THROW;
-
-/* For historical reasons, the C99-compliant versions of the scanf
-   functions are at alternative names.  When __LDBL_COMPAT or
-   __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI are in effect, this is handled in
-   bits/stdio-ldbl.h.  */
-#include <bits/floatn.h>
-#if !__GLIBC_USE (DEPRECATED_SCANF) && !defined __LDBL_COMPAT \
-    && __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI == 0
-# ifdef __REDIRECT
-extern int __REDIRECT (fscanf, (FILE *__restrict __stream,
-				const char *__restrict __format, ...),
-		       __isoc99_fscanf) __wur;
-extern int __REDIRECT (scanf, (const char *__restrict __format, ...),
-		       __isoc99_scanf) __wur;
-extern int __REDIRECT_NTH (sscanf, (const char *__restrict __s,
-				    const char *__restrict __format, ...),
-			   __isoc99_sscanf);
-# else
-extern int __isoc99_fscanf (FILE *__restrict __stream,
-			    const char *__restrict __format, ...) __wur;
-extern int __isoc99_scanf (const char *__restrict __format, ...) __wur;
-extern int __isoc99_sscanf (const char *__restrict __s,
-			    const char *__restrict __format, ...) __THROW;
-#  define fscanf __isoc99_fscanf
-#  define scanf __isoc99_scanf
-#  define sscanf __isoc99_sscanf
+                   const char *__restrict __format, ...) __THROW;
 # endif
-#endif
+#endif /* DEPRECATED_SCANF */
 
-#ifdef	__USE_ISOC99
+#ifdef __USE_ISOC99
+# if !__GLIBC_USE (DEPRECATED_SCANF)
+#  if __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI == 1 || defined __LDBL_COMPAT
+extern int __REDIRECT_LDBL (vfscanf, (FILE *__restrict __stream,
+				      const char *__restrict __format,
+				      __gnuc_va_list __arg),
+			    __isoc99_vfscanfieee128, __nldbl___isoc99_vfscanf)
+     __attribute__ ((__format__ (__scanf__, 2, 0))) __wur;
+extern int __REDIRECT_LDBL (vscanf, (const char *__restrict __format,
+				     __gnuc_va_list __arg),
+			    __isoc99_vscanfieee128, __nldbl___isoc99_vscanf)
+     __attribute__ ((__format__ (__scanf__, 1, 0))) __wur;
+extern int __REDIRECT_LDBL_NTH (vsscanf, (const char *__restrict __s,
+					  const char *__restrict __format,
+					  __gnuc_va_list __arg),
+				__isoc99_vsscanfieee128, __nldbl___isoc99_vsscanf)
+     __attribute__ ((__format__ (__scanf__, 2, 0)));
+#  else
+#   ifdef __REDIRECT
+extern int __REDIRECT (vfscanf,
+                       (FILE *__restrict __s,
+                        const char *__restrict __format, __gnuc_va_list __arg),
+                       __isoc99_vfscanf)
+     __attribute__ ((__format__ (__scanf__, 2, 0))) __wur;
+extern int __REDIRECT (vscanf, (const char *__restrict __format,
+                                __gnuc_va_list __arg),
+		       __isoc99_vscanf)
+     __attribute__ ((__format__ (__scanf__, 1, 0))) __wur;
+extern int __REDIRECT_NTH (vsscanf,
+                           (const char *__restrict __s,
+                            const char *__restrict __format,
+                            __gnuc_va_list __arg),
+			   __isoc99_vsscanf)
+     __attribute__ ((__format__ (__scanf__, 2, 0)));
+#   else
+extern int __isoc99_vfscanf (FILE *__restrict __s,
+                             const char *__restrict __format,
+                             __gnuc_va_list __arg) __wur;
+extern int __isoc99_vscanf (const char *__restrict __format,
+                            __gnuc_va_list __arg) __wur;
+extern int __isoc99_vsscanf (const char *__restrict __s,
+                             const char *__restrict __format,
+                             __gnuc_va_list __arg) __THROW;
+#    define vfscanf __isoc99_vfscanf
+#    define vscanf __isoc99_vscanf
+#    define vsscanf __isoc99_vsscanf
+#   endif /* __REDIRECT */
+#  endif
+# else /* DEPRECATED_SCANF */
+#  if __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI == 1 || defined __LDBL_COMPAT
+extern int __REDIRECT_LDBL (vfscanf, (FILE *__restrict __stream,
+				      const char *__restrict __format,
+				      __gnuc_va_list __arg),
+			    __vfscanfieee128, __nldbl_vfscanf)
+     __attribute__ ((__format__ (__scanf__, 2, 0))) __wur;
+extern int __REDIRECT_LDBL (vscanf, (const char *__restrict __format,
+				     __gnuc_va_list __arg),
+			    __vscanfieee128, __nldbl_vscanf)
+     __attribute__ ((__format__ (__scanf__, 1, 0))) __wur;
+extern int __REDIRECT_LDBL_NTH (vsscanf, (const char *__restrict __s,
+					  const char *__restrict __format,
+					  __gnuc_va_list __arg),
+				__vsscanfieee128, __nldbl_vsscanf)
+     __attribute__ ((__format__ (__scanf__, 2, 0)));
+#  else
 /* Read formatted input from S into argument list ARG.
 
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
 extern int vfscanf (FILE *__restrict __s, const char *__restrict __format,
-		    __gnuc_va_list __arg)
+                    __gnuc_va_list __arg)
      __attribute__ ((__format__ (__scanf__, 2, 0))) __wur;
 
 /* Read formatted input from stdin into argument list ARG.
@@ -469,42 +573,11 @@ extern int vscanf (const char *__restrict __format, __gnuc_va_list __arg)
 
 /* Read formatted input from S into argument list ARG.  */
 extern int vsscanf (const char *__restrict __s,
-		    const char *__restrict __format, __gnuc_va_list __arg)
+                    const char *__restrict __format, __gnuc_va_list __arg)
      __THROW __attribute__ ((__format__ (__scanf__, 2, 0)));
-
-/* Same redirection as above for the v*scanf family.  */
-# if !__GLIBC_USE (DEPRECATED_SCANF)
-#  if defined __REDIRECT && !defined __LDBL_COMPAT \
-      && __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI == 0
-extern int __REDIRECT (vfscanf,
-		       (FILE *__restrict __s,
-			const char *__restrict __format, __gnuc_va_list __arg),
-		       __isoc99_vfscanf)
-     __attribute__ ((__format__ (__scanf__, 2, 0))) __wur;
-extern int __REDIRECT (vscanf, (const char *__restrict __format,
-				__gnuc_va_list __arg), __isoc99_vscanf)
-     __attribute__ ((__format__ (__scanf__, 1, 0))) __wur;
-extern int __REDIRECT_NTH (vsscanf,
-			   (const char *__restrict __s,
-			    const char *__restrict __format,
-			    __gnuc_va_list __arg), __isoc99_vsscanf)
-     __attribute__ ((__format__ (__scanf__, 2, 0)));
-#  elif !defined __REDIRECT
-extern int __isoc99_vfscanf (FILE *__restrict __s,
-			     const char *__restrict __format,
-			     __gnuc_va_list __arg) __wur;
-extern int __isoc99_vscanf (const char *__restrict __format,
-			    __gnuc_va_list __arg) __wur;
-extern int __isoc99_vsscanf (const char *__restrict __s,
-			     const char *__restrict __format,
-			     __gnuc_va_list __arg) __THROW;
-#   define vfscanf __isoc99_vfscanf
-#   define vscanf __isoc99_vscanf
-#   define vsscanf __isoc99_vsscanf
 #  endif
 # endif
-#endif /* Use ISO C9x.  */
-
+#endif /* __USE_ISOC99 */
 
 /* Read a character from STREAM.
 
@@ -850,13 +923,17 @@ extern char *cuserid (char *__s)
 struct obstack;			/* See <obstack.h>.  */
 
 /* Write formatted output to an obstack.  */
-extern int obstack_printf (struct obstack *__restrict __obstack,
-			   const char *__restrict __format, ...)
-     __THROWNL __attribute__ ((__format__ (__printf__, 2, 3)));
-extern int obstack_vprintf (struct obstack *__restrict __obstack,
-			    const char *__restrict __format,
-			    __gnuc_va_list __args)
-     __THROWNL __attribute__ ((__format__ (__printf__, 2, 0)));
+extern int __REDIRECT_LDBL_NTHNL (obstack_printf,
+				  (struct obstack *__restrict __obstack,
+				   const char *__restrict __format, ...),
+				  __obstack_printfieee128, __nldbl_obstack_printf)
+     __attribute__ ((__format__ (__printf__, 2, 3)));
+extern int __REDIRECT_LDBL_NTHNL (obstack_vprintf,
+				  (struct obstack *__restrict __obstack,
+				   const char *__restrict __format,
+				   __gnuc_va_list __args),
+				  __obstack_vprintfieee128, __nldbl_obstack_vprintf)
+     __attribute__ ((__format__ (__printf__, 2, 0)));
 #endif /* Use GNU.  */
 
 
@@ -892,11 +969,6 @@ extern int __overflow (FILE *, int);
 #endif
 #if __USE_FORTIFY_LEVEL > 0 && defined __fortify_function
 # include <bits/stdio2.h>
-#endif
-
-#include <bits/floatn.h>
-#if defined __LDBL_COMPAT || __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI == 1
-# include <bits/stdio-ldbl.h>
 #endif
 
 __END_DECLS

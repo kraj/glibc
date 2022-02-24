@@ -177,7 +177,7 @@ argp_version_parser (int key, char *arg, struct argp_state *state)
       if (argp_program_version_hook)
 	(*argp_program_version_hook) (state->out_stream, state);
       else if (argp_program_version)
-	fprintf (state->out_stream, "%s\n", argp_program_version);
+	__fprintf (state->out_stream, "%s\n", argp_program_version);
       else
 	__argp_error (state, dgettext (state->root_argp->argp_domain,
 				       "(PROGRAM ERROR) No version known!?"));
@@ -618,7 +618,7 @@ parser_finalize (struct parser *parser,
 	{
 	  if (!(parser->state.flags & ARGP_NO_ERRS)
 	      && parser->state.err_stream)
-	    fprintf (parser->state.err_stream,
+	    __fprintf (parser->state.err_stream,
 		     dgettext (parser->argp->argp_domain,
 			       "%s: Too many arguments\n"),
 		     parser->state.name);

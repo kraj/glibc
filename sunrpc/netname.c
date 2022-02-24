@@ -48,7 +48,7 @@ user2netname (char netname[MAXNETNAMELEN + 1], const uid_t uid,
   if ((strlen (dfltdom) + OPSYS_LEN + 3 + MAXIPRINT) > (size_t) MAXNETNAMELEN)
     return 0;
 
-  sprintf (netname, "%s.%d@%s", OPSYS, uid, dfltdom);
+  __sprintf (netname, "%s.%d@%s", OPSYS, uid, dfltdom);
   i = strlen (netname);
   if (netname[i - 1] == '.')
     netname[i - 1] = '\0';
@@ -112,7 +112,7 @@ host2netname (char netname[MAXNETNAMELEN + 1], const char *host,
       > MAXNETNAMELEN)
     return 0;
 
-  sprintf (netname, "%s.%s@%s", OPSYS, hostname, domainname);
+  __sprintf (netname, "%s.%s@%s", OPSYS, hostname, domainname);
   return 1;
 }
 #ifdef EXPORT_RPC_SYMBOLS

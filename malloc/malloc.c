@@ -5279,9 +5279,9 @@ __malloc_stats (void)
       memset (&mi, 0, sizeof (mi));
       __libc_lock_lock (ar_ptr->mutex);
       int_mallinfo (ar_ptr, &mi);
-      fprintf (stderr, "Arena %d:\n", i);
-      fprintf (stderr, "system bytes     = %10u\n", (unsigned int) mi.arena);
-      fprintf (stderr, "in use bytes     = %10u\n", (unsigned int) mi.uordblks);
+      __fprintf (stderr, "Arena %d:\n", i);
+      __fprintf (stderr, "system bytes     = %10u\n", (unsigned int) mi.arena);
+      __fprintf (stderr, "in use bytes     = %10u\n", (unsigned int) mi.uordblks);
 #if MALLOC_DEBUG > 1
       if (i > 0)
         dump_heap (heap_for_ptr (top (ar_ptr)));
@@ -5293,12 +5293,12 @@ __malloc_stats (void)
       if (ar_ptr == &main_arena)
         break;
     }
-  fprintf (stderr, "Total (incl. mmap):\n");
-  fprintf (stderr, "system bytes     = %10u\n", system_b);
-  fprintf (stderr, "in use bytes     = %10u\n", in_use_b);
-  fprintf (stderr, "max mmap regions = %10u\n", (unsigned int) mp_.max_n_mmaps);
-  fprintf (stderr, "max mmap bytes   = %10lu\n",
-           (unsigned long) mp_.max_mmapped_mem);
+  __fprintf (stderr, "Total (incl. mmap):\n");
+  __fprintf (stderr, "system bytes     = %10u\n", system_b);
+  __fprintf (stderr, "in use bytes     = %10u\n", in_use_b);
+  __fprintf (stderr, "max mmap regions = %10u\n", (unsigned int) mp_.max_n_mmaps);
+  __fprintf (stderr, "max mmap bytes   = %10lu\n",
+	     (unsigned long) mp_.max_mmapped_mem);
   stderr->_flags2 = old_flags2;
   _IO_funlockfile (stderr);
 }
@@ -5729,7 +5729,7 @@ __malloc_info (int options, FILE *fp)
   mstate ar_ptr = &main_arena;
   do
     {
-      fprintf (fp, "<heap nr=\"%d\">\n<sizes>\n", n++);
+      __fprintf (fp, "<heap nr=\"%d\">\n<sizes>\n", n++);
 
       size_t nblocks = 0;
       size_t nfastblocks = 0;
@@ -5840,12 +5840,12 @@ __malloc_info (int options, FILE *fp)
 
       for (size_t i = 0; i < nsizes; ++i)
 	if (sizes[i].count != 0 && i != NFASTBINS)
-	  fprintf (fp, "\
+	  __fprintf (fp, "\
   <size from=\"%zu\" to=\"%zu\" total=\"%zu\" count=\"%zu\"/>\n",
 		   sizes[i].from, sizes[i].to, sizes[i].total, sizes[i].count);
 
       if (sizes[NFASTBINS].count != 0)
-	fprintf (fp, "\
+	__fprintf (fp, "\
   <unsorted from=\"%zu\" to=\"%zu\" total=\"%zu\" count=\"%zu\"/>\n",
 		 sizes[NFASTBINS].from, sizes[NFASTBINS].to,
 		 sizes[NFASTBINS].total, sizes[NFASTBINS].count);
@@ -5853,7 +5853,7 @@ __malloc_info (int options, FILE *fp)
       total_system += ar_ptr->system_mem;
       total_max_system += ar_ptr->max_system_mem;
 
-      fprintf (fp,
+      __fprintf (fp,
 	       "</sizes>\n<total type=\"fast\" count=\"%zu\" size=\"%zu\"/>\n"
 	       "<total type=\"rest\" count=\"%zu\" size=\"%zu\"/>\n"
 	       "<system type=\"current\" size=\"%zu\"/>\n"
@@ -5863,7 +5863,7 @@ __malloc_info (int options, FILE *fp)
 
       if (ar_ptr != &main_arena)
 	{
-	  fprintf (fp,
+	  __fprintf (fp,
 		   "<aspace type=\"total\" size=\"%zu\"/>\n"
 		   "<aspace type=\"mprotect\" size=\"%zu\"/>\n"
 		   "<aspace type=\"subheaps\" size=\"%zu\"/>\n",
@@ -5873,7 +5873,7 @@ __malloc_info (int options, FILE *fp)
 	}
       else
 	{
-	  fprintf (fp,
+	  __fprintf (fp,
 		   "<aspace type=\"total\" size=\"%zu\"/>\n"
 		   "<aspace type=\"mprotect\" size=\"%zu\"/>\n",
 		   ar_ptr->system_mem, ar_ptr->system_mem);
@@ -5886,7 +5886,7 @@ __malloc_info (int options, FILE *fp)
     }
   while (ar_ptr != &main_arena);
 
-  fprintf (fp,
+  __fprintf (fp,
 	   "<total type=\"fast\" count=\"%zu\" size=\"%zu\"/>\n"
 	   "<total type=\"rest\" count=\"%zu\" size=\"%zu\"/>\n"
 	   "<total type=\"mmap\" count=\"%d\" size=\"%zu\"/>\n"

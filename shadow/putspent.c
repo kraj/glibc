@@ -42,47 +42,47 @@ putspent (const struct spwd *p, FILE *stream)
 
   flockfile (stream);
 
-  if (fprintf (stream, "%s:%s:", p->sp_namp, _S (p->sp_pwdp)) < 0)
+  if (__fprintf (stream, "%s:%s:", p->sp_namp, _S (p->sp_pwdp)) < 0)
     ++errors;
 
   if ((p->sp_lstchg != (long int) -1
-       && fprintf (stream, "%ld:", p->sp_lstchg) < 0)
+       && __fprintf (stream, "%ld:", p->sp_lstchg) < 0)
       || (p->sp_lstchg == (long int) -1
 	  && putc_unlocked (':', stream) == EOF))
     ++errors;
 
   if ((p->sp_min != (long int) -1
-       && fprintf (stream, "%ld:", p->sp_min) < 0)
+       && __fprintf (stream, "%ld:", p->sp_min) < 0)
       || (p->sp_min == (long int) -1
 	  && putc_unlocked (':', stream) == EOF))
     ++errors;
 
   if ((p->sp_max != (long int) -1
-       && fprintf (stream, "%ld:", p->sp_max) < 0)
+       && __fprintf (stream, "%ld:", p->sp_max) < 0)
       || (p->sp_max == (long int) -1
 	  && putc_unlocked (':', stream) == EOF))
     ++errors;
 
   if ((p->sp_warn != (long int) -1
-       && fprintf (stream, "%ld:", p->sp_warn) < 0)
+       && __fprintf (stream, "%ld:", p->sp_warn) < 0)
       || (p->sp_warn == (long int) -1
 	  && putc_unlocked (':', stream) == EOF))
     ++errors;
 
   if ((p->sp_inact != (long int) -1
-       && fprintf (stream, "%ld:", p->sp_inact) < 0)
+       && __fprintf (stream, "%ld:", p->sp_inact) < 0)
       || (p->sp_inact == (long int) -1
 	  && putc_unlocked (':', stream) == EOF))
     ++errors;
 
   if ((p->sp_expire != (long int) -1
-       && fprintf (stream, "%ld:", p->sp_expire) < 0)
+       && __fprintf (stream, "%ld:", p->sp_expire) < 0)
       || (p->sp_expire == (long int) -1
 	  && putc_unlocked (':', stream) == EOF))
     ++errors;
 
   if (p->sp_flag != ~0ul
-      && fprintf (stream, "%ld", p->sp_flag) < 0)
+      && __fprintf (stream, "%ld", p->sp_flag) < 0)
     ++errors;
 
   if (putc_unlocked ('\n', stream) == EOF)

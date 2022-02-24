@@ -32,6 +32,6 @@ __sprintf (char *s, const char *format, ...)
 
   return done;
 }
-ldbl_hidden_def (__sprintf, sprintf)
+libc_hidden_def (__sprintf)
 ldbl_strong_alias (__sprintf, sprintf)
 ldbl_strong_alias (__sprintf, _IO_sprintf)
