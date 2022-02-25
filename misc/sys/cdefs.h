@@ -567,16 +567,26 @@
 #  ifdef __REDIRECT
 #   define __REDIRECT_LDBL(name, proto, ieee128, compat) \
       __REDIRECT_LDBL1 (name, , , proto, ieee128)
+#   define __REDIRECT_LDBL128(name, proto) \
+      __REDIRECT_LDBL1 (name, , , proto, __##name##ieee128)
 #   ifdef __cplusplus
 #    define __REDIRECT_LDBL_NTH(name, proto, ieee128, compat) \
       __REDIRECT_LDBL1 (name, __THROW, , proto, ieee128)
+#    define __REDIRECT_LDBL128_NTH(name, proto) \
+      __REDIRECT_LDBL1 (name, __THROW, , proto, __##name##ieee128)
 #    define __REDIRECT_LDBL_NTHNL(name, proto, ieee128, compat) \
       __REDIRECT_LDBL1 (name, __THROWNL, , proto, ieee128)
+#    define __REDIRECT_LDBL128_NTHNL(name, proto) \
+      __REDIRECT_LDBL1 (name, __THROWNL, , proto, __##name##ieee128)
 #   else
 #    define __REDIRECT_LDBL_NTH(name, proto, ieee128, compat) \
       __REDIRECT_LDBL1 (name, , __THROW, proto, ieee128)
+#    define __REDIRECT_LDBL128_NTH(name, proto) \
+      __REDIRECT_LDBL1 (name, , __THROW, proto, __##name##ieee128)
 #    define __REDIRECT_LDBL_NTHNL(name, proto, ieee128, compat) \
       __REDIRECT_LDBL1 (name, , __THROWNL, proto, ieee128)
+#    define __REDIRECT_LDBL128_NTHNL(name, proto) \
+      __REDIRECT_LDBL1 (name, , __THROWNL, proto, __##name##ieee128)
 #   endif /* __cplusplus */
 #  else
 _Static_assert (0, "IEEE 128-bits long double requires redirection on this platform");
@@ -606,6 +616,9 @@ _Static_assert (0, "Compat long double requires redirection on this platform");
 # define __REDIRECT_LDBL(name, proto, ieee128, compat) name proto
 # define __REDIRECT_LDBL_NTH(name, proto, ieee128, compat) name proto __THROW
 # define __REDIRECT_LDBL_NTHNL(name, proto, ieee128, compat) name proto __THROWNL
+# define __REDIRECT_LDBL128(name, proto) name proto
+# define __REDIRECT_LDBL128_NTH(name, proto) name proto __THROW
+# define __REDIRECT_LDBL128_NTHNL(name, proto) name proto __THROWNL
 #endif
 
 #if __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI == 1

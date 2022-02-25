@@ -227,19 +227,18 @@ __NTH (wcsncat (wchar_t *__restrict __dest, const wchar_t *__restrict __src,
   return __wcsncat_alias (__dest, __src, __n);
 }
 
-
-extern int __swprintf_chk (wchar_t *__restrict __s, size_t __n,
-			   int __flag, size_t __s_len,
-			   const wchar_t *__restrict __format, ...)
-     __THROW /* __attribute__ ((__format__ (__wprintf__, 5, 6))) */;
-
-extern int __swprintf_alias (wchar_t *__restrict __s, size_t __n,
-			     const wchar_t *__restrict __fmt, ...)
-#if __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI == 1
-     __asm__ (__ASMNAME ("swprintf"))
-#endif
-     ;
-
+extern int __REDIRECT_LDBL_NTH (__swprintf_chk, (wchar_t *__restrict __s,
+						 size_t __n,
+						 int __flag, size_t __s_len,
+						 const wchar_t *__restrict __format,
+						 ...),
+				__swprintf_chkieee128, __nldbl___swprintf_chk);
+extern int __REDIRECT_LDBL_NTH (__vswprintf_chk, (wchar_t *__restrict __s,
+						  size_t __n,
+						  int __flag, size_t __s_len,
+						  const wchar_t *__restrict __format,
+						  __gnuc_va_list __arg),
+				__vswprintf_chkieee128, __nldbl___vswprintf_chk);
 
 #ifdef __va_arg_pack
 __fortify_function int
@@ -250,7 +249,7 @@ __NTH (swprintf (wchar_t *__restrict __s, size_t __n,
   if (sz != (size_t) -1 || __USE_FORTIFY_LEVEL > 1)
     return __swprintf_chk (__s, __n, __USE_FORTIFY_LEVEL - 1,
 			   sz / sizeof (wchar_t), __fmt, __va_arg_pack ());
-  return __swprintf_alias (__s, __n, __fmt, __va_arg_pack ());
+  return swprintf (__s, __n, __fmt, __va_arg_pack ());
 }
 #elif !defined __cplusplus
 /* XXX We might want to have support in gcc for swprintf.  */
@@ -261,20 +260,6 @@ __NTH (swprintf (wchar_t *__restrict __s, size_t __n,
    : swprintf (s, n, __VA_ARGS__))
 #endif
 
-extern int __vswprintf_chk (wchar_t *__restrict __s, size_t __n,
-			    int __flag, size_t __s_len,
-			    const wchar_t *__restrict __format,
-			    __gnuc_va_list __arg)
-     __THROW /* __attribute__ ((__format__ (__wprintf__, 5, 0))) */;
-
-extern int __vswprintf_alias (wchar_t *__restrict __s, size_t __n,
-			      const wchar_t *__restrict __fmt,
-			      __gnuc_va_list __ap)
-#if __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI == 1
-     __asm__ (__ASMNAME ("vswprintf"))
-#endif
-     ;
-
 __fortify_function int
 __NTH (vswprintf (wchar_t *__restrict __s, size_t __n,
 		  const wchar_t *__restrict __fmt, __gnuc_va_list __ap))
@@ -283,21 +268,30 @@ __NTH (vswprintf (wchar_t *__restrict __s, size_t __n,
   if (sz != (size_t) -1 || __USE_FORTIFY_LEVEL > 1)
     return __vswprintf_chk (__s, __n,  __USE_FORTIFY_LEVEL - 1,
 			    sz / sizeof (wchar_t), __fmt, __ap);
-  return __vswprintf_alias (__s, __n, __fmt, __ap);
+  return vswprintf (__s, __n, __fmt, __ap);
 }
 
 
 #if __USE_FORTIFY_LEVEL > 1
 
-extern int __fwprintf_chk (__FILE *__restrict __stream, int __flag,
-			   const wchar_t *__restrict __format, ...);
-extern int __wprintf_chk (int __flag, const wchar_t *__restrict __format,
-			  ...);
-extern int __vfwprintf_chk (__FILE *__restrict __stream, int __flag,
-			    const wchar_t *__restrict __format,
-			    __gnuc_va_list __ap);
-extern int __vwprintf_chk (int __flag, const wchar_t *__restrict __format,
-			   __gnuc_va_list __ap);
+extern int __REDIRECT_LDBL (__fwprintf_chk, (__FILE *__restrict __stream,
+					     int __flag,
+					     const wchar_t *__restrict __format,
+					     ...),
+			    __fwprintf_chkieee128, __nldbl___fwprintf_chk);
+extern int __REDIRECT_LDBL (__wprintf_chk, (int __flag,
+					    const wchar_t *__restrict __format,
+					    ...),
+			    __wprintf_chkieee128, __nldbl___wprintf_chk);
+extern int __REDIRECT_LDBL (__vfwprintf_chk, (__FILE *__restrict __stream,
+					      int __flag,
+					      const wchar_t *__restrict __format,
+					      __gnuc_va_list __ap),
+			   __vfwprintf_chkieee128, __nldbl___vfwprintf_chk);
+extern int __REDIRECT_LDBL (__vwprintf_chk, (int __flag,
+					     const wchar_t *__restrict __format,
+					     __gnuc_va_list __ap),
+			    __vwprintf_chkieee128, __nldbl___vwprintf_chk);
 
 # ifdef __va_arg_pack
 __fortify_function int
