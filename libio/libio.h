@@ -257,7 +257,9 @@ extern __ssize_t _IO_wpadn (FILE *, wint_t, __ssize_t);
 extern void _IO_free_wbackup_area (FILE *) __THROW;
 
 #ifdef __LDBL_COMPAT
-__LDBL_REDIR_DECL (_IO_vfscanf)
+extern int __REDIRECT_LDBL_COMPAT (_IO_vfscanf, (FILE * __restrict,
+						 const char * __restrict,
+						 __gnuc_va_list, int *__restrict));
 #endif
 
 libc_hidden_proto (__overflow)

@@ -595,6 +595,8 @@ _Static_assert (0, "IEEE 128-bits long double requires redirection on this platf
 #  ifdef __REDIRECT
 #   define __REDIRECT_LDBL(name, proto, ieee128, compat) \
       __REDIRECT_LDBL1 (name, , , proto, compat)
+#   define __REDIRECT_LDBL_COMPAT(name, proto) \
+      __REDIRECT_LDBL1 (name, , , proto, __nldbl_##name)
 #   ifdef __cplusplus
 #    define __REDIRECT_LDBL_NTH(name, proto, ieee128, compat) \
       __REDIRECT_LDBL1 (name, __THROW, , proto, compat)
@@ -619,6 +621,9 @@ _Static_assert (0, "Compat long double requires redirection on this platform");
 # define __REDIRECT_LDBL128(name, proto) name proto
 # define __REDIRECT_LDBL128_NTH(name, proto) name proto __THROW
 # define __REDIRECT_LDBL128_NTHNL(name, proto) name proto __THROWNL
+#endif
+#ifndef __REDIRECT_LDBL_COMPAT
+# define __REDIRECT_LDBL_COMPAT(name, proto)
 #endif
 
 #if __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI == 1
