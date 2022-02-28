@@ -31,31 +31,36 @@ __BEGIN_DECLS
 
 /* Print "program: ", FORMAT, ": ", the standard error string for errno,
    and a newline, on stderr.  */
-extern void warn (const char *__format, ...)
+extern void __REDIRECT_LDBL (warn, (const char *__format, ...),
+			     __warnieee128, __nldbl_warn)
      __attribute__ ((__format__ (__printf__, 1, 2)));
-extern void vwarn (const char *__format, __gnuc_va_list)
+extern void __REDIRECT_LDBL (vwarn, (const char *__format, __gnuc_va_list),
+			     __vwarnieee128, __nldbl_vwarn)
      __attribute__ ((__format__ (__printf__, 1, 0)));
 
 /* Likewise, but without ": " and the standard error string.  */
-extern void warnx (const char *__format, ...)
+extern void __REDIRECT_LDBL (warnx, (const char *__format, ...),
+			     __warnxieee128, __nldbl_warnx)
      __attribute__ ((__format__ (__printf__, 1, 2)));
-extern void vwarnx (const char *__format, __gnuc_va_list)
+extern void __REDIRECT_LDBL (vwarnx, (const char *__format, __gnuc_va_list),
+			     __vwarnxieee128, __nldbl_vwarnx)
      __attribute__ ((__format__ (__printf__, 1, 0)));
 
 /* Likewise, and then exit with STATUS.  */
-extern void err (int __status, const char *__format, ...)
+extern void __REDIRECT_LDBL (err, (int __status, const char *__format, ...),
+			     __errieee128, __nldbl_err)
      __attribute__ ((__noreturn__, __format__ (__printf__, 2, 3)));
-extern void verr (int __status, const char *__format, __gnuc_va_list)
+extern void __REDIRECT_LDBL (verr, (int __status, const char *__format,
+				    __gnuc_va_list),
+			     __verrieee128, __nldbl_verr)
      __attribute__ ((__noreturn__, __format__ (__printf__, 2, 0)));
-extern void errx (int __status, const char *__format, ...)
+extern void __REDIRECT_LDBL (errx, (int __status, const char *__format, ...),
+			     __errxieee128, __nldbl_errx)
      __attribute__ ((__noreturn__, __format__ (__printf__, 2, 3)));
-extern void verrx (int __status, const char *, __gnuc_va_list)
+extern void __REDIRECT_LDBL (verrx, (int __status, const char *__format,
+				     __gnuc_va_list),
+			     __verrxieee128, __nldbl_verrx)
      __attribute__ ((__noreturn__, __format__ (__printf__, 2, 0)));
-
-#include <bits/floatn.h>
-#if defined __LDBL_COMPAT || __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI == 1
-# include <bits/err-ldbl.h>
-#endif
 
 __END_DECLS
 

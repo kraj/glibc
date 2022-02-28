@@ -33,7 +33,7 @@ extern char *__progname;
 {									      \
   va_list ap;								      \
   va_start (ap, format);						      \
-  call;									      \
+  __##call;								      \
   va_end (ap);								      \
 }
 
@@ -72,48 +72,54 @@ __vwarn_internal (const char *format, __gnuc_va_list ap,
 }
 
 void
-vwarn (const char *format, __gnuc_va_list ap)
+__vwarn (const char *format, __gnuc_va_list ap)
 {
   __vwarn_internal (format, ap, 0);
 }
-libc_hidden_def (vwarn)
+libc_hidden_def (__vwarn)
+weak_alias (__vwarn, vwarn)
 
 void
-vwarnx (const char *format, __gnuc_va_list ap)
+__vwarnx (const char *format, __gnuc_va_list ap)
 {
   __vwarnx_internal (format, ap, 0);
 }
-libc_hidden_def (vwarnx)
+libc_hidden_def (__vwarnx)
+weak_alias (__vwarnx, vwarnx)
 
 void
-warn (const char *format, ...)
+__warn (const char *format, ...)
 {
   VA (vwarn (format, ap))
 }
-libc_hidden_def (warn)
+libc_hidden_def (__warn)
+weak_alias (__warn, warn)
 
 void
-warnx (const char *format, ...)
+__warnx (const char *format, ...)
 {
   VA (vwarnx (format, ap))
 }
-libc_hidden_def (warnx)
+libc_hidden_def (__warnx)
+weak_alias (__warnx, warnx)
 
 void
-verr (int status, const char *format, __gnuc_va_list ap)
+__verr (int status, const char *format, __gnuc_va_list ap)
 {
-  vwarn (format, ap);
+  __vwarn (format, ap);
   exit (status);
 }
-libc_hidden_def (verr)
+libc_hidden_def (__verr)
+weak_alias (__verr, verr)
 
 void
-verrx (int status, const char *format, __gnuc_va_list ap)
+__verrx (int status, const char *format, __gnuc_va_list ap)
 {
-  vwarnx (format, ap);
+  __vwarnx (format, ap);
   exit (status);
 }
-libc_hidden_def (verrx)
+libc_hidden_def (__verrx)
+weak_alias (__verrx, verrx)
 
 void
 err (int status, const char *format, ...)
