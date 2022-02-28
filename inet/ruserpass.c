@@ -112,7 +112,7 @@ ruserpass (const char *host, const char **aname, const char **apass)
 	cfile = fopen(buf, "rce");
 	if (cfile == NULL) {
 		if (errno != ENOENT)
-			warn("%s", buf);
+			__warn("%s", buf);
 		return (0);
 	}
 	/* No threads use this stream.  */
@@ -162,7 +162,7 @@ next:
 				  newp = malloc((unsigned) strlen(tokval) + 1);
 				  if (newp == NULL)
 				    {
-				      warnx(_("out of memory"));
+				      __warnx(_("out of memory"));
 				      goto bad;
 				    }
 				  *aname = strcpy(newp, tokval);
@@ -176,8 +176,8 @@ next:
 			if (strcmp(*aname, "anonymous") &&
 			    __fstat64(fileno(cfile), &stb) >= 0 &&
 			    (stb.st_mode & 077) != 0) {
-	warnx(_("Error: .netrc file is readable by others."));
-	warnx(_("Remove 'password' line or make file unreadable by others."));
+	__warnx(_("Error: .netrc file is readable by others."));
+	__warnx(_("Remove 'password' line or make file unreadable by others."));
 				goto bad;
 			}
 			if (token() && *apass == 0) {
@@ -185,7 +185,7 @@ next:
 				newp = malloc((unsigned) strlen(tokval) + 1);
 				if (newp == NULL)
 				  {
-				    warnx(_("out of memory"));
+				    __warnx(_("out of memory"));
 				    goto bad;
 				  }
 				*apass = strcpy(newp, tokval);
@@ -196,7 +196,7 @@ next:
 		case MACDEF:
 			break;
 		default:
-			warnx(_("Unknown .netrc keyword %s"), tokval);
+			__warnx(_("Unknown .netrc keyword %s"), tokval);
 			break;
 		}
 		goto done;
