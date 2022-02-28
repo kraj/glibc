@@ -25,6 +25,7 @@
 #include <getopt.h>
 #include <limits.h>
 #include <errno.h>
+#include <bits/floatn.h>
 
 __BEGIN_DECLS
 
@@ -464,11 +465,10 @@ extern void __argp_state_help (const struct argp_state *__restrict __state,
 extern void argp_usage (const struct argp_state *__state);
 extern void __argp_usage (const struct argp_state *__state);
 
-/* If appropriate, print the printf string FMT and following args, preceded
-   by the program name and `:', to stderr, and followed by a `Try ... --help'
-   message, then exit (1).  */
-extern void argp_error (const struct argp_state *__restrict __state,
-			const char *__restrict __fmt, ...)
+extern void __REDIRECT_LDBL (argp_error,
+			     (const struct argp_state *__restrict __state,
+			      const char *__restrict __fmt, ...),
+			     __argp_errorieee128, __nldbl_argp_error)
      __attribute__ ((__format__ (__printf__, 2, 3)));
 extern void __argp_error (const struct argp_state *__restrict __state,
 			  const char *__restrict __fmt, ...)
@@ -482,10 +482,13 @@ extern void __argp_error (const struct argp_state *__restrict __state,
    difference between this function and argp_error is that the latter is for
    *parsing errors*, and the former is for other problems that occur during
    parsing but don't reflect a (syntactic) problem with the input.  */
-extern void argp_failure (const struct argp_state *__restrict __state,
-			  int __status, int __errnum,
-			  const char *__restrict __fmt, ...)
+extern void __REDIRECT_LDBL (argp_failure,
+			     (const struct argp_state *__restrict __state,
+			      int __status, int __errnum,
+			      const char *__restrict __fmt, ...),
+			     __argp_failureieee128,__nldbl_argp_failure)
      __attribute__ ((__format__ (__printf__, 4, 5)));
+
 extern void __argp_failure (const struct argp_state *__restrict __state,
 			    int __status, int __errnum,
 			    const char *__restrict __fmt, ...)
@@ -553,11 +556,6 @@ __NTH (__option_is_end (const struct argp_option *__opt))
 #  undef __option_is_end
 # endif
 #endif /* Use extern inlines.  */
-
-#include <bits/floatn.h>
-#if defined __LDBL_COMPAT || __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI == 1
-# include <bits/argp-ldbl.h>
-#endif
 
 __END_DECLS
 
