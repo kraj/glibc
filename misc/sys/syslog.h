@@ -38,6 +38,7 @@
 
 /* This file defines _PATH_LOG.  */
 #include <bits/syslog-path.h>
+#include <bits/floatn.h>
 
 /*
  * priorities/facilities are encoded into a single 32-bit quantity, where the
@@ -187,9 +188,9 @@ extern int setlogmask (int __mask) __THROW;
 
    This function is a possible cancellation point and therefore not
    marked with __THROW.  */
-extern void syslog (int __pri, const char *__fmt, ...)
+extern void __REDIRECT_LDBL (syslog, (int __pri, const char *__fmt, ...),
+			     __syslogieee128, __nldbl_syslog)
      __attribute__ ((__format__ (__printf__, 2, 3)));
-
 #ifdef __USE_MISC
 /* Generate a log message using FMT and using arguments pointed to by AP.
 
@@ -197,19 +198,15 @@ extern void syslog (int __pri, const char *__fmt, ...)
    cancellation point.  But due to similarity with an POSIX interface
    or due to the implementation it is a cancellation point and
    therefore not marked with __THROW.  */
-extern void vsyslog (int __pri, const char *__fmt, __gnuc_va_list __ap)
+extern void __REDIRECT_LDBL (vsyslog, (int __pri, const char *__fmt,
+				       __gnuc_va_list __ap),
+			     __vsyslogieee128, __nldbl_vsyslog)
      __attribute__ ((__format__ (__printf__, 2, 0)));
 #endif
-
 
 /* Define some macros helping to catch buffer overflows.  */
 #if __USE_FORTIFY_LEVEL > 0 && defined __fortify_function
 # include <bits/syslog.h>
-#endif
-
-#include <bits/floatn.h>
-#if defined __LDBL_COMPAT || __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI == 1
-# include <bits/syslog-ldbl.h>
 #endif
 
 __END_DECLS
