@@ -21,7 +21,7 @@
 #include <syslog.h>
 
 void
-___ieee128_syslog (int pri, const char *fmt, ...)
+__syslogieee128 (int pri, const char *fmt, ...)
 {
   va_list ap;
 
@@ -29,8 +29,7 @@ ___ieee128_syslog (int pri, const char *fmt, ...)
   __vsyslog_internal (pri, fmt, ap, PRINTF_LDBL_USES_FLOAT128);
   va_end (ap);
 }
-strong_alias (___ieee128_syslog, __syslogieee128)
-hidden_def (___ieee128_syslog)
+hidden_def (__syslogieee128)
 
 void
 ___ieee128_vsyslog (int pri, const char *fmt, va_list ap)

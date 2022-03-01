@@ -21,8 +21,17 @@
 #endif
 
 
-extern void __syslog_chk (int __pri, int __flag, const char *__fmt, ...)
+extern void __REDIRECT_LDBL (__syslog_chk, (int __pri, int __flag,
+					    const char *__fmt, ...),
+			     __syslog_chkieee128, __nldbl___syslog_chk)
      __attribute__ ((__format__ (__printf__, 3, 4)));
+#ifdef __USE_MISC
+extern void __REDIRECT_LDBL (__vsyslog_chk, (int __pri, int __flag,
+					     const char *__fmt,
+					     __gnuc_va_list __ap),
+			     __vsyslog_chkieee128, __nldbl___vsyslog_chk)
+     __attribute__ ((__format__ (__printf__, 3, 0)));
+#endif
 
 #ifdef __va_arg_pack
 __fortify_function void
@@ -37,10 +46,6 @@ syslog (int __pri, const char *__fmt, ...)
 
 
 #ifdef __USE_MISC
-extern void __vsyslog_chk (int __pri, int __flag, const char *__fmt,
-			   __gnuc_va_list __ap)
-     __attribute__ ((__format__ (__printf__, 3, 0)));
-
 __fortify_function void
 vsyslog (int __pri, const char *__fmt, __gnuc_va_list __ap)
 {

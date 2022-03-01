@@ -177,17 +177,17 @@ fmtmsg (long int classification, const char *label, int severity,
 	  int need_colon = (do_label
 			    && (do_severity | do_text | do_action | do_tag));
 
-	  syslog (LOG_ERR, "%s%s%s%s%s%s%s%s%s%s\n",
-		  do_label ? label : "",
-		  need_colon ? ": " : "",
-		  do_severity ? severity_rec->string : "",
-		  do_severity && (do_text | do_action | do_tag) ? ": " : "",
-		  do_text ? text : "",
-		  do_text && (do_action | do_tag) ? "\n" : "",
-		  do_action ? "TO FIX: " : "",
-		  do_action ? action : "",
-		  do_action && do_tag ? "  " : "",
-		  do_tag ? tag : "");
+	  __syslog (LOG_ERR, "%s%s%s%s%s%s%s%s%s%s\n",
+		    do_label ? label : "",
+		    need_colon ? ": " : "",
+		    do_severity ? severity_rec->string : "",
+		    do_severity && (do_text | do_action | do_tag) ? ": " : "",
+		    do_text ? text : "",
+		    do_text && (do_action | do_tag) ? "\n" : "",
+		    do_action ? "TO FIX: " : "",
+		    do_action ? action : "",
+		    do_action && do_tag ? "  " : "",
+		    do_tag ? tag : "");
 	}
     }
 
