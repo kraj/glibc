@@ -20,6 +20,7 @@
 #define _ERROR_H 1
 
 #include <features.h>
+#include <bits/floatn.h>
 
 
 __BEGIN_DECLS
@@ -28,11 +29,15 @@ __BEGIN_DECLS
    if ERRNUM is nonzero, follow it with ": " and strerror (ERRNUM).
    If STATUS is nonzero, terminate the program with `exit (STATUS)'.  */
 
-extern void error (int __status, int __errnum, const char *__format, ...)
+extern void __REDIRECT_LDBL (error, (int __status, int __errnum,
+				     const char *__format, ...),
+			     __errorieee128, __nldbl_error)
      __attribute__ ((__format__ (__printf__, 3, 4)));
-
-extern void error_at_line (int __status, int __errnum, const char *__fname,
-			   unsigned int __lineno, const char *__format, ...)
+extern void __REDIRECT_LDBL (error_at_line, (int __status, int __errnum,
+					     const char *__fname,
+					     unsigned int __lineno,
+					     const char *__format, ...),
+			     __error_at_lineieee128, __nldbl_error_at_line)
      __attribute__ ((__format__ (__printf__, 5, 6)));
 
 /* If NULL, error will flush stdout, then print on stderr the program
@@ -47,14 +52,11 @@ extern unsigned int error_message_count;
    variable controls whether this mode is selected or not.  */
 extern int error_one_per_line;
 
-#include <bits/floatn.h>
-#if defined __LDBL_COMPAT || __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI == 1
-# include <bits/error-ldbl.h>
-#else
 /* Do not inline error and error_at_line when long double has the same
    size of double, nor when long double reuses the float128
    implementation, because that would invalidate the redirections to the
    compatibility functions.  */
+#if !defined __LDBL_COMPAT && __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI == 0
 # if defined __extern_always_inline && defined __va_arg_pack
 #  include <bits/error.h>
 # endif
