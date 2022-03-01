@@ -29,6 +29,7 @@ __BEGIN_DECLS
 #include <stddef.h>
 
 #include <stdarg.h>
+#include <bits/floatn.h>
 
 
 struct printf_info
@@ -173,19 +174,15 @@ enum
    of magnitude used for numbers ('k' for kilo, 'm' for mega etc).  If
    the format specifier is a uppercase character powers of 1000 are
    used.  Otherwise powers of 1024.  */
-extern int printf_size (FILE *__restrict __fp,
-			const struct printf_info *__info,
-			const void *const *__restrict __args) __THROW;
+extern int __REDIRECT_LDBL_NTH (printf_size, (FILE *__restrict __fp,
+					      const struct printf_info *__info,
+					      const void *const *__restrict __args),
+				__printf_sizeieee128, __nldbl_printf_size);
 
 /* This is the appropriate argument information function for `printf_size'.  */
 extern int printf_size_info (const struct printf_info *__restrict
 			     __info, size_t __n, int *__restrict __argtypes)
      __THROW;
-
-#include <bits/floatn.h>
-#if defined __LDBL_COMPAT || __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI == 1
-# include <bits/printf-ldbl.h>
-#endif
 
 __END_DECLS
 

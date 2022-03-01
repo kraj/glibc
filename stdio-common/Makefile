@@ -22,7 +22,7 @@ subdir	:= stdio-common
 
 include ../Makeconfig
 
-headers	:= stdio_ext.h printf.h bits/printf-ldbl.h bits/stdio_lim.h
+headers	:= stdio_ext.h printf.h bits/stdio_lim.h
 
 routines	:=							      \
 	ctermid cuserid							      \
