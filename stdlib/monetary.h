@@ -25,6 +25,7 @@
 #define __need_size_t
 #include <stddef.h>
 #include <bits/types.h>
+#include <bits/floatn.h>
 
 #ifndef	__ssize_t_defined
 typedef __ssize_t ssize_t;
@@ -35,26 +36,24 @@ typedef __ssize_t ssize_t;
 __BEGIN_DECLS
 
 /* Formatting a monetary value according to the current locale.  */
-extern ssize_t strfmon (char *__restrict __s, size_t __maxsize,
-			const char *__restrict __format, ...)
-     __THROW __attribute_format_strfmon__ (3, 4)
+extern ssize_t __REDIRECT_LDBL_NTH (strfmon, (char *__restrict __s, size_t __maxsize,
+					      const char *__restrict __format, ...),
+				    __strfmonieee128, __nldbl_strfmon)
+     __attribute_format_strfmon__ (3, 4)
      __attr_access ((__write_only__, 1, 2));
 
 #ifdef __USE_XOPEN2K8
 /* POSIX.1-2008 extended locale interface (see locale.h).  */
 # include <bits/types/locale_t.h>
 
-/* Formatting a monetary value according to the given locale.  */
-extern ssize_t strfmon_l (char *__restrict __s, size_t __maxsize,
-			  locale_t __loc,
-			  const char *__restrict __format, ...)
-     __THROW __attribute_format_strfmon__ (4, 5)
+extern ssize_t __REDIRECT_LDBL_NTH (strfmon_l, (char *__restrict __s,
+					       	size_t __maxsize,
+     						locale_t __loc,
+						const char *__restrict __format,
+					       	...),
+			       __strfmon_lieee128, __nldbl_strfmon_l)
+     __attribute_format_strfmon__ (4, 5)
      __attr_access ((__write_only__, 1, 2));
-#endif
-
-#include <bits/floatn.h>
-#if defined __LDBL_COMPAT || __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI == 1
-# include <bits/monetary-ldbl.h>
 #endif
 
 __END_DECLS
