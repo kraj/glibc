@@ -592,6 +592,7 @@
 _Static_assert (0, "IEEE 128-bits long double requires redirection on this platform");
 #  endif /* __REDIRECT */
 # elif defined __LONG_DOUBLE_MATH_OPTIONAL && defined __NO_LONG_DOUBLE_MATH
+#  define __LDBL_COMPAT 1
 #  ifdef __REDIRECT
 #   define __REDIRECT_LDBL(name, proto, ieee128, compat) \
       __REDIRECT_LDBL1 (name, , , proto, compat)
@@ -624,50 +625,6 @@ _Static_assert (0, "Compat long double requires redirection on this platform");
 #endif
 #ifndef __REDIRECT_LDBL_COMPAT
 # define __REDIRECT_LDBL_COMPAT(name, proto)
-#endif
-
-#if __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI == 1
-# ifdef __REDIRECT
-
-/* Alias name defined automatically.  */
-#  define __LDBL_REDIR(name, proto) ... unused__ldbl_redir
-#  define __LDBL_REDIR_DECL(name) \
-  extern __typeof (name) name __asm (__ASMNAME ("__" #name "ieee128"));
-
-/* Alias name defined automatically, with leading underscores.  */
-#  define __LDBL_REDIR2_DECL(name) \
-  extern __typeof (__##name) __##name \
-    __asm (__ASMNAME ("__" #name "ieee128"));
-
-/* Alias name defined manually.  */
-#  define __LDBL_REDIR1(name, proto, alias) ... unused__ldbl_redir1
-#  define __LDBL_REDIR1_DECL(name, alias) \
-  extern __typeof (name) name __asm (__ASMNAME (#alias));
-
-#  define __LDBL_REDIR1_NTH(name, proto, alias) \
-  __REDIRECT_NTH (name, proto, alias)
-#  define __REDIRECT_NTH_LDBL(name, proto, alias) \
-  __LDBL_REDIR1_NTH (name, proto, __##alias##ieee128)
-
-# else
-_Static_assert (0, "IEEE 128-bits long double requires redirection on this platform");
-# endif
-#elif defined __LONG_DOUBLE_MATH_OPTIONAL && defined __NO_LONG_DOUBLE_MATH
-# define __LDBL_COMPAT 1
-# ifdef __REDIRECT
-#  define __LDBL_REDIR1(name, proto, alias) __REDIRECT (name, proto, alias)
-#  define __LDBL_REDIR(name, proto) \
-  __LDBL_REDIR1 (name, proto, __nldbl_##name)
-#  define __LDBL_REDIR1_NTH(name, proto, alias) __REDIRECT_NTH (name, proto, alias)
-#  define __LDBL_REDIR_NTH(name, proto) \
-  __LDBL_REDIR1_NTH (name, proto, __nldbl_##name)
-#  define __LDBL_REDIR2_DECL(name) \
-  extern __typeof (__##name) __##name __asm (__ASMNAME ("__nldbl___" #name));
-#  define __LDBL_REDIR1_DECL(name, alias) \
-  extern __typeof (name) name __asm (__ASMNAME (#alias));
-#  define __LDBL_REDIR_DECL(name) \
-  extern __typeof (name) name __asm (__ASMNAME ("__nldbl_" #name));
-# endif
 #endif
 
 /* __glibc_macro_warning (MESSAGE) issues warning MESSAGE.  This is
