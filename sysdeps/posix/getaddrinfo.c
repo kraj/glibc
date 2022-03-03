@@ -90,6 +90,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #if IS_IN (libc)
 # define feof_unlocked(fp) __feof_unlocked (fp)
+# define strtoul __strtoul
 #endif
 
 struct gaih_service

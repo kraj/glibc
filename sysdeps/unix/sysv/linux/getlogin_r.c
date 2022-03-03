@@ -51,7 +51,7 @@ __getlogin_r_loginuid (char *name, size_t namesize)
   if (n <= 0
       || n == sizeof (uidbuf)
       || (uidbuf[n] = '\0',
-	  uid = strtoul (uidbuf, &endp, 10),
+	  uid = __strtoul (uidbuf, &endp, 10),
 	  endp == uidbuf || *endp != '\0'))
     return -1;
 

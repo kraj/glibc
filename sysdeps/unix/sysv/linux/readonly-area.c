@@ -59,13 +59,13 @@ __readonly_area (const char *ptr, size_t size)
 	break;
 
       char *p;
-      uintptr_t from = strtoul (line, &p, 16);
+      uintptr_t from = __strtoul (line, &p, 16);
 
       if (p == line || *p++ != '-')
 	break;
 
       char *q;
-      uintptr_t to = strtoul (p, &q, 16);
+      uintptr_t to = __strtoul (p, &q, 16);
 
       if (q == p || *q++ != ' ')
 	break;

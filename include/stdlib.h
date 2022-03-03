@@ -221,15 +221,22 @@ libc_hidden_proto (____strtoul_l_internal)
 libc_hidden_proto (____strtoull_l_internal)
 
 #include <bits/floatn.h>
-libc_hidden_proto (strtof)
-libc_hidden_proto (strtod)
+extern __typeof (strtof) __strtof;
+libc_hidden_proto (__strtof)
+extern __typeof (strtod) __strtod;
+libc_hidden_proto (__strtod)
 #if __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI == 0
-libc_hidden_proto (strtold)
+extern __typeof (strtold) __strtold;
+libc_hidden_proto (__strtold)
 #endif
-libc_hidden_proto (strtol)
-libc_hidden_proto (strtoll)
-libc_hidden_proto (strtoul)
-libc_hidden_proto (strtoull)
+extern __typeof (strtol) __strtol;
+libc_hidden_proto (__strtol)
+extern __typeof (strtoll) __strtoll;
+libc_hidden_proto (__strtoll)
+extern __typeof (strtoul) __strtoul;
+libc_hidden_proto (__strtoul)
+extern __typeof (strtoull) __strtoull;
+libc_hidden_proto (__strtoull)
 
 libc_hidden_proto (atoi)
 
@@ -251,10 +258,10 @@ libc_hidden_proto (__wcstold_nan)
 #include <bits/floatn.h>
 
 #if __HAVE_DISTINCT_FLOAT128
+extern __typeof (strtof128) __strtof128;
+libc_hidden_proto (__strtof128)
 extern __typeof (strtof128_l) __strtof128_l;
-
 libc_hidden_proto (__strtof128_l)
-libc_hidden_proto (strtof128)
 
 extern _Float128 __strtof128_nan (const char *, char **, char);
 extern _Float128 __wcstof128_nan (const wchar_t *, wchar_t **, wchar_t);

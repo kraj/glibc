@@ -263,7 +263,7 @@ init (void)
 	      /* Second field: severity level, a number.  */
 	      char *cp;
 
-	      level = strtol (sevlevel_var, &cp, 0);
+	      level = __strtol (sevlevel_var, &cp, 0);
 	      if (cp != sevlevel_var && cp < end && *cp++ == ','
 		  && level > MM_INFO)
 		{

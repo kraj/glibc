@@ -242,7 +242,7 @@ parse_rule (const char **tzp, int whichrule)
       tzr->type = *tz == 'J' ? J1 : J0;
       if (tzr->type == J1 && !isdigit (*++tz))
 	return false;
-      unsigned long int d = strtoul (tz, &end, 10);
+      unsigned long int d = __strtoul (tz, &end, 10);
       if (end == tz || d > 365)
 	return false;
       if (tzr->type == J1 && d == 0)

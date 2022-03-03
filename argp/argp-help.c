@@ -210,7 +210,7 @@ fill_in_uparams (const struct argp_state *state)
 	      }
 	    else if (isdigit ((unsigned char) *arg))
 	      {
-		val = atoi (arg);
+		val = (int) __strtol (arg, NULL, 10);
 		while (isdigit ((unsigned char) *arg))
 		  arg++;
 		SKIPWS (arg);

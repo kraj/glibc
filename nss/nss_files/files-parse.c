@@ -53,6 +53,10 @@
 # define STRUCTURE ENTNAME
 #endif
 
+#if IS_IN(libc)
+# define strtoul __strtoul
+#endif
+
 
 struct parser_data
   {
