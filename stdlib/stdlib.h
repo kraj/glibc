@@ -124,9 +124,10 @@ extern double strtod (const char *__restrict __nptr,
 extern float strtof (const char *__restrict __nptr,
 		     char **__restrict __endptr) __THROW __nonnull ((1));
 
-extern long double strtold (const char *__restrict __nptr,
-			    char **__restrict __endptr)
-     __THROW __nonnull ((1));
+extern long double __REDIRECT_LDBL_NTH (strtold, (const char *__restrict __nptr,
+						  char **__restrict __endptr),
+					__strtoieee128, strtod)
+     __nonnull ((1));
 #endif
 
 /* Likewise for '_FloatN' and '_FloatNx'.  */
@@ -218,9 +219,11 @@ extern int strfromf (char *__dest, size_t __size, const char *__format,
 		     float __f)
      __THROW __nonnull ((3));
 
-extern int strfroml (char *__dest, size_t __size, const char *__format,
-		     long double __f)
-     __THROW __nonnull ((3));
+extern int __REDIRECT_LDBL_NTH (strfroml, (char *__dest, size_t __size,
+					   const char *__format,
+					   long double __f),
+				__strfromieee128, strfromd)
+     __nonnull ((3));
 #endif
 
 #if __HAVE_FLOAT16 && __GLIBC_USE (IEC_60559_TYPES_EXT)
@@ -301,10 +304,11 @@ extern float strtof_l (const char *__restrict __nptr,
 		       char **__restrict __endptr, locale_t __loc)
      __THROW __nonnull ((1, 3));
 
-extern long double strtold_l (const char *__restrict __nptr,
-			      char **__restrict __endptr,
-			      locale_t __loc)
-     __THROW __nonnull ((1, 3));
+extern long double __REDIRECT_LDBL_NTH (strtold_l, (const char *__restrict __nptr,
+						    char **__restrict __endptr,
+						    locale_t __loc),
+					__strtoieee128_l, strtod_l)
+     __nonnull ((1, 3));
 
 # if __HAVE_FLOAT16
 extern _Float16 strtof16_l (const char *__restrict __nptr,
@@ -895,14 +899,20 @@ extern char *gcvt (double __value, int __ndigit, char *__buf)
 
 #ifdef __USE_MISC
 /* Long double versions of above functions.  */
-extern char *qecvt (long double __value, int __ndigit,
-		    int *__restrict __decpt, int *__restrict __sign)
-     __THROW __nonnull ((3, 4)) __wur;
-extern char *qfcvt (long double __value, int __ndigit,
-		    int *__restrict __decpt, int *__restrict __sign)
-     __THROW __nonnull ((3, 4)) __wur;
-extern char *qgcvt (long double __value, int __ndigit, char *__buf)
-     __THROW __nonnull ((3)) __wur;
+extern char * __REDIRECT_LDBL_NTH (qecvt, (long double __value, int __ndigit,
+					   int *__restrict __decpt,
+					   int *__restrict __sign),
+				   __qecvtieee128, ecvt)
+     __nonnull ((3, 4)) __wur;
+extern char * __REDIRECT_LDBL_NTH (qfcvt, (long double __value, int __ndigit,
+					   int *__restrict __decpt,
+					   int *__restrict __sign),
+				   __qfcvtieee128, fcvt)
+     __nonnull ((3, 4)) __wur;
+extern char * __REDIRECT_LDBL_NTH (qgcvt, (long double __value, int __ndigit,
+					   char *__buf),
+				   __qgcvtieee128, gcvt)
+     __nonnull ((3)) __wur;
 
 
 /* Reentrant version of the functions above which provide their own
@@ -914,14 +924,20 @@ extern int fcvt_r (double __value, int __ndigit, int *__restrict __decpt,
 		   int *__restrict __sign, char *__restrict __buf,
 		   size_t __len) __THROW __nonnull ((3, 4, 5));
 
-extern int qecvt_r (long double __value, int __ndigit,
-		    int *__restrict __decpt, int *__restrict __sign,
-		    char *__restrict __buf, size_t __len)
-     __THROW __nonnull ((3, 4, 5));
-extern int qfcvt_r (long double __value, int __ndigit,
-		    int *__restrict __decpt, int *__restrict __sign,
-		    char *__restrict __buf, size_t __len)
-     __THROW __nonnull ((3, 4, 5));
+extern int __REDIRECT_LDBL_NTH (qecvt_r, (long double __value, int __ndigit,
+					  int *__restrict __decpt,
+					  int *__restrict __sign,
+					  char *__restrict __buf,
+					  size_t __len),
+				__qecvtieee128_r, ecvt_r)
+     __nonnull ((3, 4, 5));
+extern int __REDIRECT_LDBL_NTH (qfcvt_r, (long double __value, int __ndigit,
+					  int *__restrict __decpt,
+					  int *__restrict __sign,
+					  char *__restrict __buf,
+					  size_t __len),
+				__qfcvtieee128_r, fcvt_r)
+     __nonnull ((3, 4, 5));
 #endif	/* misc */
 
 
@@ -1025,11 +1041,6 @@ extern int ttyslot (void) __THROW;
 /* Define some macros helping to catch buffer overflows.  */
 #if __USE_FORTIFY_LEVEL > 0 && defined __fortify_function
 # include <bits/stdlib.h>
-#endif
-
-#include <bits/floatn.h>
-#if defined __LDBL_COMPAT || __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI == 1
-# include <bits/stdlib-ldbl.h>
 #endif
 
 __END_DECLS
