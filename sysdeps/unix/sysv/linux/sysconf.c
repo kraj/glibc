@@ -111,7 +111,7 @@ __sysconf (int name)
 	      buf[n] = '\0';
 
 	      char *endp;
-	      long int res = strtol (buf, &endp, 10);
+	      long int res = __strtol (buf, &endp, 10);
 	      if (endp != buf && (*endp == '\0' || *endp == '\n'))
 		return res;
 	    }

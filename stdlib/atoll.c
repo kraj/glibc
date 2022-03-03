@@ -24,5 +24,5 @@
 long long int
 atoll (const char *nptr)
 {
-  return strtoll (nptr, (char **) NULL, 10);
+  return __strtoll (nptr, (char **) NULL, 10);
 }

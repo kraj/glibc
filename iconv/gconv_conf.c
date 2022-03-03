@@ -290,7 +290,7 @@ add_module (char *rp, const char *directory, size_t dir_len, int modcounter)
       char *endp;
 
       *wp++ = '\0';
-      cost_hi = strtol (rp, &endp, 10);
+      cost_hi = __strtol (rp, &endp, 10);
       if (rp == endp || cost_hi < 1)
 	/* No useful information.  */
 	cost_hi = 1;

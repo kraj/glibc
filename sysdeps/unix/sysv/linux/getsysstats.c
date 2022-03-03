@@ -156,7 +156,7 @@ get_nprocs_cpu_online (void)
 	do
 	  {
 	    char *endp;
-	    unsigned long int n = strtoul (l, &endp, 10);
+	    unsigned long int n = __strtoul (l, &endp, 10);
 	    if (l == endp)
 	      {
 		result = 0;
@@ -167,7 +167,7 @@ get_nprocs_cpu_online (void)
 	    if (*endp == '-')
 	      {
 		l = endp + 1;
-		m = strtoul (l, &endp, 10);
+		m = __strtoul (l, &endp, 10);
 		if (l == endp)
 		  {
 		    result = 0;
@@ -204,7 +204,7 @@ get_nprocs_cpu (void)
 	if (d->d_type == DT_DIR && strncmp (d->d_name, "cpu", 3) == 0)
 	  {
 	    char *endp;
-	    unsigned long int nr = strtoul (d->d_name + 3, &endp, 10);
+	    unsigned long int nr = __strtoul (d->d_name + 3, &endp, 10);
 	    if (nr != ULONG_MAX && endp != d->d_name + 3 && *endp == '\0')
 	      ++count;
 	  }

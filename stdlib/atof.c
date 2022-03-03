@@ -24,5 +24,5 @@
 double
 atof (const char *nptr)
 {
-  return strtod (nptr, (char **) NULL);
+  return __strtod (nptr, (char **) NULL);
 }

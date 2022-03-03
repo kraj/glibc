@@ -564,7 +564,7 @@ eval_expr_val (char **expr, long int *result)
 
   /* POSIX requires that decimal, octal, and hexadecimal constants are
      recognized.  Therefore we pass 0 as the third parameter to strtol.  */
-  *result = strtol (digit, expr, 0);
+  *result = __strtol (digit, expr, 0);
   if (digit == *expr)
     return WRDE_SYNTAX;
 
@@ -1398,7 +1398,7 @@ envsubst:
   /* Is it a numeric parameter? */
   else if (isdigit (env[0]))
     {
-      unsigned long n = strtoul (env, NULL, 10);
+      unsigned long n = __strtoul (env, NULL, 10);
 
       if (n >= __libc_argc)
 	/* Substitute NULL. */

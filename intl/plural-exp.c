@@ -120,7 +120,7 @@ EXTRACT_PLURAL_EXPRESSION (const char *nullentry,
 	  if (!(*nplurals >= '0' && *nplurals <= '9'))
 	    goto no_plural;
 #if defined HAVE_STRTOUL || defined _LIBC
-	  n = strtoul (nplurals, &endp, 10);
+	  n = __strtoul (nplurals, &endp, 10);
 #else
 	  for (endp = nplurals, n = 0; *endp >= '0' && *endp <= '9'; endp++)
 	    n = n * 10 + (*endp - '0');

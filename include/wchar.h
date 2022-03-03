@@ -71,13 +71,20 @@ libc_hidden_proto (__wcstol_internal)
 libc_hidden_proto (__wcstoll_internal)
 libc_hidden_proto (__wcstoul_internal)
 libc_hidden_proto (__wcstoull_internal)
-libc_hidden_proto (wcstof)
-libc_hidden_proto (wcstod)
-libc_hidden_ldbl_proto (wcstold)
-libc_hidden_proto (wcstol)
-libc_hidden_proto (wcstoll)
-libc_hidden_proto (wcstoul)
-libc_hidden_proto (wcstoull)
+extern __typeof (wcstof) __wcstof;
+libc_hidden_proto (__wcstof)
+extern __typeof (wcstod) __wcstod;
+libc_hidden_proto (__wcstod)
+extern __typeof (wcstold) __wcstold;
+libc_hidden_ldbl_proto (__wcstold)
+extern __typeof (wcstol) __wcstol;
+libc_hidden_proto (__wcstol)
+extern __typeof (wcstoll) __wcstoll;
+libc_hidden_proto (__wcstoll)
+extern __typeof (wcstoul) __wcstoul;
+libc_hidden_proto (__wcstoul)
+extern __typeof (wcstoull) __wcstoull;
+libc_hidden_proto (__wcstoull)
 
 extern float ____wcstof_l_internal (const wchar_t *, wchar_t **, int,
 				    locale_t) attribute_hidden;
@@ -100,6 +107,8 @@ extern unsigned long long int ____wcstoull_l_internal (const wchar_t *,
      attribute_hidden;
 
 #if __HAVE_DISTINCT_FLOAT128
+extern __typeof (wcstof128) __wcstof128;
+libc_hidden_proto (__wcstof128)
 extern __typeof (wcstof128_l) __wcstof128_l;
 libc_hidden_proto (__wcstof128_l)
 extern _Float128 __wcstof128_internal (const wchar_t *__restrict __nptr,
@@ -110,7 +119,6 @@ extern _Float128 ____wcstof128_l_internal (const wchar_t *, wchar_t **, int,
 					   locale_t) attribute_hidden;
 
 libc_hidden_proto (__wcstof128_internal)
-libc_hidden_proto (wcstof128)
 #endif
 
 libc_hidden_proto (__wcscasecmp_l)
