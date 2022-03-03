@@ -22,7 +22,7 @@ subdir	:= stdlib
 
 include ../Makeconfig
 
-headers	:= stdlib.h bits/stdlib.h bits/stdlib-ldbl.h bits/stdlib-float.h      \
+headers	:= stdlib.h bits/stdlib.h bits/stdlib-float.h                         \
 	   monetary.h 							      \
 	   inttypes.h stdint.h bits/wordsize.h bits/timesize.h		      \
 	   errno.h sys/errno.h bits/errno.h bits/types/error_t.h	      \
