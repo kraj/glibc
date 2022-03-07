@@ -445,7 +445,7 @@
 /* Rename the non ISO C functions.  This is required by the standard
    because some ISO C functions will require linking with this object
    file and the name space must not be polluted.  */
-# define open(name, flags)	__open_nocancel (name, flags)
+# define open(name, flags)	__open64_nocancel (name, flags)
 # define close(fd)		__close_nocancel_nostatus (fd)
 # define read(fd, buf, n)	__read_nocancel (fd, buf, n)
 # define mmap(addr, len, prot, flags, fd, offset) \

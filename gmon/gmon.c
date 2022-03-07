@@ -362,13 +362,14 @@ write_gmon (void)
 	size_t len = strlen (env);
 	char buf[len + 20];
 	__snprintf (buf, sizeof (buf), "%s.%u", env, __getpid ());
-	fd = __open_nocancel (buf, O_CREAT|O_TRUNC|O_WRONLY|O_NOFOLLOW, 0666);
+	fd = __open64_nocancel (buf, O_CREAT|O_TRUNC|O_WRONLY|O_NOFOLLOW,
+				0666);
       }
 
     if (fd == -1)
       {
-	fd = __open_nocancel ("gmon.out", O_CREAT|O_TRUNC|O_WRONLY|O_NOFOLLOW,
-			      0666);
+	fd = __open64_nocancel ("gmon.out", O_CREAT|O_TRUNC|O_WRONLY|O_NOFOLLOW,
+				0666);
 	if (fd < 0)
 	  {
 	    char buf[300];

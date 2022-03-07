@@ -27,15 +27,6 @@
 #include <sys/wait.h>
 #include <time.h>
 
-/* Non cancellable open syscall.  */
-__typeof (open) __open_nocancel;
-
-/* Non cancellable open syscall (LFS version).  */
-__typeof (open64) __open64_nocancel;
-
-/* Non cancellable openat syscall.  */
-__typeof (openat) __openat_nocancel;
-
 /* Non cacellable openat syscall (LFS version).  */
 __typeof (openat64) __openat64_nocancel;
 
@@ -50,6 +41,9 @@ __typeof (__write) __write_nocancel;
 
 /* Uncancelable close.  */
 __typeof (__close) __close_nocancel;
+
+#define __open64_nocancel(args...) \
+  __openat64_nocancel (AT_FDCWD, args)
 
 /* Non cancellable close syscall that does not also set errno in case of
    failure.  */
@@ -71,9 +65,6 @@ __writev_nocancel_nostatus (int fd, const struct iovec *iov, int iovcnt)
 __typeof (__fcntl) __fcntl64_nocancel;
 
 #if IS_IN (libc) || IS_IN (rtld)
-hidden_proto (__open_nocancel)
-hidden_proto (__open64_nocancel)
-hidden_proto (__openat_nocancel)
 hidden_proto (__openat64_nocancel)
 hidden_proto (__read_nocancel)
 hidden_proto (__pread64_nocancel)

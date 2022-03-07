@@ -32,7 +32,7 @@ get_timebase_freq_fallback (void)
      contains at least one line like:
      timebase        : 33333333
      We search for this line and convert the number into an integer.  */
-  int fd = __open_nocancel ("/proc/cpuinfo", O_RDONLY);
+  int fd = __open64_nocancel ("/proc/cpuinfo", O_RDONLY);
   if (__glibc_unlikely (fd == -1))
     return result;
 

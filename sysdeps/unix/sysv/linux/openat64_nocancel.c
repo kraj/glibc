@@ -38,8 +38,3 @@ __openat64_nocancel (int fd, const char *file, int oflag, ...)
 			      mode);
 }
 hidden_def (__openat64_nocancel)
-
-#ifdef __OFF_T_MATCHES_OFF64_T
-strong_alias (__openat64_nocancel, __openat_nocancel)
-hidden_def (__openat_nocancel)
-#endif

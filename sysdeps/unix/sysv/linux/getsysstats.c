@@ -117,7 +117,7 @@ get_nproc_stat (void)
   int result = 0;
 
   const int flags = O_RDONLY | O_CLOEXEC;
-  int fd = __open_nocancel ("/proc/stat", flags);
+  int fd = __open64_nocancel ("/proc/stat", flags);
   if (fd != -1)
     {
       char *l;
@@ -146,7 +146,7 @@ get_nprocs_cpu_online (void)
 
   const int flags = O_RDONLY | O_CLOEXEC;
   /* This file contains comma-separated ranges.  */
-  int fd = __open_nocancel ("/sys/devices/system/cpu/online", flags);
+  int fd = __open64_nocancel ("/sys/devices/system/cpu/online", flags);
   char *l;
   int result = 0;
   if (fd != -1)

@@ -141,7 +141,7 @@ __libc_setutent (void)
       file_name = TRANSFORM_UTMP_FILE_NAME (__libc_utmp_file_name);
 
       file_writable = false;
-      file_fd = __open_nocancel
+      file_fd = __open64_nocancel
 	(file_name, O_RDONLY | O_LARGEFILE | O_CLOEXEC);
       if (file_fd == -1)
 	return 0;
@@ -353,7 +353,7 @@ __libc_pututline (const struct utmp *data)
       /* We must make the file descriptor writable before going on.  */
       const char *file_name = TRANSFORM_UTMP_FILE_NAME (__libc_utmp_file_name);
 
-      int new_fd = __open_nocancel
+      int new_fd = __open64_nocancel
 	(file_name, O_RDWR | O_LARGEFILE | O_CLOEXEC);
       if (new_fd == -1)
 	return NULL;
@@ -463,7 +463,7 @@ __libc_updwtmp (const char *file, const struct utmp *utmp)
   int fd;
 
   /* Open WTMP file.  */
-  fd = __open_nocancel (file, O_WRONLY | O_LARGEFILE);
+  fd = __open64_nocancel (file, O_WRONLY | O_LARGEFILE);
   if (fd < 0)
     return -1;
 

@@ -351,8 +351,7 @@ ifeq ($(subdir),io)
 sysdep_routines += xstatconv internal_statvfs \
 		   sync_file_range fallocate fallocate64 \
 		   close_nocancel fcntl_nocancel \
-		   open_nocancel open64_nocancel \
-		   openat_nocancel openat64_nocancel \
+		   openat64_nocancel \
 		   read_nocancel pread64_nocancel \
 		   write_nocancel statx_cp stat_t64_cp
 

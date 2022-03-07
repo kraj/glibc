@@ -71,7 +71,7 @@ __opendirat (int dfd, const char *name)
   if (__glibc_unlikely (invalid_name (name)))
     return NULL;
 
-  return opendir_tail (__openat_nocancel (dfd, name, opendir_oflags));
+  return opendir_tail (__openat64_nocancel (dfd, name, opendir_oflags));
 }
 #endif
 
@@ -83,7 +83,7 @@ __opendir (const char *name)
   if (__glibc_unlikely (invalid_name (name)))
     return NULL;
 
-  return opendir_tail (__open_nocancel (name, opendir_oflags));
+  return opendir_tail (__open64_nocancel (name, opendir_oflags));
 }
 weak_alias (__opendir, opendir)
 

@@ -174,7 +174,7 @@ _nl_load_locale (struct loaded_l10nfile *file, int category)
   file->decided = 1;
   file->data = NULL;
 
-  fd = __open_nocancel (file->filename, O_RDONLY | O_CLOEXEC);
+  fd = __open64_nocancel (file->filename, O_RDONLY | O_CLOEXEC);
   if (__builtin_expect (fd, 0) < 0)
     /* Cannot open the file.  */
     return;
@@ -201,7 +201,7 @@ _nl_load_locale (struct loaded_l10nfile *file, int category)
 			    "/SYS_", 5), _nl_category_names_get (category),
 		 _nl_category_name_sizes[category] + 1);
 
-      fd = __open_nocancel (newp, O_RDONLY | O_CLOEXEC);
+      fd = __open64_nocancel (newp, O_RDONLY | O_CLOEXEC);
       if (__builtin_expect (fd, 0) < 0)
 	return;
 

@@ -32,8 +32,8 @@ __closefrom_fallback (int from, _Bool dirfd_fallback)
 {
   bool ret = false;
 
-  int dirfd = __open_nocancel (FD_TO_FILENAME_PREFIX, O_RDONLY | O_DIRECTORY,
-                               0);
+  int dirfd = __open64_nocancel (FD_TO_FILENAME_PREFIX, O_RDONLY | O_DIRECTORY,
+				 0);
   if (dirfd == -1)
     {
       /* The closefrom should work even when process can't open new files.  */
@@ -47,8 +47,8 @@ __closefrom_fallback (int from, _Bool dirfd_fallback)
             break;
         }
 
-      dirfd = __open_nocancel (FD_TO_FILENAME_PREFIX, O_RDONLY | O_DIRECTORY,
-                               0);
+      dirfd = __open64_nocancel (FD_TO_FILENAME_PREFIX, O_RDONLY | O_DIRECTORY,
+				 0);
       if (dirfd == -1)
         return false;
     }

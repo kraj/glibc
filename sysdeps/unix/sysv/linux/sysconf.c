@@ -96,7 +96,7 @@ __sysconf (int name)
 
   if (procfname != NULL)
     {
-      int fd = __open_nocancel (procfname, O_RDONLY | O_CLOEXEC);
+      int fd = __open64_nocancel (procfname, O_RDONLY | O_CLOEXEC);
       if (fd != -1)
 	{
 	  /* This is more than enough, the file contains a single integer.  */
