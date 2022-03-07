@@ -421,7 +421,7 @@ CFLAGS-test-float-vlen16-wrappers.c += $(float-vlen16-arch-ext-cflags)
 # exceptions.  Thus both versions of the classification macros are
 # validated.
 libm-test-no-inline-cflags = -fno-inline -ffloat-store -fno-builtin \
-			     -fsignaling-nans
+			     $(config-cflags-signaling-nans)
 CFLAGS-test-tgmath.c += -fno-builtin
 # The following testcase uses very long lines (>3 million), so it may take a
 # while to compile it. See: http://llvm.org/bugs/show_bug.cgi?id=14106 and
@@ -430,7 +430,7 @@ CFLAGS-test-tgmath2.c += -fno-builtin
 CFLAGS-test-tgmath-ret.c += -fno-builtin
 CFLAGS-test-powl.c += -fno-builtin
 
-CFLAGS-test-snan.c += -fsignaling-nans
+CFLAGS-test-snan.c += $(config-cflags-signaling-nans)
 
 CFLAGS-test-signgam-uchar.c += -std=c99
 CFLAGS-test-signgam-uchar-init.c += -std=c99
@@ -456,7 +456,7 @@ CFLAGS-test-iszero-excess-precision.c += -fexcess-precision=standard
 CFLAGS-test-iseqsig-excess-precision.c += -fexcess-precision=standard
 CFLAGS-test-flt-eval-method.c += -fexcess-precision=standard
 
-CFLAGS-test-fe-snans-always-signal.c += -fsignaling-nans
+CFLAGS-test-fe-snans-always-signal.c += $(config-cflags-signaling-nans)
 
 CFLAGS-test-nan-const.c += -fno-builtin
 
@@ -768,10 +768,10 @@ endif
 
 # These files quiet sNaNs in a way that is optimized away without
 # -fsignaling-nans.
-CFLAGS-s_modf.c += -fsignaling-nans
-CFLAGS-s_modff.c += -fsignaling-nans
-CFLAGS-s_modfl.c += -fsignaling-nans
-CFLAGS-s_modff128.c += -fsignaling-nans
+CFLAGS-s_modf.c += $(config-cflags-signaling-nans)
+CFLAGS-s_modff.c += $(config-cflags-signaling-nans)
+CFLAGS-s_modfl.c += $(config-cflags-signaling-nans)
+CFLAGS-s_modff128.c += $(config-cflags-signaling-nans)
 
 $(addprefix $(objpfx),\
 	    $(filter-out $(tests-static) $(libm-tests-vector),\

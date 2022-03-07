@@ -42,6 +42,7 @@ asflags-cpu = @libc_cv_cc_submachine@
 config-extra-cflags = @libc_extra_cflags@
 config-extra-cppflags = @libc_extra_cppflags@
 config-cflags-nofma = @libc_cv_cc_nofma@
+config-cflags-signaling-nans = @libc_cv_cc_signaling_nans@
 
 defines = @DEFINES@
 sysheaders = @sysheaders@
