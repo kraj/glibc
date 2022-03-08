@@ -27,20 +27,26 @@
 #include <sys/wait.h>
 #include <time.h>
 
+#if IS_IN (libc) || IS_IN (rtld)
 /* Non cacellable openat syscall (LFS version).  */
-__typeof (openat64) __openat64_nocancel;
-
+hidden_proto2 (openat64, __openat64_nocancel)
 /* Non cancellable read syscall.  */
-__typeof (__read) __read_nocancel;
-
+hidden_proto2 (read, __read_nocancel)
 /* Non cancellable pread syscall (LFS version).  */
-__typeof (__pread64) __pread64_nocancel;
-
+hidden_proto2 (pread64, __pread64_nocancel)
 /* Uncancelable write.  */
-__typeof (__write) __write_nocancel;
-
+hidden_proto2 (write, __write_nocancel)
 /* Uncancelable close.  */
-__typeof (__close) __close_nocancel;
+hidden_proto2 (close, __close_nocancel)
+/* Uncancelable fcntl.  */
+hidden_proto2 (fcntl64, __fcntl64_nocancel)
+#else
+__typeof (openat64) __openat64_nocancel;
+__typeof (read) __read_nocancel;
+__typeof (pread64) __pread64_nocancel;
+__typeof (write) __write_nocancel;
+__typeof (close) __close_nocancel;
+#endif
 
 #define __open64_nocancel(args...) \
   __openat64_nocancel (AT_FDCWD, args)
@@ -60,17 +66,5 @@ __writev_nocancel_nostatus (int fd, const struct iovec *iov, int iovcnt)
 {
   INTERNAL_SYSCALL_CALL (writev, fd, iov, iovcnt);
 }
-
-/* Uncancelable fcntl.  */
-__typeof (__fcntl) __fcntl64_nocancel;
-
-#if IS_IN (libc) || IS_IN (rtld)
-hidden_proto (__openat64_nocancel)
-hidden_proto (__read_nocancel)
-hidden_proto (__pread64_nocancel)
-hidden_proto (__write_nocancel)
-hidden_proto (__close_nocancel)
-hidden_proto (__fcntl64_nocancel)
-#endif
 
 #endif /* NOT_CANCEL_H  */

@@ -532,10 +532,15 @@ for linking")
   __attribute__ ((visibility ("hidden"), ##attrs))
 #  define hidden_proto(name, attrs...) \
   __hidden_proto (name, , __GI_##name, ##attrs)
+#  define hidden_proto2(type, name, attrs...) \
+  __hidden_proto2 (type, name, , __GI_##name, ##attrs)
 #  define hidden_tls_proto(name, attrs...) \
   __hidden_proto (name, __thread, __GI_##name, ##attrs)
 #  define __hidden_proto(name, thread, internal, attrs...)	     \
   extern thread __typeof (name) name __asm__ (__hidden_asmname (#internal)) \
+  __hidden_proto_hiddenattr (attrs);
+#  define __hidden_proto2(type, name, thread, internal, attrs...)	     \
+  extern thread __typeof (type) name __asm__ (__hidden_asmname (#internal)) \
   __hidden_proto_hiddenattr (attrs);
 #  define __hidden_asmname(name) \
   __hidden_asmname1 (__USER_LABEL_PREFIX__, name)
@@ -604,6 +609,10 @@ for linking")
 #   define hidden_proto(name, attrs...)
 #   define hidden_tls_proto(name, attrs...)
 # endif
+# define __hidden_proto2(type, name, thread, attrs...)     \
+  extern thread __typeof (type) name __attribute__ ((visibility ("hidden"), ##attrs));
+# define hidden_proto2(type, name, attrs...) \
+   __hidden_proto2(type, name, , attrs)
 # else
 #  define HIDDEN_JUMPTARGET(name) JUMPTARGET(name)
 # endif /* Not  __ASSEMBLER__ */
