@@ -39,10 +39,4 @@
 
 
 /* Location of current stack frame.  */
-#ifdef __x86_64__
-/* The frame pointer is not usable.  */
-# define CURRENT_STACK_FRAME \
-  ({ register char *frame __asm__("rsp"); frame; })
-#else
-# define CURRENT_STACK_FRAME	__builtin_frame_address (0)
-#endif
+#define CURRENT_STACK_FRAME __builtin_frame_address (0)
