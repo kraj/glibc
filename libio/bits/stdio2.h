@@ -96,6 +96,8 @@ __NTH (vsnprintf (char *__restrict __s, size_t __n,
 				    __glibc_objsize (__s), __fmt, __ap);
 }
 
+#endif
+
 #if __USE_FORTIFY_LEVEL > 1
 extern int __REDIRECT_LDBL (__fprintf_chk, (FILE *__restrict __stream,
 					    int __flag,
@@ -164,7 +166,6 @@ extern int __REDIRECT_LDBL (__vdprintf_chk, (int __fd, int __flag,
 					     __gnuc_va_list __arg),
 			    __vdprintf_chkieee128, __nldbl___vdprintf_chk)
      __attribute__ ((__format__ (__printf__, 3, 0)));
-# endif
 
 #  ifdef __va_arg_pack
 __fortify_function int
