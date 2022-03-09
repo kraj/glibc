@@ -29,7 +29,7 @@ cleanup (void *arg)
      fail for any reason but the thread not having done that yet so
      there is no reason for a loop.  */
   struct pthread *self = THREAD_SELF;
-  atomic_compare_exchange_weak_acquire (&arg, &self, NULL);
+  atomic_compare_exchange_weak_acquire (&arg, (void **) &self, NULL);
 }
 
 int
