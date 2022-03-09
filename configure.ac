@@ -1490,10 +1490,28 @@ else
   libc_cv_fno_toplevel_reorder=no
 fi
 rm -f conftest*])
+
+AC_CACHE_CHECK(for -fno-unit-at-a-time, libc_cv_fno_unit_at_a_time, [dnl
+cat > conftest.c <<EOF
+int foo;
+EOF
+if AC_TRY_COMMAND([${CC-cc} $CFLAGS $CPPFLAGS -S -fno-unit-at-a-time conftest.c
+		   1>&AS_MESSAGE_LOG_FD])
+then
+  libc_cv_fno_unit_at_a_time=yes
+else
+  libc_cv_fno_unit_at_a_time=no
+fi
+rm -f conftest*])
+
 if test $libc_cv_fno_toplevel_reorder = yes; then
   fno_unit_at_a_time="-fno-toplevel-reorder -fno-section-anchors"
 else
-  fno_unit_at_a_time=-fno-unit-at-a-time
+  if test $libc_cv_fno_unit_at_a_time == yes; then
+    fno_unit_at_a_time="-fno-unit-at-a-time"
+  else
+    fno_unit_at_a_time=
+  fi
 fi
 AC_SUBST(fno_unit_at_a_time)
 
