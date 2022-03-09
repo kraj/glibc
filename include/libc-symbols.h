@@ -446,8 +446,13 @@ for linking")
 /* Used to disable stack protection in sensitive places, like ifunc
    resolvers and early static TLS init.  */
 #ifdef HAVE_CC_NO_STACK_PROTECTOR
-# define inhibit_stack_protector \
+# ifdef __clang__
+#  define inhibit_stack_protector \
+     __attribute__((no_stack_protector))
+# else
+#  define inhibit_stack_protector \
     __attribute__ ((__optimize__ ("-fno-stack-protector")))
+# endif
 #else
 # define inhibit_stack_protector
 #endif
