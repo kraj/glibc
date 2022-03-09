@@ -336,10 +336,6 @@ gaih_inet (const char *name, const struct gaih_service *service,
   const char *canon = NULL;
   const char *orig_name = name;
 
-  /* Reserve stack memory for the scratch buffer in the getaddrinfo
-     function.  */
-  size_t alloca_used = sizeof (struct scratch_buffer);
-
   if (req->ai_protocol || req->ai_socktype)
     {
       ++tp;
@@ -371,7 +367,7 @@ gaih_inet (const char *name, const struct gaih_service *service,
 	  if (tp->name[0])
 	    {
 	      st = (struct gaih_servtuple *)
-		alloca_account (sizeof (struct gaih_servtuple), alloca_used);
+		alloca (sizeof (struct gaih_servtuple));
 
 	      int rc = gaih_inet_serv (service->name, tp, req, st, tmpbuf);
 	      if (__glibc_unlikely (rc != 0))
@@ -396,8 +392,7 @@ gaih_inet (const char *name, const struct gaih_service *service,
 		    continue;
 
 		  newp = (struct gaih_servtuple *)
-		    alloca_account (sizeof (struct gaih_servtuple),
-				    alloca_used);
+		    alloca (sizeof (struct gaih_servtuple));
 
 		  if (gaih_inet_serv (service->name,
 				      tp, req, newp, tmpbuf) != 0)
@@ -422,7 +417,7 @@ gaih_inet (const char *name, const struct gaih_service *service,
 
       if (req->ai_socktype || req->ai_protocol)
 	{
-	  st = alloca_account (sizeof (struct gaih_servtuple), alloca_used);
+	  st = alloca (sizeof (struct gaih_servtuple));
 	  st->next = NULL;
 	  st->socktype = tp->socktype;
 	  st->protocol = ((tp->protoflag & GAI_PROTO_PROTOANY)
@@ -439,8 +434,7 @@ gaih_inet (const char *name, const struct gaih_service *service,
 	      {
 		struct gaih_servtuple *newp;
 
-		newp = alloca_account (sizeof (struct gaih_servtuple),
-				       alloca_used);
+		newp = alloca (sizeof (struct gaih_servtuple));
 		newp->next = NULL;
 		newp->socktype = tp->socktype;
 		newp->protocol = tp->protocol;
@@ -459,7 +453,7 @@ gaih_inet (const char *name, const struct gaih_service *service,
 
   if (name != NULL)
     {
-      at = alloca_account (sizeof (struct gaih_addrtuple), alloca_used);
+      at = alloca (sizeof (struct gaih_addrtuple));
       at->family = AF_UNSPEC;
       at->scopeid = 0;
       at->next = NULL;
@@ -940,7 +934,7 @@ gaih_inet (const char *name, const struct gaih_service *service,
   else
     {
       struct gaih_addrtuple *atr;
-      atr = at = alloca_account (sizeof (struct gaih_addrtuple), alloca_used);
+      atr = at = alloca (sizeof (struct gaih_addrtuple));
       memset (at, '\0', sizeof (struct gaih_addrtuple));
 
       if (req->ai_family == AF_UNSPEC)
