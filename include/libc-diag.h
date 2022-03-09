@@ -71,4 +71,12 @@
 # define DIAG_IGNORE_Os_NEEDS_COMMENT(version, option)
 #endif
 
+/* Some warnings are not support for all compilers.  */
+#ifndef __clang__
+# define DIAG_IGNORE_NEEDS_COMMENT_MAYBE_UNINITIALIZED(VERSION) \
+  DIAG_IGNORE_NEEDS_COMMENT (VERSION, "-Wmaybe-uninitialized")
+#else
+# define DIAG_IGNORE_NEEDS_COMMENT_MAYBE_UNINITIALIZED(VERSION)
+#endif
+
 #endif /* libc-diag.h */

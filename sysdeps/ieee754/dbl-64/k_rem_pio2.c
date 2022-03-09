@@ -337,7 +337,7 @@ recompute:
 	 to full precision (this function is not called for zero
 	 arguments).  */
       DIAG_PUSH_NEEDS_COMMENT;
-      DIAG_IGNORE_NEEDS_COMMENT (9, "-Wmaybe-uninitialized");
+      DIAG_IGNORE_NEEDS_COMMENT_MAYBE_UNINITIALIZED (9);
       fv = math_narrow_eval (fq[0] - fv);
       DIAG_POP_NEEDS_COMMENT;
       for (i = 1; i <= jz; i++)

@@ -34,7 +34,7 @@
    versions of GCC, it may be where R is defined using a macro or it
    may be where the macro is defined.  This happens only with -O1.  */
 DIAG_PUSH_NEEDS_COMMENT;
-DIAG_IGNORE_NEEDS_COMMENT (8, "-Wmaybe-uninitialized");
+DIAG_IGNORE_NEEDS_COMMENT_MAYBE_UNINITIALIZED (8);
 #include <soft-fp.h>
 #include <single.h>
 #include <double.h>
