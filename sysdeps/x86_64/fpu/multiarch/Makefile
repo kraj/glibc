@@ -50,12 +50,12 @@ CFLAGS-s_tan-fma4.c = -mfma4
 libm-sysdep_routines += e_exp-avx e_log-avx s_atan-avx \
 			e_atan2-avx s_sin-avx s_tan-avx
 
-CFLAGS-e_atan2-avx.c = -msse2avx -DSSE2AVX
-CFLAGS-e_exp-avx.c = -msse2avx -DSSE2AVX
-CFLAGS-e_log-avx.c = -msse2avx -DSSE2AVX
-CFLAGS-s_atan-avx.c = -msse2avx -DSSE2AVX
-CFLAGS-s_sin-avx.c = -msse2avx -DSSE2AVX
-CFLAGS-s_tan-avx.c = -msse2avx -DSSE2AVX
+CFLAGS-e_atan2-avx.c = $(config-cflags-msse2avx) -DSSE2AVX
+CFLAGS-e_exp-avx.c = $(config-cflags-msse2avx) -DSSE2AVX
+CFLAGS-e_log-avx.c = $(config-cflags-msse2avx) -DSSE2AVX
+CFLAGS-s_atan-avx.c = $(config-cflags-msse2avx) -DSSE2AVX
+CFLAGS-s_sin-avx.c = $(config-cflags-msse2avx) -DSSE2AVX
+CFLAGS-s_tan-avx.c = $(config-cflags-msse2avx) -DSSE2AVX
 endif
 
 ifeq ($(subdir),mathvec)
