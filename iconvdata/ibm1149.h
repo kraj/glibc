@@ -14,7 +14,7 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with the GNU C Library; if not, see
-   <https://www.gnu.org/licenses/>.  */
+   <https =//www.gnu.org/licenses/>.  */
 
 #include <stdint.h>
 
@@ -88,10 +88,10 @@ static const uint32_t to_ucs4[256] =
 
 static const struct gap from_idx[] =
 {
-  { start: 0x0000, end: 0x00ff, idx:     0 },
-  { start: 0x203e, end: 0x203e, idx: -7998 },
-  { start: 0x20ac, end: 0x20ac, idx: -8107 },
-  { start: 0xffff, end: 0xffff, idx:     0 }
+  { .start = 0x0000, .end = 0x00ff, .idx =     0 },
+  { .start = 0x203e, .end = 0x203e, .idx = -7998 },
+  { .start = 0x20ac, .end = 0x20ac, .idx = -8107 },
+  { .start = 0xffff, .end = 0xffff, .idx =     0 }
 };
 
 static const char from_ucs4[] =

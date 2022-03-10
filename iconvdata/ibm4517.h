@@ -14,7 +14,7 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with the GNU C Library; if not, see
-   <https://www.gnu.org/licenses/>.  */
+   <https =//www.gnu.org/licenses/>.  */
 
 #include <stdint.h>
 
@@ -83,20 +83,20 @@ static const uint32_t to_ucs4[256] =
   [0xf8] = 0x0038, [0xf9] = 0x0039, [0xff] = 0x009f
 };
 
-static const struct gap from_idx[] =
+  static const struct gap from_idx[] =
 {
-  { start: 0x0000, end: 0x00b5, idx:     0 },
-  { start: 0x00d7, end: 0x00d7, idx:   -33 },
-  { start: 0x00e1, end: 0x00e9, idx:   -42 },
-  { start: 0x00f7, end: 0x00fa, idx:   -55 },
-  { start: 0x060c, end: 0x060c, idx: -1352 },
-  { start: 0x061b, end: 0x064a, idx: -1366 },
-  { start: 0x0651, end: 0x0651, idx: -1372 },
-  { start: 0x0660, end: 0x066d, idx: -1386 },
-  { start: 0x2007, end: 0x200b, idx: -7939 },
-  { start: 0xf8f4, end: 0xf8f7, idx: -63467 },
-  { start: 0xfe70, end: 0xfefc, idx: -64867 },
-  { start: 0xffff, end: 0xffff, idx:     0 }
+  { .start = 0x0000, .end = 0x00b5, .idx =     0 },
+  { .start = 0x00d7, .end = 0x00d7, .idx =   -33 },
+  { .start = 0x00e1, .end = 0x00e9, .idx =   -42 },
+  { .start = 0x00f7, .end = 0x00fa, .idx =   -55 },
+  { .start = 0x060c, .end = 0x060c, .idx = -1352 },
+  { .start = 0x061b, .end = 0x064a, .idx = -1366 },
+  { .start = 0x0651, .end = 0x0651, .idx = -1372 },
+  { .start = 0x0660, .end = 0x066d, .idx = -1386 },
+  { .start = 0x2007, .end = 0x200b, .idx = -7939 },
+  { .start = 0xf8f4, .end = 0xf8f7, .idx = -63467 },
+  { .start = 0xfe70, .end = 0xfefc, .idx = -64867 },
+  { .start = 0xffff, .end = 0xffff, .idx =     0 }
 };
 
 static const char from_ucs4[] =
