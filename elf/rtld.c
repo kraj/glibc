@@ -2103,7 +2103,7 @@ dl_main (const ElfW(Phdr) *phdr,
 	      /* The library was not found.  */
 	      _dl_printf ("\t%s => not found\n",  l->l_libname->name);
 	    else
-	      _dl_printf ("\t%s => %s (0x%0*Zx)\n",
+	      _dl_printf ("\t%s => %s (0x%0*zx)\n",
 			  DSO_FILENAME (l->l_libname->name),
 			  DSO_FILENAME (l->l_name),
 			  (int) sizeof l->l_map_start * 2,
@@ -2125,7 +2125,7 @@ dl_main (const ElfW(Phdr) *phdr,
 
 	    loadbase = LOOKUP_VALUE_ADDRESS (result, false);
 
-	    _dl_printf ("%s found at 0x%0*Zd in object at 0x%0*Zd\n",
+	    _dl_printf ("%s found at 0x%0*zd in object at 0x%0*zd\n",
 			_dl_argv[i],
 			(int) sizeof ref->st_value * 2,
 			(size_t) ref->st_value,
