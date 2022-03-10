@@ -54,7 +54,7 @@ _dl_debug_update (Lmid_t ns)
 struct r_debug *
 _dl_debug_initialize (ElfW(Addr) ldbase, Lmid_t ns)
 {
-  struct r_debug_extended *r, **pp = NULL;
+  struct r_debug_extended *r = NULL, **pp = NULL;
 
   if (ns == LM_ID_BASE)
     {
