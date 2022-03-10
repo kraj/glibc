@@ -1,10 +1,15 @@
 /* Configure soft-fp for building sqrtf128.  Based on sfp-machine.h in
    libgcc, with soft-float and other irrelevant parts removed.  */
 
+typedef long __gcc_CMPtype;
+#if !defined(__clang__) && defined(__GNUC__)
 /* The type of the result of a floating point comparison.  This must
    match `__libgcc_cmp_return__' in GCC for the target.  */
-typedef int __gcc_CMPtype __attribute__ ((mode (__libgcc_cmp_return__)));
-#define CMPtype __gcc_CMPtype
+typedef int __gcc_CMPtype_GCC __attribute__ ((mode (__libgcc_cmp_return__)));
+# define CMPtype __gcc_CMPtype
+_Static_assert(sizeof(__gcc_CMPtype) == sizeof(__gcc_CMPtype_GCC),
+	       "sizeof(__gcc_CMPtype) != sizeof(__gcc_CMPtype_GCC)");
+#endif
 
 #ifdef __x86_64__
 # define _FP_W_TYPE_SIZE	64
