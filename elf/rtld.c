@@ -2512,10 +2512,16 @@ warning: debug option `%s' unknown; try LD_DEBUG=help\n", copy);
       _dl_printf ("\
 Valid options for the LD_DEBUG environment variable are:\n\n");
 
+      /* clang issues an warning adding 'const unsigned char' to a string
+	 does not append to the string, however it is exactly what code
+	 means here.  */
+      DIAG_PUSH_NEEDS_COMMENT_CLANG;
+      DIAG_IGNORE_NEEDS_COMMENT_CLANG (13, "-Wstring-plus-int");
       for (cnt = 0; cnt < ndebopts; ++cnt)
 	_dl_printf ("  %.*s%s%s\n", debopts[cnt].len, debopts[cnt].name,
 		    "         " + debopts[cnt].len - 3,
 		    debopts[cnt].helptext);
+      DIAG_POP_NEEDS_COMMENT_CLANG;
 
       _dl_printf ("\n\
 To direct the debugging output into a file instead of standard output\n\
