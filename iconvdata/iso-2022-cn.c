@@ -227,6 +227,10 @@ enum
 #define UPDATE_PARAMS		*setp = set | ann
 #include <iconv/loop.c>
 
+/* clang issues an warning adding 'int' to a string does not append
+   to the string, however it is exactly what code means here.  */
+DIAG_PUSH_NEEDS_COMMENT_CLANG;
+DIAG_IGNORE_NEEDS_COMMENT_CLANG (13, "-Wstring-plus-int");
 
 /* Next, define the other direction.  */
 #define MIN_NEEDED_INPUT	TO_LOOP_MIN_NEEDED_FROM
@@ -401,6 +405,7 @@ enum
 #define UPDATE_PARAMS		*setp = set | ann
 #include <iconv/loop.c>
 
+DIAG_POP_NEEDS_COMMENT_CLANG;
 
 /* Now define the toplevel functions.  */
 #include <iconv/skeleton.c>
