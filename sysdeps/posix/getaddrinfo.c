@@ -1899,7 +1899,7 @@ gaiconf_init (void)
 		  struct in6_addr prefix;
 		  unsigned long int bits;
 		  unsigned long int val;
-		  char *endp;
+		  char *endp = NULL;
 
 		  bits = 32;
 		  __set_errno (0);
