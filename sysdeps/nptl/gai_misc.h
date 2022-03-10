@@ -76,7 +76,7 @@
 #define gai_start_notify_thread __gai_start_notify_thread
 #define gai_create_helper_thread __gai_create_helper_thread
 
-extern inline void
+static inline void
 __gai_start_notify_thread (void)
 {
   sigset_t ss;
@@ -86,7 +86,7 @@ __gai_start_notify_thread (void)
   assert_perror (sigerr);
 }
 
-extern inline int
+static inline int
 __gai_create_helper_thread (pthread_t *threadp, void *(*tf) (void *),
 			    void *arg)
 {

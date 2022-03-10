@@ -37,7 +37,7 @@
 #ifndef gai_create_helper_thread
 # define gai_create_helper_thread __gai_create_helper_thread
 
-extern inline int
+static inline int
 __gai_create_helper_thread (pthread_t *threadp, void *(*tf) (void *),
 			    void *arg)
 {
