@@ -25,20 +25,11 @@
 # define ERR_MAP(n) n
 #endif
 
-const char *const _sys_errlist_internal[] =
-  {
-#define _S(n, str)         [ERR_MAP(n)] = str,
-#include <errlist.h>
-#undef _S
-  };
-
 const char *
 __get_errlist (int errnum)
 {
   int mapped = ERR_MAP (errnum);
-  if (mapped >= 0 && mapped < array_length (_sys_errlist_internal))
+  if (mapped >= 0 && mapped < _sys_errlist_internal_len)
     return _sys_errlist_internal[mapped];
   return NULL;
 }
-
-#include <errlist-compat.c>

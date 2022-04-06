@@ -88,6 +88,7 @@ routines := \
 
 aux := \
   errlist \
+  errlist-data \
   errname \
   fxprintf \
   printf-parsemb \
@@ -211,6 +212,10 @@ tests := \
   xbug \
   # tests
 
+generated += \
+  errlist-data-aux.os \
+  errlist-data-aux.o \
+  # generated
 
 test-srcs = tst-unbputc tst-printf tst-printfsz-islongdouble
 
@@ -245,6 +250,15 @@ endif # $(run-built-tests)
 tests-special += $(objpfx)tst-errno-manual.out
 
 include ../Rules
+
+$(objpfx)errlist-data-aux.os: errlist-data-gen.c
+	$(compile-command.c) $(no-stack-protector) -S
+
+$(objpfx)errlist-data-aux.o: errlist-data-gen.c
+	$(compile-command.c) $(no-stack-protector) -S
+
+$(objpfx)errlist-data.os: $(objpfx)errlist-data-aux.os
+$(objpfx)errlist-data.o: $(objpfx)errlist-data-aux.o
 
 ifeq ($(run-built-tests),yes)
 LOCALES := \
@@ -334,7 +348,6 @@ CFLAGS-isoc99_vfscanf.c += -fexceptions
 CFLAGS-isoc99_vscanf.c += -fexceptions
 CFLAGS-isoc99_fscanf.c += -fexceptions
 CFLAGS-isoc99_scanf.c += -fexceptions
-CFLAGS-errlist.c += $(fno-unit-at-a-time)
 CFLAGS-siglist.c += $(fno-unit-at-a-time)
 
 # scanf14a.c and scanf16a.c test a deprecated extension which is no
