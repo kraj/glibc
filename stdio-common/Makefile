@@ -215,6 +215,8 @@ tests := \
 generated += \
   errlist-data-aux.os \
   errlist-data-aux.o \
+  siglist-aux.os \
+  siglist-aux.o \
   # generated
 
 test-srcs = tst-unbputc tst-printf tst-printfsz-islongdouble
@@ -259,6 +261,15 @@ $(objpfx)errlist-data-aux.o: errlist-data-gen.c
 
 $(objpfx)errlist-data.os: $(objpfx)errlist-data-aux.os
 $(objpfx)errlist-data.o: $(objpfx)errlist-data-aux.o
+
+$(objpfx)siglist-aux.os: siglist-gen.c
+	$(compile-command.c) $(no-stack-protector) -S
+
+$(objpfx)siglist-aux.o: siglist-gen.c
+	$(compile-command.c) $(no-stack-protector) -S
+
+$(objpfx)siglist.os: $(objpfx)siglist-aux.os
+$(objpfx)siglist.o: $(objpfx)siglist-aux.o
 
 ifeq ($(run-built-tests),yes)
 LOCALES := \
@@ -348,7 +359,6 @@ CFLAGS-isoc99_vfscanf.c += -fexceptions
 CFLAGS-isoc99_vscanf.c += -fexceptions
 CFLAGS-isoc99_fscanf.c += -fexceptions
 CFLAGS-isoc99_scanf.c += -fexceptions
-CFLAGS-siglist.c += $(fno-unit-at-a-time)
 
 # scanf14a.c and scanf16a.c test a deprecated extension which is no
 # longer visible under most conformance levels; see the source files

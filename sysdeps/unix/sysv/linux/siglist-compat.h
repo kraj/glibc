@@ -1,4 +1,4 @@
-/* Compatibility signal numbers and their names symbols.  Hurd version.
+/* Compatibility signal numbers and their names symbols.  Linux version.
    Copyright (C) 1997-2022 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -16,12 +16,19 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#include <siglist-compat.h>
+#include <siglist-compat-def.h>
+/* To get _NSIG definition.  */
+#define _SIGNAL_H
+#include <bits/signum-generic.h>
 
 #if SHLIB_COMPAT (libc, GLIBC_2_0, GLIBC_2_1)
-DEFINE_COMPAT_SIGLIST (33, GLIBC_2_0)
+DEFINE_COMPAT_SIGLIST (32, GLIBC_2_0)
 #endif
 
-#if SHLIB_COMPAT (libc, GLIBC_2_1, GLIBC_2_32)
-DEFINE_COMPAT_SIGLIST (NSIG, GLIBC_2_1)
+#if SHLIB_COMPAT (libc, GLIBC_2_1, GLIBC_2_3_3)
+DEFINE_COMPAT_SIGLIST (64, GLIBC_2_1)
+#endif
+
+#if SHLIB_COMPAT (libc, GLIBC_2_3_3, GLIBC_2_32)
+DEFINE_COMPAT_SIGLIST (_NSIG, GLIBC_2_3_3)
 #endif

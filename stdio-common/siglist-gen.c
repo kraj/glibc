@@ -35,5 +35,3 @@ const char *const __sys_sigabbrev[NSIG] =
 #undef init_sig
 };
 libc_hidden_def (__sys_sigabbrev)
-
-#include <siglist-compat.c>
