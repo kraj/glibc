@@ -324,6 +324,87 @@ class ElfStt(OpenIntEnum):
     STT_TLS = 6
     STT_GNU_IFUNC = 10
 
+class ElfPt(OpenIntEnum):
+    "ELF program header types.  Type of ElfPhdr.p_type."
+    PT_NULL = 0
+    PT_LOAD = 1
+    PT_DYNAMIC = 2
+    PT_INTERP = 3
+    PT_NOTE = 4
+    PT_SHLIB = 5
+    PT_PHDR = 6
+    PT_TLS = 7
+    PT_NUM = 8
+    PT_GNU_EH_FRAME = 0x6474e550
+    PT_GNU_STACK = 0x6474e551
+    PT_GNU_RELRO = 0x6474e552
+    PT_GNU_PROPERTY = 0x6474e553
+    PT_SUNWBSS = 0x6ffffffa
+    PT_SUNWSTACK = 0x6ffffffb
+
+class ElfDt(OpenIntEnum):
+    "ELF dynamic segment tags.  Type of ElfDyn.d_val."
+    DT_NULL = 0
+    DT_NEEDED = 1
+    DT_PLTRELSZ = 2
+    DT_PLTGOT = 3
+    DT_HASH = 4
+    DT_STRTAB = 5
+    DT_SYMTAB = 6
+    DT_RELA = 7
+    DT_RELASZ = 8
+    DT_RELAENT = 9
+    DT_STRSZ = 10
+    DT_SYMENT = 11
+    DT_INIT = 12
+    DT_FINI = 13
+    DT_SONAME = 14
+    DT_RPATH = 15
+    DT_SYMBOLIC = 16
+    DT_REL = 17
+    DT_RELSZ = 18
+    DT_RELENT = 19
+    DT_PLTREL = 20
+    DT_DEBUG = 21
+    DT_TEXTREL = 22
+    DT_JMPREL = 23
+    DT_RUNPATH = 29
+    DT_FLAGS = 30
+    DT_ENCODING = 32
+    DT_PREINIT_ARRAY = 32
+    DT_PREINIT_ARRAYSZ = 33
+    DT_SYMTAB_SHNDX = 34
+    DT_GNU_PRELINKED = 0x6ffffdf5
+    DT_GNU_CONFLICTSZ = 0x6ffffdf6
+    DT_GNU_LIBLISTSZ = 0x6ffffdf7
+    DT_CHECKSUM = 0x6ffffdf8
+    DT_PLTPADSZ = 0x6ffffdf9
+    DT_MOVEENT = 0x6ffffdfa
+    DT_MOVESZ = 0x6ffffdfb
+    DT_FEATURE_1 = 0x6ffffdfc
+    DT_POSFLAG_1 = 0x6ffffdfd
+    DT_SYMINSZ = 0x6ffffdfe
+    DT_SYMINENT = 0x6ffffdff
+    DT_GNU_HASH = 0x6ffffef5
+    DT_TLSDESC_PLT = 0x6ffffef6
+    DT_TLSDESC_GOT = 0x6ffffef7
+    DT_GNU_CONFLICT = 0x6ffffef8
+    DT_GNU_LIBLIST = 0x6ffffef9
+    DT_CONFIG = 0x6ffffefa
+    DT_DEPAUDIT = 0x6ffffefb
+    DT_AUDIT = 0x6ffffefc
+    DT_SYMINFO = 0x6ffffeff
+    DT_VERSYM = 0x6ffffff0
+    DT_RELACOUNT = 0x6ffffff9
+    DT_RELCOUNT = 0x6ffffffa
+    DT_FLAGS_1 = 0x6ffffffb
+    DT_VERDEF = 0x6ffffffc
+    DT_VERDEFNUM = 0x6ffffffd
+    DT_VERNEED = 0x6ffffffe
+    DT_VERNEEDNUM = 0x6fffffff
+    DT_AUXILIARY = 0x7ffffffd
+    DT_FILTER = 0x7fffffff
+
 class ElfStInfo:
     "ELF symbol binding and type.  Type of the ElfSym.st_info field."
     def __init__(self, arg0, arg1=None):
@@ -433,10 +514,8 @@ class {classname}({baseclass}):
                 code += '{}return {}({})\n'.format(
                     indent, baseclass.__name__, field_names)
 
-            print(code)
             exec(code, env)
             cls = env[classname]
-            print(cls)
             cls.size = struct.calcsize(layout)
             classes[(elfclass, elfdata)] = cls
     baseclass.variants = classes
@@ -478,7 +557,7 @@ _define_variants(ElfPhdr,
                  fields32=('p_type', 'p_offset', 'p_vaddr', 'p_paddr',
                            'p_filesz', 'p_memsz', 'p_flags', 'p_align'),
                  layout64='2I6Q',
-                 types=dict(p_flags=ElfPf))
+                 types=dict(p_type=ElfPt, p_flags=ElfPf))
 
 
 # Corresponds to Elf32_Shdr and Elf64_Shdr.
@@ -488,14 +567,25 @@ ElfShdr = collections.namedtuple('ElfShdr',
 _define_variants(ElfShdr,
                  layout32='10I',
                  layout64='2I4Q2I2Q',
-                 types=dict(sh_flags=ElfShf))
+                 types=dict(sh_type=ElfSht,
+                            sh_flags=ElfShf,
+                            sh_link=ElfShn))
+
+# Corresponds to Elf32_Dyn and Elf64_Dyn.  The nesting through the
+# d_un union is skipped, and d_ptr is missing (its representation in
+# Python would be identical to d_val).
+ElfDyn = collections.namedtuple('ElfDyn', 'd_tag d_val')
+_define_variants(ElfDyn,
+                 layout32='2i',
+                 layout64='2q',
+                 types=dict(d_tag=ElfDt))
 
 # Corresponds to Elf32_Sym and Elf64_Sym.
 ElfSym = collections.namedtuple('ElfSym',
     'st_name st_info st_other st_shndx st_value st_size')
 _define_variants(ElfSym,
                  layout32='3I2BH',
-                 layout64='Q2BH2Q',
+                 layout64='I2BH2Q',
                  fields32=('st_name', 'st_value', 'st_size', 'st_info',
                            'st_other', 'st_shndx'),
                  types=dict(st_shndx=ElfShn,
@@ -513,6 +603,24 @@ _define_variants(ElfRela,
                  layout32='3I',
                  layout64='3Q')
 
+class ElfStringTable:
+    "ELF string table."
+    def __init__(self, blob):
+        """Create a new string table backed by the data in the blob.
+
+        blob: a memoryview-like object
+
+        """
+        self.blob = blob
+
+    def get(self, index) -> bytes:
+        blob = self.blob
+        endindex = index
+        while True:
+            if blob[endindex] == 0:
+                return bytes(blob[index:endindex])
+            endindex += 1
+
 class ElfImage:
     "ELF image parser."
     def __init__(self, image):
@@ -526,22 +634,153 @@ class ElfImage:
         ident = self.read(ElfIdent, 0)
         classdata = (ident.ei_class, ident.ei_data)
         # Set self.Ehdr etc. to the subtypes with the right parsers.
-        for typ in (ElfEhdr, ElfPhdr, ElfShdr, ElfSym, ElfRel, ElfRela):
+        for typ in (ElfEhdr, ElfPhdr, ElfShdr, ElfDyn, ElfSym, ElfRel,
+                    ElfRela):
             setattr(self, typ.__name__[3:], typ.variants.get(classdata, None))
 
         if self.Ehdr is not None:
             self.ehdr = self.read(self.Ehdr, 0)
+            self._shdr_num = self._compute_shdr_num()
         else:
             self.ehdr = None
+            self._shdr_num = 0
+
+        self._section = {}
+        self._stringtab = {}
+
+    def _compute_shdr_num(self) -> int:
+        shnum = self.ehdr.e_shnum
+        if shnum == 0:
+            if self.ehdr.e_shoff == 0 or self.ehdr.e_shentsize == 0:
+                # No section headers.
+                return 0
+            # Otherwise the extension mechanism is used (which may be
+            # needed because e_shnum is just 16 bits).
+            return self.read(self.Shdr, self.ehdr.e_shoff).sh_size
+        return shnum
 
     def read(self, typ, offset):
         return typ.unpack(self.image[offset: offset + typ.size])
 
+    def phdrs(self) -> ElfPhdr:
+        "Generator iterating over the program headers."
+        if self.ehdr is None:
+            return
+        size = self.ehdr.e_phentsize
+        if size != self.Phdr.size:
+            raise ValueError('Unexpected Phdr size in ELF header: {} != {}'
+                             .format(size, self.ElfPhdr.size))
+
+        offset = self.ehdr.e_phoff
+        for _ in range(self.ehdr.e_phnum):
+            yield self.read(self.Phdr, offset)
+            offset += size
+
+    def shdrs(self) -> ElfShdr:
+        if self._shdr_num == 0:
+            return
+
+        size = self.ehdr.e_shentsize
+        if size != self.Shdr.size:
+            raise ValueError('Unexpected Shdr size in ELF header: {} != {}'
+                             .format(size, self.ElfShdr.size))
+
+        offset = self.ehdr.e_shoff
+        for _ in range(self._shdr_num):
+            yield self.read(self.Shdr, offset)
+            offset += size
+
+    def dynamic(self) -> ElfDyn:
+        "Generator iterating over the dynamic segment."
+        for phdr in self.phdrs():
+            if phdr.p_type == ElfPt.PT_DYNAMIC:
+                # Pick the first dynamic segment, like the loader.
+                if phdr.p_filesz == 0:
+                    # Probably separated debuginfo.
+                    return
+                offset = phdr.p_offset
+                end = offset + phdr.p_memsz
+                size = self.Dyn.size
+                while True:
+                    next_offset = offset + size
+                    if next_offset > end:
+                        raise ValueError(
+                            'Dynamic segment size {} is not a multiple of ElfDyn size {}'.format(
+                                phdr.p_memsz, size))
+                    yield self.read(self.Dyn, offset)
+                    if next_offset == end:
+                        return
+                    offset = next_offset
+
+    def syms(self, shdr: ElfShdr) -> ElfSym:
+        "A generator iterating over a symbol table."
+        assert shdr.sh_type == ElfSht.SHT_SYMTAB
+        size = shdr.sh_entsize
+        if size != self.Sym.size:
+            raise ValueError('Invalid symbol table entry size {}'.format(size))
+        offset = shdr.sh_offset
+        end = shdr.sh_offset + shdr.sh_size
+        while offset < end:
+            yield self.read(self.Sym, offset)
+            offset += size
+        if offset != end:
+            raise ValueError('Symbol table is not a multiple of entry size')
+
+    def lookup_string(self, strtab_index: int, strtab_offset: int) -> bytes:
+        try:
+            strtab = self._stringtab[strtab_index]
+        except KeyError:
+            strtab = self._find_stringtab(strtab_index)
+        return strtab.get(strtab_offset)
+
+    def symbol_name(self, section: ElfShdr, sym: ElfSym) -> bytes:
+        return self.lookup_string(section.sh_link, sym.st_name)
+
+    def symbol_address(self, sym: ElfSym) -> int:
+        if sym.st_shndx == ElfShn.SHN_ABS:
+            return sym.st_value
+        if sym.st_shndx in ElfShn:
+            raise ValueError('Symbol address in section {} unknown'.format(
+                sym.st_shndx))
+        try:
+            shdr = self._section[sym.st_shndx.value]
+        except KeyError:
+            shdr = self.find_section(sym.st_shndx)
+        return shdr.sh_addr + sym.st_value
+
+    def find_section(self, shndx: ElfShn) -> ElfShdr:
+        try:
+            return self._section[shndx]
+        except KeyError:
+            pass
+        if shndx in ElfShn:
+            raise ValueError('Reserved section index {}'.format(shndx))
+        idx = shndx.value
+        if idx < 0 or idx > self._shdr_num:
+            raise ValueError('Section index {} out of range [0, {})'.format(
+                idx, self._shdr_num))
+        shdr = self.read(
+            self.Shdr, self.ehdr.e_shoff + idx * self.Shdr.size)
+        self._section[shndx] = shdr
+        return shdr
+
+    def _find_stringtab(self, sh_link: int) -> ElfStringTable:
+        if sh_link < 0 or sh_link >= self._shdr_num:
+            raise ValueError('Section index {} out of range [0, {})'.format(
+                sh_link, self._shdr_num))
+        shdr = self.read(
+            self.Shdr, self.ehdr.e_shoff + sh_link * self.Shdr.size)
+        if shdr.sh_type != ElfSht.SHT_STRTAB:
+            raise ValueError(
+                'Section {} is not a string table: {}'.format(
+                    sh_link, shdr.sh_type))
+        strtab = ElfStringTable(
+            self.image[shdr.sh_offset:shdr.sh_offset + shdr.sh_size])
+        # This could retrain essentially arbitrary amounts of data,
+        # but caching string tables seems important for performance.
+        self._stringtab[sh_link] = strtab
+        return strtab
+
+
 # Only Elf names are exported.
 __all__ = [name for name in dir() if name.startswith('Elf')]
-
-with open('/usr/bin/ld.so', 'rb') as inp:
-    img = ElfImage(memoryview(inp.read()))
-print(img.ehdr)
-print(img.read(img.Shdr, img.ehdr.e_shoff))
-print(img.read(img.Shdr, img.ehdr.e_shoff + img.ehdr.e_shentsize))

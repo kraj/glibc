@@ -543,6 +543,43 @@ endif
 endif
 endif
 
+tests-special += $(objpfx)tst-relro-ldso.out $(objpfx)tst-relro-libc.out
+$(objpfx)tst-relro-ldso.out: check-relro-symbols.py $(..)/scripts/glibcelf.py \
+  $(objpfx)ld.so
+	$(PYTHON) check-relro-symbols.py $(objpfx)ld.so \
+	  _rtld_global_ro \
+	  > $@ 2>&1; $(evaluate-test)
+ifdef have-GLIBC_2.0
+# Symbols for the old, pre-2.1 vtables.
+tst-relro-libc-old-jumps = \
+  _IO_old_cookie_jumps \
+  _IO_old_file_jumps \
+  _IO_old_proc_jumps \
+  # tst-relro-libc-old-jumps
+endif
+$(objpfx)tst-relro-libc.out: check-relro-symbols.py $(..)/scripts/glibcelf.py \
+  $(common-objpfx)libc.so
+	$(PYTHON) check-relro-symbols.py $(common-objpfx)libc.so \
+	    _IO_cookie_jumps \
+	    _IO_file_jumps \
+	    _IO_file_jumps_maybe_mmap \
+	    _IO_file_jumps_mmap \
+	    _IO_helper_jumps \
+	    _IO_mem_jumps \
+	    _IO_obstack_jumps \
+	    _IO_proc_jumps \
+	    _IO_str_chk_jumps \
+	    _IO_str_jumps \
+	    _IO_strn_jumps \
+	    _IO_wfile_jumps \
+	    _IO_wfile_jumps_maybe_mmap \
+	    _IO_wfile_jumps_mmap \
+	    _IO_wmem_jumps \
+	    _IO_wstr_jumps \
+	    _IO_wstrn_jumps \
+	    $(tst-relro-libc-old-jumps) \
+	  > $@ 2>&1; $(evaluate-test)
+
 ifeq ($(run-built-tests),yes)
 tests-special += $(objpfx)tst-valgrind-smoke.out
 endif
