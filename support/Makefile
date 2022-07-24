@@ -240,9 +240,9 @@ libsupport-inhibit-o += .o
 endif
 
 CFLAGS-support_paths.c = \
-		-DSRCDIR_PATH=\"`cd .. ; pwd`\" \
-		-DOBJDIR_PATH=\"`cd $(objpfx)/..; pwd`\" \
-		-DOBJDIR_ELF_LDSO_PATH=\"`cd $(objpfx)/..; pwd`/elf/$(rtld-installed-name)\" \
+		-DSRCDIR_PATH=\"$(oe_srcdir)\" \
+		-DOBJDIR_PATH=\"$(libdir)/glibc-tests/ptest/tests/glibc-ptest\" \
+		-DOBJDIR_ELF_LDSO_PATH=\"$(slibdir)/$(rtld-installed-name)\" \
 		-DINSTDIR_PATH=\"$(prefix)\" \
 		-DLIBDIR_PATH=\"$(libdir)\" \
 		-DBINDIR_PATH=\"$(bindir)\" \
