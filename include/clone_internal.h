@@ -11,6 +11,11 @@
    Different than kernel, the implementation also returns EINVAL for an
    invalid NULL __CL_ARGS or __FUNC (similar to __clone).
 
+   The stack is not aligned prior the syscall, different than exported
+   __clone.  Adjusting the stack on child is not async-signal safe and since
+   it is used only internally the caller is responsible for proper stack
+   alignment.
+
    This function is only implemented if the ABI defines HAVE_CLONE3_WRAPPER.
 */
 extern int __clone3 (struct clone_args *__cl_args, size_t __size,
