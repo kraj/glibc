@@ -401,10 +401,25 @@ do_test (void)
 		result = 1;
 	      }
 
-	    if (STRNCMP (dest + nchars - outer, adr + middle, outer) <= 0)
+	    /* Also check for size larger than the string.  */
+	    if (STRNCMP (adr + middle, dest + nchars - outer, outer + 99) >= 0)
 	      {
 		printf ("%s 2 flunked for outer = %zu, middle = %zu, full\n",
+			STRINGIFY (STRNCMP), outer + 99, middle);
+		result = 1;
+	      }
+
+	    if (STRNCMP (dest + nchars - outer, adr + middle, outer) <= 0)
+	      {
+		printf ("%s 3 flunked for outer = %zu, middle = %zu, full\n",
 			STRINGIFY (STRNCMP), outer, middle);
+		result = 1;
+	      }
+
+	    if (STRNCMP (dest + nchars - outer, adr + middle, outer + 99) <= 0)
+	      {
+		printf ("%s 4 flunked for outer = %zu, middle = %zu, full\n",
+			STRINGIFY (STRNCMP), outer + 99, middle);
 		result = 1;
 	      }
 	  }

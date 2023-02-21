@@ -73,7 +73,11 @@ strncmp_unaligned_loop (const op_t *x1, const op_t *x2, op_t w1, uintptr_t ofs,
   uintptr_t sh_2 = sizeof(op_t) * CHAR_BIT - sh_1;
 
   op_t w2 = MERGE (w2a, sh_1, (op_t)-1, sh_2);
-  if (!has_zero (w2) && n > (sizeof (op_t) - ofs))
+
+  /* Reading ahead is wrong if w1 and w2 already differs.  */
+  op_t w1a = MERGE (w1, 0, (op_t)-1, sh_2);
+
+  if (!has_zero (w2) && w2 == w1a && n >= (sizeof (op_t) - ofs))
     {
       op_t w2b;
 
@@ -90,6 +94,13 @@ strncmp_unaligned_loop (const op_t *x1, const op_t *x2, op_t w1, uintptr_t ofs,
 	  if (has_zero (w2b) || n <= (sizeof (op_t) - ofs))
 	    break;
 	  w1 = *x1++;
+
+	  /* Reading ahead is wrong if w1 and w2 already differs.  */
+	  w2 = MERGE (w2b, sh_1, (op_t)-1, sh_2);
+	  w1a = MERGE (w1, 0, (op_t)-1, sh_2);
+	  if (w2 != w1a)
+	    return final_cmp (w1a, w2, n);
+
 	  w2a = w2b;
 	}
 
