@@ -175,9 +175,9 @@ elf_machine_rela (struct link_map *map, struct r_scope_elem *scope[],
   ElfW(Addr) *const reloc_addr = reloc_addr_arg;
   const unsigned int r_type = ELFW (R_TYPE) (reloc->r_info);
 
-  if (__builtin_expect (r_type == R_AARCH64_RELATIVE, 0))
+  if (__glibc_unlikely (r_type == R_AARCH64_RELATIVE))
       *reloc_addr = map->l_addr + reloc->r_addend;
-  else if (__builtin_expect (r_type == R_AARCH64_NONE, 0))
+  else if (__glibc_unlikely (r_type == R_AARCH64_NONE))
       return;
   else
     {
@@ -312,7 +312,7 @@ elf_machine_lazy_rel (struct link_map *map, struct r_scope_elem *scope[],
   ElfW(Addr) *const reloc_addr = (void *) (l_addr + reloc->r_offset);
   const unsigned int r_type = ELFW (R_TYPE) (reloc->r_info);
   /* Check for unexpected PLT reloc type.  */
-  if (__builtin_expect (r_type == R_AARCH64_JUMP_SLOT, 1))
+  if (__glibc_likely (r_type == R_AARCH64_JUMP_SLOT))
     {
       if (__glibc_unlikely (map->l_info[DT_AARCH64 (VARIANT_PCS)] != NULL))
 	{
@@ -342,7 +342,7 @@ elf_machine_lazy_rel (struct link_map *map, struct r_scope_elem *scope[],
       else
 	*reloc_addr = map->l_mach.plt;
     }
-  else if (__builtin_expect (r_type == R_AARCH64_TLSDESC, 1))
+  else if (__glibc_likely (r_type == R_AARCH64_TLSDESC))
     {
       const Elf_Symndx symndx = ELFW (R_SYM) (reloc->r_info);
       const ElfW (Sym) *symtab = (const void *)D_PTR (map, l_info[DT_SYMTAB]);
