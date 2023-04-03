@@ -25,6 +25,7 @@ long int
 __internal_syscall_cancel (__syscall_arg_t a1, __syscall_arg_t a2,
 			   __syscall_arg_t a3, __syscall_arg_t a4,
 			   __syscall_arg_t a5, __syscall_arg_t a6,
+			   __SYSCALL_CANCEL7_ARG_DEF
 			   __syscall_arg_t nr)
 {
   long int result;
@@ -36,7 +37,8 @@ __internal_syscall_cancel (__syscall_arg_t a1, __syscall_arg_t a2,
   int ch = atomic_load_relaxed (&pd->cancelhandling);
   if (SINGLE_THREAD_P || !cancel_enabled (ch) || cancel_exiting (ch))
     {
-      result = INTERNAL_SYSCALL_NCS_CALL (nr, a1, a2, a3, a4, a5, a6);
+      result = INTERNAL_SYSCALL_NCS_CALL (nr, a1, a2, a3, a4, a5, a6
+					  __SYSCALL_CANCEL7_ARCH_ARG7);
       if (INTERNAL_SYSCALL_ERROR_P (result))
 	return -INTERNAL_SYSCALL_ERRNO (result);
       return result;
@@ -45,7 +47,7 @@ __internal_syscall_cancel (__syscall_arg_t a1, __syscall_arg_t a2,
   /* Call the arch-specific entry points that contains the globals markers
      to be checked by SIGCANCEL handler.  */
   result = __syscall_cancel_arch (&pd->cancelhandling, nr, a1, a2, a3, a4, a5,
-			          a6);
+			          a6 __SYSCALL_CANCEL7_ARCH_ARG7);
 
   /* If the cancellable syscall was interrupted by SIGCANCEL and it has not
      side-effect, cancel the thread if cancellation is enabled.  */
@@ -63,9 +65,10 @@ long int
 __syscall_cancel (__syscall_arg_t a1, __syscall_arg_t a2,
 		  __syscall_arg_t a3, __syscall_arg_t a4,
 		  __syscall_arg_t a5, __syscall_arg_t a6,
-		  __syscall_arg_t nr)
+		  __SYSCALL_CANCEL7_ARG_DEF __syscall_arg_t nr)
 {
-  int r = __internal_syscall_cancel (a1, a2, a3, a4, a5, a6, nr);
+  int r = __internal_syscall_cancel (a1, a2, a3, a4, a5, a6,
+				     __SYSCALL_CANCEL7_ARG nr);
   return __glibc_unlikely (INTERNAL_SYSCALL_ERROR_P (r))
 	 ? SYSCALL_ERROR_LABEL (INTERNAL_SYSCALL_ERRNO (r))
 	 : r;

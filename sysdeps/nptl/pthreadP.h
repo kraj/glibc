@@ -276,8 +276,8 @@ __do_cancel (void *result)
 
 extern long int __syscall_cancel_arch (volatile int *, __syscall_arg_t nr,
      __syscall_arg_t arg1, __syscall_arg_t arg2, __syscall_arg_t arg3,
-     __syscall_arg_t arg4, __syscall_arg_t arg5, __syscall_arg_t arg6)
-  attribute_hidden;
+     __syscall_arg_t arg4, __syscall_arg_t arg5, __syscall_arg_t arg6
+     __SYSCALL_CANCEL7_ARCH_ARG_DEF) attribute_hidden;
 
 extern _Noreturn void __syscall_do_cancel (void) attribute_hidden;
 

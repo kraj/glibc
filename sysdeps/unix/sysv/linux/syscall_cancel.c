@@ -52,7 +52,8 @@ long int
 __syscall_cancel_arch (volatile int *ch, __syscall_arg_t nr,
 		       __syscall_arg_t a1, __syscall_arg_t a2,
 		       __syscall_arg_t a3, __syscall_arg_t a4,
-		       __syscall_arg_t a5, __syscall_arg_t a6)
+		       __syscall_arg_t a5, __syscall_arg_t a6
+		       __SYSCALL_CANCEL7_ARG_DEF)
 {
 #define ADD_LABEL(__label)		\
   asm volatile (			\
@@ -63,7 +64,8 @@ __syscall_cancel_arch (volatile int *ch, __syscall_arg_t nr,
   if (__glibc_unlikely (*ch & CANCELED_BITMASK))
     __syscall_do_cancel();
 
-  long int result = INTERNAL_SYSCALL_NCS_CALL (nr, a1, a2, a3, a4, a5, a6);
+  long int result = INTERNAL_SYSCALL_NCS_CALL (nr, a1, a2, a3, a4, a5, a6
+					       __SYSCALL_CANCEL7_ARG7);
   ADD_LABEL ("__syscall_cancel_arch_end");
   if (__glibc_unlikely (INTERNAL_SYSCALL_ERROR_P (result)))
     return -INTERNAL_SYSCALL_ERRNO (result);
