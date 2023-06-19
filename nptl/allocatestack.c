@@ -124,28 +124,7 @@ get_cached_stack (size_t *sizep, void **memp)
   *sizep = result->stackblock_size;
   *memp = result->stackblock;
 
-  /* Cancellation handling is back to the default.  */
-  result->cancelhandling = 0;
-  result->cleanup = NULL;
-  result->setup_failed = 0;
-
-  /* No pending event.  */
-  result->nextevent = NULL;
-
-  result->exiting = false;
-  __libc_lock_init (result->exit_lock);
-  memset (&result->tls_state, 0, sizeof result->tls_state);
-
-  result->getrandom_buf = NULL;
-
-  /* Clear the DTV.  */
-  dtv_t *dtv = GET_DTV (TLS_TPADJ (result));
-  for (size_t cnt = 0; cnt < dtv[-1].counter; ++cnt)
-    free (dtv[1 + cnt].pointer.to_free);
-  memset (dtv, '\0', (dtv[-1].counter + 1) * sizeof (dtv_t));
-
-  /* Re-initialize the TLS.  */
-  _dl_allocate_tls_init (TLS_TPADJ (result), false);
+  __pthread_init_stack (result);
 
   return result;
 }

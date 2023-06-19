@@ -414,6 +414,12 @@ struct pthread
   /* Used on strsignal.  */
   struct tls_internal_t tls_state;
 
+  /* POSIX per-process timer.  */
+  int timerid;
+
+  /* Used to track SIGEV_THREAD helper thread expiration timers.  */
+  int timer_overrun;
+
   /* getrandom vDSO per-thread opaque state.  */
   void *getrandom_buf;
 

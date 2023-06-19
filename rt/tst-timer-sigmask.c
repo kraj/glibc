@@ -38,18 +38,21 @@ thread_handler (union sigval sv)
     printf ("%s: blocked signal mask = { ", __func__);
   for (int sig = 1; sig < NSIG; sig++)
     {
-      /* POSIX timers threads created to handle SIGEV_THREAD block all
-	 signals except SIGKILL, SIGSTOP and glibc internals ones.  */
+      /* While the notification function runs, the SIGEV_THREAD helper blocks
+	 all signals except SIGKILL, SIGSTOP, SIGSETXID, and SIGCANCEL (the
+	 last, which aliases SIGTIMER, is unblocked around the notification
+	 function so that it can be cancelled).  */
       if (sigismember (&ss, sig))
-	{
-	  TEST_VERIFY (sig != SIGKILL && sig != SIGSTOP);
-	  TEST_VERIFY (!is_internal_signal (sig));
-	}
+	TEST_VERIFY (sig != SIGKILL && sig != SIGSTOP && sig != SIGSETXID
+		     && sig != SIGCANCEL);
       if (test_verbose && sigismember (&ss, sig))
 	printf ("%d, ", sig);
     }
   if (test_verbose > 0)
     printf ("}\n");
+
+  /* SIGCANCEL must be unblocked here so pthread_cancel is honored.  */
+  TEST_VERIFY (!sigismember (&ss, SIGCANCEL));
 
   xpthread_barrier_wait (&barrier);
 }

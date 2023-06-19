@@ -667,6 +667,28 @@ int __pthread_attr_extension (struct pthread_attr *attr) attribute_hidden
 # define PTHREAD_STATIC_FN_REQUIRE(name) __asm (".globl " #name);
 #endif
 
+struct pthread_reset_cleanup_args_t
+{
+  /* The thread's original (start_thread) cancellation landing pad.  It is
+     restored into self->cleanup_jmp_buf so the reused helper thread is left
+     in a ristine state after the notification function returns, calls
+     pthread_exit, or is cancelled.  */
+  struct pthread_unwind_buf *cleanup_jmp_buf;
+};
+
+/* Reset the thread's internal state to a point as close to the initial call
+   to pthread_create.   It is designed to be used as the argument to
+   pthread_cleanup_push along with a struct pthread_reset_cleanup_args_t
+   pointer in args with a valid cleanup_jmp_buf used to reset the threads own
+   copy.  */
+void __pthread_reset_state (void *arg) attribute_hidden;
+
+/* Install the process-wide SIGCANCEL handler if it is not already installed.
+   Used lazily by pthread_cancel and eagerly by the POSIX timer SIGEV_THREAD
+   support.  */
+void __pthread_install_sigcancel_handler (void) attribute_hidden;
+
+
 /* Make a deep copy of the attribute *SOURCE in *TARGET.  *TARGET is
    not assumed to have been initialized.  Returns 0 on success, or a
    positive error code otherwise.  */

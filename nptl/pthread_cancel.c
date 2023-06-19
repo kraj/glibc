@@ -15,45 +15,11 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#include <errno.h>
-#include <signal.h>
-#include <stdlib.h>
 #include "pthreadP.h"
-#include <atomic.h>
-#include <sysdep.h>
-#include <unistd.h>
 #include <unwind-link.h>
-#include <cancellation-pc-check.h>
 #include <stdio.h>
 #include <gnu/lib-names.h>
-#include <sys/single_threaded.h>
-
-/* For asynchronous cancellation we use a signal.  */
-static void
-sigcancel_handler (int sig, siginfo_t *si, void *ctx)
-{
-  /* Safety check.  It would be possible to call this function for
-     other signals and send a signal from another process.  This is not
-     correct and might even be a security problem.  Try to catch as
-     many incorrect invocations as possible.  */
-  if (sig != SIGCANCEL
-      || si->si_pid != __getpid()
-      || si->si_code != SI_TKILL)
-    return;
-
-  /* Check if asynchronous cancellation mode is set and cancellation is not
-     already in progress, or if interrupted instruction pointer falls within
-     the cancellable syscall bridge.
-     For interruptable syscalls with external side-effects (i.e. partial
-     reads), the kernel will set the IP to after __syscall_cancel_arch_end,
-     thus disabling the cancellation and allowing the process to handle such
-     conditions.  */
-  struct pthread *self = THREAD_SELF;
-  int oldval = atomic_load_relaxed (&self->cancelhandling);
-  if (cancel_enabled_and_canceled_and_async (oldval)
-      || cancellation_pc_check (ctx))
-    __syscall_do_cancel ();
-}
+#include <shlib-compat.h>
 
 int
 __pthread_cancel (pthread_t th)
@@ -67,20 +33,7 @@ __pthread_cancel (pthread_t th)
        determined.  */
     return 0;
 
-  static int init_sigcancel = 0;
-  if (atomic_load_relaxed (&init_sigcancel) == 0)
-    {
-      struct sigaction sa;
-      sa.sa_sigaction = sigcancel_handler;
-      /* The signal handle should be non-interruptible to avoid the risk of
-	 spurious EINTR caused by SIGCANCEL sent to process or if
-	 pthread_cancel() is called while cancellation is disabled in the
-	 target thread.  */
-      sa.sa_flags = SA_SIGINFO | SA_RESTART;
-      __sigemptyset (&sa.sa_mask);
-      __libc_sigaction (SIGCANCEL, &sa, NULL);
-      atomic_store_relaxed (&init_sigcancel, 1);
-    }
+  __pthread_install_sigcancel_handler ();
 
 #ifdef SHARED
   /* Trigger an error if libgcc_s cannot be loaded.  */

@@ -93,6 +93,7 @@ routines = \
   pthread_barrierattr_init \
   pthread_barrierattr_setpshared \
   pthread_cancel \
+  pthread_cancel_signal \
   pthread_cleanup_upto \
   pthread_clockjoin \
   pthread_cond_broadcast \

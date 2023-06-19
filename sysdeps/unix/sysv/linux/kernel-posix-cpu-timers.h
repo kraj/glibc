@@ -20,6 +20,8 @@
 #define CPUCLOCK_SCHED		2
 #define CPUCLOCK_MAX		3
 
+#include <sys/types.h>
+
 static inline clockid_t
 make_process_cpuclock (unsigned int pid, clockid_t clock)
 {

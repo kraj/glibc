@@ -24,6 +24,12 @@
 int
 ___timer_getoverrun (timer_t timerid)
 {
+  /* For SIGEV_THREAD the notification thread keeps SIGTIMER unblocked while
+     running, so expirations delivered during a notification are ignored by
+     the kernel and counted in userspace instead.  */
+  if (timer_is_sigev_thread (timerid))
+    return atomic_load_relaxed (&timerid_to_pthread (timerid)->timer_overrun);
+
   kernel_timer_t ktimerid = timerid_to_kernel_timer (timerid);
   return INLINE_SYSCALL_CALL (timer_getoverrun, ktimerid);
 }

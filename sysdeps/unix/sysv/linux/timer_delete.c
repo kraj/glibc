@@ -15,10 +15,8 @@
    License along with the GNU C Library; see the file COPYING.LIB.  If
    not, see <https://www.gnu.org/licenses/>.  */
 
-#include <errno.h>
-#include <stdlib.h>
+#include <unistd.h>
 #include <time.h>
-#include <sysdep.h>
 #include "kernel-posix-timers.h"
 #include <pthreadP.h>
 #include <shlib-compat.h>
@@ -26,42 +24,33 @@
 int
 ___timer_delete (timer_t timerid)
 {
-  kernel_timer_t ktimerid = timerid_to_kernel_timer (timerid);
-  int res = INLINE_SYSCALL_CALL (timer_delete, ktimerid);
-
-  if (res == 0)
+  if (timer_is_sigev_thread (timerid))
     {
-      if (timer_is_sigev_thread (timerid))
-	{
-	  struct timer *kt = timerid_to_timer (timerid);
+      struct pthread *th = timerid_to_pthread (timerid);
+      kernel_timer_t ktimerid = timerid_to_kernel_timer (timerid);
 
-	  /* Remove the timer from the list.  */
-	  __pthread_mutex_lock (&__timer_active_sigev_thread_lock);
-	  if (__timer_active_sigev_thread == kt)
-	    __timer_active_sigev_thread = kt->next;
-	  else
-	    {
-	      struct timer *prevp = __timer_active_sigev_thread;
-	      while (prevp->next != NULL)
-		if (prevp->next == kt)
-		  {
-		    prevp->next = kt->next;
-		    break;
-		  }
-		else
-		  prevp = prevp->next;
-	    }
-	  __pthread_mutex_unlock (&__timer_active_sigev_thread_lock);
+      /* Delete the kernel timer first so no new events are generated
+	 after this function returns.  */
+      int ret = INLINE_SYSCALL_CALL (timer_delete, ktimerid);
+      if (ret != 0)
+	return ret;
 
-	  free (kt);
-	}
-
+      /* Signal the helper thread to exit its sigwaitinfo loop.  */
+      timerid_signal_delete (&th->timerid);
+      /* The helper threads leaves SIGTIMER/SIGCANCEL unblocked while running
+	 the notification function, and a tgkill would  arrive as SI_TKILL
+	 and could be mistaken for a cancellation by the SIGCANCEL handler.
+	  With SI_QUEUE the handler ignores it (only SI_TKILL cancels), while
+	 a helper blocked in sigwaitinfo still wakes up, observes the MSB set
+	 above (si_code != SI_TIMER), and exits.  */
+      siginfo_t info = { 0 };
+      info.si_signo = SIGTIMER;
+      info.si_code = SI_QUEUE;
+      INTERNAL_SYSCALL_CALL (rt_tgsigqueueinfo, __getpid (), th->tid,
+			     SIGTIMER, &info);
       return 0;
     }
-
-  /* The kernel timer is not known or something else bad happened.
-     Return the error.  */
-  return -1;
+  return INLINE_SYSCALL_CALL (timer_delete, timerid);
 }
 versioned_symbol (libc, ___timer_delete, timer_delete, GLIBC_2_34);
 libc_hidden_ver (___timer_delete, __timer_delete)
