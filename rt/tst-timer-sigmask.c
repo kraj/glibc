@@ -30,28 +30,42 @@
 static pthread_barrier_t barrier;
 
 static void
+__attribute_used__
+cl (void *arg)
+{
+  xpthread_barrier_wait (&barrier);
+}
+
+static void
 thread_handler (union sigval sv)
 {
-  sigset_t ss;
-  sigprocmask (SIG_BLOCK, NULL, &ss);
-  if (test_verbose > 0)
-    printf ("%s: blocked signal mask = { ", __func__);
-  for (int sig = 1; sig < NSIG; sig++)
-    {
-      /* POSIX timers threads created to handle SIGEV_THREAD block all
-	 signals except SIGKILL, SIGSTOP and glibc internals ones.  */
-      if (sigismember (&ss, sig))
-	{
-	  TEST_VERIFY (sig != SIGKILL && sig != SIGSTOP);
-	  TEST_VERIFY (!is_internal_signal (sig));
-	}
-      if (test_verbose && sigismember (&ss, sig))
-	printf ("%d, ", sig);
-    }
-  if (test_verbose > 0)
-    printf ("}\n");
+  /* POSIX timers threads created to handle SIGEV_THREAD block all
+     signals except SIGKILL, SIGSTOP, and SIGSETXID.  */
+  sigset_t expected_set = {
+    .__val = {[0 ...  __NSIG_WORDS-1 ] = -1 }
+  };
+  __sigdelset (&expected_set, SIGSETXID);
+  __sigdelset (&expected_set, SIGKILL);
+  __sigdelset (&expected_set, SIGSTOP);
 
-  xpthread_barrier_wait (&barrier);
+  sigset_t ss;
+  sigprocmask (SIG_SETMASK, NULL, &ss);
+
+  TEST_COMPARE_BLOB (&ss.__val, __NSIG_BYTES, &expected_set, __NSIG_BYTES);
+
+  /* Unblock some signals, the signal mask should be reset by the timer_create
+     helper thread.  */
+  {
+    sigset_t toset;
+    sigemptyset (&toset);
+    sigaddset (&toset, SIGHUP);
+    sigaddset (&toset, SIGILL);
+    sigprocmask (SIG_UNBLOCK, &toset, NULL);
+  }
+
+  pthread_cleanup_push (cl, NULL);
+  pthread_exit (NULL);
+  pthread_cleanup_pop (0);
 }
 
 static int
@@ -66,11 +80,12 @@ do_test (void)
 
   xpthread_barrier_init (&barrier, NULL, 2);
 
-  struct itimerspec trigger = { 0 };
-  trigger.it_value.tv_nsec = 1000000;
+  struct itimerspec trigger = { { 0, 1000000 }, { 0, 1000000 } };
   TEST_COMPARE (timer_settime (timerid, 0, &trigger, NULL), 0);
 
-  xpthread_barrier_wait (&barrier);
+  enum { TIMERS_TO_CHECK = 2 };
+  for (int i = 0; i < TIMERS_TO_CHECK; i++)
+    xpthread_barrier_wait (&barrier);
 
   return 0;
 }

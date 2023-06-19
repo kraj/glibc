@@ -408,6 +408,9 @@ struct pthread
   /* rseq area registered with the kernel.  */
   struct rseq rseq_area;
 
+  /* POSIX per-process timer.  */
+  int timerid;
+
   /* This member must be last.  */
   char end_padding[];
 

@@ -28,48 +28,64 @@
 #include <support/xthread.h>
 
 static pthread_barrier_t barrier;
-static pthread_t timer_thread;
+
+#define VALUE1_INITIAL 0
+static __thread unsigned int value1 = VALUE1_INITIAL;
+#define VALUE2_INITIAL 0xdeadbeef
+static __thread unsigned int value2 = VALUE2_INITIAL;
+
+static int cl_called = 0;
 
 static void
 cl (void *arg)
 {
-  xpthread_barrier_wait (&barrier);
+  cl_called++;
+  xpthread_barrier_wait (&barrier); /* 1 */
 }
 
 static void
 thread_handler (union sigval sv)
 {
-  timer_thread = pthread_self ();
+  /* Check if thread state is correctly reset after a pthread_exit.  */
+  TEST_COMPARE (value1, VALUE1_INITIAL);
+  TEST_COMPARE (value2, VALUE2_INITIAL);
 
-  xpthread_barrier_wait (&barrier);
+  value1 = VALUE2_INITIAL;
+  value2 = VALUE1_INITIAL;
+
+  xpthread_barrier_wait (&barrier);  /* 0 */
 
   pthread_cleanup_push (cl, NULL);
-  while (1)
-    clock_nanosleep (CLOCK_REALTIME, 0, &(struct timespec) { 1, 0 }, NULL);
+  pthread_exit (NULL);
   pthread_cleanup_pop (0);
 }
 
 static int
 do_test (void)
 {
-  struct sigevent sev = { 0 };
-  sev.sigev_notify = SIGEV_THREAD;
-  sev.sigev_notify_function = &thread_handler;
+  struct sigevent sev = {
+    .sigev_notify = SIGEV_THREAD,
+    .sigev_notify_function = &thread_handler,
+  };
 
   timer_t timerid;
   TEST_COMPARE (timer_create (CLOCK_REALTIME, &sev, &timerid), 0);
 
   xpthread_barrier_init (&barrier, NULL, 2);
 
-  struct itimerspec trigger = { 0 };
-  trigger.it_value.tv_nsec = 1000000;
+  struct itimerspec trigger = { { 0, 1000000 }, { 0, 1000000 } };
   TEST_COMPARE (timer_settime (timerid, 0, &trigger, NULL), 0);
 
-  xpthread_barrier_wait (&barrier);
+  enum { TIMERS_TO_CHECK = 4 };
+  for (int i = 0; i < TIMERS_TO_CHECK; i++)
+    {
+      /* Check the thread local values.  */
+      xpthread_barrier_wait (&barrier);  /* 0 */
 
-  xpthread_cancel (timer_thread);
+      xpthread_barrier_wait (&barrier);  /* 1 */
+    }
 
-  xpthread_barrier_wait (&barrier);
+  TEST_COMPARE (cl_called, TIMERS_TO_CHECK);
 
   return 0;
 }

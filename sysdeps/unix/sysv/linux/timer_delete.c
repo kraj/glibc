@@ -26,42 +26,18 @@
 int
 ___timer_delete (timer_t timerid)
 {
-  kernel_timer_t ktimerid = timerid_to_kernel_timer (timerid);
-  int res = INLINE_SYSCALL_CALL (timer_delete, ktimerid);
-
-  if (res == 0)
+  if (timer_is_sigev_thread (timerid))
     {
-      if (timer_is_sigev_thread (timerid))
-	{
-	  struct timer *kt = timerid_to_timer (timerid);
+      struct pthread *th = timerid_to_pthread (timerid);
 
-	  /* Remove the timer from the list.  */
-	  __pthread_mutex_lock (&__timer_active_sigev_thread_lock);
-	  if (__timer_active_sigev_thread == kt)
-	    __timer_active_sigev_thread = kt->next;
-	  else
-	    {
-	      struct timer *prevp = __timer_active_sigev_thread;
-	      while (prevp->next != NULL)
-		if (prevp->next == kt)
-		  {
-		    prevp->next = kt->next;
-		    break;
-		  }
-		else
-		  prevp = prevp->next;
-	    }
-	  __pthread_mutex_unlock (&__timer_active_sigev_thread_lock);
-
-	  free (kt);
-	}
-
+      /* The helper thread itself will be responsible to call the
+	 timer_delete syscall.  */
+      kernel_timer_t timerid = atomic_load_relaxed (&th->timerid);
+      atomic_store_relaxed (&th->timerid, timerid | INT_MIN);
+      __pthread_kill_internal ((pthread_t) th, SIGTIMER);
       return 0;
     }
-
-  /* The kernel timer is not known or something else bad happened.
-     Return the error.  */
-  return -1;
+  return INLINE_SYSCALL_CALL (timer_delete, timerid);
 }
 versioned_symbol (libc, ___timer_delete, timer_delete, GLIBC_2_34);
 libc_hidden_ver (___timer_delete, __timer_delete)

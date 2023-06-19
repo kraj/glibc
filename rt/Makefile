@@ -99,6 +99,7 @@ include ../Rules
 CFLAGS-aio_suspend.c += -fexceptions
 CFLAGS-mq_timedreceive.c += -fexceptions -fasynchronous-unwind-tables
 CFLAGS-mq_timedsend.c += -fexceptions -fasynchronous-unwind-tables
+CFLAGS-timer_create.c += -fexceptions -fasynchronous-unwind-tables
 
 LDFLAGS-rt.so = -Wl,--enable-new-dtags,-z,nodelete
 
