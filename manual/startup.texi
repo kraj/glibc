@@ -991,9 +991,6 @@ for this function is in @file{stdlib.h}.
 @deftypefun void abort (void)
 @standards{ISO, stdlib.h}
 @safety{@prelim{}@mtsafe{}@asunsafe{@asucorrupt{}}@acunsafe{@aculock{} @acucorrupt{}}}
-@c The implementation takes a recursive lock and attempts to support
-@c calls from signal handlers, but if we're in the middle of flushing or
-@c using streams, we may encounter them in inconsistent states.
 The @code{abort} function causes abnormal program termination.  This
 does not execute cleanup functions registered with @code{atexit} or
 @code{on_exit}.

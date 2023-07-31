@@ -17,11 +17,17 @@
    <https://www.gnu.org/licenses/>.  */
 
 #include <arch-fork.h>
+#include <libc-lock.h>
 #include <pthreadP.h>
 
 pid_t
 _Fork (void)
 {
+  /* The lock acquisition needs to be AS-safe to avoid deadlock if _Fork is
+     called from the signal handler that has interrupted fork itself.  */
+  internal_sigset_t set;
+  __abort_lock_lock (&set);
+
   pid_t pid = arch_fork (&THREAD_SELF->tid);
   if (pid == 0)
     {
@@ -44,6 +50,9 @@ _Fork (void)
       INTERNAL_SYSCALL_CALL (set_robust_list, &self->robust_head,
 			     sizeof (struct robust_list_head));
     }
+
+  __abort_lock_unlock (&set);
+
   return pid;
 }
 libc_hidden_def (_Fork)
