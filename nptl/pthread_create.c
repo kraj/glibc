@@ -402,7 +402,8 @@ start_thread (void *arg)
      the saved signal mask), so that is a false positive.  */
   DIAG_IGNORE_NEEDS_COMMENT (11, "-Wstringop-overflow=");
 #endif
-  not_first_call = setjmp ((struct __jmp_buf_tag *) unwind_buf.cancel_jmp_buf);
+  not_first_call = __sigsetjmp (
+    (struct __jmp_buf_tag *) unwind_buf.cancel_jmp_buf, 0);
   DIAG_POP_NEEDS_COMMENT;
 
   /* No previous handlers.  NB: This must be done after setjmp since the

@@ -44,11 +44,6 @@ extern int __sigsetjmp (struct __jmp_buf_tag __env[1], int __savemask) __THROWNL
    Return 0.  */
 extern int _setjmp (struct __jmp_buf_tag __env[1]) __THROWNL;
 
-/* Do not save the signal mask.  This is equivalent to the `_setjmp'
-   BSD function.  */
-#define setjmp(env)	_setjmp (env)
-
-
 /* Jump to the environment saved in ENV, making the
    `setjmp' call there return VAL, or 1 if VAL is 0.  */
 extern void longjmp (struct __jmp_buf_tag __env[1], int __val)

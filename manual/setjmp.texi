@@ -189,16 +189,10 @@ them @code{volatile}.
 @section Non-Local Exits and Signals
 
 In BSD Unix systems, @code{setjmp} and @code{longjmp} also save and
-restore the set of blocked signals; see @ref{Blocking Signals}.  However,
-the POSIX.1 standard requires @code{setjmp} and @code{longjmp} not to
-change the set of blocked signals, and provides an additional pair of
-functions (@code{sigsetjmp} and @code{siglongjmp}) to get the BSD
-behavior.
-
-The behavior of @code{setjmp} and @code{longjmp} in @theglibc{} is
-controlled by feature test macros; see @ref{Feature Test Macros}.  The
-default in @theglibc{} is the POSIX.1 behavior rather than the BSD
-behavior.
+restore the set of blocked signals; see @ref{Blocking Signals}, while
+on @w{System V} they will not.  POSIX does not specify the relation of
+@code{setjmp} and @code{longjmp} to signal mask.  The default in
+@theglibc{} is the BSD behavior.
 
 The facilities in this section are declared in the header file
 @file{setjmp.h}.
