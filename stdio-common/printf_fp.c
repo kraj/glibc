@@ -44,6 +44,7 @@
 #include <printf_buffer.h>
 #include <printf_buffer_to_file.h>
 #include <grouping_iterator.h>
+#include <scratch_buffer.h>
 
 #include <assert.h>
 
@@ -52,6 +53,15 @@
    An MP variable occupies a varying number of entries in its array.  We keep
    track of this number for efficiency reasons.  Otherwise we would always
    have to process the whole array.  */
+
+/* When _Float128 is enabled in the library and ABI-distinct from long
+   double, we need mp_limbs enough for any of them.  */
+#if __HAVE_DISTINCT_FLOAT128
+# define GREATER_MANT_DIG FLT128_MANT_DIG
+#else
+# define GREATER_MANT_DIG LDBL_MANT_DIG
+#endif
+
 #define MPN_VAR(name) mp_limb_t *name; mp_size_t name##size
 
 #define MPN_ASSIGN(dst,src)						      \
@@ -81,6 +91,17 @@ struct hack_digit_param
   MPN_VAR(scale);
   /* Temporary bignum value.  */
   MPN_VAR(tmp);
+
+  int is_neg;
+  /* "NaN" or "Inf" for the special cases.  */
+  const char *special;
+  /* We need to shift the contents of fp_input by this amount of bits.	*/
+  int to_shift;
+
+  /* We need just a few limbs for the input before shifting to the right
+     position.	*/
+  mp_limb_t fp_input[(GREATER_MANT_DIG + BITS_PER_MP_LIMB - 1)
+		     / BITS_PER_MP_LIMB];
 };
 
 static char
@@ -135,46 +156,14 @@ hack_digit (struct hack_digit_param *p)
    temporary buffer.  To prepare for that, THOUSANDS_SEP_LENGTH is the
    final length of the thousands separator.  */
 static void
-__printf_fp_buffer_1 (struct __printf_buffer *buf, locale_t loc,
-		      char thousands_sep, char decimal,
+__printf_fp_buffer_2 (struct hack_digit_param *p, struct __printf_buffer *buf,
+		      locale_t loc, char thousands_sep, char decimal,
 		      unsigned int thousands_sep_length,
 		      const struct printf_info *info,
 		      const void *const *args)
 {
-  /* The floating-point value to output.  */
-  union
-    {
-      double dbl;
-      long double ldbl;
-#if __HAVE_DISTINCT_FLOAT128
-      _Float128 f128;
-#endif
-    }
-  fpnum;
-
-  /* "NaN" or "Inf" for the special cases.  */
-  const char *special = NULL;
-
   /* Used to determine grouping rules.  */
   int lc_category = info->extra ? LC_MONETARY : LC_NUMERIC;
-
-  /* When _Float128 is enabled in the library and ABI-distinct from long
-     double, we need mp_limbs enough for any of them.  */
-#if __HAVE_DISTINCT_FLOAT128
-# define GREATER_MANT_DIG FLT128_MANT_DIG
-#else
-# define GREATER_MANT_DIG LDBL_MANT_DIG
-#endif
-  /* We need just a few limbs for the input before shifting to the right
-     position.	*/
-  mp_limb_t fp_input[(GREATER_MANT_DIG + BITS_PER_MP_LIMB - 1)
-		     / BITS_PER_MP_LIMB];
-  /* We need to shift the contents of fp_input by this amount of bits.	*/
-  int to_shift = 0;
-
-  struct hack_digit_param p;
-  /* Sign of float number.  */
-  int is_neg = 0;
 
   /* General helper (carry limb).  */
   mp_limb_t cy;
@@ -184,72 +173,27 @@ __printf_fp_buffer_1 (struct __printf_buffer *buf, locale_t loc,
   /* Flag whether wbuffer and buffer are malloc'ed or not.  */
   int buffer_malloced = 0;
 
-  p.expsign = 0;
+  p->expsign = 0;
 
-#define PRINTF_FP_FETCH(FLOAT, VAR, SUFFIX, MANT_DIG)			\
-  {									\
-    (VAR) = *(const FLOAT *) args[0];					\
-									\
-    /* Check for special values: not a number or infinity.  */		\
-    if (isnan (VAR))							\
-      {									\
-	is_neg = signbit (VAR);						\
-	if (isupper (info->spec))					\
-	  special = "NAN";						\
-	else								\
-	  special = "nan";						\
-      }									\
-    else if (isinf (VAR))						\
-      {									\
-	is_neg = signbit (VAR);						\
-	if (isupper (info->spec))					\
-	  special = "INF";						\
-	else								\
-	  special = "inf";						\
-      }									\
-    else								\
-      {									\
-	p.fracsize = __mpn_extract_##SUFFIX				\
-		     (fp_input, array_length (fp_input),		\
-		      &p.exponent, &is_neg, VAR);			\
-	to_shift = 1 + p.fracsize * BITS_PER_MP_LIMB - MANT_DIG;	\
-      }									\
-  }
-
-  /* Fetch the argument value.	*/
-#if __HAVE_DISTINCT_FLOAT128
-  if (info->is_binary128)
-    PRINTF_FP_FETCH (_Float128, fpnum.f128, float128, FLT128_MANT_DIG)
-  else
-#endif
-#ifndef __NO_LONG_DOUBLE_MATH
-  if (info->is_long_double && sizeof (long double) > sizeof (double))
-    PRINTF_FP_FETCH (long double, fpnum.ldbl, long_double, LDBL_MANT_DIG)
-  else
-#endif
-    PRINTF_FP_FETCH (double, fpnum.dbl, double, DBL_MANT_DIG)
-
-#undef PRINTF_FP_FETCH
-
-  if (special)
+  if (p->special)
     {
       int width = info->width;
 
-      if (is_neg || info->showsign || info->space)
+      if (p->is_neg || info->showsign || info->space)
 	--width;
       width -= 3;
 
       if (!info->left)
 	__printf_buffer_pad (buf, ' ', width);
 
-      if (is_neg)
+      if (p->is_neg)
 	__printf_buffer_putc (buf, '-');
       else if (info->showsign)
 	__printf_buffer_putc (buf, '+');
       else if (info->space)
 	__printf_buffer_putc (buf, ' ');
 
-      __printf_buffer_puts (buf, special);
+      __printf_buffer_puts (buf, p->special);
 
       if (info->left)
 	__printf_buffer_pad (buf, ' ', width);
@@ -257,27 +201,11 @@ __printf_fp_buffer_1 (struct __printf_buffer *buf, locale_t loc,
       return;
     }
 
-
-  /* We need three multiprecision variables.  Now that we have the p.exponent
-     of the number we can allocate the needed memory.  It would be more
-     efficient to use variables of the fixed maximum size but because this
-     would be really big it could lead to memory problems.  */
-  {
-    mp_size_t bignum_size = ((abs (p.exponent) + BITS_PER_MP_LIMB - 1)
-			     / BITS_PER_MP_LIMB
-			     + (GREATER_MANT_DIG / BITS_PER_MP_LIMB > 2
-				? 8 : 4))
-			    * sizeof (mp_limb_t);
-    p.frac = (mp_limb_t *) alloca (bignum_size);
-    p.tmp = (mp_limb_t *) alloca (bignum_size);
-    p.scale = (mp_limb_t *) alloca (bignum_size);
-  }
-
   /* We now have to distinguish between numbers with positive and negative
      exponents because the method used for the one is not applicable/efficient
      for the other.  */
-  p.scalesize = 0;
-  if (p.exponent > 2)
+  p->scalesize = 0;
+  if (p->exponent > 2)
     {
       /* |FP| >= 8.0.  */
       int scaleexpo = 0;
@@ -294,23 +222,23 @@ __printf_fp_buffer_1 (struct __printf_buffer *buf, locale_t loc,
       const struct mp_power *powers = &_fpioconst_pow10[explog + 1];
       int cnt_h, cnt_l, i;
 
-      if ((p.exponent + to_shift) % BITS_PER_MP_LIMB == 0)
+      if ((p->exponent + p->to_shift) % BITS_PER_MP_LIMB == 0)
 	{
-	  MPN_COPY_DECR (p.frac + (p.exponent + to_shift) / BITS_PER_MP_LIMB,
-			 fp_input, p.fracsize);
-	  p.fracsize += (p.exponent + to_shift) / BITS_PER_MP_LIMB;
+	  MPN_COPY_DECR (p->frac + (p->exponent + p->to_shift) / BITS_PER_MP_LIMB,
+			 p->fp_input, p->fracsize);
+	  p->fracsize += (p->exponent + p->to_shift) / BITS_PER_MP_LIMB;
 	}
       else
 	{
-	  cy = __mpn_lshift (p.frac
-			     + (p.exponent + to_shift) / BITS_PER_MP_LIMB,
-			     fp_input, p.fracsize,
-			     (p.exponent + to_shift) % BITS_PER_MP_LIMB);
-	  p.fracsize += (p.exponent + to_shift) / BITS_PER_MP_LIMB;
+	  cy = __mpn_lshift (p->frac
+			     + (p->exponent + p->to_shift) / BITS_PER_MP_LIMB,
+			     p->fp_input, p->fracsize,
+			     (p->exponent + p->to_shift) % BITS_PER_MP_LIMB);
+	  p->fracsize += (p->exponent + p->to_shift) / BITS_PER_MP_LIMB;
 	  if (cy)
-	    p.frac[p.fracsize++] = cy;
+	    p->frac[p->fracsize++] = cy;
 	}
-      MPN_ZERO (p.frac, (p.exponent + to_shift) / BITS_PER_MP_LIMB);
+      MPN_ZERO (p->frac, (p->exponent + p->to_shift) / BITS_PER_MP_LIMB);
 
       assert (powers > &_fpioconst_pow10[0]);
       do
@@ -319,9 +247,9 @@ __printf_fp_buffer_1 (struct __printf_buffer *buf, locale_t loc,
 
 	  /* The number of the product of two binary numbers with n and m
 	     bits respectively has m+n or m+n-1 bits.	*/
-	  if (p.exponent >= scaleexpo + powers->p_expo - 1)
+	  if (p->exponent >= scaleexpo + powers->p_expo - 1)
 	    {
-	      if (p.scalesize == 0)
+	      if (p->scalesize == 0)
 		{
 #if __HAVE_DISTINCT_FLOAT128
 		  if ((FLT128_MANT_DIG
@@ -333,14 +261,14 @@ __printf_fp_buffer_1 (struct __printf_buffer *buf, locale_t loc,
    - _FPIO_CONST_OFFSET)
 		      /* 64bit const offset is not enough for
 			 IEEE 854 quad long double (_Float128).  */
-		      p.tmpsize = powers->arraysize + _FLT128_FPIO_CONST_SHIFT;
-		      memcpy (p.tmp + _FLT128_FPIO_CONST_SHIFT,
+		      p->tmpsize = powers->arraysize + _FLT128_FPIO_CONST_SHIFT;
+		      memcpy (p->tmp + _FLT128_FPIO_CONST_SHIFT,
 			      &__tens[powers->arrayoff],
-			      p.tmpsize * sizeof (mp_limb_t));
-		      MPN_ZERO (p.tmp, _FLT128_FPIO_CONST_SHIFT);
-		      /* Adjust p.exponent, as scaleexpo will be this much
+			      p->tmpsize * sizeof (mp_limb_t));
+		      MPN_ZERO (p->tmp, _FLT128_FPIO_CONST_SHIFT);
+		      /* Adjust p->exponent, as scaleexpo will be this much
 			 bigger too.  */
-		      p.exponent += _FLT128_FPIO_CONST_SHIFT * BITS_PER_MP_LIMB;
+		      p->exponent += _FLT128_FPIO_CONST_SHIFT * BITS_PER_MP_LIMB;
 		    }
 		  else
 #endif /* __HAVE_DISTINCT_FLOAT128 */
@@ -353,62 +281,62 @@ __printf_fp_buffer_1 (struct __printf_buffer *buf, locale_t loc,
    - _FPIO_CONST_OFFSET)
 		      /* 64bit const offset is not enough for
 			 IEEE quad long double.  */
-		      p.tmpsize = powers->arraysize + _FPIO_CONST_SHIFT;
-		      memcpy (p.tmp + _FPIO_CONST_SHIFT,
+		      p->tmpsize = powers->arraysize + _FPIO_CONST_SHIFT;
+		      memcpy (p->tmp + _FPIO_CONST_SHIFT,
 			      &__tens[powers->arrayoff],
-			      p.tmpsize * sizeof (mp_limb_t));
-		      MPN_ZERO (p.tmp, _FPIO_CONST_SHIFT);
-		      /* Adjust p.exponent, as scaleexpo will be this much
+			      p->tmpsize * sizeof (mp_limb_t));
+		      MPN_ZERO (p->tmp, _FPIO_CONST_SHIFT);
+		      /* Adjust p->exponent, as scaleexpo will be this much
 			 bigger too.  */
-		      p.exponent += _FPIO_CONST_SHIFT * BITS_PER_MP_LIMB;
+		      p->exponent += _FPIO_CONST_SHIFT * BITS_PER_MP_LIMB;
 		    }
 		  else
 #endif
 		    {
-		      p.tmpsize = powers->arraysize;
-		      memcpy (p.tmp, &__tens[powers->arrayoff],
-			      p.tmpsize * sizeof (mp_limb_t));
+		      p->tmpsize = powers->arraysize;
+		      memcpy (p->tmp, &__tens[powers->arrayoff],
+			      p->tmpsize * sizeof (mp_limb_t));
 		    }
 		}
 	      else
 		{
-		  cy = __mpn_mul (p.tmp, p.scale, p.scalesize,
+		  cy = __mpn_mul (p->tmp, p->scale, p->scalesize,
 				  &__tens[powers->arrayoff
 					 + _FPIO_CONST_OFFSET],
 				  powers->arraysize - _FPIO_CONST_OFFSET);
-		  p.tmpsize = p.scalesize
+		  p->tmpsize = p->scalesize
 		    + powers->arraysize - _FPIO_CONST_OFFSET;
 		  if (cy == 0)
-		    --p.tmpsize;
+		    --p->tmpsize;
 		}
 
-	      if (MPN_GE (p.frac, p.tmp))
+	      if (MPN_GE (p->frac, p->tmp))
 		{
 		  int cnt;
-		  MPN_ASSIGN (p.scale, p.tmp);
-		  count_leading_zeros (cnt, p.scale[p.scalesize - 1]);
-		  scaleexpo = (p.scalesize - 2) * BITS_PER_MP_LIMB - cnt - 1;
+		  MPN_ASSIGN (p->scale, p->tmp);
+		  count_leading_zeros (cnt, p->scale[p->scalesize - 1]);
+		  scaleexpo = (p->scalesize - 2) * BITS_PER_MP_LIMB - cnt - 1;
 		  exp10 |= 1 << explog;
 		}
 	    }
 	  --explog;
 	}
       while (powers > &_fpioconst_pow10[0]);
-      p.exponent = exp10;
+      p->exponent = exp10;
 
       /* Optimize number representations.  We want to represent the numbers
 	 with the lowest number of bytes possible without losing any
 	 bytes. Also the highest bit in the scaling factor has to be set
 	 (this is a requirement of the MPN division routines).  */
-      if (p.scalesize > 0)
+      if (p->scalesize > 0)
 	{
 	  /* Determine minimum number of zero bits at the end of
 	     both numbers.  */
-	  for (i = 0; p.scale[i] == 0 && p.frac[i] == 0; i++)
+	  for (i = 0; p->scale[i] == 0 && p->frac[i] == 0; i++)
 	    ;
 
 	  /* Determine number of bits the scaling factor is misplaced.	*/
-	  count_leading_zeros (cnt_h, p.scale[p.scalesize - 1]);
+	  count_leading_zeros (cnt_h, p->scale[p->scalesize - 1]);
 
 	  if (cnt_h == 0)
 	    {
@@ -416,27 +344,27 @@ __printf_fp_buffer_1 (struct __printf_buffer *buf, locale_t loc,
 		 we only have to remove the trailing empty limbs.  */
 	      if (i > 0)
 		{
-		  MPN_COPY_INCR (p.scale, p.scale + i, p.scalesize - i);
-		  p.scalesize -= i;
-		  MPN_COPY_INCR (p.frac, p.frac + i, p.fracsize - i);
-		  p.fracsize -= i;
+		  MPN_COPY_INCR (p->scale, p->scale + i, p->scalesize - i);
+		  p->scalesize -= i;
+		  MPN_COPY_INCR (p->frac, p->frac + i, p->fracsize - i);
+		  p->fracsize -= i;
 		}
 	    }
 	  else
 	    {
-	      if (p.scale[i] != 0)
+	      if (p->scale[i] != 0)
 		{
-		  count_trailing_zeros (cnt_l, p.scale[i]);
-		  if (p.frac[i] != 0)
+		  count_trailing_zeros (cnt_l, p->scale[i]);
+		  if (p->frac[i] != 0)
 		    {
 		      int cnt_l2;
-		      count_trailing_zeros (cnt_l2, p.frac[i]);
+		      count_trailing_zeros (cnt_l2, p->frac[i]);
 		      if (cnt_l2 < cnt_l)
 			cnt_l = cnt_l2;
 		    }
 		}
 	      else
-		count_trailing_zeros (cnt_l, p.frac[i]);
+		count_trailing_zeros (cnt_l, p->frac[i]);
 
 	      /* Now shift the numbers to their optimal position.  */
 	      if (i == 0 && BITS_PER_MP_LIMB - cnt_h > cnt_l)
@@ -444,10 +372,10 @@ __printf_fp_buffer_1 (struct __printf_buffer *buf, locale_t loc,
 		  /* We cannot save any memory.	 So just roll both numbers
 		     so that the scaling factor has its highest bit set.  */
 
-		  (void) __mpn_lshift (p.scale, p.scale, p.scalesize, cnt_h);
-		  cy = __mpn_lshift (p.frac, p.frac, p.fracsize, cnt_h);
+		  (void) __mpn_lshift (p->scale, p->scale, p->scalesize, cnt_h);
+		  cy = __mpn_lshift (p->frac, p->frac, p->fracsize, cnt_h);
 		  if (cy != 0)
-		    p.frac[p.fracsize++] = cy;
+		    p->frac[p->fracsize++] = cy;
 		}
 	      else if (BITS_PER_MP_LIMB - cnt_h <= cnt_l)
 		{
@@ -455,32 +383,32 @@ __printf_fp_buffer_1 (struct __printf_buffer *buf, locale_t loc,
 		     and by packing the non-zero limbs which gain another
 		     free one. */
 
-		  (void) __mpn_rshift (p.scale, p.scale + i, p.scalesize - i,
+		  (void) __mpn_rshift (p->scale, p->scale + i, p->scalesize - i,
 				       BITS_PER_MP_LIMB - cnt_h);
-		  p.scalesize -= i + 1;
-		  (void) __mpn_rshift (p.frac, p.frac + i, p.fracsize - i,
+		  p->scalesize -= i + 1;
+		  (void) __mpn_rshift (p->frac, p->frac + i, p->fracsize - i,
 				       BITS_PER_MP_LIMB - cnt_h);
-		  p.fracsize -= p.frac[p.fracsize - i - 1] == 0 ? i + 1 : i;
+		  p->fracsize -= p->frac[p->fracsize - i - 1] == 0 ? i + 1 : i;
 		}
 	      else
 		{
 		  /* We can only save the memory of the limbs which are zero.
 		     The non-zero parts occupy the same number of limbs.  */
 
-		  (void) __mpn_rshift (p.scale, p.scale + (i - 1),
-				       p.scalesize - (i - 1),
+		  (void) __mpn_rshift (p->scale, p->scale + (i - 1),
+				       p->scalesize - (i - 1),
 				       BITS_PER_MP_LIMB - cnt_h);
-		  p.scalesize -= i;
-		  (void) __mpn_rshift (p.frac, p.frac + (i - 1),
-				       p.fracsize - (i - 1),
+		  p->scalesize -= i;
+		  (void) __mpn_rshift (p->frac, p->frac + (i - 1),
+				       p->fracsize - (i - 1),
 				       BITS_PER_MP_LIMB - cnt_h);
-		  p.fracsize -=
-		    p.frac[p.fracsize - (i - 1) - 1] == 0 ? i : i - 1;
+		  p->fracsize -=
+		    p->frac[p->fracsize - (i - 1) - 1] == 0 ? i : i - 1;
 		}
 	    }
 	}
     }
-  else if (p.exponent < 0)
+  else if (p->exponent < 0)
     {
       /* |FP| < 1.0.  */
       int exp10 = 0;
@@ -496,48 +424,48 @@ __printf_fp_buffer_1 (struct __printf_buffer *buf, locale_t loc,
       const struct mp_power *powers = &_fpioconst_pow10[explog + 1];
 
       /* Now shift the input value to its right place.	*/
-      cy = __mpn_lshift (p.frac, fp_input, p.fracsize, to_shift);
-      p.frac[p.fracsize++] = cy;
-      assert (cy == 1 || (p.frac[p.fracsize - 2] == 0 && p.frac[0] == 0));
+      cy = __mpn_lshift (p->frac, p->fp_input, p->fracsize, p->to_shift);
+      p->frac[p->fracsize++] = cy;
+      assert (cy == 1 || (p->frac[p->fracsize - 2] == 0 && p->frac[0] == 0));
 
-      p.expsign = 1;
-      p.exponent = -p.exponent;
+      p->expsign = 1;
+      p->exponent = -p->exponent;
 
       assert (powers != &_fpioconst_pow10[0]);
       do
 	{
 	  --powers;
 
-	  if (p.exponent >= powers->m_expo)
+	  if (p->exponent >= powers->m_expo)
 	    {
 	      int i, incr, cnt_h, cnt_l;
 	      mp_limb_t topval[2];
 
 	      /* The __mpn_mul function expects the first argument to be
 		 bigger than the second.  */
-	      if (p.fracsize < powers->arraysize - _FPIO_CONST_OFFSET)
-		cy = __mpn_mul (p.tmp, &__tens[powers->arrayoff
+	      if (p->fracsize < powers->arraysize - _FPIO_CONST_OFFSET)
+		cy = __mpn_mul (p->tmp, &__tens[powers->arrayoff
 					    + _FPIO_CONST_OFFSET],
 				powers->arraysize - _FPIO_CONST_OFFSET,
-				p.frac, p.fracsize);
+				p->frac, p->fracsize);
 	      else
-		cy = __mpn_mul (p.tmp, p.frac, p.fracsize,
+		cy = __mpn_mul (p->tmp, p->frac, p->fracsize,
 				&__tens[powers->arrayoff + _FPIO_CONST_OFFSET],
 				powers->arraysize - _FPIO_CONST_OFFSET);
-	      p.tmpsize = p.fracsize + powers->arraysize - _FPIO_CONST_OFFSET;
+	      p->tmpsize = p->fracsize + powers->arraysize - _FPIO_CONST_OFFSET;
 	      if (cy == 0)
-		--p.tmpsize;
+		--p->tmpsize;
 
-	      count_leading_zeros (cnt_h, p.tmp[p.tmpsize - 1]);
-	      incr = (p.tmpsize - p.fracsize) * BITS_PER_MP_LIMB
+	      count_leading_zeros (cnt_h, p->tmp[p->tmpsize - 1]);
+	      incr = (p->tmpsize - p->fracsize) * BITS_PER_MP_LIMB
 		     + BITS_PER_MP_LIMB - 1 - cnt_h;
 
 	      assert (incr <= powers->p_expo);
 
-	      /* If we increased the p.exponent by exactly 3 we have to test
+	      /* If we increased the p->exponent by exactly 3 we have to test
 		 for overflow.	This is done by comparing with 10 shifted
 		 to the right position.	 */
-	      if (incr == p.exponent + 3)
+	      if (incr == p->exponent + 3)
 		{
 		  if (cnt_h <= BITS_PER_MP_LIMB - 4)
 		    {
@@ -559,32 +487,32 @@ __printf_fp_buffer_1 (struct __printf_buffer *buf, locale_t loc,
 		 against 10.0.  If it is greater or equal to 10.0 the
 		 multiplication was not valid.  This is because we cannot
 		 determine the number of bits in the result in advance.  */
-	      if (incr < p.exponent + 3
-		  || (incr == p.exponent + 3
-		      && (p.tmp[p.tmpsize - 1] < topval[1]
-			  || (p.tmp[p.tmpsize - 1] == topval[1]
-			      && p.tmp[p.tmpsize - 2] < topval[0]))))
+	      if (incr < p->exponent + 3
+		  || (incr == p->exponent + 3
+		      && (p->tmp[p->tmpsize - 1] < topval[1]
+			  || (p->tmp[p->tmpsize - 1] == topval[1]
+			      && p->tmp[p->tmpsize - 2] < topval[0]))))
 		{
 		  /* The factor is right.  Adapt binary and decimal
 		     exponents.	 */
-		  p.exponent -= incr;
+		  p->exponent -= incr;
 		  exp10 |= 1 << explog;
 
 		  /* If this factor yields a number greater or equal to
 		     1.0, we must not shift the non-fractional digits down. */
-		  if (p.exponent < 0)
-		    cnt_h += -p.exponent;
+		  if (p->exponent < 0)
+		    cnt_h += -p->exponent;
 
 		  /* Now we optimize the number representation.	 */
-		  for (i = 0; p.tmp[i] == 0; ++i);
+		  for (i = 0; p->tmp[i] == 0; ++i);
 		  if (cnt_h == BITS_PER_MP_LIMB - 1)
 		    {
-		      MPN_COPY (p.frac, p.tmp + i, p.tmpsize - i);
-		      p.fracsize = p.tmpsize - i;
+		      MPN_COPY (p->frac, p->tmp + i, p->tmpsize - i);
+		      p->fracsize = p->tmpsize - i;
 		    }
 		  else
 		    {
-		      count_trailing_zeros (cnt_l, p.tmp[i]);
+		      count_trailing_zeros (cnt_l, p->tmp[i]);
 
 		      /* Now shift the numbers to their optimal position.  */
 		      if (i == 0 && BITS_PER_MP_LIMB - 1 - cnt_h > cnt_l)
@@ -593,16 +521,16 @@ __printf_fp_buffer_1 (struct __printf_buffer *buf, locale_t loc,
 			     number so that the leading digit is in a
 			     separate limb.  */
 
-			  cy = __mpn_lshift (p.frac, p.tmp, p.tmpsize,
+			  cy = __mpn_lshift (p->frac, p->tmp, p->tmpsize,
 			    cnt_h + 1);
-			  p.fracsize = p.tmpsize + 1;
-			  p.frac[p.fracsize - 1] = cy;
+			  p->fracsize = p->tmpsize + 1;
+			  p->frac[p->fracsize - 1] = cy;
 			}
 		      else if (BITS_PER_MP_LIMB - 1 - cnt_h <= cnt_l)
 			{
-			  (void) __mpn_rshift (p.frac, p.tmp + i, p.tmpsize - i,
+			  (void) __mpn_rshift (p->frac, p->tmp + i, p->tmpsize - i,
 					       BITS_PER_MP_LIMB - 1 - cnt_h);
-			  p.fracsize = p.tmpsize - i;
+			  p->fracsize = p->tmpsize - i;
 			}
 		      else
 			{
@@ -610,41 +538,41 @@ __printf_fp_buffer_1 (struct __printf_buffer *buf, locale_t loc,
 			     are zero.	The non-zero parts occupy the same
 			     number of limbs.  */
 
-			  (void) __mpn_rshift (p.frac, p.tmp + (i - 1),
-					       p.tmpsize - (i - 1),
+			  (void) __mpn_rshift (p->frac, p->tmp + (i - 1),
+					       p->tmpsize - (i - 1),
 					       BITS_PER_MP_LIMB - 1 - cnt_h);
-			  p.fracsize = p.tmpsize - (i - 1);
+			  p->fracsize = p->tmpsize - (i - 1);
 			}
 		    }
 		}
 	    }
 	  --explog;
 	}
-      while (powers != &_fpioconst_pow10[1] && p.exponent > 0);
+      while (powers != &_fpioconst_pow10[1] && p->exponent > 0);
       /* All factors but 10^-1 are tested now.	*/
-      if (p.exponent > 0)
+      if (p->exponent > 0)
 	{
 	  int cnt_l;
 
-	  cy = __mpn_mul_1 (p.tmp, p.frac, p.fracsize, 10);
-	  p.tmpsize = p.fracsize;
-	  assert (cy == 0 || p.tmp[p.tmpsize - 1] < 20);
+	  cy = __mpn_mul_1 (p->tmp, p->frac, p->fracsize, 10);
+	  p->tmpsize = p->fracsize;
+	  assert (cy == 0 || p->tmp[p->tmpsize - 1] < 20);
 
-	  count_trailing_zeros (cnt_l, p.tmp[0]);
-	  if (cnt_l < MIN (4, p.exponent))
+	  count_trailing_zeros (cnt_l, p->tmp[0]);
+	  if (cnt_l < MIN (4, p->exponent))
 	    {
-	      cy = __mpn_lshift (p.frac, p.tmp, p.tmpsize,
-				 BITS_PER_MP_LIMB - MIN (4, p.exponent));
+	      cy = __mpn_lshift (p->frac, p->tmp, p->tmpsize,
+				 BITS_PER_MP_LIMB - MIN (4, p->exponent));
 	      if (cy != 0)
-		p.frac[p.tmpsize++] = cy;
+		p->frac[p->tmpsize++] = cy;
 	    }
 	  else
-	    (void) __mpn_rshift (p.frac, p.tmp, p.tmpsize, MIN (4, p.exponent));
-	  p.fracsize = p.tmpsize;
+	    (void) __mpn_rshift (p->frac, p->tmp, p->tmpsize, MIN (4, p->exponent));
+	  p->fracsize = p->tmpsize;
 	  exp10 |= 1;
-	  assert (p.frac[p.fracsize - 1] < 10);
+	  assert (p->frac[p->fracsize - 1] < 10);
 	}
-      p.exponent = exp10;
+      p->exponent = exp10;
     }
   else
     {
@@ -652,13 +580,13 @@ __printf_fp_buffer_1 (struct __printf_buffer *buf, locale_t loc,
 	 numbers are in the range of 1.0 <= |fp| < 8.0.  We simply
 	 shift it to the right place and divide it by 1.0 to get the
 	 leading digit.	 (Of course this division is not really made.)	*/
-      assert (0 <= p.exponent && p.exponent < 3
-	      && p.exponent + to_shift < BITS_PER_MP_LIMB);
+      assert (0 <= p->exponent && p->exponent < 3
+	      && p->exponent + p->to_shift < BITS_PER_MP_LIMB);
 
       /* Now shift the input value to its right place.	*/
-      cy = __mpn_lshift (p.frac, fp_input, p.fracsize, (p.exponent + to_shift));
-      p.frac[p.fracsize++] = cy;
-      p.exponent = 0;
+      cy = __mpn_lshift (p->frac, p->fp_input, p->fracsize, (p->exponent + p->to_shift));
+      p->frac[p->fracsize++] = cy;
+      p->exponent = 0;
     }
 
   {
@@ -675,7 +603,7 @@ __printf_fp_buffer_1 (struct __printf_buffer *buf, locale_t loc,
 
     if (spec == 'e')
       {
-	p.type = info->spec;
+	p->type = info->spec;
 	intdig_max = 1;
 	fracdig_min = fracdig_max = info->prec < 0 ? 6 : info->prec;
 	chars_needed = 1 + 1 + (size_t) fracdig_max + 1 + 1 + 4;
@@ -685,15 +613,15 @@ __printf_fp_buffer_1 (struct __printf_buffer *buf, locale_t loc,
       }
     else if (spec == 'f')
       {
-	p.type = 'f';
+	p->type = 'f';
 	fracdig_min = fracdig_max = info->prec < 0 ? 6 : info->prec;
 	dig_max = INT_MAX;		/* Unlimited.  */
 	significant = 1;		/* Does not matter here.  */
-	if (p.expsign == 0)
+	if (p->expsign == 0)
 	  {
-	    intdig_max = p.exponent + 1;
+	    intdig_max = p->exponent + 1;
 	    /* This can be really big!	*/  /* XXX Maybe malloc if too big? */
-	    chars_needed = (size_t) p.exponent + 1 + 1 + (size_t) fracdig_max;
+	    chars_needed = (size_t) p->exponent + 1 + 1 + (size_t) fracdig_max;
 	  }
 	else
 	  {
@@ -704,27 +632,27 @@ __printf_fp_buffer_1 (struct __printf_buffer *buf, locale_t loc,
     else
       {
 	dig_max = info->prec < 0 ? 6 : (info->prec == 0 ? 1 : info->prec);
-	if ((p.expsign == 0 && p.exponent >= dig_max)
-	    || (p.expsign != 0 && p.exponent > 4))
+	if ((p->expsign == 0 && p->exponent >= dig_max)
+	    || (p->expsign != 0 && p->exponent > 4))
 	  {
 	    if ('g' - 'G' == 'e' - 'E')
-	      p.type = 'E' + (info->spec - 'G');
+	      p->type = 'E' + (info->spec - 'G');
 	    else
-	      p.type = isupper (info->spec) ? 'E' : 'e';
+	      p->type = isupper (info->spec) ? 'E' : 'e';
 	    fracdig_max = dig_max - 1;
 	    intdig_max = 1;
 	    chars_needed = 1 + 1 + (size_t) fracdig_max + 1 + 1 + 4;
 	  }
 	else
 	  {
-	    p.type = 'f';
-	    intdig_max = p.expsign == 0 ? p.exponent + 1 : 0;
+	    p->type = 'f';
+	    intdig_max = p->expsign == 0 ? p->exponent + 1 : 0;
 	    fracdig_max = dig_max - intdig_max;
 	    /* We need space for the significant digits and perhaps
 	       for leading zeros when < 1.0.  The number of leading
 	       zeros can be as many as would be required for
 	       exponential notation with a negative two-digit
-	       p.exponent, which is 4.  */
+	       p->exponent, which is 4.  */
 	    chars_needed = (size_t) dig_max + 1 + 4;
 	  }
 	fracdig_min = info->alt ? fracdig_max : 0;
@@ -760,26 +688,26 @@ __printf_fp_buffer_1 (struct __printf_buffer *buf, locale_t loc,
     wcp = wstartp = wbuffer + 2;	/* Let room for rounding.  */
 
     /* Do the real work: put digits in allocated buffer.  */
-    if (p.expsign == 0 || p.type != 'f')
+    if (p->expsign == 0 || p->type != 'f')
       {
-	assert (p.expsign == 0 || intdig_max == 1);
+	assert (p->expsign == 0 || intdig_max == 1);
 	while (intdig_no < intdig_max)
 	  {
 	    ++intdig_no;
-	    *wcp++ = hack_digit (&p);
+	    *wcp++ = hack_digit (p);
 	  }
 	significant = 1;
 	if (info->alt
 	    || fracdig_min > 0
-	    || (fracdig_max > 0 && (p.fracsize > 1 || p.frac[0] != 0)))
+	    || (fracdig_max > 0 && (p->fracsize > 1 || p->frac[0] != 0)))
 	  *wcp++ = decimal;
       }
     else
       {
-	/* |fp| < 1.0 and the selected p.type is 'f', so put "0."
+	/* |fp| < 1.0 and the selected p->type is 'f', so put "0."
 	   in the buffer.  */
 	*wcp++ = '0';
-	--p.exponent;
+	--p->exponent;
 	*wcp++ = decimal;
       }
 
@@ -787,10 +715,10 @@ __printf_fp_buffer_1 (struct __printf_buffer *buf, locale_t loc,
     int fracdig_no = 0;
     int added_zeros = 0;
     while (fracdig_no < fracdig_min + added_zeros
-	   || (fracdig_no < fracdig_max && (p.fracsize > 1 || p.frac[0] != 0)))
+	   || (fracdig_no < fracdig_max && (p->fracsize > 1 || p->frac[0] != 0)))
       {
 	++fracdig_no;
-	*wcp = hack_digit (&p);
+	*wcp = hack_digit (p);
 	if (*wcp++ != '0')
 	  significant = 1;
 	else if (significant == 0)
@@ -803,26 +731,26 @@ __printf_fp_buffer_1 (struct __printf_buffer *buf, locale_t loc,
 
     /* Do rounding.  */
     char last_digit = wcp[-1] != decimal ? wcp[-1] : wcp[-2];
-    char next_digit = hack_digit (&p);
+    char next_digit = hack_digit (p);
     bool more_bits;
     if (next_digit != '0' && next_digit != '5')
       more_bits = true;
-    else if (p.fracsize == 1 && p.frac[0] == 0)
+    else if (p->fracsize == 1 && p->frac[0] == 0)
       /* Rest of the number is zero.  */
       more_bits = false;
-    else if (p.scalesize == 0)
+    else if (p->scalesize == 0)
       {
 	/* Here we have to see whether all limbs are zero since no
 	   normalization happened.  */
-	size_t lcnt = p.fracsize;
-	while (lcnt >= 1 && p.frac[lcnt - 1] == 0)
+	size_t lcnt = p->fracsize;
+	while (lcnt >= 1 && p->frac[lcnt - 1] == 0)
 	  --lcnt;
 	more_bits = lcnt > 0;
       }
     else
       more_bits = true;
     int rounding_mode = get_rounding_mode ();
-    if (round_away (is_neg, (last_digit - '0') & 1, next_digit >= '5',
+    if (round_away (p->is_neg, (last_digit - '0') & 1, next_digit >= '5',
 		    more_bits, rounding_mode))
       {
 	char *wtp = wcp;
@@ -842,7 +770,7 @@ __printf_fp_buffer_1 (struct __printf_buffer *buf, locale_t loc,
 	    if (*wtp != decimal)
 	      /* Round up.  */
 	      (*wtp)++;
-	    else if (__builtin_expect (spec == 'g' && p.type == 'f' && info->alt
+	    else if (__builtin_expect (spec == 'g' && p->type == 'f' && info->alt
 				       && wtp == wstartp + 1
 				       && wstartp[0] == '0',
 				       0))
@@ -867,20 +795,20 @@ __printf_fp_buffer_1 (struct __printf_buffer *buf, locale_t loc,
 	    else
 	      /* It is more critical.  All digits were 9's.  */
 	      {
-		if (p.type != 'f')
+		if (p->type != 'f')
 		  {
 		    *wstartp = '1';
-		    p.exponent += p.expsign == 0 ? 1 : -1;
+		    p->exponent += p->expsign == 0 ? 1 : -1;
 
-		    /* The above p.exponent adjustment could lead to 1.0e-00,
-		       e.g. for 0.999999999.  Make sure p.exponent 0 always
+		    /* The above p->exponent adjustment could lead to 1.0e-00,
+		       e.g. for 0.999999999.  Make sure p->exponent 0 always
 		       uses + sign.  */
-		    if (p.exponent == 0)
-		      p.expsign = 0;
+		    if (p->exponent == 0)
+		      p->expsign = 0;
 		  }
 		else if (intdig_no == dig_max)
 		  {
-		    /* This is the case where for p.type %g the number fits
+		    /* This is the case where for p->type %g the number fits
 		       really in the range for %f output but after rounding
 		       the number of digits is too big.	 */
 		    *--wstartp = decimal;
@@ -896,9 +824,9 @@ __printf_fp_buffer_1 (struct __printf_buffer *buf, locale_t loc,
 		    fracdig_no += intdig_no;
 		    intdig_no = 1;
 		    fracdig_max = intdig_max - intdig_no;
-		    ++p.exponent;
-		    /* Now we must print the p.exponent.	*/
-		    p.type = isupper (info->spec) ? 'E' : 'e';
+		    ++p->exponent;
+		    /* Now we must print the p->exponent.	*/
+		    p->type = isupper (info->spec) ? 'E' : 'e';
 		  }
 		else
 		  {
@@ -931,14 +859,14 @@ __printf_fp_buffer_1 (struct __printf_buffer *buf, locale_t loc,
     if (fracdig_no == 0 && !info->alt && *(wcp - 1) == decimal)
       --wcp;
 
-    /* Write the p.exponent if it is needed.  */
-    if (p.type != 'f')
+    /* Write the p->exponent if it is needed.  */
+    if (p->type != 'f')
       {
-	if (__glibc_unlikely (p.expsign != 0 && p.exponent == 4 && spec == 'g'))
+	if (__glibc_unlikely (p->expsign != 0 && p->exponent == 4 && spec == 'g'))
 	  {
-	    /* This is another special case.  The p.exponent of the number is
+	    /* This is another special case.  The p->exponent of the number is
 	       really smaller than -4, which requires the 'e'/'E' format.
-	       But after rounding the number has an p.exponent of -4.  */
+	       But after rounding the number has an p->exponent of -4.  */
 	    assert (wcp >= wstartp + 1);
 	    assert (wstartp[0] == '1');
 	    memcpy (wstartp, "0.0001", 6);
@@ -953,26 +881,26 @@ __printf_fp_buffer_1 (struct __printf_buffer *buf, locale_t loc,
 	  }
 	else
 	  {
-	    *wcp++ = p.type;
-	    *wcp++ = p.expsign ? '-' : '+';
+	    *wcp++ = p->type;
+	    *wcp++ = p->expsign ? '-' : '+';
 
-	    /* Find the magnitude of the p.exponent.	*/
+	    /* Find the magnitude of the p->exponent.	*/
 	    expscale = 10;
-	    while (expscale <= p.exponent)
+	    while (expscale <= p->exponent)
 	      expscale *= 10;
 
-	    if (p.exponent < 10)
+	    if (p->exponent < 10)
 	      /* Exponent always has at least two digits.  */
 	      *wcp++ = '0';
 	    else
 	      do
 		{
 		  expscale /= 10;
-		  *wcp++ = '0' + (p.exponent / expscale);
-		  p.exponent %= expscale;
+		  *wcp++ = '0' + (p->exponent / expscale);
+		  p->exponent %= expscale;
 		}
 	      while (expscale > 10);
-	    *wcp++ = '0' + p.exponent;
+	    *wcp++ = '0' + p->exponent;
 	  }
       }
 
@@ -984,7 +912,7 @@ __printf_fp_buffer_1 (struct __printf_buffer *buf, locale_t loc,
 
     /* Compute number of characters which must be filled with the padding
        character.  */
-    if (is_neg || info->showsign || info->space)
+    if (p->is_neg || info->showsign || info->space)
       --width;
     /* To count bytes, we would have to use __translated_number_width
        for info->i18n && !info->wide.  See bug 28943.  */
@@ -996,7 +924,7 @@ __printf_fp_buffer_1 (struct __printf_buffer *buf, locale_t loc,
     if (!info->left && info->pad != '0')
       __printf_buffer_pad (buf, info->pad, width);
 
-    if (is_neg)
+    if (p->is_neg)
       __printf_buffer_putc (buf, '-');
     else if (info->showsign)
       __printf_buffer_putc (buf, '+');
@@ -1027,6 +955,136 @@ __printf_fp_buffer_1 (struct __printf_buffer *buf, locale_t loc,
 
   if (buffer_malloced)
     free (wbuffer);
+}
+
+#define PRINTF_FP_FETCH(P, FLOAT, SUFFIX, MANT_DIG)			\
+  ({									\
+    FLOAT __number = *(const FLOAT *) args[0];				\
+									\
+    /* Check for special values: not a number or infinity.  */		\
+    if (isnan (__number))						\
+      {									\
+	P.is_neg = signbit (__number);					\
+	if (isupper (info->spec))					\
+	  p.special = "NAN";						\
+	else								\
+	  p.special = "nan";						\
+      }									\
+    else if (isinf (__number))						\
+      {									\
+	P.is_neg = signbit (__number);					\
+	if (isupper (info->spec))					\
+	  p.special = "INF";						\
+	else								\
+	  p.special = "inf";						\
+      }									\
+    else								\
+      {									\
+	P.fracsize = __mpn_extract_##SUFFIX				\
+		     (P.fp_input, array_length (P.fp_input),		\
+		      &P.exponent, &P.is_neg, __number);		\
+	P.to_shift = 1 + p.fracsize * BITS_PER_MP_LIMB - MANT_DIG;	\
+      }									\
+  })
+
+static void
+__printf_fp_buffer_double (struct __printf_buffer *buf, locale_t loc,
+			   char thousands_sep, char decimal,
+			   unsigned int thousands_sep_length,
+			   const struct printf_info *info,
+			   const void *const *args)
+{
+  /* For double values, the required extra memory is limited to total of 144/160
+     bytes (DBL_EXP_LIMB_SIZE on 32/64 bits) times 3, so it is feasible to
+     allocate the maximum size on stack.  */
+  enum
+    {
+      DBL_EXP_LIMB_SIZE = ((DBL_MAX_EXP + BITS_PER_MP_LIMB - 1) / BITS_PER_MP_LIMB
+			   + (DBL_MANT_DIG / BITS_PER_MP_LIMB > 2 ? 8 : 4))
+    };
+  mp_limb_t frac[DBL_EXP_LIMB_SIZE];
+  mp_limb_t tmp[DBL_EXP_LIMB_SIZE];
+  mp_limb_t scale[DBL_EXP_LIMB_SIZE];
+  struct hack_digit_param p = {
+    .frac = frac, .tmp = tmp, .scale = scale, .is_neg = 0, .to_shift = 0,
+  };
+
+  PRINTF_FP_FETCH (p, double, double, DBL_MANT_DIG);
+  __printf_fp_buffer_2 (&p, buf, loc, thousands_sep, decimal,
+			thousands_sep_length, info, args);
+}
+
+#if __HAVE_DISTINCT_FLOAT128 || !defined __NO_LONG_DOUBLE_MATH
+static void
+__printf_fp_buffer_max (struct __printf_buffer *buf, locale_t loc,
+			char thousands_sep, char decimal,
+			unsigned int thousands_sep_length,
+			const struct printf_info *info,
+			const void *const *args)
+{
+  struct hack_digit_param p = {
+    .is_neg = 0, .to_shift = 0,
+  };
+#if __HAVE_DISTINCT_FLOAT128
+  if (info->is_binary128)
+    PRINTF_FP_FETCH (p, _Float128, float128, FLT128_MANT_DIG);
+  else
+#endif
+#ifndef __NO_LONG_DOUBLE_MATH
+  if (info->is_long_double && sizeof (long double) > sizeof (double))
+    PRINTF_FP_FETCH (p, long double, long_double, LDBL_MANT_DIG);
+#endif
+
+  /* For long double / _Float128 the required extra memory can be up to
+     2080 times 3, which is somewhat large stack requirement.  In this
+     case we use a scratch_buffer, which should cover most of sizes
+     with the default stack size.  */
+  mp_size_t bignum_size = ((abs (p.exponent) + BITS_PER_MP_LIMB - 1)
+                            / BITS_PER_MP_LIMB
+                            + (GREATER_MANT_DIG / BITS_PER_MP_LIMB > 2
+                               ? 8 : 4))
+			  * sizeof (mp_limb_t);
+
+  struct scratch_buffer scbuf;
+  scratch_buffer_init (&scbuf);
+  if (!scratch_buffer_set_array_size (&scbuf, 3, bignum_size))
+    {
+      __printf_buffer_mark_failed (buf);
+      return;
+    }
+
+  p.frac  = scbuf.data;
+  p.tmp   = scbuf.data + bignum_size;
+  p.scale = scbuf.data + 2 * bignum_size;
+
+  __printf_fp_buffer_2 (&p, buf, loc, thousands_sep, decimal,
+			thousands_sep_length, info, args);
+
+  scratch_buffer_free (&scbuf);
+}
+#endif
+
+static void
+__printf_fp_buffer_1 (struct __printf_buffer *buf,
+		      locale_t loc, char thousands_sep, char decimal,
+		      unsigned int thousands_sep_length,
+		      const struct printf_info *info,
+		      const void *const *args)
+{
+#if __HAVE_DISTINCT_FLOAT128
+  if (info->is_binary128)
+    return __printf_fp_buffer_max (buf, loc, thousands_sep, decimal,
+				   thousands_sep_length, info, args);
+  else
+#endif
+#ifndef __NO_LONG_DOUBLE_MATH
+  if (info->is_long_double && sizeof (long double) > sizeof (double))
+    return __printf_fp_buffer_max (buf, loc, thousands_sep, decimal,
+				   thousands_sep_length, info, args);
+  else
+#endif
+    return __printf_fp_buffer_double (buf, loc, thousands_sep, decimal,
+				      thousands_sep_length, info, args);
 }
 
 /* ASCII to localization translation.  Multibyte version.  */
