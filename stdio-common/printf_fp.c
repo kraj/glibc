@@ -17,12 +17,8 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-/* The gmp headers need some configuration frobs.  */
-#define HAVE_ALLOCA 1
-
 #include <array_length.h>
 #include <libioP.h>
-#include <alloca.h>
 #include <ctype.h>
 #include <float.h>
 #include <gmp-mparam.h>
@@ -167,11 +163,6 @@ __printf_fp_buffer_2 (struct hack_digit_param *p, struct __printf_buffer *buf,
 
   /* General helper (carry limb).  */
   mp_limb_t cy;
-
-  /* Buffer in which we produce the output.  */
-  char *wbuffer = NULL;
-  /* Flag whether wbuffer and buffer are malloc'ed or not.  */
-  int buffer_malloced = 0;
 
   p->expsign = 0;
 
@@ -600,6 +591,9 @@ __printf_fp_buffer_2 (struct hack_digit_param *p, struct __printf_buffer *buf,
     int dig_max;
     int significant;
     char spec = _tolower (info->spec);
+    struct scratch_buffer wscbuf;
+
+    scratch_buffer_init (&wscbuf);
 
     if (spec == 'e')
       {
@@ -662,7 +656,7 @@ __printf_fp_buffer_2 (struct hack_digit_param *p, struct __printf_buffer *buf,
     /* Allocate buffer for output.  We need two more because while rounding
        it is possible that we need two more characters in front of all the
        other output.  If the amount of memory we have to allocate is too
-       large use `malloc' instead of `alloca'.  */
+       large use `malloc' instead of a static buffer.  */
     if (__glibc_unlikely (chars_needed >= (size_t) -1 - 2
 			  || chars_needed < fracdig_max))
       {
@@ -671,21 +665,12 @@ __printf_fp_buffer_2 (struct hack_digit_param *p, struct __printf_buffer *buf,
 	__printf_buffer_mark_failed (buf);
 	return;
       }
-    size_t wbuffer_to_alloc = 2 + chars_needed;
-    buffer_malloced = ! __libc_use_alloca (wbuffer_to_alloc);
-    if (__builtin_expect (buffer_malloced, 0))
+    if (!scratch_buffer_set_array_size (&wscbuf, 1, 2 + chars_needed))
       {
-	wbuffer = malloc (wbuffer_to_alloc);
-	if (wbuffer == NULL)
-	  {
-	    /* Signal an error to the caller.  */
-	    __printf_buffer_mark_failed (buf);
-	    return;
-	  }
+	__printf_buffer_mark_failed (buf);
+	return;
       }
-    else
-      wbuffer = alloca (wbuffer_to_alloc);
-    wcp = wstartp = wbuffer + 2;	/* Let room for rounding.  */
+    wcp = wstartp = wscbuf.data + 2;	/* Let room for rounding.  */
 
     /* Do the real work: put digits in allocated buffer.  */
     if (p->expsign == 0 || p->type != 'f')
@@ -846,6 +831,8 @@ __printf_fp_buffer_2 (struct hack_digit_param *p, struct __printf_buffer *buf,
 		  }
 	      }
 	  }
+
+	scratch_buffer_free (&wscbuf);
       }
 
     /* Now remove unnecessary '0' at the end of the string.  */
@@ -952,9 +939,6 @@ __printf_fp_buffer_2 (struct hack_digit_param *p, struct __printf_buffer *buf,
     if (info->left)
       __printf_buffer_pad (buf, info->pad, width);
   }
-
-  if (buffer_malloced)
-    free (wbuffer);
 }
 
 #define PRINTF_FP_FETCH(P, FLOAT, SUFFIX, MANT_DIG)			\
