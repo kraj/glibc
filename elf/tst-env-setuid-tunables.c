@@ -15,14 +15,10 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-/* Verify that tunables correctly filter out unsafe tunables like
-   glibc.malloc.check and glibc.malloc.mmap_threshold but also retain
-   glibc.malloc.mmap_threshold in an unprivileged child.  */
+/* Verify that GLIBC_TUNABLES is kept unchanged but no tunable is actually
+   enabled for AT_SECURE processes.  */
 
-#define _LIBC 1
-#include "config.h"
-#undef _LIBC
-
+#include <dl-tunables.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <stdlib.h>
@@ -40,7 +36,7 @@
 #include <support/test-driver.h>
 #include <support/capture_subprocess.h>
 
-const char *teststrings[] =
+static const char *teststrings[] =
 {
   "glibc.malloc.check=2:glibc.malloc.mmap_threshold=4096",
   "glibc.malloc.check=2:glibc.malloc.check=2:glibc.malloc.mmap_threshold=4096",
@@ -60,45 +56,43 @@ const char *teststrings[] =
   "glibc.not_valid.check=2",
 };
 
-const char *resultstrings[] =
-{
-  "glibc.malloc.mmap_threshold=4096",
-  "glibc.malloc.mmap_threshold=4096",
-  "glibc.malloc.mmap_threshold=4096",
-  "glibc.malloc.perturb=0x800",
-  "glibc.malloc.perturb=0x800:glibc.malloc.mmap_threshold=4096",
-  "glibc.malloc.perturb=0x800:glibc.malloc.mmap_threshold=4096",
-  "glibc.malloc.mmap_threshold=4096",
-  "glibc.malloc.mmap_threshold=4096",
-  "glibc.malloc.mmap_threshold=glibc.malloc.mmap_threshold=4096",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-};
-
 static int
 test_child (int off)
 {
   const char *val = getenv ("GLIBC_TUNABLES");
+  int ret = 1;
 
   printf ("    [%d] GLIBC_TUNABLES is %s\n", off, val);
   fflush (stdout);
-  if (val != NULL && strcmp (val, resultstrings[off]) == 0)
-    return 0;
 
-  if (val != NULL)
-    printf ("    [%d] Unexpected GLIBC_TUNABLES VALUE %s, expected %s\n",
-	    off, val, resultstrings[off]);
-  else
+  if (val == NULL)
     printf ("    [%d] GLIBC_TUNABLES environment variable absent\n", off);
-
+  else
+    {
+      if (strcmp (val, teststrings[off]) != 0)
+	printf ("    [%d] Unexpected GLIBC_TUNABLES VALUE %s\n", off, val);
+      else
+	ret = 0;
+    }
   fflush (stdout);
 
-  return 1;
+  int32_t check = TUNABLE_GET_FULL (glibc, malloc, check, int32_t, NULL);
+  int32_t mmap_threshold = TUNABLE_GET_FULL (glibc, malloc, mmap_threshold,
+					     int32_t, NULL);
+  int32_t perturb = TUNABLE_GET_FULL (glibc, malloc, perturb, int32_t, NULL);
+
+  printf ("    [%d] glibc.malloc.check=%d\n", off, check);
+  fflush (stdout);
+  printf ("    [%d] glibc.malloc.mmap_threshold=%d\n", off, mmap_threshold);
+  fflush (stdout);
+  printf ("    [%d] glibc.malloc.perturb=%d\n", off, perturb);
+  fflush (stdout);
+
+  ret |= check != 0;
+  ret |= mmap_threshold != 0;
+  ret |= perturb != 0;
+
+  return ret;
 }
 
 static int

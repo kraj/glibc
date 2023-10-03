@@ -46,9 +46,9 @@ test_child (void)
       return 1;
     }
 
-  if (getenv ("MALLOC_MMAP_THRESHOLD_") == NULL)
+  if (getenv ("MALLOC_MMAP_THRESHOLD_") != NULL)
     {
-      printf ("MALLOC_MMAP_THRESHOLD_ lost\n");
+      printf ("MALLOC_MMAP_THRESHOLD_ is still set\n");
       return 1;
     }
 
