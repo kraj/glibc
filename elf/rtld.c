@@ -32,7 +32,6 @@
 #include <fpu_control.h>
 #include <hp-timing.h>
 #include <libc-lock.h>
-#include <unsecvars.h>
 #include <dl-cache.h>
 #include <dl-osinfo.h>
 #include <dl-procinfo.h>
@@ -2658,24 +2657,14 @@ process_envvars (struct dl_main_state *state)
 	}
     }
 
-  /* Extra security for SUID binaries.  Remove all dangerous environment
-     variables.  */
-  if (__glibc_unlikely (__libc_enable_secure))
-    {
-      const char *nextp = UNSECURE_ENVVARS;
-      do
-	{
-	  unsetenv (nextp);
-	  nextp = strchr (nextp, '\0') + 1;
-	}
-      while (*nextp != '\0');
-
-      if (state->mode != rtld_mode_normal)
-	_exit (5);
-    }
   /* If we have to run the dynamic linker in debugging mode and the
      LD_DEBUG_OUTPUT environment variable is given, we write the debug
      messages to this file.  */
+  if (__glibc_unlikely (__libc_enable_secure))
+    {
+      if (state->mode != rtld_mode_normal)
+	_exit (5);
+    }
   else if (state->any_debug && debug_output != NULL)
     {
       const int flags = O_WRONLY | O_APPEND | O_CREAT | O_NOFOLLOW;

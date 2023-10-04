@@ -36,7 +36,6 @@
 #include <libc-lock.h>
 #include <dl-cache.h>
 #include <dl-procinfo.h>
-#include <unsecvars.h>
 #include <hp-timing.h>
 #include <stackinfo.h>
 #include <dl-vdso.h>
@@ -305,20 +304,6 @@ _dl_non_dynamic_init (void)
   if (_dl_profile_output == NULL || _dl_profile_output[0] == '\0')
     _dl_profile_output
       = &"/var/tmp\0/var/profile"[__libc_enable_secure ? 9 : 0];
-
-  if (__libc_enable_secure)
-    {
-      static const char unsecure_envvars[] =
-	UNSECURE_ENVVARS
-	;
-      const char *cp = unsecure_envvars;
-
-      while (cp < unsecure_envvars + sizeof (unsecure_envvars))
-	{
-	  __unsetenv (cp);
-	  cp = strchr (cp, '\0') + 1;
-	}
-    }
 
 #ifdef DL_PLATFORM_INIT
   DL_PLATFORM_INIT;
