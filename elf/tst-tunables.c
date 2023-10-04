@@ -136,12 +136,33 @@ static const struct test_t
     0,
     0,
   },
+  /* Ill-formatted tunables are ignored.  */
+  {
+    "glibc.malloc.check=2=2",
+    0,
+    0,
+    0,
+  },
   {
     "glibc.malloc.mmap_threshold=glibc.malloc.mmap_threshold=4096",
     0,
     0,
     0,
   },
+  /* If there is a ill-formatted key=value, everything after is also ignored.  */
+  {
+    "glibc.malloc.check=2=2:glibc.malloc.check=2",
+    0,
+    0,
+    0,
+  },
+  /* Valid tunables set before ill-formatted ones are set.  */
+  {
+    "glibc.malloc.check=2:glibc.malloc.mmap_threshold=4096=4096",
+    2,
+    0,
+    0,
+  }
 };
 
 static int
