@@ -1010,11 +1010,17 @@ dl_init_cacheinfo (struct cpu_features *cpu_features)
   if (tunable_size > minimum_rep_movsb_threshold)
     rep_movsb_threshold = tunable_size;
 
-  /* NB: The default value of the x86_rep_stosb_threshold tunable is the
-     same as the default value of __x86_rep_stosb_threshold and the
-     minimum value is fixed.  */
-  rep_stosb_threshold = TUNABLE_GET (x86_rep_stosb_threshold,
-				     long int, NULL);
+  /* For AMD Zen3+ architecture, the performance of vectorized loop is
+     slight better than ERMS.  */
+  if (cpu_features->basic.kind == arch_kind_amd)
+    rep_stosb_threshold = SIZE_MAX;
+
+  if (TUNABLE_IS_INITIALIZED (x86_rep_stosb_threshold))
+    /* NB: The default value of the x86_rep_stosb_threshold tunable is the
+       same as the default value of __x86_rep_stosb_threshold and the
+       minimum value is fixed.  */
+    rep_stosb_threshold = TUNABLE_GET (x86_rep_stosb_threshold,
+				       long int, NULL);
 
   TUNABLE_SET_WITH_BOUNDS (x86_data_cache_size, data, 0, SIZE_MAX);
   TUNABLE_SET_WITH_BOUNDS (x86_shared_cache_size, shared, 0, SIZE_MAX);
