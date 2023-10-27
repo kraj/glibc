@@ -145,6 +145,13 @@ tunable_initialize (tunable_t *cur, const char *strval)
   do_tunable_update_val (cur, &val, NULL, NULL);
 }
 
+bool
+__tunable_is_initialized (tunable_id_t id)
+{
+  return tunable_list[id].initialized;
+}
+rtld_hidden_def (__tunable_is_initialized)
+
 void
 __tunable_set_val (tunable_id_t id, tunable_val_t *valp, tunable_num_t *minp,
 		   tunable_num_t *maxp)
