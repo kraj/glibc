@@ -2043,6 +2043,14 @@ _dl_map_new_object (struct link_map *loader, const char *name,
 			&loader->l_runpath_dirs, &realname, &fb, loader,
 			LA_SER_RUNPATH, &found_other_class);
 
+    /* Try the default path.  */
+    if (fd == -1
+      && ((l = loader ?: GL(dl_ns)[nsid]._ns_loaded) == NULL
+      || __glibc_likely (!(l->l_flags_1 & DF_1_NODEFLIB)))
+      && __rtld_search_dirs.dirs != (void *) -1)
+      fd = open_path (name, namelen, mode, &__rtld_search_dirs,
+                      &realname, &fb, l, LA_SER_DEFAULT, &found_other_class);
+  /* Finally try ld.so.cache */
 #ifdef USE_LDCONFIG
       if (fd == -1
 	  && (__glibc_likely ((mode & __RTLD_SECURE) == 0)
@@ -2100,14 +2108,6 @@ _dl_map_new_object (struct link_map *loader, const char *name,
 	    }
 	}
 #endif
-
-      /* Finally, try the default path.  */
-      if (fd == -1
-	  && ((l = loader ?: GL(dl_ns)[nsid]._ns_loaded) == NULL
-	      || __glibc_likely (!(l->l_flags_1 & DF_1_NODEFLIB)))
-	  && __rtld_search_dirs.dirs != (void *) -1)
-	fd = open_path (name, namelen, mode, &__rtld_search_dirs,
-			&realname, &fb, l, LA_SER_DEFAULT, &found_other_class);
 
       /* Add another newline when we are tracing the library loading.  */
       if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_LIBS))
