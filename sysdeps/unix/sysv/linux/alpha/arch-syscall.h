@@ -190,6 +190,7 @@
 #define __NR_mq_unlink 433
 #define __NR_mremap 341
 #define __NR_msgctl 200
+#define __NR_mseal 572
 #define __NR_msgget 201
 #define __NR_msgrcv 202
 #define __NR_msgsnd 203

@@ -36,6 +36,10 @@ Major new features:
 * On Linux, update epoll header to include epoll ioctl definitions and
   related structure added in Linux kernel 6.9.
 
+* On Linux, the mseal function has been added.  It allows to seal memory
+  mappings to avoid further change during process execution such as protection
+  permissions, unmapping, moving to another location, or shrinking the size.
+
 Deprecated and removed features, and other changes affecting compatibility:
 
 * Architectures which use a 32-bit seconds-since-epoch field in struct
