@@ -26,6 +26,7 @@
 #include <_itoa.h>
 #include <dl-hwcaps.h>
 #include <dl-isa-level.h>
+#include <dl-mseal.h>
 
 #ifndef _DL_PLATFORMS_COUNT
 # define _DL_PLATFORMS_COUNT 0
@@ -410,6 +411,8 @@ _dl_load_cache_lookup (const char *name)
       /* Read the contents of the file.  */
       void *file = _dl_sysdep_read_whole_file (LD_SO_CACHE, &cachesize,
 					       PROT_READ);
+      if (cache != MAP_FAILED)
+	_dl_mseal (file, cachesize);
 
       /* We can handle three different cache file formats here:
 	 - only the new format

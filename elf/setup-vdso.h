@@ -66,6 +66,7 @@ setup_vdso (struct link_map *main_map __attribute__ ((unused)),
 
       /* The vDSO is always used.  */
       l->l_used = 1;
+      l->l_seal = 1;
 
       /* Initialize l_local_scope to contain just this map.  This allows
 	 the use of dl_lookup_symbol_x to resolve symbols within the vdso.
@@ -104,6 +105,8 @@ setup_vdso (struct link_map *main_map __attribute__ ((unused)),
       if (GLRO(dl_sysinfo) == DL_SYSINFO_DEFAULT)
 	GLRO(dl_sysinfo) = GLRO(dl_sysinfo_dso)->e_entry + l->l_addr;
 # endif
+
+      _dl_mseal ((void *) l->l_map_start, l->l_map_end - l->l_map_start);
     }
 #endif
 }

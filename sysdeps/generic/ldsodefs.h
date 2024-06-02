@@ -1017,6 +1017,10 @@ extern void _dl_relocate_object (struct link_map *map,
 /* Protect PT_GNU_RELRO area.  */
 extern void _dl_protect_relro (struct link_map *map) attribute_hidden;
 
+/* Scan all PT_LOAD entries and seal the VMA range to avoid further
+   changes.  */
+extern void _dl_mseal_map (const struct link_map *map) attribute_hidden;
+
 /* Call _dl_signal_error with a message about an unhandled reloc type.
    TYPE is the result of ELFW(R_TYPE) (r_info), i.e. an R_<CPU>_* value.
    PLT is nonzero if this was a PLT reloc; it just affects the message.  */

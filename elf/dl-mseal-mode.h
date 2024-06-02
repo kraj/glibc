@@ -1,5 +1,5 @@
-/* Return string describing errno name.
-   Copyright (C) 2020-2024 Free Software Foundation, Inc.
+/* Memory sealing.  Generic definitions.
+   Copyright (C) 2024 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -16,11 +16,14 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#include <stdio.h>
-#include <string.h>
+#ifndef _DL_SEAL_MODE_H
+#define _DL_SEAL_MODE_H
 
-const char *
-strerrorname_np (int errnum)
+enum dl_seal_mode
 {
-  return __get_errname (errnum);
-}
+  DL_SEAL_DISABLE = 0,
+  DL_SEAL_ENABLE = 1,
+  DL_SEAL_ENFORCE = 2,
+};
+
+#endif

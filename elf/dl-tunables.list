@@ -142,6 +142,11 @@ glibc {
       maxval: 1
       default: 0
     }
+    seal {
+      type: INT_32
+      minval: 0
+      maxval: 2
+    }
   }
 
   mem {

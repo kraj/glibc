@@ -1,5 +1,5 @@
-/* Return string describing errno name.
-   Copyright (C) 2020-2024 Free Software Foundation, Inc.
+/* Memory sealing.  Generic version.
+   Copyright (C) 2024 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -16,11 +16,10 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#include <stdio.h>
-#include <string.h>
-
-const char *
-strerrorname_np (int errnum)
+static inline int
+_dl_mseal (void *addr, size_t len)
 {
-  return __get_errname (errnum);
+  return 0;
 }
+
+#define SUPPORT_MSEAL 0

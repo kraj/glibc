@@ -53,6 +53,7 @@
 #include <dl-find_object.h>
 #include <dl-audit-check.h>
 #include <dl-call_tls_init_tp.h>
+#include <dl-mseal.h>
 
 #include <assert.h>
 
@@ -477,6 +478,7 @@ _dl_start_final (void *arg, struct dl_start_final_info *info)
   GL(dl_rtld_map).l_real = &GL(dl_rtld_map);
   GL(dl_rtld_map).l_map_start = (ElfW(Addr)) &__ehdr_start;
   GL(dl_rtld_map).l_map_end = (ElfW(Addr)) _end;
+  GL(dl_rtld_map).l_seal = 1;
   /* Copy the TLS related data if necessary.  */
 #ifndef DONT_USE_BOOTSTRAP_MAP
 # if NO_TLS_OFFSET != 0
@@ -1123,6 +1125,7 @@ rtld_setup_main_map (struct link_map *main_map)
   /* And it was opened directly.  */
   ++main_map->l_direct_opencount;
   main_map->l_contiguous = 1;
+  main_map->l_seal = 1;
 
   /* A PT_LOAD segment at an unexpected address will clear the
      l_contiguous flag.  The ELF specification says that PT_LOAD
@@ -1636,7 +1639,7 @@ dl_main (const ElfW(Phdr) *phdr,
       /* Create a link_map for the executable itself.
 	 This will be what dlopen on "" returns.  */
       main_map = _dl_new_object ((char *) "", "", lt_executable, NULL,
-				 __RTLD_OPENEXEC, LM_ID_BASE);
+				 __RTLD_OPENEXEC | RTLD_NODELETE, LM_ID_BASE);
       assert (main_map != NULL);
       main_map->l_phdr = phdr;
       main_map->l_phnum = phnum;
@@ -1964,7 +1967,7 @@ dl_main (const ElfW(Phdr) *phdr,
     RTLD_TIMING_VAR (start);
     rtld_timer_start (&start);
     _dl_map_object_deps (main_map, preloads, npreloads,
-			 state.mode == rtld_mode_trace, 0);
+			 state.mode == rtld_mode_trace, RTLD_NODELETE);
     rtld_timer_accum (&load_time, start);
   }
 

@@ -28,6 +28,7 @@
 #include <_itoa.h>
 #include <libc-pointer-arith.h>
 #include "dynamic-link.h"
+#include <dl-mseal.h>
 
 /* Statistics function.  */
 #ifdef SHARED
@@ -347,6 +348,11 @@ _dl_relocate_object (struct link_map *l, struct r_scope_elem *scope[],
      done, do it.  */
   if (l->l_relro_size != 0)
     _dl_protect_relro (l);
+
+  /* Seal the memory mapping after RELRO setup, we can use the PT_LOAD
+     segments because even if relro splits the the original RW VMA,
+     mseal works with multiple VMAs with different flags.  */
+  _dl_mseal_map (l);
 }
 
 
@@ -366,6 +372,33 @@ _dl_protect_relro (struct link_map *l)
       static const char errstring[] = N_("\
 cannot apply additional memory protection after relocation");
       _dl_signal_error (errno, l->l_name, NULL, errstring);
+    }
+}
+
+void
+_dl_mseal_map (const struct link_map *l)
+{
+  if (l->l_seal)
+    {
+      if (l->l_contiguous)
+	_dl_mseal ((void *) l->l_map_start, l->l_map_end - l->l_map_start);
+      else
+	{
+	  for (const ElfW(Phdr) *ph = l->l_phdr;
+	       ph < &l->l_phdr[l->l_phnum];
+	       ++ph)
+	    switch (ph->p_type)
+	      {
+	      case PT_LOAD:
+		{
+		  ElfW(Addr) mapstart = l->l_addr
+		      + (ph->p_vaddr & ~(GLRO(dl_pagesize) - 1));
+		  ElfW(Addr) allocend = l->l_addr + ph->p_vaddr + ph->p_memsz;
+		  _dl_mseal ((void *) mapstart, allocend - mapstart);
+		}
+	        break;
+	    }
+	}
     }
 }
 

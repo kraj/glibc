@@ -1431,6 +1431,8 @@ cannot enable executable stack as shared object requires");
     /* Assign the next available module ID.  */
     _dl_assign_tls_modid (l);
 
+  l->l_seal = mode & RTLD_NODELETE ? 1 : 0;
+
 #ifdef DL_AFTER_LOAD
   DL_AFTER_LOAD (l);
 #endif
