@@ -66,6 +66,18 @@ PROCINFO_CLASS int (*_dl_vdso_clock_getres) (clockid_t,
 PROCINFO_CLASS int (*_dl_vdso_clock_getres_time64) (clockid_t,
 						    struct __timespec64 *) RELRO;
 # endif
+# ifdef HAVE_GETRANDOM_VSYSCALL
+PROCINFO_CLASS ssize_t (*_dl_vdso_getrandom) (void *buffer, size_t len,
+                                              unsigned int flags, void *state,
+                                              size_t state_len) RELRO;
+/* These values will be initialized at loading time by calling the
+   _dl_vdso_getrandom with a special value.  The 'state_size' is the opaque
+   state size per-thread allocated with a mmap using 'mmap_prot' and
+   'mmap_flags' argument.  */
+PROCINFO_CLASS uint32_t _dl_vdso_getrandom_state_size RELRO;
+PROCINFO_CLASS uint32_t _dl_vdso_getrandom_mmap_prot RELRO;
+PROCINFO_CLASS uint32_t _dl_vdso_getrandom_mmap_flags RELRO;
+# endif
 
 /* PowerPC specific ones.  */
 # ifdef HAVE_GET_TBFREQ
