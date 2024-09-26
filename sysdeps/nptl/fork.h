@@ -26,7 +26,7 @@
 #include <mqueue.h>
 #include <pthreadP.h>
 #include <sysdep.h>
-#include <sys/random.h>
+#include <getrandom-internal.h>
 
 static inline void
 fork_system_setup (void)

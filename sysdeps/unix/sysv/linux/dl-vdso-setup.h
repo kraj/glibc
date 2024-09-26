@@ -19,10 +19,6 @@
 #ifndef _DL_VDSO_INIT_H
 #define _DL_VDSO_INIT_H
 
-#ifdef HAVE_GETRANDOM_VSYSCALL
-# include <getrandom_vdso.h>
-#endif
-
 /* Initialize the VDSO functions pointers.  */
 static inline void __attribute__ ((always_inline))
 setup_vdso_pointers (void)
@@ -56,16 +52,6 @@ setup_vdso_pointers (void)
 #endif
 #ifdef HAVE_GETRANDOM_VSYSCALL
   GLRO(dl_vdso_getrandom) = dl_vdso_vsym (HAVE_GETRANDOM_VSYSCALL);
-  if (GLRO(dl_vdso_getrandom) != NULL)
-    {
-      struct vgetrandom_opaque_params params;
-      if (GLRO(dl_vdso_getrandom) (NULL, 0, 0, &params, ~0UL) == 0)
-	{
-	  GLRO(dl_vdso_getrandom_state_size) = params.size_of_opaque_state;
-	  GLRO(dl_vdso_getrandom_mmap_prot) = params.mmap_prot;
-	  GLRO(dl_vdso_getrandom_mmap_flags) = params.mmap_flags;
-	}
-    }
 #endif
 }
 

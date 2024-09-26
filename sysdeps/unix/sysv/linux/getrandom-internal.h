@@ -16,14 +16,14 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#ifndef _LINUX_SYS_RANDOM_H
-#define _LINUX_SYS_RANDOM_H
+#ifndef _GETRANDOM_INTERNAL_H
+#define _GETRANDOM_INTERNAL_H
 
-# ifndef _ISOMAC
-# include <pthreadP.h>
+#include <pthreadP.h>
+
+extern void __getrandom_early_init (_Bool) attribute_hidden;
 
 extern void __getrandom_fork_subprocess (void) attribute_hidden;
 extern void __getrandom_vdso_release (struct pthread *curp) attribute_hidden;
 extern void __getrandom_reset_state (struct pthread *curp) attribute_hidden;
-# endif
 #endif

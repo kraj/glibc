@@ -18,7 +18,7 @@
 
 #include <arch-fork.h>
 #include <pthreadP.h>
-#include <sys/random.h>
+#include <getrandom-internal.h>
 
 pid_t
 _Fork (void)

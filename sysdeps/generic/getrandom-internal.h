@@ -1,4 +1,4 @@
-/* Linux getrandom vDSO support.
+/* Internal definitions for getrandom implementation.
    Copyright (C) 2024 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -16,21 +16,11 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#ifndef _GETRANDOM_VDSO_H
-#define _GETRANDOM_VDSO_H
+#ifndef _GETRANDOM_INTERNAL_H
+#define _GETRANDOM_INTERNAL_H
 
-#include <stddef.h>
-#include <stdint.h>
-#include <sys/types.h>
-
-/* Used to query the vDSO for the required mmap flags and the opaque
-   per-thread state size  Defined by linux/random.h.  */
-struct vgetrandom_opaque_params
+static inline void __getrandom_early_init (_Bool)
 {
-  uint32_t size_of_opaque_state;
-  uint32_t mmap_prot;
-  uint32_t mmap_flags;
-  uint32_t reserved[13];
-};
+}
 
 #endif

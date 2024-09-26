@@ -38,7 +38,7 @@
 #include <version.h>
 #include <clone_internal.h>
 #include <futex-internal.h>
-#include <sys/random.h>
+#include <getrandom-internal.h>
 
 #include <shlib-compat.h>
 

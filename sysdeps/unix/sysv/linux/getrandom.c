@@ -31,7 +31,7 @@ getrandom_syscall (void *buffer, size_t length, unsigned int flags,
 }
 
 #ifdef HAVE_GETRANDOM_VSYSCALL
-# include <getrandom_vdso.h>
+# include <assert.h>
 # include <ldsodefs.h>
 # include <libc-lock.h>
 # include <list.h>
@@ -40,12 +40,64 @@ getrandom_syscall (void *buffer, size_t length, unsigned int flags,
 # include <sys/sysinfo.h>
 # include <tls-internal.h>
 
-# define ALIGN_PAGE(p)		PTR_ALIGN_UP (p, GLRO (dl_pagesize))
-# define READ_ONCE(p)		(*((volatile typeof (p) *) (&(p))))
-# define WRITE_ONCE(p, v)	(*((volatile typeof (p) *) (&(p))) = (v))
-# define RESERVE_PTR(p)		((void *) ((uintptr_t) (p) | 1UL))
-# define RELEASE_PTR(p)		((void *) ((uintptr_t) (p) & ~1UL))
-# define IS_RESERVED_PTR(p)	(!!((uintptr_t) (p) & 1UL))
+/* These values will be initialized at loading time by calling the]
+   _dl_vdso_getrandom with a special value.  The 'state_size' is the opaque
+   state size per-thread allocated with a mmap using 'mmap_prot' and
+   'mmap_flags' argument.  */
+static uint32_t state_size;
+static uint32_t stradle_size;
+static uint32_t mmap_prot;
+static uint32_t mmap_flags;
+
+void
+__getrandom_early_init (_Bool initial)
+{
+  if (initial && (GLRO (dl_vdso_getrandom) != NULL))
+    {
+      /* Used to query the vDSO for the required mmap flags and the opaque
+	 per-thread state size.  Defined by linux/random.h.  */
+      struct vgetrandom_opaque_params
+      {
+	uint32_t size_of_opaque_state;
+	uint32_t mmap_prot;
+	uint32_t mmap_flags;
+	uint32_t reserved[13];
+      } params;
+      if (GLRO(dl_vdso_getrandom) (NULL, 0, 0, &params, ~0UL) == 0)
+	{
+	  /* Align each opaque state to L1 data cache size to avoid false
+	     sharing.  If the size can not be obtained, use the kernel
+	     provided one.  */
+	  state_size = params.size_of_opaque_state;
+	  long int ld1sz = __sysconf (_SC_LEVEL1_DCACHE_LINESIZE) ?: 1;
+	  stradle_size = ALIGN_UP (state_size, ld1sz);
+	  mmap_prot = params.mmap_prot;
+	  mmap_flags = params.mmap_flags;
+	}
+    }
+}
+
+/* The function below are used on reentracy handling with (i.e. SA_NODEFER).
+   Befor allocate a new state or issue the vDSO, atomically read the current
+   thread buffer, and if this is already reserved (is_reserved_ptr) fallback
+   to the syscall.  Otherwise, reserve the buffer by atomically setting the
+   LSB of the opaque state pointer.  The bit is cleared after the vDSO is
+   called, or before issuing the fallback syscall.  */
+
+static inline void *reserve_ptr (void *p)
+{
+  return (void *) ((uintptr_t) (p) | 1UL);
+}
+
+static inline void *release_ptr (void *p)
+{
+  return (void *) ((uintptr_t) (p) & ~1UL);
+}
+
+static inline bool is_reserved_ptr (void *p)
+{
+  return (uintptr_t) (p) & 1UL;
+}
 
 static struct
 {
@@ -64,13 +116,10 @@ static struct
 static bool
 vgetrandom_get_state_alloc (void)
 {
-  size_t num = __get_nprocs (); /* Just a decent heuristic.  */
-
-  size_t block_size = ALIGN_PAGE (num * GLRO(dl_vdso_getrandom_state_size));
-  num = (GLRO (dl_pagesize) / GLRO(dl_vdso_getrandom_state_size)) *
-	(block_size / GLRO (dl_pagesize));
-  void *block = __mmap (NULL, block_size, GLRO(dl_vdso_getrandom_mmap_prot),
-			GLRO(dl_vdso_getrandom_mmap_flags), -1, 0);
+  /* Start by allocating one page for the opaque states.  */
+  size_t block_size = ALIGN_UP (stradle_size, GLRO(dl_pagesize));
+  size_t num = GLRO (dl_pagesize) / stradle_size;
+  void *block = __mmap (NULL, GLRO(dl_pagesize), mmap_prot, mmap_flags, -1, 0);
   if (block == MAP_FAILED)
     return false;
   __set_vma_name (block, block_size, " glibc: getrandom");
@@ -82,15 +131,20 @@ vgetrandom_get_state_alloc (void)
 	 mremap returns but before assigning to the grnd_alloc.states,
 	 thus making the its value invalid in the child.  */
       void *old_states = grnd_alloc.states;
-      size_t old_states_size = ALIGN_PAGE (sizeof (*grnd_alloc.states) *
-					   grnd_alloc.total + num);
+      size_t old_states_size = ALIGN_UP (sizeof (*grnd_alloc.states) *
+					 grnd_alloc.total + num,
+					 GLRO(dl_pagesize));
       size_t states_size;
-      if (grnd_alloc.states == NULL)
+      if (old_states == NULL)
 	states_size = old_states_size;
       else
-	states_size = ALIGN_PAGE (sizeof (*grnd_alloc.states)
-				  * grnd_alloc.cap);
+	states_size = ALIGN_UP (sizeof (*grnd_alloc.states) * grnd_alloc.cap,
+				GLRO(dl_pagesize));
 
+      /* There is no need to memcpy any opaque state information because
+	 all the allocated opaque states are assigned to running threads
+	 (meaning that if we iterate over them we can reconstruct the state
+	 list).  */
       void **states = __mmap (NULL, states_size, PROT_READ | PROT_WRITE,
 			      MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
       if (states == MAP_FAILED)
@@ -103,25 +157,29 @@ vgetrandom_get_state_alloc (void)
 	 process will see a consistent free state buffer.  The size might
 	 not be updated, but it does not really matter since the buffer is
 	 always increased.  */
-      atomic_store_relaxed (&grnd_alloc.states, states);
+      grnd_alloc.states = states;
+      atomic_thread_fence_seq_cst ();
       if (old_states != NULL)
 	__munmap (old_states, old_states_size);
 
       __set_vma_name (states, states_size, " glibc: getrandom states");
       grnd_alloc.cap = states_size / sizeof (*grnd_alloc.states);
+      atomic_thread_fence_seq_cst ();
     }
 
   for (size_t i = 0; i < num; ++i)
     {
       /* States should not straddle a page.  */
-      if (((uintptr_t) block & (GLRO (dl_pagesize) - 1)) +
-	  GLRO(dl_vdso_getrandom_state_size) > GLRO (dl_pagesize))
-	block = ALIGN_PAGE (block);
+      if (((uintptr_t) block & (GLRO (dl_pagesize) - 1)) + stradle_size
+	  > GLRO (dl_pagesize))
+	block = PTR_ALIGN_UP (block, GLRO(dl_pagesize));
       grnd_alloc.states[i] = block;
-      block += GLRO(dl_vdso_getrandom_state_size);
+      block += stradle_size;
     }
+  /* Concurrent fork should not observe the previous pointer value.  */
   grnd_alloc.len = num;
   grnd_alloc.total += num;
+  atomic_thread_fence_seq_cst ();
 
   return true;
 }
@@ -156,18 +214,15 @@ vgetrandom_get_state (void)
 static ssize_t
 getrandom_vdso (void *buffer, size_t length, unsigned int flags, bool cancel)
 {
-  if (GLRO (dl_vdso_getrandom_state_size) == 0)
+  if (__glibc_unlikely (state_size == 0))
     return getrandom_syscall (buffer, length, flags, cancel);
 
   struct pthread *self = THREAD_SELF;
 
-  /* If the LSB of getrandom_buf is set, then this function is already being
-     called, and we have a reentrant call from a signal handler.  In this case
-     fallback to the syscall.  */
-  void *state = READ_ONCE (self->getrandom_buf);
-  if (IS_RESERVED_PTR (state))
+  void *state = atomic_load_relaxed (&self->getrandom_buf);
+  if (is_reserved_ptr (state))
     return getrandom_syscall (buffer, length, flags, cancel);
-  WRITE_ONCE (self->getrandom_buf, RESERVE_PTR (state));
+  atomic_store_relaxed (&self->getrandom_buf, reserve_ptr (state));
 
   bool r = false;
   if (state == NULL)
@@ -177,15 +232,15 @@ getrandom_vdso (void *buffer, size_t length, unsigned int flags, bool cancel)
         goto out;
     }
 
-  /* Since the vDSO fallback does not issue the syscall with the cancellation
-     bridge (__syscall_cancel_arch), use GRND_NONBLOCK so there is no
-     potential unbounded blocking in the kernel.  It should be a rare
+  /* Since the vDSO implementation does not issue the syscall with the
+     cancellation bridge (__syscall_cancel_arch), use GRND_NONBLOCK so there
+     is no potential unbounded blocking in the kernel.  It should be a rare
      situation, only at system startup when RNG is not initialized.  */
-  ssize_t ret =  GLRO (dl_vdso_getrandom) (buffer,
-					   length,
-					   flags | GRND_NONBLOCK,
-					   state,
-					   GLRO(dl_vdso_getrandom_state_size));
+  ssize_t ret = GLRO (dl_vdso_getrandom) (buffer,
+					  length,
+					  flags | GRND_NONBLOCK,
+					  state,
+					  state_size);
   if (INTERNAL_SYSCALL_ERROR_P (ret))
     {
       /* Fallback to the syscall if the kernel would block.  */
@@ -199,25 +254,30 @@ getrandom_vdso (void *buffer, size_t length, unsigned int flags, bool cancel)
   r = true;
 
 out:
-  WRITE_ONCE (self->getrandom_buf, state);
+  atomic_store_relaxed (&self->getrandom_buf, state);
   return r ? ret : getrandom_syscall (buffer, length, flags, cancel);
 }
 #endif
 
-/* Re-add the state state from CURP on the free list.  */
+/* Re-add the state state from CURP on the free list.  This function is
+   called after fork returns in the child, so no locking is required.  */
 void
 __getrandom_reset_state (struct pthread *curp)
 {
 #ifdef HAVE_GETRANDOM_VSYSCALL
   if (grnd_alloc.states == NULL || curp->getrandom_buf == NULL)
     return;
-  grnd_alloc.states[grnd_alloc.len++] = RELEASE_PTR (curp->getrandom_buf);
+  grnd_alloc.len++;
+  assert (grnd_alloc.len < grnd_alloc.cap);
+  grnd_alloc.states[grnd_alloc.len] = release_ptr (curp->getrandom_buf);
   curp->getrandom_buf = NULL;
 #endif
 }
 
 /* Called when a thread terminates, and adds its random buffer back into the
-   allocator pool for use in a future thread.  */
+   allocator pool for use in a future thread.  This is called by
+   pthrea_create during thread termination, and after signal has been
+   blocked. */
 void
 __getrandom_vdso_release (struct pthread *curp)
 {
