@@ -19,6 +19,7 @@
 #ifndef _DL_PROP_H
 #define _DL_PROP_H
 
+#include <dl-prop-mseal.h>
 #include <libintl.h>
 
 extern void _dl_cet_check (struct link_map *, const char *)
@@ -66,9 +67,11 @@ dl_isa_level_check (struct link_map *m, const char *program)
 static inline void __attribute__ ((always_inline))
 _rtld_main_check (struct link_map *m, const char *program)
 {
+#ifdef SAHRED
   dl_isa_level_check (m, program);
-#if CET_ENABLED
+# if CET_ENABLED
   _dl_cet_check (m, program);
+# endif
 #endif
 }
 
@@ -241,6 +244,9 @@ _dl_process_gnu_property (struct link_map *l, int fd, uint32_t type,
 			  uint32_t datasz, void *data)
 {
   /* This is called on each GNU property.  */
+  if (_dl_process_gnu_property_seal (l, fd, type, datasz, data))
+    return 0;
+
   unsigned int needed_1 = 0;
   unsigned int feature_1_and = 0;
   unsigned int isa_1_needed = 0;
