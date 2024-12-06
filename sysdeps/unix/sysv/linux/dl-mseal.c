@@ -46,6 +46,6 @@ _dl_mseal (void *addr, size_t len, const char *object)
     {
       static const char errstring[] = N_("\
 cannot apply memory sealing");
-      _dl_signal_error (-r, object, NULL, errstring);
+      _dl_signal_error (-r, DSO_FILENAME (object), NULL, errstring);
     }
 }
