@@ -67,6 +67,10 @@ Major new features:
   to a mising GNU_STACK ELF header or explicit explicitly because of the
   executable bit in GNU_STACK.  The default is to allow executable stacks.
 
+* On Linux, the mseal function has been added.  It allows to seal memory
+  mappings to avoid further change during process execution such as protection
+  permissions, unmapping, moving to another location, or shrinking the size.
+
 Deprecated and removed features, and other changes affecting compatibility:
 
 * The big-endian ARC port (arceb-linux-gnu) has been removed.
