@@ -87,9 +87,14 @@ test_interval_1 (const char *n_clock, clockid_t t_clock)
   /* Arbitrary to ensure our time period is sufficiently bigger than
      the time step.  */
   TEST_VERIFY (clock_getres (t_clock, &quantum) == 0);
-  printf("Clock quantum: %lld ns, test time: %lld ns\n",
+  printf("%s quantum: %lld ns, test time: %lld ns\n", n_clock,
 	 (long long int) quantum.tv_nsec, (long long int) TEST_NSEC);
-  TEST_VERIFY (quantum.tv_nsec <= TEST_NSEC / 10);
+  if (quantum.tv_nsec > TEST_NSEC / 10)
+    {
+      printf ("SKIPPING test_interval for clock %s, not enough precision\n",
+	      n_clock);
+      return;
+    }
 
   min_slept = TEST_NSEC;
 
@@ -125,9 +130,14 @@ test_abs_1 (const char *n_clock, clockid_t t_clock)
   /* Arbitrary to ensure our time period is sufficiently bigger than
      the time step.  */
   TEST_VERIFY (clock_getres (t_clock, &quantum) == 0);
-  printf("Clock quantum: %lld ns, test time: %lld ns\n",
+  printf("%s quantum: %lld ns, test time: %lld ns\n", n_clock,
 	 (long long int) quantum.tv_nsec, (long long int) TEST_NSEC);
-  TEST_VERIFY (quantum.tv_nsec <= TEST_NSEC / 10);
+  if (quantum.tv_nsec > TEST_NSEC / 10)
+    {
+      printf ("SKIPPING test_abs for clock %s, not enough precision\n",
+	      n_clock);
+      return;
+    }
 
   me_sleep = make_timespec (0,  TEST_NSEC);
 
