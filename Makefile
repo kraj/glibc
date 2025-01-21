@@ -645,14 +645,19 @@ ifeq ($(run-built-tests),yes)
 	      mkdir -p `dirname $(objpfx)testroot.pristine$$dso` ;\
 	    $(test-wrapper) cp $$dso $(objpfx)testroot.pristine$$dso ;\
 	  done
-	for dso in `$(test-wrapper-env) LD_TRACE_LOADED_OBJECTS=1  \
+	for dso in \
+		`$(test-wrapper-env) LD_TRACE_LOADED_OBJECTS=1  \
+		$(rtld-prefix) \
+		$(objpfx)support/$(LINKS_DSO_PROGRAM) \
+	        | sed -n '/\//{s@.*=> /@/@;s/^[^/]*//;s/ .*//p;}'` \
+		`$(test-wrapper-env) LD_TRACE_LOADED_OBJECTS=1  \
 		$(rtld-prefix) --inhibit-cache \
 		$(objpfx)support/$(LINKS_DSO_PROGRAM) \
 	        | sed -n '/\//{s@.*=> /@/@;s/^[^/]*//;s/ .*//p;}'` ;\
 	  do \
 	    test -d `dirname $(objpfx)testroot.pristine$$dso` || \
-	      mkdir -p `dirname $(objpfx)testroot.pristine$$dso` ;\
-	    $(test-wrapper) cp $$dso $(objpfx)testroot.pristine$$dso ;\
+	      mkdir -pv `dirname $(objpfx)testroot.pristine$$dso` ;\
+	    $(test-wrapper) cp -v $$dso $(objpfx)testroot.pristine$$dso ;\
 	  done
 endif
 	# $(symbolic-link-list) is a file that encodes $(DESTDIR) so we
