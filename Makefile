@@ -612,7 +612,13 @@ endef
 # support libraries we need we build a "test" program in either C or
 # (if available) C++ just so we can copy in any shared objects
 # (which we do not build) that GCC-compiled programs depend on.
-
+# Without the (external) library cache, our ld.so (which is passed an
+# explicit list of library directories) won't find these libraries
+# during rootfs construction time, so we call up the list of dynamic
+# libraries linked in twice: first with cache, for a complete
+# list, then without cache, to make sure we get the newly built objects.
+# External libraries such as libgcc_s.so.1 may come from nonstandard
+# directories, so we copy in the host system ld.so search configuration.
 
 ifeq (,$(CXX))
 LINKS_DSO_PROGRAM = links-dso-program-c
@@ -645,6 +651,7 @@ ifeq ($(run-built-tests),yes)
 	      mkdir -p `dirname $(objpfx)testroot.pristine$$dso` ;\
 	    $(test-wrapper) cp $$dso $(objpfx)testroot.pristine$$dso ;\
 	  done
+	# Copy what LINKS_DSO_PROGRAM needs, first with then without cache
 	for dso in \
 		`$(test-wrapper-env) LD_TRACE_LOADED_OBJECTS=1  \
 		$(rtld-prefix) \
@@ -659,6 +666,10 @@ ifeq ($(run-built-tests),yes)
 	      mkdir -pv `dirname $(objpfx)testroot.pristine$$dso` ;\
 	    $(test-wrapper) cp -v $$dso $(objpfx)testroot.pristine$$dso ;\
 	  done
+	# Copy external (host system) ld.so search configuration, ignore errors
+	-mkdir -p $(objpfx)testroot.pristine/etc
+	-cp -v /etc/ld.so.conf $(objpfx)testroot.pristine/etc/
+	-cp -vR /etc/ld.so.conf.d $(objpfx)testroot.pristine/etc/
 endif
 	# $(symbolic-link-list) is a file that encodes $(DESTDIR) so we
 	# have to purge it
