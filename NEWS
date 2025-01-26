@@ -9,19 +9,6 @@ Version 2.41
 
 Major new features:
 
-* Support for testing a glibc build with a set of C and C++ compilers
-  different from the C and C++ compilers used to build glibc has been
-  added:
-  $ ../configure TEST_CC="gcc-6.4.1" TEST_CXX="g++-6.4.1"
-
-  This includes support for testing the glibc build with Clang, e.g.,
-  $ ../configure TEST_CC="clang" TEST_CXX="clang++"
-
-  Some run-time failures with Clang are expected.
-
-* The glibc test suite has been extended again significantly, with now
-  6232 separate tests compared to 5408 in glibc-2.40.
-
 * In /etc/resolv.conf and the RES_OPTIONS environment variable, option
   flags can now be prefixed with “-” to clear previously set flags.
   For example, if /etc/resolv.conf contains “options no-aaaa”, a
@@ -112,17 +99,26 @@ Major new features:
 * A new architecture type has been introduced internally to better
   support Hygon x86-64 processors.
 
+* Support for testing a glibc build with a set of C and C++ compilers
+  different from the C and C++ compilers used to build glibc has been
+  added:
+  $ ../configure TEST_CC="gcc-6.4.1" TEST_CXX="g++-6.4.1"
+
+  This includes support for testing the glibc build with Clang, e.g.,
+  $ ../configure TEST_CC="clang" TEST_CXX="clang++"
+
+  Some run-time failures with Clang are expected.
+
+* The glibc test suite has been extended again significantly, with now
+  6232 separate tests compared to 5408 in glibc-2.40.
+
 Deprecated and removed features, and other changes affecting
 compatibility:
-
-* The big-endian ARC port (arceb-linux-gnu) has been removed.
 
 * abort is now async-signal-safe and its implementation makes longjmp
   from the SIGABRT handler always abort if set up with setjmp.  Use
   sigsetjmp to keep the old behavior, where the handler does not stop
   the process execution.
-
-* The nios2*-*-linux-gnu configurations are no longer supported.
 
 * dlopen and dlmopen no longer make the stack executable if a shared
   library requires it, either implicitly because of a missing GNU_STACK
@@ -130,6 +126,10 @@ compatibility:
   or explicitly because of the executable bit in GNU_STACK, and the
   stack is not already executable.  Instead, loading such objects will
   fail.
+
+* The nios2*-*-linux-gnu configurations are no longer supported.
+
+* The big-endian ARC port (arceb-linux-gnu) has been removed.
 
 Changes to build and runtime requirements:
 
