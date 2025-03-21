@@ -9,6 +9,8 @@ Version 2.44.1
 
 The following bugs are resolved with this release:
 
+  [34338] libc: Cancellable syscall wrappers are missing from backtraces
+    because they tail-call __syscall_cancel
   [34441] math: math: sinh() returns wrong results for some inputs with
     |x| > 36.736801
   [34465] math: math: x86_64 tanh ifunc selection wrong

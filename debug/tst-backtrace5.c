@@ -36,10 +36,15 @@
    trampoline, read, 3 * fn, and do_test.  */
 #define NUM_FUNCTIONS 7
 
+/* Avoid the read wrapper frame truncation on targets that add extra frames
+   between it and handle_signal (the cancellable syscall wrappers
+   __syscall_cancel*, or the i686 __kernel_vsyscall entry).  */
+#define MAX_FUNCTIONS 64
+
 void
 handle_signal (int signum)
 {
-  void *addresses[NUM_FUNCTIONS];
+  void *addresses[MAX_FUNCTIONS];
   char **symbols;
   int n;
   int i;
@@ -70,23 +75,28 @@ handle_signal (int signum)
       return;
     }
 
-  /* Do not check name for signal trampoline or cancellable syscall
-     wrappers (__syscall_cancel*).  */
-  for (; i < n - 1; i++)
+  /* Skip the signal trampoline and any cancellable syscall wrapper frames
+     (__syscall_cancel*) and require the read syscall wrapper to be
+     present.  */
+  for (i = 1; i < n; i++)
     if (match (symbols[i], "read"))
       break;
-  if (i == n - 1)
+  if (i == n)
     {
       FAIL ();
       return;
     }
 
-  for (; i < n - 1; i++)
-    if (!match (symbols[i], "fn"))
-      {
-	FAIL ();
-	return;
-      }
+  /* The read wrapper must be followed by the three fn recursion frames.  */
+  for (int j = 0; j < 3; j++)
+    {
+      i++;
+      if (i == n || !match (symbols[i], "fn"))
+	{
+	  FAIL ();
+	  return;
+	}
+    }
   /* Symbol names are not available for static functions, so we do not
      check do_test.  */
 
