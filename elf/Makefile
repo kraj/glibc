@@ -1457,7 +1457,9 @@ $(objpfx)dl-allobjs.os: $(all-rtld-routines:%=$(objpfx)%.os)
 # when compiled for libc.
 rtld-stubbed-symbols = \
   __libc_assert_fail \
-  __syscall_cancel \
+  __syscall_cancel_arch \
+  __libc_single_threaded_internal \
+  __syscall_do_cancel \
   calloc \
   free \
   malloc \
