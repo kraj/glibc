@@ -1469,7 +1469,7 @@ fls (uint32_t a)
 {
   uint32_t mask;
   int n;
-  for (n = 0, mask = 1 << 31; n < 32; mask >>= 1, ++n)
+  for (n = 0, mask = 1U << 31; n < 32; mask >>= 1, ++n)
     if ((a & mask) != 0)
       break;
   return n;
