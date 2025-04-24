@@ -19,7 +19,8 @@ asm (".hidden __stack_chk_fail_local\n"
 # endif
 #endif
 
-#if !defined __ASSEMBLER__ && IS_IN(rtld) && defined ENABLE_UBSAN
+#if !defined __ASSEMBLER__ && IS_IN(rtld) && defined ENABLE_UBSAN \
+  && !defined DISABLE_USAN_INTERNAL_REDIR
 asm ("__ubsan_handle_negate_overflow = "
      "__GI___ubsan_handle_negate_overflow");
 asm ("__ubsan_handle_shift_out_of_bounds = "
