@@ -43,7 +43,9 @@ struct dl_find_object_internal
 #if DLFO_STRUCT_HAS_EH_COUNT
   int eh_count;
 #endif
+#if ENABLE_SFRAME
   void *sframe;
+#endif
 };
 
 /* Create a copy of *SOURCE in *COPY using relaxed MO loads and
@@ -68,8 +70,10 @@ _dl_find_object_internal_copy (const struct dl_find_object_internal *source,
   atomic_store_relaxed (&copy->eh_count,
                         atomic_load_relaxed (&source->eh_count));
 #endif
+#if ENABLE_SFRAME
   atomic_store_relaxed (&copy->sframe,
                         atomic_load_relaxed (&source->sframe));
+#endif
 }
 
 static inline void
@@ -86,10 +90,12 @@ _dl_find_object_to_external (struct dl_find_object_internal *internal,
 # if DLFO_STRUCT_HAS_EH_COUNT
   external->dlfo_eh_count = internal->eh_count;
 # endif
+# if ENABLE_SFRAME
   external->dlfo_sframe = internal->sframe;
   if (internal->sframe != NULL)
     external->dlfo_flags = DLFO_FLAG_SFRAME;
   else
+# endif
     external->dlfo_flags = 0;
 }
 
@@ -112,7 +118,9 @@ _dl_find_object_from_map (struct link_map *l,
 
   /* Initialize object's exception handling segment and SFrame segment
      data.  */
+#if ENABLE_SFRAME
   atomic_store_relaxed (&result->sframe, NULL);
+#endif
   atomic_store_relaxed (&result->eh_frame, NULL);
 #if DLFO_STRUCT_HAS_EH_COUNT
   atomic_store_relaxed (&result->eh_count, 0);
@@ -132,11 +140,13 @@ _dl_find_object_from_map (struct link_map *l,
           read_seg |= 1;
           break;
 
+#if ENABLE_SFRAME
         case PT_GNU_SFRAME:
           atomic_store_relaxed (&result->sframe,
                                 (void *) (ph->p_vaddr + l->l_addr));
           read_seg |= 2;
           /* Fall through.  */
+#endif
         default:
           break;
         }

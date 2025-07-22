@@ -441,10 +441,10 @@ case "$enable_fortify_source" in
 esac
 
 AC_ARG_ENABLE([sframe],
-	      [AS_HELP_STRING([--disable-sframe],
-			     [Disable building with SFrame stack trace information @<:@default=yes if GNU as is 2.41 or older@:>@])],
+	      [AS_HELP_STRING([--enable-sframe],
+			      [Enable building with SFrame stack trace information @<:@default=no@:>@])],
 	      [use_sframe=$enableval],
-	      [use_sframe=notset])
+	      [use_sframe=no])
 
 # We keep the original values in `$config_*' and never modify them, so we
 # can write them unchanged into config.make.  Everything else uses
@@ -2122,15 +2122,15 @@ AC_SUBST(test_enable_cet)
 AC_SUBST(libc_cv_test_x86_have_amx_tile)
 
 # Glibc stacktracer supports SFrame v2 or newer
-libc_cv_readelf_version_ok=yes
+libc_cv_sframe_readelf_version=yes
 # SFrame is supported from 2.41 or higher
-AC_CHECK_PROG_VER(READELF_SFRAME, $READELF, --version,
+AC_CHECK_PROG_VER(READELF, $READELF, --version,
   [GNU readelf.* \([0-9][0-9]*\.[0-9.]*\)],
-  [2.4[1-9]*|2.[5-9][0-9]*|[3-9].*|[1-9][0-9][0-9]*],
-  libc_cv_readelf_version_ok=no)
+  [2.4[5-9]*|2.[5-9][0-9]*|[3-9].*|[1-9][0-9][0-9]*],
+  libc_cv_sframe_readelf_version=no)
 
 # Check the current toolchain for SFrame support
-if test $libc_cv_readelf_version_ok = yes; then
+if test $libc_cv_sframe_readelf_version = yes; then
   AC_CACHE_CHECK([for SFrame support], libc_cv_default_sframe,
   [dnl
 cat > conftest.c <<EOF
@@ -2151,13 +2151,17 @@ fi
 
 # Prevent enabling sframe on non-supporting toolchains
 enable_gsframe=no
-if test $use_sframe$libc_cv_default_sframe = yesyes || \
-   test $use_sframe$libc_cv_default_sframe = notsetyes; then
-  enable_gsframe=yes
-elif test $use_sframe = yes; then
-   AC_MSG_FAILURE([toolchain doesn't support SFrame v2 or higher])
+if test $use_sframe = yes; then
+  if test -z $libc_cv_support_sframe; then
+    AC_MSG_FAILURE([the architecture doesn't support SFrame])
+  elif test $libc_cv_default_sframe == no; then
+    AC_MSG_FAILURE([toolchain doesn't support SFrame v2 or higher])
+  else
+    enable_gsframe=yes
+    AC_DEFINE(ENABLE_SFRAME)
+  fi
 fi
-AC_SUBST(enable_gsframe)
+LIBC_CONFIG_VAR([enable-gsframe], [$enable_gsframe])
 
 # Set the `multidir' variable by grabbing the variable from the compiler.
 # We do it once and save the result in a generated makefile.

@@ -20,7 +20,9 @@
 #include <stdlib.h>
 #include <unwind.h>
 #include <unwind-link.h>
+#if ENABLE_SFRAME
 #include <sframe.h>
+#endif
 
 struct trace_arg
 {
@@ -31,6 +33,7 @@ struct trace_arg
   int size;
 };
 
+#if ENABLE_SFRAME
 /* Initialize the SFrame backtrace routine and attempt to backtrace
    the current stack using SFrame information.  For the SFrame
    backtrace to be considered valid, the tracer must return more than
@@ -64,6 +67,7 @@ do_sframe_backtrace (void **array, int size)
   frame.fp = (_Unwind_Ptr) __builtin_frame_address (0);
   return __stacktrace_sframe (array, size, &frame);
 }
+#endif
 
 static _Unwind_Reason_Code
 backtrace_helper (struct _Unwind_Context *ctx, void *a)
@@ -110,6 +114,7 @@ __backtrace (void **array, int size)
   if (size <= 0)
     return 0;
 
+#if ENABLE_SFRAME
   /* Try first the SFrame backtracer.  */
   int cnt = do_sframe_backtrace (array, size);
   if (cnt > 1)
@@ -117,6 +122,9 @@ __backtrace (void **array, int size)
 
   /* Try the dwarf unwinder.  */
   if (arg.unwind_link == NULL)
+#else
+  if (arg.unwind_link == NULL)
+#endif
     return 0;
 
   UNWIND_LINK_PTR (arg.unwind_link, _Unwind_Backtrace)
