@@ -2719,7 +2719,8 @@ tcache_put_n (mchunkptr chunk, size_t tc_idx, tcache_entry **ep, bool mangled)
    available chunks to remove.  Removes chunk from the middle of the
    list.  */
 static __always_inline void *
-tcache_get_n (size_t tc_idx, tcache_entry **ep, bool mangled)
+tcache_get_n (tcache_perthread_struct *tc, size_t tc_idx, tcache_entry **ep,
+	      bool mangled)
 {
   tcache_entry *e;
   if (!mangled)
@@ -2735,7 +2736,7 @@ tcache_get_n (size_t tc_idx, tcache_entry **ep, bool mangled)
   else
     *ep = PROTECT_PTR (ep, REVEAL_PTR (e->next));
 
-  ++(tcache->num_slots[tc_idx]);
+  ++(tc->num_slots[tc_idx]);
   e->key = 0;
   return (void *) e;
 }
@@ -2750,7 +2751,7 @@ tcache_put (mchunkptr chunk, size_t tc_idx)
 static __always_inline void *
 tcache_get (size_t tc_idx)
 {
-  return tcache_get_n (tc_idx, &tcache->entries[tc_idx], false);
+  return tcache_get_n (tcache, tc_idx, &tcache->entries[tc_idx], false);
 }
 
 static __always_inline tcache_entry **
@@ -2793,7 +2794,7 @@ tcache_get_large (size_t tc_idx, size_t nb)
   if (te == NULL || nb != chunksize (mem2chunk (te)))
     return NULL;
 
-  return tcache_get_n (tc_idx, entry, mangled);
+  return tcache_get_n (tcache, tc_idx, entry, mangled);
 }
 
 static void tcache_init (mstate av);
@@ -2826,7 +2827,7 @@ tcache_get_align (size_t nb, size_t alignment)
       if (te != NULL
 	  && csize == nb
 	  && PTR_IS_ALIGNED (te, alignment))
-	return tcache_get_n (tc_idx, tep, mangled);
+	return tcache_get_n (tcache, tc_idx, tep, mangled);
     }
   return NULL;
 }
@@ -3006,6 +3007,62 @@ tcache_free_init (void *mem)
   __libc_free (mem);
 }
 
+/* If the arena does not change between chunks, keep the lock.  */
+static inline void
+__libc_free_batched_loop (bool do_lock, mstate av, mchunkptr p, INTERNAL_SIZE_T size,
+			  tcache_perthread_struct *tc, size_t tc_idx)
+{
+  /* Empty half of the tcache, for a hysteresis effect.  */
+  unsigned int to_free = mp_.tcache_count / 2;
+
+  if (do_lock)
+    __libc_lock_lock (av->mutex);
+
+  _int_free_merge_chunk (av, p, size);
+
+  while (tc->entries[tc_idx] != NULL && to_free > 0)
+    {
+      void *mem = tcache_get_n (tc, tc_idx, &tc->entries[tc_idx], false);
+      p = mem2chunk (mem);
+      size = chunksize (p);
+
+      /* Lock a different arena if necessary.  */
+      if (do_lock)
+	{
+	  mstate chunk_av = arena_for_chunk (p);
+	  if (chunk_av != av)
+	    {
+	      __libc_lock_unlock (av->mutex);
+	      av = chunk_av;
+	      __libc_lock_lock (av->mutex);
+	    }
+	}
+
+      _int_free_merge_chunk (av, p, size);
+      to_free--;
+    }
+
+  if (do_lock)
+    __libc_lock_unlock (av->mutex);
+}
+
+/* Deallocate half of the tcache entries into arenas, to amortize the
+   locking overhead.  */
+static __attribute_noinline__ void
+__libc_free_batched (mchunkptr p, INTERNAL_SIZE_T size,
+		     tcache_perthread_struct *tc, size_t tc_idx)
+{
+  /* Check size >= MINSIZE and p + size does not overflow.  */
+  if (__glibc_unlikely (INT_ADD_OVERFLOW ((uintptr_t) p,
+					  size - MINSIZE)))
+    return malloc_printerr_tail ("free(): invalid size (batch)");
+
+  if (SINGLE_THREAD_P)
+    __libc_free_batched_loop (false, &main_arena, p, size, tc, tc_idx);
+  else
+    __libc_free_batched_loop (true, arena_for_chunk (p), p, size, tc, tc_idx);
+}
+
 void
 __libc_free (void *mem)
 {
@@ -3036,6 +3093,13 @@ __libc_free (void *mem)
 	{
           if (__glibc_likely (tcache->num_slots[tc_idx] != 0))
 	    return tcache_put (p, tc_idx);
+          else
+	    {
+	      /* Perform batched freeing of tcache entries.  */
+	      if (__glibc_unlikely (tcache_inactive ()))
+		return tcache_free_init (mem);
+	      return __libc_free_batched (p, size, tcache, tc_idx);
+	    }
 	}
       else
 	{
@@ -3043,10 +3107,9 @@ __libc_free (void *mem)
 	  if (size >= MINSIZE
               && __glibc_likely (tcache->num_slots[tc_idx] != 0))
 	    return tcache_put_large (p, tc_idx);
+	  if (__glibc_unlikely (tcache_inactive ()))
+	    return tcache_free_init (mem);
 	}
-
-      if (__glibc_unlikely (tcache_inactive ()))
-	return tcache_free_init (mem);
     }
 #endif
 
