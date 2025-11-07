@@ -3570,8 +3570,11 @@ _int_malloc (mstate av, size_t bytes)
 	      if (__glibc_unlikely (tcache_inactive ()))
 		tcache_init (av);
 
-	      /* While bin not empty and tcache not full, copy chunks over.  */
-	      while (tcache->num_slots[tc_idx] != 0
+	      /* While bin not empty and tcache not full, copy chunks over.
+		 Only fill half of the tcache, so that subsequent frees
+		 do not immediately flush the tcache.  */
+	      unsigned int tcache_target_count = mp_.tcache_count / 2;
+	      while (tcache->num_slots[tc_idx] > tcache_target_count
 		     && (tc_victim = last (bin)) != bin)
 		{
 		  if (tc_victim != NULL)
