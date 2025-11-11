@@ -33,13 +33,6 @@
 #include <locale/localeinfo.h>
 #include <scratch_buffer.h>
 
-#ifdef	__GNUC__
-# define HAVE_LONGLONG
-# define LONGLONG	long long
-#else
-# define LONGLONG	long
-#endif
-
 /* Determine whether we have to handle `long long' at all.  */
 #if LONG_MAX == LONG_LONG_MAX
 # define need_longlong	0
@@ -1976,7 +1969,7 @@ digits_extended_fail:
 	      if (flags & NUMBER_SIGNED)
 		{
 		  if (need_longlong && (flags & LONGDBL))
-		    *ARG (LONGLONG int *) = num.q;
+		    *ARG (long long int *) = num.q;
 		  else if (need_long && (flags & LONG))
 		    *ARG (long int *) = num.l;
 		  else if (flags & SHORT)
@@ -1989,7 +1982,7 @@ digits_extended_fail:
 	      else
 		{
 		  if (need_longlong && (flags & LONGDBL))
-		    *ARG (unsigned LONGLONG int *) = num.uq;
+		    *ARG (unsigned long long int *) = num.uq;
 		  else if (need_long && (flags & LONG))
 		    *ARG (unsigned long int *) = num.ul;
 		  else if (flags & SHORT)
