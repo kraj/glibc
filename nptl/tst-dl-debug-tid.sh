@@ -39,7 +39,7 @@ eval "${test_wrapper_env}" LD_DEBUG=tls LD_DEBUG_OUTPUT="${debug_output}" \
 
 debug_output=$(ls "${debug_output}".*)
 # Check for the "Thread starting" message.
-if ! grep -q 'Thread starting: TID=' "${debug_output}"; then
+if ! grep -q 'tls: thread starting; TID=.*, TCB=0x' "${debug_output}"; then
     echo "error: 'Thread starting' message not found"
     cat "${debug_output}"
     exit 1
@@ -47,10 +47,10 @@ fi
 
 # Check that we have a message where the PID (from prefix) is different
 # from the TID (in the message). This indicates a worker thread log.
-if ! grep 'Thread starting: TID=' "${debug_output}" | awk -F '[ \t:]+' '{
-  sub(/,/, "", $4);
-  sub(/TID=/, "", $4);
-  if ($1 != $4)
+if ! grep 'tls: thread starting; TID=.*, TCB=0x' "${debug_output}" | awk -F '[ \t:]+' '{
+  sub(/TID=/, "", $5);
+  sub(/,/, "", $5);
+  if ($1 != $5)
     exit 0;
   exit 1
 }'; then
@@ -60,11 +60,32 @@ if ! grep 'Thread starting: TID=' "${debug_output}" | awk -F '[ \t:]+' '{
 fi
 
 # We expect messages from thread creation and destruction.
-if ! grep -q 'TCB allocated\|TCB deallocating\|TCB reused\|TCB deallocated' \
+if ! grep -q 'tls: allocate TCB 0x\|tls: deallocate TCB 0x\|tls: TCB reused from cache\|tls: TCB deallocated' \
      "${debug_output}"; then
     echo "error: Expected TCB allocation/deallocation message not found"
     cat "${debug_output}"
     exit 1
+fi
+
+# Check for TLS module ID assignment.
+if ! grep -q 'tls: assign modid .* to' "${debug_output}"; then
+    echo "error: Expected 'modid ... assigned to' message not found"
+    cat "${debug_output}"
+    exit 1
+fi
+
+# Check for TLS block allocation.
+if ! grep -q 'tls: allocate block .* for modid .* size=.*, TCB=0x' "${debug_output}"; then
+    echo "error: Expected 'modid ... allocated' message not found"
+    cat "${debug_output}"
+    exit 1
+fi
+
+# TLS block deallocation might be skipped due to DTV surplus.
+if grep -q 'tls: deallocate block .* for modid .* TCB=0x' "${debug_output}"; then
+    echo "INFO: module deallocated message found"
+else
+    echo "INFO: module deallocated message not found (may be due to DTV surplus)"
 fi
 
 cat "${debug_output}"

@@ -41,11 +41,36 @@ __tls_get_addr_slow (tls_index *ti)
   dtv_t *dtv = THREAD_DTV ();
 
   size_t gen = atomic_load_acquire (&GL(dl_tls_generation));
-  if (__glibc_unlikely (dtv[0].counter != gen)
+  if (__glibc_unlikely (dtv[0].counter != gen))
+    {
       /* See comment in __tls_get_addr in elf/dl-tls.c.  */
-      && !(_dl_tls_allocate_active ()
-           && ti->ti_module < _dl_tls_initial_modid_limit))
-    return update_get_addr (ti, gen);
+      if (_dl_tls_allocate_active ()
+	  && ti->ti_module < _dl_tls_initial_modid_limit)
+	{
+	  if (__glibc_unlikely (GLRO (dl_debug_mask) & DL_DEBUG_TLS))
+	    _dl_debug_printf (
+		"tls: modid %lu reentrant usage; TCB=0x%lx\n",
+		(unsigned long int) ti->ti_module,
+		(unsigned long int) THREAD_SELF);
+	}
+      else
+	{
+	  if (__glibc_unlikely (GLRO (dl_debug_mask) & DL_DEBUG_TLS))
+	    _dl_debug_printf (
+		"tls: modid %lu update DTV to generation %lu; TCB=0x%lx\n",
+		(unsigned long int) ti->ti_module, (unsigned long int) gen,
+		(unsigned long int) THREAD_SELF);
+	  return update_get_addr (ti, gen);
+	}
+    }
+
+  if (__glibc_unlikely (dtv[ti->ti_module].pointer.val == TLS_DTV_UNALLOCATED))
+    {
+      if (__glibc_unlikely (GLRO (dl_debug_mask) & DL_DEBUG_TLS))
+	_dl_debug_printf ("tls: modid %lu lazy allocation; TCB=0x%lx\n",
+			  (unsigned long int) ti->ti_module,
+			  (unsigned long int) THREAD_SELF);
+    }
 
   return tls_get_addr_tail (ti, dtv, NULL);
 }

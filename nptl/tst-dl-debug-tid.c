@@ -27,12 +27,25 @@
 #include <support/xthread.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <dlfcn.h>
+#include <support/xdlfcn.h>
+#include <support/check.h>
 
 static void *
 thread_function (void *arg)
 {
   if (arg)
     pthread_barrier_wait ((pthread_barrier_t *) arg);
+
+  /* Load a module with TLS to verify allocation/deallocation logs.  */
+  void *h = xdlopen ("tst-tls-debug-mod.so", RTLD_NOW);
+
+  /* Call a function that accesses TLS.  */
+  int (*fp) (void) = (int (*) (void)) xdlsym (h, "in_dso");
+  TEST_COMPARE (fp (), 0);
+
+  xdlclose (h);
+
   return NULL;
 }
 

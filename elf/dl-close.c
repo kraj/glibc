@@ -74,6 +74,11 @@ remove_slotinfo (size_t idx, struct dtv_slotinfo_list *listp, size_t disp,
       if (__glibc_likely (old_map != NULL))
 	{
 	  /* Mark the entry as unused.  These can be read concurrently.  */
+	  if (__glibc_unlikely (GLRO (dl_debug_mask) & DL_DEBUG_TLS))
+	    _dl_debug_printf (
+		"tls: release modid %lu from %s [%ld]\n",
+		(unsigned long int) idx, DSO_FILENAME (old_map->l_name),
+		(long int) old_map->l_ns);
 	  atomic_store_relaxed (&listp->slotinfo[idx - disp].gen,
 				GL(dl_tls_generation) + 1);
 	  atomic_store_relaxed (&listp->slotinfo[idx - disp].map, NULL);

@@ -220,6 +220,12 @@ _dl_assign_tls_modid (struct link_map *l)
     }
 
   l->l_tls_modid = result;
+
+  if (__glibc_unlikely (GLRO (dl_debug_mask) & DL_DEBUG_TLS))
+    _dl_debug_printf ("tls: assign modid %lu to %s [%ld]\n",
+		      (unsigned long int) result,
+		      DSO_FILENAME (l->l_name),
+		      (long int) l->l_ns);
 }
 
 
@@ -538,7 +544,7 @@ _dl_allocate_tls_storage (void)
   if (result == NULL)
     free (allocated);
   else if (__glibc_unlikely (GLRO (dl_debug_mask) & DL_DEBUG_TLS))
-    _dl_debug_printf ("TCB allocated: 0x%lx\n", (unsigned long int) result);
+    _dl_debug_printf ("tls: allocate TCB 0x%lx\n", (unsigned long int) result);
 
   _dl_tls_allocate_end ();
   return result;
@@ -551,12 +557,17 @@ extern dtv_t _dl_static_dtv[];
 #endif
 
 static dtv_t *
-_dl_resize_dtv (dtv_t *dtv, size_t max_modid)
+_dl_resize_dtv (dtv_t *dtv, size_t max_modid, void *tcb)
 {
   /* Resize the dtv.  */
   dtv_t *newp;
   size_t newsize = max_modid + DTV_SURPLUS;
   size_t oldsize = dtv[-1].counter;
+
+  if (__glibc_unlikely (GLRO (dl_debug_mask) & DL_DEBUG_TLS))
+    _dl_debug_printf ("tls: DTV resized for TCB 0x%lx: oldsize=%lu, newsize=%lu\n",
+		      (unsigned long int) tcb,
+		      (unsigned long int) oldsize, (unsigned long int) newsize);
 
   _dl_tls_allocate_begin ();
   if (dtv == GL(dl_initial_dtv))
@@ -626,7 +637,7 @@ _dl_allocate_tls_init (void *result, bool main_thread)
   if (dtv[-1].counter < GL(dl_tls_max_dtv_idx))
     {
       /* Resize the dtv.  */
-      dtv = _dl_resize_dtv (dtv, GL(dl_tls_max_dtv_idx));
+      dtv = _dl_resize_dtv (dtv, GL(dl_tls_max_dtv_idx), result);
 
       /* Install this new dtv in the thread data structures.  */
       INSTALL_DTV (result, &dtv[-1]);
@@ -717,9 +728,14 @@ rtld_hidden_def (_dl_allocate_tls_init)
 void *
 _dl_allocate_tls (void *mem)
 {
-  return _dl_allocate_tls_init (mem == NULL
-				? _dl_allocate_tls_storage ()
-				: allocate_dtv (mem), false);
+  void *result = _dl_allocate_tls_init (mem == NULL
+					? _dl_allocate_tls_storage ()
+					: allocate_dtv (mem), false);
+  if (__glibc_unlikely (result != NULL
+			&& (GLRO (dl_debug_mask) & DL_DEBUG_TLS)))
+    _dl_debug_printf ("tls: TLS initialized for TCB 0x%lx\n",
+		      (unsigned long int) result);
+  return result;
 }
 rtld_hidden_def (_dl_allocate_tls)
 
@@ -728,14 +744,22 @@ void
 _dl_deallocate_tls (void *tcb, bool dealloc_tcb)
 {
   if (__glibc_unlikely (GLRO (dl_debug_mask) & DL_DEBUG_TLS))
-    _dl_debug_printf ("TCB deallocating: 0x%lx (dealloc_tcb=%d)\n",
+    _dl_debug_printf ("tls: deallocate TCB 0x%lx (dealloc_tcb=%d)\n",
 		      (unsigned long int) tcb, dealloc_tcb);
 
   dtv_t *dtv = GET_DTV (tcb);
 
   /* We need to free the memory allocated for non-static TLS.  */
   for (size_t cnt = 0; cnt < dtv[-1].counter; ++cnt)
-    free (dtv[1 + cnt].pointer.to_free);
+    {
+      if (dtv[1 + cnt].pointer.to_free != NULL
+	  && __glibc_unlikely (GLRO (dl_debug_mask) & DL_DEBUG_TLS))
+	_dl_debug_printf (
+	    "tls: deallocate block 0x%lx for modid %lu; TCB=0x%lx\n",
+	    (unsigned long int) dtv[1 + cnt].pointer.to_free,
+	    (unsigned long int) (1 + cnt), (unsigned long int) tcb);
+      free (dtv[1 + cnt].pointer.to_free);
+    }
 
   /* The array starts with dtv[-1].  */
   if (dtv != GL(dl_initial_dtv))
@@ -790,6 +814,12 @@ allocate_and_init (struct link_map *map)
     (map->l_tls_align, map->l_tls_blocksize);
   if (result.val == NULL)
     oom ();
+  else if (__glibc_unlikely (GLRO (dl_debug_mask) & DL_DEBUG_TLS))
+    _dl_debug_printf ("tls: allocate block 0x%lx for modid %lu; size=%lu, TCB=0x%lx\n",
+		      (unsigned long int) result.to_free,
+		      (unsigned long int) map->l_tls_modid,
+		      (unsigned long int) map->l_tls_blocksize,
+		      (unsigned long int) THREAD_SELF);
 
   /* Initialize the memory.  */
   memset (__mempcpy (result.val, map->l_tls_initimage,
@@ -891,7 +921,7 @@ _dl_update_slotinfo (unsigned long int req_modid, size_t new_gen)
 		    continue;
 
 		  /* Resizing the dtv aborts on failure: bug 16134.  */
-		  dtv = _dl_resize_dtv (dtv, max_modid);
+		  dtv = _dl_resize_dtv (dtv, max_modid, THREAD_SELF);
 
 		  assert (modid <= dtv[-1].counter);
 
@@ -912,6 +942,12 @@ _dl_update_slotinfo (unsigned long int req_modid, size_t new_gen)
 		 least some dynamic TLS usage by interposed mallocs.  */
 	      if (dtv[modid].pointer.to_free != NULL)
 		{
+		  if (__glibc_unlikely (GLRO (dl_debug_mask) & DL_DEBUG_TLS))
+		    _dl_debug_printf (
+			"tls: DTV update for TCB 0x%lx: modid %lu deallocated block 0x%lx\n",
+			(unsigned long int) THREAD_SELF,
+			(unsigned long int) modid,
+			(unsigned long int) dtv[modid].pointer.to_free);
 		  _dl_tls_allocate_begin ();
 		  free (dtv[modid].pointer.to_free);
 		  _dl_tls_allocate_end ();
@@ -1004,6 +1040,11 @@ tls_get_addr_tail (tls_index *ti, dtv_t *dtv, struct link_map *the_map)
 	  dtv[ti->ti_module].pointer.to_free = NULL;
 	  dtv[ti->ti_module].pointer.val = p;
 
+	  if (__glibc_unlikely (GLRO (dl_debug_mask) & DL_DEBUG_TLS))
+	    _dl_debug_printf ("tls: modid %lu using static TLS; TCB=0x%lx\n",
+			      (unsigned long int) ti->ti_module,
+			      (unsigned long int) THREAD_SELF);
+
 	  return tls_get_addr_adjust (p, ti);
 	}
       else
@@ -1059,18 +1100,28 @@ __tls_get_addr (tls_index *ti)
     {
       if (_dl_tls_allocate_active ()
 	  && ti->ti_module < _dl_tls_initial_modid_limit)
+	{
 	  /* This is a reentrant __tls_get_addr call, but we can
 	     satisfy it because it's an initially-loaded module ID.
 	     These TLS slotinfo slots do not change, so the
 	     out-of-date generation counter does not matter.  However,
 	     if not in a TLS update, still update_get_addr below, to
 	     get off the slow path eventually.  */
-	;
+	  if (__glibc_unlikely (GLRO (dl_debug_mask) & DL_DEBUG_TLS))
+	    _dl_debug_printf ("tls: modid %lu reentrant usage; TCB=0x%lx\n",
+			      (unsigned long int) ti->ti_module,
+			      (unsigned long int) THREAD_SELF);
+	}
       else
 	{
 	  /* Update DTV up to the global generation, see CONCURRENCY NOTES
 	     in _dl_update_slotinfo.  */
 	  gen = atomic_load_acquire (&GL(dl_tls_generation));
+	  if (__glibc_unlikely (GLRO (dl_debug_mask) & DL_DEBUG_TLS))
+	    _dl_debug_printf (
+		"tls: modid %lu update DTV to generation %lu; TCB=0x%lx\n",
+		(unsigned long int) ti->ti_module, (unsigned long int) gen,
+		(unsigned long int) THREAD_SELF);
 	  return update_get_addr (ti, gen);
 	}
     }
@@ -1078,7 +1129,13 @@ __tls_get_addr (tls_index *ti)
   void *p = dtv[ti->ti_module].pointer.val;
 
   if (__glibc_unlikely (p == TLS_DTV_UNALLOCATED))
-    return tls_get_addr_tail (ti, dtv, NULL);
+    {
+      if (__glibc_unlikely (GLRO (dl_debug_mask) & DL_DEBUG_TLS))
+	_dl_debug_printf ("tls: modid %lu lazy allocation; TCB=0x%lx\n",
+			  (unsigned long int) ti->ti_module,
+			  (unsigned long int) THREAD_SELF);
+      return tls_get_addr_tail (ti, dtv, NULL);
+    }
 
   return tls_get_addr_adjust (p, ti);
 }
@@ -1149,6 +1206,10 @@ _dl_tls_initial_modid_limit_setup (void)
 	break;
     }
   _dl_tls_initial_modid_limit = idx;
+
+  if (__glibc_unlikely (GLRO (dl_debug_mask) & DL_DEBUG_TLS))
+    _dl_debug_printf ("tls: initial modid limit set to %lu\n",
+		      (unsigned long int) idx);
 }
 
 

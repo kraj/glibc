@@ -266,6 +266,7 @@ CFLAGS-tst-thread-exit-clobber.o = -std=gnu++11
 LDLIBS-tst-thread-exit-clobber = -lstdc++
 CFLAGS-tst-minstack-throw.o = -std=gnu++11
 LDLIBS-tst-minstack-throw = -lstdc++
+LDLIBS-tst-dl-debug-tid = $(libdl)
 
 tests = \
   tst-attr2 \
@@ -485,6 +486,7 @@ modules-names = \
   tst-audit-threads-mod2 \
   tst-compat-forwarder-mod \
   tst-stack4mod \
+  tst-tls-debug-mod \
   tst-tls3mod \
   tst-tls5mod \
   tst-tls5moda \
@@ -710,7 +712,8 @@ tst-stackguard1-ARGS = --command "$(host-test-program-cmd) --child"
 tst-stackguard1-static-ARGS = --command "$(objpfx)tst-stackguard1-static --child"
 
 ifeq ($(run-built-tests),yes)
-$(objpfx)tst-dl-debug-tid.out: tst-dl-debug-tid.sh $(objpfx)tst-dl-debug-tid
+$(objpfx)tst-dl-debug-tid.out: tst-dl-debug-tid.sh $(objpfx)tst-dl-debug-tid \
+			 $(objpfx)tst-tls-debug-mod.so
 	$(SHELL) $< $(common-objpfx) '$(test-wrapper-env)' '$(rtld-prefix)' \
 	  '$(run-program-env)' \
 	  $(objpfx)tst-dl-debug-tid > $@; $(evaluate-test)

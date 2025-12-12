@@ -1433,6 +1433,7 @@ $(objpfx)tst-glibcelf.out: tst-glibcelf.py elf.h $(..)/scripts/glibcelf.py \
 
 ifeq ($(run-built-tests),yes)
 tests-special += $(objpfx)tst-tls-allocation-failure-static-patched.out
+tests-special += $(objpfx)tst-tls-debug-recursive.out
 endif
 
 # The test requires shared _and_ PIE because the executable
@@ -3533,3 +3534,16 @@ $(objpfx)tst-origin.out: tst-origin.sh $(objpfx)tst-origin
 	$(evaluate-test)
 
 $(objpfx)tst-dlopen-sgid.out: $(objpfx)tst-dlopen-sgid-mod.so
+
+
+ifeq ($(run-built-tests),yes)
+$(objpfx)tst-tls-debug-recursive.out: tst-tls-debug-recursive.sh \
+			      $(objpfx)tst-recursive-tls \
+			      $(objpfx)tst-recursive-tlsmallocmod.so \
+			      $(patsubst %,$(objpfx)tst-recursive-tlsmod%.so, \
+				0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15)
+	$(SHELL) $< $(common-objpfx) '$(test-wrapper-env)' \
+		 '$(rtld-prefix)' '$(run_program_env)' \
+		 $(objpfx)tst-recursive-tls > $@; \
+	$(evaluate-test)
+endif

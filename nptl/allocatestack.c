@@ -117,7 +117,7 @@ get_cached_stack (size_t *sizep, void **memp)
   lll_unlock (GL (dl_stack_cache_lock), LLL_PRIVATE);
 
   if (__glibc_unlikely (GLRO (dl_debug_mask) & DL_DEBUG_TLS))
-    GLRO (dl_debug_printf) ("TLS TCB reused from cache: 0x%lx\n",
+    GLRO (dl_debug_printf) ("tls: TCB reused from cache: 0x%lx\n",
 			    (unsigned long int) result);
 
   /* Report size and location of the stack to the caller.  */
@@ -436,9 +436,9 @@ allocate_stack (const struct pthread_attr *attr, struct pthread **pdp,
 
       if (__glibc_unlikely (GLRO (dl_debug_mask) & DL_DEBUG_TLS))
 	GLRO (dl_debug_printf) (
-	  "TCB for user-supplied stack created: 0x%lx, stack=0x%lx, size=%lu\n",
-	  (unsigned long int) pd, (unsigned long int) pd->stackblock,
-	  (unsigned long int) pd->stackblock_size);
+	  "tls: TCB created (user-supplied stack); stack=0x%lx, size=%lu, TCB=0x%lx\n",
+	  (unsigned long int) pd->stackblock,
+	  (unsigned long int) pd->stackblock_size, (unsigned long int) pd);
 
       /* This is at least the second thread.  */
       pd->header.multiple_threads = 1;
@@ -561,7 +561,7 @@ allocate_stack (const struct pthread_attr *attr, struct pthread **pdp,
 	  pd->setxid_futex = -1;
 
 	  if (__glibc_unlikely (GLRO (dl_debug_mask) & DL_DEBUG_TLS))
-	    GLRO (dl_debug_printf) ("TCB for new stack allocated: 0x%lx\n",
+	    GLRO (dl_debug_printf) ("tls: TCB allocated (new stack): 0x%lx\n",
 				    (unsigned long int) pd);
 
 	  /* Allocate the DTV for this thread.  */

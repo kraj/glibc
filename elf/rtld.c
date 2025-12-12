@@ -1192,6 +1192,11 @@ rtld_setup_main_map (struct link_map *main_map)
 
 	    /* This image gets the ID one.  */
 	    GL(dl_tls_max_dtv_idx) = main_map->l_tls_modid = 1;
+	    if (__glibc_unlikely (GLRO (dl_debug_mask) & DL_DEBUG_TLS))
+	      _dl_debug_printf ("tls: assign modid %lu to %s [%ld]\n",
+				(unsigned long int) main_map->l_tls_modid,
+				DSO_FILENAME (main_map->l_name),
+				(long int) main_map->l_ns);
 	  }
 	break;
 
