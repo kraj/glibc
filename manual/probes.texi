@@ -235,13 +235,6 @@ tunable is set.  Argument @var{$arg1} is the requested value, and
 @var{$arg2} is the previous value of this tunable.
 @end deftp
 
-@deftp Probe memory_tunable_tcache_unsorted_limit (int @var{$arg1}, int @var{$arg2})
-This probe is triggered when the
-@code{glibc.malloc.tcache_unsorted_limit} tunable is set.  Argument
-@var{$arg1} is the requested value, and @var{$arg2} is the previous
-value of this tunable.
-@end deftp
-
 @deftp Probe memory_tcache_double_free (void *@var{$arg1}, int @var{$arg2})
 This probe is triggered when @code{free} determines that the memory
 being freed has probably already been freed, and resides in the

@@ -53,7 +53,6 @@ glibc.cpu.x86_shstk:
 glibc.pthread.stack_cache_size: 0x2800000 (min: 0x0, max: 0xffffffffffffffff)
 glibc.malloc.mmap_max: 0 (min: 0, max: 2147483647)
 glibc.cpu.plt_rewrite: 0 (min: 0, max: 2)
-glibc.malloc.tcache_unsorted_limit: 0x0 (min: 0x0, max: 0xffffffffffffffff)
 glibc.cpu.x86_ibt:
 glibc.cpu.hwcaps:
 glibc.malloc.arena_max: 0x0 (min: 0x1, max: 0xffffffffffffffff)
@@ -241,21 +240,6 @@ to the number of bins times the chunk count in each bin times the size
 of each chunk.  With defaults, the approximate maximum overhead of the
 per-thread cache is approximately 236 KB on 64-bit systems and 118 KB
 on 32-bit systems.
-@end deftp
-
-@deftp Tunable glibc.malloc.tcache_unsorted_limit
-When the user requests memory and the request cannot be met via the
-per-thread cache, the arenas are used to meet the request.  At this
-time, additional chunks will be moved from existing arena lists to
-pre-fill the corresponding cache.  While copies from the fastbins,
-smallbins, and regular bins are bounded and predictable due to the bin
-sizes, copies from the unsorted bin are not bounded, and incur
-additional time penalties as they need to be sorted as they're
-scanned.  To make scanning the unsorted list more predictable and
-bounded, the user may set this tunable to limit the number of chunks
-that are scanned from the unsorted list while searching for chunks to
-pre-fill the per-thread cache with.  The default, or when set to zero,
-is no limit.
 @end deftp
 
 @deftp Tunable glibc.malloc.mxfast

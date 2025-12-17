@@ -71,9 +71,6 @@ glibc {
     tcache_count {
       type: SIZE_T
     }
-    tcache_unsorted_limit {
-      type: SIZE_T
-    }
     mxfast {
       type: SIZE_T
       minval: 0

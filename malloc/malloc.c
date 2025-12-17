@@ -1797,9 +1797,6 @@ struct malloc_par
   size_t tcache_max_bytes;
   /* Maximum number of chunks in each bucket.  */
   size_t tcache_count;
-  /* Maximum number of chunks to remove from the unsorted list, which
-     aren't used to prefill the cache.  */
-  size_t tcache_unsorted_limit;
 #endif
 };
 
@@ -1832,7 +1829,6 @@ static struct malloc_par mp_ =
   .tcache_count = TCACHE_FILL_COUNT,
   .tcache_small_bins = TCACHE_SMALL_BINS,
   .tcache_max_bytes = MAX_TCACHE_SMALL_SIZE + 1,
-  .tcache_unsorted_limit = 0 /* No limit.  */
 #endif
 };
 
@@ -3824,10 +3820,6 @@ _int_malloc (mstate av, size_t bytes)
   mchunkptr fwd;                    /* misc temp for linking */
   mchunkptr bck;                    /* misc temp for linking */
 
-#if USE_TCACHE
-  size_t tcache_unsorted_count;	    /* count of unsorted chunks processed */
-#endif
-
   /*
      Convert request size to internal form by adding SIZE_SZ bytes
      overhead plus possibly more to obtain necessary alignment and/or
@@ -3925,24 +3917,8 @@ _int_malloc (mstate av, size_t bytes)
      the most recent non-exact fit.  Place other traversed chunks in
      bins.  Note that this step is the only place in any routine where
      chunks are placed in bins.
-
-     The outer loop here is needed because we might not realize until
-     near the end of malloc that we should have consolidated, so must
-     do so and retry. This happens at most once, and only when we would
-     otherwise need to expand memory to service a "small" request.
    */
 
-#if USE_TCACHE
-  INTERNAL_SIZE_T tcache_nb = 0;
-  size_t tc_idx = csize2tidx (nb);
-  if (tc_idx < mp_.tcache_small_bins)
-    tcache_nb = nb;
-  int return_cached = 0;
-
-  tcache_unsorted_count = 0;
-#endif
-
-  for (;; )
     {
       int iters = 0;
       while ((victim = unsorted_chunks (av)->bk) != unsorted_chunks (av))
@@ -4012,28 +3988,10 @@ _int_malloc (mstate av, size_t bytes)
               set_inuse_bit_at_offset (victim, size);
               if (av != &main_arena)
 		set_non_main_arena (victim);
-#if USE_TCACHE
-	      if (__glibc_unlikely (tcache_inactive ()))
-		tcache_init (av);
-	      /* Fill cache first, return to user only if cache fills.
-		 We may return one of these chunks later.  */
-	      if (tcache_nb > 0
-		  && tcache->num_slots[tc_idx] != 0)
-		{
-		  tcache_put (victim, tc_idx);
-		  return_cached = 1;
-		  continue;
-		}
-	      else
-		{
-#endif
               check_malloced_chunk (av, victim, nb);
               void *p = chunk2mem (victim);
               alloc_perturb (p, bytes);
               return p;
-#if USE_TCACHE
-		}
-#endif
             }
 
           /* Place chunk in bin.  Only splitting can put
@@ -4107,30 +4065,10 @@ _int_malloc (mstate av, size_t bytes)
           fwd->bk = victim;
           bck->fd = victim;
 
-#if USE_TCACHE
-      /* If we've processed as many chunks as we're allowed while
-	 filling the cache, return one of the cached ones.  */
-      ++tcache_unsorted_count;
-      if (return_cached
-	  && mp_.tcache_unsorted_limit > 0
-	  && tcache_unsorted_count > mp_.tcache_unsorted_limit)
-	{
-	  return tcache_get (tc_idx);
-	}
-#endif
-
 #define MAX_ITERS       10000
           if (++iters >= MAX_ITERS)
             break;
         }
-
-#if USE_TCACHE
-      /* If all the small chunks we found ended up cached, return one now.  */
-      if (return_cached)
-	{
-	  return tcache_get (tc_idx);
-	}
-#endif
 
       /*
          If a large request, scan through the chunks of current bin in
@@ -5114,13 +5052,6 @@ do_set_tcache_count (size_t value)
   return 0;
 }
 
-static __always_inline int
-do_set_tcache_unsorted_limit (size_t value)
-{
-  LIBC_PROBE (memory_tunable_tcache_unsorted_limit, 2, value, mp_.tcache_unsorted_limit);
-  mp_.tcache_unsorted_limit = value;
-  return 1;
-}
 #endif
 
 static __always_inline int

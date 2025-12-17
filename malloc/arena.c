@@ -238,7 +238,6 @@ TUNABLE_CALLBACK_FNDECL (set_arena_test, size_t)
 #if USE_TCACHE
 TUNABLE_CALLBACK_FNDECL (set_tcache_max, size_t)
 TUNABLE_CALLBACK_FNDECL (set_tcache_count, size_t)
-TUNABLE_CALLBACK_FNDECL (set_tcache_unsorted_limit, size_t)
 #endif
 TUNABLE_CALLBACK_FNDECL (set_hugetlb, size_t)
 
@@ -290,8 +289,6 @@ __ptmalloc_init (void)
 # if USE_TCACHE
   TUNABLE_GET (tcache_max, size_t, TUNABLE_CALLBACK (set_tcache_max));
   TUNABLE_GET (tcache_count, size_t, TUNABLE_CALLBACK (set_tcache_count));
-  TUNABLE_GET (tcache_unsorted_limit, size_t,
-	       TUNABLE_CALLBACK (set_tcache_unsorted_limit));
 # endif
   TUNABLE_GET (hugetlb, size_t, TUNABLE_CALLBACK (set_hugetlb));
 
