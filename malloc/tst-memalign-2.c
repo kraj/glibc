@@ -24,6 +24,7 @@
 #include <array_length.h>
 #include <libc-pointer-arith.h>
 #include <support/check.h>
+#include "tst-malloc-aux.h"
 
 typedef struct TestCase {
   size_t size;

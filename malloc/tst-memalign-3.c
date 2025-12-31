@@ -26,6 +26,7 @@
 #include <libc-pointer-arith.h>
 #include <support/check.h>
 #include <support/xthread.h>
+#include "tst-malloc-aux.h"
 
 
 typedef struct TestCase {
