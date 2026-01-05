@@ -58,7 +58,8 @@ do_missing_arg() {
 }
 
 do_ambiguous() {
-  printf >&2 $"%s: option is ambiguous; possibilities:"
+  printf >&2 $"%s: option '%s' is ambiguous; possibilities:" "sotruss" "$1"
+  shift
   while test $# -gt 0; do
     printf >&2 " '%s'" $1
     shift
@@ -124,7 +125,7 @@ warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     SOTRUSS_EXIT=1
     ;;
   --f)
-    do_ambiguous '--from' '--follow'
+    do_ambiguous '--f' '--from' '--follow'
     ;;
   --)
     shift
