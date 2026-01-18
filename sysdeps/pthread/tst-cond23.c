@@ -21,6 +21,7 @@
 #include <time.h>
 #include <unistd.h>
 
+#include <support/test-driver.h>
 
 #if defined _POSIX_CLOCK_SELECTION && _POSIX_CLOCK_SELECTION >= 0
 static int
