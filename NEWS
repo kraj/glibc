@@ -9,6 +9,8 @@ Version 2.43.1
 
 The following bugs are resolved with this release:
 
+ [33623] [ldbl-128ibm] roundl, ceill, truncl, floorl bad sign of zero
+   results
 
 Version 2.43
 

@@ -80,6 +80,9 @@ __roundl (long double x)
 	  xh = hi;
 	  ldbl_canonicalize_int (&xh, &xl);
 	}
+
+      /* Ensure we return -0 rather than +0 when appropriate.  */
+      xh = copysign(xh, hi);
     }
   else
     /* Quiet signaling NaN arguments.  */

@@ -99,6 +99,10 @@ static const struct test_f_f_data round_test_data[] =
 #endif
 
 #if MANT_DIG >= 64
+    /* The input value can only be represented in long double.  */
+    TEST_f_f (round, 0x0.ffffffffffffffffp-1L, plus_zero, NO_INEXACT_EXCEPTION|ERRNO_UNCHANGED),
+    TEST_f_f (round, -0x0.ffffffffffffffffp-1L, minus_zero, NO_INEXACT_EXCEPTION|ERRNO_UNCHANGED),
+
     /* The result can only be represented in long double.  */
     TEST_f_f (round, 4503599627370495.5L, 4503599627370496.0L, NO_INEXACT_EXCEPTION|ERRNO_UNCHANGED),
     TEST_f_f (round, 4503599627370496.25L, 4503599627370496.0L, NO_INEXACT_EXCEPTION|ERRNO_UNCHANGED),
