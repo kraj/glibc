@@ -77,27 +77,19 @@
       SAVE_VFP_D32					\
     }
 
-# define VFP_STACK_REQ (16*8)
-# if __BYTE_ORDER == __BIG_ENDIAN
-#  define DISP 7
-# else
-#  define DISP 0
-# endif
+# define VFP_STACK_REQ (16)
 
 # ifdef HAVE_ARM_PCS_VFP_D32
 #  define CHECK_VFP_D32							\
-      char vfp[VFP_STACK_REQ];						\
+      uint64_t vfp[VFP_STACK_REQ];					\
       asm volatile ("vstmia %0, {d16-d31}\n"				\
 		    :							\
 		    : "r" (vfp)						\
 		    : "memory");					\
 									\
-      char expected[VFP_STACK_REQ] = { 0 };				\
       for (int i = 0; i < 16; ++i)					\
-	expected[i * 8 + DISP] = i + 17;				\
-									\
-      if (memcmp (vfp, expected, VFP_STACK_REQ) != 0)			\
-        abort ();
+        if (vfp[i] != i + 17)						\
+	  abort ();
 # else
 #  define CHECK_VFP_D32
 # endif
@@ -105,18 +97,15 @@
 # define AFTER_TLSDESC_CALL()						\
   if (hwcap & HWCAP_ARM_VFP)						\
     {									\
-      char vfp[VFP_STACK_REQ];						\
+      uint64_t vfp[VFP_STACK_REQ];					\
       asm volatile ("vstmia %0, {d0-d15}\n"				\
 		    :							\
 		    : "r" (vfp)						\
 		    : "memory");					\
 									\
-      char expected[VFP_STACK_REQ] = { 0 };				\
       for (int i = 0; i < 16; ++i)					\
-	expected[i * 8 + DISP] = i + 1;					\
-									\
-      if (memcmp (vfp, expected, VFP_STACK_REQ) != 0)			\
-        abort ();							\
+        if (vfp[i] != i + 1)						\
+	  abort ();							\
     }									\
   if (hwcap & HWCAP_ARM_VFPD32)						\
     {									\
