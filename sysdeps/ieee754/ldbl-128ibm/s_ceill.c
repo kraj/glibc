@@ -54,6 +54,9 @@ __ceill (long double x)
 	  xh = hi;
 	  xl = lo;
 	  ldbl_canonicalize_int (&xh, &xl);
+
+	  /* Ensure we return -0 rather than +0 when appropriate.  */
+	  xh = copysign (xh, hi);
 	}
     }
   else
