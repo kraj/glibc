@@ -1,9 +1,9 @@
 # Romanian translation for glibc.
 # Mesajele în limba română pentru pachetul glibc.
-# Copyright © 2023, 2024, 2025 Free Software Foundation, Inc.
+# Copyright © 2023, 2024, 2025, 2026 Free Software Foundation, Inc.
 # This file is distributed under the same license as the glibc package.
 #
-# Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>, 2023, 2024, 2025.
+# Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>, 2023, 2024, 2025, 2026.
 #
 # Cronologia traducerii fișierului „libc”:
 # Traducerea inițială, făcută de R-GC, pentru versiunea libc 2.36.9000.
@@ -13,13 +13,14 @@
 # Actualizare a traducerii pentru versiunea 2.39.9000, făcută de R-GC, iun-2024.
 # Actualizare a traducerii pentru versiunea 2.40.9000, făcută de R-GC, ian-2025.
 # Actualizare a traducerii pentru versiunea 2.41.9000, făcută de R-GC, iul-2025.
+# Actualizare a traducerii pentru versiunea 2.42.9000, făcută de R-GC, ian-2026.
 # Actualizare a traducerii pentru versiunea Y, făcută de X, Z(luna-anul).
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: libc 2.41.9000\n"
-"POT-Creation-Date: 2025-07-19 22:21+0200\n"
-"PO-Revision-Date: 2025-07-20 12:01+0200\n"
+"Project-Id-Version: libc 2.42.9000\n"
+"POT-Creation-Date: 2026-01-19 16:22+0100\n"
+"PO-Revision-Date: 2026-01-19 19:08+0100\n"
 "Last-Translator: Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>\n"
 "Language-Team: Romanian <translation-team-ro@lists.sourceforge.net>\n"
 "Language: ro\n"
@@ -28,7 +29,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < 20)) ? 1 : 2);\n"
 "X-Bugs: Report translation errors to the Language-Team address.\n"
-"X-Generator: Poedit 3.5\n"
+"X-Generator: Poedit 3.6\n"
 
 #: argp/argp-help.c:229
 #, c-format
@@ -79,7 +80,7 @@ msgstr "Oferă această listă de ajutor"
 msgid "Give a short usage message"
 msgstr "Oferă un mesaj scurt de utilizare"
 
-#: argp/argp-parse.c:88 catgets/gencat.c:110 catgets/gencat.c:114
+#: argp/argp-parse.c:88 catgets/gencat.c:111 catgets/gencat.c:115
 #: iconv/iconv_prog.c:61 iconv/iconv_prog.c:62 nscd/nscd.c:106 nscd/nscd.c:110
 #: nss/makedb.c:122
 msgid "NAME"
@@ -114,29 +115,29 @@ msgstr "%s: Prea multe argumente\n"
 msgid "(PROGRAM ERROR) Option should have been recognized!?"
 msgstr "(EROARE DE PROGRAM) Opțiunea ar fi trebuit să fie recunoscută!?"
 
-#: assert/assert-perr.c:35
+#: assert/assert-perr.c:45
 #, c-format
-msgid "%s%s%s:%u: %s%sUnexpected error: %s.\n"
-msgstr "%s%s%s:%u: %s%sEroare neașteptată: %s.\n"
+msgid "%s%s%s:%s: %s%sUnexpected error: %s.\n"
+msgstr "%s%s%s:%s: %s%sEroare neașteptată: %s.\n"
 
-#: assert/assert.c:127
+#: assert/assert.c:37
 #, c-format
-msgid "%s%s%s:%u: %s%sAssertion `%s' failed.\n"
-msgstr "%s%s%s:%u: %s%sAserțiunea „%s” a eșuat.\n"
+msgid "%s%s%s:%s: %s%sAssertion `%s' failed.\n"
+msgstr "%s%s%s:%s: %s%sAserțiunea „%s” a eșuat.\n"
 
-#: catgets/gencat.c:111
+#: catgets/gencat.c:112
 msgid "Create C header file NAME containing symbol definitions"
 msgstr "Creează fișierul antet C NUME care conține definiții de simbol"
 
-#: catgets/gencat.c:113
+#: catgets/gencat.c:114
 msgid "Do not use existing catalog, force new output file"
 msgstr "Nu utilizează catalogul existent, forțează generarea unui fișie nou"
 
-#: catgets/gencat.c:114 nss/makedb.c:122
+#: catgets/gencat.c:115 nss/makedb.c:122
 msgid "Write output to file NAME"
 msgstr "Scrie ieșirea în fișierul NUME"
 
-#: catgets/gencat.c:119
+#: catgets/gencat.c:120
 msgid ""
 "Generate message catalog.\vIf INPUT-FILE is -, input is read from standard input.  If OUTPUT-FILE\n"
 "is -, output is written to standard output.\n"
@@ -144,7 +145,7 @@ msgstr ""
 "Generează catalogul de mesaje.\vDacă FIȘIER-INTRARE este -, intrarea este citită de la intrarea standard.\n"
 "Dacă FIȘIER-IEȘIRE este -, ieșirea este scrisă la ieșirea standard.\n"
 
-#: catgets/gencat.c:124
+#: catgets/gencat.c:125
 msgid ""
 "-o OUTPUT-FILE [INPUT-FILE]...\n"
 "[OUTPUT-FILE [INPUT-FILE]...]"
@@ -152,12 +153,12 @@ msgstr ""
 "-o FIȘIER-IEȘIRE [FIȘIER-INTRARE]...\n"
 "[FIȘIER-IEȘIRE [FIȘIER-INTRARE]...]"
 
-#: catgets/gencat.c:230 debug/pcprofiledump.c:219 elf/ldconfig.c:216
-#: elf/pldd.c:246 elf/sln.c:77 elf/sprof.c:371 iconv/iconv_prog.c:374
+#: catgets/gencat.c:231 debug/pcprofiledump.c:219 elf/ldconfig.c:216
+#: elf/pldd.c:246 elf/sln.c:77 elf/sprof.c:372 iconv/iconv_prog.c:374
 #: iconv/iconvconfig.c:380 locale/programs/locale.c:275
 #: locale/programs/localedef.c:437 login/programs/pt_chown.c:88
 #: malloc/memusagestat.c:564 nss/getent.c:961 nss/makedb.c:371
-#: posix/getconf.c:505
+#: posix/getconf.c:551
 #, c-format
 msgid ""
 "For bug reporting instructions, please see:\n"
@@ -166,12 +167,12 @@ msgstr ""
 "Pentru instrucțiuni de raportare a erorilor, consultați:\n"
 "%s.\n"
 
-#: catgets/gencat.c:246 debug/pcprofiledump.c:235 debug/xtrace.sh:63
-#: elf/ldconfig.c:232 elf/ldd.bash.in:38 elf/pldd.c:262 elf/sotruss.sh:75
-#: elf/sprof.c:388 iconv/iconv_prog.c:391 iconv/iconvconfig.c:397
+#: catgets/gencat.c:247 debug/pcprofiledump.c:235 debug/xtrace.sh:63
+#: elf/ldconfig.c:232 elf/ldd.bash.in:39 elf/pldd.c:262 elf/sotruss.sh:75
+#: elf/sprof.c:389 iconv/iconv_prog.c:391 iconv/iconvconfig.c:397
 #: locale/programs/locale.c:292 locale/programs/localedef.c:459
 #: login/programs/pt_chown.c:62 malloc/memusage.sh:70 malloc/memusagestat.c:582
-#: nscd/nscd.c:521 nss/getent.c:92 nss/makedb.c:387 posix/getconf.c:487
+#: nscd/nscd.c:521 nss/getent.c:92 nss/makedb.c:387 posix/getconf.c:533
 #, c-format
 msgid ""
 "Copyright (C) %s Free Software Foundation, Inc.\n"
@@ -182,78 +183,78 @@ msgstr ""
 "Acesta este software liber; consultați sursa pentru condițiile de copiere. NU există\n"
 "garanție; nici măcar pentru COMERCIALIZARE sau POTRIVIRE PENTRU UN ANUMIT SCOP.\n"
 
-#: catgets/gencat.c:251 debug/pcprofiledump.c:240 debug/xtrace.sh:67
-#: elf/ldconfig.c:237 elf/pldd.c:267 elf/sprof.c:394 iconv/iconv_prog.c:396
+#: catgets/gencat.c:252 debug/pcprofiledump.c:240 debug/xtrace.sh:67
+#: elf/ldconfig.c:237 elf/pldd.c:267 elf/sprof.c:395 iconv/iconv_prog.c:396
 #: iconv/iconvconfig.c:402 locale/programs/locale.c:297
 #: locale/programs/localedef.c:464 malloc/memusage.sh:74
 #: malloc/memusagestat.c:587 nscd/nscd.c:526 nss/getent.c:97 nss/makedb.c:392
-#: posix/getconf.c:492
+#: posix/getconf.c:538
 #, c-format
 msgid "Written by %s.\n"
 msgstr "Scris de %s.\n"
 
-#: catgets/gencat.c:282
+#: catgets/gencat.c:283
 msgid "*standard input*"
 msgstr "*intrare standard*"
 
-#: catgets/gencat.c:288 iconv/iconv_charmap.c:172 iconv/iconv_prog.c:279
+#: catgets/gencat.c:289 iconv/iconv_charmap.c:172 iconv/iconv_prog.c:279
 #: iconv/iconv_prog.c:432 nss/makedb.c:248
 #, c-format
 msgid "cannot open input file `%s'"
 msgstr "nu se poate deschide fișierul de intrare „%s”"
 
-#: catgets/gencat.c:417 catgets/gencat.c:492
+#: catgets/gencat.c:418 catgets/gencat.c:493
 msgid "illegal set number"
 msgstr "număr de set ilegal"
 
-#: catgets/gencat.c:444
+#: catgets/gencat.c:445
 msgid "duplicate set definition"
 msgstr "definiție de set duplicată"
 
-#: catgets/gencat.c:446 catgets/gencat.c:618 catgets/gencat.c:670
+#: catgets/gencat.c:447 catgets/gencat.c:619 catgets/gencat.c:671
 msgid "this is the first definition"
 msgstr "aceasta este prima definiție"
 
-#: catgets/gencat.c:517
+#: catgets/gencat.c:518
 #, c-format
 msgid "unknown set `%s'"
 msgstr "set necunoscut „%s”"
 
-#: catgets/gencat.c:558
+#: catgets/gencat.c:559
 msgid "invalid quote character"
 msgstr "caracter de citat nevalid"
 
-#: catgets/gencat.c:571
+#: catgets/gencat.c:572
 #, c-format
 msgid "unknown directive `%s': line ignored"
 msgstr "directivă necunoscută „%s ”: linia este ignorată"
 
-#: catgets/gencat.c:616
+#: catgets/gencat.c:617
 msgid "duplicated message number"
 msgstr "număr de mesaj duplicat"
 
-#: catgets/gencat.c:667
+#: catgets/gencat.c:668
 msgid "duplicated message identifier"
 msgstr "identificator de mesaj duplicat"
 
-#: catgets/gencat.c:724
+#: catgets/gencat.c:725
 msgid "invalid character: message ignored"
 msgstr "caracter nevalid: mesaj ignorat"
 
-#: catgets/gencat.c:767
+#: catgets/gencat.c:768
 msgid "invalid line"
 msgstr "linie nevalidă"
 
-#: catgets/gencat.c:821
+#: catgets/gencat.c:822
 msgid "malformed line ignored"
 msgstr "linie incorectă ignorată"
 
-#: catgets/gencat.c:939 catgets/gencat.c:947
+#: catgets/gencat.c:940 catgets/gencat.c:948
 #, c-format
 msgid "cannot allocate memory"
 msgstr "nu se poate aloca memorie"
 
-#: catgets/gencat.c:1000 catgets/gencat.c:1045
+#: catgets/gencat.c:1001 catgets/gencat.c:1046
 #, c-format
 msgid "cannot open output file `%s'"
 msgstr "nu se poate deschide fișierul de ieșire „%s”"
@@ -265,25 +266,25 @@ msgstr "nu se poate deschide fișierul de ieșire „%s”"
 # 10% înseamnă „code de control”
 # **************************************
 # a se vedea „escape” în Wikipedia
-#: catgets/gencat.c:1210 locale/programs/linereader.c:588
+#: catgets/gencat.c:1211 locale/programs/linereader.c:588
 msgid "invalid escape sequence"
 msgstr "secvență de cod de control nevalidă"
 
-#: catgets/gencat.c:1234
+#: catgets/gencat.c:1235
 msgid "unterminated message"
 msgstr "mesaj neterminat"
 
-#: catgets/gencat.c:1258
+#: catgets/gencat.c:1259
 #, c-format
 msgid "while opening old catalog file"
 msgstr "în timp ce se deschidea fișierul de catalog vechi"
 
-#: catgets/gencat.c:1349
+#: catgets/gencat.c:1350
 #, c-format
 msgid "conversion modules not available"
 msgstr "modulele de conversie nu sunt disponibile"
 
-#: catgets/gencat.c:1375
+#: catgets/gencat.c:1376
 #, c-format
 msgid "cannot determine escape character"
 msgstr "nu se poate determina caracterul de cod de control"
@@ -369,7 +370,7 @@ msgstr ""
 "pentru orice opțiuni scurte corespunzătoare.\n"
 "\n"
 
-#: debug/xtrace.sh:56 elf/ldd.bash.in:55 elf/sotruss.sh:49
+#: debug/xtrace.sh:56 elf/ldd.bash.in:56 elf/sotruss.sh:49
 #: malloc/memusage.sh:63
 msgid "For bug reporting instructions, please see:\\\\n%s.\\\\n"
 msgstr "Pentru instrucțiuni de raportare a erorilor, consultați:\\\\n%s.\\\\n"
@@ -553,11 +554,11 @@ msgstr "nu se poate crea matricea de rute de căutare"
 msgid "cannot stat shared object"
 msgstr "nu s-a putut obține starea obiectului partajat"
 
-#: elf/dl-load.c:1071 elf/dl-load.c:2155
+#: elf/dl-load.c:1071 elf/dl-load.c:2160
 msgid "cannot create shared object descriptor"
 msgstr "nu se poate crea un descriptor de obiect partajat"
 
-#: elf/dl-load.c:1090 elf/dl-load.c:1605 elf/dl-load.c:1711
+#: elf/dl-load.c:1090 elf/dl-load.c:1594 elf/dl-load.c:1704
 msgid "cannot read file data"
 msgstr "nu se pot citi datele fișierului"
 
@@ -565,95 +566,95 @@ msgstr "nu se pot citi datele fișierului"
 msgid "ELF load command address/offset not page-aligned"
 msgstr "Adresa/poziția comenzii de încărcare ELF nu este aliniată în pagină"
 
-#: elf/dl-load.c:1235
+#: elf/dl-load.c:1224
 msgid "object file has no loadable segments"
 msgstr "fișierul obiect nu are segmente încărcabile"
 
-#: elf/dl-load.c:1252
+#: elf/dl-load.c:1241
 msgid "cannot dynamically load executable"
 msgstr "nu se poate încărca în mod dinamic executabilul"
 
-#: elf/dl-load.c:1259
+#: elf/dl-load.c:1248
 msgid "object file has no dynamic section"
 msgstr "fișierul obiect nu are secțiune dinamică"
 
-#: elf/dl-load.c:1294
+#: elf/dl-load.c:1283
 msgid "cannot dynamically load position-independent executable"
 msgstr "nu poate încărca dinamic executabilul independent de poziție"
 
-#: elf/dl-load.c:1296
+#: elf/dl-load.c:1285
 msgid "shared object cannot be dlopen()ed"
 msgstr "obiectul partajat nu poate fi deschis cu dlopen()"
 
-#: elf/dl-load.c:1309
+#: elf/dl-load.c:1298
 msgid "cannot allocate memory for program header"
 msgstr "nu se poate aloca memorie pentru antetul programului"
 
-#: elf/dl-load.c:1334
+#: elf/dl-load.c:1323
 msgid "cannot enable executable stack as shared object requires"
 msgstr "nu se poate activa stiva executabilă așa cum necesită obiectul partajat"
 
-#: elf/dl-load.c:1362
+#: elf/dl-load.c:1351
 msgid "cannot close file descriptor"
 msgstr "nu se poate închide descriptorul de fișier"
 
-#: elf/dl-load.c:1605
+#: elf/dl-load.c:1594
 msgid "file too short"
 msgstr "fișier prea scurt"
 
-#: elf/dl-load.c:1639
+#: elf/dl-load.c:1628
 msgid "invalid ELF header"
 msgstr "antet ELF nevalid"
 
-#: elf/dl-load.c:1654
+#: elf/dl-load.c:1645
 msgid "ELF file data encoding not big-endian"
 msgstr "codificarea datelor fișierului ELF nu este de tipul big-endian"
 
-#: elf/dl-load.c:1656
+#: elf/dl-load.c:1647
 msgid "ELF file data encoding not little-endian"
 msgstr "codificarea datelor fișierului ELF nu este de tipul little-endian"
 
-#: elf/dl-load.c:1660
+#: elf/dl-load.c:1651
 msgid "ELF file version ident does not match current one"
 msgstr "versiunea de identificare a fișierului ELF nu se potrivește cu cea actuală"
 
-#: elf/dl-load.c:1664
+#: elf/dl-load.c:1655
 msgid "ELF file OS ABI invalid"
 msgstr "ABI(interfața) SO(sistemului operațional) a fișierului ELF nu este validă"
 
-#: elf/dl-load.c:1667
+#: elf/dl-load.c:1658
 msgid "ELF file ABI version invalid"
 msgstr "versiunea ABI a fișierului ELF nu este validă"
 
-#: elf/dl-load.c:1670
+#: elf/dl-load.c:1661
 msgid "nonzero padding in e_ident"
 msgstr "umplutură diferită de zero în e_ident"
 
-#: elf/dl-load.c:1673
+#: elf/dl-load.c:1664
 msgid "internal error"
 msgstr "eroare internă"
 
-#: elf/dl-load.c:1680
+#: elf/dl-load.c:1671
 msgid "ELF file version does not match current one"
 msgstr "versiunea fișierului ELF nu se potrivește cu cea actuală"
 
-#: elf/dl-load.c:1692
+#: elf/dl-load.c:1685
 msgid "only ET_DYN and ET_EXEC can be loaded"
 msgstr "numai ET_DYN și ET_EXEC pot fi încărcate"
 
-#: elf/dl-load.c:1697
+#: elf/dl-load.c:1690
 msgid "ELF file's phentsize not the expected size"
 msgstr "„phentsize” a fișierului ELF nu are dimensiunea așteptată"
 
-#: elf/dl-load.c:2174
+#: elf/dl-load.c:2179
 msgid "wrong ELF class: ELFCLASS64"
 msgstr "clasă ELF greșită: ELFCLASS64"
 
-#: elf/dl-load.c:2175
+#: elf/dl-load.c:2180
 msgid "wrong ELF class: ELFCLASS32"
 msgstr "clasă ELF greșită: ELFCLASS32"
 
-#: elf/dl-load.c:2178
+#: elf/dl-load.c:2183
 msgid "cannot open shared object file"
 msgstr "nu se poate deschide fișierul obiect partajat"
 
@@ -669,7 +670,7 @@ msgstr "nu se pot modifica protecțiile memoriei"
 msgid "cannot map zero-fill pages"
 msgstr "nu se pot memora pagini umplute cu zerouri"
 
-#: elf/dl-lookup.c:810
+#: elf/dl-lookup.c:808
 msgid "symbol lookup error"
 msgstr "eroare de căutare a simbolului"
 
@@ -722,7 +723,7 @@ msgstr "nu se poate aplica protecția suplimentară de memorie după realocare"
 msgid "RTLD_NEXT used in code not dynamically loaded"
 msgstr "RTLD_NEXT utilizat în cod nu s-a încărcat dinamic"
 
-#: elf/dl-tls.c:1209
+#: elf/dl-tls.c:1217
 msgid "cannot create TLS data structures"
 msgstr "nu se pot crea structurile de date TLS"
 
@@ -927,7 +928,7 @@ msgstr "este nevoie de numele absolut de fișier pentru fișierul de configurare
 
 #: elf/ldconfig.c:1124 locale/programs/xasprintf.c:31
 #: locale/programs/xmalloc.c:63 malloc/obstack.c:416 malloc/obstack.c:418
-#: posix/getconf.c:460 posix/getconf.c:699
+#: posix/getconf.c:503 posix/getconf.c:745
 #, c-format
 msgid "memory exhausted"
 msgstr "memorie epuizată"
@@ -952,11 +953,11 @@ msgstr "Nu se poate executa «chdir» la /"
 msgid "Can't open cache file directory %s\n"
 msgstr "Nu se poate deschide directorul de fișiere de spațiu de prestocare(cache) %s\n"
 
-#: elf/ldd.bash.in:42
+#: elf/ldd.bash.in:43
 msgid "Written by %s and %s.\n"
 msgstr "Scris de %s și %s.\n"
 
-#: elf/ldd.bash.in:47
+#: elf/ldd.bash.in:48
 msgid ""
 "Usage: ldd [OPTION]... FILE...\n"
 "      --help              print this help and exit\n"
@@ -974,46 +975,46 @@ msgstr ""
 "  -u, --unused            afișează dependențele directe neutilizate\n"
 "  -v, --verbose           afișează toate informațiile\n"
 
-#: elf/ldd.bash.in:80
+#: elf/ldd.bash.in:81
 msgid "ldd: option \\`$1' is ambiguous"
 msgstr "ldd: opțiunea „$1” este ambiguă"
 
-#: elf/ldd.bash.in:87
+#: elf/ldd.bash.in:88
 msgid "unrecognized option"
 msgstr "opțiune nerecunoscută"
 
-#: elf/ldd.bash.in:88 elf/ldd.bash.in:125
+#: elf/ldd.bash.in:89 elf/ldd.bash.in:126
 msgid "Try \\`ldd --help' for more information."
 msgstr "Încercați «ldd --help» pentru mai multe informații."
 
-#: elf/ldd.bash.in:124
+#: elf/ldd.bash.in:125
 msgid "missing file arguments"
 msgstr "lipsesc argumentele fișierului"
 
 #. TRANS This is a ``file doesn't exist'' error
 #. TRANS for ordinary files that are referenced in contexts where they are
 #. TRANS expected to already exist.
-#: elf/ldd.bash.in:147 sysdeps/gnu/errlist.h:13
+#: elf/ldd.bash.in:148 sysdeps/gnu/errlist.h:13
 msgid "No such file or directory"
 msgstr "Nu există un astfel de fișier sau director"
 
-#: elf/ldd.bash.in:150 inet/rcmd.c:483
+#: elf/ldd.bash.in:151 inet/rcmd.c:483
 msgid "not regular file"
 msgstr "nu este un fișier obișnuit"
 
-#: elf/ldd.bash.in:153
+#: elf/ldd.bash.in:154
 msgid "warning: you do not have execution permission for"
 msgstr "avertisment: nu aveți permisiunea de execuție pentru"
 
-#: elf/ldd.bash.in:170
+#: elf/ldd.bash.in:171
 msgid "\tnot a dynamic executable"
 msgstr "\tnu este un executabil dinamic"
 
-#: elf/ldd.bash.in:178
+#: elf/ldd.bash.in:179
 msgid "exited with unknown exit code"
 msgstr "ieșit cu un cod de ieșire necunoscut"
 
-#: elf/ldd.bash.in:183
+#: elf/ldd.bash.in:184
 msgid "error: you do not have read permission for"
 msgstr "eroare: nu aveți permisiunea de citire pentru"
 
@@ -1271,111 +1272,126 @@ msgstr ""
 msgid "%s: unrecognized option '%c%s'\\n"
 msgstr "%s: opțiune nerecunoscută „%c%s”\\n"
 
-#: elf/sprof.c:76
+#: elf/sprof.c:77
 msgid "Output selection:"
 msgstr "Selectarea ieșirii:"
 
-#: elf/sprof.c:78
+#: elf/sprof.c:79
 msgid "print list of count paths and their number of use"
 msgstr "afișează o listă de rute numerotate și numărul lor de utilizare"
 
-#: elf/sprof.c:80
+#: elf/sprof.c:81
 msgid "generate flat profile with counts and ticks"
 msgstr "generează un profil plat cu contoare și marcaje de timp"
 
-#: elf/sprof.c:81
+#: elf/sprof.c:82
 msgid "generate call graph"
 msgstr "generează graficul de apeluri"
 
-#: elf/sprof.c:88
+#: elf/sprof.c:89
 msgid "Read and display shared object profiling data."
 msgstr "Citește și afișează datele de profilare ale obiectelor partajate."
 
-#: elf/sprof.c:93
+#: elf/sprof.c:94
 msgid "SHOBJ [PROFDATA]"
 msgstr "OBIECT_PARTAJAT [DATE_PROFILARE]"
 
-#: elf/sprof.c:432
+#: elf/sprof.c:434
 #, c-format
 msgid "failed to load shared object `%s'"
 msgstr "nu s-a putut încărca obiectul partajat „%s”"
 
-#: elf/sprof.c:441 elf/sprof.c:821 elf/sprof.c:919
+#: elf/sprof.c:443 elf/sprof.c:860 elf/sprof.c:958
 #, c-format
 msgid "cannot create internal descriptor"
 msgstr "nu se poate crea un descriptor intern"
 
-#: elf/sprof.c:550
+#: elf/sprof.c:552
 #, c-format
 msgid "Reopening shared object `%s' failed"
 msgstr "Redeschiderea obiectului partajat „%s” a eșuat"
 
-#: elf/sprof.c:557 elf/sprof.c:652
+#: elf/sprof.c:556 elf/sprof.c:672
+#, c-format
+msgid "stat(%s) failure"
+msgstr "stat(%s) a eșuat"
+
+#: elf/sprof.c:573
+#, c-format
+msgid "read outside of file extents %zu + %jd > %jd"
+msgstr "citire în afara extinderilor fișierului %zu + %jd > %jd"
+
+#: elf/sprof.c:582 elf/sprof.c:689
 #, c-format
 msgid "reading of section headers failed"
 msgstr "citirea antetelor secțiunilor a eșuat"
 
-#: elf/sprof.c:565 elf/sprof.c:660
+#: elf/sprof.c:592 elf/sprof.c:699
 #, c-format
 msgid "reading of section header string table failed"
 msgstr "citirea tabelului de șiruri de antet de secțiune a eșuat"
 
-#: elf/sprof.c:591
+#: elf/sprof.c:619
 #, c-format
 msgid "*** Cannot read debuginfo file name: %m\n"
 msgstr "*** Nu se poate citi numele fișierului cu informațiile de depanare: %m\n"
 
-#: elf/sprof.c:612
+#: elf/sprof.c:640
 #, c-format
 msgid "cannot determine file name"
 msgstr "nu se poate determina numele fișierului"
 
-#: elf/sprof.c:645
+#: elf/sprof.c:678
 #, c-format
 msgid "reading of ELF header failed"
 msgstr "citirea antetului ELF a eșuat"
 
-#: elf/sprof.c:681
+#: elf/sprof.c:683
+#, c-format
+msgid "too many section headers"
+msgstr "prea multe anteturi de secțiune"
+
+#: elf/sprof.c:720
 #, c-format
 msgid "*** The file `%s' is stripped: no detailed analysis possible\n"
 msgstr "*** Fișierul „%s” a fost curățat de datele suplimentare: nu este posibilă o analiză detaliată\n"
 
-#: elf/sprof.c:711
+#: elf/sprof.c:750
 #, c-format
 msgid "failed to load symbol data"
 msgstr "nu s-au putut încărca datele simbolului"
 
-#: elf/sprof.c:776
+#: elf/sprof.c:815
 #, c-format
 msgid "cannot load profiling data"
 msgstr "nu se pot încărca datele de profilare"
 
-#: elf/sprof.c:785
+#: elf/sprof.c:824
 #, c-format
 msgid "while stat'ing profiling data file"
 msgstr "la evaluarea de către stat() a fișierului de date de profilare"
 
-#: elf/sprof.c:793
+#: elf/sprof.c:832
 #, c-format
 msgid "profiling data file `%s' does not match shared object `%s'"
 msgstr "fișierul de date de profilare „%s” nu se potrivește cu obiectul partajat „%s”"
 
-#: elf/sprof.c:804
+#: elf/sprof.c:843
 #, c-format
 msgid "failed to mmap the profiling data file"
 msgstr "nu s-a reușit executarea a mmap asupra fișierului de date de profilare"
 
-#: elf/sprof.c:812
+#: elf/sprof.c:851
 #, c-format
 msgid "error while closing the profiling data file"
 msgstr "eroare la închiderea fișierului de date de profilare"
 
-#: elf/sprof.c:895
+#: elf/sprof.c:934
 #, c-format
 msgid "`%s' is no correct profile data file for `%s'"
 msgstr "„%s” nu este un fișier de date de profil corect pentru „%s”"
 
-#: elf/sprof.c:1076 elf/sprof.c:1134
+#: elf/sprof.c:1115 elf/sprof.c:1173
 #, c-format
 msgid "cannot allocate symbol data"
 msgstr "nu se pot aloca datele simbolului"
@@ -4789,17 +4805,17 @@ msgstr "nu se poate inițializa contextul SELinux"
 msgid "cannot set file creation context for `%s'"
 msgstr "nu se poate stabilii contextul de creare a fișierului pentru „%s”"
 
-#: posix/getconf.c:419
+#: posix/getconf.c:462
 #, c-format
 msgid "Usage: %s [-v specification] variable_name [pathname]\n"
 msgstr "Utilizare: %s [-v specificația] nume_variabilă [nume_rută]\n"
 
-#: posix/getconf.c:422
+#: posix/getconf.c:465
 #, c-format
 msgid "       %s -a [pathname]\n"
 msgstr "       %s -a [nume_rută]\n"
 
-#: posix/getconf.c:498
+#: posix/getconf.c:544
 #, c-format
 msgid ""
 "Usage: getconf [-v SPEC] VAR\n"
@@ -4818,21 +4834,21 @@ msgstr ""
 "mediul de compilare SPECificat.\n"
 "\n"
 
-#: posix/getconf.c:574
+#: posix/getconf.c:620
 #, c-format
 msgid "unknown specification \"%s\""
 msgstr "specificație necunoscută „%s”"
 
-#: posix/getconf.c:626
+#: posix/getconf.c:672
 #, c-format
 msgid "Couldn't execute %s"
 msgstr "Nu s-a putut executa %s"
 
-#: posix/getconf.c:671 posix/getconf.c:687
+#: posix/getconf.c:717 posix/getconf.c:733
 msgid "undefined"
 msgstr "nedefinită"
 
-#: posix/getconf.c:709
+#: posix/getconf.c:761
 #, c-format
 msgid "Unrecognized variable `%s'"
 msgstr "Variabilă nerecunoscută „%s”"
@@ -4990,17 +5006,17 @@ msgstr "%s: linia %d: nu se pot specifica mai mult de %d domenii de tăiat"
 msgid "%s: line %d: list delimiter not followed by domain"
 msgstr "%s: linia %d: delimitatorul listei nu este urmat de domeniu"
 
-#: resolv/res_hconf.c:176
+#: resolv/res_hconf.c:177
 #, c-format
 msgid "%s: line %d: expected `on' or `off', found `%s'\n"
 msgstr "%s: linia %d: era așteptat „on” sau „off”, s-a găsit „%s”\n"
 
-#: resolv/res_hconf.c:219
+#: resolv/res_hconf.c:220
 #, c-format
 msgid "%s: line %d: bad command `%s'\n"
 msgstr "%s: linia %d: comandă incorectă „%s”\n"
 
-#: resolv/res_hconf.c:252
+#: resolv/res_hconf.c:253
 #, c-format
 msgid "%s: line %d: ignoring trailing garbage `%s'\n"
 msgstr "%s: linia %d: se ignoră gunoiul final „%s”\n"
@@ -5211,7 +5227,7 @@ msgstr "Semnal necunoscut %d"
 
 #: sunrpc/auth_unix.c:113 sunrpc/clnt_tcp.c:124 sunrpc/clnt_udp.c:140
 #: sunrpc/clnt_unix.c:125 sunrpc/svc_tcp.c:189 sunrpc/svc_tcp.c:233
-#: sunrpc/svc_udp.c:161 sunrpc/svc_unix.c:186 sunrpc/svc_unix.c:226
+#: sunrpc/svc_udp.c:161 sunrpc/svc_unix.c:187 sunrpc/svc_unix.c:227
 #: sunrpc/xdr.c:631 sunrpc/xdr.c:791 sunrpc/xdr_array.c:102
 #: sunrpc/xdr_rec.c:153 sunrpc/xdr_ref.c:79
 msgid "out of memory\n"
@@ -5460,17 +5476,13 @@ msgstr "cache_set: alocarea victimei(obiectivului) a eșuat"
 msgid "cache_set: could not allocate new rpc_buffer"
 msgstr "cache_set: nu s-a putut aloca un nou rpc_buffer"
 
-#: sunrpc/svc_unix.c:166
+#: sunrpc/svc_unix.c:167
 msgid "svc_unix.c - AF_UNIX socket creation problem"
 msgstr "svc_unix.c - problemă la crearea soclului AF_UNIX"
 
-#: sunrpc/svc_unix.c:176
+#: sunrpc/svc_unix.c:177
 msgid "svc_unix.c - cannot getsockname or listen"
 msgstr "svc_unix.c - execuția getsockname() sau listen() a eșuat"
-
-#: sysdeps/aarch64/dl-bti.c:72
-msgid "failed to turn on BTI protection"
-msgstr "nu s-a putut activa protecția BTI"
 
 #: sysdeps/generic/dl-protected.h:55
 msgid "error due to GNU_PROPERTY_1_NEEDED_INDIRECT_EXTERN_ACCESS"
@@ -6466,6 +6478,18 @@ msgstr "?"
 #: sysdeps/gnu/errlist.h:798
 msgid "RPC program not available"
 msgstr "Programul RPC nu este disponibil"
+
+#: sysdeps/gnu/errlist.h:801
+msgid "Initialization error"
+msgstr "Eroare de inițializare"
+
+#: sysdeps/gnu/errlist.h:804
+msgid "Device is remote"
+msgstr "Dispozitivul este la distanță"
+
+#: sysdeps/gnu/errlist.h:807
+msgid "Too many levels of remote in path"
+msgstr "Prea multe niveluri de distanțiere(remote) în rută"
 
 #: sysdeps/hppa/dl-fptr.c:96
 msgid "cannot map pages for fdesc table"

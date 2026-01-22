@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libc 2.37.9000\n"
 "Report-Msgid-Bugs-To: http://www.gnu.org/software/libc/bugs.html\n"
-"POT-Creation-Date: 2025-07-19 22:21+0200\n"
+"POT-Creation-Date: 2026-01-19 16:22+0100\n"
 "PO-Revision-Date: 2023-07-22 10:02+0700\n"
 "Last-Translator: Trần Ngọc Quân <vnwildman@gmail.com>\n"
 "Language-Team: Vietnamese <translation-team-vi@lists.sourceforge.net>\n"
@@ -71,7 +71,7 @@ msgstr "Hiển thị trợ giúp này"
 msgid "Give a short usage message"
 msgstr "Hiển thị thông tin về cách dùng dạng ngắn"
 
-#: argp/argp-parse.c:88 catgets/gencat.c:110 catgets/gencat.c:114
+#: argp/argp-parse.c:88 catgets/gencat.c:111 catgets/gencat.c:115
 #: iconv/iconv_prog.c:61 iconv/iconv_prog.c:62 nscd/nscd.c:106 nscd/nscd.c:110
 #: nss/makedb.c:122
 msgid "NAME"
@@ -106,19 +106,19 @@ msgstr "%s: Quá nhiều đối số\n"
 msgid "(PROGRAM ERROR) Option should have been recognized!?"
 msgstr "(LỖI CHƯƠNG TRÌNH) Nên nhận biệt tùy chọn mà chưa?"
 
-#: catgets/gencat.c:111
+#: catgets/gencat.c:112
 msgid "Create C header file NAME containing symbol definitions"
 msgstr "Tạo tập tin phần đầu C TÊN chứa các lời định nghĩa ký hiệu"
 
-#: catgets/gencat.c:113
+#: catgets/gencat.c:114
 msgid "Do not use existing catalog, force new output file"
 msgstr "Đừng dùng phân loại đã tồn tại, ép buộc tập tin xuất mới"
 
-#: catgets/gencat.c:114 nss/makedb.c:122
+#: catgets/gencat.c:115 nss/makedb.c:122
 msgid "Write output to file NAME"
 msgstr "Ghi kết xuất vào tập tin TÊN"
 
-#: catgets/gencat.c:119
+#: catgets/gencat.c:120
 msgid ""
 "Generate message catalog.\vIf INPUT-FILE is -, input is read from standard input.  If OUTPUT-FILE\n"
 "is -, output is written to standard output.\n"
@@ -127,7 +127,7 @@ msgstr ""
 "thì dữ liệu đầu vào được đọc từ đầu vào tiêu chuẩn.\n"
 "Nếu TẬP-TIN-ĐẦU-RA là “-” thì kết xuất được ghi vào đầu ra tiêu chuẩn.\n"
 
-#: catgets/gencat.c:124
+#: catgets/gencat.c:125
 msgid ""
 "-o OUTPUT-FILE [INPUT-FILE]...\n"
 "[OUTPUT-FILE [INPUT-FILE]...]"
@@ -135,12 +135,12 @@ msgstr ""
 "-o TẬP-TIN-ĐẦU-RA [TẬP-TIN-ĐẦU-VÀO]…\n"
 "[TẬP-TIN-ĐẦU-RA [TẬP-TIN-ĐẦU-VÀO]…]"
 
-#: catgets/gencat.c:230 debug/pcprofiledump.c:219 elf/ldconfig.c:216
-#: elf/pldd.c:246 elf/sln.c:77 elf/sprof.c:371 iconv/iconv_prog.c:374
+#: catgets/gencat.c:231 debug/pcprofiledump.c:219 elf/ldconfig.c:216
+#: elf/pldd.c:246 elf/sln.c:77 elf/sprof.c:372 iconv/iconv_prog.c:374
 #: iconv/iconvconfig.c:380 locale/programs/locale.c:275
 #: locale/programs/localedef.c:437 login/programs/pt_chown.c:88
 #: malloc/memusagestat.c:564 nss/getent.c:961 nss/makedb.c:371
-#: posix/getconf.c:505
+#: posix/getconf.c:551
 #, c-format
 msgid ""
 "For bug reporting instructions, please see:\n"
@@ -150,12 +150,12 @@ msgstr ""
 "%s.\n"
 "Thông báo lỗi dịch cho: <https://translationproject.org/team/vi.html>.\n"
 
-#: catgets/gencat.c:246 debug/pcprofiledump.c:235 debug/xtrace.sh:63
-#: elf/ldconfig.c:232 elf/ldd.bash.in:38 elf/pldd.c:262 elf/sotruss.sh:75
-#: elf/sprof.c:388 iconv/iconv_prog.c:391 iconv/iconvconfig.c:397
+#: catgets/gencat.c:247 debug/pcprofiledump.c:235 debug/xtrace.sh:63
+#: elf/ldconfig.c:232 elf/ldd.bash.in:39 elf/pldd.c:262 elf/sotruss.sh:75
+#: elf/sprof.c:389 iconv/iconv_prog.c:391 iconv/iconvconfig.c:397
 #: locale/programs/locale.c:292 locale/programs/localedef.c:459
 #: login/programs/pt_chown.c:62 malloc/memusage.sh:70 malloc/memusagestat.c:582
-#: nscd/nscd.c:521 nss/getent.c:92 nss/makedb.c:387 posix/getconf.c:487
+#: nscd/nscd.c:521 nss/getent.c:92 nss/makedb.c:387 posix/getconf.c:533
 #, c-format
 msgid ""
 "Copyright (C) %s Free Software Foundation, Inc.\n"
@@ -166,96 +166,96 @@ msgstr ""
 "Chương trình này là phần mềm tự do; xem mã nguồn để tìm điều kiện sao chép.\n"
 "KHÔNG CÓ BẢO HÀNH GÌ CẢ; NGAY CẢ KHI NÓ ĐƯỢC BÁN HAY THÍCH HỢP CHO MỤC ĐÍCH CÁ NHÂN.\n"
 
-#: catgets/gencat.c:251 debug/pcprofiledump.c:240 debug/xtrace.sh:67
-#: elf/ldconfig.c:237 elf/pldd.c:267 elf/sprof.c:394 iconv/iconv_prog.c:396
+#: catgets/gencat.c:252 debug/pcprofiledump.c:240 debug/xtrace.sh:67
+#: elf/ldconfig.c:237 elf/pldd.c:267 elf/sprof.c:395 iconv/iconv_prog.c:396
 #: iconv/iconvconfig.c:402 locale/programs/locale.c:297
 #: locale/programs/localedef.c:464 malloc/memusage.sh:74
 #: malloc/memusagestat.c:587 nscd/nscd.c:526 nss/getent.c:97 nss/makedb.c:392
-#: posix/getconf.c:492
+#: posix/getconf.c:538
 #, c-format
 msgid "Written by %s.\n"
 msgstr "Viết bởi %s.\n"
 
-#: catgets/gencat.c:282
+#: catgets/gencat.c:283
 msgid "*standard input*"
 msgstr "*đầu vào tiêu chuẩn*"
 
-#: catgets/gencat.c:288 iconv/iconv_charmap.c:172 iconv/iconv_prog.c:279
+#: catgets/gencat.c:289 iconv/iconv_charmap.c:172 iconv/iconv_prog.c:279
 #: iconv/iconv_prog.c:432 nss/makedb.c:248
 #, c-format
 msgid "cannot open input file `%s'"
 msgstr "không thể mở tập tin nhập vào “%s”"
 
-#: catgets/gencat.c:417 catgets/gencat.c:492
+#: catgets/gencat.c:418 catgets/gencat.c:493
 msgid "illegal set number"
 msgstr "số thứ tự tập hợp không hợp lệ"
 
-#: catgets/gencat.c:444
+#: catgets/gencat.c:445
 msgid "duplicate set definition"
 msgstr "lời định nghĩa tập hợp bị trùng"
 
-#: catgets/gencat.c:446 catgets/gencat.c:618 catgets/gencat.c:670
+#: catgets/gencat.c:447 catgets/gencat.c:619 catgets/gencat.c:671
 msgid "this is the first definition"
 msgstr "đây là lời định nghĩa thứ nhất"
 
-#: catgets/gencat.c:517
+#: catgets/gencat.c:518
 #, c-format
 msgid "unknown set `%s'"
 msgstr "không rõ tập hợp “%s”"
 
-#: catgets/gencat.c:558
+#: catgets/gencat.c:559
 msgid "invalid quote character"
 msgstr "ký tự trích dẫn không hợp lệ"
 
-#: catgets/gencat.c:571
+#: catgets/gencat.c:572
 #, c-format
 msgid "unknown directive `%s': line ignored"
 msgstr "không rõ chỉ thị “%s”: dòng bị bỏ qua"
 
-#: catgets/gencat.c:616
+#: catgets/gencat.c:617
 msgid "duplicated message number"
 msgstr "số thứ tự thông điệp trùng"
 
-#: catgets/gencat.c:667
+#: catgets/gencat.c:668
 msgid "duplicated message identifier"
 msgstr "định danh thông điệp bị trùng"
 
-#: catgets/gencat.c:724
+#: catgets/gencat.c:725
 msgid "invalid character: message ignored"
 msgstr "ký tự không hợp lệ: thông điệp bị bỏ qua"
 
-#: catgets/gencat.c:767
+#: catgets/gencat.c:768
 msgid "invalid line"
 msgstr "dòng không hợp lệ"
 
-#: catgets/gencat.c:821
+#: catgets/gencat.c:822
 msgid "malformed line ignored"
 msgstr "dòng dạng sai bị bỏ qua"
 
-#: catgets/gencat.c:1000 catgets/gencat.c:1045
+#: catgets/gencat.c:1001 catgets/gencat.c:1046
 #, c-format
 msgid "cannot open output file `%s'"
 msgstr "không thể mở tập tin kết xuất “%s”"
 
-#: catgets/gencat.c:1210 locale/programs/linereader.c:588
+#: catgets/gencat.c:1211 locale/programs/linereader.c:588
 msgid "invalid escape sequence"
 msgstr "dây thoát không hợp lệ"
 
-#: catgets/gencat.c:1234
+#: catgets/gencat.c:1235
 msgid "unterminated message"
 msgstr "thông điệp chưa chấm dứt"
 
-#: catgets/gencat.c:1258
+#: catgets/gencat.c:1259
 #, c-format
 msgid "while opening old catalog file"
 msgstr "trong khi mở tập tin phân loại cũ"
 
-#: catgets/gencat.c:1349
+#: catgets/gencat.c:1350
 #, c-format
 msgid "conversion modules not available"
 msgstr "mô-đun chuyển đổi không sẵn sàng"
 
-#: catgets/gencat.c:1375
+#: catgets/gencat.c:1376
 #, c-format
 msgid "cannot determine escape character"
 msgstr "không thể giải quyết ký tự thoát chuỗi"
@@ -326,7 +326,7 @@ msgstr ""
 "cũng bắt buộc với các tùy chọn ngắn tương ứng.\n"
 "\n"
 
-#: debug/xtrace.sh:56 elf/ldd.bash.in:55 elf/sotruss.sh:49
+#: debug/xtrace.sh:56 elf/ldd.bash.in:56 elf/sotruss.sh:49
 #: malloc/memusage.sh:63
 msgid "For bug reporting instructions, please see:\\\\n%s.\\\\n"
 msgstr "Để tìm hướng dẫn về thông báo lỗi, hãy xem:\\\\n%s.\\\\nThông báo lỗi dịch cho: <https://translationproject.org/team/vi.html>.\\\\n"
@@ -508,11 +508,11 @@ msgstr "không thể tạo mảng đường dẫn tìm kiếm"
 msgid "cannot stat shared object"
 msgstr "không thể lấy trạng thái về đối tượng dùng chung"
 
-#: elf/dl-load.c:1071 elf/dl-load.c:2155
+#: elf/dl-load.c:1071 elf/dl-load.c:2160
 msgid "cannot create shared object descriptor"
 msgstr "không thể tạo bộ mô tả đối tượng dùng chung"
 
-#: elf/dl-load.c:1090 elf/dl-load.c:1605 elf/dl-load.c:1711
+#: elf/dl-load.c:1090 elf/dl-load.c:1594 elf/dl-load.c:1704
 msgid "cannot read file data"
 msgstr "không thể đọc dữ liệu tập tin"
 
@@ -520,95 +520,95 @@ msgstr "không thể đọc dữ liệu tập tin"
 msgid "ELF load command address/offset not page-aligned"
 msgstr "Địa chỉ/bù của câu lệnh nạp ELF không phải được sắp trang đúng"
 
-#: elf/dl-load.c:1235
+#: elf/dl-load.c:1224
 msgid "object file has no loadable segments"
 msgstr "tập tin đối tượng không có đoạn nạp được"
 
-#: elf/dl-load.c:1252
+#: elf/dl-load.c:1241
 msgid "cannot dynamically load executable"
 msgstr "không thể nạp động tập tin thực hiện được"
 
-#: elf/dl-load.c:1259
+#: elf/dl-load.c:1248
 msgid "object file has no dynamic section"
 msgstr "tập tin đối tượng không có phần động"
 
-#: elf/dl-load.c:1294
+#: elf/dl-load.c:1283
 msgid "cannot dynamically load position-independent executable"
 msgstr "không thể nạp động tập tin thực hiện được không phụ thuộc vị trí"
 
-#: elf/dl-load.c:1296
+#: elf/dl-load.c:1285
 msgid "shared object cannot be dlopen()ed"
 msgstr "đối tượng dùng chung không thể được dlopen()"
 
-#: elf/dl-load.c:1309
+#: elf/dl-load.c:1298
 msgid "cannot allocate memory for program header"
 msgstr "không thể cấp phát bộ nhớ cho phần đầu chương trình"
 
-#: elf/dl-load.c:1334
+#: elf/dl-load.c:1323
 msgid "cannot enable executable stack as shared object requires"
 msgstr "không thể hiệu lực ngăn xếp thực hiện được theo yêu cầu của đối tượng dùng chung"
 
-#: elf/dl-load.c:1362
+#: elf/dl-load.c:1351
 msgid "cannot close file descriptor"
 msgstr "không thể đóng bộ mô tả tập tin"
 
-#: elf/dl-load.c:1605
+#: elf/dl-load.c:1594
 msgid "file too short"
 msgstr "tập tin quá ngắn"
 
-#: elf/dl-load.c:1639
+#: elf/dl-load.c:1628
 msgid "invalid ELF header"
 msgstr "phần đầu ELF không hợp lệ"
 
-#: elf/dl-load.c:1654
+#: elf/dl-load.c:1645
 msgid "ELF file data encoding not big-endian"
 msgstr "Bảng mã dữ liệu tập tin ELF không có kiểu về cuối lớn (big-endian)"
 
-#: elf/dl-load.c:1656
+#: elf/dl-load.c:1647
 msgid "ELF file data encoding not little-endian"
 msgstr "Bảng mã dữ liệu tập tin ELF không có kiểu về cuối nhỏ (little-endian)"
 
-#: elf/dl-load.c:1660
+#: elf/dl-load.c:1651
 msgid "ELF file version ident does not match current one"
 msgstr "ident phiên bản tập tin ELF không tương ứng với cái hiện tại"
 
-#: elf/dl-load.c:1664
+#: elf/dl-load.c:1655
 msgid "ELF file OS ABI invalid"
 msgstr "Hệ điều hành ABI của tập tin ELF không phải hợp lệ"
 
-#: elf/dl-load.c:1667
+#: elf/dl-load.c:1658
 msgid "ELF file ABI version invalid"
 msgstr "Phiên bản ABI của tập tin ELF không phải hợp lệ"
 
-#: elf/dl-load.c:1670
+#: elf/dl-load.c:1661
 msgid "nonzero padding in e_ident"
 msgstr "không có phần đệm số không trong e_ident"
 
-#: elf/dl-load.c:1673
+#: elf/dl-load.c:1664
 msgid "internal error"
 msgstr "lỗi nội bộ"
 
-#: elf/dl-load.c:1680
+#: elf/dl-load.c:1671
 msgid "ELF file version does not match current one"
 msgstr "Phiên bản tập tin ELF không tương ứng với điều hiện thời"
 
-#: elf/dl-load.c:1692
+#: elf/dl-load.c:1685
 msgid "only ET_DYN and ET_EXEC can be loaded"
 msgstr "chỉ có thể nạp ET_DYN và ET_EXEC"
 
-#: elf/dl-load.c:1697
+#: elf/dl-load.c:1690
 msgid "ELF file's phentsize not the expected size"
 msgstr "kích cỡ phentsize của tập tin ELF là bất thường"
 
-#: elf/dl-load.c:2174
+#: elf/dl-load.c:2179
 msgid "wrong ELF class: ELFCLASS64"
 msgstr "lớp ELF không đúng: ELFCLASS64"
 
-#: elf/dl-load.c:2175
+#: elf/dl-load.c:2180
 msgid "wrong ELF class: ELFCLASS32"
 msgstr "lớp ELF không đúng: ELFCLASS32"
 
-#: elf/dl-load.c:2178
+#: elf/dl-load.c:2183
 msgid "cannot open shared object file"
 msgstr "không thể mở tập tin đối tượng dùng chung"
 
@@ -624,7 +624,7 @@ msgstr "không thể thay đổi sự bảo vệ bộ nhớ"
 msgid "cannot map zero-fill pages"
 msgstr "không thể ánh xạ trang điền số không"
 
-#: elf/dl-lookup.c:810
+#: elf/dl-lookup.c:808
 msgid "symbol lookup error"
 msgstr "lỗi tra cứu ký hiệu"
 
@@ -677,7 +677,7 @@ msgstr "không thể áp dụng sự bảo vệ bộ nhớ thêm sau khi tái đ
 msgid "RTLD_NEXT used in code not dynamically loaded"
 msgstr "RTLD_NEXT được dùng trong mã không phải được nạp động"
 
-#: elf/dl-tls.c:1209
+#: elf/dl-tls.c:1217
 msgid "cannot create TLS data structures"
 msgstr "không thể tạo các cấu trúc dữ liệu TLS"
 
@@ -882,7 +882,7 @@ msgstr "dùng tùy chọn “-r” thì cũng cần tên tập tin tuyệt đố
 
 #: elf/ldconfig.c:1124 locale/programs/xasprintf.c:31
 #: locale/programs/xmalloc.c:63 malloc/obstack.c:416 malloc/obstack.c:418
-#: posix/getconf.c:460 posix/getconf.c:699
+#: posix/getconf.c:503 posix/getconf.c:745
 #, c-format
 msgid "memory exhausted"
 msgstr "hết bộ nhớ"
@@ -907,11 +907,11 @@ msgstr "Không thể chuyển đổi thư mục (chdir) sang /"
 msgid "Can't open cache file directory %s\n"
 msgstr "Không thể mở thư mục nhớ tạm %s\n"
 
-#: elf/ldd.bash.in:42
+#: elf/ldd.bash.in:43
 msgid "Written by %s and %s.\n"
 msgstr "Tác giả: %s và %s.\n"
 
-#: elf/ldd.bash.in:47
+#: elf/ldd.bash.in:48
 msgid ""
 "Usage: ldd [OPTION]... FILE...\n"
 "      --help              print this help and exit\n"
@@ -929,46 +929,46 @@ msgstr ""
 "  -u, --unused            in các quan hệ phụ thuộc trực tiếp không dùng\n"
 "  -v, --verbose           in mọi thông tin\n"
 
-#: elf/ldd.bash.in:80
+#: elf/ldd.bash.in:81
 msgid "ldd: option \\`$1' is ambiguous"
 msgstr "ldd: tùy chọn “$1” chưa rõ ràng"
 
-#: elf/ldd.bash.in:87
+#: elf/ldd.bash.in:88
 msgid "unrecognized option"
 msgstr "không nhận ra tùy chọn"
 
-#: elf/ldd.bash.in:88 elf/ldd.bash.in:125
+#: elf/ldd.bash.in:89 elf/ldd.bash.in:126
 msgid "Try \\`ldd --help' for more information."
 msgstr "Hãy chạy lệnh trợ giúp “ldd --help” để xem thông tin thêm."
 
-#: elf/ldd.bash.in:124
+#: elf/ldd.bash.in:125
 msgid "missing file arguments"
 msgstr "đối số tập tin còn thiếu"
 
 #. TRANS This is a ``file doesn't exist'' error
 #. TRANS for ordinary files that are referenced in contexts where they are
 #. TRANS expected to already exist.
-#: elf/ldd.bash.in:147 sysdeps/gnu/errlist.h:13
+#: elf/ldd.bash.in:148 sysdeps/gnu/errlist.h:13
 msgid "No such file or directory"
 msgstr "Không có tập tin hoặc thư mục như vậy"
 
-#: elf/ldd.bash.in:150 inet/rcmd.c:483
+#: elf/ldd.bash.in:151 inet/rcmd.c:483
 msgid "not regular file"
 msgstr "không phải tập tin thường"
 
-#: elf/ldd.bash.in:153
+#: elf/ldd.bash.in:154
 msgid "warning: you do not have execution permission for"
 msgstr "cảnh báo: bạn không có đủ thẩm quyền đối với"
 
-#: elf/ldd.bash.in:170
+#: elf/ldd.bash.in:171
 msgid "\tnot a dynamic executable"
 msgstr "\tkhông phải một tập tin thực hiện được kiểu động"
 
-#: elf/ldd.bash.in:178
+#: elf/ldd.bash.in:179
 msgid "exited with unknown exit code"
 msgstr "đã thoát với mã thoát không rõ"
 
-#: elf/ldd.bash.in:183
+#: elf/ldd.bash.in:184
 msgid "error: you do not have read permission for"
 msgstr "lỗi: bạn không có quyền đọc"
 
@@ -1225,111 +1225,111 @@ msgstr ""
 msgid "%s: unrecognized option '%c%s'\\n"
 msgstr "%s: không nhận ra tùy chọn “%c%s”\\n"
 
-#: elf/sprof.c:76
+#: elf/sprof.c:77
 msgid "Output selection:"
 msgstr "Xuất vùng chọn:"
 
-#: elf/sprof.c:78
+#: elf/sprof.c:79
 msgid "print list of count paths and their number of use"
 msgstr "in danh sách các đường dẫn đếm và số lần dùng mỗi đường dẫn"
 
-#: elf/sprof.c:80
+#: elf/sprof.c:81
 msgid "generate flat profile with counts and ticks"
 msgstr "tạo lược tả phẳng có số đếm và vạch khấc"
 
-#: elf/sprof.c:81
+#: elf/sprof.c:82
 msgid "generate call graph"
 msgstr "tạo đồ thị gọi"
 
-#: elf/sprof.c:88
+#: elf/sprof.c:89
 msgid "Read and display shared object profiling data."
 msgstr "Đọc và hiển thị dữ liệu lược tả đối tượng chia sẻ."
 
-#: elf/sprof.c:93
+#: elf/sprof.c:94
 msgid "SHOBJ [PROFDATA]"
 msgstr "SHOBJ [DỮ_LIỆU_LƯỢC_TẢ]"
 
-#: elf/sprof.c:432
+#: elf/sprof.c:434
 #, c-format
 msgid "failed to load shared object `%s'"
 msgstr "lỗi nạp đối tượng dùng chung “%s”"
 
-#: elf/sprof.c:441 elf/sprof.c:821 elf/sprof.c:919
+#: elf/sprof.c:443 elf/sprof.c:860 elf/sprof.c:958
 #, c-format
 msgid "cannot create internal descriptor"
 msgstr "không thể tạo bộ mô tả nội bộ"
 
-#: elf/sprof.c:550
+#: elf/sprof.c:552
 #, c-format
 msgid "Reopening shared object `%s' failed"
 msgstr "Lỗi mở lại đối tượng dùng chung “%s”"
 
-#: elf/sprof.c:557 elf/sprof.c:652
+#: elf/sprof.c:582 elf/sprof.c:689
 #, c-format
 msgid "reading of section headers failed"
 msgstr "lỗi đọc phần đầu của phần"
 
-#: elf/sprof.c:565 elf/sprof.c:660
+#: elf/sprof.c:592 elf/sprof.c:699
 #, c-format
 msgid "reading of section header string table failed"
 msgstr "lỗi đọc bảng chuỗi phần đầu của phần"
 
-#: elf/sprof.c:591
+#: elf/sprof.c:619
 #, c-format
 msgid "*** Cannot read debuginfo file name: %m\n"
 msgstr "*** Không thể đọc tên tập tin chứa thông tin gỡ lỗi: %m\n"
 
-#: elf/sprof.c:612
+#: elf/sprof.c:640
 #, c-format
 msgid "cannot determine file name"
 msgstr "không thể phân giải tên tập tin"
 
-#: elf/sprof.c:645
+#: elf/sprof.c:678
 #, c-format
 msgid "reading of ELF header failed"
 msgstr "lỗi đọc phần đầu ELF"
 
-#: elf/sprof.c:681
+#: elf/sprof.c:720
 #, c-format
 msgid "*** The file `%s' is stripped: no detailed analysis possible\n"
 msgstr "*** Tập tin “%s” bị tước nên không thể phân tích chi tiết\n"
 
-#: elf/sprof.c:711
+#: elf/sprof.c:750
 #, c-format
 msgid "failed to load symbol data"
 msgstr "lỗi nạp dữ liệu ký hiệu"
 
-#: elf/sprof.c:776
+#: elf/sprof.c:815
 #, c-format
 msgid "cannot load profiling data"
 msgstr "không thể nạp dữ liệu đo hiệu năng sử dụng"
 
-#: elf/sprof.c:785
+#: elf/sprof.c:824
 #, c-format
 msgid "while stat'ing profiling data file"
 msgstr "trong khi lấy thống kê về tập tin dữ liệu do hiệu năng sử dụng"
 
-#: elf/sprof.c:793
+#: elf/sprof.c:832
 #, c-format
 msgid "profiling data file `%s' does not match shared object `%s'"
 msgstr "tập tin dữ liệu do hiệu năng sử dụng “%s” không tương ứng với đối tượng dùng chung “%s”"
 
-#: elf/sprof.c:804
+#: elf/sprof.c:843
 #, c-format
 msgid "failed to mmap the profiling data file"
 msgstr "lỗi mmap tập tin dữ liệu do hiệu năng sử dụng"
 
-#: elf/sprof.c:812
+#: elf/sprof.c:851
 #, c-format
 msgid "error while closing the profiling data file"
 msgstr "gặp lỗi khi đóng tập tin dữ liệu do hiệu năng sử dụng"
 
-#: elf/sprof.c:895
+#: elf/sprof.c:934
 #, c-format
 msgid "`%s' is no correct profile data file for `%s'"
 msgstr "“%s” không phải là tập tin dữ liệu lược tả đúng dành cho “%s”"
 
-#: elf/sprof.c:1076 elf/sprof.c:1134
+#: elf/sprof.c:1115 elf/sprof.c:1173
 #, c-format
 msgid "cannot allocate symbol data"
 msgstr "không thể cấp phát dữ liệu ký hiệu"
@@ -4713,17 +4713,17 @@ msgstr "không thể khởi tạo ngữ cảnh SELinux"
 msgid "cannot set file creation context for `%s'"
 msgstr "không thể đặt ngữ cảnh tạo tập tin cho “%s”"
 
-#: posix/getconf.c:419
+#: posix/getconf.c:462
 #, c-format
 msgid "Usage: %s [-v specification] variable_name [pathname]\n"
 msgstr "Cách dùng: %s [-v đặc_tả] tên_biến [đường_dẫn]\n"
 
-#: posix/getconf.c:422
+#: posix/getconf.c:465
 #, c-format
 msgid "       %s -a [pathname]\n"
 msgstr "           %s -a [đường_dẫn]\n"
 
-#: posix/getconf.c:498
+#: posix/getconf.c:544
 #, c-format
 msgid ""
 "Usage: getconf [-v SPEC] VAR\n"
@@ -4742,21 +4742,21 @@ msgstr ""
 "Đưa ra ĐẶC_TẢ thì xuất giá trị cho môi trường biên dịch ĐẶC_TẢ.\n"
 "\n"
 
-#: posix/getconf.c:574
+#: posix/getconf.c:620
 #, c-format
 msgid "unknown specification \"%s\""
 msgstr "không rõ đặc tả “%s”"
 
-#: posix/getconf.c:626
+#: posix/getconf.c:672
 #, c-format
 msgid "Couldn't execute %s"
 msgstr "Không thể thực hiện %s"
 
-#: posix/getconf.c:671 posix/getconf.c:687
+#: posix/getconf.c:717 posix/getconf.c:733
 msgid "undefined"
 msgstr "chưa định nghĩa"
 
-#: posix/getconf.c:709
+#: posix/getconf.c:761
 #, c-format
 msgid "Unrecognized variable `%s'"
 msgstr "Không nhận ra biến “%s”"
@@ -4906,17 +4906,17 @@ msgstr "%s: dòng %d: không thể chỉ ra nhiều hơn %d miền trim"
 msgid "%s: line %d: list delimiter not followed by domain"
 msgstr "%s: dòng %d: dấu tách danh sách không có miền theo sau"
 
-#: resolv/res_hconf.c:176
+#: resolv/res_hconf.c:177
 #, c-format
 msgid "%s: line %d: expected `on' or `off', found `%s'\n"
 msgstr "%s: dòng %d: cần “on” (bật) hoặc “off” (tắt), nhưng lại nhận được “%s”\n"
 
-#: resolv/res_hconf.c:219
+#: resolv/res_hconf.c:220
 #, c-format
 msgid "%s: line %d: bad command `%s'\n"
 msgstr "%s: dòng %d: câu lệnh sai “%s”\n"
 
-#: resolv/res_hconf.c:252
+#: resolv/res_hconf.c:253
 #, c-format
 msgid "%s: line %d: ignoring trailing garbage `%s'\n"
 msgstr "%s: dòng %d: đang bỏ qua rác đi theo “%s”\n"
@@ -5127,7 +5127,7 @@ msgstr "Tín hiệu không rõ %d"
 
 #: sunrpc/auth_unix.c:113 sunrpc/clnt_tcp.c:124 sunrpc/clnt_udp.c:140
 #: sunrpc/clnt_unix.c:125 sunrpc/svc_tcp.c:189 sunrpc/svc_tcp.c:233
-#: sunrpc/svc_udp.c:161 sunrpc/svc_unix.c:186 sunrpc/svc_unix.c:226
+#: sunrpc/svc_udp.c:161 sunrpc/svc_unix.c:187 sunrpc/svc_unix.c:227
 #: sunrpc/xdr.c:631 sunrpc/xdr.c:791 sunrpc/xdr_array.c:102
 #: sunrpc/xdr_rec.c:153 sunrpc/xdr_ref.c:79
 msgid "out of memory\n"
@@ -5376,17 +5376,13 @@ msgstr "cache_set: lỗi cấp phát nạn nhân"
 msgid "cache_set: could not allocate new rpc_buffer"
 msgstr "cache_set: không thể cấp phát bộ đệm RPC (rpc_buffer) mới"
 
-#: sunrpc/svc_unix.c:166
+#: sunrpc/svc_unix.c:167
 msgid "svc_unix.c - AF_UNIX socket creation problem"
 msgstr "svc_unix.c — vấn đề tạo ổ cắm AF_UNIX"
 
-#: sunrpc/svc_unix.c:176
+#: sunrpc/svc_unix.c:177
 msgid "svc_unix.c - cannot getsockname or listen"
 msgstr "svc_unix.c — không thể getsockname (lấy tên ổ cắm) hoặc lắng nghe"
-
-#: sysdeps/aarch64/dl-bti.c:72
-msgid "failed to turn on BTI protection"
-msgstr "gặp lỗi khi bật bảo vệ BTI"
 
 #: sysdeps/generic/dl-protected.h:55
 msgid "error due to GNU_PROPERTY_1_NEEDED_INDIRECT_EXTERN_ACCESS"

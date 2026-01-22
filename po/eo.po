@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libc 2.31.9000\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-19 22:21+0200\n"
+"POT-Creation-Date: 2026-01-19 16:22+0100\n"
 "PO-Revision-Date: 2020-12-30 12:07+0100\n"
 "Last-Translator: Benno Schulenberg <vertaling@coevern.nl>\n"
 "Language-Team: Esperanto <translation-team-eo@lists.sourceforge.net>\n"
@@ -71,7 +71,7 @@ msgstr "montri ĉi tiun helptekston"
 msgid "Give a short usage message"
 msgstr "montri mallongan uzmanieran mesaĝon"
 
-#: argp/argp-parse.c:88 catgets/gencat.c:110 catgets/gencat.c:114
+#: argp/argp-parse.c:88 catgets/gencat.c:111 catgets/gencat.c:115
 #: iconv/iconv_prog.c:61 iconv/iconv_prog.c:62 nscd/nscd.c:106 nscd/nscd.c:110
 #: nss/makedb.c:122
 msgid "NAME"
@@ -106,19 +106,19 @@ msgstr "%s: tro da argumentoj\n"
 msgid "(PROGRAM ERROR) Option should have been recognized!?"
 msgstr "(**Programmiso**) Opcio devus esti rekonata!?"
 
-#: catgets/gencat.c:111
+#: catgets/gencat.c:112
 msgid "Create C header file NAME containing symbol definitions"
 msgstr "krei C-ĉapdosieron kiu enhavas simboldifinojn"
 
-#: catgets/gencat.c:113
+#: catgets/gencat.c:114
 msgid "Do not use existing catalog, force new output file"
 msgstr "ne aldoni al eligdosiero; anstataŭigi ĝin"
 
-#: catgets/gencat.c:114 nss/makedb.c:122
+#: catgets/gencat.c:115 nss/makedb.c:122
 msgid "Write output to file NAME"
 msgstr "skribi eligon al dosiero NOMO"
 
-#: catgets/gencat.c:119
+#: catgets/gencat.c:120
 msgid ""
 "Generate message catalog.\vIf INPUT-FILE is -, input is read from standard input.  If OUTPUT-FILE\n"
 "is -, output is written to standard output.\n"
@@ -126,7 +126,7 @@ msgstr ""
 "  \n"
 "Generas mesaĝan katalogon.\vSe ENIGDOSIERO estas «-», ĉefenigujo legiĝas.  Se ELIGDOSIERO estas «-», la eligo skribiĝas al ĉefeligujo.\n"
 
-#: catgets/gencat.c:124
+#: catgets/gencat.c:125
 msgid ""
 "-o OUTPUT-FILE [INPUT-FILE]...\n"
 "[OUTPUT-FILE [INPUT-FILE]...]"
@@ -134,12 +134,12 @@ msgstr ""
 "-o ELIGDOSIERO [ENIGDOSIERO...]\n"
 "[ELIGDOSIERO [ENIGDOSIERO...]]"
 
-#: catgets/gencat.c:230 debug/pcprofiledump.c:219 elf/ldconfig.c:216
-#: elf/pldd.c:246 elf/sln.c:77 elf/sprof.c:371 iconv/iconv_prog.c:374
+#: catgets/gencat.c:231 debug/pcprofiledump.c:219 elf/ldconfig.c:216
+#: elf/pldd.c:246 elf/sln.c:77 elf/sprof.c:372 iconv/iconv_prog.c:374
 #: iconv/iconvconfig.c:380 locale/programs/locale.c:275
 #: locale/programs/localedef.c:437 login/programs/pt_chown.c:88
 #: malloc/memusagestat.c:564 nss/getent.c:961 nss/makedb.c:371
-#: posix/getconf.c:505
+#: posix/getconf.c:551
 #, c-format
 msgid ""
 "For bug reporting instructions, please see:\n"
@@ -148,12 +148,12 @@ msgstr ""
 "Por raporti programmisojn, bonvolu legi (angle):\n"
 "  %s.\n"
 
-#: catgets/gencat.c:246 debug/pcprofiledump.c:235 debug/xtrace.sh:63
-#: elf/ldconfig.c:232 elf/ldd.bash.in:38 elf/pldd.c:262 elf/sotruss.sh:75
-#: elf/sprof.c:388 iconv/iconv_prog.c:391 iconv/iconvconfig.c:397
+#: catgets/gencat.c:247 debug/pcprofiledump.c:235 debug/xtrace.sh:63
+#: elf/ldconfig.c:232 elf/ldd.bash.in:39 elf/pldd.c:262 elf/sotruss.sh:75
+#: elf/sprof.c:389 iconv/iconv_prog.c:391 iconv/iconvconfig.c:397
 #: locale/programs/locale.c:292 locale/programs/localedef.c:459
 #: login/programs/pt_chown.c:62 malloc/memusage.sh:70 malloc/memusagestat.c:582
-#: nscd/nscd.c:521 nss/getent.c:92 nss/makedb.c:387 posix/getconf.c:487
+#: nscd/nscd.c:521 nss/getent.c:92 nss/makedb.c:387 posix/getconf.c:533
 #, c-format
 msgid ""
 "Copyright (C) %s Free Software Foundation, Inc.\n"
@@ -164,97 +164,97 @@ msgstr ""
 "Ĉi tio estas libera programo; vidu la fontdosierojn por la kopikondiĉoj.\n"
 "Doniĝas NENIA GARANTIO; eĉ ne por KOMERCKVALITO aŭ ADEKVATECO POR IU CELO.\n"
 
-#: catgets/gencat.c:251 debug/pcprofiledump.c:240 debug/xtrace.sh:67
-#: elf/ldconfig.c:237 elf/pldd.c:267 elf/sprof.c:394 iconv/iconv_prog.c:396
+#: catgets/gencat.c:252 debug/pcprofiledump.c:240 debug/xtrace.sh:67
+#: elf/ldconfig.c:237 elf/pldd.c:267 elf/sprof.c:395 iconv/iconv_prog.c:396
 #: iconv/iconvconfig.c:402 locale/programs/locale.c:297
 #: locale/programs/localedef.c:464 malloc/memusage.sh:74
 #: malloc/memusagestat.c:587 nscd/nscd.c:526 nss/getent.c:97 nss/makedb.c:392
-#: posix/getconf.c:492
+#: posix/getconf.c:538
 #, c-format
 msgid "Written by %s.\n"
 msgstr "Verkita de %s.\n"
 
-#: catgets/gencat.c:282
+#: catgets/gencat.c:283
 msgid "*standard input*"
 msgstr "*ĉefenigujo*"
 
-#: catgets/gencat.c:288 iconv/iconv_charmap.c:172 iconv/iconv_prog.c:279
+#: catgets/gencat.c:289 iconv/iconv_charmap.c:172 iconv/iconv_prog.c:279
 #: iconv/iconv_prog.c:432 nss/makedb.c:248
 #, c-format
 msgid "cannot open input file `%s'"
 msgstr "ne eblas malfermi enigan dosieron «%s»"
 
-#: catgets/gencat.c:417 catgets/gencat.c:492
+#: catgets/gencat.c:418 catgets/gencat.c:493
 msgid "illegal set number"
 msgstr "nevalida numero de aro"
 
-#: catgets/gencat.c:444
+#: catgets/gencat.c:445
 msgid "duplicate set definition"
 msgstr "duobla difino de aro"
 
-#: catgets/gencat.c:446 catgets/gencat.c:618 catgets/gencat.c:670
+#: catgets/gencat.c:447 catgets/gencat.c:619 catgets/gencat.c:671
 msgid "this is the first definition"
 msgstr "ĉi tiu estas la unua difino"
 
-#: catgets/gencat.c:517
+#: catgets/gencat.c:518
 #, c-format
 msgid "unknown set `%s'"
 msgstr "nekonata aro «%s»"
 
-#: catgets/gencat.c:558
+#: catgets/gencat.c:559
 msgid "invalid quote character"
 msgstr "nevalida cita signo"
 
-#: catgets/gencat.c:571
+#: catgets/gencat.c:572
 #, c-format
 msgid "unknown directive `%s': line ignored"
 msgstr "nekonata komando '%s': linio ignoriĝas"
 
-#: catgets/gencat.c:616
+#: catgets/gencat.c:617
 msgid "duplicated message number"
 msgstr "duobla mesaĝnumero"
 
-#: catgets/gencat.c:667
+#: catgets/gencat.c:668
 msgid "duplicated message identifier"
 msgstr "duobla mesaĝnomo"
 
-#: catgets/gencat.c:724
+#: catgets/gencat.c:725
 msgid "invalid character: message ignored"
 msgstr "nevalida signo: mesaĝo ignoriĝas"
 
-#: catgets/gencat.c:767
+#: catgets/gencat.c:768
 msgid "invalid line"
 msgstr "nevalida linio"
 
-#: catgets/gencat.c:821
+#: catgets/gencat.c:822
 msgid "malformed line ignored"
 msgstr "misformita linio ignoriĝas"
 
-#: catgets/gencat.c:1000 catgets/gencat.c:1045
+#: catgets/gencat.c:1001 catgets/gencat.c:1046
 #, c-format
 msgid "cannot open output file `%s'"
 msgstr "ne eblas malfermi eligan dosieron «%s»"
 
-#: catgets/gencat.c:1210 locale/programs/linereader.c:588
+#: catgets/gencat.c:1211 locale/programs/linereader.c:588
 msgid "invalid escape sequence"
 msgstr "nevalida stirkodo"
 
 # SIGTERM     15       Term    Termination signal
-#: catgets/gencat.c:1234
+#: catgets/gencat.c:1235
 msgid "unterminated message"
 msgstr "nefinita mesaĝo"
 
-#: catgets/gencat.c:1258
+#: catgets/gencat.c:1259
 #, c-format
 msgid "while opening old catalog file"
 msgstr "dum malfermo de malnova katalogdosiero"
 
-#: catgets/gencat.c:1349
+#: catgets/gencat.c:1350
 #, c-format
 msgid "conversion modules not available"
 msgstr "konvertmoduloj ne disponeblas"
 
-#: catgets/gencat.c:1375
+#: catgets/gencat.c:1376
 #, c-format
 msgid "cannot determine escape character"
 msgstr "ne eblas eltrovi kodŝanĝan signon"
@@ -295,7 +295,7 @@ msgstr "Tajpu «%s --help» aŭ «%s --usage» por pli da informoj.\\n"
 msgid "%s: option '%s' requires an argument.\\n"
 msgstr "%s: opcio «%s» bezonas argumenton\\n"
 
-#: debug/xtrace.sh:56 elf/ldd.bash.in:55 elf/sotruss.sh:49
+#: debug/xtrace.sh:56 elf/ldd.bash.in:56 elf/sotruss.sh:49
 #: malloc/memusage.sh:63
 msgid "For bug reporting instructions, please see:\\\\n%s.\\\\n"
 msgstr "Por raporti programmisojn, bonvolu legi (angle):\\\\n  %s.\\\\n"
@@ -403,35 +403,35 @@ msgstr "ne eblas krei kaŝmemoron por serĉpado"
 msgid "cannot stat shared object"
 msgstr "malsukcesis eltrovi statinformon pri komuna objekto"
 
-#: elf/dl-load.c:1090 elf/dl-load.c:1605 elf/dl-load.c:1711
+#: elf/dl-load.c:1090 elf/dl-load.c:1594 elf/dl-load.c:1704
 msgid "cannot read file data"
 msgstr "ne eblas legi dosierdatumojn"
 
-#: elf/dl-load.c:1362
+#: elf/dl-load.c:1351
 msgid "cannot close file descriptor"
 msgstr "ne eblas fermi dosierpriaĵon"
 
-#: elf/dl-load.c:1605
+#: elf/dl-load.c:1594
 msgid "file too short"
 msgstr "dosiero tro mallongas"
 
-#: elf/dl-load.c:1639
+#: elf/dl-load.c:1628
 msgid "invalid ELF header"
 msgstr "nevalida ELF-ĉapo"
 
-#: elf/dl-load.c:1673
+#: elf/dl-load.c:1664
 msgid "internal error"
 msgstr "**interna programmiso**"
 
-#: elf/dl-load.c:2174
+#: elf/dl-load.c:2179
 msgid "wrong ELF class: ELFCLASS64"
 msgstr "malĝusta ELF-klaso: ELFCLASS64"
 
-#: elf/dl-load.c:2175
+#: elf/dl-load.c:2180
 msgid "wrong ELF class: ELFCLASS32"
 msgstr "malĝusta ELF-klaso: ELFCLASS32"
 
-#: elf/dl-load.c:2178
+#: elf/dl-load.c:2183
 msgid "cannot open shared object file"
 msgstr "ne eblas malfermi komunan objektdosieron"
 
@@ -591,7 +591,7 @@ msgstr "Averto: ignoriĝas agorda dosiero kiu ne malfermeblas: %s"
 
 #: elf/ldconfig.c:1124 locale/programs/xasprintf.c:31
 #: locale/programs/xmalloc.c:63 malloc/obstack.c:416 malloc/obstack.c:418
-#: posix/getconf.c:460 posix/getconf.c:699
+#: posix/getconf.c:503 posix/getconf.c:745
 #, c-format
 msgid "memory exhausted"
 msgstr "mankas sufiĉa memoro"
@@ -616,50 +616,50 @@ msgstr "malsukcesis ŝanĝi aktualan dosierujon al «/»"
 msgid "Can't open cache file directory %s\n"
 msgstr "malsukcesis malfermi kaŝmemoran dosierujon %s\n"
 
-#: elf/ldd.bash.in:42
+#: elf/ldd.bash.in:43
 msgid "Written by %s and %s.\n"
 msgstr "Verkita de %s kaj %s.\n"
 
-#: elf/ldd.bash.in:80
+#: elf/ldd.bash.in:81
 msgid "ldd: option \\`$1' is ambiguous"
 msgstr "ldd: opcio «-$1» estas plursenca"
 
-#: elf/ldd.bash.in:87
+#: elf/ldd.bash.in:88
 msgid "unrecognized option"
 msgstr "nekonata opcio"
 
-#: elf/ldd.bash.in:88 elf/ldd.bash.in:125
+#: elf/ldd.bash.in:89 elf/ldd.bash.in:126
 msgid "Try \\`ldd --help' for more information."
 msgstr "Tajpu «ldd --help» por pli da informoj."
 
-#: elf/ldd.bash.in:124
+#: elf/ldd.bash.in:125
 msgid "missing file arguments"
 msgstr "mankas dosieraj argumentoj"
 
 #. TRANS This is a ``file doesn't exist'' error
 #. TRANS for ordinary files that are referenced in contexts where they are
 #. TRANS expected to already exist.
-#: elf/ldd.bash.in:147 sysdeps/gnu/errlist.h:13
+#: elf/ldd.bash.in:148 sysdeps/gnu/errlist.h:13
 msgid "No such file or directory"
 msgstr "Dosiero aŭ dosierujo ne ekzistas"
 
-#: elf/ldd.bash.in:150 inet/rcmd.c:483
+#: elf/ldd.bash.in:151 inet/rcmd.c:483
 msgid "not regular file"
 msgstr "ne estas normala dosiero"
 
-#: elf/ldd.bash.in:153
+#: elf/ldd.bash.in:154
 msgid "warning: you do not have execution permission for"
 msgstr "averto: vi ne havas permeson ruli"
 
-#: elf/ldd.bash.in:170
+#: elf/ldd.bash.in:171
 msgid "\tnot a dynamic executable"
 msgstr "    ne estas dinamika rulebla dosiero"
 
-#: elf/ldd.bash.in:178
+#: elf/ldd.bash.in:179
 msgid "exited with unknown exit code"
 msgstr "finis kun nekonata elirstato"
 
-#: elf/ldd.bash.in:183
+#: elf/ldd.bash.in:184
 msgid "error: you do not have read permission for"
 msgstr "eraro: vi ne havas permeson legi"
 
@@ -2154,16 +2154,16 @@ msgstr "dosiero ne estas datumbaza dosiero"
 msgid "cannot set file creation context for `%s'"
 msgstr "malsukcesis agordi dosierkrean kuntekston por '%s'"
 
-#: posix/getconf.c:626
+#: posix/getconf.c:672
 #, c-format
 msgid "Couldn't execute %s"
 msgstr "Ne eblas ruli %s"
 
-#: posix/getconf.c:671 posix/getconf.c:687
+#: posix/getconf.c:717 posix/getconf.c:733
 msgid "undefined"
 msgstr "nedifinita"
 
-#: posix/getconf.c:709
+#: posix/getconf.c:761
 #, c-format
 msgid "Unrecognized variable `%s'"
 msgstr "Nerekonata variablo '%s'"
@@ -2505,7 +2505,7 @@ msgstr "Nekonata signalo %d"
 
 #: sunrpc/auth_unix.c:113 sunrpc/clnt_tcp.c:124 sunrpc/clnt_udp.c:140
 #: sunrpc/clnt_unix.c:125 sunrpc/svc_tcp.c:189 sunrpc/svc_tcp.c:233
-#: sunrpc/svc_udp.c:161 sunrpc/svc_unix.c:186 sunrpc/svc_unix.c:226
+#: sunrpc/svc_udp.c:161 sunrpc/svc_unix.c:187 sunrpc/svc_unix.c:227
 #: sunrpc/xdr.c:631 sunrpc/xdr.c:791 sunrpc/xdr_array.c:102
 #: sunrpc/xdr_rec.c:153 sunrpc/xdr_ref.c:79
 msgid "out of memory\n"
@@ -2690,11 +2690,11 @@ msgstr "cache_set: mankas sufiĉa memoro por 'victim'"
 msgid "cache_set: could not allocate new rpc_buffer"
 msgstr "cache_set: mankas sufiĉa memoro por nova RPC-bufro "
 
-#: sunrpc/svc_unix.c:166
+#: sunrpc/svc_unix.c:167
 msgid "svc_unix.c - AF_UNIX socket creation problem"
 msgstr "svc_unix.c: problemo je kreo de AF_UNIX-konektilo"
 
-#: sunrpc/svc_unix.c:176
+#: sunrpc/svc_unix.c:177
 msgid "svc_unix.c - cannot getsockname or listen"
 msgstr "svc_unix.c: ne eblas 'getsockname()' aŭ aŭskulti"
 

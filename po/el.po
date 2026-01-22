@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: libc 2.2.3\n"
-"POT-Creation-Date: 2025-07-19 22:21+0200\n"
+"POT-Creation-Date: 2026-01-19 16:22+0100\n"
 "PO-Revision-Date: 2001-05-21 19:20:31+0000\n"
 "Last-Translator: Nikos Mavroyanopoulos <nmav@hellug.gr>\n"
 "Language-Team: Greek <nls@tux.hellug.gr>\n"
@@ -65,7 +65,7 @@ msgstr "Να δοθεί αυτή η λίστα βοήθειας"
 msgid "Give a short usage message"
 msgstr "Να δωθεί σύντομο μήνυμα χρήσης"
 
-#: argp/argp-parse.c:88 catgets/gencat.c:110 catgets/gencat.c:114
+#: argp/argp-parse.c:88 catgets/gencat.c:111 catgets/gencat.c:115
 #: iconv/iconv_prog.c:61 iconv/iconv_prog.c:62 nscd/nscd.c:106 nscd/nscd.c:110
 #: nss/makedb.c:122
 msgid "NAME"
@@ -96,29 +96,19 @@ msgstr "%s: Πάρα πολλά ορίσματα\n"
 msgid "(PROGRAM ERROR) Option should have been recognized!?"
 msgstr "(ΣΦΑΛΜΑ ΠΡΟΓΡΑΜΜΑΤΟΣ) Η επιλογή θα έπρεπε να είχε αναγνωριστεί!;"
 
-#: assert/assert-perr.c:35
-#, c-format
-msgid "%s%s%s:%u: %s%sUnexpected error: %s.\n"
-msgstr "%s%s%s:%u: %s%sΜη αναμενόμενο σφάλμα: %s.\n"
-
-#: assert/assert.c:127
-#, c-format
-msgid "%s%s%s:%u: %s%sAssertion `%s' failed.\n"
-msgstr "%s%s%s:%u: %s%sΟ ισχυρισμός %s' απέτυχε.\n"
-
-#: catgets/gencat.c:111
+#: catgets/gencat.c:112
 msgid "Create C header file NAME containing symbol definitions"
 msgstr "Δημιουργία ΟΝΟΜΑΤΟΣ αρχείου κεφαλίδας C με ορισμούς συμβόλων"
 
-#: catgets/gencat.c:113
+#: catgets/gencat.c:114
 msgid "Do not use existing catalog, force new output file"
 msgstr "Να μη χρησιμοποιηθεί ο υπάρχον κατάλογος, προκάλεσε νέο αρχείο εξόδου"
 
-#: catgets/gencat.c:114 nss/makedb.c:122
+#: catgets/gencat.c:115 nss/makedb.c:122
 msgid "Write output to file NAME"
 msgstr "Εγγραφή εξόδου στο αρχείο ΟΝΟΜΑ"
 
-#: catgets/gencat.c:124
+#: catgets/gencat.c:125
 msgid ""
 "-o OUTPUT-FILE [INPUT-FILE]...\n"
 "[OUTPUT-FILE [INPUT-FILE]...]"
@@ -126,12 +116,12 @@ msgstr ""
 "-o ΑΡΧΕΙΟ-ΕΞΟΔΟΥ [ΑΡΧΕΙΟ-ΕΙΣΟΔΟΥ]...\n"
 "[ΑΡΧΕΙΟ-ΕΞΟΔΟΥ [ΑΡΧΕΙΟ-ΕΙΣΟΔΟΥ]...]"
 
-#: catgets/gencat.c:246 debug/pcprofiledump.c:235 debug/xtrace.sh:63
-#: elf/ldconfig.c:232 elf/ldd.bash.in:38 elf/pldd.c:262 elf/sotruss.sh:75
-#: elf/sprof.c:388 iconv/iconv_prog.c:391 iconv/iconvconfig.c:397
+#: catgets/gencat.c:247 debug/pcprofiledump.c:235 debug/xtrace.sh:63
+#: elf/ldconfig.c:232 elf/ldd.bash.in:39 elf/pldd.c:262 elf/sotruss.sh:75
+#: elf/sprof.c:389 iconv/iconv_prog.c:391 iconv/iconvconfig.c:397
 #: locale/programs/locale.c:292 locale/programs/localedef.c:459
 #: login/programs/pt_chown.c:62 malloc/memusage.sh:70 malloc/memusagestat.c:582
-#: nscd/nscd.c:521 nss/getent.c:92 nss/makedb.c:387 posix/getconf.c:487
+#: nscd/nscd.c:521 nss/getent.c:92 nss/makedb.c:387 posix/getconf.c:533
 #, c-format
 msgid ""
 "Copyright (C) %s Free Software Foundation, Inc.\n"
@@ -143,70 +133,70 @@ msgstr ""
 "ΔΕΝ υπάρχει εγγύηση ούτε ακόμη για ΛΕΙΤΟΥΡΓIΚΟΤΗΤΑΣ ή ΚΑΤΑΛΛΗΛΟΤΗΤΑ ΓΙΑ\n"
 "ΚΑΠΟΙΟ ΣΥΓΚΕΚΡΙΜΕΝΟ ΣΚΟΠΟ.\n"
 
-#: catgets/gencat.c:251 debug/pcprofiledump.c:240 debug/xtrace.sh:67
-#: elf/ldconfig.c:237 elf/pldd.c:267 elf/sprof.c:394 iconv/iconv_prog.c:396
+#: catgets/gencat.c:252 debug/pcprofiledump.c:240 debug/xtrace.sh:67
+#: elf/ldconfig.c:237 elf/pldd.c:267 elf/sprof.c:395 iconv/iconv_prog.c:396
 #: iconv/iconvconfig.c:402 locale/programs/locale.c:297
 #: locale/programs/localedef.c:464 malloc/memusage.sh:74
 #: malloc/memusagestat.c:587 nscd/nscd.c:526 nss/getent.c:97 nss/makedb.c:392
-#: posix/getconf.c:492
+#: posix/getconf.c:538
 #, c-format
 msgid "Written by %s.\n"
 msgstr "Εγγράφηκε από %s.\n"
 
-#: catgets/gencat.c:282
+#: catgets/gencat.c:283
 msgid "*standard input*"
 msgstr "*κανονική είσοδος*"
 
-#: catgets/gencat.c:288 iconv/iconv_charmap.c:172 iconv/iconv_prog.c:279
+#: catgets/gencat.c:289 iconv/iconv_charmap.c:172 iconv/iconv_prog.c:279
 #: iconv/iconv_prog.c:432 nss/makedb.c:248
 #, c-format
 msgid "cannot open input file `%s'"
 msgstr "αδυναμία ανοίγματος αρχείου εισόδου `%s'"
 
-#: catgets/gencat.c:417 catgets/gencat.c:492
+#: catgets/gencat.c:418 catgets/gencat.c:493
 msgid "illegal set number"
 msgstr "μη έγκυρος αριθμός σετ"
 
-#: catgets/gencat.c:444
+#: catgets/gencat.c:445
 msgid "duplicate set definition"
 msgstr "διπλός ορισμός συνόλου"
 
-#: catgets/gencat.c:446 catgets/gencat.c:618 catgets/gencat.c:670
+#: catgets/gencat.c:447 catgets/gencat.c:619 catgets/gencat.c:671
 msgid "this is the first definition"
 msgstr "αυτός είναι ο πρώτος ορισμός"
 
-#: catgets/gencat.c:517
+#: catgets/gencat.c:518
 #, c-format
 msgid "unknown set `%s'"
 msgstr "άγνωστο σετ `%s'"
 
-#: catgets/gencat.c:571
+#: catgets/gencat.c:572
 #, c-format
 msgid "unknown directive `%s': line ignored"
 msgstr "άγνωστo λεκτικό `%s': γραμμή αγνοήθηκε"
 
-#: catgets/gencat.c:616
+#: catgets/gencat.c:617
 msgid "duplicated message number"
 msgstr "διπλός αριθμός μηνύματος"
 
-#: catgets/gencat.c:667
+#: catgets/gencat.c:668
 msgid "duplicated message identifier"
 msgstr "διπλός προσδιοριστής μηνύματος"
 
-#: catgets/gencat.c:821
+#: catgets/gencat.c:822
 msgid "malformed line ignored"
 msgstr "κακοδιαμορφωμένη γραμμή αγνοήθηκε"
 
-#: catgets/gencat.c:1000 catgets/gencat.c:1045
+#: catgets/gencat.c:1001 catgets/gencat.c:1046
 #, c-format
 msgid "cannot open output file `%s'"
 msgstr "αδυναμία ανοίγματος αρχείου εξόδου `%s'"
 
-#: catgets/gencat.c:1234
+#: catgets/gencat.c:1235
 msgid "unterminated message"
 msgstr "μη τερματιζόμενο μήνυμα"
 
-#: catgets/gencat.c:1258
+#: catgets/gencat.c:1259
 #, c-format
 msgid "while opening old catalog file"
 msgstr "κατά το άνοιγμα παλιού αρχείου καταλόγου"
@@ -230,7 +220,7 @@ msgstr " (άλλαξε)\n"
 
 #: elf/ldconfig.c:1124 locale/programs/xasprintf.c:31
 #: locale/programs/xmalloc.c:63 malloc/obstack.c:416 malloc/obstack.c:418
-#: posix/getconf.c:460 posix/getconf.c:699
+#: posix/getconf.c:503 posix/getconf.c:745
 #, c-format
 msgid "memory exhausted"
 msgstr "η μνήμη εξαντλήθηκε"
@@ -238,11 +228,11 @@ msgstr "η μνήμη εξαντλήθηκε"
 #. TRANS This is a ``file doesn't exist'' error
 #. TRANS for ordinary files that are referenced in contexts where they are
 #. TRANS expected to already exist.
-#: elf/ldd.bash.in:147 sysdeps/gnu/errlist.h:13
+#: elf/ldd.bash.in:148 sysdeps/gnu/errlist.h:13
 msgid "No such file or directory"
 msgstr "Δεν υπάρχει τέτοιο αρχείο ή κατάλογος"
 
-#: elf/ldd.bash.in:150 inet/rcmd.c:483
+#: elf/ldd.bash.in:151 inet/rcmd.c:483
 msgid "not regular file"
 msgstr "δεν είναι κανονικό αρχείο"
 
@@ -251,82 +241,82 @@ msgstr "δεν είναι κανονικό αρχείο"
 msgid "Cannot mmap file %s.\n"
 msgstr "Αδυναμία μεταφοράς στη μνήμη (mmap) του αρχείου %s.\n"
 
-#: elf/sprof.c:76
+#: elf/sprof.c:77
 msgid "Output selection:"
 msgstr "Επιλογή εξόδου:"
 
-#: elf/sprof.c:78
+#: elf/sprof.c:79
 msgid "print list of count paths and their number of use"
 msgstr "εμφάνιση λίστα με μετρητές μονοπατιών και τον αριθμό χρήσης τους"
 
-#: elf/sprof.c:80
+#: elf/sprof.c:81
 msgid "generate flat profile with counts and ticks"
 msgstr "δημιουργία γενικού προφίλ με μετρήσεις"
 
-#: elf/sprof.c:81
+#: elf/sprof.c:82
 msgid "generate call graph"
 msgstr "δημιουργία γράφου κλήσεων"
 
-#: elf/sprof.c:93
+#: elf/sprof.c:94
 msgid "SHOBJ [PROFDATA]"
 msgstr "SHOBJ [PROFDATA]"
 
-#: elf/sprof.c:432
+#: elf/sprof.c:434
 #, c-format
 msgid "failed to load shared object `%s'"
 msgstr "αποτυχία φόρτωσης διαμοιραζομένου αντικειμένου `%s'"
 
-#: elf/sprof.c:441 elf/sprof.c:821 elf/sprof.c:919
+#: elf/sprof.c:443 elf/sprof.c:860 elf/sprof.c:958
 #, c-format
 msgid "cannot create internal descriptor"
 msgstr "αδυναμία δημιουργίας εσωτερικού περιγραφέα"
 
-#: elf/sprof.c:550
+#: elf/sprof.c:552
 #, c-format
 msgid "Reopening shared object `%s' failed"
 msgstr "Αποτυχία ανοίγματος ξανά του διαμοιραζομένου αντικειμένου `%s'"
 
-#: elf/sprof.c:681
+#: elf/sprof.c:720
 #, c-format
 msgid "*** The file `%s' is stripped: no detailed analysis possible\n"
 msgstr "*** Το αρχείο `%s' είναι απογυμνωμένο: δεν είναι δυνατή λεπτομερής ανάλυση\n"
 
-#: elf/sprof.c:711
+#: elf/sprof.c:750
 #, c-format
 msgid "failed to load symbol data"
 msgstr "αποτυχία φόρτωσης δεδομένων συμβόλων"
 
-#: elf/sprof.c:776
+#: elf/sprof.c:815
 #, c-format
 msgid "cannot load profiling data"
 msgstr "αδύνατη η φόρτωση δεδομένων προφίλ"
 
-#: elf/sprof.c:785
+#: elf/sprof.c:824
 #, c-format
 msgid "while stat'ing profiling data file"
 msgstr "κατά την προσπέλαση (stat) του αρχείου δεδομένων προφίλ"
 
-#: elf/sprof.c:793
+#: elf/sprof.c:832
 #, c-format
 msgid "profiling data file `%s' does not match shared object `%s'"
 msgstr "το αρχείο δεδομένων προφίλ `%s' δεν ταιριάζει με το διαμοιραζόμενο αντικείμενο `%s'"
 
-#: elf/sprof.c:804
+#: elf/sprof.c:843
 #, c-format
 msgid "failed to mmap the profiling data file"
 msgstr "αποτυχία στη λειτουργία mmap για το αρχείο δεδομένων προφίλ"
 
-#: elf/sprof.c:812
+#: elf/sprof.c:851
 #, c-format
 msgid "error while closing the profiling data file"
 msgstr "σφάλμα κατά το κλείσιμο του αρχείου δεδομένων προφίλ"
 
-#: elf/sprof.c:895
+#: elf/sprof.c:934
 #, c-format
 msgid "`%s' is no correct profile data file for `%s'"
 msgstr "Το `%s' δεν είναι το σωστό αρχείο δεδομένων προφίλ για το `%s'"
 
-#: elf/sprof.c:1076 elf/sprof.c:1134
+#: elf/sprof.c:1115 elf/sprof.c:1173
 #, c-format
 msgid "cannot allocate symbol data"
 msgstr "αδυναμία δέσμευσης δεδομένων συμβόλων"
@@ -1654,11 +1644,11 @@ msgstr "διπλό κλειδί"
 msgid "problems while reading `%s'"
 msgstr "προβλήματα κατά την ανάγνωση του `%s'"
 
-#: posix/getconf.c:671 posix/getconf.c:687
+#: posix/getconf.c:717 posix/getconf.c:733
 msgid "undefined"
 msgstr "αόριστο"
 
-#: posix/getconf.c:709
+#: posix/getconf.c:761
 #, c-format
 msgid "Unrecognized variable `%s'"
 msgstr "Μη αναγνωρίσιμη μεταβλητή `%s'"
@@ -1972,11 +1962,11 @@ msgstr "cache_set: η εκχώρηση θύματος απέτυχε"
 msgid "cache_set: could not allocate new rpc_buffer"
 msgstr "cache_set: αδυναμία δέσμευσης νέου rpc_buffer"
 
-#: sunrpc/svc_unix.c:166
+#: sunrpc/svc_unix.c:167
 msgid "svc_unix.c - AF_UNIX socket creation problem"
 msgstr "svc_unix.c - πρόβλημα δημιουργίας υποδοχής AF_UNIX"
 
-#: sunrpc/svc_unix.c:176
+#: sunrpc/svc_unix.c:177
 msgid "svc_unix.c - cannot getsockname or listen"
 msgstr "svc_unix.c - αδυναμία getsockname ή listen"
 

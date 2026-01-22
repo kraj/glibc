@@ -16,7 +16,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: libc 2.39.9000\n"
-"POT-Creation-Date: 2025-07-19 22:21+0200\n"
+"POT-Creation-Date: 2026-01-19 16:22+0100\n"
 "PO-Revision-Date: 2024-12-02 09:47+0800\n"
 "Last-Translator: Yi-Jyun Pan <pan93412@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@lists.slat.org>\n"
@@ -77,7 +77,7 @@ msgstr "給出這個使用方式列表"
 msgid "Give a short usage message"
 msgstr "給出簡短的使用訊息"
 
-#: argp/argp-parse.c:88 catgets/gencat.c:110 catgets/gencat.c:114
+#: argp/argp-parse.c:88 catgets/gencat.c:111 catgets/gencat.c:115
 #: iconv/iconv_prog.c:61 iconv/iconv_prog.c:62 nscd/nscd.c:106 nscd/nscd.c:110
 #: nss/makedb.c:122
 msgid "NAME"
@@ -112,19 +112,19 @@ msgstr "%s: 過多參數\n"
 msgid "(PROGRAM ERROR) Option should have been recognized!?"
 msgstr "（程式錯誤）選項應該已被識別！？"
 
-#: catgets/gencat.c:111
+#: catgets/gencat.c:112
 msgid "Create C header file NAME containing symbol definitions"
 msgstr "產生的 C 標頭檔名內含符號定義"
 
-#: catgets/gencat.c:113
+#: catgets/gencat.c:114
 msgid "Do not use existing catalog, force new output file"
 msgstr "不使用現存的 catalog, 強制使用新的輸出檔"
 
-#: catgets/gencat.c:114 nss/makedb.c:122
+#: catgets/gencat.c:115 nss/makedb.c:122
 msgid "Write output to file NAME"
 msgstr "將輸出寫到檔案 NAME 中"
 
-#: catgets/gencat.c:119
+#: catgets/gencat.c:120
 msgid ""
 "Generate message catalog.\vIf INPUT-FILE is -, input is read from standard input.  If OUTPUT-FILE\n"
 "is -, output is written to standard output.\n"
@@ -132,7 +132,7 @@ msgstr ""
 "產生訊息 catelog。\\v如果輸入檔名是 -, 將從標準輸入讀取輸入。\n"
 "如果輸出檔名是 -, 則輸出將寫到標準輸出去。\n"
 
-#: catgets/gencat.c:124
+#: catgets/gencat.c:125
 msgid ""
 "-o OUTPUT-FILE [INPUT-FILE]...\n"
 "[OUTPUT-FILE [INPUT-FILE]...]"
@@ -140,12 +140,12 @@ msgstr ""
 "-o 輸出檔案名稱 [輸入檔案名稱]...\n"
 "[輸出檔案名稱 [輸入檔案名稱]...]"
 
-#: catgets/gencat.c:230 debug/pcprofiledump.c:219 elf/ldconfig.c:216
-#: elf/pldd.c:246 elf/sln.c:77 elf/sprof.c:371 iconv/iconv_prog.c:374
+#: catgets/gencat.c:231 debug/pcprofiledump.c:219 elf/ldconfig.c:216
+#: elf/pldd.c:246 elf/sln.c:77 elf/sprof.c:372 iconv/iconv_prog.c:374
 #: iconv/iconvconfig.c:380 locale/programs/locale.c:275
 #: locale/programs/localedef.c:437 login/programs/pt_chown.c:88
 #: malloc/memusagestat.c:564 nss/getent.c:961 nss/makedb.c:371
-#: posix/getconf.c:505
+#: posix/getconf.c:551
 #, c-format
 msgid ""
 "For bug reporting instructions, please see:\n"
@@ -154,12 +154,12 @@ msgstr ""
 "要知道錯誤報告指令，請參看: \n"
 "%s。\n"
 
-#: catgets/gencat.c:246 debug/pcprofiledump.c:235 debug/xtrace.sh:63
-#: elf/ldconfig.c:232 elf/ldd.bash.in:38 elf/pldd.c:262 elf/sotruss.sh:75
-#: elf/sprof.c:388 iconv/iconv_prog.c:391 iconv/iconvconfig.c:397
+#: catgets/gencat.c:247 debug/pcprofiledump.c:235 debug/xtrace.sh:63
+#: elf/ldconfig.c:232 elf/ldd.bash.in:39 elf/pldd.c:262 elf/sotruss.sh:75
+#: elf/sprof.c:389 iconv/iconv_prog.c:391 iconv/iconvconfig.c:397
 #: locale/programs/locale.c:292 locale/programs/localedef.c:459
 #: login/programs/pt_chown.c:62 malloc/memusage.sh:70 malloc/memusagestat.c:582
-#: nscd/nscd.c:521 nss/getent.c:92 nss/makedb.c:387 posix/getconf.c:487
+#: nscd/nscd.c:521 nss/getent.c:92 nss/makedb.c:387 posix/getconf.c:533
 #, c-format
 msgid ""
 "Copyright (C) %s Free Software Foundation, Inc.\n"
@@ -170,101 +170,101 @@ msgstr ""
 "這是一個自由軟體; 請見原始碼的授權條款。這沒有擔保; 甚至也沒有專為銷\n"
 "售或者適合某些特殊目的。\n"
 
-#: catgets/gencat.c:251 debug/pcprofiledump.c:240 debug/xtrace.sh:67
-#: elf/ldconfig.c:237 elf/pldd.c:267 elf/sprof.c:394 iconv/iconv_prog.c:396
+#: catgets/gencat.c:252 debug/pcprofiledump.c:240 debug/xtrace.sh:67
+#: elf/ldconfig.c:237 elf/pldd.c:267 elf/sprof.c:395 iconv/iconv_prog.c:396
 #: iconv/iconvconfig.c:402 locale/programs/locale.c:297
 #: locale/programs/localedef.c:464 malloc/memusage.sh:74
 #: malloc/memusagestat.c:587 nscd/nscd.c:526 nss/getent.c:97 nss/makedb.c:392
-#: posix/getconf.c:492
+#: posix/getconf.c:538
 #, c-format
 msgid "Written by %s.\n"
 msgstr "由 %s 編寫。\n"
 
-#: catgets/gencat.c:282
+#: catgets/gencat.c:283
 msgid "*standard input*"
 msgstr "*標準輸入*"
 
-#: catgets/gencat.c:288 iconv/iconv_charmap.c:172 iconv/iconv_prog.c:279
+#: catgets/gencat.c:289 iconv/iconv_charmap.c:172 iconv/iconv_prog.c:279
 #: iconv/iconv_prog.c:432 nss/makedb.c:248
 #, c-format
 msgid "cannot open input file `%s'"
 msgstr "無法開啟輸入檔 `%s'"
 
-#: catgets/gencat.c:417 catgets/gencat.c:492
+#: catgets/gencat.c:418 catgets/gencat.c:493
 msgid "illegal set number"
 msgstr "不合法的集合編號"
 
-#: catgets/gencat.c:444
+#: catgets/gencat.c:445
 msgid "duplicate set definition"
 msgstr "複製集合定義"
 
-#: catgets/gencat.c:446 catgets/gencat.c:618 catgets/gencat.c:670
+#: catgets/gencat.c:447 catgets/gencat.c:619 catgets/gencat.c:671
 msgid "this is the first definition"
 msgstr "此為第一個定義"
 
-#: catgets/gencat.c:517
+#: catgets/gencat.c:518
 #, c-format
 msgid "unknown set `%s'"
 msgstr "不明的集合 `%s'"
 
-#: catgets/gencat.c:558
+#: catgets/gencat.c:559
 msgid "invalid quote character"
 msgstr "不適用的引用字元"
 
-#: catgets/gencat.c:571
+#: catgets/gencat.c:572
 #, c-format
 msgid "unknown directive `%s': line ignored"
 msgstr "不明的 `%s' 指示詞: 此列忽略"
 
-#: catgets/gencat.c:616
+#: catgets/gencat.c:617
 msgid "duplicated message number"
 msgstr "重複的訊息編號"
 
-#: catgets/gencat.c:667
+#: catgets/gencat.c:668
 msgid "duplicated message identifier"
 msgstr "重複的訊息識別符號"
 
-#: catgets/gencat.c:724
+#: catgets/gencat.c:725
 msgid "invalid character: message ignored"
 msgstr "不適用的字元: 忽略此訊息"
 
-#: catgets/gencat.c:767
+#: catgets/gencat.c:768
 msgid "invalid line"
 msgstr "無效的輸入列"
 
-#: catgets/gencat.c:821
+#: catgets/gencat.c:822
 msgid "malformed line ignored"
 msgstr "忽略奇怪的列"
 
-#: catgets/gencat.c:939 catgets/gencat.c:947
+#: catgets/gencat.c:940 catgets/gencat.c:948
 #, c-format
 msgid "cannot allocate memory"
 msgstr "無法配置記憶體"
 
-#: catgets/gencat.c:1000 catgets/gencat.c:1045
+#: catgets/gencat.c:1001 catgets/gencat.c:1046
 #, c-format
 msgid "cannot open output file `%s'"
 msgstr "無法開啟輸出檔 `%s'"
 
-#: catgets/gencat.c:1210 locale/programs/linereader.c:588
+#: catgets/gencat.c:1211 locale/programs/linereader.c:588
 msgid "invalid escape sequence"
 msgstr "無效的跳脫序列"
 
-#: catgets/gencat.c:1234
+#: catgets/gencat.c:1235
 msgid "unterminated message"
 msgstr "沒有結尾的訊息"
 
-#: catgets/gencat.c:1258
+#: catgets/gencat.c:1259
 #, c-format
 msgid "while opening old catalog file"
 msgstr "在開啟舊的類別檔案時"
 
-#: catgets/gencat.c:1349
+#: catgets/gencat.c:1350
 #, c-format
 msgid "conversion modules not available"
 msgstr "轉換模組不存在"
 
-#: catgets/gencat.c:1375
+#: catgets/gencat.c:1376
 #, c-format
 msgid "cannot determine escape character"
 msgstr "無法決定跳脫字元"
@@ -335,7 +335,7 @@ msgstr ""
 "短選項。\n"
 "\n"
 
-#: debug/xtrace.sh:56 elf/ldd.bash.in:55 elf/sotruss.sh:49
+#: debug/xtrace.sh:56 elf/ldd.bash.in:56 elf/sotruss.sh:49
 #: malloc/memusage.sh:63
 msgid "For bug reporting instructions, please see:\\\\n%s.\\\\n"
 msgstr "要知道錯誤報告指令，請參看:\\\\n%s.\\\\n"
@@ -517,11 +517,11 @@ msgstr "無法建立搜尋路徑陣列"
 msgid "cannot stat shared object"
 msgstr "無法 stat 共用物件"
 
-#: elf/dl-load.c:1071 elf/dl-load.c:2155
+#: elf/dl-load.c:1071 elf/dl-load.c:2160
 msgid "cannot create shared object descriptor"
 msgstr "無法建立共用物件敘述項"
 
-#: elf/dl-load.c:1090 elf/dl-load.c:1605 elf/dl-load.c:1711
+#: elf/dl-load.c:1090 elf/dl-load.c:1594 elf/dl-load.c:1704
 msgid "cannot read file data"
 msgstr "無法讀取檔案資料"
 
@@ -529,95 +529,95 @@ msgstr "無法讀取檔案資料"
 msgid "ELF load command address/offset not page-aligned"
 msgstr "ELF 載入命令的位址或位移沒有對齊頁面"
 
-#: elf/dl-load.c:1235
+#: elf/dl-load.c:1224
 msgid "object file has no loadable segments"
 msgstr "目的檔中沒有可載入的區段"
 
-#: elf/dl-load.c:1252
+#: elf/dl-load.c:1241
 msgid "cannot dynamically load executable"
 msgstr "無法動態載入執行檔"
 
-#: elf/dl-load.c:1259
+#: elf/dl-load.c:1248
 msgid "object file has no dynamic section"
 msgstr "共用物件中沒有動態區段"
 
-#: elf/dl-load.c:1294
+#: elf/dl-load.c:1283
 msgid "cannot dynamically load position-independent executable"
 msgstr "無法動態載入地址無關可執行檔"
 
-#: elf/dl-load.c:1296
+#: elf/dl-load.c:1285
 msgid "shared object cannot be dlopen()ed"
 msgstr "共用物件無法被 dlopen()"
 
-#: elf/dl-load.c:1309
+#: elf/dl-load.c:1298
 msgid "cannot allocate memory for program header"
 msgstr "無法配置記憶體給程式標頭區使用"
 
-#: elf/dl-load.c:1334
+#: elf/dl-load.c:1323
 msgid "cannot enable executable stack as shared object requires"
 msgstr "無法開啟可執行堆疊做為共用物件"
 
-#: elf/dl-load.c:1362
+#: elf/dl-load.c:1351
 msgid "cannot close file descriptor"
 msgstr "無法關閉檔案描述符號"
 
-#: elf/dl-load.c:1605
+#: elf/dl-load.c:1594
 msgid "file too short"
 msgstr "檔案太小"
 
-#: elf/dl-load.c:1639
+#: elf/dl-load.c:1628
 msgid "invalid ELF header"
 msgstr "無效的 ELF 標頭"
 
-#: elf/dl-load.c:1654
+#: elf/dl-load.c:1645
 msgid "ELF file data encoding not big-endian"
 msgstr "ELF 檔資料編碼並非大尾序"
 
-#: elf/dl-load.c:1656
+#: elf/dl-load.c:1647
 msgid "ELF file data encoding not little-endian"
 msgstr "ELF 檔資料編碼並非小尾序"
 
-#: elf/dl-load.c:1660
+#: elf/dl-load.c:1651
 msgid "ELF file version ident does not match current one"
 msgstr "ELF 檔版本 ident 不符合目前所使用的"
 
-#: elf/dl-load.c:1664
+#: elf/dl-load.c:1655
 msgid "ELF file OS ABI invalid"
 msgstr "ELF 檔 OS ABI 版本不適用"
 
-#: elf/dl-load.c:1667
+#: elf/dl-load.c:1658
 msgid "ELF file ABI version invalid"
 msgstr "ELF 檔 ABI 版本不適用"
 
-#: elf/dl-load.c:1670
+#: elf/dl-load.c:1661
 msgid "nonzero padding in e_ident"
 msgstr "在 e_ident 中填補非零值"
 
-#: elf/dl-load.c:1673
+#: elf/dl-load.c:1664
 msgid "internal error"
 msgstr "內部錯誤"
 
-#: elf/dl-load.c:1680
+#: elf/dl-load.c:1671
 msgid "ELF file version does not match current one"
 msgstr "ELF 檔版本不符合目前的版本"
 
-#: elf/dl-load.c:1692
+#: elf/dl-load.c:1685
 msgid "only ET_DYN and ET_EXEC can be loaded"
 msgstr "只有 ET_DYN 以及 ET_EXEC 可以載入"
 
-#: elf/dl-load.c:1697
+#: elf/dl-load.c:1690
 msgid "ELF file's phentsize not the expected size"
 msgstr "ELF 檔的 phentsize 並不是預期中的大小"
 
-#: elf/dl-load.c:2174
+#: elf/dl-load.c:2179
 msgid "wrong ELF class: ELFCLASS64"
 msgstr "錯誤 ELF 類別: ELFCLASS64"
 
-#: elf/dl-load.c:2175
+#: elf/dl-load.c:2180
 msgid "wrong ELF class: ELFCLASS32"
 msgstr "錯誤 ELF 類別: ELFCLASS32"
 
-#: elf/dl-load.c:2178
+#: elf/dl-load.c:2183
 msgid "cannot open shared object file"
 msgstr "無法開啟共用物件"
 
@@ -633,7 +633,7 @@ msgstr "無法改變記憶體保護狀態"
 msgid "cannot map zero-fill pages"
 msgstr "無法對應以零填滿的分頁區"
 
-#: elf/dl-lookup.c:810
+#: elf/dl-lookup.c:808
 msgid "symbol lookup error"
 msgstr "符號查找錯誤"
 
@@ -686,7 +686,7 @@ msgstr "重定址之後無法套用額外記憶體保護"
 msgid "RTLD_NEXT used in code not dynamically loaded"
 msgstr "程式碼所使用的 RTLD_NEXT 沒有動態載入"
 
-#: elf/dl-tls.c:1209
+#: elf/dl-tls.c:1217
 msgid "cannot create TLS data structures"
 msgstr "無法建立 TLS 資料結構"
 
@@ -891,7 +891,7 @@ msgstr "需要絕對檔案名稱用於組態檔案時正在使用 -r"
 
 #: elf/ldconfig.c:1124 locale/programs/xasprintf.c:31
 #: locale/programs/xmalloc.c:63 malloc/obstack.c:416 malloc/obstack.c:418
-#: posix/getconf.c:460 posix/getconf.c:699
+#: posix/getconf.c:503 posix/getconf.c:745
 #, c-format
 msgid "memory exhausted"
 msgstr "記憶體用盡"
@@ -916,11 +916,11 @@ msgstr "無法變更目錄到 /"
 msgid "Can't open cache file directory %s\n"
 msgstr "無法開啟快取檔案目錄 %s\n"
 
-#: elf/ldd.bash.in:42
+#: elf/ldd.bash.in:43
 msgid "Written by %s and %s.\n"
 msgstr "由 %s 和 %s 編寫。\n"
 
-#: elf/ldd.bash.in:47
+#: elf/ldd.bash.in:48
 msgid ""
 "Usage: ldd [OPTION]... FILE...\n"
 "      --help              print this help and exit\n"
@@ -938,46 +938,46 @@ msgstr ""
 "  -u, --unused            印出未使用的直接相依性\n"
 "  -v, --verbose           印出所有資訊\n"
 
-#: elf/ldd.bash.in:80
+#: elf/ldd.bash.in:81
 msgid "ldd: option \\`$1' is ambiguous"
 msgstr "ldd: 選項「$1」為模稜兩可的"
 
-#: elf/ldd.bash.in:87
+#: elf/ldd.bash.in:88
 msgid "unrecognized option"
 msgstr "無法辨識的選項"
 
-#: elf/ldd.bash.in:88 elf/ldd.bash.in:125
+#: elf/ldd.bash.in:89 elf/ldd.bash.in:126
 msgid "Try \\`ldd --help' for more information."
 msgstr "嘗試「ldd --help」以獲得更多資訊。"
 
-#: elf/ldd.bash.in:124
+#: elf/ldd.bash.in:125
 msgid "missing file arguments"
 msgstr "缺少檔案引數"
 
 #. TRANS This is a ``file doesn't exist'' error
 #. TRANS for ordinary files that are referenced in contexts where they are
 #. TRANS expected to already exist.
-#: elf/ldd.bash.in:147 sysdeps/gnu/errlist.h:13
+#: elf/ldd.bash.in:148 sysdeps/gnu/errlist.h:13
 msgid "No such file or directory"
 msgstr "沒有此一檔案或目錄"
 
-#: elf/ldd.bash.in:150 inet/rcmd.c:483
+#: elf/ldd.bash.in:151 inet/rcmd.c:483
 msgid "not regular file"
 msgstr "並非正常的檔案"
 
-#: elf/ldd.bash.in:153
+#: elf/ldd.bash.in:154
 msgid "warning: you do not have execution permission for"
 msgstr "警告: 您沒有執行權限用於"
 
-#: elf/ldd.bash.in:170
+#: elf/ldd.bash.in:171
 msgid "\tnot a dynamic executable"
 msgstr "\t不是動態可執行檔案"
 
-#: elf/ldd.bash.in:178
+#: elf/ldd.bash.in:179
 msgid "exited with unknown exit code"
 msgstr "離開的與不明的離開代碼"
 
-#: elf/ldd.bash.in:183
+#: elf/ldd.bash.in:184
 msgid "error: you do not have read permission for"
 msgstr "錯誤: 您沒有讀取許可權用於"
 
@@ -1234,111 +1234,111 @@ msgstr ""
 msgid "%s: unrecognized option '%c%s'\\n"
 msgstr "%s: 無法辨識的選項『%c%s』\\n"
 
-#: elf/sprof.c:76
+#: elf/sprof.c:77
 msgid "Output selection:"
 msgstr "輸出選擇:"
 
-#: elf/sprof.c:78
+#: elf/sprof.c:79
 msgid "print list of count paths and their number of use"
 msgstr "列出計數的路徑以及它們使用的次數"
 
-#: elf/sprof.c:80
+#: elf/sprof.c:81
 msgid "generate flat profile with counts and ticks"
 msgstr "從執行次數與經歷時間的資料中產生直接的測速結果"
 
-#: elf/sprof.c:81
+#: elf/sprof.c:82
 msgid "generate call graph"
 msgstr "產生函式呼叫圖形"
 
-#: elf/sprof.c:88
+#: elf/sprof.c:89
 msgid "Read and display shared object profiling data."
 msgstr "讀取和顯示共用物件規範資料。"
 
-#: elf/sprof.c:93
+#: elf/sprof.c:94
 msgid "SHOBJ [PROFDATA]"
 msgstr "SHOBJ [PROFDATA]"
 
-#: elf/sprof.c:432
+#: elf/sprof.c:434
 #, c-format
 msgid "failed to load shared object `%s'"
 msgstr "開啟共用物件 `%s' 失敗"
 
-#: elf/sprof.c:441 elf/sprof.c:821 elf/sprof.c:919
+#: elf/sprof.c:443 elf/sprof.c:860 elf/sprof.c:958
 #, c-format
 msgid "cannot create internal descriptor"
 msgstr "無法建立內部敘述項"
 
-#: elf/sprof.c:550
+#: elf/sprof.c:552
 #, c-format
 msgid "Reopening shared object `%s' failed"
 msgstr "重新開啟共用物件 %s 失敗"
 
-#: elf/sprof.c:557 elf/sprof.c:652
+#: elf/sprof.c:582 elf/sprof.c:689
 #, c-format
 msgid "reading of section headers failed"
 msgstr "讀取小節標頭時失敗"
 
-#: elf/sprof.c:565 elf/sprof.c:660
+#: elf/sprof.c:592 elf/sprof.c:699
 #, c-format
 msgid "reading of section header string table failed"
 msgstr "讀取小節標頭字串表格時失敗"
 
-#: elf/sprof.c:591
+#: elf/sprof.c:619
 #, c-format
 msgid "*** Cannot read debuginfo file name: %m\n"
 msgstr "*** 無法讀取除錯資訊檔案名稱: %m\n"
 
-#: elf/sprof.c:612
+#: elf/sprof.c:640
 #, c-format
 msgid "cannot determine file name"
 msgstr "無法決定檔案名稱"
 
-#: elf/sprof.c:645
+#: elf/sprof.c:678
 #, c-format
 msgid "reading of ELF header failed"
 msgstr "讀取 ELF 標頭時失敗"
 
-#: elf/sprof.c:681
+#: elf/sprof.c:720
 #, c-format
 msgid "*** The file `%s' is stripped: no detailed analysis possible\n"
 msgstr "*** 檔案 `%s' 被裁剪了: 無法做詳細的分析\n"
 
-#: elf/sprof.c:711
+#: elf/sprof.c:750
 #, c-format
 msgid "failed to load symbol data"
 msgstr "載入函式符號資料失敗"
 
-#: elf/sprof.c:776
+#: elf/sprof.c:815
 #, c-format
 msgid "cannot load profiling data"
 msgstr "無法載入測試資料"
 
-#: elf/sprof.c:785
+#: elf/sprof.c:824
 #, c-format
 msgid "while stat'ing profiling data file"
 msgstr "在對測試資料檔案進行統計的時候"
 
-#: elf/sprof.c:793
+#: elf/sprof.c:832
 #, c-format
 msgid "profiling data file `%s' does not match shared object `%s'"
 msgstr "測試資料檔 `%s' 與共用物件 `%s' 不符合"
 
-#: elf/sprof.c:804
+#: elf/sprof.c:843
 #, c-format
 msgid "failed to mmap the profiling data file"
 msgstr "測試資料檔案 mmap 失敗"
 
-#: elf/sprof.c:812
+#: elf/sprof.c:851
 #, c-format
 msgid "error while closing the profiling data file"
 msgstr "正在關閉測試資料檔案時發生錯誤"
 
-#: elf/sprof.c:895
+#: elf/sprof.c:934
 #, c-format
 msgid "`%s' is no correct profile data file for `%s'"
 msgstr "`%s' 不是 `%s' 中正確的測速評估資料檔"
 
-#: elf/sprof.c:1076 elf/sprof.c:1134
+#: elf/sprof.c:1115 elf/sprof.c:1173
 #, c-format
 msgid "cannot allocate symbol data"
 msgstr "無法配置函式符號資料"
@@ -4723,17 +4723,17 @@ msgstr "無法初始化 SELinux 情境"
 msgid "cannot set file creation context for `%s'"
 msgstr "無法為 %s 設定檔案建立語境"
 
-#: posix/getconf.c:419
+#: posix/getconf.c:462
 #, c-format
 msgid "Usage: %s [-v specification] variable_name [pathname]\n"
 msgstr "用法: %s [-v 規格] 變數名稱 [路徑名稱]\n"
 
-#: posix/getconf.c:422
+#: posix/getconf.c:465
 #, c-format
 msgid "       %s -a [pathname]\n"
 msgstr "       %s -a [路徑名稱]\n"
 
-#: posix/getconf.c:498
+#: posix/getconf.c:544
 #, c-format
 msgid ""
 "Usage: getconf [-v SPEC] VAR\n"
@@ -4752,21 +4752,21 @@ msgstr ""
 "環境 SPEC 值。\n"
 "\n"
 
-#: posix/getconf.c:574
+#: posix/getconf.c:620
 #, c-format
 msgid "unknown specification \"%s\""
 msgstr "不明的規格 \"%s\""
 
-#: posix/getconf.c:626
+#: posix/getconf.c:672
 #, c-format
 msgid "Couldn't execute %s"
 msgstr "無法執行 %s"
 
-#: posix/getconf.c:671 posix/getconf.c:687
+#: posix/getconf.c:717 posix/getconf.c:733
 msgid "undefined"
 msgstr "未定義"
 
-#: posix/getconf.c:709
+#: posix/getconf.c:761
 #, c-format
 msgid "Unrecognized variable `%s'"
 msgstr "無法識別的變數 `%s'"
@@ -4916,17 +4916,17 @@ msgstr "%s: 第 %d 列: 無法指定超過 %d 個修剪範圍"
 msgid "%s: line %d: list delimiter not followed by domain"
 msgstr "%s: 第 %d 列: 範圍不可跟在表列分隔字元之後"
 
-#: resolv/res_hconf.c:176
+#: resolv/res_hconf.c:177
 #, c-format
 msgid "%s: line %d: expected `on' or `off', found `%s'\n"
 msgstr "%s: 第 %d 列: 預期為 `on' 或 `off'，卻發現 `%s'\n"
 
-#: resolv/res_hconf.c:219
+#: resolv/res_hconf.c:220
 #, c-format
 msgid "%s: line %d: bad command `%s'\n"
 msgstr "%s: 第 %d 列: 不當的命令 `%s'\n"
 
-#: resolv/res_hconf.c:252
+#: resolv/res_hconf.c:253
 #, c-format
 msgid "%s: line %d: ignoring trailing garbage `%s'\n"
 msgstr "%s: 第 %d 列: 正在忽略尾端的無用資料 `%s'\n"
@@ -5137,7 +5137,7 @@ msgstr "未知信號 %d"
 
 #: sunrpc/auth_unix.c:113 sunrpc/clnt_tcp.c:124 sunrpc/clnt_udp.c:140
 #: sunrpc/clnt_unix.c:125 sunrpc/svc_tcp.c:189 sunrpc/svc_tcp.c:233
-#: sunrpc/svc_udp.c:161 sunrpc/svc_unix.c:186 sunrpc/svc_unix.c:226
+#: sunrpc/svc_udp.c:161 sunrpc/svc_unix.c:187 sunrpc/svc_unix.c:227
 #: sunrpc/xdr.c:631 sunrpc/xdr.c:791 sunrpc/xdr_array.c:102
 #: sunrpc/xdr_rec.c:153 sunrpc/xdr_ref.c:79
 msgid "out of memory\n"
@@ -5386,17 +5386,13 @@ msgstr "cache_set: victim 配置失敗"
 msgid "cache_set: could not allocate new rpc_buffer"
 msgstr "cache_set: 無法配置新的遠端程序呼叫緩衝區 (rpc_buffer)"
 
-#: sunrpc/svc_unix.c:166
+#: sunrpc/svc_unix.c:167
 msgid "svc_unix.c - AF_UNIX socket creation problem"
 msgstr "svc_unix.c - AF_UNIX socket 建立有問題"
 
-#: sunrpc/svc_unix.c:176
+#: sunrpc/svc_unix.c:177
 msgid "svc_unix.c - cannot getsockname or listen"
 msgstr "svc_unix.c - 無法 getsockname 或 listen"
-
-#: sysdeps/aarch64/dl-bti.c:72
-msgid "failed to turn on BTI protection"
-msgstr "無法啟動 BTI 保護"
 
 #: sysdeps/generic/dl-protected.h:55
 msgid "error due to GNU_PROPERTY_1_NEEDED_INDIRECT_EXTERN_ACCESS"

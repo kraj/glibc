@@ -3,16 +3,16 @@
 # This file is distributed under the same license as the glibc package.
 #
 # Anton Zinoviev <zinoviev@debian.org>, 2007
-# Roumen Petrov <transl@roumenpetrov.info>, 2008,2009,2011,2012,2017,2018,2019,2020,2021,2022,2023,2024,2025
+# Roumen Petrov <transl@roumenpetrov.info>, 2008,2009,2011,2012,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026
 #
 # Abbreviations:
 #  CET - Control-Flow Enforcement Technology
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: libc 2.41.9000\n"
-"POT-Creation-Date: 2025-07-19 22:21+0200\n"
-"PO-Revision-Date: 2025-07-20 18:44+0200\n"
+"Project-Id-Version: libc 2.42.9000\n"
+"POT-Creation-Date: 2026-01-19 16:22+0100\n"
+"PO-Revision-Date: 2026-01-19 22:40+0200\n"
 "Last-Translator: Roumen Petrov <transl@roumenpetrov.info>\n"
 "Language-Team: Bulgarian <dict@ludost.net>\n"
 "Language: bg\n"
@@ -71,7 +71,7 @@ msgstr "Извеждане на този помощен списък"
 msgid "Give a short usage message"
 msgstr "Извеждане на лаконичен съвет за използване"
 
-#: argp/argp-parse.c:88 catgets/gencat.c:110 catgets/gencat.c:114
+#: argp/argp-parse.c:88 catgets/gencat.c:111 catgets/gencat.c:115
 #: iconv/iconv_prog.c:61 iconv/iconv_prog.c:62 nscd/nscd.c:106 nscd/nscd.c:110
 #: nss/makedb.c:122
 msgid "NAME"
@@ -106,29 +106,29 @@ msgstr "%s: Твърде много аргументи\n"
 msgid "(PROGRAM ERROR) Option should have been recognized!?"
 msgstr "(ПРОГРАМНА ГРЕШКА) Опцията трябва да е разпознаваема!?"
 
-#: assert/assert-perr.c:35
+#: assert/assert-perr.c:45
 #, c-format
-msgid "%s%s%s:%u: %s%sUnexpected error: %s.\n"
-msgstr "%s%s%s:%u: %s%sНеочаквана грешка: %s.\n"
+msgid "%s%s%s:%s: %s%sUnexpected error: %s.\n"
+msgstr "%s%s%s:%s: %s%sНеочаквана грешка: %s.\n"
 
-#: assert/assert.c:127
+#: assert/assert.c:37
 #, c-format
-msgid "%s%s%s:%u: %s%sAssertion `%s' failed.\n"
-msgstr "%s%s%s:%u: %s%sПропадна проверката за истина - '%s'.\n"
+msgid "%s%s%s:%s: %s%sAssertion `%s' failed.\n"
+msgstr "%s%s%s:%s: %s%sПропадна проверката за истина - '%s'.\n"
 
-#: catgets/gencat.c:111
+#: catgets/gencat.c:112
 msgid "Create C header file NAME containing symbol definitions"
 msgstr "Създава ИМЕ - заглавен файл на C, съдържащ определения на символи"
 
-#: catgets/gencat.c:113
+#: catgets/gencat.c:114
 msgid "Do not use existing catalog, force new output file"
 msgstr "Създаване на нов изходен файл, без да се използва съществуващ каталог"
 
-#: catgets/gencat.c:114 nss/makedb.c:122
+#: catgets/gencat.c:115 nss/makedb.c:122
 msgid "Write output to file NAME"
 msgstr "Записване на изхода във файлът ИМЕ"
 
-#: catgets/gencat.c:119
+#: catgets/gencat.c:120
 msgid ""
 "Generate message catalog.\vIf INPUT-FILE is -, input is read from standard input.  If OUTPUT-FILE\n"
 "is -, output is written to standard output.\n"
@@ -137,7 +137,7 @@ msgstr ""
 "Ако ВХОДЕН-ФАЙЛ е -, данните се четат от стандартния вход.\n"
 "Ако ИЗХОДЕН-ФАЙЛ е -, резултатът се записва в стандартния изход.\n"
 
-#: catgets/gencat.c:124
+#: catgets/gencat.c:125
 msgid ""
 "-o OUTPUT-FILE [INPUT-FILE]...\n"
 "[OUTPUT-FILE [INPUT-FILE]...]"
@@ -145,12 +145,12 @@ msgstr ""
 "-o ИЗХОДЕН-ФАЙЛ [ВХОДЕН_ФАЙЛ]...\n"
 "[ИЗХОДЕН-ФАЙЛ [ВХОДЕН_ФАЙЛ]...]"
 
-#: catgets/gencat.c:230 debug/pcprofiledump.c:219 elf/ldconfig.c:216
-#: elf/pldd.c:246 elf/sln.c:77 elf/sprof.c:371 iconv/iconv_prog.c:374
+#: catgets/gencat.c:231 debug/pcprofiledump.c:219 elf/ldconfig.c:216
+#: elf/pldd.c:246 elf/sln.c:77 elf/sprof.c:372 iconv/iconv_prog.c:374
 #: iconv/iconvconfig.c:380 locale/programs/locale.c:275
 #: locale/programs/localedef.c:437 login/programs/pt_chown.c:88
 #: malloc/memusagestat.c:564 nss/getent.c:961 nss/makedb.c:371
-#: posix/getconf.c:505
+#: posix/getconf.c:551
 #, c-format
 msgid ""
 "For bug reporting instructions, please see:\n"
@@ -159,12 +159,12 @@ msgstr ""
 "За подаване на доклад за грешка, моля, вижте:\n"
 "%s.\n"
 
-#: catgets/gencat.c:246 debug/pcprofiledump.c:235 debug/xtrace.sh:63
-#: elf/ldconfig.c:232 elf/ldd.bash.in:38 elf/pldd.c:262 elf/sotruss.sh:75
-#: elf/sprof.c:388 iconv/iconv_prog.c:391 iconv/iconvconfig.c:397
+#: catgets/gencat.c:247 debug/pcprofiledump.c:235 debug/xtrace.sh:63
+#: elf/ldconfig.c:232 elf/ldd.bash.in:39 elf/pldd.c:262 elf/sotruss.sh:75
+#: elf/sprof.c:389 iconv/iconv_prog.c:391 iconv/iconvconfig.c:397
 #: locale/programs/locale.c:292 locale/programs/localedef.c:459
 #: login/programs/pt_chown.c:62 malloc/memusage.sh:70 malloc/memusagestat.c:582
-#: nscd/nscd.c:521 nss/getent.c:92 nss/makedb.c:387 posix/getconf.c:487
+#: nscd/nscd.c:521 nss/getent.c:92 nss/makedb.c:387 posix/getconf.c:533
 #, c-format
 msgid ""
 "Copyright (C) %s Free Software Foundation, Inc.\n"
@@ -175,101 +175,101 @@ msgstr ""
 "Това е свободен софтуер.  Вижте изходния код за условията за копиране. НЯМА\n"
 "ГАРАНЦИИ, включително без предполагаемите гаранции за полезност и пригодност.\n"
 
-#: catgets/gencat.c:251 debug/pcprofiledump.c:240 debug/xtrace.sh:67
-#: elf/ldconfig.c:237 elf/pldd.c:267 elf/sprof.c:394 iconv/iconv_prog.c:396
+#: catgets/gencat.c:252 debug/pcprofiledump.c:240 debug/xtrace.sh:67
+#: elf/ldconfig.c:237 elf/pldd.c:267 elf/sprof.c:395 iconv/iconv_prog.c:396
 #: iconv/iconvconfig.c:402 locale/programs/locale.c:297
 #: locale/programs/localedef.c:464 malloc/memusage.sh:74
 #: malloc/memusagestat.c:587 nscd/nscd.c:526 nss/getent.c:97 nss/makedb.c:392
-#: posix/getconf.c:492
+#: posix/getconf.c:538
 #, c-format
 msgid "Written by %s.\n"
 msgstr "Автори: %s.\n"
 
-#: catgets/gencat.c:282
+#: catgets/gencat.c:283
 msgid "*standard input*"
 msgstr "*стандартен изход*"
 
-#: catgets/gencat.c:288 iconv/iconv_charmap.c:172 iconv/iconv_prog.c:279
+#: catgets/gencat.c:289 iconv/iconv_charmap.c:172 iconv/iconv_prog.c:279
 #: iconv/iconv_prog.c:432 nss/makedb.c:248
 #, c-format
 msgid "cannot open input file `%s'"
 msgstr "не може да се отвори входния файл `%s'"
 
-#: catgets/gencat.c:417 catgets/gencat.c:492
+#: catgets/gencat.c:418 catgets/gencat.c:493
 msgid "illegal set number"
 msgstr "незаконен номер на множество"
 
-#: catgets/gencat.c:444
+#: catgets/gencat.c:445
 msgid "duplicate set definition"
 msgstr "повторно определение на множество"
 
-#: catgets/gencat.c:446 catgets/gencat.c:618 catgets/gencat.c:670
+#: catgets/gencat.c:447 catgets/gencat.c:619 catgets/gencat.c:671
 msgid "this is the first definition"
 msgstr "това е първото определение"
 
-#: catgets/gencat.c:517
+#: catgets/gencat.c:518
 #, c-format
 msgid "unknown set `%s'"
 msgstr "неизвестно множество \"%s\""
 
-#: catgets/gencat.c:558
+#: catgets/gencat.c:559
 msgid "invalid quote character"
 msgstr "неправилен знак за кавичка"
 
-#: catgets/gencat.c:571
+#: catgets/gencat.c:572
 #, c-format
 msgid "unknown directive `%s': line ignored"
 msgstr "неизвестно напътствие \"%s\": пренебрегване на реда"
 
-#: catgets/gencat.c:616
+#: catgets/gencat.c:617
 msgid "duplicated message number"
 msgstr "повторен номер на съобщение"
 
-#: catgets/gencat.c:667
+#: catgets/gencat.c:668
 msgid "duplicated message identifier"
 msgstr "номер на повторено съобщение"
 
-#: catgets/gencat.c:724
+#: catgets/gencat.c:725
 msgid "invalid character: message ignored"
 msgstr "неправилен знак: пренебрегване на съобщението"
 
-#: catgets/gencat.c:767
+#: catgets/gencat.c:768
 msgid "invalid line"
 msgstr "неправилен ред"
 
-#: catgets/gencat.c:821
+#: catgets/gencat.c:822
 msgid "malformed line ignored"
 msgstr "уродливия ред е пренебрегнат"
 
-#: catgets/gencat.c:939 catgets/gencat.c:947
+#: catgets/gencat.c:940 catgets/gencat.c:948
 #, c-format
 msgid "cannot allocate memory"
 msgstr "не може да се задели памет"
 
-#: catgets/gencat.c:1000 catgets/gencat.c:1045
+#: catgets/gencat.c:1001 catgets/gencat.c:1046
 #, c-format
 msgid "cannot open output file `%s'"
 msgstr "не може да се отвори файлът за изход \"%s\""
 
-#: catgets/gencat.c:1210 locale/programs/linereader.c:588
+#: catgets/gencat.c:1211 locale/programs/linereader.c:588
 msgid "invalid escape sequence"
 msgstr "неправилна заместваща последователност (escape)"
 
-#: catgets/gencat.c:1234
+#: catgets/gencat.c:1235
 msgid "unterminated message"
 msgstr "незавършено съобщение"
 
-#: catgets/gencat.c:1258
+#: catgets/gencat.c:1259
 #, c-format
 msgid "while opening old catalog file"
 msgstr "при отваряне на предишен файл за каталог"
 
-#: catgets/gencat.c:1349
+#: catgets/gencat.c:1350
 #, c-format
 msgid "conversion modules not available"
 msgstr "не е наличен модул за конвертиране"
 
-#: catgets/gencat.c:1375
+#: catgets/gencat.c:1376
 #, c-format
 msgid "cannot determine escape character"
 msgstr "не може да се определи знака за заместване(escape)"
@@ -355,7 +355,7 @@ msgstr ""
 "Задължителни аргументи за \"дълги\" опции са също задължителни за всички съответстващи \"къси\" опции.\n"
 "\n"
 
-#: debug/xtrace.sh:56 elf/ldd.bash.in:55 elf/sotruss.sh:49
+#: debug/xtrace.sh:56 elf/ldd.bash.in:56 elf/sotruss.sh:49
 #: malloc/memusage.sh:63
 msgid "For bug reporting instructions, please see:\\\\n%s.\\\\n"
 msgstr "За подаване на доклад за грешка, моля, вижте:\\\\n%s.\\\\n"
@@ -537,11 +537,11 @@ msgstr "не може да се създаде масив на директор�
 msgid "cannot stat shared object"
 msgstr "не може да се определят атрибутите на споделен обект"
 
-#: elf/dl-load.c:1071 elf/dl-load.c:2155
+#: elf/dl-load.c:1071 elf/dl-load.c:2160
 msgid "cannot create shared object descriptor"
 msgstr "не може да се създаде описание за споделен обект"
 
-#: elf/dl-load.c:1090 elf/dl-load.c:1605 elf/dl-load.c:1711
+#: elf/dl-load.c:1090 elf/dl-load.c:1594 elf/dl-load.c:1704
 msgid "cannot read file data"
 msgstr "не може да се прочетат данни от файлът"
 
@@ -549,95 +549,95 @@ msgstr "не може да се прочетат данни от файлът"
 msgid "ELF load command address/offset not page-aligned"
 msgstr "адресът или отместването, в командата за зареждане на ELF, не е подравнен на страница"
 
-#: elf/dl-load.c:1235
+#: elf/dl-load.c:1224
 msgid "object file has no loadable segments"
 msgstr "обектният файл е без дялове за свързване"
 
-#: elf/dl-load.c:1252
+#: elf/dl-load.c:1241
 msgid "cannot dynamically load executable"
 msgstr "изпълнимият файл не може да се свърже динамично"
 
-#: elf/dl-load.c:1259
+#: elf/dl-load.c:1248
 msgid "object file has no dynamic section"
 msgstr "обектният файл е без дял за динамично свързване"
 
-#: elf/dl-load.c:1294
+#: elf/dl-load.c:1283
 msgid "cannot dynamically load position-independent executable"
 msgstr "не може да се зареди изпълним файл независим от местоположение"
 
-#: elf/dl-load.c:1296
+#: elf/dl-load.c:1285
 msgid "shared object cannot be dlopen()ed"
 msgstr "не е възможно dlopen() за споделеният обект"
 
-#: elf/dl-load.c:1309
+#: elf/dl-load.c:1298
 msgid "cannot allocate memory for program header"
 msgstr "не може да се задели памет за заглавието на програмата"
 
-#: elf/dl-load.c:1334
+#: elf/dl-load.c:1323
 msgid "cannot enable executable stack as shared object requires"
 msgstr "стекът не може да се разреши за изпълнение, както е поискано от споделения обект"
 
-#: elf/dl-load.c:1362
+#: elf/dl-load.c:1351
 msgid "cannot close file descriptor"
 msgstr "не може да се затвори описанието на файлът"
 
-#: elf/dl-load.c:1605
+#: elf/dl-load.c:1594
 msgid "file too short"
 msgstr "файлът е твърде къс"
 
-#: elf/dl-load.c:1639
+#: elf/dl-load.c:1628
 msgid "invalid ELF header"
 msgstr "неправилен ELF заглавен блок"
 
-#: elf/dl-load.c:1654
+#: elf/dl-load.c:1645
 msgid "ELF file data encoding not big-endian"
 msgstr "данните от ELF файлът не са кодирани със старши байт първи(big-endian)"
 
-#: elf/dl-load.c:1656
+#: elf/dl-load.c:1647
 msgid "ELF file data encoding not little-endian"
 msgstr "данните от ELF файлът не са кодирани с младши байт първи(little-endian)"
 
-#: elf/dl-load.c:1660
+#: elf/dl-load.c:1651
 msgid "ELF file version ident does not match current one"
 msgstr "номерът на версия от ELF-файла не съответства на текущата"
 
-#: elf/dl-load.c:1664
+#: elf/dl-load.c:1655
 msgid "ELF file OS ABI invalid"
 msgstr "ELF файлът е с неправилен номер на ДПИ(ABI-двоичен програмен интерфейс) за ОС "
 
-#: elf/dl-load.c:1667
+#: elf/dl-load.c:1658
 msgid "ELF file ABI version invalid"
 msgstr "ELF файлът е с неправилна версия за ДПИ(двоичен програмен интерфейс)"
 
-#: elf/dl-load.c:1670
+#: elf/dl-load.c:1661
 msgid "nonzero padding in e_ident"
 msgstr "ненулево допълване при e_ident"
 
-#: elf/dl-load.c:1673
+#: elf/dl-load.c:1664
 msgid "internal error"
 msgstr "вътрешна грешка"
 
-#: elf/dl-load.c:1680
+#: elf/dl-load.c:1671
 msgid "ELF file version does not match current one"
 msgstr "версията, на ELF файлът, не съответства на текущата"
 
-#: elf/dl-load.c:1692
+#: elf/dl-load.c:1685
 msgid "only ET_DYN and ET_EXEC can be loaded"
 msgstr "само ET_DYN и ET_EXEC могат да се свържат"
 
-#: elf/dl-load.c:1697
+#: elf/dl-load.c:1690
 msgid "ELF file's phentsize not the expected size"
 msgstr "неочакван размер на елемент(phentsize) в заглавието на ELF файл"
 
-#: elf/dl-load.c:2174
+#: elf/dl-load.c:2179
 msgid "wrong ELF class: ELFCLASS64"
 msgstr "неправилен ELF клас: ELFCLASS64"
 
-#: elf/dl-load.c:2175
+#: elf/dl-load.c:2180
 msgid "wrong ELF class: ELFCLASS32"
 msgstr "неправилен ELF клас: ELFCLASS32"
 
-#: elf/dl-load.c:2178
+#: elf/dl-load.c:2183
 msgid "cannot open shared object file"
 msgstr "не може да се отвори файлът със споделения обект"
 
@@ -653,7 +653,7 @@ msgstr "не може да се промени защитата на памет�
 msgid "cannot map zero-fill pages"
 msgstr "не може да се изобразят страници запълнени с нули"
 
-#: elf/dl-lookup.c:810
+#: elf/dl-lookup.c:808
 msgid "symbol lookup error"
 msgstr "грешка при търсене на символ"
 
@@ -706,7 +706,7 @@ msgstr "след преместването не може да се постав
 msgid "RTLD_NEXT used in code not dynamically loaded"
 msgstr "RTLD_NEXT е използван в код, който не е за динамично свързване"
 
-#: elf/dl-tls.c:1209
+#: elf/dl-tls.c:1217
 msgid "cannot create TLS data structures"
 msgstr "не може да се създадат структури за TLS данни"
 
@@ -911,7 +911,7 @@ msgstr "изисква се абсолютно име на настройващ 
 
 #: elf/ldconfig.c:1124 locale/programs/xasprintf.c:31
 #: locale/programs/xmalloc.c:63 malloc/obstack.c:416 malloc/obstack.c:418
-#: posix/getconf.c:460 posix/getconf.c:699
+#: posix/getconf.c:503 posix/getconf.c:745
 #, c-format
 msgid "memory exhausted"
 msgstr "паметта е изчерпана"
@@ -936,11 +936,11 @@ msgstr "Не може да се смени директорията на /"
 msgid "Can't open cache file directory %s\n"
 msgstr "Не може да се отвори директорията '%s' с файл за складиране\n"
 
-#: elf/ldd.bash.in:42
+#: elf/ldd.bash.in:43
 msgid "Written by %s and %s.\n"
 msgstr "Автори: %s и %s.\n"
 
-#: elf/ldd.bash.in:47
+#: elf/ldd.bash.in:48
 msgid ""
 "Usage: ldd [OPTION]... FILE...\n"
 "      --help              print this help and exit\n"
@@ -958,46 +958,46 @@ msgstr ""
 "  -u, --unused            Извеждане на неизползваните пряки зависимости\n"
 "  -v, --verbose           Извеждане на подробни сведения\n"
 
-#: elf/ldd.bash.in:80
+#: elf/ldd.bash.in:81
 msgid "ldd: option \\`$1' is ambiguous"
 msgstr "ldd: опцията \\$1 е двусмислена"
 
-#: elf/ldd.bash.in:87
+#: elf/ldd.bash.in:88
 msgid "unrecognized option"
 msgstr "неразпозната опция"
 
-#: elf/ldd.bash.in:88 elf/ldd.bash.in:125
+#: elf/ldd.bash.in:89 elf/ldd.bash.in:126
 msgid "Try \\`ldd --help' for more information."
 msgstr "За повече сведения, опитайте \"ldd --help\"."
 
-#: elf/ldd.bash.in:124
+#: elf/ldd.bash.in:125
 msgid "missing file arguments"
 msgstr "липсва аргумент за файл"
 
 #. TRANS This is a ``file doesn't exist'' error
 #. TRANS for ordinary files that are referenced in contexts where they are
 #. TRANS expected to already exist.
-#: elf/ldd.bash.in:147 sysdeps/gnu/errlist.h:13
+#: elf/ldd.bash.in:148 sysdeps/gnu/errlist.h:13
 msgid "No such file or directory"
 msgstr "Няма такъв файл или директория"
 
-#: elf/ldd.bash.in:150 inet/rcmd.c:483
+#: elf/ldd.bash.in:151 inet/rcmd.c:483
 msgid "not regular file"
 msgstr "не е обикновен файл"
 
-#: elf/ldd.bash.in:153
+#: elf/ldd.bash.in:154
 msgid "warning: you do not have execution permission for"
 msgstr "предупреждение: липсва право за изпълнение на "
 
-#: elf/ldd.bash.in:170
+#: elf/ldd.bash.in:171
 msgid "\tnot a dynamic executable"
 msgstr "\tизпълнимият файл не е с динамично свързване"
 
-#: elf/ldd.bash.in:178
+#: elf/ldd.bash.in:179
 msgid "exited with unknown exit code"
 msgstr "приключване с неизвестен код за завършване"
 
-#: elf/ldd.bash.in:183
+#: elf/ldd.bash.in:184
 msgid "error: you do not have read permission for"
 msgstr "грешка: липсва право за четене на"
 
@@ -1254,111 +1254,126 @@ msgstr ""
 msgid "%s: unrecognized option '%c%s'\\n"
 msgstr "%s: неразпозната опция '%c%s'\\n"
 
-#: elf/sprof.c:76
+#: elf/sprof.c:77
 msgid "Output selection:"
 msgstr "Избор на типа за извеждане:"
 
-#: elf/sprof.c:78
+#: elf/sprof.c:79
 msgid "print list of count paths and their number of use"
 msgstr "извеждане на списък с преброените пътища и броя на използването им"
 
-#: elf/sprof.c:80
+#: elf/sprof.c:81
 msgid "generate flat profile with counts and ticks"
 msgstr "създаване на пълна диагностика с броячи и отметки"
 
-#: elf/sprof.c:81
+#: elf/sprof.c:82
 msgid "generate call graph"
 msgstr "създаване на граф на извикванията"
 
-#: elf/sprof.c:88
+#: elf/sprof.c:89
 msgid "Read and display shared object profiling data."
 msgstr "Прочита и показва диагностични данни за споделен обект."
 
-#: elf/sprof.c:93
+#: elf/sprof.c:94
 msgid "SHOBJ [PROFDATA]"
 msgstr "СПОД_ОБЕКТ [ДИАГ_ДАННИ]"
 
-#: elf/sprof.c:432
+#: elf/sprof.c:434
 #, c-format
 msgid "failed to load shared object `%s'"
 msgstr "пропадна зареждането на споделения обект \"%s\""
 
-#: elf/sprof.c:441 elf/sprof.c:821 elf/sprof.c:919
+#: elf/sprof.c:443 elf/sprof.c:860 elf/sprof.c:958
 #, c-format
 msgid "cannot create internal descriptor"
 msgstr "не може да се създаде вътрешно описание"
 
-#: elf/sprof.c:550
+#: elf/sprof.c:552
 #, c-format
 msgid "Reopening shared object `%s' failed"
 msgstr "повторното отварянето на споделения обект \"%s\" не успя"
 
-#: elf/sprof.c:557 elf/sprof.c:652
+#: elf/sprof.c:556 elf/sprof.c:672
+#, c-format
+msgid "stat(%s) failure"
+msgstr "пропадна stat(%s)"
+
+#: elf/sprof.c:573
+#, c-format
+msgid "read outside of file extents %zu + %jd > %jd"
+msgstr "четене извън заделените файлови блокове %zu + %jd > %jd"
+
+#: elf/sprof.c:582 elf/sprof.c:689
 #, c-format
 msgid "reading of section headers failed"
 msgstr "не успя прочитането на заглавията на дяловете"
 
-#: elf/sprof.c:565 elf/sprof.c:660
+#: elf/sprof.c:592 elf/sprof.c:699
 #, c-format
 msgid "reading of section header string table failed"
 msgstr "не успя прочитането на таблицата с низове от заглавието на дяла"
 
-#: elf/sprof.c:591
+#: elf/sprof.c:619
 #, c-format
 msgid "*** Cannot read debuginfo file name: %m\n"
 msgstr "*** Не може да се прочете името на файла с сведения за изпитание: %m\n"
 
-#: elf/sprof.c:612
+#: elf/sprof.c:640
 #, c-format
 msgid "cannot determine file name"
 msgstr "не може да се определи името на файла"
 
-#: elf/sprof.c:645
+#: elf/sprof.c:678
 #, c-format
 msgid "reading of ELF header failed"
 msgstr "прочитането на ELF заглавието не успя"
 
-#: elf/sprof.c:681
+#: elf/sprof.c:683
+#, c-format
+msgid "too many section headers"
+msgstr "твърде много заглавия на дялове"
+
+#: elf/sprof.c:720
 #, c-format
 msgid "*** The file `%s' is stripped: no detailed analysis possible\n"
 msgstr "*** Файлът \"%s\" е изчистен: невъзможен подробен анализ\n"
 
-#: elf/sprof.c:711
+#: elf/sprof.c:750
 #, c-format
 msgid "failed to load symbol data"
 msgstr "пропадна зареждането на данни за символите"
 
-#: elf/sprof.c:776
+#: elf/sprof.c:815
 #, c-format
 msgid "cannot load profiling data"
 msgstr "не може да се заредят диагностичните данни"
 
-#: elf/sprof.c:785
+#: elf/sprof.c:824
 #, c-format
 msgid "while stat'ing profiling data file"
 msgstr "при определяне атрибутите на файл с диагностични данни"
 
-#: elf/sprof.c:793
+#: elf/sprof.c:832
 #, c-format
 msgid "profiling data file `%s' does not match shared object `%s'"
 msgstr "файлът с диагностични данни \"%s\" не съответства на споделения обект \"%s\""
 
-#: elf/sprof.c:804
+#: elf/sprof.c:843
 #, c-format
 msgid "failed to mmap the profiling data file"
 msgstr "Неуспех при изобразяването в паметта на файл с диагностични данни"
 
-#: elf/sprof.c:812
+#: elf/sprof.c:851
 #, c-format
 msgid "error while closing the profiling data file"
 msgstr "грешка при затваряне на файл с диагностични данни"
 
-#: elf/sprof.c:895
+#: elf/sprof.c:934
 #, c-format
 msgid "`%s' is no correct profile data file for `%s'"
 msgstr "\"%s\" не е подходящ файл с диагностични данни за \"%s\""
 
-#: elf/sprof.c:1076 elf/sprof.c:1134
+#: elf/sprof.c:1115 elf/sprof.c:1173
 #, c-format
 msgid "cannot allocate symbol data"
 msgstr "не може да се памет за данни за символи"
@@ -4773,17 +4788,17 @@ msgstr "не може създаде обкръжение за SELinux"
 msgid "cannot set file creation context for `%s'"
 msgstr "не може зададе обкръжение за създаване на \"%s\""
 
-#: posix/getconf.c:419
+#: posix/getconf.c:462
 #, c-format
 msgid "Usage: %s [-v specification] variable_name [pathname]\n"
 msgstr "Употреба: %s [-v уточняване] име_на_променлива [път]\n"
 
-#: posix/getconf.c:422
+#: posix/getconf.c:465
 #, c-format
 msgid "       %s -a [pathname]\n"
 msgstr "          %s -a [път]\n"
 
-#: posix/getconf.c:498
+#: posix/getconf.c:544
 #, c-format
 msgid ""
 "Usage: getconf [-v SPEC] VAR\n"
@@ -4802,21 +4817,21 @@ msgstr ""
 "променливата при компилиране.\n"
 "\n"
 
-#: posix/getconf.c:574
+#: posix/getconf.c:620
 #, c-format
 msgid "unknown specification \"%s\""
 msgstr "неизвестно уточняване \"%s\""
 
-#: posix/getconf.c:626
+#: posix/getconf.c:672
 #, c-format
 msgid "Couldn't execute %s"
 msgstr "Не може да се изпълни %s"
 
-#: posix/getconf.c:671 posix/getconf.c:687
+#: posix/getconf.c:717 posix/getconf.c:733
 msgid "undefined"
 msgstr "неопределен"
 
-#: posix/getconf.c:709
+#: posix/getconf.c:761
 #, c-format
 msgid "Unrecognized variable `%s'"
 msgstr "Неразпозната променлива \"%s\""
@@ -4966,17 +4981,17 @@ msgstr "%s: ред %d: не може да се зададът повече от 
 msgid "%s: line %d: list delimiter not followed by domain"
 msgstr "%s: ред %d: разделителят за списък не е последван от домейн"
 
-#: resolv/res_hconf.c:176
+#: resolv/res_hconf.c:177
 #, c-format
 msgid "%s: line %d: expected `on' or `off', found `%s'\n"
 msgstr "%s: ред %d: очаква се \"on\" или \"off\", а е намерено \"%s\"\n"
 
-#: resolv/res_hconf.c:219
+#: resolv/res_hconf.c:220
 #, c-format
 msgid "%s: line %d: bad command `%s'\n"
 msgstr "%s: ред %d: неправилна команда \"%s\"\n"
 
-#: resolv/res_hconf.c:252
+#: resolv/res_hconf.c:253
 #, c-format
 msgid "%s: line %d: ignoring trailing garbage `%s'\n"
 msgstr "%s: ред %d: пренебрегване на останалия боклук \"%s\"\n"
@@ -5187,7 +5202,7 @@ msgstr "Неизвестен сигнал %d"
 
 #: sunrpc/auth_unix.c:113 sunrpc/clnt_tcp.c:124 sunrpc/clnt_udp.c:140
 #: sunrpc/clnt_unix.c:125 sunrpc/svc_tcp.c:189 sunrpc/svc_tcp.c:233
-#: sunrpc/svc_udp.c:161 sunrpc/svc_unix.c:186 sunrpc/svc_unix.c:226
+#: sunrpc/svc_udp.c:161 sunrpc/svc_unix.c:187 sunrpc/svc_unix.c:227
 #: sunrpc/xdr.c:631 sunrpc/xdr.c:791 sunrpc/xdr_array.c:102
 #: sunrpc/xdr_rec.c:153 sunrpc/xdr_ref.c:79
 msgid "out of memory\n"
@@ -5436,17 +5451,13 @@ msgstr "cache_set: пропадна заделянето на памет за ж
 msgid "cache_set: could not allocate new rpc_buffer"
 msgstr "cache_set: не може да се задели нов rpc_buffer"
 
-#: sunrpc/svc_unix.c:166
+#: sunrpc/svc_unix.c:167
 msgid "svc_unix.c - AF_UNIX socket creation problem"
 msgstr "svc_unix.c - проблем при създаване на Юникс домейн гнезда"
 
-#: sunrpc/svc_unix.c:176
+#: sunrpc/svc_unix.c:177
 msgid "svc_unix.c - cannot getsockname or listen"
 msgstr "svc_unix.c - getsockname или listen не успя"
-
-#: sysdeps/aarch64/dl-bti.c:72
-msgid "failed to turn on BTI protection"
-msgstr "не успя включването на BTI защита"
 
 #: sysdeps/generic/dl-protected.h:55
 msgid "error due to GNU_PROPERTY_1_NEEDED_INDIRECT_EXTERN_ACCESS"
@@ -6451,6 +6462,18 @@ msgstr "?"
 #: sysdeps/gnu/errlist.h:798
 msgid "RPC program not available"
 msgstr "Недостъпна RPC-програма"
+
+#: sysdeps/gnu/errlist.h:801
+msgid "Initialization error"
+msgstr "Грешка при създаване"
+
+#: sysdeps/gnu/errlist.h:804
+msgid "Device is remote"
+msgstr "Отдалечено устройство"
+
+#: sysdeps/gnu/errlist.h:807
+msgid "Too many levels of remote in path"
+msgstr "Твърде много отдалечени нива в пътя"
 
 #: sysdeps/hppa/dl-fptr.c:96
 msgid "cannot map pages for fdesc table"

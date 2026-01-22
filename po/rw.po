@@ -14,7 +14,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: libc 2.3\n"
-"POT-Creation-Date: 2025-07-19 22:21+0200\n"
+"POT-Creation-Date: 2026-01-19 16:22+0100\n"
 "PO-Revision-Date: 2005-04-04 10:55-0700\n"
 "Last-Translator: Steven Michael Murphy <murf@e-tools.com>\n"
 "Language-Team: Kinyarwanda <translation-team-rw@lists.sourceforge.net>\n"
@@ -46,7 +46,7 @@ msgstr "Ikosa mu myandikire"
 msgid "Success"
 msgstr "Ibyatunganye"
 
-#: posix/getconf.c:671 posix/getconf.c:687
+#: posix/getconf.c:717 posix/getconf.c:733
 msgid "undefined"
 msgstr "kidasobanuye"
 
