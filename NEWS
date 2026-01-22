@@ -93,6 +93,12 @@ Deprecated and removed features, and other changes affecting compatibility:
 * Support for dumped heaps has been removed.  malloc_set_state() now always
   returns the error code -1.
 
+* The abovementioned change in ISO C23 of the declaration of bsearch,
+  memchr, strchr, strpbrk, strrchr, strstr, wcschr, wcspbrk, wcsrchr,
+  wcsstr, and wmemchr as const-preserving macros can lead to compilation
+  issues in code not set up for it. In particular, gnulib snapshots may need
+  to be updated.
+
 * The uimaxabs function has been renamed to umaxabs, following a change
   to the name of that function in ISO C2Y.  The old function continues
   to exist as a compatibility symbol for old binaries.
