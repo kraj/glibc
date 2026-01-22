@@ -9,7 +9,8 @@ Version 2.43
 
 Major new features:
 
-* The ISO C23 memset_explicit and memalignment functions have been added.
+* The ISO C23 free_sized, free_aligned_sized, memset_explicit, and
+  memalignment functions have been added.
 
 * As specified in ISO C23, the assert macro is defined to take variable
   arguments to support expressions with a comma inside a compound
@@ -24,9 +25,6 @@ Major new features:
 * The ISO C23 typedef names long_double_t, _Float32_t, _Float64_t, and
   (on platforms supporting _Float128) _Float128_t, introduced in TS
   18661-3:2015, have been added to <math.h>.
-
-* The ISO C23 functions free_sized and free_aligned_sized are now
-  supported in <stdlib.h>.
 
 * The ISO C23 optional time bases TIME_MONOTONIC, TIME_ACTIVE, and
   TIME_THREAD_ACTIVE have been added.
@@ -43,9 +41,10 @@ Major new features:
 * Optimized implementations for fma, fmaf, remainder, remaindef, frexpf,
   frexp, frexpl (binary128), and frexpl (intel96) have been added.
 
-* The SVID handling for acosf, acoshf, asinhf, atan2f, atanhf, coshf,
-  lgammaf/lgammaf_r, log10f, sinhf, sqrtf, tgammaf, y0/j0, y1/j1, and yn/jn
-  were moved to compat symbols, allowing improvements in performance.
+* The SVID handling for acosf, acoshf, asinhf, atan2f, atanhf, coshf, fmodf,
+  lgammaf/lgammaf_r, log10f, remainderf, sinhf, sqrtf, tgammaf, y0/j0,
+  y1/j1, and yn/jn were moved to compat symbols, allowing improvements in
+  performance.
 
 * Experimental support for building with clang has been added.  It requires
   at least clang version 18, aarch64-linux-gnu or x86_64-linux-gnu
@@ -71,6 +70,22 @@ Major new features:
   is possible to use LD_DEBUG=security to make dynamic linker show warning
   messages about loaded binaries that do not support the corresponding
   security feature.
+
+* On AArch64, vector variants of the new C23 exp2m1, exp10m1, log10p1,
+  log2p1, and rsqrt routines have been added.
+
+* On RISC-V, an RVV-optimized implementation of memset has been added.
+
+* On x86, support for the Intel Nova Lake and Wildcat Lake processors
+  has been added.
+
+* The test suite has seen significant improvements in particular around
+  the scanf, strerror, strsignal functions and multithreaded testing.
+
+* Unicode support has been updated to Unicode 17.0.0.
+
+* The manual has been updated and modernized, in particular also regarding
+  many of its code examples.
 
 Deprecated and removed features, and other changes affecting compatibility:
 
