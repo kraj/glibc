@@ -543,7 +543,7 @@ GCC 12.1 or newer
 GCC 12.1 or higher is required.  In general it is recommended to use
 the newest version of the compiler that is known to work for building
 @theglibc{}, as newer compilers usually produce better code.  As of
-release time, GCC 15.1.1 is the newest compiler verified to work to build
+release time, GCC 15.2.1 is the newest compiler verified to work to build
 @theglibc{}.
 
 For multi-arch support it is recommended to use a GCC which has been built with
@@ -564,7 +564,7 @@ GNU @code{binutils} 2.39 or later
 
 You must use GNU @code{binutils} (as and ld) to build @theglibc{}.
 No other assembler or linker has the necessary functionality at the
-moment. As of release time, GNU @code{binutils} 2.45 is the newest
+moment. As of release time, GNU @code{binutils} 2.45.1 is the newest
 verified to work to build @theglibc{}.
 
 @item
@@ -616,7 +616,7 @@ with any version of @code{sed}.  As of release time, @code{sed} version
 Python 3.4 or later
 
 Python is required to build @theglibc{}.  As of release time, Python
-3.13.5 is the newest verified to work for building and testing
+3.14.0 is the newest verified to work for building and testing
 @theglibc{}.
 
 @item PExpect 4.0
