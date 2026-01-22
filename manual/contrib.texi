@@ -12,6 +12,9 @@ order.
 @itemize @bullet
 
 @item
+Osama Abdelkader for various contributions.
+
+@item
 Nick Alcock for contributing fixes to allow @theglibc{} to be built with the
 stack smashing protector enabled.
 
@@ -61,7 +64,7 @@ Fr@'ed@'eric B@'erat for numerous fixes and contributions.
 
 @item
 Peter Bergner for contributions to and maintainership of the PowerPC
-port.
+port and maintainership of the RISC-V port.
 
 @item
 Indu Bhagat for various fixes.
@@ -70,12 +73,18 @@ Indu Bhagat for various fixes.
 Anton Blanchard for various fixes.
 
 @item
+Pierre Blanchard for contributions to the AArch64 port.
+
+@item
 Stephen R. van den Berg for contributing a highly-optimized
 @code{strstr} function.
 
 @item
 Ond@v{r}ej B@'ilka for contributing optimized string routines for x64 and various
 fixes.
+
+@item
+Uros Bizjak for many fixes and improvements.
 
 @item
 Eric Blake for adding O(n) implementations of @code{memmem},
@@ -102,6 +111,9 @@ is used to implement @code{stdio} functions.
 Dridi Boukelmoune for various fixes.
 
 @item
+Padraig Brady for various contributions.
+
+@item
 Mark Brown for his direction as part of @theglibc{} steering
 committee.
 
@@ -119,6 +131,9 @@ Daniel Cederman for fixes to the Sparc port.
 
 @item
 Kito Cheng for various fixes.
+
+@item
+James Chesterman for contributions to the AArch64 port.
 
 @item
 Paul Clarke for optimized functions on PowerPC.
@@ -149,12 +164,15 @@ contributions.
 Jianbo Deng for the work on the Loongson port.
 
 @item
-Wilco Dijkstra for various fixes and many improvements as well as
-maintainership of the AArch64 port.
+Wilco Dijkstra for many fixes and improvements as well as maintainership
+of the AArch64 port.
 
 @item
 Liubov Dmitrieva for optimized string and math functions on x86-64 and
 x86.
+
+@item
+Jovan Dmitrovic for work on the mips port.
 
 @item
 Michael Hudson Doyle for various fixes.
@@ -220,7 +238,7 @@ Mike Frysinger for his maintaining of the IA64 architecture and for
 testing and bug fixing.
 
 @item
-Collin Funk for various fixes and manual improvements.
+Collin Funk for many fixes and manual improvements.
 
 @item
 Martin Galvan for contributing gdb pretty printer support to glibc and adding
@@ -286,6 +304,9 @@ Stafford Horne for maintainership of the OpenRISC port.
 Ying Huang for work on the MIPS port.
 
 @item
+William Hunt for work on memory management.
+
+@item
 Guy-Fleury Iteriteka for many contributions to Hurd support.
 
 @item
@@ -297,6 +318,9 @@ Andreas Jaeger for the port to Linux on x86-64
 (@code{mips-@var{anything}-linux}), implementing the @file{ldconfig}
 program, providing a test suite for the math library and for his
 direction as part of @theglibc{} steering committee.
+
+@item
+Dev Jain for various fixes and work on memory management.
 
 @item
 Sam James for various fixes.
@@ -469,7 +493,8 @@ Alan Modra for his improvements for Linux on PowerPC.
 Lenard Mollenkopf for work on C2Y support.
 
 @item
-Sachin Monga for various fixes and contributions to the PowerPC port.
+Sachin Monga for many fixes and contributions and maintainership of
+the PowerPC port.
 
 @item
 David Mosberger-Tang for contributing the port to Linux/Alpha
@@ -560,8 +585,11 @@ low-level platform-specific headers for PowerPC, for their
 maintainership of the PowerPC port and various fixes.
 
 @item
-Joe Ramsay for contributing to the AArch64 port, in particular the
+Joe Ramsay for many contributions to the AArch64 port, in particular the
 vector library.
+
+@item
+Jens Remus for work on the s390 port.
 
 @item
 Torvald Riegel for the implementation of new algorithms for semaphores,
@@ -607,7 +635,8 @@ Andrew Senkevich for contributing vector math function implementations for x86.
 Carlos Eduardo Seo for optimized functions on PowerPC.
 
 @item
-Arjun Shankar for testing, bug fixing, and many handbook contributions.
+Arjun Shankar for testing, bug fixing, test suite additions, and many handbook
+contributions.
 
 @item
 Marcus Shawcroft for contributing the AArch64 port.
@@ -696,6 +725,9 @@ Xi Ruoyao for various fixes and work on the loongarch port.
 Qixing ksyx Xue for various fixes.
 
 @item
+Yao Zihong for contributions to the RISC-V port.
+
+@item
 Adam Yi for various fixes.
 
 @item
@@ -717,8 +749,8 @@ Xuelei Zhang for optimized functions on AArch64.
 Junxian Zhu for work on the MIPS and RISC-V port.
 
 @item
-Paul Zimmermann for the work on mathematical functions and their
-testsuite.
+Paul Zimmermann for the extensive work on CORE-MATH, the mathematical functions,
+and their testsuite.
 
 @item
 Claudiu Zissulescu for work on the SFrame support.
