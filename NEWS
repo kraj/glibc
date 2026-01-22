@@ -43,23 +43,24 @@ Major new features:
 
 * The SVID handling for acosf, acoshf, asinhf, atan2f, atanhf, coshf, fmodf,
   lgammaf/lgammaf_r, log10f, remainderf, sinhf, sqrtf, tgammaf, y0/j0,
-  y1/j1, and yn/jn were moved to compat symbols, allowing improvements in
+  y1/j1, and yn/jn was moved to compat symbols, allowing improvements in
   performance.
 
 * Experimental support for building with clang has been added.  It requires
   at least clang version 18, aarch64-linux-gnu or x86_64-linux-gnu
-  targets, and libgcc compatible runtime (including libgcc_s.so for
+  targets, and a libgcc compatible runtime (including libgcc_s.so for
   pthread cancellation and backtrace runtime support).
 
 * On Linux, the openat2 function has been added.  It is an extension of
   openat and provides a superset of its functionality.  It is supported only
-  in LFS mode and it is a cancellable entrypoint.
+  in LFS mode and is a cancellable entrypoint.
 
-* On AArch64, support for 2MB transparent huge pages is enabled by default
-  in malloc (similar to setting glibc.malloc.hugetlb=1 tunable).
+* On AArch64, support for 2MB transparent huge pages has been enabled by
+  default in malloc (similar to setting glibc.malloc.hugetlb=1 tunable).
 
 * On AArch64 Linux targets supporting the Scalable Matrix Extension
-  (SME), the clone() system call wrapper will disable the ZA state of SME.
+  (SME), the clone() system call wrapper will disable the ZA state of the
+  SME.
 
 * On AArch64 targets supporting the Branch Target Identification (BTI)
   extension, it is possible to enforce that all binaries in the process
@@ -67,9 +68,9 @@ Major new features:
 
 * On AArch64 Linux targets supporting at least one of the branch protection
   extensions (e.g. Branch Target Identification or Guarded Control Stack), it
-  is possible to use LD_DEBUG=security to make dynamic linker show warning
-  messages about loaded binaries that do not support the corresponding
-  security feature.
+  is possible to use LD_DEBUG=security to make the dynamic linker show
+  warning messages about loaded binaries that do not support the
+  corresponding security feature.
 
 * On AArch64, vector variants of the new C23 exp2m1, exp10m1, log10p1,
   log2p1, and rsqrt routines have been added.
@@ -89,7 +90,7 @@ Major new features:
 
 Deprecated and removed features, and other changes affecting compatibility:
 
-* Support for dumped heaps has been removed - malloc_set_state() now always
+* Support for dumped heaps has been removed.  malloc_set_state() now always
   returns the error code -1.
 
 * The uimaxabs function has been renamed to umaxabs, following a change
