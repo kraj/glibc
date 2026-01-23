@@ -111,7 +111,7 @@ is used to implement @code{stdio} functions.
 Dridi Boukelmoune for various fixes.
 
 @item
-Padraig Brady for various contributions.
+P@'adraig Brady for various contributions.
 
 @item
 Mark Brown for his direction as part of @theglibc{} steering
