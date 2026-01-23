@@ -25,7 +25,11 @@ M_DECL_FUNC (__fmin) (FLOAT x, FLOAT y)
   return M_SUF (__builtin_fmin) (x, y);
 #else
   if (__glibc_likely (!isunordered (x, y)))
-    return x > y ? y : x;
+    {
+      if (__glibc_unlikely (x == y))
+	return signbit (x) ? x : y;
+      return x > y ? y : x;
+    }
   else if (issignaling (x) || issignaling (y))
     return x + y;
   else

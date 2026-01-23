@@ -2110,9 +2110,12 @@ perform these operations faster than the equivalent C code.
 @standardsx{fminfNx, TS 18661-3:2015, math.h}
 @safety{@prelim{}@mtsafe{}@assafe{}@acsafe{}}
 The @code{fmin} function returns the lesser of the two values @var{x}
-and @var{y}.  It is similar to the expression
+and @var{y} respecting the order signed zeros.  It is similar to the
+expression
 @smallexample
-((x) < (y) ? (x) : (y))
+if (x == y)
+  return signbit (x) ? x : y;
+return ((x) < (y) ? (x) : (y))
 @end smallexample
 except that @var{x} and @var{y} are only evaluated once.
 
