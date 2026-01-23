@@ -24,10 +24,8 @@ M_DECL_FUNC (__fmin) (FLOAT x, FLOAT y)
 #if M_USE_BUILTIN (FMIN)
   return M_SUF (__builtin_fmin) (x, y);
 #else
-  if (islessequal (x, y))
-    return x;
-  else if (isgreater (x, y))
-    return y;
+  if (__glibc_likely (!isunordered (x, y)))
+    return x > y ? y : x;
   else if (issignaling (x) || issignaling (y))
     return x + y;
   else
