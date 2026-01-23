@@ -21,12 +21,18 @@
 FLOAT
 M_DECL_FUNC (__fmaximum) (FLOAT x, FLOAT y)
 {
-  if (isgreater (x, y))
-    return x;
-  else if (isless (x, y))
-    return y;
-  else if (x == y)
-    return (M_COPYSIGN (1, x) >= M_COPYSIGN (1, y) ? x : y);
+  if (__glibc_likely (!isunordered (x, y)))
+    {
+#if M_USE_BUILTIN (FMAX)
+      return M_SUF (__builtin_fmax) (x, y);
+#else
+      if (isgreater (x, y))
+	return x;
+      else if (isless (x, y))
+	return y;
+      return signbit (x) ? y : x;
+#endif
+    }
   else
     return x + y;
 }
