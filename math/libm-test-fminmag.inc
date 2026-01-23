@@ -22,8 +22,9 @@ static const struct test_ff_f_data fminmag_test_data[] =
   {
     TEST_ff_f (fminmag, 0, 0, 0, NO_INEXACT_EXCEPTION|ERRNO_UNCHANGED),
     TEST_ff_f (fminmag, minus_zero, minus_zero, minus_zero, NO_INEXACT_EXCEPTION|ERRNO_UNCHANGED),
-    TEST_ff_f (fminmag, 0, minus_zero, 0, NO_INEXACT_EXCEPTION|ERRNO_UNCHANGED|IGNORE_ZERO_INF_SIGN),
-    TEST_ff_f (fminmag, minus_zero, 0, 0, NO_INEXACT_EXCEPTION|ERRNO_UNCHANGED|IGNORE_ZERO_INF_SIGN),
+    /* The order signed zeros are implemented as a QoI in the generic implementation.  */
+    TEST_ff_f (fminmag, 0, minus_zero, minus_zero, NO_INEXACT_EXCEPTION|ERRNO_UNCHANGED),
+    TEST_ff_f (fminmag, minus_zero, 0, minus_zero, NO_INEXACT_EXCEPTION|ERRNO_UNCHANGED),
     TEST_ff_f (fminmag, min_subnorm_value, min_subnorm_value, min_subnorm_value, NO_INEXACT_EXCEPTION|ERRNO_UNCHANGED),
     TEST_ff_f (fminmag, min_subnorm_value, -min_subnorm_value, -min_subnorm_value, NO_INEXACT_EXCEPTION|ERRNO_UNCHANGED),
     TEST_ff_f (fminmag, -min_subnorm_value, min_subnorm_value, -min_subnorm_value, NO_INEXACT_EXCEPTION|ERRNO_UNCHANGED),
