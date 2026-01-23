@@ -21,14 +21,14 @@
 FLOAT
 M_DECL_FUNC (__fmaximum_mag) (FLOAT x, FLOAT y)
 {
-  FLOAT ax = M_FABS (x);
-  FLOAT ay = M_FABS (y);
-  if (isgreater (ax, ay))
-    return x;
-  else if (isless (ax, ay))
-    return y;
-  else if (ax == ay)
-    return (M_COPYSIGN (1, x) >= M_COPYSIGN (1, y) ? x : y);
+  if (__glibc_likely (!isunordered (x, y)))
+    {
+      FLOAT ax = M_FABS (x);
+      FLOAT ay = M_FABS (y);
+      if (__glibc_unlikely (ax == ay))
+        return signbit (x) ? y : x;
+      return isgreater (ax, ay) ? x : y;
+    }
   else
     return x + y;
 }
