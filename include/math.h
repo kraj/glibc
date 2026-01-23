@@ -120,6 +120,9 @@ __issignaling (double x)
 	  > UINT64_C (0xfff0000000000000);
 }
 
+/* Get any long double optimization.  */
+#include <math_ldbl.h>
+
 # if __HAVE_DISTINCT_FLOAT128
 
 #  ifdef __USE_EXTERN_INLINES

@@ -97,4 +97,16 @@ do {								\
   (d) = se_u.value;						\
 } while (0)
 
+extern inline int
+__issignalingl (long double x)
+{
+  uint32_t exi, hxi, lxi;
+  GET_LDOUBLE_WORDS (exi, hxi, lxi, x);
+
+  int ret =  ((exi & 0x7fff) && ((hxi & 0x80000000) == 0));
+  hxi ^= 0x40000000;
+  hxi |= (lxi | -lxi) >> 31;
+  return ret || (((exi & 0x7fff) == 0x7fff) && (hxi > 0xc0000000));
+}
+
 #endif /* math_ldbl.h */
