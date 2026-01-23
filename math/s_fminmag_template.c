@@ -21,14 +21,14 @@
 FLOAT
 M_DECL_FUNC (__fminmag) (FLOAT x, FLOAT y)
 {
-  FLOAT ax = M_FABS (x);
-  FLOAT ay = M_FABS (y);
-  if (isless (ax, ay))
-    return x;
-  else if (isgreater (ax, ay))
-    return y;
-  else if (ax == ay)
-    return x < y ? x : y;
+  if (__glibc_likely (!isunordered (x, y)))
+    {
+      FLOAT ax = M_FABS (x);
+      FLOAT ay = M_FABS (y);
+      if (__glibc_unlikely (ax == ay))
+	return x < y ? x : y;
+      return isless (ax, ay) ? x : y;
+    }
   else if (issignaling (x) || issignaling (y))
     return x + y;
   else
