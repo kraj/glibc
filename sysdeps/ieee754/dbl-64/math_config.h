@@ -125,15 +125,6 @@ asdouble (uint64_t i)
   return u.f;
 }
 
-static inline int
-issignaling_inline (double x)
-{
-  uint64_t ix = asuint64 (x);
-  if (HIGH_ORDER_BIT_IS_SET_FOR_SNAN)
-    return (ix & 0x7ff8000000000000) == 0x7ff8000000000000;
-  return 2 * (ix ^ 0x0008000000000000) > 2 * 0x7ff8000000000000ULL;
-}
-
 #define BIT_WIDTH       64
 #define MANTISSA_WIDTH  52
 #define EXPONENT_WIDTH  11

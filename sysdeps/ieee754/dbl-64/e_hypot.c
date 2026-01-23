@@ -98,7 +98,7 @@ __hypot (double x, double y)
   if (!isfinite(x) || !isfinite(y))
     {
       if ((isinf (x) || isinf (y))
-	  && !issignaling_inline (x) && !issignaling_inline (y))
+	  && !issignaling (x) && !issignaling (y))
 	return INFINITY;
       return x + y;
     }

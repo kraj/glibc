@@ -62,32 +62,21 @@ libm_hidden_proto (__expm1f128)
 #include <stdint.h>
 #include <nan-high-order-bit.h>
 
-/* A union which permits us to convert between a float and a 32 bit
-   int.  */
-
-typedef union
-{
-  float value;
-  uint32_t word;
-} ieee_float_shape_type;
-
 /* Get a 32 bit int from a float.  */
 #ifndef GET_FLOAT_WORD
-# define GET_FLOAT_WORD(i,d)					\
+# define GET_FLOAT_WORD(__i, __d)				\
 do {								\
-  ieee_float_shape_type gf_u;					\
-  gf_u.value = (d);						\
-  (i) = gf_u.word;						\
+  union { float f; uint32_t i; } u = { .f = (__d) };		\
+  (__i) = u.i;							\
 } while (0)
 #endif
 
 /* Set a float from a 32 bit int.  */
 #ifndef SET_FLOAT_WORD
-# define SET_FLOAT_WORD(d,i)					\
+# define SET_FLOAT_WORD(__d, __i)				\
 do {								\
-  ieee_float_shape_type sf_u;					\
-  sf_u.word = (i);						\
-  (d) = sf_u.value;						\
+  union { float f; uint32_t i; } u = { .i = (__i) };		\
+  (__d) = u.f;							\
 } while (0)
 #endif
 
@@ -96,20 +85,39 @@ __issignalingf (float x)
 {
   uint32_t xi;
   GET_FLOAT_WORD (xi, x);
-#if HIGH_ORDER_BIT_IS_SET_FOR_SNAN
+
   /* We only have to care about the high-order bit of x's significand, because
      having it set (sNaN) already makes the significand different from that
      used to designate infinity.  */
-  return (xi & 0x7fc00000) == 0x7fc00000;
-#else
-  /* To keep the following comparison simple, toggle the quiet/signaling bit,
-     so that it is set for sNaNs.  This is inverse to IEEE 754-2008 (as well as
-     common practice for IEEE 754-1985).  */
-  xi ^= 0x00400000;
-  /* We have to compare for greater (instead of greater or equal), because x's
-     significand being all-zero designates infinity not NaN.  */
-  return (xi & 0x7fffffff) > 0x7fc00000;
-#endif
+  if (HIGH_ORDER_BIT_IS_SET_FOR_SNAN)
+    return (xi & 0x7fc00000) == 0x7fc00000;
+
+  /* IEEE 754-2008 is_quiet flag is zero for signaling NaN.  To simplify the
+     comparison logic, first toggle the flag, so that it is set for a sNaN.
+     We shift out the sign bit and compare for greater than because xi's
+     significand being all-zero means infinity, not sNaN.  */
+  return 2 * (xi ^ 0x00400000) > 2 * 0x7fc00000U;
+}
+
+extern inline int
+__issignaling (double x)
+{
+  union { double f; uint64_t i; } u = { .f = x };
+  uint64_t xi = u.i;
+
+  /* We only have to care about the high-order bit of x's significand, because
+     having it set (sNaN) already makes the significand different from that
+     used to designate infinity.  */
+  if (HIGH_ORDER_BIT_IS_SET_FOR_SNAN)
+    return (xi & UINT64_C (0x7ff8000000000000))
+	    == UINT64_C (0x7ff8000000000000);
+
+  /* IEEE 754-2008 is_quiet flag is zero for signaling NaN.  To simplify the
+     comparison logic, first toggle the flag, so that it is set for a sNaN.
+     We shift out the sign bit and compare for greater than because xi's
+     significand being all-zero means infinity, not sNaN.  */
+  return 2 * (xi ^ UINT64_C (0x0008000000000000))
+	  > UINT64_C (0xfff0000000000000);
 }
 
 # if __HAVE_DISTINCT_FLOAT128

@@ -303,9 +303,9 @@ __pow (double x, double y)
       if (__glibc_unlikely (zeroinfnan (iy)))
 	{
 	  if (2 * iy == 0)
-	    return issignaling_inline (x) ? x + y : 1.0;
+	    return issignaling (x) ? x + y : 1.0;
 	  if (ix == asuint64 (1.0))
-	    return issignaling_inline (y) ? x + y : 1.0;
+	    return issignaling (y) ? x + y : 1.0;
 	  if (2 * ix > 2 * asuint64 (INFINITY)
 	      || 2 * iy > 2 * asuint64 (INFINITY))
 	    return x + y;

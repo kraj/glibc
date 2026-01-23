@@ -154,15 +154,6 @@ asdouble (uint64_t i)
   return u.f;
 }
 
-static inline int
-issignalingf_inline (float x)
-{
-  uint32_t ix = asuint (x);
-  if (HIGH_ORDER_BIT_IS_SET_FOR_SNAN)
-    return (ix & 0x7fc00000) == 0x7fc00000;
-  return 2 * (ix ^ 0x00400000) > 2 * 0x7fc00000UL;
-}
-
 #define BIT_WIDTH       32
 #define MANTISSA_WIDTH  23
 #define EXPONENT_WIDTH  8
