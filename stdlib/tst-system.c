@@ -20,6 +20,7 @@
 #include <string.h>
 #include <signal.h>
 #include <paths.h>
+#include <pwd.h>
 #include <sys/resource.h>
 
 #include <support/capture_subprocess.h>
@@ -196,6 +197,19 @@ do_test (void)
   }
 
   {
+    /* RLIMIT_NPROC is not enforced for root.  Switch to user nobody
+       if it exists.  */
+    if (getuid () == 0)
+      {
+	struct passwd *pw = getpwnam ("nobody");
+	if (pw == NULL)
+	  FAIL_UNSUPPORTED ("RLIMIT_NPROC test skipped: "
+			    "cannot switch to user nobody");
+	if (setgid (pw->pw_gid) != 0 || setuid (pw->pw_uid) != 0)
+	  FAIL_UNSUPPORTED ("RLIMIT_NPROC test skipped: "
+			    "cannot switch to user nobody: %m");
+      }
+
     struct rlimit rlimit_orig, rlimit_new;
 
     if (getrlimit (RLIMIT_NPROC, &rlimit_orig) != 0)
