@@ -39,6 +39,7 @@ tests := \
   tst-free-sized-trace \
   tst-interpose-nothread \
   tst-interpose-thread \
+  tst-mallinfo2 \
   tst-malloc \
   tst-malloc-alternate-path \
   tst-malloc-backtrace \
@@ -51,7 +52,7 @@ tests := \
   tst-malloc-thread-fail \
   tst-malloc-too-large \
   tst-malloc-usable \
-  tst-malloc_info tst-mallinfo2 \
+  tst-malloc_info \
   tst-mallocalign1 \
   tst-mallocfork \
   tst-mallocfork2 \
@@ -67,7 +68,10 @@ tests := \
   tst-realloc \
   tst-reallocarray \
   tst-safe-linking \
-  tst-tcfree1 tst-tcfree2 tst-tcfree3 tst-tcfree4 \
+  tst-tcfree1 \
+  tst-tcfree2 \
+  tst-tcfree3 \
+  tst-tcfree4 \
   tst-trim1 \
   tst-valloc \
 # tests
