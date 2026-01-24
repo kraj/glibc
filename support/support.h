@@ -147,6 +147,9 @@ extern const char support_complocaledir_prefix[];
 /* Corresponds to the install's etc/ directory.  */
 extern const char support_sysconfdir_prefix[];
 
+/* If true, glibc was configured with --enable-hardcoded-path-in-tests.  */
+extern const bool support_hardcoded_paths_in_test;
+
 /* Copies the file at the path FROM to TO.  If TO does not exist, it
    is created.  If TO is a regular file, it is truncated before
    copying.  The file mode is copied, but the permissions are not.  */

@@ -253,6 +253,12 @@ CFLAGS-support_paths.c = \
 		-DCOMPLOCALEDIR_PATH=\"$(complocaledir)\" \
 		-DSYSCONFDIR_PATH=\"$(sysconfdir)\"
 
+ifeq ($(build-hardcoded-path-in-tests),yes)
+CFLAGS-support_paths.c += -DHARDCODED_PATHS_IN_TEST=true
+else
+CFLAGS-support_paths.c += -DHARDCODED_PATHS_IN_TEST=false
+endif
+
 # Build with exception handling and asynchronous unwind table support.
 CFLAGS-.oS += -fexceptions -fasynchronous-unwind-tables
 

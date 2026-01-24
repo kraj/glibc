@@ -99,3 +99,5 @@ const char support_sysconfdir_prefix[] = SYSCONFDIR_PATH;
 #else
 # error please -DSYSCONFDIR_PATH=something in the Makefile
 #endif
+
+const bool support_hardcoded_paths_in_test = HARDCODED_PATHS_IN_TEST;
