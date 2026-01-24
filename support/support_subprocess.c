@@ -89,6 +89,7 @@ support_subprogram (const char *file, char *const argv[], char *const envp[])
 
   result.pid = xposix_spawn (file, &fa, NULL, argv,
 			     envp == NULL ? environ : envp);
+  posix_spawn_file_actions_destroy (&fa);
 
   xclose (result.stdout_pipe[1]);
   xclose (result.stderr_pipe[1]);
@@ -105,6 +106,7 @@ support_subprogram_wait (const char *file, char *const argv[])
   struct support_subprocess res = support_subprocess_init ();
 
   res.pid = xposix_spawn (file, &fa, NULL, argv, environ);
+  posix_spawn_file_actions_destroy (&fa);
 
   return support_process_wait (&res);
 }
