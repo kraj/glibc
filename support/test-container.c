@@ -134,7 +134,9 @@ int verbose = 0;
 	 - 'mkdirp': A minimal "mkdir -p FILE" command.
 
    * mytest.root/postclean.req causes fresh rsync (with delete) after
-     test if present
+     test if present.  If /etc is present, the testroot is cleaned,
+     too.  This prevents further tests from using special
+     configurations in /etc from previous tests.
 
    * mytest.root/ldconfig.run causes ldconfig to be issued prior
      test execution (to setup the initial ld.so.cache).
@@ -870,7 +872,8 @@ main (int argc, char **argv)
   if (strrchr (so_base, '/') != NULL)
     strrchr (so_base, '/')[1] = 0;
 
-  if (file_exists (concat (command_root, "/postclean.req", NULL)))
+  if (file_exists (concat (command_root, "/postclean.req", NULL))
+      || file_exists (concat (command_root, "/etc", NULL)))
     do_postclean = 1;
 
   if (file_exists (concat (command_root, "/ldconfig.run", NULL)))
