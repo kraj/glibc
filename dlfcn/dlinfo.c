@@ -67,6 +67,13 @@ dlinfo_doit (void *argsblock)
       strcpy (args->arg, l->l_origin);
       break;
 
+    case RTLD_DI_ORIGIN_PATH:
+      if (l->l_origin != (char *) -1)
+        *(const char **) args->arg = l->l_origin;
+      else
+        *(const char **) args->arg = NULL;
+      break;
+
     case RTLD_DI_TLS_MODID:
       *(size_t *) args->arg = 0;
       *(size_t *) args->arg = l->l_tls_modid;

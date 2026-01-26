@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <error.h>
+#include <support/check.h>
 
 #define TEST_FUNCTION do_test ()
 
@@ -54,6 +55,13 @@ do_test (void)
   TRY (RTLD_DI_ORIGIN, origin)
     {
       printf ("origin: %s\n", origin);
+    }
+
+  const char *origin_path;
+  TRY (RTLD_DI_ORIGIN_PATH, &origin_path)
+    {
+      TEST_COMPARE_STRING (origin, origin_path);
+      printf ("origin_path: %s\n", origin_path);
     }
 
   Dl_serinfo counts;

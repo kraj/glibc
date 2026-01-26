@@ -554,13 +554,23 @@ The namespace identifier of @var{handle} is written to
 @code{*@var{arg}}.  The @var{arg} argument must be the address of an
 object of type @code{Lmid_t}.
 
+@item RTLD_DI_ORIGIN_PATH
+The @code{$ORIGIN} dynamic string token pointer for @var{handle} is written
+to @code{*@var{arg}}.  The @var{arg} argument must be the address of a
+@code{const char *}.  If the @code{$ORIGIN} could not be determined, the
+function still returns 0 but writes a null pointer to @code{*@var{arg}}.
+The returned string is only valid as long as the corresponding handle is
+valid.  Accessing it after @code{dlclose} has been called for the
+corresponding @var{handle} is undefined behavior.
+
 @item RTLD_DI_ORIGIN
 The value of the @code{$ORIGIN} dynamic string token for @var{handle} is
 written to the character array starting at @var{arg} as a
 null-terminated string.
 
 This request type should not be used because it is prone to buffer
-overflows.
+overflows.  Instead, @code{RTLD_DI_ORIGIN_PATH} described above should be
+used.
 
 @item RTLD_DI_SERINFO
 @itemx RTLD_DI_SERINFOSIZE
