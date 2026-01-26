@@ -499,7 +499,7 @@ tests-special += \
   $(objpfx)tst-pcre-mem.out \
   $(objpfx)tst-rxspencer-no-utf8-mem.out \
   $(objpfx)tst-vfork3-mem.out \
-  $(objpfx)tst-wordexp-reuse.out \
+  $(objpfx)tst-wordexp-reuse-mem.out \
   # tests-special
 endif
 endif
