@@ -797,6 +797,14 @@ allocation, is not async-signal-safe, and introduces considerable
 complexity.
 
 @item
+Do not use text relocations.  Text relocations are often created by
+accident if position-dependent code is linked into position-independent
+executables or shared objects.  Text relocations require creating
+read-write-execute segments at run time, which may not be possible given
+system security hardening policy.  Text relocations are typically more
+complex to process than the widely used data-only relocation types.
+
+@item
 Make dependencies on shared objects explicit.  Do not assume that
 certain libraries (such as @code{libc.so.6}) are always loaded.
 Specifically, if a main program or shared object references a symbol,
@@ -885,12 +893,13 @@ Several considerations apply to ELF constructors and destructors.
 @itemize @bullet
 @item
 The dynamic linker does not take constructor and destructor priorities
-into account when determining their execution order.  Priorities are
-only used by the link editor for ordering execution within a
-completely linked object.  If a dynamic shared object needs to be
-initialized before another object, this can be expressed with a
-@code{DT_NEEDED} dependency on the object that needs to be initialized
-earlier.
+into account when determining their execution order.  Priorities can be
+set using the GCC attributes @code{constructor}, @code{destructor}, and
+@code{init_priority}.  They are only used by the link editor for
+ordering execution within a completely linked object.  If a dynamic
+shared object needs to be initialized before another object, this can be
+expressed with a @code{DT_NEEDED} dependency on the object that needs to
+be initialized earlier.
 
 @item
 The recommendations to avoid cyclic dependencies and symbol
@@ -1120,7 +1129,8 @@ Use @option{-Wl,--error-rwx-segments} and @option{-Wl,--error-execstack} to
 instruct the link editor to fail the link if the resulting final object
 would have read-write-execute segments or an executable stack.  Such
 issues usually indicate that the input files are not marked up
-correctly.
+correctly.  Use @option{-Wl,-z,text}, so that the link editor produces
+errors instead of generating binaries with text relocations.
 
 @item
 Ensure that for each @code{LOAD} segment in the ELF program header, file
@@ -1223,12 +1233,15 @@ should not contain @code{RPATH} or @code{RUNPATH} entries.
 
 @item
 Likewise, the dynamic segment should not show any @code{AUDIT},
-@code{DEPAUDIT}, @code{AUXILIARY}, @code{FILTER}, or
+@code{DEPAUDIT}, @code{AUXILIARY}, @code{FILTER}, @code{TEXTREL}, or
 @code{PREINIT_ARRAY} tags.
 
 @item
 If the dynamic segment contains a (deprecated) @code{HASH} tag, it
 must also contain a @code{GNU_HASH} tag.
+
+@item
+The @code{TEXTREL} flag (under the @code{FLAGS} tag) should not be used.
 
 @item
 The @code{INITFIRST} flag (under @code{FLAGS_1}) should not be used.
