@@ -22,5 +22,5 @@
 # define MEMCPY __memcpy_generic
 # undef libc_hidden_builtin_def
 # define libc_hidden_builtin_def(x)
+# include <string/memcpy.c>
 #endif
-#include <string/memcpy.c>

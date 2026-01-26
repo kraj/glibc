@@ -19,6 +19,7 @@
 #include <sysdep.h>
 #include <sys/asm.h>
 
+#if IS_IN(libc)
 /* memcpy optimization for CPUs with fast unaligned support
    (RISCV_HWPROBE_MISALIGNED_FAST).
 
@@ -31,7 +32,7 @@
 
    The tail is handled with branchless copies.  */
 
-#define BLOCK_SIZE (16 * SZREG)
+# define BLOCK_SIZE (16 * SZREG)
 
 	.attribute unaligned_access, 1
 ENTRY (__memcpy_noalignment)
@@ -156,3 +157,5 @@ L(word_copy_adjust):
 	mv	a3, a5
 	j	L(word_copy)
 END (__memcpy_noalignment)
+
+#endif
