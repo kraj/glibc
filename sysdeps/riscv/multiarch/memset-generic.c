@@ -22,5 +22,5 @@
 # define MEMSET __memset_generic
 # undef libc_hidden_builtin_def
 # define libc_hidden_builtin_def(x)
+# include <string/memset.c>
 #endif
-#include <string/memset.c>
