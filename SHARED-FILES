@@ -296,7 +296,7 @@ core-math:
   sysdeps/ieee754/flt-32/s_expm1f.c
   # src/binary32/log10p1/log10p1f.c revision bc385c2
   sysdeps/ieee754/flt-32/s_log10p1f.c
-  # src/binary32/log1p/log1pf.c revision bc385c2
+  # src/binary32/log1p/log1pf.c revision 24ef43a1
   sysdeps/ieee754/flt-32/s_log1pf.c
   # src/binary32/log2p1/log2p1f.c revision bc385c2
   sysdeps/ieee754/flt-32/s_log2p1f.c

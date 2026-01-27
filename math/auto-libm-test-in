@@ -7650,6 +7650,7 @@ log1p -0x4.f37d3c9ce0b14bdd86eb157df5d4p-4
 log1p 0x7.2eca50c4d93196362b4f37f6e8dcp-4
 log1p -0x6.3fef3067427e43dfcde9e48f74bcp-4
 log1p 0x6.af53d00fd2845d4772260ef5adc4p-4
+log1p -0x1.fffffcp-127
 
 log2 1
 log2 e
