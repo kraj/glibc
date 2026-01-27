@@ -1,9 +1,9 @@
 /* Correctly-rounded radix-10 logarithm function for binary32 value.
 
-Copyright (c) 2022-2023 Alexei Sibidanov.
+Copyright (c) 2022-2026 Alexei Sibidanov.
 
 This file is part of the CORE-MATH project
-project (file src/binary32/log10/log10f.c, revision bc385c2).
+project (file src/binary32/log10/log10f.c, revision ebff4c43).
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -31,24 +31,29 @@ SOFTWARE.
 #include <math-svid-compat.h>
 #include "math_config.h"
 
+#include <fenv.h>
+#include <errno.h>
+
 static __attribute__ ((noinline)) float
 as_special (float x)
 {
-  uint32_t ux = asuint (x);
-  if (ux == 0x7f800000u)
-    return x; /* +inf */
-  uint32_t ax = ux << 1;
-  if (ax == 0u)
+  uint32_t ux = asuint (x), ax = ux<<1;
+  if (ax == 0u) // x = +/-0.0
     /* -0.0 */
-    return  __math_divzerof (1);
+    return __math_divzerof (1);
+  if (ux == 0x7f800000u)
+    return x; // x=+inf
   if (ax > 0xff000000u)
-    return x + x; /* nan */
+    return x + x; // x=nan
   return __math_invalidf (x);
 }
+
+typedef union {double f; uint64_t u;} b64u64_u;
 
 float
 __log10f (float x)
 {
+  // reciprocal of 1+i/64 (i=0..64) rounded to 29 bits
   static const double tr[] =
     {
       0x1p+0,         0x1.f81f82p-1,  0x1.f07c1fp-1,  0x1.e9131acp-1,
@@ -69,45 +74,47 @@ __log10f (float x)
       0x1.0842108p-1, 0x1.0624dd3p-1, 0x1.041041p-1,  0x1.0204081p-1,
       0.5
     };
+  // logarithms of the reciprocals with offset
   static const double tl[] =
     {
-      -0x1.d45fd6237ebe3p-47, 0x1.b947689311b6ep-8, 0x1.b5e909c96d7d5p-7,
-      0x1.45f4f59ed2165p-6,   0x1.af5f92cbd8f1ep-6, 0x1.0ba01a606de8cp-5,
-      0x1.3ed119b9a2b7bp-5,   0x1.714834298eec2p-5, 0x1.a30a9d98357fbp-5,
-      0x1.d41d512670813p-5,   0x1.02428c0f65519p-4, 0x1.1a23444eecc3ep-4,
-      0x1.31b30543f4cb4p-4,   0x1.48f3ed39bfd04p-4, 0x1.5fe8049a0e423p-4,
-      0x1.769140a6aa008p-4,   0x1.8cf1836c98cb3p-4, 0x1.a30a9d55541a1p-4,
-      0x1.b8de4d1ee823ep-4,   0x1.ce6e4202ca2e6p-4, 0x1.e3bc1accace07p-4,
-      0x1.f8c9683b5abd4p-4,   0x1.06cbd68ca9a6ep-3, 0x1.11142f19df73p-3,
-      0x1.1b3e71fa7a97fp-3,   0x1.254b4d37a46e3p-3, 0x1.2f3b6912cbf07p-3,
-      0x1.390f683115886p-3,   0x1.42c7e7fffc5a8p-3, 0x1.4c65808c78d3cp-3,
-      0x1.55e8c50751c55p-3,   0x1.5f52445dec3d8p-3, 0x1.68a288c3f12p-3,
-      0x1.71da17bdf0d19p-3,   0x1.7af973608afd9p-3, 0x1.84011952a2579p-3,
-      0x1.8cf1837a7ea6p-3,    0x1.95cb2891e43d6p-3, 0x1.9e8e7b0f869ep-3,
-      0x1.a73beaa5db18dp-3,   0x1.afd3e394558d3p-3, 0x1.b856cf060d9f1p-3,
-      0x1.c0c5134de1ffcp-3,   0x1.c91f1371bc99fp-3, 0x1.d1652ffcd3f53p-3,
-      0x1.d997c6f635e75p-3,   0x1.e1b733ab90f3bp-3, 0x1.e9c3ceadac856p-3,
-      0x1.f1bdeec43a305p-3,   0x1.f9a5e7a5fa3fep-3, 0x1.00be05ac02f2bp-2,
-      0x1.04a054d81a2d4p-2,   0x1.087a0835957fbp-2, 0x1.0c4b457099517p-2,
-      0x1.101431aa1fe51p-2,   0x1.13d4f08b98dd8p-2, 0x1.178da53edb892p-2,
-      0x1.1b3e71e9f9d58p-2,   0x1.1ee777defdeedp-2, 0x1.2288d7b48e23bp-2,
-      0x1.2622b0f52e49fp-2,   0x1.29b522a4c6314p-2, 0x1.2d404b0e30f8p-2,
-      0x1.30c4478f3fbe5p-2,   0x1.34413509f7915p-2
+      -0x1.2p-46,             0x1.b947689310dfap-8, 0x1.b5e909c96d11bp-7,
+      0x1.45f4f59ed1e08p-6,   0x1.af5f92cbd8bc1p-6, 0x1.0ba01a606dcdep-5,
+      0x1.3ed119b9a29cdp-5,   0x1.714834298ed14p-5, 0x1.a30a9d983564cp-5,
+      0x1.d41d512670665p-5,   0x1.02428c0f65442p-4, 0x1.1a23444eecb67p-4,
+      0x1.31b30543f4bddp-4,   0x1.48f3ed39bfc2dp-4, 0x1.5fe8049a0e34bp-4,
+      0x1.769140a6a9f3p-4,    0x1.8cf1836c98bdbp-4, 0x1.a30a9d55540cap-4,
+      0x1.b8de4d1ee8167p-4,   0x1.ce6e4202ca20fp-4, 0x1.e3bc1accacd3p-4,
+      0x1.f8c9683b5aafdp-4,   0x1.06cbd68ca9a03p-3, 0x1.11142f19df6c5p-3,
+      0x1.1b3e71fa7a913p-3,   0x1.254b4d37a4677p-3, 0x1.2f3b6912cbe9cp-3,
+      0x1.390f68311581ap-3,   0x1.42c7e7fffc53dp-3, 0x1.4c65808c78cd1p-3,
+      0x1.55e8c50751beap-3,   0x1.5f52445dec36cp-3, 0x1.68a288c3f1195p-3,
+      0x1.71da17bdf0cadp-3,   0x1.7af973608af6ep-3, 0x1.84011952a250ep-3,
+      0x1.8cf1837a7e9f4p-3,   0x1.95cb2891e436ap-3, 0x1.9e8e7b0f86974p-3,
+      0x1.a73beaa5db121p-3,   0x1.afd3e39455867p-3, 0x1.b856cf060d985p-3,
+      0x1.c0c5134de1f9p-3,    0x1.c91f1371bc934p-3, 0x1.d1652ffcd3ee8p-3,
+      0x1.d997c6f635e09p-3,   0x1.e1b733ab90edp-3,  0x1.e9c3ceadac7ebp-3,
+      0x1.f1bdeec43a29ap-3,   0x1.f9a5e7a5fa392p-3, 0x1.00be05ac02ef5p-2,
+      0x1.04a054d81a29ep-2,   0x1.087a0835957c5p-2, 0x1.0c4b4570994e1p-2,
+      0x1.101431aa1fe1bp-2,   0x1.13d4f08b98da2p-2, 0x1.178da53edb85cp-2,
+      0x1.1b3e71e9f9d22p-2,   0x1.1ee777defdeb7p-2, 0x1.2288d7b48e205p-2,
+      0x1.2622b0f52e469p-2,   0x1.29b522a4c62dep-2, 0x1.2d404b0e30f4ap-2,
+      0x1.30c4478f3fbafp-2,   0x1.34413509f78dfp-2
     };
+  // 10^n
   static const union
   {
     float f;
     uint32_t u;
   } st[] =
   {
-    { 0x1p+0 },        { 0x1.4p+3 },      { 0x1.9p+6 },       { 0x1.f4p+9 },
-    { 0x1.388p+13 },   { 0x1.86ap+16 },   { 0x1.e848p+19 },   { 0x1.312dp+23 },
-    { 0x1.7d784p+26 }, { 0x1.dcd65p+29 }, { 0x1.2a05f2p+33 }, { 0 },
-    { 0 },             { 0 },             { 0 },              { 0 }
+    { 0x1.2a05f2p+33 }, { 0x1.4p+3 },     { 0x1.9p+6 },      { 0 },
+    { 0x1.f4p+9 },      { 0 },            { 0x1.388p+13 },   { 0x1.86ap+16 },
+    { 0 },              { 0x1.e848p+19 }, { 0 },             { 0x1.312dp+23 },
+    { 0x1.7d784p+26 },  { 0 },            { 0x1.dcd65p+29 }, { 0x1p+0 }
   };
   static const double b[] =
     {
-      0x1.bcb7b15c5a2f8p-2, -0x1.bcbb1dbb88ebap-3, 0x1.2871c39d521c6p-3
+      0x1.bcb7b15d35067p-2, -0x1.bcbb1cd29cbafp-3, 0x1.2870e2624ce4ep-3
     };
   static const double c[] =
     {
@@ -115,29 +122,35 @@ __log10f (float x)
       -0x1.bcb7b146a14b3p-4, 0x1.63c627d5219cbp-4,  -0x1.2880736c8762dp-4,
       0x1.fc1ecf913961ap-5
     };
+
+  // ln(2)/ln(10)
+  const double ln10 = 0x1.34413509f79ffp-2,
+	       ln10h = 0x1.34413509f7ap-2,
+	       ln10l = -0x1.0cee0ed4ca7e9p-54;
   uint32_t ux = asuint (x);
-  if (__glibc_unlikely (ux < (1 << 23) || ux >= 0x7f800000u))
+  if (__glibc_unlikely (ux >= 0x7f800000u))
+    return as_special (x); // <=-0, nan, inf
+  if (__glibc_unlikely (ux == st[(ux >> 24) & 0xf].u))
+    { // x = 10^n
+      unsigned je = ((int) ux >> 23) - 126;
+      je = (je * 0x4d104d4) >> 28;
+      return je;
+    }
+  if (__glibc_unlikely (ux < 0x00800000u))
     {
-      if (ux == 0 || ux >= 0x7f800000u)
-	return as_special (x);
-      /* subnormal */
+      if (__glibc_unlikely (ux == 0u))
+	return as_special (x); // x=+0
+      // subnormal
       int n = __builtin_clz (ux) - 8;
       ux <<= n;
       ux -= n << 23;
     }
-  unsigned m = ux & ((1 << 23) - 1), j = (m + (1 << (23 - 7))) >> (23 - 6);
-  double ix = tr[j], l = tl[j];
   int e = ((int) ux >> 23) - 127;
-  unsigned je = e + 1;
-  je = (je * 0x4d104d4) >> 28;
-  if (__glibc_unlikely (ux == st[je].u))
-    return je;
-
-  double tz = asdouble (((int64_t) m | ((int64_t) 1023 << 23)) << (52 - 23));
-  double z = tz * ix - 1, z2 = z * z;
-  double r
-      = ((e * 0x1.34413509f79ffp-2 + l) + z * b[0]) + z2 * (b[1] + z * b[2]);
-  float ub = r, lb = r + 0x1.b008p-34;
+  int64_t m = ux & ((1 << 23) - 1), j = (m + (1 << (23 - 7))) >> (23 - 6);
+  double tz = asdouble ((m << (52 - 23)) | (UINT64_C(0x3ff) << 52));
+  double z = tz * tr[j] - 1, z2 = z * z;
+  double r = ((e * ln10 + tl[j]) + z * b[0]) + z2 * (b[1] + z * b[2]);
+  float ub = r, lb = r + 0x1.af23fp-34;
   if (__glibc_unlikely (ub != lb))
     {
       double f = z
@@ -145,13 +158,13 @@ __log10f (float x)
 		    + z2
 			  * ((c[2] + z * c[3])
 			     + z2 * (c[4] + z * c[5] + z2 * c[6])));
-      f -= 0x1.0cee0ed4ca7e9p-54 * e;
-      f += l - tl[0];
-      double el = e * 0x1.34413509f7ap-2;
+      f += ln10l * e;
+      f += tl[j] - tl[0];
+      double el = e * ln10h;
       r = el + f;
       ub = r;
       tz = r;
-      if (__glibc_unlikely (!((asuint64 (tz) & ((1 << 28) - 1)))))
+      if (__glibc_unlikely (!(asuint64 (tz) & ((1 << 28) - 1))))
 	{
 	  double dr = (el - r) + f;
 	  r += dr * 32;

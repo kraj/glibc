@@ -268,7 +268,7 @@ core-math:
   sysdeps/ieee754/flt-32/e_gammaf_r.c
   # src/binary32/lgamma/lgammaf.c, revision bc385c2
   sysdeps/ieee754/flt-32/e_lgammaf_r.c
-  # src/binary32/log10/log10f.c, revision bc385c2
+  # src/binary32/log10/log10f.c, revision ebff4c43
   sysdeps/ieee754/flt-32/e_log10f.c
   # src/binary32/sinh/sinhf.c, revision bbfabd99
   sysdeps/ieee754/flt-32/e_sinhf.c
