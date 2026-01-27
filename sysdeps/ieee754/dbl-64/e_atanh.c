@@ -3,7 +3,7 @@
 Copyright (c) 2023-2026 Alexei Sibidanov.
 
 The original version of this file was copied from the CORE-MATH
-project (file src/binary64/atanh/atanh.c, revision c423b9a3).
+project (file src/binary64/atanh/atanh.c, revision 532e37dc).
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -95,6 +95,9 @@ __ieee754_atanh (double x)
 	  return __math_check_uflow_zero_lt (x, 0x1p-1022,
 					     fma (x, 0x1p-55, x));
 	}
+      /* checked exhautively this branch (with and without FMA):
+       * for 0x1.d12ed0af1a27fp-27 <= x < 2^-24
+       */
       double x2 = x * x;
       static const double c[] = { 0x1.999999999999ap-3, 0x1.2492492492244p-3,
 				  0x1.c71c71c79715fp-4, 0x1.745d16f777723p-4,
@@ -109,7 +112,7 @@ __ieee754_atanh (double x)
 	    + x8 * ((c[4] + x2 * c[5]) + x4 * (c[6] + x2 * c[7]) + x8 * c[8]);
       double t = fma (x2, p, 0x1.5555555555555p-56);
       double pl, ph = fasttwosum (0x1.5555555555555p-2, t, &pl);
-      ph = muldd_acc (ph, pl, x3, dx3, &pl);
+      ph = muldd2 (ph, pl, x3, dx3, &pl);
       double tl;
       ph = fasttwosum (x, ph, &tl);
       pl += tl;
