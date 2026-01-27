@@ -119,6 +119,19 @@ do_test (void)
 
   free (p);
 
+  /* Check the alignment is rounded up to a power of 2.  */
+  p = memalign (257, 10);
+
+  if (p == NULL)
+    merror ("memalign (257, 10) failed.");
+
+  ptrval = (unsigned long) p;
+
+  if ((ptrval & 0x1ff) != 0)
+    merror ("pointer is not aligned to 0x200");
+
+  free (p);
+
   return errors != 0;
 }
 

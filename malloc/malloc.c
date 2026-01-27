@@ -2975,10 +2975,8 @@ tcache_key_initialize (void)
 static __always_inline size_t
 large_csize2tidx(size_t nb)
 {
-  size_t idx = TCACHE_SMALL_BINS
-	       + __builtin_clz (MAX_TCACHE_SMALL_SIZE)
-	       - __builtin_clz (nb);
-  return idx;
+  size_t idx = stdc_bit_width (nb) - stdc_bit_width (MAX_TCACHE_SMALL_SIZE);
+  return idx + TCACHE_SMALL_BINS;
 }
 
 /* Caller must ensure that we know tc_idx is valid and there's room
@@ -3494,6 +3492,19 @@ libc_hidden_def (__libc_realloc)
 void *
 __libc_memalign (size_t alignment, size_t bytes)
 {
+  /* Round the alignment up to a power of 2.  Reject alignments that overflow
+     when rounded up.  Zero alignment is handled by _mid_memalign.  */
+  if (__glibc_unlikely (!powerof2 (alignment)))
+    {
+      if (alignment > SIZE_MAX / 2 + 1)
+	{
+	  __set_errno (EINVAL);
+	  return NULL;
+	}
+
+      alignment = stdc_bit_ceil (alignment);
+    }
+
   return _mid_memalign (alignment, bytes);
 }
 libc_hidden_def (__libc_memalign)
@@ -3503,11 +3514,9 @@ void *
 weak_function
 aligned_alloc (size_t alignment, size_t bytes)
 {
-/* Similar to memalign, but starting with ISO C17 the standard
-   requires an error for alignments that are not supported by the
-   implementation.  Valid alignments for the current implementation
-   are non-negative powers of two.  */
-  if (!powerof2 (alignment) || alignment == 0)
+/* Starting with ISO C17 the standard requires an error for alignments
+   that are not supported.  Only integral powers of 2 are valid.  */
+  if (!stdc_has_single_bit (alignment))
     {
       __set_errno (EINVAL);
       return NULL;
@@ -3552,28 +3561,6 @@ _mid_memalign (size_t alignment, size_t bytes)
   /* If we need less alignment than we give anyway, just relay to malloc.  */
   if (alignment <= MALLOC_ALIGNMENT)
     return __libc_malloc (bytes);
-
-  /* Otherwise, ensure that it is at least a minimum chunk size */
-  if (alignment < MINSIZE)
-    alignment = MINSIZE;
-
-  /* If the alignment is greater than SIZE_MAX / 2 + 1 it cannot be a
-     power of 2 and will cause overflow in the check below.  */
-  if (alignment > SIZE_MAX / 2 + 1)
-    {
-      __set_errno (EINVAL);
-      return NULL;
-    }
-
-
-  /* Make sure alignment is power of 2.  */
-  if (!powerof2 (alignment))
-    {
-      size_t a = MALLOC_ALIGNMENT * 2;
-      while (a < alignment)
-        a <<= 1;
-      alignment = a;
-    }
 
 #if USE_TCACHE
   void *victim = tcache_get_align (checked_request2size (bytes), alignment);
@@ -5289,25 +5276,18 @@ malloc_printerr_tail (const char *str)
 int
 __posix_memalign (void **memptr, size_t alignment, size_t size)
 {
-  void *mem;
-
   /* Test whether the SIZE argument is valid.  It must be a power of
-     two multiple of sizeof (void *).  */
-  if (alignment % sizeof (void *) != 0
-      || !powerof2 (alignment / sizeof (void *))
-      || alignment == 0)
+     two multiple of sizeof (void *) (which must be either 4 or 8).  */
+  if (alignment < sizeof (void *) || !powerof2 (alignment))
     return EINVAL;
 
+  void *mem = _mid_memalign (alignment, size);
 
-  mem = _mid_memalign (alignment, size);
+  if (mem == NULL)
+    return ENOMEM;
 
-  if (mem != NULL)
-    {
-      *memptr = mem;
-      return 0;
-    }
-
-  return ENOMEM;
+  *memptr = mem;
+  return 0;
 }
 weak_alias (__posix_memalign, posix_memalign)
 #endif
