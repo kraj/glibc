@@ -20,6 +20,7 @@
 #include <support/check.h>
 #include <support/xunistd.h>
 #include <support/namespace.h>
+#include <fcntl.h> /* For AT_ constants.  */
 #include <sys/mount.h>
 
 _Static_assert (sizeof (struct mount_attr) == MOUNT_ATTR_SIZE_VER0,

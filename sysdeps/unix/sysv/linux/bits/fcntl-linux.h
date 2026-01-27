@@ -81,9 +81,7 @@
 #ifndef __O_NOFOLLOW
 # define __O_NOFOLLOW	0400000
 #endif
-#ifndef __O_CLOEXEC
-# define __O_CLOEXEC   02000000
-#endif
+#include <bits/cloexec.h>
 #ifndef __O_DIRECT
 # define __O_DIRECT	 040000
 #endif

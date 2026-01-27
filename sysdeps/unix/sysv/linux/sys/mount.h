@@ -21,7 +21,6 @@
 #ifndef _SYS_MOUNT_H
 #define _SYS_MOUNT_H	1
 
-#include <fcntl.h>
 #include <features.h>
 #include <stdint.h>
 #include <stddef.h>
@@ -266,6 +265,11 @@ enum fsconfig_command
 
 /* open_tree flags.  */
 #define OPEN_TREE_CLONE    1         /* Clone the target tree and attach the clone */
+#ifndef O_CLOEXEC
+# include <bits/cloexec.h>
+# define O_CLOEXEC __O_CLOEXEC
+#endif
+#undef  OPEN_TREE_CLOEXEC
 #define OPEN_TREE_CLOEXEC  O_CLOEXEC /* Close the file on execve() */
 
 

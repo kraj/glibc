@@ -18,6 +18,10 @@
 #include <errno.h>
 #include <fcntl.h>
 
+#ifndef __O_CLOEXEC
+# error __O_CLOEXEC not defined by fcntl.h/cloexec.h
+#endif
+
 /* Perform file control operations on FD.  */
 int
 __fcntl (int fd, int cmd, ...)

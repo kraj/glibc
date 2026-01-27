@@ -129,6 +129,7 @@ CFLAGS-test-errno-linux.c += $(no-fortify-source)
 
 sysdep_headers += \
   bits/a.out.h \
+  bits/cloexec.h \
   bits/epoll.h \
   bits/eventfd.h \
   bits/inotify.h \
