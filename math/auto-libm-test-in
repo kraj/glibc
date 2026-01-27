@@ -7721,6 +7721,7 @@ log2p1 0x1p100
 log2p1 0x1p1000
 log2p1 0x6.a0cf42befce9ed4085ef59254b48p-4
 log2p1 max
+log2p1 0x1.62e42cp-127
 # the following inputs yield large errors on x86_64 for binary32
 log2p1 0x1.a69b4ap-2
 log2p1 -0x1.2516d6p-2
