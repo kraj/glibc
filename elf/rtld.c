@@ -2461,11 +2461,18 @@ process_dl_debug (struct dl_main_state *state, const char *dl_debug)
 		 && dl_debug[len] != ',' && dl_debug[len] != ':')
 	    ++len;
 
+	  bool exclude = *dl_debug == '-';
+	  const char *name = exclude ? dl_debug + 1 : dl_debug;
+	  size_t name_len = exclude ? len - 1 : len;
+
 	  for (cnt = 0; cnt < ndebopts; ++cnt)
-	    if (debopts[cnt].len == len
-		&& memcmp (dl_debug, debopts[cnt].name, len) == 0)
+	    if (debopts[cnt].len == name_len
+		&& memcmp (name, debopts[cnt].name, name_len) == 0)
 	      {
-		GLRO(dl_debug_mask) |= debopts[cnt].mask;
+		if (exclude)
+		  GLRO(dl_debug_mask) &= ~debopts[cnt].mask;
+		else
+		  GLRO(dl_debug_mask) |= debopts[cnt].mask;
 		break;
 	      }
 
@@ -2507,7 +2514,8 @@ Valid options for the LD_DEBUG environment variable are:\n\n");
 
       _dl_printf ("\n\
 To direct the debugging output into a file instead of standard output\n\
-a filename can be specified using the LD_DEBUG_OUTPUT environment variable.\n");
+a filename can be specified using the LD_DEBUG_OUTPUT environment variable.\n\
+Categories can be excluded by prefixing them with a dash (-).\n");
       _exit (0);
     }
 }
