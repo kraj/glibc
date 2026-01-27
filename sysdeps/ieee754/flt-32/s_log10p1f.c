@@ -3,7 +3,7 @@
 Copyright (c) 2022-2023 Alexei Sibidanov.
 
 This file is part of the CORE-MATH project
-project (file src/binary32/log10p1/log10p1f.c revision bc385c2).
+project (file src/binary32/log10p1/log10p1f.c revision eb28456b).
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -48,50 +48,62 @@ as_special (float x)
 float
 __log10p1f (float x)
 {
+  static const struct
+  {
+    float x;
+    float f, df;
+  } tb[] = {
+    {  0x1.34f8p-12, 0x1.0c53cap-13, 0x1p-38},
+    { -0x1.a3c2e6p-31, -0x1.6c999ep-32, 0x1p-57},
+    { -0x1.1d4db2p-9, -0x1.f029c4p-11, 0x1p-36},
+    { -0x1.0dff72p-4, -0x1.e53536p-6, -0x1p-31},
+  };
+
+  // reciprocal of 1+(j+0.5)/64 rounded to 24 bits
   static const double tr[] =
     {
-      0x1p+0,         0x1.f81f82p-1,  0x1.f07c1fp-1,  0x1.e9131acp-1,
-      0x1.e1e1e1ep-1, 0x1.dae6077p-1, 0x1.d41d41dp-1, 0x1.cd85689p-1,
-      0x1.c71c71cp-1, 0x1.c0e0704p-1, 0x1.bacf915p-1, 0x1.b4e81b5p-1,
-      0x1.af286bdp-1, 0x1.a98ef6p-1,  0x1.a41a41ap-1, 0x1.9ec8e95p-1,
-      0x1.999999ap-1, 0x1.948b0fdp-1, 0x1.8f9c19p-1,  0x1.8acb90fp-1,
-      0x1.8618618p-1, 0x1.8181818p-1, 0x1.7d05f41p-1, 0x1.78a4c81p-1,
-      0x1.745d174p-1, 0x1.702e05cp-1, 0x1.6c16c17p-1, 0x1.6816817p-1,
-      0x1.642c859p-1, 0x1.605816p-1,  0x1.5c9882cp-1, 0x1.58ed231p-1,
-      0x1.5555555p-1, 0x1.51d07ebp-1, 0x1.4e5e0a7p-1, 0x1.4afd6ap-1,
-      0x1.47ae148p-1, 0x1.446f865p-1, 0x1.4141414p-1, 0x1.3e22cbdp-1,
-      0x1.3b13b14p-1, 0x1.3813814p-1, 0x1.3521cfbp-1, 0x1.323e34ap-1,
-      0x1.2f684bep-1, 0x1.2c9fb4ep-1, 0x1.29e412ap-1, 0x1.27350b9p-1,
-      0x1.2492492p-1, 0x1.21fb781p-1, 0x1.1f7047ep-1, 0x1.1cf06aep-1,
-      0x1.1a7b961p-1, 0x1.1811812p-1, 0x1.15b1e5fp-1, 0x1.135c811p-1,
-      0x1.1111111p-1, 0x1.0ecf56cp-1, 0x1.0c9715p-1,  0x1.0a6810ap-1,
-      0x1.0842108p-1, 0x1.0624dd3p-1, 0x1.041041p-1,  0x1.0204081p-1,
-      0.5
+      0x1.fc07fp-1,  0x1.f4465ap-1, 0x1.ecc07cp-1, 0x1.e573acp-1,
+      0x1.de5d6ep-1, 0x1.d77b66p-1, 0x1.d0cb58p-1, 0x1.ca4b3p-1,
+      0x1.c3f8fp-1,  0x1.bdd2b8p-1, 0x1.b7d6c4p-1, 0x1.b20364p-1,
+      0x1.ac5702p-1, 0x1.a6d01ap-1, 0x1.a16d4p-1,  0x1.9c2d14p-1,
+      0x1.970e5p-1,  0x1.920fb4p-1, 0x1.8d3018p-1, 0x1.886e6p-1,
+      0x1.83c978p-1, 0x1.7f406p-1,  0x1.7ad22p-1,  0x1.767dcep-1,
+      0x1.724288p-1, 0x1.6e1f76p-1, 0x1.6a13cep-1, 0x1.661ec6p-1,
+      0x1.623fa8p-1, 0x1.5e75bcp-1, 0x1.5ac056p-1, 0x1.571ed4p-1,
+      0x1.539094p-1, 0x1.501502p-1, 0x1.4cab88p-1, 0x1.49539ep-1,
+      0x1.460cbcp-1, 0x1.42d662p-1, 0x1.3fb014p-1, 0x1.3c995ap-1,
+      0x1.3991c2p-1, 0x1.3698ep-1,  0x1.33ae46p-1, 0x1.30d19p-1,
+      0x1.2e025cp-1, 0x1.2b404ap-1, 0x1.288b02p-1, 0x1.25e228p-1,
+      0x1.234568p-1, 0x1.20b47p-1,  0x1.1e2ef4p-1, 0x1.1bb4a4p-1,
+      0x1.194538p-1, 0x1.16e068p-1, 0x1.1485fp-1,  0x1.12358ep-1,
+      0x1.0fef02p-1, 0x1.0db20ap-1, 0x1.0b7e6ep-1, 0x1.0953f4p-1,
+      0x1.07326p-1,  0x1.05198p-1,  0x1.03091cp-1, 0x1.010102p-1
     };
+  // logarithm of the reciprocals biased by 0x1.58ep-43
   static const double tl[] =
     {
-     -0x1.562ec497ef351p-43, 0x1.b9476892ea99cp-8, 0x1.b5e909c959eecp-7,
-      0x1.45f4f59ec84fp-6,   0x1.af5f92cbcf2aap-6, 0x1.0ba01a6069052p-5,
-      0x1.3ed119b99dd41p-5,  0x1.714834298a088p-5, 0x1.a30a9d98309c1p-5,
-      0x1.d41d51266b9d9p-5,  0x1.02428c0f62dfcp-4, 0x1.1a23444eea521p-4,
-      0x1.31b30543f2597p-4,  0x1.48f3ed39bd5e7p-4, 0x1.5fe8049a0bd06p-4,
-      0x1.769140a6a78eap-4,  0x1.8cf1836c96595p-4, 0x1.a30a9d5551a84p-4,
-      0x1.b8de4d1ee5b21p-4,  0x1.ce6e4202c7bc9p-4, 0x1.e3bc1accaa6eap-4,
-      0x1.f8c9683b584b7p-4,  0x1.06cbd68ca86ep-3,  0x1.11142f19de3a2p-3,
-      0x1.1b3e71fa795fp-3,   0x1.254b4d37a3354p-3, 0x1.2f3b6912cab79p-3,
-      0x1.390f6831144f7p-3,  0x1.42c7e7fffb21ap-3, 0x1.4c65808c779aep-3,
-      0x1.55e8c507508c7p-3,  0x1.5f52445deb049p-3, 0x1.68a288c3efe72p-3,
-      0x1.71da17bdef98bp-3,  0x1.7af9736089c4bp-3, 0x1.84011952a11ebp-3,
-      0x1.8cf1837a7d6d1p-3,  0x1.95cb2891e3048p-3, 0x1.9e8e7b0f85651p-3,
-      0x1.a73beaa5d9dfep-3,  0x1.afd3e39454544p-3, 0x1.b856cf060c662p-3,
-      0x1.c0c5134de0c6dp-3,  0x1.c91f1371bb611p-3, 0x1.d1652ffcd2bc5p-3,
-      0x1.d997c6f634ae6p-3,  0x1.e1b733ab8fbadp-3, 0x1.e9c3ceadab4c8p-3,
-      0x1.f1bdeec438f77p-3,  0x1.f9a5e7a5f906fp-3, 0x1.00be05ac02564p-2,
-      0x1.04a054d81990cp-2,  0x1.087a083594e33p-2, 0x1.0c4b457098b4fp-2,
-      0x1.101431aa1f48ap-2,  0x1.13d4f08b98411p-2, 0x1.178da53edaecbp-2,
-      0x1.1b3e71e9f9391p-2,  0x1.1ee777defd526p-2, 0x1.2288d7b48d874p-2,
-      0x1.2622b0f52dad8p-2,  0x1.29b522a4c594cp-2, 0x1.2d404b0e305b9p-2,
-      0x1.30c4478f3f21dp-2,  0x1.34413509f6f4dp-2
+      0x1.bafd550786257p-9, 0x1.49b08209ec64p-7,  0x1.10a82eca6416p-6,
+      0x1.7adc46340fc4p-6,  0x1.e3806e7ccbebp-6,  0x1.255026bdcb233p-5,
+      0x1.5823964d3c8dcp-5, 0x1.8a3fb08692a5fp-5, 0x1.bba9a137364d7p-5,
+      0x1.ec664cb24c458p-5, 0x1.0e3d294d154ccp-4, 0x1.25f5217a7e5dfp-4,
+      0x1.3d5d3200e0e36p-4, 0x1.547774e40ea5ap-4, 0x1.6b45ddb283c9cp-4,
+      0x1.81ca67d4c05e1p-4, 0x1.9806d71561d18p-4, 0x1.adfd09f848345p-4,
+      0x1.c3aea856ca97fp-4, 0x1.d91d540edcaep-4,  0x1.ee4ab8dbebb39p-4,
+      0x1.019c29971c034p-3, 0x1.0bf3d1e104ae2p-3, 0x1.162d08ca9a7bep-3,
+      0x1.204881c31ba38p-3, 0x1.2a46ea803f1cbp-3, 0x1.3428e0134104bp-3,
+      0x1.3def1007f5f74p-3, 0x1.479a066a5fa87p-3, 0x1.512a631ebcdecp-3,
+      0x1.5aa0b67441c74p-3, 0x1.63fd84e6e41dep-3, 0x1.6d41602642abbp-3,
+      0x1.766cc236f8424p-3, 0x1.7f80367f521b3p-3, 0x1.887c2f002ebc7p-3,
+      0x1.916128c710c17p-3, 0x1.9a2f9609731f8p-3, 0x1.a2e7e853a516cp-3,
+      0x1.ab8a901fe9635p-3, 0x1.b417f6bfa9e71p-3, 0x1.bc907da9eace3p-3,
+      0x1.c4f494e895d78p-3, 0x1.cd44987634191p-3, 0x1.d580e68cc0a87p-3,
+      0x1.dda9df79b84d2p-3, 0x1.e5bfd37200ee8p-3, 0x1.edc325e4a0f81p-3,
+      0x1.f5b4297735a7cp-3, 0x1.fd93318156892p-3, 0x1.02b042b675879p-2,
+      0x1.068e3fa975162p-2, 0x1.0a63b3535192bp-2, 0x1.0e30c45ab291fp-2,
+      0x1.11f595eceef01p-2, 0x1.15b24abf1aeb1p-2, 0x1.196704f31e753p-2,
+      0x1.1d13ec95021b6p-2, 0x1.20b91bd192db3p-2, 0x1.2456b26c914d5p-2,
+      0x1.27ecd5ea10d93p-2, 0x1.2b7b9d4731bd4p-2, 0x1.2f032bca9e44bp-2,
+      0x1.32839caee0d8ap-2
     };
   static const union
   {
@@ -99,83 +111,86 @@ __log10p1f (float x)
     uint32_t u;
   } st[] =
   {
-    { 0x0p+0 },        { 0x1.2p+3 },      { 0x1.8cp+6 },
-    { 0x1.f38p+9 },    { 0x1.3878p+13 },  { 0x1.869fp+16 },
-    { 0x1.e847ep+19 }, { 0x1.312cfep+23 }
+    { 0x125p+0 },   { 0x1.2p+3 },      { 0x1.8cp+6 },     { 0} ,
+    { 0x1.f38p+9 }, { 0 },             { 0x1.3878p+13 },  { 0x1.869fp+16 },
+    { 0 },          { 0x1.e847ep+19 }, { 0 },             { 0x1.312cfep+23 },
+    { 0 },          { 0 },             { 0 },             { 0 }
   };
+  static const double b[] =
+    {
+       0x1.bcb7b150bf33dp-2, -0x1.bcb7b14b2164ep-3, 0x1.287de1f406bedp-3,
+      -0x1.bcbfad32135bdp-4
+    };
+  static const double c[] =
+    {
+       0x1.bcb7b1526e50ep-2, -0x1.bcb7b1526e48ep-3,  0x1.287a7636f422fp-3,
+      -0x1.bcb7b15514181p-4,  0x1.63c62778ff0d1p-4, -0x1.287a581961505p-4,
+       0x1.fc3f60b6c20a5p-5, -0x1.bdb55f5990c49p-5,  0x1.8c4ba9c7c0692p-5
+    };
+  const double ln10 = 0x1.34413509f79ffp-2,
+	       ln10h = 0x1.34413509f8p-2,
+	       ln10l = -0x1.80433b83b532ap-44;
   double z = x;
   uint32_t ux = asuint (x);
-  if (__glibc_unlikely (ux >= 0x17fu << 23)) /* x <= -1 */
-    return as_special (x);
-  uint32_t ax = ux & (~0u >> 1);
-  if (__glibc_unlikely (ax == 0))
-    return copysign (0, x);
-  if (__glibc_unlikely (ax >= (0xff << 23))) /* +inf, nan */
-    return as_special (x);
-  int ie = ux;
-  ie >>= 23;
-  unsigned int je = ie - 126;
-  je = (je * 0x9a209a8) >> 29;
-  if (__glibc_unlikely (ux == st[je].u))
-    return je;
-
-  uint64_t tz = asuint64 (z + 1.0);
-  uint64_t m = tz & (~(uint64_t) 0 >> 12);
-  int32_t e = (tz >> 52) - 1023, j = ((m + ((int64_t) 1 << 45)) >> 46);
-  tz = m | ((uint64_t) 0x3ff << 52);
-  double ix = tr[j], l = tl[j];
-  double off = e * 0x1.34413509f79ffp-2 + l;
-  double v = asdouble (tz) * ix - 1;
-
-  static const double h[] =
+  if (__glibc_unlikely (ux >= 0xbf800000u))
+    return as_special (x); // x <= -1, -inf, -nan
+  if (__glibc_unlikely ((int32_t) ux >= 0x7f800000))
+    return as_special (x); // +inf, +nan
+  if (__glibc_unlikely (ux == st[(ux >> 24) & 0xf].u))
     {
-      0x1.bcb7b150bf6d8p-2, -0x1.bcb7b1738c07ep-3,
-      0x1.287de19e795c5p-3, -0x1.bca44edc44bc4p-4
-    };
-  double v2 = v * v;
-  double f = (h[0] + v * h[1]) + v2 * (h[2] + v * h[3]);
-  double r = off + v * f;
-  float ub = r;
-  float lb = r + 0x1.5cp-42;
+      int ie = ux;
+      ie >>= 23;
+      unsigned je = ie - 126;
+      je = (je * 0x9a209a8) >> 29;
+      return je;
+    }
+  uint64_t tz = asuint64 (z + 1.0);
+  uint64_t m = tz & (UINT64_C(~0) >> 12);
+  int32_t e = (tz >> 52) - 1023, j = m >> 46;
+  tz = m | (UINT64_C(0x3ff) << 52);
+  if (__glibc_unlikely (m == 0))
+    {
+      if (__glibc_unlikely (ux == 0 || ux == 0x80000000))
+	return x; // return signed zero
+    }
+  double v = asdouble (tz) * tr[j] - 1, v2 = v * v;
+  double f
+      = (e * ln10 + tl[j]) + v * ((b[0] + v * b[1]) + v2 * (b[2] + v * b[3]));
+  float ub = f, lb = f + 0x1.56ap-42;
   if (__glibc_unlikely (ub != lb))
     {
-      if (__glibc_unlikely (ax < 0x3d32743eu))
-	{ /* 0x1.64e87cp-5f */
-	  if (__glibc_unlikely (ux == 0xa6aba8afu))
-	    return -0x1.2a33bcp-51f + 0x1p-76f;
-	  if (__glibc_unlikely (ux == 0xaf39b9a7u))
-	    return -0x1.42a342p-34f + 0x1p-59f;
-	  if (__glibc_unlikely (ux == 0x399a7c00u))
-	    return 0x1.0c53cap-13f + 0x1p-38f;
-	  z /= 2.0 + z;
-	  double z2 = z * z, z4 = z2 * z2;
-	  static const double c[] =
-	    {
-	      0x1.bcb7b1526e50fp-1, 0x1.287a76370129dp-2,
-	      0x1.63c62378fa3dbp-3, 0x1.fca4139a42374p-4
-	    };
-	  float ret = z * ((c[0] + z2 * c[1]) + z4 * (c[2] + z2 * c[3]));
-	  if (x != 0.0f && ret == 0.0f)
-	    __set_errno (ERANGE);
-	  return ret;
+      for (int i = 0; i < 4; i++)
+	if (__glibc_unlikely (ux == asuint (tb[i].x)))
+	  return tb[i].f + tb[i].df;
+      double lj = tl[j] + 0x1.58ep-43;
+      uint32_t ax = ux & (~0u >> 1);
+      if (ax < 0x3d100000)
+	{ // |x| < 0x1.2p-5
+	  if (__glibc_unlikely (ax < 0x33000000u))
+	    { // |x| < 0x1p-25
+	      static const double c0h = 0x1.bcb7b15p-2,
+				  c0l = 0x1.37287195355bbp-33;
+	      float r = z * c0h + z * (c0l + z * c[1]);
+	      // |x|<=0x1-126*ln(10)
+	      if (__glibc_unlikely (ax <= 0x01135d8du))
+		__set_errno (ERANGE); // underflow
+	      return r;
+	    }
+	  e = 0;
+	  v = x;
+	  v2 = v * v;
+	  lj = 0.0;
 	}
-      if (__glibc_unlikely (ux == 0x7956ba5eu))
-	return 0x1.16bebap+5f + 0x1p-20f;
-      if (__glibc_unlikely (ux == 0xbd86ffb9u))
-	return -0x1.e53536p-6f + 0x1p-31f;
-      static const double c[] =
-	{
-	  0x1.bcb7b1526e50ep-2,  -0x1.bcb7b1526e53dp-3, 0x1.287a7636f3fa2p-3,
-	  -0x1.bcb7b146a14b3p-4,  0x1.63c627d5219cbp-4, -0x1.2880736c8762dp-4,
-	  0x1.fc1ecf913961ap-5
-	};
+      double v4 = v2 * v2;
       f = v
-	  * ((c[0] + v * c[1])
-	     + v2 * ((c[2] + v * c[3]) + v2 * (c[4] + v * c[5] + v2 * c[6])));
-      f += l - tl[0];
-      double el = e * 0x1.34413509f79ffp-2;
-      r = el + f;
-      ub = r;
+	  * (((c[0] + v * c[1]) + v2 * (c[2] + v * c[3]))
+	     + v4
+		   * ((c[4] + v * c[5])
+		      + v2 * ((c[6] + v * c[7]) + v2 * c[8])));
+      f += e * ln10l;
+      f += lj;
+      f += e * ln10h;
+      ub = f;
     }
   return ub;
 }
