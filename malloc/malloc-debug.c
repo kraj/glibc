@@ -269,6 +269,15 @@ _debug_mid_memalign (size_t alignment, size_t bytes, const void *address)
 static void *
 __debug_memalign (size_t alignment, size_t bytes)
 {
+  /* Round the alignment up to a power of 2.  Reject alignments that overflow
+     when rounded up.  Zero alignment is accepted and handled later.  */
+  if (alignment > SIZE_MAX / 2 + 1)
+    {
+      errno = EINVAL;
+      return NULL;
+    }
+
+  alignment = stdc_bit_ceil (alignment);
   return _debug_mid_memalign (alignment, bytes, RETURN_ADDRESS (0));
 }
 strong_alias (__debug_memalign, memalign)
