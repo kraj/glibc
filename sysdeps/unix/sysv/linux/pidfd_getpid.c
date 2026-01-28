@@ -23,8 +23,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sysdep.h>
+#include <sys/ioctl.h>
+#include <sys/pidfd.h>
 #include <unistd.h>
 
+#if !__ASSUME_PIDFD_GET_INFO
 #define FDINFO_TO_FILENAME_PREFIX "/proc/self/fdinfo/"
 
 #define FDINFO_FILENAME_LEN \
@@ -91,15 +94,9 @@ parse_fdinfo (const char *l, void *arg)
   return 1;
 }
 
-pid_t
-pidfd_getpid (int fd)
+static pid_t
+getpid_fdinfo (int fd)
 {
-  if (__glibc_unlikely (fd < 0))
-    {
-      __set_errno (EBADF);
-      return -1;
-    }
-
   char fdinfoname[FDINFO_FILENAME_LEN];
 
   char *p = mempcpy (fdinfoname, FDINFO_TO_FILENAME_PREFIX,
@@ -125,4 +122,35 @@ pidfd_getpid (int fd)
     return INLINE_SYSCALL_ERROR_RETURN_VALUE (ESRCH);
 
   return fdinfo.pid;
+}
+#endif
+
+pid_t
+pidfd_getpid (int fd)
+{
+  struct pidfd_info info = { .mask = PIDFD_INFO_PID };
+
+  if (__glibc_unlikely (fd < 0))
+    {
+      __set_errno (EBADF);
+      return -1;
+    }
+
+  /* New in kernel 6.13 */
+  if (__ioctl (fd, PIDFD_GET_INFO, &info) < 0)
+    {
+#if __ASSUME_PIDFD_GET_INFO
+      /* The procfs implementation returns EBADF when called with a non-pidfd
+         fd, change the errno to keep it consistent across implementations.  */
+      if (errno == ENOTTY)
+        return INLINE_SYSCALL_ERROR_RETURN_VALUE (EBADF);
+#else
+      if (errno == ENOTTY || errno == EINVAL)
+        return getpid_fdinfo (fd);
+#endif
+
+      return INLINE_SYSCALL_ERROR_RETURN_VALUE (errno);
+    }
+
+  return info.pid;
 }

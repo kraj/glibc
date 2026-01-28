@@ -269,4 +269,12 @@
 # define __ASSUME_MSEAL 0
 #endif
 
+/* The PIDFD_GET_INFO ioctl was introduced across all architectures in Linux
+   6.13.  */
+#if __LINUX_KERNEL_VERSION >= 0x060D00
+# define __ASSUME_PIDFD_GET_INFO 1
+#else
+# define __ASSUME_PIDFD_GET_INFO 0
+#endif
+
 #endif /* kernel-features.h */

@@ -100,7 +100,9 @@ do_test (void)
 	  }
 
 	TEST_COMPARE (pidfd_getpid (child1_pidfd), -1);
-	TEST_COMPARE (errno, EREMOTE);
+	/* The kernel PIDFD_GET_INFO used to return ESRCH in this case.  */
+	if (errno != EREMOTE)
+		TEST_COMPARE (errno, ESRCH);
 
 	_exit (EXIT_SUCCESS);
       }
