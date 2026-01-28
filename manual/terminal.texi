@@ -1112,7 +1112,7 @@ The @code{speed_t} type is an unsigned integer data type used to
 represent line speeds.
 
 @strong{Portability note:} In the current version of @theglibc{}, the
-@code{speed_t} type is numerically indentical to the line speed rate.
+@code{speed_t} type is numerically identical to the line speed rate.
 Other libraries and older versions of @theglibc{} may require speeds to
 be indicated by enumerated constants, which may not be numerically
 identical to the requested line speed.  For portability, you must use
@@ -1271,7 +1271,7 @@ These aliases are obsolete.
 value of type @code{speed_t}.  This value may be smaller than the
 underlying C type can store.
 
-For compatiblity with some other platforms the alias @code{__MAX_BAUD}
+For compatibility with some other platforms the alias @code{__MAX_BAUD}
 is defined for this constant.
 @end deftypevr
 
