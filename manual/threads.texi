@@ -999,7 +999,7 @@ appropriate for use in non-realtime threads, and is more
 resource-conserving.
 
 @deftypefun int pthread_mutex_init (pthread_mutex_t *@var{mutex}, const pthread_mutexattr_t *@var{mutexattr})
-Initiailizes a mutex.
+Initializes a mutex.
 @manpagefunctionstub{pthread_mutex_init, 3}
 @end deftypefun
 
@@ -1016,7 +1016,7 @@ until @var{mutex} is unlocked, then attempt to lock it.  Since there
 may be many threads waiting at the same time, the calling thread may
 need to repeat this wait-and-try many times before it successfully
 locks @var{mutex}, at which point the call to
-@code{pthread_mutex_locks} returns succesfully.
+@code{pthread_mutex_locks} returns successfully.
 
 This function may fail with the following:
 
@@ -1091,7 +1091,7 @@ Attempting to unlock a mutex not locked by the calling thread results
 in undefined behavior.
 
 @item PTHREAD_MUTEX_ERRORCHECK
-Attemps to relock a mutex, or unlock a mutex not held, will result in an error.
+Attempts to relock a mutex, or unlock a mutex not held, will result in an error.
 
 @item PTHREAD_MUTEX_RECURSIVE
 Attempts to relock a mutex already held succeed, but require a
@@ -1099,7 +1099,7 @@ matching number of unlocks to release it.  Attempts to unlock a mutex
 not held will result in an error.
 
 @item PTHREAD_MUTEX_DEFAULT
-Attemps to relock a mutex, or unlock a mutex not held, will result in
+Attempts to relock a mutex, or unlock a mutex not held, will result in
 undefined behavior.  This is the default.
 
 @end table
@@ -1124,7 +1124,7 @@ Get the clock associated with @var{th}.
 
 @deftypefun int pthread_once (pthread_once_t *@var{once_control}, void (*@var{init_routine}) (void))
 Calls @var{init_routine} once for each @var{once_control}, which must
-be statically initalized to @code{PTHREAD_ONCE_INIT}.  Subsequent
+be statically initialized to @code{PTHREAD_ONCE_INIT}.  Subsequent
 calls to @code{pthread_once} with the same @var{once_control} do not
 call @var{init_routine}, even in multi-threaded environments.
 @manpagefunctionstub{pthread_once, 3}
