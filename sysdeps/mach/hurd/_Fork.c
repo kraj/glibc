@@ -460,13 +460,27 @@ retry:
 	LOSE;
 
       /* This seems like a convenient juncture to copy the proc server's
-	 idea of what addresses our argv and envp are found at from the
-	 parent into the child.  Since we happen to know that the child
-	 shares our memory image, it is we who should do this copying.  */
+	 idea of what addresses our argv, envp, start, end, entry are found at
+	 from the parent into the child.  Since we happen to know that the
+	 child shares our memory image, it is we who should do this copying. */
       {
 	vm_address_t argv, envp;
 	err = (__USEPORT (PROC, __proc_get_arg_locations (port, &argv, &envp))
 	       ?: __proc_set_arg_locations (newproc, argv, envp));
+	if (err)
+	  LOSE;
+      }
+      {
+	vm_address_t start, end;
+	err = (__USEPORT (PROC, __proc_get_code (port, &start, &end))
+	       ?: __proc_set_code (newproc, start, end));
+	if (err)
+	  LOSE;
+      }
+      {
+	vm_address_t entry;
+	err = (__USEPORT (PROC, __proc_get_entry (port, &entry))
+	       ?: __proc_set_entry (newproc, entry));
 	if (err)
 	  LOSE;
       }
