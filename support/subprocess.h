@@ -52,4 +52,36 @@ int support_process_wait (struct support_subprocess *proc);
    then with a SIGKILL.  Return the status as for waitpid call.  */
 int support_process_terminate (struct support_subprocess *proc);
 
+/* Arguments to pass to posix_spawn and related functions to run a
+   process under the built glibc.  This overrides the dynamic linker,
+   its search path, and other search paths, such as for locales.  */
+struct support_spawn_wrapped
+{
+  const char *path;
+  char *const *argv;
+  char *const *envp;
+};
+
+enum support_spawn_wrap_flags
+  {
+    /* Always wrap the invocation, even if test binaries are linked
+       with overridden the default paths to point into the build tree
+       (--enable-hardcoded-path-in-tests).  Can be used to run
+       non-test binaries.  */
+    support_spawn_wrap_force = 1 << 0,
+  };
+
+/* Wrap the invocation for invoking testing.  PATH is the program
+   path.  If ARGV is null, no arguments are passed.  If ENVP is null,
+   environ is used instead.  The result must not be modified.  It is a
+   deep copy of the inputs.  */
+struct support_spawn_wrapped *support_spawn_wrap (const char *path,
+                                                  char *const argv[],
+                                                  char *const envp[],
+                                                  enum
+                                                  support_spawn_wrap_flags);
+
+/* Deallocate the result of support_spawn_wrap.  */
+void support_spawn_wrapped_free (struct support_spawn_wrapped *);
+
 #endif

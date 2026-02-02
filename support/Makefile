@@ -91,6 +91,7 @@ libsupport-routines = \
   support_shared_allocate \
   support_small_stack_thread_attribute \
   support_socket_so_timestamp_time64 \
+  support_spawn_wrap \
   support_stack_alloc \
   support_stat_nanoseconds \
   support_subprocess \
@@ -259,6 +260,11 @@ else
 CFLAGS-support_paths.c += -DHARDCODED_PATHS_IN_TEST=false
 endif
 
+CFLAGS-support_spawn_wrap.c += \
+  '-DRUN_PROGRAM_ENV=$(patsubst %, ELEMENT ("%"), $(run-program-env))' \
+  '-DRTLD_PREFIX=$(patsubst %, ELEMENT ("%"), $(rtld-prefix))' \
+  # CFLAGS-support_spawn_wrap.c
+
 # Build with exception handling and asynchronous unwind table support.
 CFLAGS-.oS += -fexceptions -fasynchronous-unwind-tables
 
@@ -352,6 +358,7 @@ tests = \
   tst-support_quote_string \
   tst-support_readdir \
   tst-support_record_failure \
+  tst-support_spawn_wrap \
   tst-test_compare \
   tst-test_compare_blob \
   tst-test_compare_string \
