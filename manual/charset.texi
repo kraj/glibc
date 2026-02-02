@@ -1801,6 +1801,9 @@ pointer again is of type @code{char} and the length is measured in
 bytes.  If @var{outbuf} or @code{*@var{outbuf}} is a null pointer, the
 conversion is performed but no output is available.
 
+The input and output buffers may not have any bytes in common.  If they
+overlap, the behavior is undefined.
+
 If @var{inbuf} is a null pointer, the @code{iconv} function performs the
 necessary action to put the state of the conversion into the initial
 state.  This is obviously a no-op for non-stateful encodings, but if the
