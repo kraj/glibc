@@ -90,6 +90,7 @@ struct sigcontext
     int sc_fpexcsr;		/* FPSR including exception bits.  */
 
     struct i386_xfloat_state *xstate;
+    size_t xstate_size;
   };
 
 /* Traditional BSD names for some members.  */
