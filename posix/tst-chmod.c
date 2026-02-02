@@ -26,6 +26,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#include <time.h>
 
 #include <support/xunistd.h>
 
@@ -36,6 +37,21 @@
     result = 1;								      \
     goto fail;								      \
   } while (0)
+
+/* On some emulated targets sleep may result in inconsistent wait
+   times which will lead to the failure of this test.  To account
+   for this we use the CLOCK_PROCESS_CPUTIME_ID clock ID while
+   also consuming CPU time by repeatedly calling clock_gettime. */
+static void
+test_sleep (signed long seconds)
+{
+  struct timespec ts;
+  clock_gettime (CLOCK_PROCESS_CPUTIME_ID, &ts);
+  signed long end = ts.tv_sec + seconds;
+  signed long end_ns = ts.tv_nsec;
+  while (ts.tv_sec < end || (ts.tv_sec == end && ts.tv_nsec < end_ns))
+    clock_gettime (CLOCK_PROCESS_CPUTIME_ID, &ts);
+}
 
 static int
 do_test (int argc, char *argv[])
@@ -108,7 +124,7 @@ do_test (int argc, char *argv[])
     }
 
   /* We have to wait for a second to make sure the ctime changes.  */
-  sleep (1);
+  test_sleep (1);
 
   /* Remove all access rights from the directory.  */
   if (chmod (testdir, 0) != 0)
@@ -236,7 +252,7 @@ do_test (int argc, char *argv[])
   /* We are now in the directory above the one we create the test
      directory in.  */
 
-  sleep (1);
+  test_sleep (1);
   snprintf (buf, buflen, "./%s/../%s/file",
 	    basename (testdir), basename (testdir));
   if (chmod (buf, 0600) != 0)
