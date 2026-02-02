@@ -1687,6 +1687,24 @@ source and destination character set for the conversion, and if the
 implementation has the possibility to perform such a conversion, the
 function returns a handle.
 
+The @var{tocode} argument may optionally be suffixed with
+@code{//TRANSLIT}.  When this suffix is present, transliteration is
+enabled.  With transliteration enabled, characters that cannot be
+represented directly in the destination character set may be approximated
+using one or more similar characters that are available in the
+destination character set.  Characters outside of the destination
+character set and cannot be transliterated are replaced with a question
+mark @code{?}.
+
+The @var{tocode} argument may also be suffixed with @code{//IGNORE}.
+When this suffix is present, characters that cannot be converted are
+silently discarded.
+
+The suffixes may be combined, for example @code{//TRANSLIT,IGNORE}.
+When both suffixes are specified, transliteration is attempted first.
+If a character cannot be transliterated, it is then handled according
+to @code{//IGNORE}.
+
 If the wanted conversion is not available, the @code{iconv_open} function
 returns @code{(iconv_t) -1}.  In this case the global variable
 @code{errno} can have the following values:
