@@ -452,6 +452,7 @@ tests += \
   tst-initorder \
   tst-initorder2 \
   tst-latepthread \
+  tst-ld_profile \
   tst-main1 \
   tst-next-ver \
   tst-nodelete-dlclose \
