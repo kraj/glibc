@@ -147,3 +147,9 @@ void _dl_gcs_enable_failed (int code)
 {
   _dl_fatal_printf ("failed to enable GCS: %d\n", -code);
 }
+
+/* Used to report error when prctl system call to lock GCS fails.  */
+void _dl_gcs_lock_failed (int code)
+{
+  _dl_fatal_printf ("failed to lock GCS: %d\n", -code);
+}

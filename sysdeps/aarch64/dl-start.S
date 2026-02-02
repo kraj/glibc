@@ -35,12 +35,13 @@ ENTRY (_start)
 	/* Use GL(dl_aarch64_gcs) to set the shadow stack status.  */
 	adrp	x16, _rtld_local
 	add	x16, x16, :lo12:_rtld_local
-	ldr	x1, [x16, GL_DL_AARCH64_GCS_OFFSET]
-	cbz	x1, L(skip_gcs_enable)
+	ldr	x22, [x16, GL_DL_AARCH64_GCS_OFFSET]
+	cbz	x22, L(skip_gcs_enable)
 
 	/* Enable GCS before user code runs.  Note that IFUNC resolvers and
 	   LD_AUDIT hooks may run before, but should not create threads.  */
 #define PR_SET_SHADOW_STACK_STATUS  75
+#define PR_LOCK_SHADOW_STACK_STATUS 76
 #define PR_SHADOW_STACK_ENABLE      (1UL << 0)
 	mov	x0, PR_SET_SHADOW_STACK_STATUS
 	mov	x1, PR_SHADOW_STACK_ENABLE
@@ -50,6 +51,19 @@ ENTRY (_start)
 	mov	x8, #SYS_ify(prctl)
 	svc	0x0
 	cbnz	w0, L(failed_gcs_enable)
+	/* Check if we need to lock GCS features.  */
+	/* If the aarch64_gcs tunable is either 0 or 2 do not lock GCS.  */
+	tst	x22, #-3
+	beq	L(skip_gcs_enable)
+	mov	x0, PR_LOCK_SHADOW_STACK_STATUS
+	/* Lock everything including future operations.  */
+	mov	x1, ~0
+	mov	x2, 0
+	mov	x3, 0
+	mov	x4, 0
+	mov	x8, #SYS_ify(prctl)
+	svc	0x0
+	cbnz	w0, L(failed_gcs_lock)
 L(skip_gcs_enable):
 
 .globl _dl_start_user
@@ -74,5 +88,8 @@ _dl_start_user:
 
 L(failed_gcs_enable):
 	b	_dl_gcs_enable_failed
+
+L(failed_gcs_lock):
+	b	_dl_gcs_lock_failed
 
 END (_start)

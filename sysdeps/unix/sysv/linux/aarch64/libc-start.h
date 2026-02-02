@@ -25,7 +25,15 @@
 
 # ifndef PR_SET_SHADOW_STACK_STATUS
 #  define PR_SET_SHADOW_STACK_STATUS	75
+#  define PR_LOCK_SHADOW_STACK_STATUS	76
 #  define PR_SHADOW_STACK_ENABLE	(1UL << 0)
+# endif
+
+# ifndef GCS_POLICY_DISABLED
+/* GCS is disabled.  */
+#  define GCS_POLICY_DISABLED 0
+/* Optionally enable GCS if all startup dependencies are marked.  */
+#  define GCS_POLICY_OPTIONAL 2
 # endif
 
 /* Must be on a top-level stack frame that does not return.  */
@@ -46,12 +54,23 @@ aarch64_libc_setup_tls (void)
 
   _rtld_main_check (main_map, _dl_argv[0]);
 
-  if (GL(dl_aarch64_gcs) != 0)
+  uint64_t gcs = GL (dl_aarch64_gcs);
+  if (gcs != GCS_POLICY_DISABLED)
     {
-      int ret = INLINE_SYSCALL_CALL (prctl, PR_SET_SHADOW_STACK_STATUS,
-				     PR_SHADOW_STACK_ENABLE, 0, 0, 0);
-      if (ret)
-        _dl_fatal_printf ("failed to enable GCS: %d\n", -ret);
+      int ret;
+      ret = INLINE_SYSCALL_CALL (prctl, PR_SET_SHADOW_STACK_STATUS,
+				 PR_SHADOW_STACK_ENABLE, 0, 0, 0);
+      if (ret != 0)
+	_dl_fatal_printf ("failed to enable GCS: %d\n", -ret);
+      /* Do not lock GCS features if policy is OPTIONAL.  */
+      if (gcs != GCS_POLICY_OPTIONAL)
+	{
+	  /* Lock all bits, including future bits.  */
+	  ret = INLINE_SYSCALL_CALL (prctl, PR_LOCK_SHADOW_STACK_STATUS,
+				     ~0, 0, 0, 0);
+	  if (ret != 0)
+	    _dl_fatal_printf ("failed to lock GCS: %d\n", -ret);
+	}
     }
 }
 
