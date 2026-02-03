@@ -11,6 +11,8 @@ The following bugs are resolved with this release:
 
  [33623] [ldbl-128ibm] roundl, ceill, truncl, floorl bad sign of zero
    results
+ [33848] build: Build fails at openat2.h, redefinition of 'struct
+    open_how'
 
 Version 2.43
 
