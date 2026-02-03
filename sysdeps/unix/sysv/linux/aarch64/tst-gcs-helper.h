@@ -26,7 +26,13 @@
 #include <stdio.h>
 #include <sys/auxv.h>
 
-static bool __check_gcs_status (void)
+#ifndef PR_SET_SHADOW_STACK_STATUS
+# define PR_GET_SHADOW_STACK_STATUS 74
+# define PR_SET_SHADOW_STACK_STATUS 75
+#endif
+
+static bool
+__check_gcs_status (void)
 {
   register unsigned long x16 asm ("x16");
   asm volatile (

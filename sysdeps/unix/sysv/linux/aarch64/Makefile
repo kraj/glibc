@@ -32,10 +32,14 @@ gcs-tests-dynamic = \
   tst-gcs-dlopen-override \
   tst-gcs-enforced \
   tst-gcs-enforced-abort \
+  tst-gcs-execv \
+  tst-gcs-fork \
   tst-gcs-ld-debug-both \
   tst-gcs-ld-debug-dlopen \
   tst-gcs-ld-debug-exe \
   tst-gcs-ld-debug-shared \
+  tst-gcs-lock \
+  tst-gcs-lock-ptrace \
   tst-gcs-noreturn \
   tst-gcs-optional-off \
   tst-gcs-optional-on \
@@ -48,15 +52,18 @@ gcs-tests-dynamic = \
   tst-gcs-shared-enforced-abort \
   tst-gcs-shared-optional \
   tst-gcs-shared-override \
+  tst-gcs-unlock \
   # gcs-tests-dynamic
 
 gcs-tests-static = \
   tst-gcs-disabled-static \
   tst-gcs-enforced-static \
   tst-gcs-enforced-static-abort \
+  tst-gcs-lock-static \
   tst-gcs-optional-static-off \
   tst-gcs-optional-static-on \
   tst-gcs-override-static \
+  tst-gcs-unlock-static \
   # gcs-tests-static
 
 tests += \
@@ -105,6 +112,24 @@ tst-gcs-enforced-static-abort-ENV = GLIBC_TUNABLES=glibc.cpu.aarch64_gcs=1
 tst-gcs-optional-static-on-ENV = GLIBC_TUNABLES=glibc.cpu.aarch64_gcs=2
 tst-gcs-optional-static-off-ENV = GLIBC_TUNABLES=glibc.cpu.aarch64_gcs=2
 tst-gcs-override-static-ENV = GLIBC_TUNABLES=glibc.cpu.aarch64_gcs=3
+
+LDFLAGS-tst-gcs-execv += -Wl,-z,gcs=always
+tst-gcs-execv-ENV = GLIBC_TUNABLES=glibc.cpu.aarch64_gcs=1
+tst-gcs-execv-ARGS = -- $(host-test-program-cmd)
+LDFLAGS-tst-gcs-fork += -Wl,-z,gcs=always
+tst-gcs-fork-ENV = GLIBC_TUNABLES=glibc.cpu.aarch64_gcs=2
+
+LDFLAGS-tst-gcs-lock += -Wl,-z,gcs=always
+tst-gcs-lock-ENV = GLIBC_TUNABLES=glibc.cpu.aarch64_gcs=1
+LDFLAGS-tst-gcs-lock-ptrace += -Wl,-z,gcs=always
+tst-gcs-lock-ptrace-ENV = GLIBC_TUNABLES=glibc.cpu.aarch64_gcs=1
+tst-gcs-lock-ptrace-ARGS = -- $(host-test-program-cmd)
+LDFLAGS-tst-gcs-lock-static += -Wl,-z,gcs=always
+tst-gcs-lock-static-ENV = GLIBC_TUNABLES=glibc.cpu.aarch64_gcs=1
+LDFLAGS-tst-gcs-unlock += -Wl,-z,gcs=always
+tst-gcs-unlock-ENV = GLIBC_TUNABLES=glibc.cpu.aarch64_gcs=2
+LDFLAGS-tst-gcs-unlock-static += -Wl,-z,gcs=always
+tst-gcs-unlock-static-ENV = GLIBC_TUNABLES=glibc.cpu.aarch64_gcs=2
 
 # force one of the dependencies to be unmarked
 LDFLAGS-tst-gcs-mod2.so += -Wl,-z,gcs=never
