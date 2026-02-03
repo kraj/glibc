@@ -17,7 +17,6 @@
    <https://www.gnu.org/licenses/>.  */
 
 #include <fcntl.h>
-#include <bits/openat2.h>
 #include <sysdep-cancel.h>
 
 int
