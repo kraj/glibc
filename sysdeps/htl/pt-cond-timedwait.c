@@ -16,6 +16,7 @@
    License along with the GNU C Library;  if not, see
    <https://www.gnu.org/licenses/>.  */
 
+#include <hurd/signal.h>
 #include <pthread.h>
 #include <shlib-compat.h>
 #include <pt-internal.h>
@@ -117,6 +118,7 @@ __pthread_cond_timedwait_internal (pthread_cond_t *cond,
 
      This function contains inline implementations of pthread_testcancel and
      pthread_setcanceltype to reduce locking overhead.  */
+  HURD_CRITICAL_BEGIN;
   __pthread_mutex_lock (&self->cancel_lock);
   cancelled = (self->cancel_state == PTHREAD_CANCEL_ENABLE)
       && self->cancel_pending;
@@ -124,6 +126,7 @@ __pthread_cond_timedwait_internal (pthread_cond_t *cond,
   if (cancelled)
     {
       __pthread_mutex_unlock (&self->cancel_lock);
+      HURD_CRITICAL_UNLOCK;
       __pthread_exit (PTHREAD_CANCELED);
     }
 
@@ -145,6 +148,7 @@ __pthread_cond_timedwait_internal (pthread_cond_t *cond,
   __pthread_spin_unlock (&cond->__lock);
 
   __pthread_mutex_unlock (&self->cancel_lock);
+  HURD_CRITICAL_END;
 
   /* Increase the waiter reference count.  Relaxed MO is sufficient because
      we only need to synchronize when decrementing the reference count.

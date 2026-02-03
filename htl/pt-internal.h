@@ -292,7 +292,7 @@ libc_hidden_proto (__pthread_wakeup)
 
 /* Perform a cancelation.  The CANCEL_LOCK member of the given thread must
    be locked before calling this function, which must unlock it.  */
-extern int __pthread_do_cancel (struct __pthread *thread);
+extern int __pthread_do_cancel (struct __pthread *thread, void *hurd_critical);
 
 
 /* Initialize the thread specific data structures.  THREAD must be the

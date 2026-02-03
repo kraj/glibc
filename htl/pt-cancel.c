@@ -16,6 +16,7 @@
    License along with the GNU C Library;  if not, see
    <https://www.gnu.org/licenses/>.  */
 
+#include <hurd/signal.h>
 #include <pthread.h>
 
 #include <pt-internal.h>
@@ -27,15 +28,22 @@ __pthread_cancel (pthread_t t)
 {
   int err = 0;
   struct __pthread *p;
+  struct __pthread *self = _pthread_self ();
+  void *hurd_critical = NULL;
 
   p = __pthread_getid (t);
   if (p == NULL)
     return ESRCH;
 
+  if (p == self)
+    hurd_critical = _hurd_critical_section_lock ();
+
   __pthread_mutex_lock (&p->cancel_lock);
   if (p->cancel_pending)
     {
       __pthread_mutex_unlock (&p->cancel_lock);
+      if (p == self)
+	_hurd_critical_section_unlock (hurd_critical);
       return 0;
     }
 
@@ -44,12 +52,14 @@ __pthread_cancel (pthread_t t)
   if (p->cancel_state != PTHREAD_CANCEL_ENABLE)
     {
       __pthread_mutex_unlock (&p->cancel_lock);
+      if (p == self)
+	_hurd_critical_section_unlock (hurd_critical);
       return 0;
     }
 
   if (p->cancel_type == PTHREAD_CANCEL_ASYNCHRONOUS)
     /* CANCEL_LOCK is unlocked by this call.  */
-    err = __pthread_do_cancel (p);
+    err = __pthread_do_cancel (p, hurd_critical);
   else
     {
       if (p->cancel_hook != NULL)
@@ -59,6 +69,8 @@ __pthread_cancel (pthread_t t)
 
       __pthread_mutex_unlock (&p->cancel_lock);
     }
+  if (p == self)
+    _hurd_critical_section_unlock (hurd_critical);
 
   return err;
 }

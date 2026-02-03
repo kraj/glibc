@@ -16,6 +16,7 @@
    License along with the GNU C Library;  if not, see
    <https://www.gnu.org/licenses/>.  */
 
+#include <hurd/signal.h>
 #include <pthread.h>
 
 #include <pt-internal.h>
@@ -28,9 +29,11 @@ __pthread_testcancel (void)
   struct __pthread *p = _pthread_self ();
   int cancelled;
 
+  HURD_CRITICAL_BEGIN;
   __pthread_mutex_lock (&p->cancel_lock);
   cancelled = (p->cancel_state == PTHREAD_CANCEL_ENABLE) && p->cancel_pending;
   __pthread_mutex_unlock (&p->cancel_lock);
+  HURD_CRITICAL_END;
 
   if (cancelled)
     __pthread_exit (PTHREAD_CANCELED);

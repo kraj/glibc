@@ -29,8 +29,9 @@ call_exit (void)
 }
 
 int
-__pthread_do_cancel (struct __pthread *p)
+__pthread_do_cancel (struct __pthread *p, void *hurd_critical)
 {
+  struct __pthread *self = _pthread_self ();
   mach_port_t ktid;
   int me;
 
@@ -38,6 +39,8 @@ __pthread_do_cancel (struct __pthread *p)
   assert (p->cancel_state == PTHREAD_CANCEL_ENABLE);
 
   __pthread_mutex_unlock (&p->cancel_lock);
+  if (p == self)
+    _hurd_critical_section_unlock (hurd_critical);
 
   ktid = __mach_thread_self ();
   me = p->kernel_thread == ktid;

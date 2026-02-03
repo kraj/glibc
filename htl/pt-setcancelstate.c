@@ -16,6 +16,7 @@
    License along with the GNU C Library;  if not, see
    <https://www.gnu.org/licenses/>.  */
 
+#include <hurd/signal.h>
 #include <pthread.h>
 #include <shlib-compat.h>
 #include <pt-internal.h>
@@ -35,6 +36,7 @@ __pthread_setcancelstate (int state, int *oldstate)
       break;
     }
 
+  HURD_CRITICAL_BEGIN;
   __pthread_mutex_lock (&p->cancel_lock);
   if (oldstate != NULL)
     *oldstate = p->cancel_state;
@@ -44,6 +46,7 @@ __pthread_setcancelstate (int state, int *oldstate)
     /* Do not achieve cancel when called again, notably from __pthread_exit itself.  */
     p->cancel_pending = 2;
   __pthread_mutex_unlock (&p->cancel_lock);
+  HURD_CRITICAL_END;
 
   if (cancelled)
     __pthread_exit (PTHREAD_CANCELED);
