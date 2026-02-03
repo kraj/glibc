@@ -34,6 +34,7 @@ extern __typeof (__redirect_memcpy) __memcpy_a64fx attribute_hidden;
 extern __typeof (__redirect_memcpy) __memcpy_sve attribute_hidden;
 extern __typeof (__redirect_memcpy) __memcpy_mops attribute_hidden;
 extern __typeof (__redirect_memcpy) __memcpy_oryon1 attribute_hidden;
+extern __typeof (__redirect_memcpy) __memcpy_kunpeng950 attribute_hidden;
 
 static inline __typeof (__redirect_memcpy) *
 select_memcpy_ifunc (void)
@@ -45,6 +46,9 @@ select_memcpy_ifunc (void)
 
   if (sve)
     {
+      if (IS_KUNPENG950 (midr))
+	return __memcpy_kunpeng950;
+
       if (IS_A64FX (midr))
 	return __memcpy_a64fx;
       return prefer_sve_ifuncs ? __memcpy_sve : __memcpy_generic;

@@ -46,6 +46,9 @@
 #define IS_KUNPENG920(midr) (MIDR_IMPLEMENTOR(midr) == 'H'			   \
                         && MIDR_PARTNUM(midr) == 0xd01)
 
+#define IS_KUNPENG950(midr) (MIDR_IMPLEMENTOR(midr) == 'H'			   \
+                        && MIDR_PARTNUM(midr) == 0xd06)
+
 #define IS_A64FX(midr) (MIDR_IMPLEMENTOR(midr) == 'F'			      \
 			&& MIDR_PARTNUM(midr) == 0x001)
 

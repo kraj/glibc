@@ -4,6 +4,7 @@ sysdep_routines += \
   memchr_nosimd \
   memcpy_a64fx \
   memcpy_generic \
+  memcpy_kunpeng950 \
   memcpy_mops \
   memcpy_oryon1 \
   memcpy_sve \

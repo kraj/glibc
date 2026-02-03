@@ -38,6 +38,7 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 	      IFUNC_IMPL_ADD (array, i, memcpy, 1, __memcpy_oryon1)
 	      IFUNC_IMPL_ADD (array, i, memcpy, sve, __memcpy_a64fx)
 	      IFUNC_IMPL_ADD (array, i, memcpy, sve, __memcpy_sve)
+	      IFUNC_IMPL_ADD (array, i, memcpy, sve, __memcpy_kunpeng950)
 	      IFUNC_IMPL_ADD (array, i, memcpy, mops, __memcpy_mops)
 	      IFUNC_IMPL_ADD (array, i, memcpy, 1, __memcpy_generic))
   IFUNC_IMPL (i, name, memmove,

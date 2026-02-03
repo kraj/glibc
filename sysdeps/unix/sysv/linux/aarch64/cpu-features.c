@@ -50,6 +50,7 @@ static const struct cpu_list cpu_list[] =
   CPU_LIST_ENTRY ("ares",           0x411FD0C0),
   CPU_LIST_ENTRY ("emag",           0x503F0001),
   CPU_LIST_ENTRY ("kunpeng920",     0x481FD010),
+  CPU_LIST_ENTRY ("kunpeng950",     0x480FD060),
   CPU_LIST_ENTRY ("a64fx",          0x460F0010),
   CPU_LIST_ENTRY ("generic",        0x0),
 };
