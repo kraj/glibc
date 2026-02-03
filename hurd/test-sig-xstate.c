@@ -43,6 +43,7 @@
 
 static volatile atomic_bool startflag = ATOMIC_VAR_INIT (false);
 static volatile atomic_bool loopflag = ATOMIC_VAR_INIT (true);
+static volatile bool doublesig = false;
 
 void handler (int signum, siginfo_t *info, void *context)
 {
@@ -53,7 +54,13 @@ void handler (int signum, siginfo_t *info, void *context)
   SET_MMXSTATE (mmxbuf3);
   SET_XSTATE (xbuf3);
   printf ("signal %d setting a different CPU state\n", signum);
-  atomic_store_explicit (&loopflag, false, memory_order_release);
+  if (doublesig)
+    {
+      doublesig = false;
+      TEST_COMPARE (kill (getpid (), SIGUSR1), 0);
+    }
+  else
+    atomic_store_explicit (&loopflag, false, memory_order_release);
 }
 
 /* Helper thread to send a signal to the main thread  */
@@ -101,6 +108,28 @@ static int do_test (void)
   TEST_COMPARE_BLOB (xbuf1, sizeof (xbuf1), xbuf2, sizeof (xbuf2));
 
   xpthread_join (thsender);
+
+  /* Now retry with double signalling.  */
+  doublesig = true;
+  atomic_store_explicit (&startflag, false, memory_order_relaxed);
+  atomic_store_explicit (&loopflag, true, memory_order_relaxed);
+
+  thsender = xpthread_create (NULL, signal_sender, NULL);
+
+  SET_MMXSTATE (mmxbuf1);
+  SET_XSTATE (xbuf1);
+
+  atomic_store_explicit (&startflag, true, memory_order_release);
+  while (atomic_load_explicit (&loopflag, memory_order_acquire))
+    ;
+
+  GET_MMXSTATE (mmxbuf2);
+  GET_XSTATE (xbuf2);
+  TEST_COMPARE_BLOB (mmxbuf1, sizeof (mmxbuf1), mmxbuf2, sizeof (mmxbuf2));
+  TEST_COMPARE_BLOB (xbuf1, sizeof (xbuf1), xbuf2, sizeof (xbuf2));
+
+  xpthread_join (thsender);
+
   return EXIT_SUCCESS;
 }
 
