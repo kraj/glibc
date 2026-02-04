@@ -585,35 +585,192 @@ handle_hygon (int name)
   unsigned int ebx;
   unsigned int ecx;
   unsigned int edx;
-  unsigned int count = 0x1;
+  unsigned int max_cpuid = 0;
 
-  if (name >= _SC_LEVEL3_CACHE_SIZE)
-    count = 0x3;
-  else if (name >= _SC_LEVEL2_CACHE_SIZE)
-    count = 0x2;
-  else if (name >= _SC_LEVEL1_DCACHE_SIZE)
-    count = 0x0;
+  /* No level 4 cache (yet).  */
+  if (name > _SC_LEVEL3_CACHE_LINESIZE)
+    return 0;
 
-  /* Use __cpuid__ '0x8000_001D' to compute cache details.  */
-  __cpuid_count (0x8000001D, count, eax, ebx, ecx, edx);
+  __cpuid (0x80000000, max_cpuid, ebx, ecx, edx);
+
+  if (max_cpuid >= 0x8000001D)
+    /* Use __cpuid__ '0x8000_001D' to compute cache details.  */
+    {
+      unsigned int count = 0x1;
+
+      if (name >= _SC_LEVEL3_CACHE_SIZE)
+        count = 0x3;
+      else if (name >= _SC_LEVEL2_CACHE_SIZE)
+        count = 0x2;
+      else if (name >= _SC_LEVEL1_DCACHE_SIZE)
+        count = 0x0;
+
+      __cpuid_count (0x8000001D, count, eax, ebx, ecx, edx);
+
+      if (ecx != 0)
+        {
+          switch (name)
+            {
+            case _SC_LEVEL1_ICACHE_ASSOC:
+            case _SC_LEVEL1_DCACHE_ASSOC:
+            case _SC_LEVEL2_CACHE_ASSOC:
+            case _SC_LEVEL3_CACHE_ASSOC:
+              return ((ebx >> 22) & 0x3ff) + 1;
+            case _SC_LEVEL1_ICACHE_LINESIZE:
+            case _SC_LEVEL1_DCACHE_LINESIZE:
+            case _SC_LEVEL2_CACHE_LINESIZE:
+            case _SC_LEVEL3_CACHE_LINESIZE:
+              return (ebx & 0xfff) + 1;
+            case _SC_LEVEL1_ICACHE_SIZE:
+            case _SC_LEVEL1_DCACHE_SIZE:
+            case _SC_LEVEL2_CACHE_SIZE:
+            case _SC_LEVEL3_CACHE_SIZE:
+              return (((ebx >> 22) & 0x3ff) + 1) * ((ebx & 0xfff) + 1) * (ecx + 1);
+            default:
+              __builtin_unreachable ();
+            }
+          return -1;
+       }
+    }
+
+  /* Legacy cache computation for some hypervisors that
+     accidentally configure __cpuid__ '0x8000_001D' to Zero.  */
+
+  unsigned int fn = 0x80000005 + (name >= _SC_LEVEL2_CACHE_SIZE);
+
+  if (max_cpuid < fn)
+    return 0;
+
+  __cpuid (fn, eax, ebx, ecx, edx);
+
+  if (name < _SC_LEVEL1_DCACHE_SIZE)
+    {
+      name += _SC_LEVEL1_DCACHE_SIZE - _SC_LEVEL1_ICACHE_SIZE;
+      ecx = edx;
+    }
 
   switch (name)
     {
-    case _SC_LEVEL1_ICACHE_ASSOC:
-    case _SC_LEVEL1_DCACHE_ASSOC:
-    case _SC_LEVEL2_CACHE_ASSOC:
+      case _SC_LEVEL1_DCACHE_SIZE:
+        return (ecx >> 14) & 0x3fc00;
+
+      case _SC_LEVEL1_DCACHE_ASSOC:
+        ecx >>= 16;
+        if ((ecx & 0xff) == 0xff)
+        {
+          /* Fully associative.  */
+          return (ecx << 2) & 0x3fc00;
+        }
+        return ecx & 0xff;
+
+      case _SC_LEVEL1_DCACHE_LINESIZE:
+        return ecx & 0xff;
+
+      case _SC_LEVEL2_CACHE_SIZE:
+        return (ecx & 0xf000) == 0 ? 0 : (ecx >> 6) & 0x3fffc00;
+
+      case _SC_LEVEL2_CACHE_ASSOC:
+        switch ((ecx >> 12) & 0xf)
+          {
+            case 0:
+            case 1:
+            case 2:
+            case 4:
+              return (ecx >> 12) & 0xf;
+            case 6:
+              return 8;
+            case 8:
+              return 16;
+            case 10:
+              return 32;
+            case 11:
+              return 48;
+            case 12:
+              return 64;
+            case 13:
+              return 96;
+            case 14:
+              return 128;
+            case 15:
+              return ((ecx >> 6) & 0x3fffc00) / (ecx & 0xff);
+            default:
+              return 0;
+          }
+
+      case _SC_LEVEL2_CACHE_LINESIZE:
+        return (ecx & 0xf000) == 0 ? 0 : ecx & 0xff;
+
+      case _SC_LEVEL3_CACHE_SIZE:
+        {
+        long int total_l3_cache = 0, l3_cache_per_thread = 0;
+        unsigned int threads = 0;
+
+        if ((edx & 0xf000) == 0)
+          return 0;
+
+        total_l3_cache = (edx & 0x3ffc0000) << 1;
+
+        /* Figure out the number of logical threads that share L3.  */
+        if (max_cpuid >= 0x80000008)
+          {
+            /* Get width of APIC ID.  */
+            __cpuid (0x80000008, eax, ebx, ecx, edx);
+            threads = (ecx & 0xff) + 1;
+          }
+
+        if (threads == 0)
+          {
+            /* If APIC ID width is not available, use logical
+            processor count.  */
+            __cpuid (0x00000001, eax, ebx, ecx, edx);
+            if ((edx & (1 << 28)) != 0)
+              threads = (ebx >> 16) & 0xff;
+          }
+
+        /* Cap usage of highest cache level to the number of
+           supported threads.  */
+        if (threads > 0)
+          l3_cache_per_thread = total_l3_cache/threads;
+
+        /* Get shared cache per ccx.  */
+            /* Get number of threads share the L3 cache in CCX.  */
+            __cpuid_count (0x8000001D, 0x3, eax, ebx, ecx, edx);
+            unsigned int threads_per_ccx = ((eax >> 14) & 0xfff) + 1;
+            long int l3_cache_per_ccx = l3_cache_per_thread * threads_per_ccx;
+            return l3_cache_per_ccx;
+      }
+
     case _SC_LEVEL3_CACHE_ASSOC:
-      return ((ebx >> 22) & 0x3ff) + 1;
-    case _SC_LEVEL1_ICACHE_LINESIZE:
-    case _SC_LEVEL1_DCACHE_LINESIZE:
-    case _SC_LEVEL2_CACHE_LINESIZE:
+      switch ((edx >> 12) & 0xf)
+      {
+        case 0:
+        case 1:
+        case 2:
+        case 4:
+          return (edx >> 12) & 0xf;
+        case 6:
+          return 8;
+        case 8:
+          return 16;
+        case 10:
+          return 32;
+        case 11:
+          return 48;
+        case 12:
+          return 64;
+        case 13:
+          return 96;
+        case 14:
+          return 128;
+        case 15:
+          return ((edx & 0x3ffc0000) << 1) / (edx & 0xff);
+        default:
+          return 0;
+      }
+
     case _SC_LEVEL3_CACHE_LINESIZE:
-      return (ebx & 0xfff) + 1;
-    case _SC_LEVEL1_ICACHE_SIZE:
-    case _SC_LEVEL1_DCACHE_SIZE:
-    case _SC_LEVEL2_CACHE_SIZE:
-    case _SC_LEVEL3_CACHE_SIZE:
-      return (((ebx >> 22) & 0x3ff) + 1) * ((ebx & 0xfff) + 1) * (ecx + 1);
+      return (edx & 0xf000) == 0 ? 0 : edx & 0xff;
+
     default:
       __builtin_unreachable ();
     }
