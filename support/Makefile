@@ -309,6 +309,12 @@ endif
 ifeq (yes,$(have-selinux))
 LDLIBS-$(LINKS_DSO_PROGRAM) += -lselinux
 endif
+ifeq (yes,$(have-libaudit))
+LDLIBS-$(LINKS_DSO_PROGRAM) += -laudit
+endif
+ifeq (yes,$(have-libcap))
+LDLIBS-$(LINKS_DSO_PROGRAM) += -lcap
+endif
 
 
 LDLIBS-test-container = $(libsupport)
