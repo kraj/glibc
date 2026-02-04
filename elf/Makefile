@@ -441,7 +441,6 @@ tests += \
   tst-glibc-hwcaps-prepend \
   tst-global1 \
   tst-global2 \
-  tst-gnu2-tls2 \
   tst-hash-collision1 \
   tst-hash-collision1-gnu \
   tst-hash-collision1-sysv \
@@ -950,9 +949,6 @@ modules-names += \
   tst-filterobj-flt \
   tst-finilazyfailmod \
   tst-globalmod2 \
-  tst-gnu2-tls2mod0 \
-  tst-gnu2-tls2mod1 \
-  tst-gnu2-tls2mod2 \
   tst-hash-collision1-mod \
   tst-hash-collision1-mod-gnu \
   tst-hash-collision1-mod-sysv \
@@ -1143,8 +1139,16 @@ modules-names-tests = $(filter-out ifuncmod% tst-tlsmod% \
 extra-test-objs += tst-auditmod17.os
 
 ifneq (no,$(have-test-mtls-descriptor))
-tests += tst-gnu2-tls1
-modules-names += tst-gnu2-tls1mod
+tests += \
+  tst-gnu2-tls1 \
+  tst-gnu2-tls2 \
+  # tests
+modules-names += \
+  tst-gnu2-tls1mod \
+  tst-gnu2-tls2mod0 \
+  tst-gnu2-tls2mod1 \
+  tst-gnu2-tls2mod2 \
+  # modules-names
 $(objpfx)tst-gnu2-tls1: $(objpfx)tst-gnu2-tls1mod.so
 tst-gnu2-tls1mod.so-no-z-defs = yes
 CFLAGS-tst-gnu2-tls1mod.c += -mtls-dialect=$(have-test-mtls-descriptor)
