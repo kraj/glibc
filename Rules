@@ -372,7 +372,7 @@ $(1)-mcheck-ENV = LD_PRELOAD=$(common-objpfx)/malloc/libc_malloc_debug.so
 endef
 $(foreach t,$(tests-mcheck),$(eval $(call mcheck-ENVS,$(t))))
 
-ifneq "$(strip $(tests) $(tests-internal) $(xtests) $(test-srcs))" ""
+ifneq "$(strip $(tests) $(tests-container) $(tests-internal) $(xtests) $(test-srcs))" ""
 # These are the implicit rules for making test outputs
 # from the test programs and whatever input files are present.
 
