@@ -27,11 +27,15 @@ tests += \
   tst-cpu-features-supports-static \
   tst-get-cpu-features \
   tst-get-cpu-features-static \
+  tst-hwcap-tunables \
+# tests
+ifneq (no,$(have-test-mtls-descriptor))
+tests += \
   tst-gnu2-tls2-x86-noxsave \
   tst-gnu2-tls2-x86-noxsavec \
   tst-gnu2-tls2-x86-noxsavexsavec \
-  tst-hwcap-tunables \
 # tests
+endif
 tests-static += \
   tst-cpu-features-cpuinfo-static \
   tst-cpu-features-supports-static \
