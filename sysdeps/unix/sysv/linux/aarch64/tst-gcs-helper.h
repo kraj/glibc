@@ -26,7 +26,8 @@
 #include <stdio.h>
 #include <sys/auxv.h>
 
-static bool __check_gcs_status (void)
+static bool
+__check_gcs_status (void)
 {
   register unsigned long x16 asm ("x16");
   asm volatile (

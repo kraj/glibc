@@ -16,10 +16,7 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#include <stdio.h>
 #include <sys/auxv.h>
-#include <sys/signal.h>
-
 #include <support/check.h>
 #include <support/test-driver.h>
 

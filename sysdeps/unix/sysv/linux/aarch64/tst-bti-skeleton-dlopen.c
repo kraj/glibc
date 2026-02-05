@@ -33,9 +33,7 @@ do_test (void)
 {
   unsigned long hwcap2 = getauxval (AT_HWCAP2);
   if ((hwcap2 & HWCAP2_BTI) == 0)
-    {
-      FAIL_UNSUPPORTED ("BTI is not supported by this system");
-    }
+    FAIL_UNSUPPORTED ("BTI is not supported by this system");
 
   void *h = dlopen (TEST_BTI_DLOPEN_MODULE, RTLD_NOW);
   const char *err = dlerror ();

@@ -1,5 +1,5 @@
 /* Check if the audit modules without GCS marking is loaded when GCS is
-   overrided.  */
+   overridden.  */
 
 #define AUDIT_MOD       "tst-gcs-audit1.so"
 

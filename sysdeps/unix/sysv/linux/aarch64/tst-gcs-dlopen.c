@@ -26,10 +26,8 @@ do_test (void)
 {
   /* Check if GCS could possible by enabled.  */
   if (!(getauxval (AT_HWCAP) & HWCAP_GCS))
-    {
-      puts ("kernel or CPU does not support GCS");
-      return EXIT_UNSUPPORTED;
-    }
+    FAIL_UNSUPPORTED ("kernel or CPU does not support GCS");
+
   /* The tst-gcs-mod2.so test library does not have GCS marking.  */
   void *h = dlopen ("tst-gcs-mod2.so", RTLD_NOW);
   const char *err = dlerror ();

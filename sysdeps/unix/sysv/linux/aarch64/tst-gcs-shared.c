@@ -26,10 +26,7 @@ do_test (void)
 {
   /* Check if GCS could possible by enabled.  */
   if (!(getauxval (AT_HWCAP) & HWCAP_GCS))
-    {
-      puts ("kernel or CPU does not support GCS");
-      return EXIT_UNSUPPORTED;
-    }
+    FAIL_UNSUPPORTED ("kernel or CPU does not support GCS");
 #if TEST_GCS_EXPECT_ENABLED
   TEST_VERIFY (__check_gcs_status ());
 #else
