@@ -42,9 +42,9 @@
 
 struct test_param
 {
-  int nproc;
   int nproc_configured;
   cpu_set_t *set;
+  cpu_set_t *set_at_startup;
   size_t size;
   bool entry;
 };
@@ -52,18 +52,61 @@ struct test_param
 void __attribute__((noinline))
 set_cpu_mask (struct test_param *param, bool entry)
 {
-  int cpus = param->nproc;
+  /* Do not determine the number of CPUs based on get_nproc as the test process
+     could already be taskset to less CPUs.  */
+  int cpus = CPU_COUNT_S (param->size, param->set_at_startup);
 
   /* Less CPUS for the first level, if that's possible.  */
   if (entry && cpus > 1)
     cpus--;
 
+  /* Only use CPUs which were in mask at start of the test process.  */
   CPU_ZERO_S (param->size, param->set);
-  while (cpus > 0)
-    CPU_SET_S (--cpus, param->size, param->set);
+  for (int cur = 0; cpus > 0; cur++)
+    {
+      if (CPU_ISSET_S (cur, param->size, param->set_at_startup))
+	{
+	  CPU_SET_S (cur, param->size, param->set);
+	  cpus--;
+	}
+    }
 
-  if (CPU_COUNT_S (param->size, param->set) == 0)
-    FAIL_EXIT1 ("Failed to add any CPUs to the affinity set\n");
+  if (cpus != 0)
+    FAIL_EXIT1 ("Failed to add all requested CPUs to the affinity set\n");
+}
+
+static void
+verify_my_affinity (int nproc_configured, size_t size,
+		    const cpu_set_t *expected_set)
+{
+  cpu_set_t *set = CPU_ALLOC (nproc_configured);
+  cpu_set_t *xor_set = CPU_ALLOC (nproc_configured);
+
+  if (set == NULL || xor_set == NULL)
+    FAIL_EXIT1 ("verify_my_affinity: Failed to allocate cpuset: %m\n");
+
+  get_my_affinity (size, set);
+
+  CPU_XOR_S (size, xor_set, expected_set, set);
+
+  int cpucount = CPU_COUNT_S (size, xor_set);
+
+  if (cpucount > 0)
+    {
+      FAIL ("Affinity mask not inherited, "
+	    "following %d CPUs mismatched in the expected and actual sets:\n",
+	    cpucount);
+      for (int cur = 0; cpucount > 0; cur++)
+	if (CPU_ISSET_S (cur, size, xor_set))
+	  {
+	    printf ("%d ", cur);
+	    cpucount--;
+	  }
+      printf ("\n");
+    }
+
+  CPU_FREE (set);
+  CPU_FREE (xor_set);
 }
 
 static void *
@@ -72,8 +115,7 @@ child_test (void *arg)
   struct test_param *param = arg;
 
   printf ("%d:%d        child\n", getpid (), gettid ());
-  verify_my_affinity (param->nproc, param->nproc_configured, param->size,
-		      param->set);
+  verify_my_affinity (param->nproc_configured, param->size, param->set);
   return NULL;
 }
 
@@ -91,13 +133,15 @@ do_one_test (void *arg)
       child = do_one_test;
       set_cpu_mask (param, true);
       set_my_affinity (param->size, param->set);
+      /* Ensure that the affinity mask is really set as expected before forking
+	 a new process or creating a new thread.  */
+      verify_my_affinity (param->nproc_configured, param->size, param->set);
       param->entry = false;
     }
   else
     {
       /* Verification for the first level.  */
-      verify_my_affinity (param->nproc, param->nproc_configured, param->size,
-			  param->set);
+      verify_my_affinity (param->nproc_configured, param->size, param->set);
 
       /* Launch the second level test, launching CHILD_TEST as a subprocess and
 	 then as a subthread.  Use a different mask to see if it gets
@@ -136,23 +180,30 @@ do_test (void)
   /* Large enough in case the kernel decides to return the larger mask.  This
      seems to happen on some kernels for S390x.  */
   int num_configured_cpus = get_nprocs_conf ();
-  int num_cpus = get_nprocs ();
 
   struct test_param param =
     {
-      .nproc = num_cpus,
       .nproc_configured = num_configured_cpus,
       .set = CPU_ALLOC (num_configured_cpus),
+      .set_at_startup = CPU_ALLOC (num_configured_cpus),
       .size = CPU_ALLOC_SIZE (num_configured_cpus),
       .entry = true,
     };
 
   if (param.set == NULL)
-    FAIL_EXIT1 ("error: CPU_ALLOC (%d) failed\n", num_cpus);
+    FAIL_EXIT1 ("error: CPU_ALLOC (%d) for param.set failed\n",
+		num_configured_cpus);
+  if (param.set_at_startup == NULL)
+    FAIL_EXIT1 ("error: CPU_ALLOC (%d) for param.set_at_startup failed\n",
+		num_configured_cpus);
+
+  /* Get a list of all available CPUs for this test.  */
+  get_my_affinity (param.size, param.set_at_startup);
 
   do_one_test (&param);
 
   CPU_FREE (param.set);
+  CPU_FREE (param.set_at_startup);
 
   return 0;
 }
