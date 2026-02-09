@@ -136,6 +136,13 @@ _hurd_intr_rpc_mach_msg (mach_msg_header_t *msg,
 	}
       if (!(option & MACH_SEND_INTERRUPT))
 	{
+	  m->header.msgh_local_port = rcv_name;
+	  m->header.msgh_remote_port = remote_port;
+	  m->header.msgh_id = msgid;
+	  m->header.msgh_bits = msgh_bits;
+	  /* Restore the two words clobbered by the reply data.  */
+	  m->request.data = save_data;
+
 	  option = user_option;
 	  timeout = user_timeout;
 	  goto message;
