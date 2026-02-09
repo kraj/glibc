@@ -27,7 +27,7 @@ _start:
 
 	movq %rsp, %rdi
 	call _hurd_stack_setup
-	xorq %rdx, %rdx
+	xorl %edx, %edx
 	jmp _start1
 
 #define _start _start1

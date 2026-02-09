@@ -103,7 +103,7 @@ asm (
 "repe	scasq\n"
 "	jne	fail\n"
 
-"	xor	%rax,%rax\n"
+"	xor	%eax,%eax\n"
 "	ret\n"
 "fail:\n"
 "	movq	$1,%rax\n"
