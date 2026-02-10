@@ -144,8 +144,8 @@ make_fdesc (ElfW(Addr) ip, ElfW(Addr) gp)
 	  if (fdesc == NULL)
 	    goto retry;
 	}
-      while (! COMPARE_AND_SWAP ((ElfW(Addr) *) &l->free_list,
-				 (ElfW(Addr)) fdesc, fdesc->ip));
+      while (! COMPARE_AND_SWAP (&l->free_list, fdesc,
+				 (struct fdesc *) fdesc->ip));
     }
   else
     {
@@ -157,9 +157,7 @@ make_fdesc (ElfW(Addr) ip, ElfW(Addr) gp)
 	goto retry;
 
       new_table->next = root;
-      if (! COMPARE_AND_SWAP ((ElfW(Addr) *) &l->root,
-			      (ElfW(Addr)) root,
-			      (ElfW(Addr)) new_table))
+      if (! COMPARE_AND_SWAP (&l->root, root, new_table))
 	{
 	  /* Someone has just installed a new table. Return NULL to
 	     tell the caller to use the new table.  */
@@ -213,8 +211,7 @@ make_fptr_table (struct link_map *map)
     _dl_signal_error (errno, NULL, NULL,
 		      N_("cannot map pages for fptr table"));
 
-  if (COMPARE_AND_SWAP ((ElfW(Addr) *) &map->l_mach.fptr_table,
-			(ElfW(Addr)) NULL, (ElfW(Addr)) fptr_table))
+  if (COMPARE_AND_SWAP (&map->l_mach.fptr_table, NULL, fptr_table))
     map->l_mach.fptr_table_len = len;
   else
     __munmap (fptr_table, len * sizeof (fptr_table[0]));
@@ -249,8 +246,7 @@ _dl_make_fptr (struct link_map *map, const ElfW(Sym) *sym,
       ElfW(Addr) fdesc
 	= make_fdesc (ip, map->l_info[DT_PLTGOT]->d_un.d_ptr);
 
-      if (__builtin_expect (COMPARE_AND_SWAP (&ftab[symidx], (ElfW(Addr)) NULL,
-					      fdesc), 1))
+      if (__builtin_expect (COMPARE_AND_SWAP (&ftab[symidx], 0, fdesc), 1))
 	{
 	  /* No one has updated the entry and the new function
 	     descriptor has been installed.  */
@@ -276,8 +272,8 @@ _dl_make_fptr (struct link_map *map, const ElfW(Sym) *sym,
 
 	  do
 	    f->ip = (ElfW(Addr)) l->free_list;
-	  while (! COMPARE_AND_SWAP ((ElfW(Addr) *) &l->free_list,
-				     f->ip, fdesc));
+	  while (! COMPARE_AND_SWAP (&l->free_list, (struct fdesc *) f->ip,
+				     fdesc));
 	}
     }
 
@@ -313,8 +309,8 @@ _dl_unmap (struct link_map *map)
   if (tail)
     do
       tail->ip = (ElfW(Addr)) local.free_list;
-    while (! COMPARE_AND_SWAP ((ElfW(Addr) *) &local.free_list,
-			       tail->ip, (ElfW(Addr)) head));
+    while (! COMPARE_AND_SWAP (&local.free_list, (struct fdesc *) tail->ip,
+			       head));
 
   __munmap (ftab, (map->l_mach.fptr_table_len
 		   * sizeof (map->l_mach.fptr_table[0])));
