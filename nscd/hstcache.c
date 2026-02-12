@@ -125,8 +125,9 @@ cache_addhst (struct database_dyn *db, int fd, request_header *req,
 	}
       else
 	{
-	  /* We have no data.  This means we send the standard reply for this
-	     case.  Possibly this is only temporary.  */
+	  /* We have no data.  This means we send the standard reply
+	     for this case.  Possibly this is only temporary due to
+	     networking errors or memory allocation failures.  */
 	  ssize_t total = sizeof (notfound);
 	  assert (sizeof (notfound) == sizeof (tryagain));
 
@@ -434,7 +435,6 @@ addhstbyX (struct database_dyn *db, int fd, request_header *req,
      pruning function only will look at the timestamp.  */
   struct hostent resultbuf;
   struct hostent *hst;
-  int errval = 0;
   int32_t ttl = INT32_MAX;
 
   if (__glibc_unlikely (debug_level > 0))
@@ -459,7 +459,7 @@ addhstbyX (struct database_dyn *db, int fd, request_header *req,
   while (lookup (req->type, key, &resultbuf,
 		 tmpbuf.data, tmpbuf.length, &hst, &ttl) != 0
 	 && h_errno == NETDB_INTERNAL
-	 && (errval = errno) == ERANGE)
+	 && errno == ERANGE)
     if (!scratch_buffer_grow (&tmpbuf))
       {
 	/* We ran out of memory.  We cannot do anything but sending a
@@ -470,12 +470,15 @@ addhstbyX (struct database_dyn *db, int fd, request_header *req,
 	   error and that it does not mean the entry is not
 	   available at all.  */
 	h_errno = TRY_AGAIN;
-	errval = EAGAIN;
 	break;
       }
 
+  /* On out-of-memory or without a network connection, pass EAGAIN as
+     an error code.  This will be translated back to TRY_AGAIN in the
+     client.  Other errors with hst == NULL and error code 0 are
+     treated as HOST_NOT_FOUND.  */
   time_t timeout = cache_addhst (db, fd, req, key, hst, uid, he, dh,
-				 h_errno == TRY_AGAIN ? errval : 0, ttl);
+				 h_errno == TRY_AGAIN ? EAGAIN : 0, ttl);
   scratch_buffer_free (&tmpbuf);
   return timeout;
 }

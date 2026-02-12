@@ -42,6 +42,15 @@ static const ai_response_header notfound =
   .error = 0
 };
 
+static const ai_response_header tryagain =
+{
+  .version = NSCD_VERSION,
+  .found = 0,
+  .naddrs = 0,
+  .addrslen = 0,
+  .canonlen = 0,
+  .error = TRY_AGAIN
+};
 
 static time_t
 addhstaiX (struct database_dyn *db, int fd, request_header *req,
@@ -440,7 +449,7 @@ next_nip:
     }
 
   /* No result found.  Create a negative result record.  */
-  if (he != NULL && rc4 == EAGAIN)
+  if (he != NULL && herrno == TRY_AGAIN)
     {
       /* If we have an old record available but cannot find one now
 	 because the service is not available we keep the old record
@@ -454,16 +463,21 @@ next_nip:
     }
   else
     {
-      /* We have no data.  This means we send the standard reply for
-	 this case.  */
+      /* We have no data.  This means we send the standard reply
+	 for this case.  Possibly this is only temporary due to
+	 networking errors or memory allocation failures.  */
       total = sizeof (notfound);
+      assert (sizeof (notfound) == sizeof (tryagain));
+
+      const ai_response_header *resp = (herrno == TRY_AGAIN
+					? &tryagain : &notfound);
 
       if (fd != -1)
-	TEMP_FAILURE_RETRY (send (fd, &notfound, total, MSG_NOSIGNAL));
+	TEMP_FAILURE_RETRY (send (fd, resp, total, MSG_NOSIGNAL));
 
       /* If we have a transient error or cannot permanently store the
 	 result, so be it.  */
-      if (rc4 == EAGAIN || __builtin_expect (db->negtimeout == 0, 0))
+      if (herrno == TRY_AGAIN || __builtin_expect (db->negtimeout == 0, 0))
 	{
 	  /* Mark the old entry as obsolete.  */
 	  if (dh != NULL)
@@ -478,7 +492,7 @@ next_nip:
 				       total, db->negtimeout);
 
 	  /* This is the reply.  */
-	  memcpy (&dataset->resp, &notfound, total);
+	  memcpy (&dataset->resp, resp, total);
 
 	  /* Copy the key data.  */
 	  key_copy = memcpy (dataset->strdata, key, req->key_len);

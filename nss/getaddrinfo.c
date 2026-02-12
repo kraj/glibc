@@ -502,7 +502,12 @@ get_nscd_addresses (const char *name, const struct addrinfo *req,
     {
       /* The database contains a negative entry.  */
       if (err == 0)
-	return -EAI_NONAME;
+	{
+	  /* h_errno contains the error from nscd.  */
+	  if (h_errno == TRY_AGAIN)
+	    return -EAI_AGAIN;
+	  return -EAI_NONAME;
+	}
       if (__nss_not_use_nscd_hosts == 0)
 	{
 	  if (h_errno == NETDB_INTERNAL && errno == ENOMEM)
