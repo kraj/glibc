@@ -88,6 +88,7 @@ libsupport-routines = \
   support_mem_access \
   support_mutex_pi_monotonic \
   support_need_proc \
+  support_nscd \
   support_open_and_compare_file_bytes \
   support_open_and_compare_file_string \
   support_openpty \
