@@ -25,8 +25,17 @@
 __BEGIN_DECLS
 
 struct addrinfo;
+struct aliasent;
+struct ether_addr;
+struct group;
 struct hostent;
 struct netent;
+struct passwd;
+struct protoent;
+struct rpcent;
+struct servent;
+struct sgrp;
+struct spwd;
 
 /* The following functions format their arguments as human-readable
    strings (which can span multiple lines).  The caller must free the
@@ -35,10 +44,19 @@ struct netent;
    result.  */
 char *support_format_address_family (int);
 char *support_format_addrinfo (const struct addrinfo *, int ret);
+char *support_format_aliasent (const struct aliasent *);
 char *support_format_dns_packet (const unsigned char *buffer, size_t length);
+char *support_format_ether_addr (const struct ether_addr *);
+char *support_format_group (const struct group *);
 char *support_format_herrno (int);
 char *support_format_hostent (const struct hostent *);
 char *support_format_netent (const struct netent *);
+char *support_format_passwd (const struct passwd *);
+char *support_format_protoent (const struct protoent *);
+char *support_format_rpcent (const struct rpcent *);
+char *support_format_servent (const struct servent *);
+char *support_format_sgrp (const struct sgrp *);
+char *support_format_spwd (const struct spwd *);
 
 __END_DECLS
 

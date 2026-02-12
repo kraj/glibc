@@ -25,8 +25,17 @@
 __BEGIN_DECLS
 
 struct addrinfo;
+struct aliasent;
+struct ether_addr;
+struct group;
 struct hostent;
 struct netent;
+struct passwd;
+struct protoent;
+struct rpcent;
+struct servent;
+struct sgrp;
+struct spwd;
 
 /* Compare the data structures against the expected values (which have
    to be formatted according to the support_format_* functions in
@@ -34,12 +43,30 @@ struct netent;
    failure is recorded, and a diff is written to standard output.  */
 void check_addrinfo (const char *query_description,
                      const struct addrinfo *, int ret, const char *expected);
+void check_aliasent (const char *description, const struct aliasent *,
+                     const char *expected);
 void check_dns_packet (const char *query_description,
                        const unsigned char *, size_t, const char *expected);
+void check_ether_addr (const char *description, const struct ether_addr *,
+                       const char *expected);
+void check_group (const char *description, const struct group *,
+                  const char *expected);
 void check_hostent (const char *query_description,
                     const struct hostent *, const char *expected);
 void check_netent (const char *query_description,
                    const struct netent *, const char *expected);
+void check_passwd (const char *description, const struct passwd *,
+                   const char *expected);
+void check_protoent (const char *description, const struct protoent *,
+                     const char *expected);
+void check_rpcent (const char *description, const struct rpcent *,
+                   const char *expected);
+void check_servent (const char *description, const struct servent *,
+                    const char *expected);
+void check_sgrp (const char *description, const struct sgrp *,
+                 const char *expected);
+void check_spwd (const char *description, const struct spwd *,
+                 const char *expected);
 
 /* Helper routine for implementing the functions above.  Report an
    error if ACTUAL and EXPECTED are not equal.  ACTUAL is always freed.  */
