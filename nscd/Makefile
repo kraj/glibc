@@ -46,6 +46,9 @@ install-sbin := nscd
 
 extra-objs = $(nscd-modules:=.o)
 
+tests-container += \
+  tst-nscd-basic \
+  # tests-container
 endif
 
 all-nscd-modules := $(nscd-modules) selinux
