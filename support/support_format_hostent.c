@@ -20,6 +20,7 @@
 
 #include <arpa/inet.h>
 #include <errno.h>
+#include <netdb.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <support/support.h>
@@ -39,7 +40,7 @@ address_length (int family)
 }
 
 char *
-support_format_hostent (struct hostent *h)
+support_format_hostent (const struct hostent *h)
 {
   if (h == NULL)
     {

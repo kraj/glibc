@@ -18,6 +18,7 @@
 
 #include <support/format_nss.h>
 
+#include <netdb.h>
 #include <support/support.h>
 
 char *

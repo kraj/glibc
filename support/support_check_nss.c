@@ -1,4 +1,4 @@
-/* Convert an address family to a string.
+/* Report a NSS struct comparison failure.
    Copyright (C) 2016-2026 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -16,25 +16,26 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#include <support/format_nss.h>
+#include <support/check_nss.h>
 
-#include <netdb.h>
-#include <support/support.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <support/check.h>
+#include <support/run_diff.h>
 
-char *
-support_format_address_family (int family)
+void
+support_check_nss (const char *query_description, const char *type_name,
+                   char *actual, const char *expected)
 {
-  switch (family)
+  if (strcmp (actual, expected) != 0)
     {
-    case AF_INET:
-      return xstrdup ("INET");
-    case AF_INET6:
-      return xstrdup ("INET6");
-    case AF_LOCAL:
-      return xstrdup ("LOCAL");
-    case AF_UNSPEC:
-      return xstrdup ("UNSPEC");
-    default:
-      return xasprintf ("<unknown address family %d>", family);
+      support_record_failure ();
+      printf ("error: %s comparison failure\n", type_name);
+      if (query_description != NULL)
+        printf ("query: %s\n", query_description);
+      support_run_diff ("expected", expected,
+                        "actual", actual);
     }
+  free (actual);
 }

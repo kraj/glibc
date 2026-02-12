@@ -18,6 +18,7 @@
 
 #include <dlfcn.h>
 #include <gnu/lib-names.h>
+#include <netdb.h>
 #include <nss.h>
 #include <stdio.h>
 #include <stdlib.h>

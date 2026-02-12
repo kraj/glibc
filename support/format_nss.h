@@ -19,10 +19,14 @@
 #ifndef SUPPORT_FORMAT_NSS_H
 #define SUPPORT_FORMAT_NSS_H
 
-#include <netdb.h>
 #include <sys/cdefs.h>
+#include <stddef.h>
 
 __BEGIN_DECLS
+
+struct addrinfo;
+struct hostent;
+struct netent;
 
 /* The following functions format their arguments as human-readable
    strings (which can span multiple lines).  The caller must free the
@@ -30,11 +34,11 @@ __BEGIN_DECLS
    error variables such as h_errno and errno are included in the
    result.  */
 char *support_format_address_family (int);
-char *support_format_addrinfo (struct addrinfo *, int ret);
+char *support_format_addrinfo (const struct addrinfo *, int ret);
 char *support_format_dns_packet (const unsigned char *buffer, size_t length);
 char *support_format_herrno (int);
-char *support_format_hostent (struct hostent *);
-char *support_format_netent (struct netent *);
+char *support_format_hostent (const struct hostent *);
+char *support_format_netent (const struct netent *);
 
 __END_DECLS
 

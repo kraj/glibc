@@ -20,6 +20,7 @@
    0, depending on whether a UTF-8 locale is used or a Latin-1
    locale.  */
 
+#include <netdb.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

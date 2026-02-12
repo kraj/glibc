@@ -46,6 +46,7 @@ libsupport-routines = \
   support_can_chroot \
   support_capture_subprocess \
   support_capture_subprocess_check \
+  support_check_nss \
   support_check_stat_fd \
   support_check_stat_path \
   support_chroot \

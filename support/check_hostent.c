@@ -18,26 +18,12 @@
 
 #include <support/check_nss.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <support/check.h>
 #include <support/format_nss.h>
-#include <support/run_diff.h>
 
 void
-check_hostent (const char *query_description, struct hostent *h,
+check_hostent (const char *query_description, const struct hostent *h,
                const char *expected)
 {
   char *formatted = support_format_hostent (h);
-  if (strcmp (formatted, expected) != 0)
-    {
-      support_record_failure ();
-      printf ("error: hostent comparison failure\n");
-      if (query_description != NULL)
-        printf ("query: %s\n", query_description);
-      support_run_diff ("expected", expected,
-                        "actual", formatted);
-    }
-  free (formatted);
+  support_check_nss (query_description, "hostent", formatted, expected);
 }

@@ -20,6 +20,7 @@
 
 #include <arpa/inet.h>
 #include <errno.h>
+#include <netdb.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -41,8 +42,8 @@ socket_address_length (int family)
 }
 
 static void
-format_ai_flags_1 (FILE *out, struct addrinfo *ai, int flag, const char *name,
-                   int * flags_printed)
+format_ai_flags_1 (FILE *out, const struct addrinfo *ai, int flag,
+                   const char *name, int *flags_printed)
 {
   if ((ai->ai_flags & flag) != 0)
     fprintf (out, " %s", name);
@@ -50,7 +51,7 @@ format_ai_flags_1 (FILE *out, struct addrinfo *ai, int flag, const char *name,
 }
 
 static void
-format_ai_flags (FILE *out, struct addrinfo *ai)
+format_ai_flags (FILE *out, const struct addrinfo *ai)
 {
   if (ai == NULL)
     return;
@@ -91,7 +92,7 @@ format_ai_flags (FILE *out, struct addrinfo *ai)
 }
 
 static void
-format_ai_canonname (FILE *out, struct addrinfo *ai)
+format_ai_canonname (FILE *out, const struct addrinfo *ai)
 {
   if (ai == NULL)
     return;
@@ -113,7 +114,7 @@ format_ai_canonname (FILE *out, struct addrinfo *ai)
 }
 
 static void
-format_ai_one (FILE *out, struct addrinfo *ai)
+format_ai_one (FILE *out, const struct addrinfo *ai)
 {
   {
     char type_buf[32];
@@ -200,7 +201,7 @@ format_ai_one (FILE *out, struct addrinfo *ai)
 
 /* Format all the addresses in one address family.  */
 static void
-format_ai_family (FILE *out, struct addrinfo *ai, int family)
+format_ai_family (FILE *out, const struct addrinfo *ai, int family)
 {
   while (ai)
     {
@@ -211,7 +212,7 @@ format_ai_family (FILE *out, struct addrinfo *ai, int family)
 }
 
 char *
-support_format_addrinfo (struct addrinfo *ai, int ret)
+support_format_addrinfo (const struct addrinfo *ai, int ret)
 {
   int errno_copy = errno;
 

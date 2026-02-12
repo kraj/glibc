@@ -18,12 +18,7 @@
 
 #include <support/check_nss.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <support/check.h>
 #include <support/format_nss.h>
-#include <support/run_diff.h>
 
 void
 check_dns_packet (const char *query_description,
@@ -31,13 +26,5 @@ check_dns_packet (const char *query_description,
                   const char *expected)
 {
   char *formatted = support_format_dns_packet (buffer, length);
-  if (strcmp (formatted, expected) != 0)
-    {
-      support_record_failure ();
-      printf ("error: packet comparison failure\n");
-      if (query_description != NULL)
-        printf ("query: %s\n", query_description);
-      support_run_diff ("expected", expected, "actual", formatted);
-    }
-  free (formatted);
+  support_check_nss (query_description, "packet", formatted, expected);
 }

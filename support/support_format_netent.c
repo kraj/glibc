@@ -19,13 +19,14 @@
 #include <support/format_nss.h>
 
 #include <arpa/inet.h>
+#include <netdb.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <support/support.h>
 #include <support/xmemstream.h>
 
 char *
-support_format_netent (struct netent *e)
+support_format_netent (const struct netent *e)
 {
   if (e == NULL)
     {
