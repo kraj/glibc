@@ -241,9 +241,12 @@ __nss_configure_lookup (const char *dbname, const char *service_line)
 
   /* Force any load/cache/read whatever to happen, so we can override
      it.  */
-  __nss_database_get (db, &result);
+  if (!__nss_database_get (db, &result))
+    return -1;
 
   local = nss_database_state_get ();
+  if (local == NULL)
+    return -1;
 
   result = __nss_action_parse (service_line);
   if (result == NULL)
@@ -465,6 +468,8 @@ bool
 __nss_database_get (enum nss_database db, nss_action_list *actions)
 {
   struct nss_database_state *local = nss_database_state_get ();
+  if (local == NULL)
+    return false;
   return nss_database_check_reload_and_get (local, actions, db);
 }
 libc_hidden_def (__nss_database_get)

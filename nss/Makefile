@@ -326,6 +326,7 @@ tests := \
   tst-gshadow \
   tst-nss-getpwent \
   tst-nss-hash \
+  tst-nss-malloc-failure-getlogin_r \
   tst-nss-test1 \
   tst-nss-test2 \
   tst-nss-test4 \
