@@ -37,7 +37,12 @@ __getlogin_r_loginuid (char *name, size_t namesize)
 {
   int fd = __open_nocancel ("/proc/self/loginuid", O_RDONLY);
   if (fd == -1)
-    return -1;
+    {
+      if (errno == ENOENT)
+	/* Trigger utmp fallback.  */
+	return -1;
+      return errno;
+    }
 
   /* We are reading a 32-bit number.  12 bytes are enough for the text
      representation.  If not, something is wrong.  */
@@ -45,6 +50,8 @@ __getlogin_r_loginuid (char *name, size_t namesize)
   ssize_t n = TEMP_FAILURE_RETRY (__read_nocancel (fd, uidbuf,
 						   sizeof (uidbuf)));
   __close_nocancel_nostatus (fd);
+  if (n < 0)
+    return errno;
 
   uid_t uid;
   char *endp;
@@ -53,12 +60,13 @@ __getlogin_r_loginuid (char *name, size_t namesize)
       || (uidbuf[n] = '\0',
 	  uid = strtoul (uidbuf, &endp, 10),
 	  endp == uidbuf || *endp != '\0'))
-    return -1;
+    return EINVAL;
 
   /* If there is no login uid, linux sets /proc/self/loginid to the sentinel
      value of, (uid_t) -1, so check if that value is set and return early to
      avoid making unneeded nss lookups. */
   if (uid == (uid_t) -1)
+    /* Trigger utmp fallback.  */
     return -1;
 
   struct passwd pwd;
@@ -78,9 +86,14 @@ __getlogin_r_loginuid (char *name, size_t namesize)
 	}
     }
 
-  if (res != 0 || tpwd == NULL)
+  if (res != 0)
     {
-      result = -1;
+      result = res;
+      goto out;
+    }
+  if (tpwd == NULL)
+    {
+      result = ENOENT;
       goto out;
     }
 
