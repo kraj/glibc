@@ -56,7 +56,6 @@ global_state_allocate (void *closure)
     {
       result->data.nsswitch_conf.size = -1; /* Force reload.  */
       memset (result->data.services, 0, sizeof (result->data.services));
-      result->data.initialized = true;
       result->data.reload_disabled = false;
       __libc_lock_init (result->lock);
       result->root_ino = 0;
@@ -439,8 +438,8 @@ nss_database_check_reload_and_get (struct nss_database_state *local,
   /* Avoid overwriting the global configuration until we have loaded
      everything successfully.  Otherwise, if the file change
      information changes back to what is in the global configuration,
-     the lookups would use the partially-written  configuration.  */
-  struct nss_database_data staging = { .initialized = true, };
+     the lookups would use the partially-written configuration.  */
+  struct nss_database_data staging = { };
 
   bool ok = nss_database_reload (&staging, &initial);
 
@@ -491,7 +490,7 @@ __nss_database_freeres (void)
 }
 
 void
-__nss_database_fork_prepare_parent (struct nss_database_data *data)
+__nss_database_fork_prepare_parent (struct nss_database_for_fork *data)
 {
   /* Do not use allocate_once to trigger loading unnecessarily.  */
   struct nss_database_state *local = atomic_load_acquire (&global_database_state);
@@ -503,20 +502,21 @@ __nss_database_fork_prepare_parent (struct nss_database_data *data)
          because it avoids acquiring the lock during the actual
          fork.  */
       __libc_lock_lock (local->lock);
-      *data = local->data;
+      data->data = local->data;
       __libc_lock_unlock (local->lock);
+      data->initialized = true;
     }
 }
 
 void
-__nss_database_fork_subprocess (struct nss_database_data *data)
+__nss_database_fork_subprocess (struct nss_database_for_fork *data)
 {
   struct nss_database_state *local = atomic_load_acquire (&global_database_state);
   if (data->initialized)
     {
       /* Restore the state at the point of the fork.  */
       assert (local != NULL);
-      local->data = *data;
+      local->data = data->data;
       __libc_lock_init (local->lock);
     }
   else if (local != NULL)

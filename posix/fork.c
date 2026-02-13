@@ -50,7 +50,7 @@ __libc_fork (void)
 
   lastrun = __run_prefork_handlers (multiple_threads);
 
-  struct nss_database_data nss_database_data;
+  struct nss_database_for_fork nss_database_data;
 
   /* If we are not running multiple threads, we do not have to
      preserve lock state.  If fork runs from a signal handler, only

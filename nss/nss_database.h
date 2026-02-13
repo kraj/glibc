@@ -70,15 +70,21 @@ struct nss_database_data
   struct file_change_detection nsswitch_conf;
   nss_action_list services[NSS_DATABASE_COUNT];
   int reload_disabled;          /* Actually bool; int for atomic access.  */
-  bool initialized;
+};
+
+/* Use to store a consistent state snapshot across fork.  */
+struct nss_database_for_fork
+{
+  bool initialized;  /* Set to true if the data field below is initialized.  */
+  struct nss_database_data data;
 };
 
 /* Called by fork in the parent process, before forking.  */
-void __nss_database_fork_prepare_parent (struct nss_database_data *data)
+void __nss_database_fork_prepare_parent (struct nss_database_for_fork *)
   attribute_hidden;
 
 /* Called by fork in the new subprocess, after forking.  */
-void __nss_database_fork_subprocess (struct nss_database_data *data)
+void __nss_database_fork_subprocess (struct nss_database_for_fork *)
   attribute_hidden;
 
 #endif /* _NSS_DATABASE_H */
