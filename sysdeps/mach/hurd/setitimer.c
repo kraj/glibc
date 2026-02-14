@@ -131,8 +131,7 @@ timer_thread (void)
 
 /* Forward declaration.  */
 static int setitimer_locked (const struct itimerval *new,
-			     struct itimerval *old, void *crit,
-			     int hurd_siglocked);
+			     struct itimerval *old);
 
 static sighandler_t
 restart_itimer (struct hurd_signal_preemptor *preemptor,
@@ -144,21 +143,25 @@ restart_itimer (struct hurd_signal_preemptor *preemptor,
   struct itimerval it;
 
   /* Either reload or disable the itimer.  */
+  /* _hurd_siglock is already locked by the caller. */
   __spin_lock (&_hurd_itimer_lock);
   it.it_value = it.it_interval = _hurd_itimerval.it_interval;
-  setitimer_locked (&it, NULL, NULL, 1);
+  setitimer_locked (&it, NULL);
+  __spin_unlock (&_hurd_itimer_lock);
 
   /* Continue with normal delivery (or hold, etc.) of SIGALRM.  */
   return SIG_ERR;
 }
 
 
-/* Called before any normal SIGALRM signal is delivered.
-   Reload the itimer, or disable the itimer.  */
+/* Called before any normal SIGALRM signal is delivered.  Reload the
+   itimer, or disable the itimer. _hurd_siglock and _hurd_itimer_lock
+   must be locked before entry noting that it is important to acquire
+   the _hurd_siglock before the _hurd_itimer_lock. Both of these
+   remain locked on exit. */
 
 static int
-setitimer_locked (const struct itimerval *new, struct itimerval *old,
-		  void *crit, int hurd_siglocked)
+setitimer_locked (const struct itimerval *new, struct itimerval *old)
 {
   struct itimerval newval;
   struct timeval now, remaining, elapsed;
@@ -180,8 +183,6 @@ setitimer_locked (const struct itimerval *new, struct itimerval *old,
 	 This is what BSD does, even though it's not documented. */
       if (old)
 	*old = _hurd_itimerval;
-      spin_unlock (&_hurd_itimer_lock);
-      _hurd_critical_section_unlock (crit);
       return 0;
     }
 
@@ -199,16 +200,12 @@ setitimer_locked (const struct itimerval *new, struct itimerval *old,
 	  __sigmask (SIGALRM), SI_TIMER, SI_TIMER,
 	  &restart_itimer,
 	};
-      if (!hurd_siglocked)
-	__mutex_lock (&_hurd_siglock);
       if (! preemptor.next && _hurdsig_preemptors != &preemptor)
 	{
 	  preemptor.next = _hurdsig_preemptors;
 	  _hurdsig_preemptors = &preemptor;
 	  _hurdsig_preempted_set |= preemptor.signals;
 	}
-      if (!hurd_siglocked)
-	__mutex_unlock (&_hurd_siglock);
 
       if (_hurd_itimer_port == MACH_PORT_NULL)
 	{
@@ -316,9 +313,6 @@ setitimer_locked (const struct itimerval *new, struct itimerval *old,
       _hurd_itimer_thread_suspended = 0;
     }
 
-  __spin_unlock (&_hurd_itimer_lock);
-  _hurd_critical_section_unlock (crit);
-
   if (old != NULL)
     {
       old->it_value = remaining;
@@ -327,8 +321,6 @@ setitimer_locked (const struct itimerval *new, struct itimerval *old,
   return 0;
 
  out:
-  __spin_unlock (&_hurd_itimer_lock);
-  _hurd_critical_section_unlock (crit);
   return __hurd_fail (err);
 }
 
@@ -339,7 +331,6 @@ int
 __setitimer (enum __itimer_which which, const struct itimerval *new,
 	     struct itimerval *old)
 {
-  void *crit;
   int ret;
 
   switch (which)
@@ -356,9 +347,13 @@ __setitimer (enum __itimer_which which, const struct itimerval *new,
     }
 
 retry:
-  crit = _hurd_critical_section_lock ();
+  HURD_CRITICAL_BEGIN;
+  __mutex_lock (&_hurd_siglock);
   __spin_lock (&_hurd_itimer_lock);
-  ret = setitimer_locked (new, old, crit, 0);
+  ret = setitimer_locked (new, old);
+  __spin_unlock (&_hurd_itimer_lock);
+  __mutex_unlock (&_hurd_siglock);
+  HURD_CRITICAL_END;
   if (ret == -1 && errno == EINTR)
     /* Got a signal while inside an RPC of the critical section, retry again */
     goto retry;
@@ -373,12 +368,15 @@ fork_itimer (void)
 
   struct itimerval it;
 
+  __mutex_lock (&_hurd_siglock);
   __spin_lock (&_hurd_itimer_lock);
   _hurd_itimer_thread = MACH_PORT_NULL;
   it = _hurd_itimerval;
   it.it_value = it.it_interval;
 
-  setitimer_locked (&it, NULL, NULL, 0);
+  setitimer_locked (&it, NULL);
+  __spin_unlock (&_hurd_itimer_lock);
+  __mutex_unlock (&_hurd_siglock);
 
   (void) &fork_itimer;		/* Avoid gcc optimizing out the function.  */
 }
