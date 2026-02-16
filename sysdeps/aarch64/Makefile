@@ -132,6 +132,12 @@ $(objpfx)tst-bti-permissive-transitive: $(objpfx)tst-bti-mod.so
 $(objpfx)tst-bti-ld-debug-shared: $(objpfx)tst-bti-mod.so
 $(objpfx)tst-bti-ld-debug-both: $(objpfx)tst-bti-mod-unprot.so
 
+$(objpfx)tst-bti-dlopen-imm.out: $(objpfx)tst-bti-mod-unprot.so
+$(objpfx)tst-bti-dlopen-prot.out: $(objpfx)tst-bti-mod-prot.so
+$(objpfx)tst-bti-dlopen-transitive.out: $(objpfx)tst-bti-mod.so
+$(objpfx)tst-bti-ld-debug-dlopen.out: $(objpfx)tst-bti-mod-unprot.so
+$(objpfx)tst-bti-permissive-dlopen.out: $(objpfx)tst-bti-mod-unprot.so
+
 $(objpfx)tst-bti-abort-unprot-preload.out: $(objpfx)tst-bti-mod-unprot-preload.so
 tst-bti-abort-unprot-preload-ENV = \
   GLIBC_TUNABLES=glibc.cpu.aarch64_bti=1 \
