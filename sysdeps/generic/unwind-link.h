@@ -34,6 +34,12 @@ unwind_arch_adjustment (void *prev, void *addr)
 # include <pointer_guard.h>
 # include <unwind-resume.h>
 
+# ifndef HAVE_CC_WITH_LIBUNWIND
+#  define UNWIND_SONAME LIBGCC_S_SO
+# else
+#  define UNWIND_SONAME LIBUNWIND_SO
+# endif
+
 # if UNWIND_LINK_FRAME_STATE_FOR
 struct frame_state;
 # endif
@@ -50,7 +56,14 @@ struct unwind_link
 #if UNWIND_LINK_FRAME_STATE_FOR
   struct frame_state *(*ptr___frame_state_for) (void *, struct frame_state *);
 #endif
+#ifndef HAVE_CC_WITH_LIBUNWIND
   _Unwind_Reason_Code (*ptr_personality) PERSONALITY_PROTO;
+#else
+  __typeof (_Unwind_GetLanguageSpecificData) *ptr__Unwind_GetLanguageSpecificData;
+  __typeof (_Unwind_SetGR) *ptr__Unwind_SetGR;
+  __typeof (_Unwind_SetIP) *ptr__Unwind_SetIP;
+  __typeof (_Unwind_GetRegionStart) *ptr__Unwind_GetRegionStart;
+#endif
   UNWIND_LINK_EXTRA_FIELDS
 };
 

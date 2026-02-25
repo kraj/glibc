@@ -87,7 +87,7 @@ __pthread_cancel (pthread_t th)
   {
     struct unwind_link *unwind_link = __libc_unwind_link_get ();
     if (unwind_link == NULL)
-      __libc_fatal (LIBGCC_S_SO
+      __libc_fatal (UNWIND_SONAME
 		    " must be installed for pthread_cancel to work\n");
   }
 #endif

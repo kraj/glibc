@@ -38,11 +38,43 @@ _Unwind_Resume (struct _Unwind_Exception *exc)
 }
 #endif
 
+#ifndef HAVE_CC_WITH_LIBUNWIND
 _Unwind_Reason_Code
 __gcc_personality_v0 PERSONALITY_PROTO
 {
   return UNWIND_LINK_PTR (link (), personality) PERSONALITY_ARGS;
 }
+#else
+void *
+_Unwind_GetLanguageSpecificData (struct _Unwind_Context *context)
+{
+  return UNWIND_LINK_PTR (link (), _Unwind_GetLanguageSpecificData) (context);
+}
+
+void
+_Unwind_SetGR (struct _Unwind_Context *context, int index, _Unwind_Word val)
+{
+  UNWIND_LINK_PTR (link (), _Unwind_SetGR) (context, index, val);
+}
+
+_Unwind_Ptr
+_Unwind_GetIP (struct _Unwind_Context *context)
+{
+  return UNWIND_LINK_PTR (link (), _Unwind_GetIP) (context);
+}
+
+void
+_Unwind_SetIP (struct _Unwind_Context *context, _Unwind_Ptr val)
+{
+  UNWIND_LINK_PTR (link (), _Unwind_SetIP) (context, val);
+}
+
+_Unwind_Ptr
+_Unwind_GetRegionStart (struct _Unwind_Context *context)
+{
+  return UNWIND_LINK_PTR (link (), _Unwind_GetRegionStart) (context);
+}
+#endif
 
 _Unwind_Reason_Code
 _Unwind_ForcedUnwind (struct _Unwind_Exception *exc, _Unwind_Stop_Fn stop,

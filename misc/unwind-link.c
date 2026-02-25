@@ -37,6 +37,12 @@ static void *global_libgcc_handle;
    may depend on unwinding.  */
 __libc_lock_define (static, lock);
 
+#ifndef HAVE_CC_WITH_LIBUNWIND
+# define UNWIND_SONAME LIBGCC_S_SO
+#else
+# define UNWIND_SONAME LIBUNWIND_SO
+#endif
+
 struct unwind_link *
 __libc_unwind_link_get (void)
 {
@@ -48,7 +54,7 @@ __libc_unwind_link_get (void)
   /* Initialize a copy of the data, so that we do not need about
      unlocking in case the dynamic loader somehow triggers
      unwinding.  */
-  void *local_libgcc_handle = __libc_dlopen (LIBGCC_S_SO);
+  void *local_libgcc_handle = __libc_dlopen (UNWIND_SONAME);
   if (local_libgcc_handle == NULL)
     {
       __libc_lock_unlock (lock);
@@ -72,8 +78,19 @@ __libc_unwind_link_get (void)
   local.ptr___frame_state_for
     = __libc_dlsym (local_libgcc_handle, "__frame_state_for");
 #endif
+#ifndef HAVE_CC_WITH_LIBUNWIND
   local.ptr_personality
     = __libc_dlsym (local_libgcc_handle, "__gcc_personality_v0");
+#else
+  local.ptr__Unwind_GetLanguageSpecificData
+    = __libc_dlsym (local_libgcc_handle, "_Unwind_GetLanguageSpecificData");
+  local.ptr__Unwind_SetGR
+    = __libc_dlsym (local_libgcc_handle, "_Unwind_SetGR");
+  local.ptr__Unwind_SetIP
+    = __libc_dlsym (local_libgcc_handle, "_Unwind_SetIP");
+  local.ptr__Unwind_GetRegionStart
+    = __libc_dlsym (local_libgcc_handle, "_Unwind_GetRegionStart");
+#endif
   UNWIND_LINK_EXTRA_INIT
 
   /* If a symbol is missing, libgcc_s has somehow been corrupted.  */
@@ -84,7 +101,15 @@ __libc_unwind_link_get (void)
   assert (local.ptr__Unwind_GetIP != NULL);
 #endif
   assert (local.ptr__Unwind_Resume != NULL);
+#ifndef HAVE_CC_WITH_LIBUNWIND
   assert (local.ptr_personality != NULL);
+#else
+  assert (local.ptr__Unwind_GetLanguageSpecificData != NULL);
+  assert (local.ptr__Unwind_SetGR != NULL);
+  assert (local.ptr__Unwind_GetIP != NULL);
+  assert (local.ptr__Unwind_SetIP != NULL);
+  assert (local.ptr__Unwind_GetRegionStart != NULL);
+#endif
 
   PTR_MANGLE (local.ptr__Unwind_Backtrace);
   PTR_MANGLE (local.ptr__Unwind_ForcedUnwind);
@@ -96,7 +121,14 @@ __libc_unwind_link_get (void)
 #if UNWIND_LINK_FRAME_STATE_FOR
   PTR_MANGLE (local.ptr___frame_state_for);
 #endif
+#ifndef HAVE_CC_WITH_LIBUNWIND
   PTR_MANGLE (local.ptr_personality);
+#else
+  PTR_MANGLE (local.ptr__Unwind_GetLanguageSpecificData);
+  PTR_MANGLE (local.ptr__Unwind_SetGR);
+  PTR_MANGLE (local.ptr__Unwind_SetIP);
+  PTR_MANGLE (local.ptr__Unwind_GetRegionStart);
+#endif
 
   __libc_lock_lock (lock);
   if (atomic_load_relaxed (&global_libgcc_handle) != NULL)

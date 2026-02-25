@@ -2765,6 +2765,8 @@ $(objpfx)tst-big-note-lib.so: $(objpfx)tst-big-note-lib.o
 	$(LINK.o) -shared -o $@ $(LDFLAGS.so) $(dt-relr-ldflag) $<
 
 $(objpfx)tst-unwind-ctor: $(objpfx)tst-unwind-ctor-lib.so
+LDLIBS-tst-unwind-ctor += $(libunwind)
+LDFLAGS-tst-unwind-ctor-lib.so = -Wl,--unresolved-symbols=ignore-all
 
 CFLAGS-tst-unwind-main.c += -funwind-tables -DUSE_PTHREADS=0
 

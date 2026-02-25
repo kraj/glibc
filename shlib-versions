@@ -68,3 +68,5 @@ libmvec=1
 
 # The malloc debug library
 libc_malloc_debug=0
+
+libunwind=1
