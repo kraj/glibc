@@ -187,7 +187,7 @@ $(objpfx)bug-atexit1.out: $(objpfx)bug-atexit1-lib.so
 $(objpfx)bug-atexit2.out: $(objpfx)bug-atexit2-lib.so
 
 ifneq (,$(CXX))
-LDLIBS-bug-atexit3-lib.so = -lstdc++ -lgcc_eh
+LDLIBS-bug-atexit3-lib.so = -lstdc++ $(libgcc_eh)
 $(objpfx)bug-atexit3-lib.so: $(libsupport)
 $(objpfx)bug-atexit3.out: $(objpfx)bug-atexit3-lib.so
 endif

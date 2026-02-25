@@ -1515,7 +1515,7 @@ $(objpfx)librtld.map: $(objpfx)dl-allobjs.os $(common-objpfx)libc_pic.a
 		echo ".globl $$symbol"; \
 		echo "$$symbol:"; \
 	done | $(CC) -o $@T.o $(ASFLAGS) -c -x assembler -
-	$(reloc-link) -o $@.o $@T.o '-Wl,-(' $^ -lgcc '-Wl,-)' -Wl,-Map,$@T
+	$(reloc-link) -o $@.o $@T.o '-Wl,-(' $^ $(gnulib) '-Wl,-)' -Wl,-Map,$@T
 	rm -f %@T.o $@.o
 	mv -f $@T $@
 
@@ -1545,7 +1545,7 @@ $(objpfx)rtld-libc.a: $(objpfx)librtld.mk FORCE
 	$(MAKE) -f $< -f rtld-Rules
 
 $(objpfx)librtld.os: $(objpfx)dl-allobjs.os $(objpfx)rtld-libc.a
-	$(LINK.o) -nostdlib -nostartfiles -r -o $@ '-Wl,-(' $^ -lgcc '-Wl,-)' \
+	$(LINK.o) -nostdlib -nostartfiles -r -o $@ '-Wl,-(' $^ $(gnulib) '-Wl,-)' \
 		  -Wl,-Map,$@.map
 
 generated += librtld.map librtld.mk rtld-libc.a librtld.os.map

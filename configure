@@ -9402,6 +9402,40 @@ printf "%s\n" "$libc_cv_have_libgcc_s" >&6; }
 config_vars="$config_vars
 have-libgcc_s = $libc_cv_have_libgcc_s"
 
+# Check which runtime library compiler uses
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for the usable compiler runtime library" >&5
+printf %s "checking for the usable compiler runtime library... " >&6; }
+if test ${libc_cv_runtime_library+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e)   libc_cv_libgcc_usable=no
+  libgcc_name=`${CC-cc} $CFLAGS $CPPFLAGS -print-libgcc-file-name | sed 's:.*/::'`
+  case "$libgcc_name" in
+    libgcc*)
+      libc_cv_libgcc=-lgcc
+      libc_cv_libgcc_eh=-lgcc_eh
+      libc_cv_runtime_library=libgcc
+      ;;
+    libclang_rt*)
+      libc_cv_libgcc=-lclang_rt.builtins
+      libc_cv_libgcc_eh=
+      libc_cv_runtime_library=compiler-rt
+      ;;
+    *) { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: error: in '$ac_pwd':" >&5
+printf "%s\n" "$as_me: error: in '$ac_pwd':" >&2;}
+as_fn_error $? "non supported compiler runtime library
+See 'config.log' for more details" "$LINENO" 5; } ;;
+  esac ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_cv_runtime_library" >&5
+printf "%s\n" "$libc_cv_runtime_library" >&6; }
+config_vars="$config_vars
+libgcc-name = $libc_cv_libgcc"
+config_vars="$config_vars
+libgcc_eh-name = $libc_cv_libgcc_eh"
+
 # Check if compiler runtime library provides __sfp_handle_exceptions
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for __sfp_handle_exceptions support" >&5

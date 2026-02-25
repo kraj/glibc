@@ -716,20 +716,20 @@ else
 endif
 libgcc_eh := -Wl,--as-needed -lgcc_s $(libunwind) -Wl,--no-as-needed
 gnulib-arch =
-gnulib = -lgcc $(gnulib-arch)
-gnulib-tests := -lgcc $(libgcc_eh)
+gnulib = $(libgcc-name) $(gnulib-arch)
+gnulib-tests := $(libgcc-name) $(libgcc_eh)
 gnulib-extralibdir = $(dir $(shell $(CC) -print-file-name=libgcc_s.so$(libgcc_s.so-version)))
 static-gnulib-arch =
 # By default, elf/static-stubs.o, instead of -lgcc_eh, is used to
 # statically link programs.  When --disable-shared is used, we use
 # -lgcc_eh since elf/static-stubs.o isn't sufficient.
 ifeq (yes,$(build-shared))
-static-gnulib = -lgcc $(static-gnulib-arch)
+static-gnulib = $(libgcc-name) $(static-gnulib-arch)
 else
-static-gnulib = -lgcc -lgcc_eh $(static-gnulib-arch)
+static-gnulib = $(libgcc-name) $(libgcc_eh-name) $(static-gnulib-arch)
 endif
-static-gnulib-tests := -lgcc -lgcc_eh $(libunwind)
-libc.so-gnulib := -lgcc
+static-gnulib-tests := $(libgcc-name) $(libgcc_eh-name) $(libunwind)
+libc.so-gnulib := $(libgcc-name)
 endif
 +preinit = $(addprefix $(csu-objpfx),crti.o)
 +postinit = $(addprefix $(csu-objpfx),crtn.o)
