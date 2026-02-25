@@ -319,7 +319,7 @@ LINKS_DSO_PROGRAM = links-dso-program-c
 LDLIBS-links-dso-program-c = $(gnulib)
 ifeq ($(have-libgcc_s),yes)
 CFLAGS-links-dso-program-c.c += -fexceptions
-LDLIBS-links-dso-program-c += -lgcc_s $(libunwind)
+LDLIBS-links-dso-program-c += $(libgcc_s) $(libunwind)
 endif
 else
 LINKS_DSO_PROGRAM = links-dso-program

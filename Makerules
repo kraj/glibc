@@ -565,7 +565,8 @@ $(LINK.o) -shared -static-libgcc $(sysdep-LDFLAGS) $(rtld-LDFLAGS) \
 	  -B$(csu-objpfx) $(load-map-file) \
 	  $(LDFLAGS.so) $(LDFLAGS-$(@F:%.so=%).so) \
 	  $(link-test-modules-rpath-link) \
-	  -L$(subst :, -L,$(rpath-link)) -Wl,-rpath-link=$(rpath-link)
+	  -L$(subst :, -L,$(rpath-link)) -Wl,-rpath-link=$(rpath-link) \
+	  $(libgcc_eh)
 endef
 
 # This macro is similar to build-shlib but it does not define a soname

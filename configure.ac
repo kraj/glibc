@@ -1289,13 +1289,13 @@ if test $libc_cv_have_sdata_section = yes; then
   AC_DEFINE(HAVE_SDATA_SECTION)
 fi
 
-AC_CACHE_CHECK(for libunwind-support in compiler,
-	       libc_cv_cc_with_libunwind, [
-  cat > conftest.c <<EOF
+AC_CACHE_CHECK(whether the compiler links with libunwind,
+	       libc_cv_cc_with_libunwind, [dnl
+cat > conftest.c <<EOF
 int main (void) { return 0; }
 EOF
   if ${CC-cc} $CFLAGS $CPPFLAGS $LDFLAGS -static -o conftest \
-     conftest.c -v 2>&1 >/dev/null | grep ' -lunwind ' >/dev/null; then
+     conftest.c -v 2>&1 >/dev/null | grep 'libunwind.a' >/dev/null; then
     libc_cv_cc_with_libunwind=yes
   else
     libc_cv_cc_with_libunwind=no
@@ -1305,6 +1305,7 @@ AC_SUBST(libc_cv_cc_with_libunwind)
 if test $libc_cv_cc_with_libunwind = yes; then
   AC_DEFINE(HAVE_CC_WITH_LIBUNWIND)
 fi
+LIBC_CONFIG_VAR([have-cc-with-libunwind], [$libc_cv_cc_with_libunwind])
 
 ASFLAGS_config=
 AC_CACHE_CHECK(whether --noexecstack is desirable for .S files,

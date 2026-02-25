@@ -69,7 +69,6 @@ no-fortify-source = @no_fortify_source@
 have-selinux = @have_selinux@
 have-libaudit = @have_libaudit@
 have-libcap = @have_libcap@
-have-cc-with-libunwind = @libc_cv_cc_with_libunwind@
 bind-now = @bindnow@
 have-cxx-thread_local = @libc_cv_cxx_thread_local@
 have-loop-to-function = @libc_cv_cc_loop_to_function@

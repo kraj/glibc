@@ -711,10 +711,12 @@ link-libc-static-tests = -Wl,--start-group $(common-objpfx)libc.a $(static-gnuli
 ifndef gnulib
 ifneq ($(have-cc-with-libunwind),yes)
   libunwind =
+  libgcc_s  = -lgcc_s
 else
-  libunwind = -lunwind
+  libunwind = -lunwind $(libgcc-name)
+  libgcc_s = $(libunwind)
 endif
-libgcc_eh := -Wl,--as-needed -lgcc_s $(libunwind) -Wl,--no-as-needed
+libgcc_eh := -Wl,--as-needed $(libgcc_s) -Wl,--no-as-needed
 gnulib-arch =
 gnulib = $(libgcc-name) $(gnulib-arch)
 gnulib-tests := $(libgcc-name) $(libgcc_eh)

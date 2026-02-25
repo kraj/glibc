@@ -7069,18 +7069,17 @@ if test $libc_cv_have_sdata_section = yes; then
 
 fi
 
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for libunwind-support in compiler" >&5
-printf %s "checking for libunwind-support in compiler... " >&6; }
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether the compiler links with libunwind" >&5
+printf %s "checking whether the compiler links with libunwind... " >&6; }
 if test ${libc_cv_cc_with_libunwind+y}
 then :
   printf %s "(cached) " >&6
 else case e in #(
-  e)
-  cat > conftest.c <<EOF
+  e) cat > conftest.c <<EOF
 int main (void) { return 0; }
 EOF
   if ${CC-cc} $CFLAGS $CPPFLAGS $LDFLAGS -static -o conftest \
-     conftest.c -v 2>&1 >/dev/null | grep ' -lunwind ' >/dev/null; then
+     conftest.c -v 2>&1 >/dev/null | grep 'libunwind.a' >/dev/null; then
     libc_cv_cc_with_libunwind=yes
   else
     libc_cv_cc_with_libunwind=no
@@ -7095,6 +7094,8 @@ if test $libc_cv_cc_with_libunwind = yes; then
   printf "%s\n" "#define HAVE_CC_WITH_LIBUNWIND 1" >>confdefs.h
 
 fi
+config_vars="$config_vars
+have-cc-with-libunwind = $libc_cv_cc_with_libunwind"
 
 ASFLAGS_config=
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether --noexecstack is desirable for .S files" >&5
