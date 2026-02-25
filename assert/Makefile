@@ -36,6 +36,7 @@ routines := \
 tests := \
   test-assert \
   test-assert-2 \
+  test-assert-c++-variadic \
   test-assert-c99 \
   test-assert-gnu99 \
   test-assert-perr \
@@ -49,12 +50,15 @@ CFLAGS-test-assert-c99.c += -std=c99
 CFLAGS-test-assert-gnu99.c += -std=gnu99
 
 ifeq ($(have-cxx-thread_local),yes)
+CFLAGS-test-assert-c++-variadic.o = $(test-config-cxxflags-stdcxx26)
+LDLIBS-test-assert-c++-variadic = -lstdc++
 CFLAGS-tst-assert-c++.o = -std=c++11
 LDLIBS-tst-assert-c++ = -lstdc++
 CFLAGS-tst-assert-g++.o = -std=gnu++11
 LDLIBS-tst-assert-g++ = -lstdc++
 else
 tests-unsupported += \
+  test-assert-c++-variadic \
   tst-assert-c++ \
   tst-assert-g++ \
   # tests-unsupported

@@ -8344,6 +8344,40 @@ CXX="$saved_CXX"
 config_vars="$config_vars
 test-config-cxxflags-finput-charset-ascii = $libc_cv_test_cxxflags_finput_charset_ascii"
 
+
+
+saved_CXX="$CXX"
+CXX="$TEST_CXX"
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking $CXX -std=c++26 in testing" >&5
+printf %s "checking $CXX -std=c++26 in testing... " >&6; }
+if test ${libc_cv_test_cxxflags_stdcxx26+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) if { ac_try='${CXX-c++} -Werror -std=c++26 -xc++ /dev/null -S -o /dev/null'
+  { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; }
+then :
+  libc_cv_test_cxxflags_stdcxx26="-std=c++26"
+else case e in #(
+  e) libc_cv_test_cxxflags_stdcxx26=
+ ;;
+esac
+fi ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_cv_test_cxxflags_stdcxx26" >&5
+printf "%s\n" "$libc_cv_test_cxxflags_stdcxx26" >&6; }
+
+CXX="$saved_CXX"
+
+
+config_vars="$config_vars
+test-config-cxxflags-stdcxx26 = $libc_cv_test_cxxflags_stdcxx26"
+
 conftest_code="
 extern int not_exist (void);
 

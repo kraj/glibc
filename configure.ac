@@ -1696,6 +1696,16 @@ LIBC_TRY_TEST_CXX_OPTION([$CXX -finput-charset=ascii],
 LIBC_CONFIG_VAR(test-config-cxxflags-finput-charset-ascii,
 		$libc_cv_test_cxxflags_finput_charset_ascii)
 
+dnl Check if TEST_CXX supports -std=c++26.
+LIBC_TRY_TEST_CXX_OPTION([$CXX -std=c++26],
+  [-Werror -std=c++26],
+  libc_cv_test_cxxflags_stdcxx26,
+  [libc_cv_test_cxxflags_stdcxx26="-std=c++26"],
+  [libc_cv_test_cxxflags_stdcxx26=]
+)
+LIBC_CONFIG_VAR(test-config-cxxflags-stdcxx26,
+		$libc_cv_test_cxxflags_stdcxx26)
+
 conftest_code="
 extern int not_exist (void);
 

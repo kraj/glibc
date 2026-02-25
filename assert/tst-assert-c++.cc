@@ -22,6 +22,11 @@
 #include <assert.h>
 
 #if __GNUC_PREREQ (5, 0)
+template <typename> struct is_void { static const bool value = false; };
+template <> struct is_void <void> { static const bool value = true; };
+
+static_assert(is_void <decltype (assert (""))>::value, "type is void");
+
 /* The C++ standard requires that if the assert argument is a constant
    subexpression, then the assert itself is one, too.  */
 constexpr int
@@ -63,6 +68,15 @@ struct bool_and_int
   template <class T> bool operator!= (T) const; /* No definition.  */
 };
 
+/* Scoped enumerations are not contextually convertible to bool. */
+enum class E { e1 = 1 };
+
+int&
+preincrement (int& i)
+{
+  return ++i;
+}
+
 static int
 do_test ()
 {
@@ -76,8 +90,30 @@ do_test ()
     assert (value);
   }
 
+  {
+    assert ([] { return true; } ());
+  }
+
+  {
+    assert (bool (E::e1));
+    /* Ill-formed, E::e1 is not contextually convertible to bool. */
+    // assert (E::e1);
+  }
+
+  {
+    int i = 0;
+    assert (preincrement (i) > 0);
+    if (i != 1)
+      return 1;
+  }
+
   return 0;
 }
+#define NDEBUG
+#include <assert.h>
+
+static_assert(is_void <decltype (assert (""))>::value, "type is void with NDEBUG");
+
 #else
 #include <support/test-driver.h>
 
