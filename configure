@@ -9402,6 +9402,88 @@ printf "%s\n" "$libc_cv_have_libgcc_s" >&6; }
 config_vars="$config_vars
 have-libgcc_s = $libc_cv_have_libgcc_s"
 
+# Check if compiler runtime library provides __sfp_handle_exceptions
+
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for __sfp_handle_exceptions support" >&5
+printf %s "checking for __sfp_handle_exceptions support... " >&6; }
+if test ${libc_cv_sfp_handle_exceptions+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e)
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main (void)
+{
+void __sfp_handle_exceptions (int); __sfp_handle_exceptions (0)
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  libc_cv_sfp_handle_exceptions=yes
+else case e in #(
+  e) libc_cv_sfp_handle_exceptions=no ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+ ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_cv_sfp_handle_exceptions" >&5
+printf "%s\n" "$libc_cv_sfp_handle_exceptions" >&6; }
+if test "$TEST_CC" = "$CC"; then
+  libc_cv_test_sfp_handle_exceptions=$libc_cv_sfp_handle_exceptions
+else
+
+saved_CC="$CC"
+CC="$TEST_CC"
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for __sfp_handle_exceptions support in testing" >&5
+printf %s "checking for __sfp_handle_exceptions support in testing... " >&6; }
+if test ${libc_cv_test_sfp_handle_exceptions+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e)
+      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main (void)
+{
+void __sfp_handle_exceptions (int); __sfp_handle_exceptions (0)
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  libc_cv_test_sfp_handle_exceptions=yes
+else case e in #(
+  e) libc_cv_test_sfp_handle_exceptions=no ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+     ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_cv_test_sfp_handle_exceptions" >&5
+printf "%s\n" "$libc_cv_test_sfp_handle_exceptions" >&6; }
+
+CC="$saved_CC"
+
+fi
+
+if test $libc_cv_sfp_handle_exceptions = yes; then
+  printf "%s\n" "#define HAVE_SFP_HANDLE_EXCEPTIONS 1" >>confdefs.h
+
+fi
+
 # Support configure.ac under sysdeps.
 
 

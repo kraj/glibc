@@ -2144,6 +2144,19 @@ AC_CACHE_CHECK([whether $CC can link against -lgcc_s], libc_cv_have_libgcc_s, [d
   LIBS="$old_LIBS"])
 LIBC_CONFIG_VAR([have-libgcc_s], [$libc_cv_have_libgcc_s])
 
+# Check if compiler runtime library provides __sfp_handle_exceptions
+LIBC_TRY_CC_AND_TEST_LINK([for __sfp_handle_exceptions support],
+  [void __sfp_handle_exceptions (int); __sfp_handle_exceptions (0)],
+  libc_cv_sfp_handle_exceptions,
+  [libc_cv_sfp_handle_exceptions=yes],
+  [libc_cv_sfp_handle_exceptions=no],
+  libc_cv_test_sfp_handle_exceptions,
+  [libc_cv_test_sfp_handle_exceptions=yes],
+  [libc_cv_test_sfp_handle_exceptions=no])
+if test $libc_cv_sfp_handle_exceptions = yes; then
+  AC_DEFINE([HAVE_SFP_HANDLE_EXCEPTIONS])
+fi
+
 # Support configure.ac under sysdeps.
 AC_SUBST(libc_cv_test_cc_mprefer_vector_width)
 AC_SUBST(test_enable_cet)

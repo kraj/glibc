@@ -228,6 +228,9 @@
 /* Set to 1 if 64 bit atomics are supported.  */
 #undef HAVE_64B_ATOMICS
 
+/* Define to 1 if compiler runtime provides __sfp_handle_exceptions */
+#undef HAVE_SFP_HANDLE_EXCEPTIONS
+
 /*
  */
 

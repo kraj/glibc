@@ -2,7 +2,10 @@ ifeq ($(subdir),math)
 # sqrtf128 requires soft-fp.
 CPPFLAGS += -I../soft-fp
 
-libm-support += powl_helper
+libm-support += \
+  powl_helper \
+  sfp-exceptions \
+  # libm-support
 tests += \
   test-fenv-clear-sse \
   test-fenv-sse \
