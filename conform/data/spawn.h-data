@@ -1,7 +1,7 @@
 #if !defined ISO && !defined ISO99 && !defined ISO11 && !defined ISO23 && !defined POSIX && !defined XPG4 && !defined XPG42 && !defined UNIX98
 type posix_spawnattr_t
 type posix_spawn_file_actions_t
-# if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
+# if defined XOPEN2K8 || defined XOPEN2K24 || defined POSIX2008 || defined POSIX2024
 type mode_t
 type pid_t
 type sigset_t

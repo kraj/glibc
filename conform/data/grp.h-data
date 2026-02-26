@@ -11,7 +11,7 @@ element {struct group} {char**} gr_mem
 # ifndef POSIX
 type gid_t
 # endif
-# if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
+# if defined XOPEN2K8 || defined XOPEN2K24 || defined POSIX2008 || defined POSIX2024
 type size_t
 # endif
 

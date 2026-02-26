@@ -16,7 +16,7 @@ constant WRDE_BADCHAR
 constant WRDE_BADVAL
 constant WRDE_CMDSUB
 constant WRDE_NOSPACE
-# if !defined POSIX && !defined XOPEN2K8 && !defined POSIX2008 && !defined POSIX2024
+# if !defined POSIX && !defined XOPEN2K8 && !defined XOPEN2K24 && !defined POSIX2008 && !defined POSIX2024
 constant WRDE_NOSYS
 # endif
 constant WRDE_SYNTAX

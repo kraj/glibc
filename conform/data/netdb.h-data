@@ -35,7 +35,7 @@ element {struct servent} {char*} s_proto
 
 macro IPPORT_RESERVED
 
-#if !defined XOPEN2K8 && !defined POSIX2008 && !defined POSIX2024
+#if !defined XOPEN2K8 && !defined XOPEN2K24 && !defined POSIX2008 && !defined POSIX2024
 // variable int h_errno
 allow h_errno
 

@@ -3,7 +3,7 @@ constant FNM_NOMATCH
 constant FNM_PATHNAME
 constant FNM_PERIOD
 constant FNM_NOESCAPE
-#if !defined POSIX && !defined XOPEN2K8 && !defined POSIX2008 && !defined POSIX2024
+#if !defined POSIX && !defined XOPEN2K8 && !defined XOPEN2K24 && !defined POSIX2008 && !defined POSIX2024
 constant FNM_NOSYS
 #endif
 

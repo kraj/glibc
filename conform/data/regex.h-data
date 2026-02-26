@@ -29,7 +29,7 @@ constant REG_BADBR
 constant REG_ERANGE
 constant REG_ESPACE
 constant REG_BADRPT
-# if !defined POSIX && !defined XOPEN2K8 && !defined POSIX2008 && !defined POSIX2024
+# if !defined POSIX && !defined XOPEN2K8 && !defined XOPEN2K24 && !defined POSIX2008 && !defined POSIX2024
 constant REG_ENOSYS
 # endif
 

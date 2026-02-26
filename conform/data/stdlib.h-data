@@ -12,7 +12,7 @@ macro-constant NULL == 0
 macro-int-constant RAND_MAX >= 32767
 macro MB_CUR_MAX
 
-#if defined ISO99 || defined ISO11 || defined ISO23 || defined XOPEN2K || defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
+#if defined ISO99 || defined ISO11 || defined ISO23 || defined XOPEN2K || defined XOPEN2K8 || defined XOPEN2K24 || defined POSIX2008 || defined POSIX2024
 type lldiv_t
 element lldiv_t {long long} quot
 element lldiv_t {long long} rem
@@ -103,10 +103,10 @@ function {void*} malloc (size_t)
 function int mblen (const char*, size_t)
 function size_t mbstowcs (wchar_t*, const char*, size_t)
 function int mbtowc (wchar_t*, const char*, size_t)
-#if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
+#if defined XOPEN2K8 || defined XOPEN2K24 || defined POSIX2008 || defined POSIX2024
 function {char*} mkdtemp (char*)
 #endif
-#if !defined ISO && !defined ISO99 && !defined ISO11 && !defined ISO23 && !defined XPG4 && !defined POSIX && !defined XOPEN2K8 && !defined POSIX2008 && !defined POSIX2024
+#if !defined ISO && !defined ISO99 && !defined ISO11 && !defined ISO23 && !defined XPG4 && !defined POSIX && !defined XOPEN2K8 && !defined XOPEN2K24 && !defined POSIX2008 && !defined POSIX2024
 function {char*} mktemp (char*)
 #endif
 #if !defined ISO && !defined ISO99 && !defined ISO11 && !defined ISO23 && !defined XPG4 && !defined POSIX
@@ -116,10 +116,10 @@ function int mkstemp (char*)
 function {long int} mrand48 (void)
 function {long int} nrand48 (unsigned short int[3])
 #endif
-#if defined XOPEN2K || defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
+#if defined XOPEN2K || defined XOPEN2K8 || defined XOPEN2K24 || defined POSIX2008 || defined POSIX2024
 function int posix_memalign (void**, size_t, size_t)
 #endif
-#if defined XOPEN2K || defined XOPEN2K8
+#if defined XOPEN2K || defined XOPEN2K8 || defined XOPEN2K24
 function int posix_openpt (int)
 #endif
 #if !defined ISO && !defined ISO99 && !defined ISO11 && !defined ISO23 && !defined XPG4 && !defined POSIX && !defined POSIX2008 && !defined POSIX2024
@@ -133,7 +133,7 @@ function void qsort (void*, size_t, size_t, int(*)(const void*, const void*))
 function void quick_exit (int)
 #endif
 function int rand (void)
-#if defined POSIX || defined UNIX98 || defined XOPEN2K || defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
+#if defined POSIX || defined UNIX98 || defined XOPEN2K || defined XOPEN2K8 || defined XOPEN2K24 || defined POSIX2008 || defined POSIX2024
 function int rand_r (unsigned int*)
 #endif
 #if !defined ISO && !defined ISO99 && !defined ISO11 && !defined ISO23 && !defined XPG4 && !defined POSIX && !defined POSIX2008 && !defined POSIX2024

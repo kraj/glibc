@@ -67,7 +67,7 @@ constant S_ISVTX
 #endif
 #endif
 
-#if defined XOPEN2K || defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
+#if defined XOPEN2K || defined XOPEN2K8 || defined XOPEN2K24 || defined POSIX2008 || defined POSIX2024
 constant POSIX_FADV_NORMAL
 constant POSIX_FADV_SEQUENTIAL
 constant POSIX_FADV_RANDOM
@@ -96,15 +96,15 @@ type pid_t
 function int creat (const char*, mode_t)
 function int fcntl (int, int, ...)
 function int open (const char*, int, ...)
-#if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
+#if defined XOPEN2K8 || defined XOPEN2K24 || defined POSIX2008 || defined POSIX2024
 function int openat (int, const char*, int, ...)
 #endif
-#if defined XOPEN2K || defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
+#if defined XOPEN2K || defined XOPEN2K8 || defined XOPEN2K24 || defined POSIX2008 || defined POSIX2024
 function int posix_fadvise (int, off_t, off_t, int)
 function int posix_fallocate (int, off_t, off_t)
 #endif
 
-#if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
+#if defined XOPEN2K8 || defined XOPEN2K24 || defined POSIX2008 || defined POSIX2024
 // Bug 18228: O_TTY_INIT, O_EXEC, O_SEARCH missing.
 xfail-constant O_TTY_INIT
 constant O_CLOEXEC

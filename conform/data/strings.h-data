@@ -1,5 +1,5 @@
 #if !defined ISO && !defined ISO99 && !defined ISO11 && !defined ISO23 && !defined POSIX && !defined XPG4
-# if !defined XOPEN2K8 && !defined POSIX2008 && !defined POSIX2024
+# if !defined XOPEN2K8 && !defined XOPEN2K24 && !defined POSIX2008 && !defined POSIX2024
 function int bcmp (const void*, const void*, size_t)
 function void bcopy (const void*, void*, size_t)
 function void bzero (void*, size_t)
@@ -11,13 +11,13 @@ function int ffs (int)
 # endif
 function int strcasecmp (const char*, const char*)
 function int strncasecmp (const char*, const char*, size_t)
-# if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
+# if defined XOPEN2K8 || defined XOPEN2K24 || defined POSIX2008 || defined POSIX2024
 function int strcasecmp_l (const char*, const char*, locale_t)
 function int strncasecmp_l (const char*, const char*, size_t, locale_t)
 # endif
 
 type size_t
-# if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
+# if defined XOPEN2K8 || defined XOPEN2K24 || defined POSIX2008 || defined POSIX2024
 type locale_t
 # endif
 

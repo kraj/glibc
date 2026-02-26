@@ -3,7 +3,7 @@ type socklen_t
 
 type sa_family_t
 
-# if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
+# if defined XOPEN2K8 || defined XOPEN2K24 || defined POSIX2008 || defined POSIX2024
 type size_t
 type ssize_t
 # endif
@@ -83,7 +83,7 @@ macro MSG_OOB
 macro MSG_PEEK
 macro MSG_TRUNC
 macro MSG_WAITALL
-# if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
+# if defined XOPEN2K8 || defined XOPEN2K24 || defined POSIX2008 || defined POSIX2024
 constant MSG_NOSIGNAL
 # endif
 

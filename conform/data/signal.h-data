@@ -15,7 +15,7 @@ type pid_t
 # define pid_t __pid_t
 # define uid_t __uid_t
 #endif
-#if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
+#if defined XOPEN2K8 || defined XOPEN2K24 || defined POSIX2008 || defined POSIX2024
 type size_t
 type pthread_t
 type uid_t
@@ -35,7 +35,7 @@ element {struct timespec} __time_t tv_sec
 xfail[x86_64-x32-linux]-element {struct timespec} long tv_nsec
 #endif
 
-#if defined POSIX || defined UNIX98 || defined XOPEN2K || defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
+#if defined POSIX || defined UNIX98 || defined XOPEN2K || defined XOPEN2K8 || defined XOPEN2K24 || defined POSIX2008 || defined POSIX2024
 element {union sigval} int sival_int
 element {union sigval} {void*} sival_ptr
 
@@ -148,7 +148,7 @@ element stack_t {void*} ss_sp
 element stack_t size_t ss_size
 element stack_t int ss_flags
 
-#  if !defined XOPEN2K8 && !defined POSIX2008 && !defined POSIX2024
+#  if !defined XOPEN2K8 && !defined XOPEN2K24 && !defined POSIX2008 && !defined POSIX2024
 type {struct sigstack}
 
 element {struct sigstack} int ss_onstack
@@ -224,7 +224,7 @@ constant SI_ASYNCIO
 constant SI_MESGQ
 # endif
 
-# if !defined XPG4 && !defined XOPEN2K8 && !defined POSIX && !defined POSIX2008 && !defined POSIX2024
+# if !defined XPG4 && !defined XOPEN2K8 && !defined XOPEN2K24 && !defined POSIX && !defined POSIX2008 && !defined POSIX2024
 function void (*bsd_signal (int, void(*)(int)))(int)
 # endif
 function int kill (pid_t, int)
@@ -272,7 +272,7 @@ function int sigtimedwait (const sigset_t*, siginfo_t*, const struct timespec*)
 function int sigwait (const sigset_t*, int*)
 function int sigwaitinfo (const sigset_t*, siginfo_t*)
 # endif
-# if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
+# if defined XOPEN2K8 || defined XOPEN2K24 || defined POSIX2008 || defined POSIX2024
 function void psiginfo (const siginfo_t*, const char*)
 function void psignal (int, const char*)
 # endif

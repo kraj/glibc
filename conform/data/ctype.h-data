@@ -25,7 +25,7 @@ function int _toupper (int)
 function int _tolower (int)
 #endif
 
-# if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
+# if defined XOPEN2K8 || defined XOPEN2K24 || defined POSIX2008 || defined POSIX2024
 type locale_t
 
 function int isalnum_l (int, locale_t)

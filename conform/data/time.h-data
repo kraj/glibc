@@ -43,7 +43,7 @@ function int timespec_get (struct timespec *, int)
 #endif
 
 #if !defined ISO && !defined ISO99 && !defined ISO11 && !defined ISO23
-# if !defined XOPEN2K && !defined XOPEN2K8 && !defined POSIX2008 && !defined POSIX2024
+# if !defined XOPEN2K && !defined XOPEN2K8 && !defined XOPEN2K24 && !defined POSIX2008 && !defined POSIX2024
 symbol CLK_TCK
 # endif
 # if !defined XPG4 && !defined XPG42
@@ -67,7 +67,7 @@ type clockid_t
 type timer_t
 # endif
 
-# if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
+# if defined XOPEN2K8 || defined XOPEN2K24 || defined POSIX2008 || defined POSIX2024
 type pid_t
 type locale_t
 tag {struct sigevent}
@@ -100,7 +100,7 @@ function {struct tm*} localtime_r (const time_t*, struct tm*)
 # if !defined XPG4 && !defined XPG42
 function int nanosleep (const struct timespec*, struct timespec*)
 # endif
-# if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
+# if defined XOPEN2K8 || defined XOPEN2K24 || defined POSIX2008 || defined POSIX2024
 function size_t strftime_l (char*, size_t, const char*, const struct tm*, locale_t)
 # endif
 # if !defined POSIX && !defined POSIX2008 && !defined POSIX2024

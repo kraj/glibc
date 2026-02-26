@@ -14,7 +14,7 @@ element {struct passwd} {char*} pw_shell
 # ifndef POSIX
 type uid_t
 type gid_t
-#  if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
+#  if defined XOPEN2K8 || defined XOPEN2K24 || defined POSIX2008 || defined POSIX2024
 type size_t
 #  endif
 # endif

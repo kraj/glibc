@@ -5,7 +5,7 @@ type tcflag_t
 
 type {struct termios}
 
-#if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
+#if defined XOPEN2K8 || defined XOPEN2K24 || defined POSIX2008 || defined POSIX2024
 type pid_t
 #endif
 
@@ -37,7 +37,7 @@ constant IGNPAR
 constant INLCR
 constant INPCK
 constant ISTRIP
-# if !defined POSIX && !defined XOPEN2K && !defined XOPEN2K8 && !defined POSIX2008 && !defined POSIX2024
+# if !defined POSIX && !defined XOPEN2K && !defined XOPEN2K8 && !defined XOPEN2K24 && !defined POSIX2008 && !defined POSIX2024
 constant IUCLC
 # endif
 # ifndef POSIX
@@ -48,7 +48,7 @@ constant IXON
 constant PARMRK
 
 constant OPOST
-# if !defined POSIX && !defined XOPEN2K && !defined XOPEN2K8 && !defined POSIX2008 && !defined POSIX2024
+# if !defined POSIX && !defined XOPEN2K && !defined XOPEN2K8 && !defined XOPEN2K24 && !defined POSIX2008 && !defined POSIX2024
 constant OLCUC
 # endif
 # if !defined POSIX && !defined POSIX2008 && !defined POSIX2024
@@ -120,7 +120,7 @@ constant IEXTEN
 constant ISIG
 constant NOFLSH
 constant TOSTOP
-# if !defined POSIX && !defined XOPEN2K && !defined XOPEN2K8 && !defined POSIX2008 && !defined POSIX2024
+# if !defined POSIX && !defined XOPEN2K && !defined XOPEN2K8 && !defined XOPEN2K24 && !defined POSIX2008 && !defined POSIX2024
 constant XCASE
 # endif
 
