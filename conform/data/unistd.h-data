@@ -74,7 +74,7 @@ optional-constant _POSIX_V6_ILP32_OFFBIG
 optional-constant _POSIX_V6_LP64_OFF64
 optional-constant _POSIX_V6_LPBIG_OFFBIG
 # endif
-# if defined XOPEN2K8 || defined POSIX2008
+# if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
 optional-constant _POSIX_V7_ILP32_OFF32
 optional-constant _POSIX_V7_ILP32_OFFBIG
 optional-constant _POSIX_V7_LP64_OFF64
@@ -85,7 +85,7 @@ optional-constant _POSIX2_C_DEV
 optional-constant _POSIX2_FORT_DEV
 optional-constant _POSIX2_FORT_RUN
 optional-constant _POSIX2_SW_DEV
-# if !defined POSIX && !defined POSIX2008
+# if !defined POSIX && !defined POSIX2008 && !defined POSIX2024
 optional-constant _XOPEN_CRYPT
 optional-constant _XOPEN_ENH_I18N
 optional-constant _XOPEN_LEGACY
@@ -313,14 +313,14 @@ constant _SC_V6_ILP32_OFFBIG
 constant _SC_V6_LP64_OFF64
 constant _SC_V6_LPBIG_OFFBIG
 # endif
-# if defined XOPEN2K8 || defined POSIX2008
+# if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
 constant _SC_V7_ILP32_OFF32
 constant _SC_V7_ILP32_OFFBIG
 constant _SC_V7_LP64_OFF64
 constant _SC_V7_LPBIG_OFFBIG
 # endif
 constant _SC_VERSION
-# if !defined POSIX && !defined POSIX2008
+# if !defined POSIX && !defined POSIX2008 && !defined POSIX2024
 constant _SC_XOPEN_VERSION
 constant _SC_XOPEN_CRYPT
 constant _SC_XOPEN_ENH_I18N
@@ -354,7 +354,7 @@ constant _CS_POSIX_V6_LPBIG_OFFBIG_LIBS
 constant _CS_POSIX_V6_WIDTH_RESTRICTED_ENVS
 constant _CS_V6_ENV
 # endif
-# if defined XOPEN2K8 || defined POSIX2008
+# if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
 constant _CS_POSIX_V7_ILP32_OFF32_CFLAGS
 constant _CS_POSIX_V7_ILP32_OFF32_LDFLAGS
 constant _CS_POSIX_V7_ILP32_OFF32_LIBS
@@ -375,7 +375,7 @@ constant _SC_THREAD_ROBUST_PRIO_INHERIT
 constant _SC_THREAD_ROBUST_PRIO_PROTECT
 #endif
 
-#if !defined XPG4 && !defined POSIX && !defined POSIX2008
+#if !defined XPG4 && !defined POSIX && !defined POSIX2008 && !defined POSIX2024
 constant F_LOCK
 constant F_ULOCK
 constant F_TEST
@@ -427,7 +427,7 @@ type intptr_t
 
 function int access (const char*, int)
 function {unsigned int} alarm (unsigned int)
-#if !defined XOPEN2K && !defined XOPEN2K8 && !defined XPG4 && !defined POSIX && !defined POSIX2008
+#if !defined XOPEN2K && !defined XOPEN2K8 && !defined XPG4 && !defined POSIX && !defined POSIX2008 && !defined POSIX2024
 function int brk (void*)
 #endif
 function int chdir (const char*)
@@ -453,13 +453,13 @@ function int execv (const char*, char *const[])
 function int execve (const char*, char *const[], char *const[])
 function int execvp (const char*, char *const[])
 function void _exit (int)
-# if defined XOPEN2K8 || defined POSIX2008
+# if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
 function int faccessat (int, const char*, int, int)
 # endif
 #if !defined XPG4 && !defined POSIX
 function int fchown (int, uid_t, gid_t)
 #endif
-# if defined XOPEN2K8 || defined POSIX2008
+# if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
 function int fchownat (int, const char*, uid_t, gid_t, int)
 # endif
 #if !defined XPG4 && !defined POSIX
@@ -468,7 +468,7 @@ function int fchdir (int)
 #if !defined XPG4 && !defined XPG42
 function int fdatasync (int)
 #endif
-# if defined XOPEN2K8 || defined POSIX2008
+# if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
 function int fexecve (int, char *const[], char *const[])
 # endif
 function pid_t fork (void)
@@ -478,14 +478,14 @@ function int fsync (int)
 function int ftruncate (int, off_t)
 #endif
 function {char*} getcwd (char*, size_t)
-#if !defined XOPEN2K && !defined XOPEN2K8 && !defined XPG4 && !defined POSIX && !defined POSIX2008
+#if !defined XOPEN2K && !defined XOPEN2K8 && !defined XPG4 && !defined POSIX && !defined POSIX2008 && !defined POSIX2024
 function int getdtablesize (void)
 #endif
 function gid_t getegid (void)
 function uid_t geteuid (void)
 function gid_t getgid (void)
 function int getgroups (int, gid_t[])
-#if !defined XPG4 && !defined POSIX && !defined POSIX2008
+#if !defined XPG4 && !defined POSIX && !defined POSIX2008 && !defined POSIX2024
 function long gethostid (void)
 #endif
 #if !defined POSIX && !defined XPG4
@@ -520,14 +520,14 @@ function int isatty (int)
 function int lchown (const char*, uid_t, gid_t)
 #endif
 function int link (const char*, const char*)
-# if defined XOPEN2K8 || defined POSIX2008
+# if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
 function int linkat (int, const char*, int, const char*, int)
 # endif
-# if !defined XPG4 && !defined POSIX && !defined POSIX2008
+# if !defined XPG4 && !defined POSIX && !defined POSIX2008 && !defined POSIX2024
 function int lockf (int, int, off_t)
 # endif
 function off_t lseek (int, off_t, int)
-# if !defined POSIX && !defined POSIX2008
+# if !defined POSIX && !defined POSIX2008 && !defined POSIX2024
 function int nice (int)
 # endif
 function {long int} pathconf (const char*, int)
@@ -536,7 +536,7 @@ function int pipe (int[2])
 #if !defined POSIX && !defined XPG4 && !defined XPG42
 function ssize_t pread (int, void*, size_t, off_t)
 #endif
-#if !defined POSIX && !defined XOPEN2K && !defined XOPEN2K8 && !defined POSIX2008 && !defined XPG4 && !defined XPG42
+#if !defined POSIX && !defined XOPEN2K && !defined XOPEN2K8 && !defined POSIX2008 && !defined POSIX2024 && !defined XPG4 && !defined XPG42
 function int pthread_atfork (void(*)(void), void(*)(void), void(*)(void))
 #endif
 #if !defined POSIX && !defined XPG4 && !defined XPG42
@@ -546,11 +546,11 @@ function ssize_t read (int, void*, size_t)
 #if !defined XPG4 && !defined POSIX
 function ssize_t readlink (const char*, char*, size_t)
 #endif
-# if defined XOPEN2K8 || defined POSIX2008
+# if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
 function ssize_t readlinkat (int, const char*, char*, size_t)
 # endif
 function int rmdir (const char*)
-#if !defined XOPEN2K && !defined XOPEN2K8 && !defined XPG4 && !defined POSIX && !defined POSIX2008
+#if !defined XOPEN2K && !defined XOPEN2K8 && !defined XPG4 && !defined POSIX && !defined POSIX2008 && !defined POSIX2024
 function {void*} sbrk (intptr_t)
 #endif
 #if !defined POSIX && !defined XPG4 && !defined XPG42 && !defined UNIX98
@@ -559,7 +559,7 @@ function int seteuid (uid_t)
 #endif
 function int setgid (gid_t)
 function int setpgid (pid_t, pid_t)
-# if !defined XPG4 && !defined POSIX && !defined POSIX2008
+# if !defined XPG4 && !defined POSIX && !defined POSIX2008 && !defined POSIX2024
 function pid_t setpgrp (void)
 function int setregid (gid_t, gid_t)
 function int setreuid (uid_t, uid_t)
@@ -567,16 +567,16 @@ function int setreuid (uid_t, uid_t)
 function pid_t setsid (void)
 function int setuid (uid_t)
 function {unsigned int} sleep (unsigned int)
-# if !defined POSIX && !defined POSIX2008
+# if !defined POSIX && !defined POSIX2008 && !defined POSIX2024
 function void swab (const void*, void*, ssize_t)
 # endif
 #if !defined XPG4 && !defined POSIX
 function int symlink (const char*, const char*)
 # endif
-# if defined XOPEN2K8 || defined POSIX2008
+# if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
 function int symlinkat (const char*, int, const char*)
 # endif
-# if !defined XPG4 && !defined POSIX && !defined POSIX2008
+# if !defined XPG4 && !defined POSIX && !defined POSIX2008 && !defined POSIX2024
 function void sync (void)
 # endif
 function {long int} sysconf (int)
@@ -591,7 +591,7 @@ function int ttyname_r (int, char*, size_t)
 function useconds_t ualarm (useconds_t, useconds_t)
 #endif
 function int unlink (const char*)
-# if defined XOPEN2K8 || defined POSIX2008
+# if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
 function int unlinkat (int, const char*, int)
 # endif
 #if defined XPG42 || defined UNIX98 || defined XOPEN2K

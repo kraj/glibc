@@ -1,6 +1,6 @@
 macro-constant SIG_DFL {void(*)(int)}
 macro-constant SIG_ERR {void(*)(int)}
-#if !defined ISO && !defined ISO99 && !defined ISO11 && !defined ISO23 && !defined POSIX && !defined POSIX2008
+#if !defined ISO && !defined ISO99 && !defined ISO11 && !defined ISO23 && !defined POSIX && !defined POSIX2008 && !defined POSIX2024
 macro-constant SIG_HOLD {void(*)(int)}
 #endif
 macro-constant SIG_IGN {void(*)(int)}
@@ -15,7 +15,7 @@ type pid_t
 # define pid_t __pid_t
 # define uid_t __uid_t
 #endif
-#if defined XOPEN2K8 || defined POSIX2008
+#if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
 type size_t
 type pthread_t
 type uid_t
@@ -35,7 +35,7 @@ element {struct timespec} __time_t tv_sec
 xfail[x86_64-x32-linux]-element {struct timespec} long tv_nsec
 #endif
 
-#if defined POSIX || defined UNIX98 || defined XOPEN2K || defined XOPEN2K8 || defined POSIX2008
+#if defined POSIX || defined UNIX98 || defined XOPEN2K || defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
 element {union sigval} int sival_int
 element {union sigval} {void*} sival_ptr
 
@@ -90,7 +90,7 @@ macro-int-constant SIGPOLL {int} > 0
 macro-int-constant SIGPROF {int} > 0
 macro-int-constant SIGSYS {int} > 0
 # endif
-# if !defined POSIX && !defined XPG4 && !defined POSIX2008
+# if !defined POSIX && !defined XPG4 && !defined POSIX2008 && !defined POSIX2024
 macro-int-constant SIGTRAP {int} > 0
 # endif
 # if !defined POSIX && !defined XPG4
@@ -116,7 +116,7 @@ constant SA_SIGINFO
 constant SIG_BLOCK
 constant SIG_UNBLOCK
 constant SIG_SETMASK
-# if !defined XPG4 && !defined POSIX && !defined POSIX2008
+# if !defined XPG4 && !defined POSIX && !defined POSIX2008 && !defined POSIX2024
 constant SA_ONSTACK
 # endif
 # if !defined XPG4 && !defined POSIX
@@ -126,7 +126,7 @@ constant SA_RESTART
 xfail[i386-gnu|x86_64-gnu]-constant SA_NOCLDWAIT
 constant SA_NODEFER
 # endif
-# if !defined XPG4 && !defined POSIX && !defined POSIX2008
+# if !defined XPG4 && !defined POSIX && !defined POSIX2008 && !defined POSIX2024
 constant SS_ONSTACK
 constant SS_DISABLE
 constant MINSIGSTKSZ
@@ -148,7 +148,7 @@ element stack_t {void*} ss_sp
 element stack_t size_t ss_size
 element stack_t int ss_flags
 
-#  if !defined XOPEN2K8 && !defined POSIX2008
+#  if !defined XOPEN2K8 && !defined POSIX2008 && !defined POSIX2024
 type {struct sigstack}
 
 element {struct sigstack} int ss_onstack
@@ -160,7 +160,7 @@ element {struct sigstack} {void*} ss_sp
 type siginfo_t
 
 element siginfo_t int si_signo
-#  if !defined POSIX && !defined POSIX2008
+#  if !defined POSIX && !defined POSIX2008 && !defined POSIX2024
 element siginfo_t int si_errno
 #  endif
 element siginfo_t int si_code
@@ -212,7 +212,7 @@ constant POLL_ERR
 constant POLL_PRI
 constant POLL_HUP
 # endif
-# if !defined POSIX && !defined XPG4 && !defined POSIX2008
+# if !defined POSIX && !defined XPG4 && !defined POSIX2008 && !defined POSIX2024
 constant TRAP_BRKPT
 constant TRAP_TRACE
 # endif
@@ -224,11 +224,11 @@ constant SI_ASYNCIO
 constant SI_MESGQ
 # endif
 
-# if !defined XPG4 && !defined XOPEN2K8 && !defined POSIX && !defined POSIX2008
+# if !defined XPG4 && !defined XOPEN2K8 && !defined POSIX && !defined POSIX2008 && !defined POSIX2024
 function void (*bsd_signal (int, void(*)(int)))(int)
 # endif
 function int kill (pid_t, int)
-# if !defined XPG4 && !defined POSIX && !defined POSIX2008
+# if !defined XPG4 && !defined POSIX && !defined POSIX2008 && !defined POSIX2024
 function int killpg (pid_t, int)
 # endif
 # if !defined XPG4 && !defined XPG42
@@ -237,19 +237,19 @@ function int pthread_sigmask (int, const sigset_t*, sigset_t*)
 # endif
 function int sigaction (int, const struct sigaction*, struct sigaction*)
 function int sigaddset (sigset_t*, int)
-# if !defined XPG4 && !defined POSIX && !defined POSIX2008
+# if !defined XPG4 && !defined POSIX && !defined POSIX2008 && !defined POSIX2024
 function int sigaltstack (const stack_t*, stack_t*)
 # endif
 function int sigdelset (sigset_t*, int)
 function int sigemptyset (sigset_t*)
 function int sigfillset (sigset_t*)
-# if !defined XPG4 && !defined POSIX && !defined POSIX2008
+# if !defined XPG4 && !defined POSIX && !defined POSIX2008 && !defined POSIX2024
 function int sighold (int)
 function int sigignore (int)
 function int siginterrupt (int, int)
 # endif
 function int sigismember (const sigset_t*, int)
-#if !defined XPG4 && !defined POSIX && !defined POSIX2008
+#if !defined XPG4 && !defined POSIX && !defined POSIX2008 && !defined POSIX2024
 function int sigpause (int)
 # endif
 function int sigpending (sigset_t*)
@@ -257,7 +257,7 @@ function int sigprocmask (int, const sigset_t*, sigset_t*)
 # if !defined XPG4 && !defined XPG42
 function int sigqueue (pid_t, int, const union sigval)
 # endif
-# if !defined XPG4 && !defined POSIX && !defined POSIX2008
+# if !defined XPG4 && !defined POSIX && !defined POSIX2008 && !defined POSIX2024
 function int sigrelse (int)
 function void (*sigset (int, void(*)(int)))(int)
 # endif
@@ -272,7 +272,7 @@ function int sigtimedwait (const sigset_t*, siginfo_t*, const struct timespec*)
 function int sigwait (const sigset_t*, int*)
 function int sigwaitinfo (const sigset_t*, siginfo_t*)
 # endif
-# if defined XOPEN2K8 || defined POSIX2008
+# if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
 function void psiginfo (const siginfo_t*, const char*)
 function void psignal (int, const char*)
 # endif
@@ -301,7 +301,7 @@ allow ILL_*
 allow POLL_*
 allow SEGV_*
 # endif
-# if !defined POSIX && !defined XPG4 && !defined POSIX2008
+# if !defined POSIX && !defined XPG4 && !defined POSIX2008 && !defined POSIX2024
 allow SS_*
 allow SV_*
 allow TRAP_*

@@ -43,7 +43,7 @@ function int timespec_get (struct timespec *, int)
 #endif
 
 #if !defined ISO && !defined ISO99 && !defined ISO11 && !defined ISO23
-# if !defined XOPEN2K && !defined XOPEN2K8 && !defined POSIX2008
+# if !defined XOPEN2K && !defined XOPEN2K8 && !defined POSIX2008 && !defined POSIX2024
 symbol CLK_TCK
 # endif
 # if !defined XPG4 && !defined XPG42
@@ -67,13 +67,13 @@ type clockid_t
 type timer_t
 # endif
 
-# if defined XOPEN2K8 || defined POSIX2008
+# if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
 type pid_t
 type locale_t
 tag {struct sigevent}
 # endif
 
-# if !defined XPG4 && !defined POSIX && !defined POSIX2008
+# if !defined XPG4 && !defined POSIX && !defined POSIX2008 && !defined POSIX2024
 variable int getdate_err
 # endif
 
@@ -92,7 +92,7 @@ function int clock_nanosleep (clockid_t, int, const struct timespec*, struct tim
 function int clock_settime (clockid_t, const struct timespec*)
 #endif
 function {char*} ctime_r (const time_t*, char*)
-# if !defined XPG4 && !defined POSIX && !defined POSIX2008
+# if !defined XPG4 && !defined POSIX && !defined POSIX2008 && !defined POSIX2024
 function {struct tm*} getdate (const char*)
 # endif
 function {struct tm*} gmtime_r (const time_t*, struct tm*)
@@ -100,10 +100,10 @@ function {struct tm*} localtime_r (const time_t*, struct tm*)
 # if !defined XPG4 && !defined XPG42
 function int nanosleep (const struct timespec*, struct timespec*)
 # endif
-# if defined XOPEN2K8 || defined POSIX2008
+# if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
 function size_t strftime_l (char*, size_t, const char*, const struct tm*, locale_t)
 # endif
-# if !defined POSIX && !defined POSIX2008
+# if !defined POSIX && !defined POSIX2008 && !defined POSIX2024
 function {char*} strptime (const char*, const char*, struct tm*)
 # endif
 # if !defined XPG4 && !defined XPG42
@@ -115,7 +115,7 @@ function int timer_settime (timer_t, int, const struct itimerspec*, struct itime
 # endif
 function void tzset (void)
 
-# if !defined POSIX && !defined POSIX2008
+# if !defined POSIX && !defined POSIX2008 && !defined POSIX2024
 variable int daylight
 variable {long int} timezone
 # endif

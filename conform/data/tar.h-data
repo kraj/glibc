@@ -16,7 +16,7 @@ macro-int-constant CONTTYPE {int} == '7'
 
 macro-int-constant TSUID {int} == 04000
 macro-int-constant TSGID {int} == 02000
-# if !defined POSIX2008
+# if !defined POSIX2008 && !defined POSIX2024
 macro-int-constant TSVTX {int} == 01000
 # endif
 macro-int-constant TUREAD {int} == 00400

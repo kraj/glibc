@@ -122,7 +122,7 @@ macro-int-constant EWOULDBLOCK {int} > 0
 # endif
 macro-int-constant EXDEV {int} > 0
 
-# if defined XOPEN2K8 || defined POSIX2008
+# if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
 macro-int-constant ENOTRECOVERABLE {int} > 0
 macro-int-constant EOWNERDEAD {int} > 0
 # endif

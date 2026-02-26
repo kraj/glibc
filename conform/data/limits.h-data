@@ -20,7 +20,7 @@ macro-int-constant UINT_MAX {unsigned int} >= 4294967295U
 macro-int-constant LONG_MAX {long int} >= 2147483647L
 macro-int-constant LONG_MIN {long int} <= -2147483647L
 macro-int-constant ULONG_MAX {unsigned long int} >= 4294967295UL
-#if defined ISO99 || defined ISO11 || defined ISO23 || defined XOPEN2K8 || defined POSIX2008
+#if defined ISO99 || defined ISO11 || defined ISO23 || defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
 macro-int-constant LLONG_MIN {long long int} <= -9223372036854775807ll
 macro-int-constant LLONG_MAX {long long int} >= 9223372036854775807ll
 macro-int-constant ULLONG_MAX {unsigned long long int} >= 18446744073709551615ull
@@ -37,7 +37,7 @@ allow ATEXIT_MAX
 #endif
 allow CHILD_MAX
 allow DELAYTIMER_MAX
-#if !defined POSIX && !defined POSIX2008 && !defined XPG4
+#if !defined POSIX && !defined POSIX2008 && !defined POSIX2024 && !defined XPG4
 allow IOV_MAX
 #endif
 allow LOGIN_NAME_MAX
@@ -45,7 +45,7 @@ allow MQ_OPEN_MAX
 allow MQ_PRIO_MAX
 allow OPEN_MAX
 allow PAGESIZE
-#if !defined POSIX && !defined POSIX2008
+#if !defined POSIX && !defined POSIX2008 && !defined POSIX2024
 allow PAGE_SIZE
 #endif
 allow PTHREAD_DESTRUCTOR_ITERATIONS
@@ -160,11 +160,11 @@ macro-constant _POSIX2_COLL_WEIGHTS_MAX == 2
 macro-constant _POSIX2_EXPR_NEST_MAX == 32
 macro-constant _POSIX2_LINE_MAX == 2048
 macro-constant _POSIX2_RE_DUP_MAX == 255
-#if !defined POSIX && !defined POSIX2008 && !defined XPG4
+#if !defined POSIX && !defined POSIX2008 && !defined POSIX2024 && !defined XPG4
 optional-constant _XOPEN_IOV_MAX == 16
 #endif
 
-#if !defined POSIX && !defined POSIX2008
+#if !defined POSIX && !defined POSIX2008 && !defined POSIX2024
 constant WORD_BIT >= 16
 constant LONG_BIT >= 32
 #endif
@@ -175,16 +175,16 @@ optional-constant CHARCLASS_NAME_MAX >= 14
 #endif
 #if !defined POSIX
 optional-constant NL_ARGMAX >= 9
-# if !defined POSIX2008
+# if !defined POSIX2008 && !defined POSIX2024
 optional-constant NL_LANGMAX >= 14
 # endif
 optional-constant NL_MSGMAX >= 32767
-# if !defined XOPEN2K8 && !defined POSIX2008
+# if !defined XOPEN2K8 && !defined POSIX2008 && !defined POSIX2024
 optional-constant NL_NMAX
 # endif
 optional-constant NL_SETMAX >= 255
 optional-constant NL_TEXTMAX
-# if !defined POSIX2008
+# if !defined POSIX2008 && !defined POSIX2024
 optional-constant NZERO >= 20
 # endif
 #endif

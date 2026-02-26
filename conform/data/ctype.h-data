@@ -16,7 +16,7 @@ function int toupper (int)
 function int isblank (int)
 #endif
 
-#if !defined ISO && !defined ISO99 && !defined ISO11 && !defined ISO23 && !defined POSIX && !defined POSIX2008
+#if !defined ISO && !defined ISO99 && !defined ISO11 && !defined ISO23 && !defined POSIX && !defined POSIX2008 && !defined POSIX2024
 function int isascii (int)
 function int toascii (int)
 
@@ -25,7 +25,7 @@ function int _toupper (int)
 function int _tolower (int)
 #endif
 
-# if defined XOPEN2K8 || defined POSIX2008
+# if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
 type locale_t
 
 function int isalnum_l (int, locale_t)

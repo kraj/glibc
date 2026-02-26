@@ -17,7 +17,7 @@ function int sem_unlink (const char*)
 function int sem_wait (sem_t*)
 
 allow-header fcntl.h
-# if !defined POSIX2008 && !defined XOPEN2K8
+# if !defined POSIX2008 && !defined POSIX2024 && !defined XOPEN2K8
 allow-header sys/types.h
 # endif
 // Consider addition of this permission in POSIX.1:2008 as a bug fix,

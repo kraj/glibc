@@ -1,6 +1,6 @@
 #if !defined ISO && !defined ISO99 && !defined ISO11 && !defined ISO23
 
-#if !defined POSIX && !defined POSIX2008 && !defined XPG4 && !defined XPG42
+#if !defined POSIX && !defined POSIX2008 && !defined POSIX2024 && !defined XPG4 && !defined XPG42
 type blkcnt_t
 type blksize_t
 #endif
@@ -34,7 +34,7 @@ element {struct stat} mode_t st_mode
 element {struct stat} nlink_t st_nlink
 element {struct stat} uid_t st_uid
 element {struct stat} gid_t st_gid
-#if !defined POSIX && !defined POSIX2008
+#if !defined POSIX && !defined POSIX2008 && !defined POSIX2024
 // Bug 21278: st_rdev has wrong type.
 xfail[mips-o32-linux]-element {struct stat} dev_t st_rdev
 #endif
@@ -42,12 +42,12 @@ element {struct stat} off_t st_size
 element {struct stat} time_t st_atime
 element {struct stat} time_t st_mtime
 element {struct stat} time_t st_ctime
-#if defined XOPEN2K8 || defined POSIX2008
+#if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
 element {struct stat} {struct timespec} st_atim
 element {struct stat} {struct timespec} st_mtim
 element {struct stat} {struct timespec} st_ctim
 #endif
-#if !defined XPG4 && !defined POSIX && !defined POSIX2008
+#if !defined XPG4 && !defined POSIX && !defined POSIX2008 && !defined POSIX2024
 # ifdef XPG42
 // The XPG42 use of "long" for these fields is not compatible with the
 // use of typedefs in future standards to support values outside the
@@ -60,14 +60,14 @@ element {struct stat} blkcnt_t st_blocks
 # endif
 #endif
 
-# if defined XOPEN2K8 || defined POSIX2008
+# if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
 type {struct timespec}
 element {struct timespec} time_t tv_sec
 // Bug 16437: tv_nsec has wrong type.
 xfail[x86_64-x32-linux]-element {struct timespec} long tv_nsec
 # endif
 
-#if !defined POSIX && !defined POSIX2008
+#if !defined POSIX && !defined POSIX2008 && !defined POSIX2024
 constant S_IFMT
 constant S_IFBLK
 constant S_IFCHR
@@ -94,7 +94,7 @@ constant S_IWOTH
 constant S_IXOTH
 constant S_ISUID
 constant S_ISGID
-#if !defined XPG4 && !defined POSIX && !defined POSIX2008
+#if !defined XPG4 && !defined POSIX && !defined POSIX2008 && !defined POSIX2024
 constant S_ISVTX
 #endif
 
@@ -116,7 +116,7 @@ optional-macro S_TYPEISSHM
 optional-macro S_TYPEISTMO
 # endif
 
-# if defined XOPEN2K8 || defined POSIX2008
+# if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
 constant UTIME_NOW
 constant UTIME_OMIT
 # endif
@@ -125,11 +125,11 @@ function int chmod (const char*, mode_t)
 # ifndef XPG4
 function int fchmod (int, mode_t)
 # endif
-# if defined XOPEN2K8 || defined POSIX2008
+# if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
 function int fchmodat (int, const char*, mode_t, int)
 # endif
 function int fstat (int, struct stat*)
-# if defined XOPEN2K8 || defined POSIX2008
+# if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
 function int fstatat (int, const char*, struct stat*, int)
 function int futimens (int, const struct timespec[2])
 # endif
@@ -137,14 +137,14 @@ function int futimens (int, const struct timespec[2])
 function int lstat (const char*, struct stat*)
 #endif
 function int mkdir (const char*, mode_t)
-# if defined XOPEN2K8 || defined POSIX2008
+# if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
 function int mkdirat (int, const char*, mode_t)
 # endif
 function int mkfifo (const char*, mode_t)
-# if defined XOPEN2K8 || defined POSIX2008
+# if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
 function int mkfifoat (int, const char*, mode_t)
 # endif
-# if !defined XPG4 && !defined POSIX && !defined POSIX2008
+# if !defined XPG4 && !defined POSIX && !defined POSIX2008 && !defined POSIX2024
 function int mknod (const char*, mode_t, dev_t)
 # endif
 # ifdef XOPEN2K8
@@ -152,7 +152,7 @@ function int mknodat (int, const char*, mode_t, dev_t)
 # endif
 function int stat (const char*, struct stat*)
 function mode_t umask (mode_t)
-# if defined XOPEN2K8 || defined POSIX2008
+# if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
 function int utimensat (int, const char*, const struct timespec[2], int)
 # endif
 

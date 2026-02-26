@@ -25,7 +25,7 @@ constant PTHREAD_MUTEX_NORMAL
 constant PTHREAD_MUTEX_RECURSIVE
 macro PTHREAD_RWLOCK_INITIALIZER
 # endif
-# if defined XOPEN2K8 || defined POSIX2008
+# if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
 constant PTHREAD_MUTEX_ROBUST
 constant PTHREAD_MUTEX_STALLED
 # endif
@@ -107,7 +107,7 @@ function int pthread_create (pthread_t*, const pthread_attr_t*, void *(*) (void*
 function int pthread_detach (pthread_t)
 function int pthread_equal (pthread_t, pthread_t)
 function void pthread_exit (void*)
-# if !defined POSIX && !defined POSIX2008
+# if !defined POSIX && !defined POSIX2008 && !defined POSIX2024
 function int pthread_getconcurrency (void)
 # endif
 # if !defined POSIX && !defined UNIX98
@@ -164,12 +164,12 @@ function int pthread_rwlockattr_setpshared (pthread_rwlockattr_t*, int)
 function pthread_t pthread_self (void)
 function int pthread_setcancelstate (int, int*)
 function int pthread_setcanceltype (int, int*)
-# if !defined POSIX && !defined POSIX2008
+# if !defined POSIX && !defined POSIX2008 && !defined POSIX2024
 function int pthread_setconcurrency (int)
 # endif
 function int pthread_setschedparam (pthread_t, int, const struct sched_param*)
 function int pthread_setspecific (pthread_key_t, const void*)
-# if !defined POSIX && !defined UNIX98 && !defined XOPEN2K && !defined XOPEN2K8 && !defined POSIX2008
+# if !defined POSIX && !defined UNIX98 && !defined XOPEN2K && !defined XOPEN2K8 && !defined POSIX2008 && !defined POSIX2024
 function int pthread_sigmask (int, const sigset_t*, sigset_t*)
 # endif
 # if !defined POSIX && !defined UNIX98
@@ -180,7 +180,7 @@ function int pthread_spin_trylock (pthread_spinlock_t*)
 function int pthread_spin_unlock (pthread_spinlock_t*)
 # endif
 function void pthread_testcancel (void)
-# if defined XOPEN2K8 || defined POSIX2008
+# if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
 function int pthread_mutex_consistent (pthread_mutex_t *)
 function int pthread_mutexattr_getrobust (const pthread_mutexattr_t*, int*)
 function int pthread_mutexattr_setrobust (pthread_mutexattr_t*, int)

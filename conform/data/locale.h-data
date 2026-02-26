@@ -38,7 +38,7 @@ macro-int-constant LC_MONETARY
 macro-int-constant LC_NUMERIC
 macro-int-constant LC_TIME
 
-#if defined XOPEN2K8 || defined POSIX2008
+#if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
 constant LC_GLOBAL_LOCALE
 
 macro LC_COLLATE_MASK
@@ -54,7 +54,7 @@ type locale_t
 
 function {struct lconv*} localeconv (void)
 function {char*} setlocale (int, const char*)
-#if defined XOPEN2K8 || defined POSIX2008
+#if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
 function locale_t duplocale (locale_t)
 function void freelocale (locale_t)
 function locale_t newlocale (int, const char*, locale_t)
@@ -65,6 +65,6 @@ allow LC_[ABCDEFGHIJKLMNOPQRSTUVWXYZ]*
 #if !defined ISO && !defined ISO99 && !defined ISO11 && !defined ISO23
 allow *_t
 #endif
-#if defined XOPEN2K8 || defined POSIX2008
+#if defined XOPEN2K8 || defined POSIX2008 || defined POSIX2024
 allow LC_*_MASK
 #endif
