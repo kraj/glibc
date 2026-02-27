@@ -1892,25 +1892,10 @@ free_perturb (char *p, size_t n)
 
 /* ----------- Routines dealing with transparent huge pages ----------- */
 
-static __always_inline void
-thp_init (void)
-{
-  /* Initialize only once if DEFAULT_THP_PAGESIZE is defined.  */
-  if (DEFAULT_THP_PAGESIZE == 0 || mp_.thp_mode != malloc_thp_mode_not_supported)
-    return;
-
-  /* Set thp_pagesize even if thp_mode is never.  This reduces frequency
-     of MORECORE () invocation.  */
-  mp_.thp_mode = __malloc_thp_mode ();
-  mp_.thp_pagesize = DEFAULT_THP_PAGESIZE;
-}
-
 static inline void
 madvise_thp (void *p, INTERNAL_SIZE_T size)
 {
 #ifdef MADV_HUGEPAGE
-
-  thp_init ();
 
   /* Only use __madvise if the system is using 'madvise' mode and the size
      is at least a huge page, otherwise the call is wasteful. */
@@ -2461,9 +2446,6 @@ sysmalloc (INTERNAL_SIZE_T nb, mstate av)
          this is not first time through, this preserves page-alignment of
          previous calls. Otherwise, we correct to page-align below.
        */
-
-      /* Ensure thp_pagesize is initialized.  */
-      thp_init ();
 
       if (__glibc_unlikely (mp_.thp_pagesize != 0))
 	{
