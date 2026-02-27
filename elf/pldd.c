@@ -137,7 +137,7 @@ main (int argc, char *argv[])
   } *thread_list = NULL;
 
   int taskfd = openat (dfd, "task", O_RDONLY | O_DIRECTORY | O_CLOEXEC);
-  if (taskfd == 1)
+  if (taskfd == -1)
     error (EXIT_FAILURE, errno, gettext ("cannot open %s/task"), buf);
   DIR *dir = fdopendir (taskfd);
   if (dir == NULL)
