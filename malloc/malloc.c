@@ -198,14 +198,6 @@
     There are several other #defined constants and macros that you
     probably don't want to touch unless you are extending or adapting malloc.  */
 
-/*
-  void* is the pointer type that malloc should say it returns
-*/
-
-#ifndef void
-#define void      void
-#endif /*void*/
-
 #include <stddef.h>   /* for size_t */
 #include <stdlib.h>   /* for getenv(), abort() */
 #include <unistd.h>   /* for __libc_enable_secure */
@@ -258,6 +250,11 @@
 #include <random-bits.h>
 #include <sys/random.h>
 #include <not-cancel.h>
+
+verify (sizeof (unsigned long) == sizeof (size_t));
+verify (sizeof (void *) == sizeof (size_t));
+verify (sizeof (void *) == 4 || sizeof (void *) == 8);
+verify (PTRDIFF_MAX <= SIZE_MAX / 2);
 
 /*
   Debugging:
@@ -1263,9 +1260,6 @@ nextchunk-> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 static __always_inline size_t
 checked_request2size (size_t req) __nonnull (1)
 {
-  _Static_assert (PTRDIFF_MAX <= SIZE_MAX / 2,
-                  "PTRDIFF_MAX is not more than half of SIZE_MAX");
-
   if (__glibc_unlikely (req > PTRDIFF_MAX))
     return SIZE_MAX;
 
