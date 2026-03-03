@@ -354,7 +354,7 @@ __res_context_search (struct resolv_context *ctx,
 	char tmp[NS_MAXDNAME];
 	u_int dots;
 	int trailing_dot, ret, saved_herrno;
-	int got_nodata = 0, got_servfail = 0, root_on_list = 0;
+	int got_nodata = 0, got_servfail = 0;
 	int tried_as_is = 0;
 	int searched = 0;
 
@@ -433,8 +433,11 @@ __res_context_search (struct resolv_context *ctx,
 			   domain.  */
 			if (dname[0] == '.')
 				dname++;
-			if (dname[0] == '\0')
-				root_on_list++;
+			if (dname[0] == '\0') {
+				if (tried_as_is)
+					continue;
+				tried_as_is++;
+			}
 
 			ret = __res_context_querydomain
 			  (ctx, name, dname, class, type,
@@ -506,7 +509,7 @@ __res_context_search (struct resolv_context *ctx,
 	 * unless RES_NOTLDQUERY is set and there were no dots.
 	 */
 	if ((dots || !searched || (statp->options & RES_NOTLDQUERY) == 0)
-	    && !(tried_as_is || root_on_list)) {
+	    && !tried_as_is) {
 		ret = __res_context_querydomain
 		  (ctx, name, NULL, class, type,
 		   answer, anslen, answerp, answerp2, nanswerp2,

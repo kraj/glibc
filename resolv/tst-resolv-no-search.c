@@ -27,6 +27,11 @@
 #include <support/resolv_test.h>
 #include <support/support.h>
 
+/* Used to check for duplicated queries (bug 33804).  POSIX does not
+   explicitly say that socket calls (as used in the resolver tests)
+   provide synchronization.  */
+static _Atomic unsigned int query_count;
+
 /* Check that plain res_init loads the configuration as expected.  */
 static void
 test_res_init (void *ignored)
@@ -43,6 +48,7 @@ response (const struct resolv_response_context *ctx,
 {
   TEST_VERIFY_EXIT (qclass == C_IN);
   TEST_COMPARE (ctx->server_index, 0);
+  ++query_count;
 
   if (strncmp (qname, "does-not-exist", strlen ("does-not-exist")) == 0)
     {
@@ -82,12 +88,16 @@ check_h (const char *name, int family, const char *expected)
   if (family == AF_INET)
     {
       char *query = xasprintf ("gethostbyname (\"%s\")", name);
+      query_count = 0;
       check_hostent (query, gethostbyname (name), expected);
+      TEST_COMPARE (query_count, 1);
       free (query);
     }
   {
     char *query = xasprintf ("gethostbyname2 (\"%s\", %d)", name, family);
+    query_count = 0;
     check_hostent (query, gethostbyname2 (name, family), expected);
+    TEST_COMPARE (query_count, 1);
     free (query);
   }
 }
@@ -98,8 +108,10 @@ check_ai (const char *name, int family, const char *expected)
   struct addrinfo hints = { .ai_family = family, .ai_socktype = SOCK_STREAM, };
   struct addrinfo *ai;
   char *query = xasprintf ("%s:80 [%d]", name, hints.ai_family);
+  query_count = 0;
   int ret = getaddrinfo (name, "80", &hints, &ai);
   check_addrinfo (query, ai, ret, expected);
+  TEST_COMPARE (query_count, family == AF_UNSPEC ? 2 : 1);
   if (ret == 0)
     freeaddrinfo (ai);
   free (query);
