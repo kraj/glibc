@@ -83,6 +83,7 @@ tests = tst-aton tst-leaks tst-inet_ntop
 tests-container += \
   tst-getaddrinfo-eai-again \
   tst-leaks2 \
+  tst-resolv-no-search \
   # tests-container
 
 tests-internal += tst-inet_aton_exact
@@ -310,6 +311,7 @@ $(objpfx)tst-resolv-res_init-thread: $(objpfx)libresolv.so \
   $(shared-thread-library)
 $(objpfx)tst-resolv-invalid-cname: $(objpfx)libresolv.so \
   $(shared-thread-library)
+$(objpfx)tst-resolv-no-search: $(objpfx)libresolv.so $(shared-thread-library)
 $(objpfx)tst-resolv-noaaaa: $(objpfx)libresolv.so $(shared-thread-library)
 $(objpfx)tst-resolv-noaaaa-vc: $(objpfx)libresolv.so $(shared-thread-library)
 $(objpfx)tst-resolv-nondecimal: $(objpfx)libresolv.so $(shared-thread-library)

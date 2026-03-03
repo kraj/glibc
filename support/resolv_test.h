@@ -96,6 +96,9 @@ struct resolv_redirect_config
      domain name as well.  */
   const char *search[7];
 
+  /* If true, do not override the search path loaded from /etc/resolv.conf.  */
+  bool no_override_resolv_conf_search;
+
   /* Number of servers to activate in resolv.  0 means the default,
      resolv_max_test_servers.  */
   int nscount;

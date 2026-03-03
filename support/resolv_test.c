@@ -1098,6 +1098,9 @@ resolv_test_init (void)
 static void
 set_search_path (struct resolv_redirect_config config)
 {
+  if (config.no_override_resolv_conf_search)
+    return;
+
   memset (_res.defdname, 0, sizeof (_res.defdname));
   memset (_res.dnsrch, 0, sizeof (_res.dnsrch));
 
