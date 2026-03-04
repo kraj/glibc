@@ -89,7 +89,7 @@ run_allocations (void *arg)
 
   xpthread_barrier_wait (&barrier);
 
-  /* Stage 2: Half of the threads allocationg memory and the other
+  /* Stage 2: Half of the threads allocating memory and the other
    * half deallocating:
    * - In the non cross-thread dealloc scenario the first half will be
    *   deallocating the memory allocated by themselves in stage 1 and the

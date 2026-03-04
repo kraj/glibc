@@ -1247,7 +1247,7 @@ extern struct link_map * _dl_get_dl_main_map (void) attribute_hidden;
 /* Find origin of the executable.  */
 extern const char *_dl_get_origin (void) attribute_hidden;
 
-/* Return the canonalized path name from the opened file descriptor FD,
+/* Return the canonicalized path name from the opened file descriptor FD,
    or NULL otherwise.  */
 extern char * _dl_canonicalize (int fd) attribute_hidden;
 
@@ -1387,7 +1387,7 @@ link_map_audit_state (struct link_map *l, size_t index)
 }
 
 /* Call the la_objsearch from the audit modules from the link map L.  If
-   ORIGNAME is non NULL, it is updated with the revious name prior calling
+   ORIGNAME is non NULL, it is updated with the previous name prior calling
    la_objsearch.  */
 const char *_dl_audit_objsearch (const char *name, struct link_map *l,
 				 unsigned int code)

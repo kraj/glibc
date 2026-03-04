@@ -86,7 +86,7 @@ check_gcs (struct link_map *l, const char *program, bool enforced,
   if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_SECURITY))
     warn (l, program);
   /* Binary is not marked and loaded via dlopen: abort.  Also, do not
-     fail is optional dlopne_mode is being used with audit modules without
+     fail is optional dlopen_mode is being used with audit modules without
      GCS support.  */
   if (program == NULL && (dlopen_mode & __RTLD_AUDIT) == 0)
     fail (l, program);

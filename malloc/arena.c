@@ -423,7 +423,7 @@ alloc_new_heap  (size_t size, size_t top_pad, size_t pagesize,
       return NULL;
     }
 
-  /* Only considere the actual usable range.  */
+  /* Only consider the actual usable range.  */
   __set_vma_name (p2, size, " glibc: malloc arena");
 
   madvise_thp (p2, size);

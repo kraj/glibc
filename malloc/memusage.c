@@ -942,7 +942,7 @@ dest (void)
              failed[idx_munmap] ? "\e[01;41m" : "",
              (unsigned long int) failed[idx_munmap]);
 
-  /* Write out a histoogram of the sizes of the allocations.  */
+  /* Write out a histogram of the sizes of the allocations.  */
   fprintf (stderr, "\e[01;32mHistogram for block sizes:\e[0;0m\n");
 
   /* Determine the maximum of all calls for each size range.  */

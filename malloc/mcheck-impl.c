@@ -46,7 +46,7 @@ struct hdr
    It is only constructed if the pedantic testing is requested.  */
 static struct hdr *root;
 
-/* Nonzero if pedentic checking of all blocks is requested.  */
+/* Nonzero if pedantic checking of all blocks is requested.  */
 static bool pedantic;
 
 #if defined _LIBC || defined STDC_HEADERS || defined USG

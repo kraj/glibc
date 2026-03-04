@@ -545,7 +545,7 @@ tag_at (void *ptr)
   there's no compelling reason to bother to do this.)
 
   The main declaration needed is the mallinfo struct that is returned
-  (by-copy) by mallinfo().  The SVID/XPG malloinfo struct contains a
+  (by-copy) by mallinfo().  The SVID/XPG mallinfo struct contains a
   bunch of fields that are not even meaningful in this version of
   malloc.  These fields are are instead filled by mallinfo() with
   other numbers that might be of interest.
@@ -809,7 +809,7 @@ libc_hidden_proto (__libc_mallopt)
   might set to a value close to the average size of a process
   (program) running on your system.  Releasing this much memory
   would allow such a process to run in memory.  Generally, it's
-  worth it to tune for trimming rather tham memory mapping when a
+  worth it to tune for trimming rather than memory mapping when a
   program undergoes phases where several large chunks are
   allocated and released in ways that can reuse each other's
   storage, perhaps mixed with phases where there are no such
@@ -973,7 +973,7 @@ libc_hidden_proto (__libc_mallopt)
      having to zero memory over and over again
 
   The implementation works with a sliding threshold, which is by default
-  limited to go between 128Kb and 32Mb (64Mb for 64 bitmachines) and starts
+  limited to go between 128Kb and 32Mb (64Mb for 64 bit machines) and starts
   out at 128Kb as per the 2001 default.
 
   This allows us to satisfy requirement 1) under the assumption that long

@@ -97,8 +97,8 @@ __pthread_cancel (pthread_t th)
      EINTR).  So pthread_cancel cannot send SIGCANCEL unless the cancellation
      is enabled.
      In this case the target thread is set as 'cancelled' (CANCELED_BITMASK)
-     by atomically setting 'cancelhandling' and the cancelation will be acted
-     upon on next cancellation entrypoing in the target thread.
+     by atomically setting 'cancelhandling' and the cancellation will be acted
+     upon on next cancellation entrypoint in the target thread.
 
      It also requires to atomically check if cancellation is enabled, so the
      state are also tracked on 'cancelhandling'.  */
@@ -113,7 +113,7 @@ __pthread_cancel (pthread_t th)
       if (oldval == newval)
 	break;
 
-      /* Only send the SIGANCEL signal if cancellation is enabled, since some
+      /* Only send the SIGCANCEL signal if cancellation is enabled, since some
 	 syscalls are never restarted even with SA_RESTART.  The signal
 	 will act iff async cancellation is enabled.  */
       if (cancel_enabled (newval))
