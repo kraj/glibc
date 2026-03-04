@@ -264,14 +264,16 @@ enum fsconfig_command
 #define FSOPEN_CLOEXEC          0x00000001
 
 /* open_tree flags.  */
-#define OPEN_TREE_CLONE    1         /* Clone the target tree and attach the clone */
+#ifndef OPEN_TREE_CLONE
+# define OPEN_TREE_CLONE    1 /* Clone the target tree and attach the clone */
+#endif
 #ifndef O_CLOEXEC
 # include <bits/cloexec.h>
 # define O_CLOEXEC __O_CLOEXEC
 #endif
-#undef  OPEN_TREE_CLOEXEC
-#define OPEN_TREE_CLOEXEC  O_CLOEXEC /* Close the file on execve() */
-
+#ifndef OPEN_TREE_CLOEXEC
+# define OPEN_TREE_CLOEXEC  O_CLOEXEC /* Close the file on execve() */
+#endif
 
 __BEGIN_DECLS
 
