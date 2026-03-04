@@ -203,16 +203,23 @@ make_request (int fd, pid_t pid)
 		out:
 		  if (ifam->ifa_family == AF_INET)
 		    {
-		      if (*(const in_addr_t *) address
-			  != htonl (INADDR_LOOPBACK))
+		      in_addr_t inaddr;
+		      memcpy (&inaddr, address, sizeof (inaddr));
+		      if (inaddr != htonl (INADDR_LOOPBACK))
 			seen_ipv4 = true;
 		    }
 		  else
 		    {
-		      if (!IN6_IS_ADDR_LOOPBACK (address))
+		      struct in6_addr in6addr;
+		      memcpy (&in6addr, address, sizeof (in6addr));
+		      if (!IN6_IS_ADDR_LOOPBACK (&in6addr))
 			seen_ipv6 = true;
 		    }
 		}
+
+	      /* An RTM_NEWADDR message always comes with an address.
+		 We de-reference address below.  */
+	      assert (address != NULL);
 
 	      if (result_len == 0 || result_len == result_cap)
 		{
@@ -239,7 +246,7 @@ make_request (int fd, pid_t pid)
 		  info->addr[0] = 0;
 		  info->addr[1] = 0;
 		  info->addr[2] = htonl (0xffff);
-		  info->addr[3] = *(const in_addr_t *) address;
+		  memcpy (&info->addr[3], address, sizeof (info->addr[3]));
 		}
 	      else
 		memcpy (info->addr, address, sizeof (info->addr));
