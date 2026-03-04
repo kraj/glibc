@@ -205,6 +205,7 @@ __pthread_cond_timedwait_internal (pthread_cond_t *cond,
 
   /* We're almost done.  Remove the unblock hook, restore the previous
      cancellation type, and check for a pending cancellation request.  */
+  HURD_CRITICAL_BEGIN;
   __pthread_mutex_lock (&self->cancel_lock);
   self->cancel_hook = NULL;
   self->cancel_hook_arg = NULL;
@@ -212,6 +213,7 @@ __pthread_cond_timedwait_internal (pthread_cond_t *cond,
   cancelled = (self->cancel_state == PTHREAD_CANCEL_ENABLE)
       && self->cancel_pending;
   __pthread_mutex_unlock (&self->cancel_lock);
+  HURD_CRITICAL_END;
 
   /* Reacquire MUTEX before returning/cancelling.  */
   __pthread_mutex_lock (mutex);
