@@ -31,7 +31,6 @@ __pthread_rwlock_timedwrlock_internal (struct __pthread_rwlock *rwlock,
 				       const struct timespec *abstime)
 {
   error_t err;
-  int drain;
   struct __pthread *self;
 
   __pthread_spin_wait (&rwlock->__lock);
@@ -71,32 +70,30 @@ __pthread_rwlock_timedwrlock_internal (struct __pthread_rwlock *rwlock,
 
   __pthread_spin_wait (&rwlock->__lock);
   if (self->prevp == NULL)
-    /* Another thread removed us from the queue, which means a wakeup message
-       has been sent.  It was either consumed while we were blocking, or
-       queued after we timed out and before we acquired the rwlock lock, in
-       which case the message queue must be drained.  */
-    drain = err ? 1 : 0;
+    {
+      /* Another thread removed us from the queue, which means it gave us
+	 ownership and a wakeup message has been sent. It was either consumed
+	 while we were blocking, or queued after we timed out and before we
+	 acquired the rwlock lock, in which case the message queue must be
+	 drained. */
+      __pthread_spin_unlock (&rwlock->__lock);
+      if (err)
+	/* We have not consumed the message, do it now.  */
+	__pthread_block (self);
+
+      assert (rwlock->__readers == 0);
+
+      return 0;
+    }
   else
     {
       /* We're still in the queue.  No one attempted to wake us up, i.e. we
          timed out.  */
       __pthread_dequeue (self);
-      drain = 0;
-    }
-  __pthread_spin_unlock (&rwlock->__lock);
-
-  if (drain)
-    __pthread_block (self);
-
-  if (err)
-    {
+      __pthread_spin_unlock (&rwlock->__lock);
       assert (err == ETIMEDOUT);
       return err;
     }
-
-  assert (rwlock->__readers == 0);
-
-  return 0;
 }
 
 int
