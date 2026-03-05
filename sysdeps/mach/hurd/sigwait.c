@@ -27,7 +27,7 @@ __sigwait (const sigset_t *set, int *sig)
   ret = __sigtimedwait (set, NULL, NULL);
 
   if (ret < 0)
-    return -1;
+    return errno;
 
   if (!ret)
     return __hurd_fail(EAGAIN);
