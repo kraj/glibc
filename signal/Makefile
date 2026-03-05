@@ -61,6 +61,7 @@ tests := \
   tst-sigset2 \
   tst-sigsimple \
   tst-sigwait-eintr \
+  tst-sigtimedwait-timeout \
 # tests
 
 include ../Rules

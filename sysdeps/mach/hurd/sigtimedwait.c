@@ -147,17 +147,17 @@ __sigtimedwait (const sigset_t *set, siginfo_t *info,
       /* Timed out.  */
       signo = __hurd_fail (EAGAIN);
     }
-  else
-    {
-      assert (signo);
 
-      _hurd_sigstate_lock (ss);
+  assert (signo);
 
-      /* Delete our preemptor. */
-      assert (ss->preemptors == &preemptor);
-      ss->preemptors = preemptor.next;
-    }
+  _hurd_sigstate_lock (ss);
 
+  /* Delete our preemptor. */
+  assert (ss->preemptors == &preemptor);
+  ss->preemptors = preemptor.next;
+
+  /* Restore the blocking mask. */
+  ss->blocked = blocked;
 
 all_done:
   _hurd_sigstate_unlock (ss);
