@@ -765,10 +765,11 @@ post_signal (struct hurd_sigstate *ss,
     handler = ss->preemptors ? try_preemptor (ss->preemptors) : SIG_ERR;
 
     /* If no thread-specific preemptor, check for a global one.  */
-    if (handler == SIG_ERR && __sigismember (&_hurdsig_preempted_set, signo))
+    if (handler == SIG_ERR)
       {
 	__mutex_lock (&_hurd_siglock);
-	handler = try_preemptor (_hurdsig_preemptors);
+	if (__sigismember (&_hurdsig_preempted_set, signo))
+	  handler = try_preemptor (_hurdsig_preemptors);
 	__mutex_unlock (&_hurd_siglock);
       }
   }
