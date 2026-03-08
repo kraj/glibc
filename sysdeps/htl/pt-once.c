@@ -34,8 +34,7 @@ __pthread_once (pthread_once_t *once_control, void (*init_routine) (void))
 {
   ASSERT_TYPE_SIZE (pthread_once_t, __SIZEOF_PTHREAD_ONCE_T);
 
-  atomic_full_barrier ();
-  if (once_control->__run == 0)
+  if (atomic_load_acquire (&once_control->__run) == 0)
     {
       __pthread_spin_wait (&once_control->__lock);
 
@@ -45,8 +44,7 @@ __pthread_once (pthread_once_t *once_control, void (*init_routine) (void))
 	  init_routine ();
 	  pthread_cleanup_pop (0);
 
-	  atomic_full_barrier ();
-	  once_control->__run = 1;
+	  atomic_store_release (&once_control->__run, 1);
 	}
 
       __pthread_spin_unlock (&once_control->__lock);
