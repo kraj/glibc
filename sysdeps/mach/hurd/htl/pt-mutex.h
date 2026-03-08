@@ -45,7 +45,7 @@
   ret = cb (mtxp->__lock, ##__VA_ARGS__);   \
   if (ret == 0 || ret == EOWNERDEAD)   \
     {   \
-      if (mtxp->__owner_id == ENOTRECOVERABLE)   \
+      if (mtxp->__owner_id == NOTRECOVERABLE_ID)   \
         ret = ENOTRECOVERABLE;   \
       else   \
         {   \
