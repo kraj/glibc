@@ -55,14 +55,14 @@ __pthread_exit (void *status)
 
   __pthread_setcancelstate (oldstate, &oldstate);
 
+  /* Destroy any thread specific data.  */
+  __pthread_destroy_specific (self);
+
   /* Decrease the number of threads.  We use an atomic operation to
      make sure that only the last thread calls `exit'.  */
   if (atomic_fetch_add_relaxed (&__pthread_total, -1) == 1)
     /* We are the last thread.  */
     exit (0);
-
-  /* Destroy any thread specific data.  */
-  __pthread_destroy_specific (self);
 
   /* Note that after this point the process can be terminated at any
      point if another thread calls `pthread_exit' and happens to be
