@@ -25,15 +25,15 @@ feenableexcept (int excepts)
 {
   unsigned int new_exc, old_exc;
 
-  /* Get the current control word.  */
-  _FPU_GETCW (new_exc);
+  /* Get the current enables.  */
+  _FPU_GET_ENABLES (new_exc);
 
-  old_exc = (new_exc & ENABLE_MASK) << ENABLE_SHIFT;
+  old_exc = new_exc << ENABLE_SHIFT;
 
   excepts &= FE_ALL_EXCEPT;
 
   new_exc |= excepts >> ENABLE_SHIFT;
-  _FPU_SETCW (new_exc);
+  _FPU_SET_ENABLES (new_exc);
 
   return old_exc;
 }

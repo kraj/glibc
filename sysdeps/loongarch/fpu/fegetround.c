@@ -23,11 +23,10 @@ int
 __fegetround (void)
 {
   int cw;
+  /* Get RM control word.  */
+  _FPU_GET_RM (cw);
 
-  /* Get control word.  */
-  _FPU_GETCW (cw);
-
-  return cw & _FPU_RC_MASK;
+  return cw;
 }
 libm_hidden_def (__fegetround) weak_alias (__fegetround, fegetround)
 libm_hidden_weak (fegetround)

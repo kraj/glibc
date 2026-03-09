@@ -25,8 +25,8 @@ fegetexcept (void)
 {
   unsigned int exc;
 
-  /* Get the current control word.  */
-  _FPU_GETCW (exc);
+  /* Get the current enables.  */
+  _FPU_GET_ENABLES (exc);
 
-  return (exc & ENABLE_MASK) << ENABLE_SHIFT;
+  return exc << ENABLE_SHIFT;
 }
