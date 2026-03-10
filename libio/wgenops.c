@@ -34,6 +34,8 @@
 
 static int save_for_wbackup (FILE *fp, wchar_t *end_p) __THROW;
 
+libio_static_fn_required (_IO_wfile_doallocate);
+
 /* Return minimum _pos markers
    Assumes the current get area is the main get area. */
 ssize_t
