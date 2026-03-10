@@ -703,6 +703,7 @@ INSTALL_PROGRAM
 base_machine
 build_pt_chown
 build_nscd
+aarch64_memtag_abi
 memory_tagging
 enable_werror
 force_install
@@ -812,6 +813,7 @@ enable_kernel
 enable_werror
 enable_multi_arch
 enable_memory_tagging
+enable_aarch64_memtag_abi
 enable_systemtap
 enable_build_nscd
 enable_nscd
@@ -1492,6 +1494,9 @@ Optional Features:
                           architectures
   --enable-memory-tagging enable memory tagging if supported by the
                           architecture [default=no]
+  --enable-aarch64-memtag-abi
+                          enable AArch64 Memtag ABI Extension for ELF
+                          [default=no]]
   --enable-systemtap      enable systemtap static probe points [default=no]
   --disable-build-nscd    disable building and installing the nscd daemon
   --disable-nscd          library functions will not contact the nscd daemon
@@ -4704,6 +4709,25 @@ if test "$memory_tagging" = yes; then
   case $host_cpu in
     aarch64)
       printf "%s\n" "#define USE_MTAG 1" >>confdefs.h
+
+      ;;
+  esac
+fi
+
+
+# Check whether --enable-aarch64-memtag-abi was given.
+if test ${enable_aarch64_memtag_abi+y}
+then :
+  enableval=$enable_aarch64_memtag_abi; aarch64_memtag_abi=$enableval
+else case e in #(
+  e) aarch64_memtag_abi=no ;;
+esac
+fi
+
+if test "$aarch64_memtag_abi" = yes; then
+  case $host_cpu in
+    aarch64)
+      printf "%s\n" "#define USE_AARCH64_MEMTAG_ABI 1" >>confdefs.h
 
       ;;
   esac

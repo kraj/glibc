@@ -1,5 +1,5 @@
-/* Data for processor runtime information.  AArch64 version.
-   Copyright (C) 2024-2026 Free Software Foundation, Inc.
+/* Memory tagging handling for GNU dynamic linker.  AArch64 version.
+   Copyright (C) 2026 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -16,36 +16,16 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#ifndef PROCINFO_CLASS
-# define PROCINFO_CLASS
-#endif
+#ifdef USE_AARCH64_MEMTAG_ABI
+#include <ldsodefs.h>
+#include <dl-prop.h>
 
-#if !IS_IN (ldconfig)
-# if !defined PROCINFO_DECL && defined SHARED
-  ._dl_aarch64_gcs
-# else
-PROCINFO_CLASS unsigned long _dl_aarch64_gcs
-# endif
-# ifndef PROCINFO_DECL
-= 0
-# endif
-# if !defined SHARED || defined PROCINFO_DECL
-;
-# else
-,
-# endif
-
-# if !defined PROCINFO_DECL && defined SHARED
-  ._dl_aarch64_mte
-# else
-PROCINFO_CLASS unsigned long _dl_aarch64_mte
-# endif
-# ifndef PROCINFO_DECL
-= 0
-# endif
-# if !defined SHARED || defined PROCINFO_DECL
-;
-# else
-,
-# endif
+bool
+_dl_mte_setup_stack (void)
+{
+  GL(dl_stack_prot_flags) |= PROT_MTE;
+  void *page = PTR_ALIGN_DOWN (__libc_stack_end, GLRO (dl_pagesize));
+  return  __mprotect (page, GLRO (dl_pagesize),
+		      GL(dl_stack_prot_flags) | PROT_GROWSDOWN) == 0;
+}
 #endif

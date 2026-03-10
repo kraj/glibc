@@ -9,6 +9,10 @@ modules-names += \
 LDFLAGS-tst-tlsdesc-pac = -rdynamic
 
 $(objpfx)tst-tlsdesc-pac.out: $(objpfx)tst-tlsdesc-pac-mod.so
+
+sysdep-dl-routines += \
+  dl-mte-stack \
+  # sysdep-dl-routines
 endif
 
 ifeq ($(subdir),misc)
@@ -363,6 +367,59 @@ tst-gcs-audit-optional-ARGS = -- $(host-test-program-cmd)
 tst-gcs-audit-override-ARGS = -- $(host-test-program-cmd)
 
 endif # ifeq ($(have-test-gcs),yes)
+
+ifeq ($(aarch64-memtag-abi)$(have-test-memtag-stack),yesyes)
+tests += \
+  tst-memtag-stack-async \
+  tst-memtag-stack-dep1 \
+  tst-memtag-stack-dep2 \
+  tst-memtag-stack-dlopen \
+  tst-memtag-stack-sync \
+  # tests
+
+tests-special += \
+  $(objpfx)tst-memtag-stack-sync-tunable.out \
+  # tests-special
+
+modules-names += \
+  tst-memtag-mod1 \
+  tst-memtag-mod2 \
+  # modules-names
+
+# Disable stack protector for stack tagging tests.  Some GCC versions have a
+# a bug where the stack frame untagging at the function epiloge is done before
+# stack canary check.
+CFLAGS-tst-memtag-stack-sync.c += -march=armv8.5-a+memtag -fsanitize=memtag-stack \
+	$(no-stack-protector)
+LDFLAGS-tst-memtag-stack-sync += -Wl,-z,memtag-stack -Wl,-z,memtag-mode=sync
+tst-memtag-stack-sync-ARGS = sync
+
+CFLAGS-tst-memtag-stack-async.c += -march=armv8.5-a+memtag -fsanitize=memtag-stack \
+	-DMEMTAG_MODE_ASYNC $(no-stack-protector)
+LDFLAGS-tst-memtag-stack-async += -Wl,-z,memtag-stack -Wl,-z,memtag-mode=async
+tst-memtag-stack-async-ARGS = async
+
+CFLAGS-tst-memtag-stack-dep1.c += -march=armv8.5-a+memtag -fsanitize=memtag-stack \
+	$(no-stack-protector)
+LDFLAGS-tst-memtag-stack-dep1 += -Wl,-z,memtag-stack -Wl,-z,memtag-mode=sync
+$(objpfx)tst-memtag-stack-dep1: $(objpfx)tst-memtag-mod1.so
+tst-memtag-stack-dep1-ARGS = sync
+
+$(objpfx)tst-memtag-stack-dep2: $(objpfx)tst-memtag-mod2.so
+CFLAGS-tst-memtag-mod2.c += -march=armv8.5-a+memtag -fsanitize=memtag-stack
+LDFLAGS-tst-memtag-mod2.so += -Wl,-z,memtag-stack -Wl,-z,memtag-mode=sync
+$(objpfx)tst-memtag-mod2.so: $(libsupport)
+
+$(objpfx)tst-memtag-stack-dlopen.out: $(objpfx)tst-memtag-mod2.so
+
+$(objpfx)tst-memtag-stack-sync-tunable.out: $(objpfx)tst-memtag-stack-async
+	$(test-program-cmd-before-env) \
+		$(run-program-env) \
+		GLIBC_TUNABLES=glibc.mem.tagging=2 \
+		$(test-program-cmd-after-env) sync $< \
+		> $@ 2>&1; echo "status: $$?" >> $@; \
+	$(evaluate-test)
+endif # ifeq ($(aarch64-memtag-abi)$(have-test-memtag-stack),yesyes)
 
 endif # ifeq ($(subdir),misc)
 

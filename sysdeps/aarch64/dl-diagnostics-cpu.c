@@ -45,8 +45,6 @@ _dl_diagnostics_cpu (void)
   print_cpu_features_value ("midr_el1",
                             GLRO (dl_aarch64_cpu_features).midr_el1);
   print_cpu_features_value ("mops", GLRO (dl_aarch64_cpu_features).mops);
-  print_cpu_features_value ("mte_state",
-                            GLRO (dl_aarch64_cpu_features).mte_state);
   print_cpu_features_value ("sve", GLRO (dl_aarch64_cpu_features).sve);
   print_cpu_features_value ("zva_size",
                             GLRO (dl_aarch64_cpu_features).zva_size);

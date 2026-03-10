@@ -72,6 +72,8 @@ aarch64_libc_setup_tls (void)
 	    _dl_fatal_printf ("failed to lock GCS: %d\n", -ret);
 	}
     }
+
+  _dl_mte_init ();
 }
 
 # define ARCH_SETUP_IREL() apply_irel ()

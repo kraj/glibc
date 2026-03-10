@@ -70,4 +70,10 @@ __libc_mtag_new_tag (void *p)
   return p;
 }
 
+static __always_inline bool
+__libc_mtag_enabled (void)
+{
+  return false;
+}
+
 #endif /* _GENERIC_LIBC_MTAG_H */

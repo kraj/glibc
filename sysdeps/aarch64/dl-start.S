@@ -65,6 +65,8 @@ ENTRY (_start)
 	svc	0x0
 	cbnz	w0, L(failed_gcs_lock)
 L(skip_gcs_enable):
+	/* Enable MTE support */
+	bl	_dl_mte_init
 
 .globl _dl_start_user
 .type _dl_start_user, %function

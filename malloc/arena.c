@@ -253,7 +253,7 @@ __ptmalloc_init (void)
 #endif
 
 #ifdef USE_MTAG
-  if ((TUNABLE_GET_FULL (glibc, mem, tagging, int32_t, NULL) & 1) != 0)
+  if (__libc_mtag_enabled ())
     {
       /* If the tunable says that we should be using tagged memory
 	 and that morecore does not support tagged regions, then

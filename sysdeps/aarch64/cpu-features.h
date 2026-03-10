@@ -59,15 +59,23 @@ enum {
   BTI_CHECK_ENFORCED = 1,
 };
 
+enum {
+  MTE_MODE_SYNC  = 0x1,
+  MTE_MODE_ASYNC = 0x2,
+  MTE_MODE_AUTO  = 0x4,
+  MTE_MODE_MASK  = MTE_MODE_SYNC | MTE_MODE_ASYNC | MTE_MODE_AUTO,
+  MTE_STACK      = 0x8,
+  MTE_HEAP       = 0x10,
+};
+
 struct cpu_features
 {
   uint64_t midr_el1;
   unsigned zva_size;
   bool bti;
-  /* Currently, the GLIBC memory tagging tunable only defines 8 bits.  */
-  uint8_t mte_state;
+  uint8_t unused0;
   bool sve;
-  bool unused;
+  bool unused1;
   bool mops;
 };
 

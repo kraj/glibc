@@ -484,3 +484,106 @@ else
 have-test-gcs = no"
 fi
 
+# Check if compiler supports MEMTAG stack support.  Also check if linker
+# support the required options (clang might only support ti for Android
+# builds).
+
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if compiler supports -fsanitize=memtag-stack" >&5
+printf %s "checking if compiler supports -fsanitize=memtag-stack... " >&6; }
+if test ${libc_cv_cc_memtag_stack+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) if { ac_try='${CC-cc} -Werror -march=armv8.5-a+memtag -fsanitize=memtag-stack -xc /dev/null -S -o /dev/null'
+  { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; }
+then :
+  libc_cv_cc_memtag_stack=yes
+else case e in #(
+  e) libc_cv_cc_memtag_stack=no ;;
+esac
+fi ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_cv_cc_memtag_stack" >&5
+printf "%s\n" "$libc_cv_cc_memtag_stack" >&6; }
+if test "$TEST_CC" = "$CC"; then
+  libc_cv_test_cc_memtag_stack=$libc_cv_cc_memtag_stack
+else
+
+saved_CC="$CC"
+CC="$TEST_CC"
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if compiler supports -fsanitize=memtag-stack in testing" >&5
+printf %s "checking if compiler supports -fsanitize=memtag-stack in testing... " >&6; }
+if test ${libc_cv_test_cc_memtag_stack+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) if { ac_try='${CC-cc} -Werror -march=armv8.5-a+memtag -fsanitize=memtag-stack -xc /dev/null -S -o /dev/null'
+  { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; }
+then :
+  libc_cv_test_cc_memtag_stack=yes
+else case e in #(
+  e) libc_cv_test_cc_memtag_stack=no
+ ;;
+esac
+fi ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_cv_test_cc_memtag_stack" >&5
+printf "%s\n" "$libc_cv_test_cc_memtag_stack" >&6; }
+
+CC="$saved_CC"
+
+fi
+
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for linker that supports -z memtag-stack" >&5
+printf %s "checking for linker that supports -z memtag-stack... " >&6; }
+libc_linker_feature=no
+cat > conftest.c <<EOF
+int _start (void) { return 42; }
+EOF
+if { ac_try='${CC-cc} $CFLAGS $CPPFLAGS $LDFLAGS $no_ssp
+		  -Wl,-z,memtag-stack -nostdlib -nostartfiles
+		  -fPIC -shared -o conftest.so conftest.c
+		  1>&5'
+  { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; }
+then
+  if ${CC-cc} $CFLAGS $CPPFLAGS $LDFLAGS $no_ssp -Wl,-z,memtag-stack -nostdlib \
+      -nostartfiles -fPIC -shared -o conftest.so conftest.c 2>&1 \
+      | grep "warning: -z memtag-stack ignored" > /dev/null 2>&1; then
+    true
+  else
+    libc_linker_feature=yes
+  fi
+fi
+rm -f conftest*
+if test $libc_linker_feature = yes; then
+  libc_cv_ld_memtag_stack=yes
+else
+  libc_cv_ld_memtag_stack=no
+
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_linker_feature" >&5
+printf "%s\n" "$libc_linker_feature" >&6; }
+if test $libc_cv_test_cc_memtag_stack = yes && \
+   test $libc_cv_ld_memtag_stack = yes
+then
+   config_vars="$config_vars
+have-test-memtag-stack = yes"
+else
+   config_vars="$config_vars
+have-test-memtag-stack = no"
+fi
+

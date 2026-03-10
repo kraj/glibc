@@ -299,6 +299,20 @@ passed to 'configure'.  For example:
 
      Default is to disable SFrame support.
 
+'--enable-aarch64-memtag-abi'
+    Enable initial support for the AArch64 Memory Tagging Extension (MTE) ABI.
+    The option implements stack tagging (DT_AARCH64_MEMTAG_STACK) and MTE
+    execution mode configuration (DT_AARCH64_MEMTAG_MODE) as defined in the
+    Memtag ABI Extension for ELF64.
+
+    Unsupported options (DT_AARCH64_MEMTAG_HEAP and DT_AARCH64_MEMTAG_GLOBALS)
+    triggers either startup failure or dlopen errors.
+
+    If `--enable-memory-tagging` is also uses, the `glibc.mem.tagging` tunable
+    takes precedence.
+
+    This option is disabled by default and only support on aarch64.
+
    To build the library and related programs, type 'make'.  This will
 produce a lot of output, some of which may look like errors from 'make'
 but aren't.  Look for error messages from 'make' containing '***'.

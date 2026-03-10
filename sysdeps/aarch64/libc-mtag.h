@@ -64,6 +64,12 @@ __libc_mtag_new_tag (void *p)
   return x0;
 }
 
+static __always_inline bool
+__libc_mtag_enabled (void)
+{
+  return GL(dl_aarch64_mte) & MTE_HEAP;
+}
+
 #endif /* USE_MTAG */
 
 #endif /* _AARCH64_LIBC_MTAG_H */

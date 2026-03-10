@@ -185,6 +185,9 @@
 /* Define if memory tagging support should be enabled.  */
 #undef USE_MTAG
 
+/* Define if AArch64 Memtag ABI extension should be enabled.  */
+#undef USE_AARCH64_MEMTAG_ABI
+
 /* Package description.  */
 #undef PKGVERSION
 

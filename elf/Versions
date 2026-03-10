@@ -28,6 +28,13 @@ libc {
     # by scripts/versions.awk.
     __placeholder_only_for_empty_version_map;
   }
+%ifdef USE_AARCH64_MEMTAG_ABI
+  GLIBC_ABI_MEMTAG {
+    # This symbol is used only for empty version map and will be removed
+    # by scripts/versions.awk.
+    __placeholder_only_for_empty_version_map;
+  }
+%endif
   GLIBC_PRIVATE {
     # functions used in other libraries
     __libc_early_init;

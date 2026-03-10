@@ -343,6 +343,20 @@ if test "$memory_tagging" = yes; then
 fi
 AC_SUBST(memory_tagging)
 
+AC_ARG_ENABLE([aarch64-memtag-abi],
+	      AS_HELP_STRING([--enable-aarch64-memtag-abi],
+			     [enable AArch64 Memtag ABI Extension for ELF @<:@default=no@:>@]]),
+	      [aarch64_memtag_abi=$enableval],
+	      [aarch64_memtag_abi=no])
+if test "$aarch64_memtag_abi" = yes; then
+  case $host_cpu in
+    aarch64)
+      AC_DEFINE(USE_AARCH64_MEMTAG_ABI)
+      ;;
+  esac
+fi
+AC_SUBST(aarch64_memtag_abi)
+
 AC_ARG_ENABLE([systemtap],
               [AS_HELP_STRING([--enable-systemtap],
 	       [enable systemtap static probe points @<:@default=no@:>@])],

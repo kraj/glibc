@@ -27,11 +27,17 @@ extern void _dl_bti_check (struct link_map *, const char *)
 extern void _dl_gcs_check (struct link_map *, const char *, int)
     attribute_hidden;
 
+extern void _dl_mte_check (struct link_map *, const char *)
+    attribute_hidden;
+
+extern void _dl_mte_init (void) attribute_hidden;
+
 static inline void __attribute__ ((always_inline))
 _rtld_main_check (struct link_map *m, const char *program)
 {
   _dl_bti_check (m, program);
   _dl_gcs_check (m, program, 0);
+  _dl_mte_check (m, program);
 }
 
 static inline void __attribute__ ((always_inline))
@@ -39,6 +45,7 @@ _dl_open_check (struct link_map *m, int dlopen_mode)
 {
   _dl_bti_check (m, NULL);
   _dl_gcs_check (m, NULL, dlopen_mode);
+  _dl_mte_check (m, NULL);
 }
 
 static inline void __attribute__ ((always_inline))

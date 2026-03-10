@@ -1,6 +1,5 @@
-/* Data for processor runtime information.  AArch64 version.
-   Copyright (C) 2024-2026 Free Software Foundation, Inc.
-   This file is part of the GNU C Library.
+/* AArch64 MTE support.
+   Copyright (C) 2026 Free Software Foundation, Inc.
 
    The GNU C Library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -16,36 +15,21 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#ifndef PROCINFO_CLASS
-# define PROCINFO_CLASS
+#ifndef _DL_MTE_H
+#define _DL_MTE_H
+
+#ifndef PR_SET_TAGGED_ADDR_CTRL
+# define PR_SET_TAGGED_ADDR_CTRL  55
+# define PR_MTE_TAG_SHIFT         3
+# define PR_TAGGED_ADDR_ENABLE    (1UL << 0)
+# define PR_MTE_TCF_SYNC          (1UL << 1)
+# define PR_MTE_TCF_ASYNC         (1UL << 2)
 #endif
 
-#if !IS_IN (ldconfig)
-# if !defined PROCINFO_DECL && defined SHARED
-  ._dl_aarch64_gcs
-# else
-PROCINFO_CLASS unsigned long _dl_aarch64_gcs
-# endif
-# ifndef PROCINFO_DECL
-= 0
-# endif
-# if !defined SHARED || defined PROCINFO_DECL
-;
-# else
-,
-# endif
+#ifndef USE_AARCH64_MEMTAG_ABI
+static __always_inline bool _dl_mte_setup_stack (void) { return false; };
+#else
+extern bool _dl_mte_setup_stack (void) attribute_hidden;
+#endif
 
-# if !defined PROCINFO_DECL && defined SHARED
-  ._dl_aarch64_mte
-# else
-PROCINFO_CLASS unsigned long _dl_aarch64_mte
-# endif
-# ifndef PROCINFO_DECL
-= 0
-# endif
-# if !defined SHARED || defined PROCINFO_DECL
-;
-# else
-,
-# endif
 #endif
