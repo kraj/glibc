@@ -239,31 +239,23 @@ disabled.
 
 The approximate maximum overhead of the per-thread cache is thus equal
 to the number of bins times the chunk count in each bin times the size
-of each chunk.  With defaults, the approximate maximum overhead of the
-per-thread cache is approximately 236 KB on 64-bit systems and 118 KB
-on 32-bit systems.
+of each chunk.
 @end deftp
 
 @deftp Tunable glibc.malloc.mxfast
-One of the optimizations @code{malloc} uses is to maintain a series of ``fast
-bins'' that hold chunks up to a specific size.  The default and
-maximum size which may be held this way is 80 bytes on 32-bit systems
-or 160 bytes on 64-bit systems.  Applications which value size over
-speed may choose to reduce the size of requests which are serviced
-from fast bins with this tunable.  Note that the value specified
-includes @code{malloc}'s internal overhead, which is normally the size of one
-pointer, so add 4 on 32-bit systems or 8 on 64-bit systems to the size
-passed to @code{malloc} for the largest bin size to enable.
+This tunable has no effect since the ``fastbins'' have been removed.
 @end deftp
 
 @deftp Tunable glibc.malloc.hugetlb
 This tunable controls the usage of Huge Pages on @code{malloc} calls.  The
-default value is @code{0}, which disables any additional support on
-@code{malloc}.
+default value is @code{0} on most targets.  Using @code{0} disables support
+that improves use of huge pages in @code{malloc}.  However huge pages may
+still be created depending on the OS settings.
 
 Setting its value to @code{1} enables the use of @code{madvise} with
 @code{MADV_HUGEPAGE} after memory allocation with @code{mmap}.  It is enabled
 only if the system supports Transparent Huge Page (currently only on Linux).
+This is the default used for AArch64.
 
 Setting its value to @code{2} enables the use of Huge Page directly with
 @code{mmap} with the use of @code{MAP_HUGETLB} flag.  The huge page size
