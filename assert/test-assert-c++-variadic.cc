@@ -65,6 +65,9 @@ test_enabled ()
   }
 }
 
+/* GCC PR118629 fixed the handling of assert inside requires clause.  */
+#if __GNUC_PREREQ (14, 3) || defined __clang__
+
 template <typename Ts>
 constexpr bool
 assert_works ()
@@ -81,6 +84,8 @@ enum class SE : int { se };
 static_assert ( assert_works <OE> ());
 static_assert ( assert_works <TE> ());
 static_assert (!assert_works <SE> ());
+
+#endif /* __GNUC_PREREQ (14, 3) || defined __clang__ */
 
 #define NDEBUG
 #include <assert.h>
