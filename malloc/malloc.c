@@ -233,9 +233,6 @@
 /* For ALIGN_UP et. al.  */
 #include <libc-pointer-arith.h>
 
-/* For DIAG_PUSH/POP_NEEDS_COMMENT et al.  */
-#include <libc-diag.h>
-
 /* For memory tagging.  */
 #include <libc-mtag.h>
 
@@ -3099,7 +3096,7 @@ tcache_get_align (size_t nb, size_t alignment)
       tcache_entry **tep = & tcache->entries[tc_idx];
       tcache_entry *te = *tep;
       bool mangled = false;
-      size_t csize;
+      size_t csize = 0;
 
       while (te != NULL
 	     && ((csize = chunksize (mem2chunk (te))) < nb
@@ -3111,16 +3108,10 @@ tcache_get_align (size_t nb, size_t alignment)
           mangled = true;
         }
 
-      /* GCC compiling for -Os warns on some architectures that csize may be
-	 uninitialized.  However, if 'te' is not NULL, csize is always
-	 initialized in the loop above.  */
-      DIAG_PUSH_NEEDS_COMMENT;
-      DIAG_IGNORE_Os_NEEDS_COMMENT (12, "-Wmaybe-uninitialized");
       if (te != NULL
 	  && csize == nb
 	  && PTR_IS_ALIGNED (te, alignment))
 	return tag_new_usable (tcache_get_n (tc_idx, tep, mangled));
-      DIAG_POP_NEEDS_COMMENT;
     }
   return NULL;
 }

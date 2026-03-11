@@ -314,12 +314,6 @@ realloc_check (void *oldmem, size_t bytes)
       newmem = _int_realloc (&main_arena, oldp, chunksize (oldp), chnb);
     }
 
-  DIAG_PUSH_NEEDS_COMMENT;
-#if __GNUC_PREREQ (7, 0)
-  /* GCC 7 warns about magic_p may be used uninitialized.  But we never
-     reach here if magic_p is uninitialized.  */
-  DIAG_IGNORE_NEEDS_COMMENT_GCC (7, "-Wmaybe-uninitialized");
-#endif
   /* mem2chunk_check changed the magic byte in the old chunk.
      If newmem is NULL, then the old chunk will still be used though,
      so we need to invert that change here.  */
