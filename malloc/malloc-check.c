@@ -320,7 +320,6 @@ realloc_check (void *oldmem, size_t bytes)
 invert:
   if (newmem == NULL)
     *magic_p ^= 0xFF;
-  DIAG_POP_NEEDS_COMMENT;
 
   __libc_lock_unlock (main_arena.mutex);
 
