@@ -711,7 +711,7 @@ link-libc-static-tests = -Wl,--start-group $(common-objpfx)libc.a $(static-gnuli
 ifndef gnulib
 ifneq ($(have-cc-with-libunwind),yes)
   libunwind =
-  ifeq ($(have-libgcc_s),yes))
+  ifeq ($(have-libgcc_s),yes)
     libgcc_s  = -lgcc_s
   endif
 else
