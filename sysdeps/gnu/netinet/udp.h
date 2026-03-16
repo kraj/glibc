@@ -90,6 +90,9 @@ struct udphdr
 #define UDP_ENCAP_L2TPINUDP	3	/* rfc2661 */
 #define UDP_ENCAP_GTP0		4	/* GSM TS 09.60 */
 #define UDP_ENCAP_GTP1U		5	/* 3GPP TS 29.060 */
+#define UDP_ENCAP_RXRPC		6
+#define TCP_ENCAP_ESPINTCP	7	/* IPsec traffic over TCP (RFC 8229) */
+#define UDP_ENCAP_OVPNINUDP	8	/* OpenVPN traffic */
 
 #define SOL_UDP            17      /* sockopt level for UDP */
 
