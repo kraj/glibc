@@ -270,7 +270,7 @@ __wunderflow (FILE *fp)
       if (save_for_wbackup (fp, fp->_wide_data->_IO_read_end))
 	return WEOF;
     }
-  else if (_IO_have_backup (fp))
+  else if (_IO_have_wbackup (fp))
     _IO_free_wbackup_area (fp);
   return _IO_UNDERFLOW (fp);
 }
@@ -603,6 +603,6 @@ _IO_unsave_wmarkers (FILE *fp)
       fp->_markers = NULL;
     }
 
-  if (_IO_have_backup (fp))
+  if (_IO_have_wbackup (fp))
     _IO_free_wbackup_area (fp);
 }
