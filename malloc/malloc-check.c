@@ -224,7 +224,7 @@ free_check (void *mem)
     }
   else
     {
-      _int_free_chunk (&main_arena, p, chunksize (p), 1);
+      _int_free_merge_chunk (&main_arena, p, chunksize (p));
       __libc_lock_unlock (main_arena.mutex);
     }
   __set_errno (err);

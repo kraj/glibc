@@ -931,7 +931,7 @@ typedef struct malloc_chunk* mchunkptr;
 /* Internal routines.  */
 
 static void*  _int_malloc(mstate, size_t);
-static void _int_free_chunk (mstate, mchunkptr, INTERNAL_SIZE_T, int);
+static void _int_free_chunk (mstate, mchunkptr, INTERNAL_SIZE_T);
 static void _int_free_merge_chunk (mstate, mchunkptr, INTERNAL_SIZE_T);
 static INTERNAL_SIZE_T _int_free_create_chunk (mstate,
 					       mchunkptr, INTERNAL_SIZE_T,
@@ -2240,7 +2240,7 @@ sysmalloc (INTERNAL_SIZE_T nb, mstate av)
 			CHUNK_HDR_SZ | PREV_INUSE);
               set_foot (chunk_at_offset (old_top, old_size), CHUNK_HDR_SZ);
               set_head (old_top, old_size | PREV_INUSE | NON_MAIN_ARENA);
-              _int_free_chunk (av, old_top, chunksize (old_top), 1);
+              _int_free_merge_chunk (av, old_top, chunksize (old_top));
             }
           else
             {
@@ -2511,7 +2511,7 @@ sysmalloc (INTERNAL_SIZE_T nb, mstate av)
                       /* If possible, release the rest. */
                       if (old_size >= MINSIZE)
                         {
-                          _int_free_chunk (av, old_top, chunksize (old_top), 1);
+                          _int_free_merge_chunk (av, old_top, chunksize (old_top));
                         }
                     }
                 }
@@ -3008,12 +3008,12 @@ tcache_thread_shutdown (void)
 	  tcache_tmp->entries[i] = REVEAL_PTR (e->next);
 	  e->key = 0;
 	  p = mem2chunk (e);
-	  _int_free_chunk (arena_for_chunk (p), p, chunksize (p), 0);
+	  _int_free_chunk (arena_for_chunk (p), p, chunksize (p));
 	}
     }
 
   p = mem2chunk (tcache_tmp);
-  _int_free_chunk (arena_for_chunk (p), p, chunksize (p), 0);
+  _int_free_chunk (arena_for_chunk (p), p, chunksize (p));
 }
 
 /* Initialize tcache.  In the rare case there isn't any memory available,
@@ -3177,7 +3177,7 @@ __libc_free (void *mem)
 					  size - MINSIZE)))
     return malloc_printerr_tail ("free(): invalid size");
 
-  _int_free_chunk (arena_for_chunk (p), p, size, 0);
+  _int_free_chunk (arena_for_chunk (p), p, size);
 }
 libc_hidden_def (__libc_free)
 
@@ -3284,7 +3284,7 @@ __libc_realloc (void *oldmem, size_t bytes)
       if (newp != NULL)
         {
 	  memcpy (newp, oldmem, memsize (oldp));
-	  _int_free_chunk (ar_ptr, oldp, chunksize (oldp), 0);
+	  _int_free_chunk (ar_ptr, oldp, chunksize (oldp));
         }
     }
 
@@ -4046,11 +4046,10 @@ _int_malloc (mstate av, size_t bytes)
    ------------------------------ free ------------------------------
  */
 
-/* Free chunk P of SIZE bytes to the arena.  HAVE_LOCK indicates where
-   the arena for P has already been locked.  Caller must ensure chunk
-   and size are valid.  */
-static void
-_int_free_chunk (mstate av, mchunkptr p, INTERNAL_SIZE_T size, int have_lock)
+/* Free chunk P of SIZE bytes to the arena AV (which is not locked).
+   Caller must ensure chunk and size are valid.  */
+static __attribute_maybe_unused__ void
+_int_free_chunk (mstate av, mchunkptr p, INTERNAL_SIZE_T size)
 {
   /*
     Consolidate other non-mmapped chunks as they arrive.
@@ -4058,22 +4057,14 @@ _int_free_chunk (mstate av, mchunkptr p, INTERNAL_SIZE_T size, int have_lock)
 
   if (!chunk_is_mmapped(p)) {
 
-    /* Preserve errno in case block merging results in munmap.  */
-    int err = errno;
-
-    /* If we're single-threaded, don't lock the arena.  */
     if (SINGLE_THREAD_P)
-      have_lock = true;
-
-    if (!have_lock)
-      __libc_lock_lock (av->mutex);
-
-    _int_free_merge_chunk (av, p, size);
-
-    if (!have_lock)
-      __libc_lock_unlock (av->mutex);
-
-    __set_errno (err);
+      _int_free_merge_chunk (av, p, size);
+    else
+      {
+	__libc_lock_lock (av->mutex);
+	_int_free_merge_chunk (av, p, size);
+	__libc_lock_unlock (av->mutex);
+      }
   }
   /*
     If the chunk was allocated via mmap, release via munmap().
@@ -4090,8 +4081,8 @@ _int_free_chunk (mstate av, mchunkptr p, INTERNAL_SIZE_T size, int have_lock)
   }
 }
 
-/* Try to merge chunk P of SIZE bytes with its neighbors.  Put the
-   resulting chunk on the appropriate bin list.  P must not be on a
+/* Try to merge chunk P of SIZE bytes from locked arena AV with its neighbors.
+   Put the resulting chunk on the appropriate bin list.  P must not be on a
    bin list yet, and it can be in use.  */
 static void
 _int_free_merge_chunk (mstate av, mchunkptr p, INTERNAL_SIZE_T size)
@@ -4221,6 +4212,9 @@ _int_free_maybe_trim (mstate av, INTERNAL_SIZE_T size)
      if ATTEMPT_TRIMMING_THRESHOLD is reached.  */
   if (size >= ATTEMPT_TRIMMING_THRESHOLD)
     {
+      /* Preserve errno.  */
+      int err = errno;
+
       if (av == &main_arena)
 	{
 #ifndef MORECORE_CANNOT_TRIM
@@ -4237,6 +4231,8 @@ _int_free_maybe_trim (mstate av, INTERNAL_SIZE_T size)
 	  assert (heap->ar_ptr == av);
 	  heap_trim (heap, mp_.top_pad);
 	}
+
+      __set_errno (err);
     }
 }
 
@@ -4327,7 +4323,7 @@ _int_realloc (mstate av, mchunkptr oldp, INTERNAL_SIZE_T oldsize,
             {
 	      void *oldmem = chunk2mem (oldp);
 	      memcpy (newmem, oldmem, memsize (oldp));
-	      _int_free_chunk (av, oldp, chunksize (oldp), 1);
+	      _int_free_merge_chunk (av, oldp, chunksize (oldp));
 	      check_inuse_chunk (av, newp);
 	      return newmem;
             }
@@ -4353,7 +4349,7 @@ _int_realloc (mstate av, mchunkptr oldp, INTERNAL_SIZE_T oldsize,
                 (av != &main_arena ? NON_MAIN_ARENA : 0));
       /* Mark remainder as inuse so free() won't complain */
       set_inuse_bit_at_offset (remainder, remainder_size);
-      _int_free_chunk (av, remainder, chunksize (remainder), 1);
+      _int_free_merge_chunk (av, remainder, chunksize (remainder));
     }
 
   check_inuse_chunk (av, newp);
