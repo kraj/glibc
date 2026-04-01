@@ -381,10 +381,26 @@ tests-special += \
   $(objpfx)tst-memtag-stack-sync-tunable.out \
   # tests-special
 
+ifeq ($(have-test-memtag-heap),yes)
+tests += \
+  tst-memtag-heap-async \
+  tst-memtag-heap-disable \
+  tst-memtag-heap-dlopen \
+  tst-memtag-heap-sync \
+  # tests
+
+tests-special += \
+  $(objpfx)tst-memtag-heap-sync.out \
+  $(objpfx)tst-memtag-heap-async.out \
+  $(objpfx)tst-memtag-heap-disable.out \
+  # tests
+endif
+
 modules-names += \
   tst-memtag-mod1 \
   tst-memtag-mod2 \
-  # modules-names
+  tst-memtag-mod3 \
+ # modules-names
 
 # Disable stack protector for stack tagging tests.  Some GCC versions have a
 # a bug where the stack frame untagging at the function epiloge is done before
@@ -417,6 +433,39 @@ $(objpfx)tst-memtag-stack-sync-tunable.out: $(objpfx)tst-memtag-stack-async
 		$(run-program-env) \
 		GLIBC_TUNABLES=glibc.mem.tagging=2 \
 		$(test-program-cmd-after-env) sync $< \
+		> $@ 2>&1; echo "status: $$?" >> $@; \
+	$(evaluate-test)
+
+LDFLAGS-tst-memtag-heap-sync += -Wl,-z,memtag-heap -Wl,-z,memtag-mode=sync
+$(objpfx)tst-memtag-heap-sync.out: $(objpfx)tst-memtag-heap-sync
+	$(test-program-cmd-before-env) \
+		$(run-program-env) \
+		$(test-program-cmd-after-env) $< \
+		> $@ 2>&1; echo "status: $$?" >> $@; \
+	grep -q 'MTE heap protection is not supported' $@ \
+	|| grep -q '^status: 79$$' $@; \
+	$(evaluate-test)
+
+CFLAGS-tst-memtag-heap-async.c += -DMEMTAG_MODE_ASYNC
+LDFLAGS-tst-memtag-heap-async += -Wl,-z,memtag-heap -Wl,-z,memtag-mode=async
+$(objpfx)tst-memtag-heap-async.out: $(objpfx)tst-memtag-heap-async
+	$(test-program-cmd-before-env) \
+		$(run-program-env) \
+		$(test-program-cmd-after-env) $< \
+		> $@ 2>&1; echo "status: $$?" >> $@; \
+	grep -q 'MTE heap protection is not supported' $@ \
+	|| grep -q '^status: 79$$' $@; \
+	$(evaluate-test)
+
+$(objpfx)tst-memtag-heap-dlopen.out: $(objpfx)tst-memtag-mod3.so
+LDFLAGS-tst-memtag-mod3.so += -Wl,-z,memtag-heap
+
+LDFLAGS-tst-memtag-heap-disable += -Wl,-z,memtag-heap
+$(objpfx)tst-memtag-heap-disable.out: $(objpfx)tst-memtag-heap-disable
+	$(test-program-cmd-before-env) \
+		$(run-program-env) \
+		GLIBC_TUNABLES=glibc.mem.tagging=0 \
+		$(test-program-cmd-after-env) $< \
 		> $@ 2>&1; echo "status: $$?" >> $@; \
 	$(evaluate-test)
 endif # ifeq ($(aarch64-memtag-abi)$(have-test-memtag-stack),yesyes)

@@ -17,9 +17,10 @@ Major new features:
   improvements in performance.
 
 * On AArch64 now has initial support for the Memtag ABI Extension for ELF64,
-  specifically handling stack tagging (DT_AARCH64_MEMTAG_STACK) and execution
-  mode configuration (DT_AARCH64_MEMTAG_MODE).  This can be enabled using thw
-  new --enable-aarch64-memtag-abi configure option.
+  specifically handling stack tagging (DT_AARCH64_MEMTAG_STACK), execution
+  mode configuration (DT_AARCH64_MEMTAG_MODE), and head tagging
+  (DT_AARCH64_MEMTAG_HEAP).  This can be enabled using thw new
+  --enable-aarch64-memtag-abi configure option.
 
 Deprecated and removed features, and other changes affecting compatibility:
 

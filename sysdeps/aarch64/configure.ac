@@ -130,3 +130,10 @@ then
 else
    LIBC_CONFIG_VAR([have-test-memtag-stack], [no])
 fi
+
+# Check if linker supports Memtag Heap support
+LIBC_LINKER_FEATURE(
+  [-z memtag-heap], [-Wl,-z,memtag-heap],
+  [libc_cv_ld_memtag_heap=yes], [libc_cv_ld_memtag_heap=no]
+)
+LIBC_CONFIG_VAR([have-test-memtag-heap], [$libc_cv_ld_memtag_heap])

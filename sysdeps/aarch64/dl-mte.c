@@ -34,22 +34,39 @@
 
 # define DT_AARCH64(x) (DT_AARCH64_##x - DT_LOPROC + DT_NUM)
 
+typedef enum
+{
+  MTE_ERROR_SUPPORT,
+  MTE_ERROR_STACK,
+  MTE_ERROR_HEAP,
+  MTE_ERROR_GLOBALS,
+} mte_error_mode;
+
 static void
-fail (const struct link_map *l, const char *program, const char *mode)
+fail (const struct link_map *l, const char *program, mte_error_mode mode)
 {
   if (program != NULL)
     {
+      const char *modestr;
+      switch (mode)
+	{
+	case MTE_ERROR_STACK: modestr = "stack"; break;
+	case MTE_ERROR_HEAP: modestr = "heap"; break;
+	case MTE_ERROR_GLOBALS: modestr = "global"; break;
+	default: __builtin_unreachable ();
+	}
+
       if (program[0] != '\0' && l->l_name[0] != '\0')
-	_dl_fatal_printf ("%s: %s: MTE protection %s is not supported\n",
-			  program, l->l_name, mode);
+	_dl_fatal_printf ("%s: %s: MTE %s protection is not supported\n",
+			  program, l->l_name, modestr);
       if (program[0] != '\0')
-        _dl_fatal_printf ("%s: MTE protection %s is not supported\n",
-			  program, mode);
-      _dl_fatal_printf ("error: MTE protection %s is not supported\n",
-			mode);
+        _dl_fatal_printf ("%s: MTE %s protection is not supported\n",
+			  program, modestr);
+      _dl_fatal_printf ("error: MTE %s protection is not supported\n",
+			modestr);
   }
   else
-    _dl_signal_error (0, l->l_name, "dlopen", "MTE is not enabled");
+    _dl_signal_error (0, l->l_name, "dlopen", "MTE support is not enabled");
 }
 
 static void
@@ -109,9 +126,13 @@ static void check_mte (const struct link_map *l, const char *program)
   if (requires_mte_stack (l))
     GL(dl_aarch64_mte) |= MTE_STACK;
   if (requires_mte_heap (l))
-    fail (l, program, "heap");
+# ifdef USE_MTAG
+    GL(dl_aarch64_mte) |= MTE_HEAP;
+# else
+    fail (l, program, MTE_ERROR_HEAP);
+# endif
   if (requires_mte_globals (l))
-    fail (l, program, "globals");
+    fail (l, program, MTE_ERROR_GLOBALS);
 }
 #endif
 
@@ -131,8 +152,8 @@ static inline bool enable_mte_stack (void)
 
 static inline bool enable_mte_heap (void)
 {
-#ifdef USE_MTAB
-  return GL(dl_aarch64_mte) & MTE_HEAD;
+#if defined USE_MTAB || defined USE_AARCH64_MEMTAG_ABI
+  return GL(dl_aarch64_mte) & MTE_HEAP;
 #else
   return false;
 #endif
@@ -153,13 +174,13 @@ _dl_mte_check (struct link_map *l, const char *program)
   for (unsigned int i = 0; i < l->l_searchlist.r_nlist; i++)
     check_mte (l->l_searchlist.r_list[i], program);
 
-  /* For dlopen, if program has not enabled MTE stack at the startup, signal
-     that the module can not be loaded.  */
-  if (enable_mte_stack () && program == NULL)
+  /* For dlopen, if program has not enabled MTE at the startup, signal that
+     the module can not be loaded.  */
+  if ((enable_mte_stack () || enable_mte_heap()) && program == NULL)
     {
-      GL(dl_aarch64_mte) &= ~MTE_STACK;
+      GL(dl_aarch64_mte) &= ~(MTE_STACK | MTE_HEAP);
 
-      fail (l, program, "stack");
+      fail (l, program, MTE_ERROR_SUPPORT);
     }
 #endif
 }
@@ -186,6 +207,8 @@ _dl_mte_init (void)
 					      NULL);
       if (mte_tunable & 0x1)
 	GL(dl_aarch64_mte) |= MTE_HEAP;
+      else
+	GL(dl_aarch64_mte) &= ~MTE_HEAP;
       if (mte_tunable & 0x2)
 	{
 	  GL(dl_aarch64_mte) &= ~MTE_MODE_ASYNC;

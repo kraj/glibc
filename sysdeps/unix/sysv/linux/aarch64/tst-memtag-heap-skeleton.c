@@ -1,4 +1,4 @@
-/* Tests skeleton for MEMTAG tests.
+/* Tests for MEMTAG heap support.
    Copyright (C) 2026 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -16,21 +16,20 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#include <stdlib.h>
 #include <libc-diag.h>
+#include <sys/auxv.h>
+
 #include <support/check.h>
 #include <support/xthread.h>
-#include <unistd.h>
+#include <support/xsignal.h>
+#include <support/support.h>
 
 #include "tst-mte-helper.h"
 
-/* Prevent inlining so the stack frame is definitively constructed to
-   trigger a stack frame, and optimization to avoid compiler optimize
-   away the invalid stack operation.  */
-static void *
+static void
 __attribute_noinline__
 __attribute_optimization_barrier__
-trigger_mte_fault (void *closure)
+trigger_mte_fault (void)
 {
   DIAG_PUSH_NEEDS_COMMENT;
   DIAG_IGNORE_NEEDS_COMMENT_GCC (16, "-Warray-bounds");
@@ -39,29 +38,33 @@ trigger_mte_fault (void *closure)
   sigemptyset (&mask);
   sigaddset (&mask, SIGSEGV);
 
-  /* Aling to a MTE tag granule.  */
-  _Alignas (16) char stack_buffer[16];
-  volatile char *ptr = &stack_buffer[16];
-
-  *(volatile char *)ptr;
-
-  return NULL;
+  volatile char *ptr = xmalloc (MTE_GRANULE_SIZE);
+  /* Access memory strictly outside the allocated chunk.  Adding
+     MTE_GRANULE_SIZE bytes pushes us into the next granule, which
+     will have a different tag.  */
+  ptr[16] = 0xFF;
 }
 
-void
-run_mte_test (void *closure)
+static int
+do_test (void)
 {
-  test_mode mode = (test_mode)(uintptr_t)closure;
+  if (!(getauxval (AT_HWCAP2) & HWCAP2_MTE))
+    FAIL_UNSUPPORTED ("kernel or CPU does not support or enable MTE");
+
+  TEST_VERIFY_EXIT (mte_enable ());
+  TEST_VERIFY_EXIT (mte_mode () ==
+#ifdef MEMTAG_MODE_ASYNC
+		    PR_MTE_TCF_ASYNC
+#else
+		    PR_MTE_TCF_SYNC
+#endif
+		    );
 
   install_sigsegv_handler ();
 
-  if (mode == TEST_MAIN)
-    trigger_mte_fault (NULL);
-  else
-    {
-      pthread_t t = xpthread_create (NULL, trigger_mte_fault, NULL);
-      xpthread_join (t);
-    }
+  trigger_mte_fault ();
 
-  _exit (EXIT_FAILURE);
+  return 0;
 }
+
+#include <support/test-driver.c>
