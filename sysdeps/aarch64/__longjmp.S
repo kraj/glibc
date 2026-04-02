@@ -20,8 +20,17 @@
 #include <pointer_guard.h>
 #include <jmpbuf-offsets.h>
 #include <stap-probe.h>
+#include <rtld-global-offsets.h>
 
 /* __longjmp(jmpbuf, val) */
+
+/* From sysdeps/aarch64/cpu-features.h */
+#define MTE_STACK 0x8
+
+#ifdef USE_AARCH64_MEMTAG_ABI
+	.arch armv8.5-a
+        .arch_extension memtag
+#endif
 
 ENTRY (__longjmp)
 
@@ -136,6 +145,42 @@ L(gcs_done):
 #ifdef PTR_DEMANGLE
 	PTR_DEMANGLE (x4, x4, x3)
 #endif
+
+#ifdef USE_AARCH64_MEMTAG_ABI
+	/* Skip if MTE stack tagging is not enabled.  */
+# ifdef SHARED
+        /* In libc.so.  */
+        adrp    x2, :got:_rtld_global
+	ldr	x2, [x2, :got_lo12:_rtld_global]
+	ldr	x2, [x2, GL_DL_AARCH64_MTE_OFFSET]
+# else
+	/* In libc.a (PIC or !PIC).  */
+        adrp    x2, :got:_dl_aarch64_mte
+        ldr     x2, [x2, :got_lo12:_dl_aarch64_mte]
+	ldr	x2, [x2]
+# endif
+	tbnz	x2, MTE_STACK, L(tag_done)
+
+	subps	x2, x4, sp
+	beq	L(tag_done)
+	tbz	x2, 4, L(tag_clean32)
+	stg	sp, [sp], 16
+L(tag_clean32):
+	tbz	x2, 5, L(tag_clean64)
+	st2g	sp, [sp], 32
+L(tag_clean64):
+	lsr	x2, x2, 6
+	cbz	x2, L(tag_done)
+
+	mov	x2, sp
+L(tag_loop):
+	st2g	sp, [x2], 32
+	st2g	sp, [x2], 32
+	cmp	x4, x2
+	bhi	L(tag_loop)
+L(tag_done):
+#endif
+
 	mov	sp, x4
 
 	/* longjmp_target probe takes 3 arguments, address of jump buffer

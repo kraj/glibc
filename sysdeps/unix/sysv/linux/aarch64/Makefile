@@ -423,6 +423,18 @@ endif # ifeq ($(aarch64-memtag-abi)$(have-test-memtag-stack),yesyes)
 
 endif # ifeq ($(subdir),misc)
 
+ifeq ($(subdir),setjmp)
+ifeq ($(aarch64-memtag-abi)$(have-test-memtag-stack),yesyes)
+tests += \
+  tst-memtag-setjmp \
+  # tests
+
+CFLAGS-tst-memtag-setjmp.c += -march=armv8.5-a+memtag -fsanitize=memtag-stack \
+	$(no-stack-protector)
+LDFLAGS-tst-memtag-setjmp += -Wl,-z,memtag-stack -Wl,-z,memtag-mode=sync
+endif # ifeq ($(aarch64-memtag-abi)$(have-test-memtag-stack),yesyes)
+endif # $subdir = setjmp
+
 ifeq ($(subdir),stdlib)
 gen-as-const-headers += ucontext_i.sym
 endif

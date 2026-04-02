@@ -19,12 +19,11 @@
 #ifndef TST_MTE_HELPER_H
 #define TST_MTE_HELPER_H
 
-#include <fcntl.h>
-#include <limits.h>
-#include <string.h>
+#include <stdlib.h>
 #include <stdbool.h>
 #include <sys/prctl.h>
-#include <stdio.h>
+#include <support/xsignal.h>
+#include <support/check.h>
 
 typedef enum
 {
@@ -53,5 +52,52 @@ mte_mode (void)
 
 #define __attribute_disable_mte_stack__ \
  __attribute__((no_sanitize("memtag-stack")))
+
+#define MTE_GRANULE_SIZE 16
+
+static void
+__attribute_maybe_unused__
+sigsegv_handler_expected (int signum, siginfo_t *si, void *context)
+{
+  if (si->si_signo == SIGSEGV
+      && (si->si_code == SEGV_MTESERR || si->si_code == SEGV_MTEAERR))
+    _exit (EXIT_MTESERR);
+  else
+    _exit (EXIT_FAILURE);
+}
+
+static void
+__attribute_maybe_unused__
+sigsegv_handler_failure (int signum, siginfo_t *si, void *context)
+{
+  support_record_failure ();
+  _exit (EXIT_FAILURE);
+}
+
+static inline void
+install_sigsegv_handler (void)
+{
+  {
+    struct sigaction sa = {
+      .sa_sigaction = sigsegv_handler_expected,
+      .sa_flags = SA_NODEFER | SA_SIGINFO,
+    };
+    sigemptyset (&sa.sa_mask);
+    xsigaction (SIGSEGV, &sa, NULL);
+  }
+}
+
+static inline void
+install_sigsegv_handler_failure (void)
+{
+  {
+    struct sigaction sa = {
+      .sa_sigaction = sigsegv_handler_failure,
+      .sa_flags = SA_NODEFER | SA_SIGINFO,
+    };
+    sigemptyset (&sa.sa_mask);
+    xsigaction (SIGSEGV, &sa, NULL);
+  }
+}
 
 #endif
