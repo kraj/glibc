@@ -1770,10 +1770,6 @@ struct malloc_par
   int n_mmaps;
   int n_mmaps_max;
   int max_n_mmaps;
-  /* the mmap_threshold is dynamic, until the user sets
-     it manually, at which point we need to disable any
-     dynamic behavior. */
-  int no_dyn_threshold;
 
   /* Statistics */
   INTERNAL_SIZE_T mmapped_mem;
@@ -4291,18 +4287,6 @@ _int_free_chunk (mstate av, mchunkptr p, INTERNAL_SIZE_T size, int have_lock)
     /* Preserve errno in case munmap sets it.  */
     int err = errno;
 
-    /* See if the dynamic brk/mmap threshold needs adjusting.
-       Dumped fake mmapped chunks do not affect the threshold.  */
-    if (!mp_.no_dyn_threshold
-        && chunksize_nomask (p) > mp_.mmap_threshold
-        && chunksize_nomask (p) <= DEFAULT_MMAP_THRESHOLD_MAX)
-      {
-        mp_.mmap_threshold = chunksize (p);
-        mp_.trim_threshold = 2 * mp_.mmap_threshold;
-        LIBC_PROBE (memory_mallopt_free_dyn_thresholds, 2,
-		    mp_.mmap_threshold, mp_.trim_threshold);
-      }
-
     munmap_chunk (p);
 
     __set_errno (err);
@@ -4901,40 +4885,32 @@ __malloc_stats (void)
 static __always_inline int
 do_set_trim_threshold (size_t value)
 {
-  LIBC_PROBE (memory_mallopt_trim_threshold, 3, value, mp_.trim_threshold,
-	      mp_.no_dyn_threshold);
+  LIBC_PROBE (memory_mallopt_trim_threshold, 2, value, mp_.trim_threshold);
   mp_.trim_threshold = value;
-  mp_.no_dyn_threshold = 1;
   return 1;
 }
 
 static __always_inline int
 do_set_top_pad (size_t value)
 {
-  LIBC_PROBE (memory_mallopt_top_pad, 3, value, mp_.top_pad,
-	      mp_.no_dyn_threshold);
+  LIBC_PROBE (memory_mallopt_top_pad, 2, value, mp_.top_pad);
   mp_.top_pad = value;
-  mp_.no_dyn_threshold = 1;
   return 1;
 }
 
 static __always_inline int
 do_set_mmap_threshold (size_t value)
 {
-  LIBC_PROBE (memory_mallopt_mmap_threshold, 3, value, mp_.mmap_threshold,
-	      mp_.no_dyn_threshold);
+  LIBC_PROBE (memory_mallopt_mmap_threshold, 2, value, mp_.mmap_threshold);
   mp_.mmap_threshold = value;
-  mp_.no_dyn_threshold = 1;
   return 1;
 }
 
 static __always_inline int
 do_set_mmaps_max (int32_t value)
 {
-  LIBC_PROBE (memory_mallopt_mmap_max, 3, value, mp_.n_mmaps_max,
-	      mp_.no_dyn_threshold);
+  LIBC_PROBE (memory_mallopt_mmap_max, 2, value, mp_.n_mmaps_max);
   mp_.n_mmaps_max = value;
-  mp_.no_dyn_threshold = 1;
   return 1;
 }
 
