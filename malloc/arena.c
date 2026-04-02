@@ -799,16 +799,11 @@ arena_get2 (size_t size, mstate avoid_arena)
         {
           if (mp_.arena_max != 0)
             narenas_limit = mp_.arena_max;
-          else if (narenas > mp_.arena_test)
+          else if (narenas >= mp_.arena_test)
             {
-              int n = __get_nprocs ();
-
-              if (n >= 1)
-                narenas_limit = NARENAS_FROM_NCORES (n);
-              else
-                /* We have no information about the system.  Assume two
-                   cores.  */
-                narenas_limit = NARENAS_FROM_NCORES (2);
+	      narenas_limit = __get_nprocs ();
+	      if (narenas_limit < mp_.arena_test)
+		narenas_limit = mp_.arena_test;
             }
         }
     repeat:;

@@ -1650,8 +1650,7 @@ static struct malloc_par mp_ =
   .n_mmaps_max = DEFAULT_MMAP_MAX,
   .mmap_threshold = DEFAULT_MMAP_THRESHOLD,
   .trim_threshold = DEFAULT_TRIM_THRESHOLD,
-#define NARENAS_FROM_NCORES(n) ((n) * (sizeof (long) == 4 ? 2 : 8))
-  .arena_test = NARENAS_FROM_NCORES (1),
+  .arena_test = sizeof (long) == 4 ? 2 : 8,
   .thp_mode = thp_mode_not_supported
 #if USE_TCACHE
   ,

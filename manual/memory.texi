@@ -1388,11 +1388,8 @@ environment variable @env{MALLOC_ARENA_TEST} to the desired value.
 This parameter sets the number of arenas to use regardless of the number of
 cores in the system.
 
-The default value of this tunable is @code{0}, meaning that the limit on the
-number of arenas is determined by the number of CPU cores online. For 32-bit
-systems the limit is twice the number of cores online and on 64-bit systems, it
-is eight times the number of cores online.  Note that the default value is not
-derived from the default value of M_ARENA_TEST and is computed independently.
+The default value of this tunable is @code{0}, meaning that the limit is the
+number of CPU cores online reported by get_nprocs().
 
 This parameter can also be set for the process at startup by setting the
 environment variable @env{MALLOC_ARENA_MAX} to the desired value.
