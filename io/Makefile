@@ -206,6 +206,7 @@ tests := \
   tst-fts-newflags \
   tst-ftw-bz26353 \
   tst-ftw-bz28126 \
+  tst-ftw-bz33085 \
   tst-ftw-lnk \
   tst-futimens \
   tst-futimes \

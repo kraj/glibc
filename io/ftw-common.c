@@ -246,8 +246,19 @@ open_dir_stream (int *dfdp, struct ftw_data *data, struct dir_data *dirp)
 	  struct dirent64 *d;
 	  size_t actsize = 0;
 
-	  while ((d = __readdir64 (st)) != NULL)
+	  while (1)
 	    {
+	      errno = 0;
+	      d = __readdir64 (st);
+	      if (d == NULL)
+		{
+		  if (errno != 0)
+		    {
+		      free (buf);
+		      return -1;
+		    }
+		  break;
+		}
 	      size_t this_len = NAMLEN (d);
 	      if (actsize + this_len + 2 >= bufsize)
 		{
@@ -607,6 +618,7 @@ ftw_dir (struct ftw_data *data, const struct STRUCT_STAT *st)
 	      continue;
 	    }
 
+	  errno = 0;
 	  struct dirent64 *d = __readdir64 (frame->dir.stream);
 	  if (d != NULL)
 	    {
@@ -631,7 +643,11 @@ ftw_dir (struct ftw_data *data, const struct STRUCT_STAT *st)
 		}
 	    }
 	  else
-	    frame->state = FTW_STATE_CLEANUP;
+	    {
+	      frame->state = FTW_STATE_CLEANUP;
+	      if (errno != 0)
+		result = -1;
+	    }
 	}
       else if (frame->state == FTW_STATE_CONTENT_LOOP)
 	{
