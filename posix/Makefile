@@ -330,6 +330,7 @@ tests := \
   tst-wait3 \
   tst-wait4 \
   tst-waitid \
+  tst-wordexp-append \
   tst-wordexp-nocmd \
   tst-wordexp-reuse \
   tstgetopt \

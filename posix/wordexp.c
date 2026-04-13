@@ -35,6 +35,7 @@
 #include <scratch_buffer.h>
 #include <_itoa.h>
 #include <assert.h>
+#include <intprops.h>
 
 /*
  * This is a recursive-descent-style word expansion routine.
@@ -2224,6 +2225,12 @@ wordexp (const char *words, wordexp_t *pwordexp, int flags)
   char ifs_white[4];
   wordexp_t old_word = *pwordexp;
 
+  /* When WRDE_APPEND is set we work on a copy of the we_wordv array so that
+     the caller's original pointer is never invalidated by realloc inside
+     w_addword.  The saved_wordv keeps the original; on success we free it,
+     on non-NOSPACE error we free the working copy and restore the original.  */
+  char **saved_wordv = NULL;
+
   if (flags & WRDE_REUSE)
     {
       /* Minimal implementation of WRDE_REUSE for now */
@@ -2257,6 +2264,23 @@ wordexp (const char *words, wordexp_t *pwordexp, int flags)
 
 	  pwordexp->we_offs = 0;
 	}
+    }
+  else if (pwordexp->we_wordv != NULL)
+    {
+      /* WRDE_APPEND with an existing word list: duplicate the array so that
+	 realloc during parsing does not invalidate the caller's pointer.  The
+	 strings themselves are shared.  */
+      size_t num_p;
+      char **dup;
+      if (INT_ADD_WRAPV (pwordexp->we_offs, pwordexp->we_wordc, &num_p)
+	  || INT_ADD_WRAPV (num_p, 1, &num_p))
+	return WRDE_NOSPACE;
+      dup = __libc_reallocarray (NULL, num_p, sizeof *dup);
+      if (dup == NULL)
+	return WRDE_NOSPACE;
+      memcpy (dup, pwordexp->we_wordv, num_p * sizeof *dup);
+      saved_wordv = pwordexp->we_wordv;
+      pwordexp->we_wordv = dup;
     }
 
   /* Find out what the field separators are.
@@ -2338,7 +2362,7 @@ wordexp (const char *words, wordexp_t *pwordexp, int flags)
 	    error = w_addword (pwordexp, NULL);
 
 	    if (error)
-	      return error;
+	      goto do_error;
 	  }
 
 	break;
@@ -2356,7 +2380,7 @@ wordexp (const char *words, wordexp_t *pwordexp, int flags)
 	    error = w_addword (pwordexp, NULL);
 
 	    if (error)
-	      return error;
+	      goto do_error;
 	  }
 
 	break;
@@ -2422,10 +2446,18 @@ wordexp (const char *words, wordexp_t *pwordexp, int flags)
 
   /* There was a word separator at the end */
   if (word == NULL) /* i.e. w_newword */
-    return 0;
+    {
+      free (saved_wordv);
+      return 0;
+    }
 
-  /* There was no field separator at the end */
-  return w_addword (pwordexp, word);
+  /* There was no field separator at the end.  The only possible error
+     from w_addword is WRDE_NOSPACE.  */
+  error = w_addword (pwordexp, word);
+  if (error != 0)
+    goto do_error;
+  free (saved_wordv);
+  return 0;
 
 do_error:
   /* Error:
@@ -2436,11 +2468,30 @@ do_error:
   free (word);
 
   if (error == WRDE_NOSPACE)
-    return WRDE_NOSPACE;
+    {
+      /* we_wordc and we_wordv are updated to reflect any words that were
+	 successfully expanded.  The old array is obsolete.  */
+      free (saved_wordv);
+      return WRDE_NOSPACE;
+    }
 
-  if ((flags & WRDE_APPEND) == 0)
-    wordfree (pwordexp);
+  if (flags & WRDE_APPEND)
+    {
+      /* POSIX 2024 states that for in other error cases, if the WRDE_APPEND
+	 flag was specified, we_wordc and we_wordv shall not be modified.
 
-  *pwordexp = old_word;
+	 Free strings appended during this call, discard the working copy of
+	 we_wordv, and restore the caller's original pointer.  */
+      while (pwordexp->we_wordc > old_word.we_wordc)
+	free (pwordexp->we_wordv[pwordexp->we_offs + --pwordexp->we_wordc]);
+      free (pwordexp->we_wordv);
+      pwordexp->we_wordv = saved_wordv;
+    }
+  else
+    {
+      wordfree (pwordexp);
+      *pwordexp = old_word;
+    }
+
   return error;
 }
