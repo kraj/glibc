@@ -21,6 +21,10 @@
 
 #include <stdbool.h>
 #include <sys/cdefs.h>
+#undef attribute_hidden
+#define attribute_hidden
+#include <hugepages.h>	/* For enum thp_mode_t.  */
+#undef attribute_hidden
 
 __BEGIN_DECLS
 
@@ -42,6 +46,14 @@ bool support_hugepages_reserved (void);
    the test with EXIT_UNSUPPORTED.  No-op when no such tunable is set,
    so it is safe to call unconditionally.  */
 void support_check_malloc_hugetlb (void);
+
+/* Returns Transparent Huge Pages (THP) mode from
+   /sys/kernel/mm/transparent_hugepage/enabled.  */
+extern enum thp_mode_t support_get_thp_mode (void);
+
+/* Returns Transparent Huge Pages (THP) page size from
+   /sys/kernel/mm/transparent_hugepage/hpage_pmd_size.  */
+extern unsigned long int support_get_thp_size (void);
 
 __END_DECLS
 

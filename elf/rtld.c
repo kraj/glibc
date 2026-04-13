@@ -53,6 +53,7 @@
 #include <dl-find_object.h>
 #include <dl-audit-check.h>
 #include <dl-call_tls_init_tp.h>
+#include <dl-exec-post.h>
 
 #include <assert.h>
 
@@ -1203,14 +1204,8 @@ rtld_setup_main_map (struct link_map *main_map)
 	main_map->l_relro_size = ph->p_memsz;
 	break;
       }
-  /* Process program headers again, but scan them backwards since
-     PT_GNU_PROPERTY is close to the end of program headers.   */
-  for (const ElfW(Phdr) *ph = &phdr[phnum]; ph != phdr; --ph)
-    if (ph[-1].p_type == PT_GNU_PROPERTY)
-      {
-	_dl_process_pt_gnu_property (main_map, -1, &ph[-1]);
-	break;
-      }
+
+  _dl_executable_postprocess (main_map, phdr, phnum);
 
   /* Adjust the address of the TLS initialization image in case
      the executable is actually an ET_DYN object.  */
@@ -1583,6 +1578,9 @@ dl_main (const ElfW(Phdr) *phdr,
 	{
 	  RTLD_TIMING_VAR (start);
 	  rtld_timer_start (&start);
+#ifdef HAVE_THP
+	  _dl_get_thp_config ();
+#endif
 	  _dl_map_object (NULL, rtld_progname, lt_executable, 0,
 			  __RTLD_OPENEXEC, LM_ID_BASE);
 	  rtld_timer_stop (&load_time, start);

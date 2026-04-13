@@ -697,11 +697,15 @@ $(objpfx)pldd: $(objpfx)xmalloc.o
 tests += \
   tst-rseq-tls-range \
   tst-rseq-tls-range-4096 \
+  tst-thp-1 \
+  tst-thp-1-pde \
+  tst-thp-1-static \
   tst-thp-align \
 # tests
 tests-static += \
   tst-rseq-tls-range-4096-static \
   tst-rseq-tls-range-static \
+  tst-thp-1-static \
 # tests-static
 modules-names += \
   tst-rseq-tls-range-mod \
@@ -711,15 +715,12 @@ CFLAGS-tst-rseq-tls-range.c += -DMAIN_TLS_ALIGN=4
 CFLAGS-tst-rseq-tls-range-4096.c += -DMAIN_TLS_ALIGN=4096
 CFLAGS-tst-rseq-tls-range-static.c += -DMAIN_TLS_ALIGN=4
 CFLAGS-tst-rseq-tls-range-4096-static.c += -DMAIN_TLS_ALIGN=4096
-LDFLAGS-tst-thp-size-mod.so += -Wl,-z,noseparate-code
 $(objpfx)tst-rseq-tls-range.out: $(objpfx)tst-rseq-tls-range-mod.so
 $(objpfx)tst-rseq-tls-range-4096.out: $(objpfx)tst-rseq-tls-range-mod.so
 $(objpfx)tst-rseq-tls-range-static.out: $(objpfx)tst-rseq-tls-range-mod.so
 $(objpfx)tst-rseq-tls-range-4096-static.out: $(objpfx)tst-rseq-tls-range-mod.so
-$(objpfx)tst-thp-align.out: $(objpfx)tst-thp-size-mod.so
 tst-rseq-tls-range-static-ENV = LD_LIBRARY_PATH=$(objpfx):$(common-objpfx)
 tst-rseq-tls-range-4096-static-ENV = LD_LIBRARY_PATH=$(objpfx):$(common-objpfx)
-tst-thp-align-ENV = GLIBC_TUNABLES=glibc.elf.thp=1
 
 test-internal-extras += tst-nolink-libc
 ifeq ($(run-built-tests),yes)
@@ -728,6 +729,186 @@ tests-special += \
   $(objpfx)tst-nolink-libc-2.out \
   # tests-special
 endif
+
+ifndef THP-PAGE-SIZE
+# Align PT_LOAD segments in THP tests to THP page size so that kernel will
+# map PIE to the address aligned to THP page size.  Default THP page size
+# to 2MB which can be overridden in Makefile in subdirectories.
+THP-PAGE-SIZE = 0x200000
+endif
+
+THP-PAGE-SIZE-LDFLAGS = -Wl,-z,max-page-size=$(THP-PAGE-SIZE)
+
+# -Wl,-z,max-page-size=$(THP-PAGE-SIZE) alone doesn't work for PDE when
+# text-segment address is lower than the maximum page size:
+# https://sourceware.org/bugzilla/show_bug.cgi?id=34184
+ifneq (,$(load-address-ldflag))
+LOAD-THP-ADDRESS-LDFLAGS = $(load-address-ldflag)=$(THP-PAGE-SIZE)
+endif
+
+LDFLAGS-tst-thp-size-mod.so = -Wl,-z,noseparate-code \
+			      $(THP-PAGE-SIZE-LDFLAGS)
+tst-thp-align-ENV = GLIBC_TUNABLES=glibc.elf.thp=1
+$(objpfx)tst-thp-align.out: $(objpfx)tst-thp-size-mod.so
+
+tests += \
+  tst-thp-1-no-s-code \
+  tst-thp-1-no-s-code-pde \
+  tst-thp-1-no-s-code-static \
+# tests
+tests-static += \
+  tst-thp-1-no-s-code-static \
+# tests-static
+
+ifeq (yes,$(with-lld))
+# -z noseparate-code is a nop for lld.  It doesn't create an executable
+# segment placed at 0 file offset.
+test-xfail-tst-thp-1-no-s-code = yes
+test-xfail-tst-thp-1-no-s-code-pde = yes
+test-xfail-tst-thp-1-no-s-code-static = yes
+endif
+
+LDFLAGS-tst-thp-1 = -Wl,-z,separate-code $(THP-PAGE-SIZE-LDFLAGS)
+LDFLAGS-tst-thp-1-pde = -Wl,-z,separate-code $(THP-PAGE-SIZE-LDFLAGS) \
+			$(LOAD-THP-ADDRESS-LDFLAGS)
+LDFLAGS-tst-thp-1-static = -Wl,-z,separate-code $(THP-PAGE-SIZE-LDFLAGS)
+ifneq (yes,$(enable-static-pie))
+LDFLAGS-tst-thp-1-static += $(LOAD-THP-ADDRESS-LDFLAGS)
+endif
+LDFLAGS-tst-thp-1-no-s-code = -Wl,-z,noseparate-code \
+			      $(THP-PAGE-SIZE-LDFLAGS)
+LDFLAGS-tst-thp-1-no-s-code-pde = -Wl,-z,noseparate-code \
+				  $(THP-PAGE-SIZE-LDFLAGS) \
+				  $(LOAD-THP-ADDRESS-LDFLAGS)
+LDFLAGS-tst-thp-1-no-s-code-static = -Wl,-z,noseparate-code \
+				     $(THP-PAGE-SIZE-LDFLAGS)
+ifneq (yes,$(enable-static-pie))
+LDFLAGS-tst-thp-1-no-s-code-static += $(LOAD-THP-ADDRESS-LDFLAGS)
+endif
+
+$(objpfx)tst-thp-1-no-s-code: $(objpfx)tst-thp-size-mod.o
+$(objpfx)tst-thp-1-no-s-code-pde: $(objpfx)tst-thp-size-mod.o
+$(objpfx)tst-thp-1-no-s-code-static: $(objpfx)tst-thp-size-mod.o
+
+tst-thp-1-no-s-code-ENV = GLIBC_TUNABLES=glibc.elf.thp=1
+tst-thp-1-no-s-code-pde-ENV = GLIBC_TUNABLES=glibc.elf.thp=1
+tst-thp-1-no-s-code-static-ENV = GLIBC_TUNABLES=glibc.elf.thp=1
+
+tst-thp-1-no-s-code-pde-no-pie = yes
+
+tst-thp-1-ENV = GLIBC_TUNABLES=glibc.elf.thp=1
+tst-thp-1-pde-ENV = GLIBC_TUNABLES=glibc.elf.thp=1
+tst-thp-1-static-ENV = GLIBC_TUNABLES=glibc.elf.thp=1
+
+$(objpfx)tst-thp-1: $(objpfx)tst-thp-size-mod.o
+$(objpfx)tst-thp-1-pde: $(objpfx)tst-thp-size-mod.o
+$(objpfx)tst-thp-1-static: $(objpfx)tst-thp-size-mod.o
+
+tst-thp-1-pde-no-pie = yes
+
+# Don't run strace tests for cross-compiling.
+ifeq (no,$(cross-compiling))
+thp-kernel-status = $(shell grep madvise /sys/kernel/mm/transparent_hugepage/enabled)
+# Verify that madvise is called with MADV_HUGEPAGE when THP is enabled
+# under madvise THP kernel.
+ifneq ($(findstring [madvise],$(thp-kernel-status)),)
+tests-special += \
+  $(objpfx)strace-tst-thp-1-disabled.out \
+  $(objpfx)strace-tst-thp-1-enabled.out \
+  $(objpfx)strace-tst-thp-1-pde-disabled.out \
+  $(objpfx)strace-tst-thp-1-pde-enabled.out \
+  $(objpfx)strace-tst-thp-1-static-disabled.out \
+  $(objpfx)strace-tst-thp-1-static-enabled.out \
+  $(objpfx)strace-tst-thp-align-default.out \
+  $(objpfx)strace-tst-thp-align-disabled.out \
+  $(objpfx)strace-tst-thp-align-enabled.out \
+# tests-special
+
+ifeq (yes,$(build-hardcoded-path-in-tests))
+strace-test-via-rtld-prefix =
+else
+strace-test-via-rtld-prefix = $(rtld-prefix)
+endif
+
+$(objpfx)strace-tst-thp-1-enabled.out: \
+  $(..)sysdeps/unix/sysv/linux/strace-tst-thp.sh $(objpfx)ld.so \
+  $(objpfx)tst-thp-1
+	$(SHELL) $< '$(strace-test-via-rtld-prefix)' \
+		'$(test-wrapper-env)' \
+		'$(run-program-env) GLIBC_TUNABLES=glibc.elf.thp=1' \
+		$(objpfx)tst-thp-1 > $@; \
+	  $(evaluate-test)
+
+$(objpfx)strace-tst-thp-1-disabled.out: \
+  $(..)sysdeps/unix/sysv/linux/strace-tst-thp.sh $(objpfx)ld.so \
+  $(objpfx)tst-thp-1
+	$(SHELL) $< '$(strace-test-via-rtld-prefix)' \
+		'$(test-wrapper-env)' \
+		'$(run-program-env) GLIBC_TUNABLES=glibc.elf.thp=0' \
+		$(objpfx)tst-thp-1 > $@; \
+	  $(evaluate-test)
+
+$(objpfx)strace-tst-thp-1-pde-enabled.out: \
+  $(..)sysdeps/unix/sysv/linux/strace-tst-thp.sh $(objpfx)ld.so \
+  $(objpfx)tst-thp-1-pde
+	$(SHELL) $< '$(strace-test-via-rtld-prefix)' \
+		'$(test-wrapper-env)' \
+		'$(run-program-env) GLIBC_TUNABLES=glibc.elf.thp=1' \
+		$(objpfx)tst-thp-1-pde > $@; \
+	  $(evaluate-test)
+
+$(objpfx)strace-tst-thp-1-pde-disabled.out: \
+  $(..)sysdeps/unix/sysv/linux/strace-tst-thp.sh $(objpfx)ld.so \
+  $(objpfx)tst-thp-1-pde
+	$(SHELL) $< '$(strace-test-via-rtld-prefix)' \
+		'$(test-wrapper-env)' \
+		'$(run-program-env) GLIBC_TUNABLES=glibc.elf.thp=0' \
+		$(objpfx)tst-thp-1-pde > $@; \
+	  $(evaluate-test)
+
+$(objpfx)strace-tst-thp-1-static-enabled.out: \
+  $(..)sysdeps/unix/sysv/linux/strace-tst-thp.sh \
+  $(objpfx)tst-thp-1-static
+	$(SHELL) $< '' '$(test-wrapper-env)' \
+		'$(run-program-env) GLIBC_TUNABLES=glibc.elf.thp=1' \
+		$(objpfx)tst-thp-1-static > $@; \
+	  $(evaluate-test)
+
+$(objpfx)strace-tst-thp-1-static-disabled.out: \
+  $(..)sysdeps/unix/sysv/linux/strace-tst-thp.sh \
+  $(objpfx)tst-thp-1-static
+	$(SHELL) $< '' '$(test-wrapper-env)' \
+		'$(run-program-env) GLIBC_TUNABLES=glibc.elf.thp=0' \
+		$(objpfx)tst-thp-1-static > $@; \
+	  $(evaluate-test)
+
+$(objpfx)strace-tst-thp-align-default.out: \
+  $(..)sysdeps/unix/sysv/linux/strace-tst-thp.sh $(objpfx)ld.so \
+  $(objpfx)tst-thp-align
+	$(SHELL) $< '$(strace-test-via-rtld-prefix)' \
+		'$(test-wrapper-env)' '$(run-program-env)' \
+		$(objpfx)tst-thp-align > $@; \
+	  $(evaluate-test)
+
+$(objpfx)strace-tst-thp-align-enabled.out: \
+  $(..)sysdeps/unix/sysv/linux/strace-tst-thp.sh $(objpfx)ld.so \
+  $(objpfx)tst-thp-align
+	$(SHELL) $< '$(strace-test-via-rtld-prefix)' \
+		'$(test-wrapper-env)' \
+		'$(run-program-env) GLIBC_TUNABLES=glibc.elf.thp=1' \
+		$(objpfx)tst-thp-align > $@; \
+	  $(evaluate-test)
+
+$(objpfx)strace-tst-thp-align-disabled.out: \
+  $(..)sysdeps/unix/sysv/linux/strace-tst-thp.sh $(objpfx)ld.so \
+  $(objpfx)tst-thp-align
+	$(SHELL) $< '$(strace-test-via-rtld-prefix)' \
+		'$(test-wrapper-env)' \
+		'$(run-program-env) GLIBC_TUNABLES=glibc.elf.thp=0' \
+		$(objpfx)tst-thp-align > $@; \
+	  $(evaluate-test)
+endif # [madvise]
+endif # $(cross-compiling)
 endif # $(subdir) == elf
 
 ifeq ($(subdir),rt)

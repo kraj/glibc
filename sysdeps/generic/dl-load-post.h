@@ -1,4 +1,4 @@
-/* _dl_map_segment_align.  LoongArch64 Linux version.
+/* _dl_postprocess_loadcmd_extra.  Generic version.
    Copyright (C) 2026 Free Software Foundation, Inc.
    Copyright The GNU Toolchain Authors.
    This file is part of the GNU C Library.
@@ -17,6 +17,7 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#define DL_MAP_DEFAULT_THP_PAGESIZE (32 * 1024 * 1024)
-
-#include_next <dl-map-segment-align.h>
+static inline void
+_dl_postprocess_loadcmd_extra (struct link_map *l, const struct loadcmd *c)
+{
+}

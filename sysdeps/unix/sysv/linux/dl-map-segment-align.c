@@ -17,38 +17,24 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
+#include <ldsodefs.h>
 #include <dl-map-segment-align.h>
-#include <dl-tunables.h>
-#include <hugepages.h>
+
+/* Return the alignment of the PT_LOAD segment for THP.  P_ALIGN_MAX is
+   the maximum p_align value in the PT_LOAD segment.  */
 
 ElfW (Addr)
 _dl_map_segment_align (const struct loadcmd *c, ElfW (Addr) p_align_max)
 {
-  static enum thp_mode_t thp_mode = thp_mode_not_supported;
-  static unsigned long int thp_pagesize;
+  size_t thp_pagesize = GL(dl_elf_thp_pagesize);
 
-  if (TUNABLE_GET (glibc, elf, thp, int32_t, NULL) == 0)
+  if (GL(dl_elf_thp_control) != dl_elf_thp_control_enabled
+      || p_align_max >= thp_pagesize)
     return p_align_max;
 
-  if (__glibc_unlikely (thp_mode == thp_mode_not_supported
-                        || thp_pagesize == 0))
-    {
-      unsigned long int default_thp_pagesize = DL_MAP_DEFAULT_THP_PAGESIZE;
-      thp_mode = default_thp_pagesize ? thp_mode_always : __get_thp_mode ();
-      thp_pagesize = default_thp_pagesize ? : __get_thp_size ();
-    }
-
-  /* Aligning load segments that are large enough to the PMD size helps
-     improve THP eligibility and reduces TLB pressure.
-     We cap the huge page size at MAX_THP_PAGESIZE to avoid over-aligning
-     on systems with very large normal pages (like 64K pages with 512M
-     huge pages). */
-  if (thp_mode == thp_mode_always
-      && thp_pagesize <= MAX_THP_PAGESIZE
-      && ((c->mapstart | c->mapoff) & (thp_pagesize - 1)) == 0
-      && (c->mapend - c->mapstart) >= thp_pagesize
-      && p_align_max < thp_pagesize
-      && (c->prot & PROT_WRITE) == 0)
+  /* Return true if the segment is THP eligible.  It helps improve THP
+     eligibility and reduces TLB pressure.  */
+  if (_dl_segment_thp_eligible (c, thp_pagesize))
     return thp_pagesize;
 
   return p_align_max;

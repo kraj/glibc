@@ -21,15 +21,26 @@
 
 #include <stddef.h>
 
+/* The THP segment load control mode.  */
+enum dl_elf_thp_control_t
+{
+  /* To be enabled or disabled by GLIBC_TUNABLES.  */
+  dl_elf_thp_control_default = 0,
+  /* Enabled by GLIBC_TUNABLES=glibc.elf.thp=1.  */
+  dl_elf_thp_control_enabled,
+    /* Disabled by GLIBC_TUNABLES=glibc.elf.thp=0.  */
+  dl_elf_thp_control_disabled
+};
+
 /* Return the default transparent huge page size.  */
 unsigned long int __get_thp_size (void) attribute_hidden;
 
 enum thp_mode_t
 {
+  thp_mode_not_supported = 0,
   thp_mode_always,
   thp_mode_madvise,
-  thp_mode_never,
-  thp_mode_not_supported
+  thp_mode_never
 };
 
 enum thp_mode_t __get_thp_mode (void) attribute_hidden;
@@ -43,6 +54,10 @@ void __get_hugepage_config (size_t requested, size_t *pagesize, int *flags)
 
 #ifndef MALLOC_DEFAULT_THP_PAGESIZE
 # define MALLOC_DEFAULT_THP_PAGESIZE	0
+#endif
+
+#ifndef DL_MAP_DEFAULT_THP_PAGESIZE
+# define DL_MAP_DEFAULT_THP_PAGESIZE	0
 #endif
 
 #ifndef MAX_THP_PAGESIZE

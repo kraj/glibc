@@ -1,6 +1,7 @@
-/* Test the THP compatible alignment of PT_LOAD segments.
-
+/* _dl_executable_postprocess.  Generic version.
    Copyright (C) 2026 Free Software Foundation, Inc.
+   Copyright The GNU Toolchain Authors.
+   This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -16,21 +17,18 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#include <support/xdlfcn.h>
-#include "tst-thp-align-check.h"
-
-#define THP_SIZE_MOD_NAME "tst-thp-size-mod.so"
-
-static int
-do_test (void)
+static inline void
+_dl_executable_postprocess (struct link_map *main_map,
+			    const ElfW(Phdr) *phdr, ElfW(Word) phnum)
 {
-  void *dl;
-
-  dl = xdlopen (THP_SIZE_MOD_NAME, RTLD_NOW);
-  check_align (THP_SIZE_MOD_NAME);
-  xdlclose (dl);
-
-  return 0;
+#ifdef SHARED
+  /* Process program headers again, but scan them backwards since
+     PT_GNU_PROPERTY is close to the end of program headers.   */
+  for (const ElfW(Phdr) *ph = &phdr[phnum]; ph != phdr; --ph)
+    if (ph[-1].p_type == PT_GNU_PROPERTY)
+      {
+	_dl_process_pt_gnu_property (main_map, -1, &ph[-1]);
+	break;
+      }
+#endif
 }
-
-#include <support/test-driver.c>

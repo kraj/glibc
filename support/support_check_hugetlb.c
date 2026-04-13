@@ -27,23 +27,67 @@
 #include <support/support_check_hugetlb.h>
 #include <support/check.h>
 
+enum thp_mode_t
+support_get_thp_mode (void)
+{
+  int fd = open ("/sys/kernel/mm/transparent_hugepage/enabled",
+		 O_RDONLY, 0);
+  if (fd == -1)
+    return thp_mode_not_supported;
+
+  static const char mode_always[]  = "[always] madvise never\n";
+  static const char mode_madvise[] = "always [madvise] never\n";
+  static const char mode_never[]   = "always madvise [never]\n";
+
+  char str[sizeof(mode_always)];
+  ssize_t s = read (fd, str, sizeof (str));
+  close (fd);
+  if (s < 0 || s >= sizeof str)
+    return thp_mode_not_supported;
+  str[s] = '\0';
+
+  if (s == sizeof (mode_always) - 1)
+    {
+      if (strcmp (str, mode_always) == 0)
+	return thp_mode_always;
+      else if (strcmp (str, mode_madvise) == 0)
+	return thp_mode_madvise;
+      else if (strcmp (str, mode_never) == 0)
+	return thp_mode_never;
+    }
+  return thp_mode_not_supported;
+}
+
+unsigned long int
+support_get_thp_size (void)
+{
+  int fd = open ("/sys/kernel/mm/transparent_hugepage/hpage_pmd_size",
+                 O_RDONLY, 0);
+  if (fd == -1)
+    return 0;
+
+  char str[INT_BUFSIZE_BOUND (unsigned long int)];
+  ssize_t s = read (fd, str, sizeof (str));
+  close (fd);
+  if (s < 0)
+    return 0;
+
+  unsigned long int r = 0;
+  for (ssize_t i = 0; i < s; i++)
+    {
+      if (str[i] == '\n')
+    break;
+      r *= 10;
+      r += str[i] - '0';
+    }
+  return r;
+}
+
 bool
 support_thp_work_madvise (void)
 {
-  int fd = open ("/sys/kernel/mm/transparent_hugepage/enabled", O_RDONLY);
-  if (fd == -1)
-    return false;
-
-#define MODE_MADVISE "always [madvise] never\n"
-#define MODE_ALWAYS  "[always] madvise never\n"
-
-  char str[sizeof(MODE_MADVISE)];
-  ssize_t s = read (fd, str, sizeof (str));
-  close (fd);
-  if (s != sizeof (str) - 1)
-    return false;
-  str[s] = '\0';
-  return strcmp (str, MODE_MADVISE) == 0 || strcmp (str, MODE_ALWAYS) == 0;
+  enum thp_mode_t mode = support_get_thp_mode ();
+  return mode == thp_mode_always || mode == thp_mode_madvise;
 }
 
 bool
@@ -56,7 +100,7 @@ support_hugepages_reserved (void)
   char str[INT_BUFSIZE_BOUND(unsigned long int)];
   ssize_t s = read (fd, str, sizeof (str));
   close (fd);
-  if (s >= sizeof str || s < 0)
+  if (s < 0 || s >= sizeof str)
     return false;
   str[s] = '\0';
   unsigned long int n = 0;

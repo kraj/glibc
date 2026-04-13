@@ -1,6 +1,7 @@
-/* Test the THP compatible alignment of PT_LOAD segments.
-
+/* Huge Page support.  LoongArch64 Linux version.
    Copyright (C) 2026 Free Software Foundation, Inc.
+   Copyright The GNU Toolchain Authors.
+   This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -16,21 +17,6 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#include <support/xdlfcn.h>
-#include "tst-thp-align-check.h"
+#define DL_MAP_DEFAULT_THP_PAGESIZE (32 * 1024 * 1024)
 
-#define THP_SIZE_MOD_NAME "tst-thp-size-mod.so"
-
-static int
-do_test (void)
-{
-  void *dl;
-
-  dl = xdlopen (THP_SIZE_MOD_NAME, RTLD_NOW);
-  check_align (THP_SIZE_MOD_NAME);
-  xdlclose (dl);
-
-  return 0;
-}
-
-#include <support/test-driver.c>
+#include_next <hugepages.h>

@@ -204,6 +204,7 @@ call_fini (void *unused)
 #endif /* !SHARED */
 
 #include <libc-start.h>
+#include <dl-exec-post.h>
 
 STATIC int LIBC_START_MAIN (int (*main) (int, char **, char **
 					 MAIN_AUXVEC_DECL),
@@ -306,6 +307,11 @@ LIBC_START_MAIN (int (*main) (int, char **, char ** MAIN_AUXVEC_DECL),
      phase of _dl_relocate_static_pie above.  */
   _dl_relocate_static_pie_ifunc ();
   ARCH_SETUP_IREL ();
+
+  /* This must run after the IFUNC relocations: _dl_executable_postprocess
+     may call IFUNC-resolved routines.  */
+  struct link_map *main_map = _dl_get_dl_main_map ();
+  _dl_executable_postprocess (main_map, GL(dl_phdr), GL(dl_phnum));
 
   /* Initialize libpthread if linked in.  */
   if (__pthread_initialize_minimal != NULL)

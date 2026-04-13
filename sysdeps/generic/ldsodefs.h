@@ -39,6 +39,7 @@
 #include <libc-lock.h>
 #include <hp-timing.h>
 #include <list_t.h>
+#include <hugepages.h>
 
 __BEGIN_DECLS
 
@@ -476,6 +477,14 @@ struct rtld_global
   /* Array of __pthread structures and its lock.  */
   EXTERN struct __pthread **_dl_pthread_threads;
   __mach_rwlock_define (EXTERN, _dl_pthread_threads_lock)
+#endif
+#ifdef HAVE_THP
+  /* The THP segment load control.  */
+  EXTERN enum dl_elf_thp_control_t _dl_elf_thp_control;
+  /* The kernel THP mode.  */
+  EXTERN enum thp_mode_t _dl_thp_mode;
+  /* Page size used for THP segment load.  */
+  EXTERN size_t _dl_elf_thp_pagesize;
 #endif
 #ifdef SHARED
 };

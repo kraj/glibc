@@ -21,6 +21,9 @@
 /* We have the auxiliary vector.  */
 #define HAVE_AUX_VECTOR
 
+/* We have transparent huge page.  */
+#define HAVE_THP
+
 /* Get the real definitions.  */
 #include_next <ldsodefs.h>
 

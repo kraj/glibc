@@ -179,6 +179,12 @@ int _dl_stack_cache_lock;
 #endif
 struct dl_scope_free_list *_dl_scope_free_list;
 
+#ifdef HAVE_THP
+enum dl_elf_thp_control_t _dl_elf_thp_control;
+enum thp_mode_t _dl_thp_mode;
+size_t _dl_elf_thp_pagesize;
+#endif
+
 #ifdef NEED_DL_SYSINFO
 /* Needed for improved syscall handling on at least x86/Linux.  NB: Don't
    initialize it here to avoid RELATIVE relocation in static PIE.  */

@@ -112,6 +112,7 @@ struct loadcmd
   int prot;                             /* PROT_* bits.  */
 };
 
+#include <dl-load-post.h>
 
 /* Iterator for program header segments.  Initialize with
    _dl_pt_load_iterator_init, then either walk PT_LOAD segments via
@@ -215,6 +216,8 @@ _dl_postprocess_loadcmd (struct link_map *l, const ElfW(Ehdr) *header,
     /* Found the program header in this segment.  */
     l->l_phdr = (void *) (uintptr_t) (c->mapstart + header->e_phoff
                                       - c->mapoff);
+
+  _dl_postprocess_loadcmd_extra (l, c);
 }
 
 

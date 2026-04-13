@@ -19,9 +19,18 @@
 
 #include <dl-load.h>
 
-#ifndef DL_MAP_DEFAULT_THP_PAGESIZE
-# define DL_MAP_DEFAULT_THP_PAGESIZE	0
-#endif
-
 extern ElfW (Addr) _dl_map_segment_align
   (const struct loadcmd *, ElfW (Addr)) attribute_hidden;
+
+/* Return true only if the loadcmd C is THP eligible with THP page size
+   THP_PAGESIZE, which means that it is read-only, its size >= THP page
+   size, its offset and address of the loadcmd C are aligned to THP page
+   size.  */
+
+static inline bool
+_dl_segment_thp_eligible (const struct loadcmd *c, size_t thp_pagesize)
+{
+  return ((c->prot & (PROT_WRITE | PROT_READ)) == PROT_READ
+	  && (c->mapend - c->mapstart) >= thp_pagesize
+	  && ((c->mapstart | c->mapoff) & (thp_pagesize - 1)) == 0);
+}
