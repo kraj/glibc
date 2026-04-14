@@ -335,17 +335,29 @@ parse_tilde (char **word, size_t *word_length, size_t *max_length,
   else
     {
       /* Look up user name in database to get home directory */
-      char *user = strndupa (&words[1 + *offset], i - (1 + *offset));
-      struct passwd pwd, *tpwd;
-      int result;
+      size_t userlen = i - (1 + *offset);
+      /* tmpbuf contains both the user and the __getpwnam_r working area.  */
       struct scratch_buffer tmpbuf;
       scratch_buffer_init (&tmpbuf);
+      if (!scratch_buffer_set_array_size (&tmpbuf, userlen + 1, 1))
+	return WRDE_NOSPACE;
+      char *user = tmpbuf.data;
+      memcpy (user, &words[1 + *offset], userlen);
+      user[userlen] = '\0';
 
-      while ((result = __getpwnam_r (user, &pwd, tmpbuf.data, tmpbuf.length,
+      struct passwd pwd, *tpwd;
+      int result;
+      while ((result = __getpwnam_r (user,
+				     &pwd,
+				     tmpbuf.data + userlen + 1,
+				     tmpbuf.length - userlen - 1,
 				     &tpwd)) != 0
 	     && errno == ERANGE)
-	if (!scratch_buffer_grow (&tmpbuf))
-	  return WRDE_NOSPACE;
+	{
+	  if (!scratch_buffer_grow_preserve (&tmpbuf))
+	    return WRDE_NOSPACE;
+	  user = tmpbuf.data;
+	}
 
       if (result == 0 && tpwd != NULL && pwd.pw_dir)
 	*word = w_addstr (*word, word_length, max_length, pwd.pw_dir);
