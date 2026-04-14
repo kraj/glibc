@@ -357,6 +357,7 @@ tests-internal := \
 tests-container := \
   bug-ga2 \
   tst-vfork3 \
+  tst-wordexp-tilde \
   # tests-container
 
 tests-time64 := \
