@@ -441,8 +441,6 @@ tag_at (void *ptr)
   return ptr;
 }
 
-#include <string.h>
-
 /*
   MORECORE-related declarations. By default, rely on sbrk
 */
@@ -566,8 +564,8 @@ tag_at (void *ptr)
   differs across systems, but is in all cases less than the maximum
   representable value of a size_t.
 */
-void *__libc_malloc (size_t);
-libc_hidden_proto (__libc_malloc)
+void *__libc_malloc_core (size_t);
+libc_hidden_proto (__libc_malloc_core)
 
 static void *__libc_calloc2 (size_t);
 static void *__libc_malloc2 (size_t);
@@ -583,15 +581,16 @@ static void *__libc_malloc2 (size_t);
   when possible, automatically trigger operations that give
   back unused memory to the system, thus reducing program footprint.
 */
-void     __libc_free(void*);
-libc_hidden_proto (__libc_free)
+void __libc_free_core (void *);
+libc_hidden_proto (__libc_free_core)
 
 /*
   calloc(size_t n_elements, size_t element_size);
   Returns a pointer to n_elements * element_size bytes, with all locations
   set to zero.
 */
-void*  __libc_calloc(size_t, size_t);
+void * __libc_calloc_core (size_t, size_t);
+libc_hidden_proto (__libc_calloc_core)
 
 /*
   realloc(void* p, size_t n)
@@ -620,8 +619,8 @@ void*  __libc_calloc(size_t, size_t);
   The old unix realloc convention of allowing the last-free'd chunk
   to be used as an argument to realloc is not supported.
 */
-void*  __libc_realloc(void*, size_t);
-libc_hidden_proto (__libc_realloc)
+void *__libc_realloc_core (void *, size_t);
+libc_hidden_proto (__libc_realloc_core)
 
 /*
   memalign(size_t alignment, size_t n);
@@ -635,16 +634,16 @@ libc_hidden_proto (__libc_realloc)
 
   Overreliance on memalign is a sure way to fragment space.
 */
-void*  __libc_memalign(size_t, size_t);
-libc_hidden_proto (__libc_memalign)
+void *__libc_memalign_core (size_t, size_t);
+libc_hidden_proto (__libc_memalign_core)
 
 /*
   valloc(size_t n);
   Equivalent to memalign(pagesize, n), where pagesize is the page
   size of the system. If the pagesize is unknown, 4096 is used.
 */
-void*  __libc_valloc(size_t);
-
+void *__libc_valloc_core (size_t);
+libc_hidden_proto (__libc_valloc_core)
 
 
 /*
@@ -677,7 +676,8 @@ struct mallinfo __libc_mallinfo(void);
   Equivalent to valloc(minimum-page-that-holds(n)), that is,
   round up n to nearest pagesize.
  */
-void*  __libc_pvalloc(size_t);
+void *__libc_pvalloc_core (size_t);
+libc_hidden_proto (__libc_pvalloc_core)
 
 /*
   malloc_trim(size_t pad);
@@ -720,7 +720,8 @@ int      __malloc_trim(size_t);
   assert(malloc_usable_size(p) >= 256);
 
 */
-size_t   __malloc_usable_size(void*);
+size_t __malloc_usable_size_core (void *);
+libc_hidden_proto (__malloc_usable_size_core)
 
 /*
   malloc_stats();
@@ -749,7 +750,8 @@ void     __malloc_stats(void);
 
   POSIX wrapper like memalign(), checking for validity of size.
 */
-int      __posix_memalign(void **, size_t, size_t);
+int __posix_memalign_core (void **, size_t, size_t);
+libc_hidden_proto (__posix_memalign_core)
 #endif /* IS_IN (libc) */
 
 /*
@@ -2951,7 +2953,7 @@ tcache_key_initialize (void)
 
   /* We need tcache_key to be non-zero (otherwise tcache_double_free_verify's
      clearing of e->key would go unnoticed and it would loop getting called
-     through __libc_free), and we want tcache_key not to be a
+     through __libc_free_core), and we want tcache_key not to be a
      commonly-occurring value in memory, so ensure a minimum amount of one and
      zero bits.  */
   int minimum_bits = __WORDSIZE / 4;
@@ -2983,7 +2985,7 @@ tcache_put_n (mchunkptr chunk, size_t tc_idx, tcache_entry **ep, bool mangled)
 {
   tcache_entry *e = (tcache_entry *) chunk2mem (chunk);
 
-  /* Mark this chunk as "in the tcache" so the test in __libc_free will
+  /* Mark this chunk as "in the tcache" so the test in __libc_free_core will
      detect a double free.  */
   e->key = tcache_key;
 
@@ -3142,7 +3144,7 @@ tcache_double_free_verify (tcache_entry *e)
      or user data that happens to match the key.  Since we are not sure,
      clear the key and retry freeing it.  */
   e->key = 0;
-  __libc_free (e);
+  __libc_free_core (e);
 }
 
 static void
@@ -3258,7 +3260,7 @@ __libc_malloc2 (size_t bytes)
 }
 
 void *
-__libc_malloc (size_t bytes)
+__libc_malloc_core (size_t bytes)
 {
 #if USE_TCACHE
   size_t nb = checked_request2size (bytes);
@@ -3284,17 +3286,17 @@ __libc_malloc (size_t bytes)
 
   return __libc_malloc2 (bytes);
 }
-libc_hidden_def (__libc_malloc)
+libc_hidden_def (__libc_malloc_core)
 
 static void __attribute_noinline__
 tcache_free_init (void *mem)
 {
   tcache_init (NULL);
-  __libc_free (mem);
+  __libc_free_core (mem);
 }
 
 void
-__libc_free (void *mem)
+__libc_free_core (void *mem)
 {
   mchunkptr p;                          /* chunk corresponding to mem */
 
@@ -3352,10 +3354,10 @@ __libc_free (void *mem)
 
   _int_free_chunk (arena_for_chunk (p), p, size, 0);
 }
-libc_hidden_def (__libc_free)
+libc_hidden_def (__libc_free_core)
 
 void *
-__libc_realloc (void *oldmem, size_t bytes)
+__libc_realloc_core (void *oldmem, size_t bytes)
 {
   mstate ar_ptr;
   INTERNAL_SIZE_T nb;         /* padded request size */
@@ -3364,12 +3366,12 @@ __libc_realloc (void *oldmem, size_t bytes)
 
   /* realloc of null is supposed to be same as malloc */
   if (oldmem == NULL)
-    return __libc_malloc (bytes);
+    return __libc_malloc_core (bytes);
 
 #if REALLOC_ZERO_BYTES_FREES
   if (bytes == 0)
     {
-      __libc_free (oldmem); return NULL;
+      __libc_free_core (oldmem); return NULL;
     }
 #endif
 
@@ -3434,7 +3436,7 @@ __libc_realloc (void *oldmem, size_t bytes)
 	return oldmem;
 
       /* Must alloc, copy, free. */
-      newmem = __libc_malloc (bytes);
+      newmem = __libc_malloc_core (bytes);
       if (newmem == NULL)
         return NULL;              /* propagate failure */
 
@@ -3466,7 +3468,7 @@ __libc_realloc (void *oldmem, size_t bytes)
     {
       /* Try harder to allocate memory in other arenas.  */
       LIBC_PROBE (memory_realloc_retry, 2, bytes, oldmem);
-      newp = __libc_malloc (bytes);
+      newp = __libc_malloc_core (bytes);
       if (newp != NULL)
         {
 	  size_t sz = memsize (oldp);
@@ -3478,10 +3480,10 @@ __libc_realloc (void *oldmem, size_t bytes)
 
   return newp;
 }
-libc_hidden_def (__libc_realloc)
+libc_hidden_def (__libc_realloc_core)
 
 void *
-__libc_memalign (size_t alignment, size_t bytes)
+__libc_memalign_core (size_t alignment, size_t bytes)
 {
   /* Round the alignment up to a power of 2.  Reject alignments that overflow
      when rounded up.  Zero alignment is handled by _mid_memalign.  */
@@ -3498,12 +3500,14 @@ __libc_memalign (size_t alignment, size_t bytes)
 
   return _mid_memalign (alignment, bytes);
 }
-libc_hidden_def (__libc_memalign)
+libc_hidden_def (__libc_memalign_core)
 
 /* For ISO C17.  */
+void *__aligned_alloc_core (size_t, size_t);
+libc_hidden_proto (__aligned_alloc_core)
+
 void *
-weak_function
-aligned_alloc (size_t alignment, size_t bytes)
+__aligned_alloc_core (size_t alignment, size_t bytes)
 {
 /* Starting with ISO C17 the standard requires an error for alignments
    that are not supported.  Only integral powers of 2 are valid.  */
@@ -3515,11 +3519,14 @@ aligned_alloc (size_t alignment, size_t bytes)
 
   return _mid_memalign (alignment, bytes);
 }
+libc_hidden_def (__aligned_alloc_core)
 
 /* For ISO C23.  */
+void __free_sized_core (void *, size_t);
+libc_hidden_proto (__free_sized_core)
+
 void
-weak_function
-free_sized (void *ptr, __attribute_maybe_unused__ size_t size)
+__free_sized_core (void *ptr, __attribute_maybe_unused__ size_t size)
 {
   /* We do not perform validation that size is the same as the original
      requested size at this time. We leave that to the sanitizers.  We
@@ -3528,11 +3535,14 @@ free_sized (void *ptr, __attribute_maybe_unused__ size_t size)
 
   free (ptr);
 }
+libc_hidden_def (__free_sized_core)
 
 /* For ISO C23.  */
+void __free_aligned_sized_core (void *, size_t, size_t);
+libc_hidden_proto (__free_aligned_sized_core)
+
 void
-weak_function
-free_aligned_sized (void *ptr, __attribute_maybe_unused__ size_t alignment,
+__free_aligned_sized_core (void *ptr, __attribute_maybe_unused__ size_t alignment,
                     __attribute_maybe_unused__ size_t size)
 {
   /* We do not perform validation that size and alignment is the same as
@@ -3542,6 +3552,7 @@ free_aligned_sized (void *ptr, __attribute_maybe_unused__ size_t alignment,
 
   free (ptr);
 }
+libc_hidden_def (__free_aligned_sized_core)
 
 static void *
 _mid_memalign (size_t alignment, size_t bytes)
@@ -3551,7 +3562,7 @@ _mid_memalign (size_t alignment, size_t bytes)
 
   /* If we need less alignment than we give anyway, just relay to malloc.  */
   if (alignment <= MALLOC_ALIGNMENT)
-    return __libc_malloc (bytes);
+    return __libc_malloc_core (bytes);
 
 #if USE_TCACHE
   void *victim = tcache_get_align (checked_request2size (bytes), alignment);
@@ -3586,13 +3597,14 @@ _mid_memalign (size_t alignment, size_t bytes)
 }
 
 void *
-__libc_valloc (size_t bytes)
+__libc_valloc_core (size_t bytes)
 {
   return _mid_memalign (GLRO (dl_pagesize), bytes);
 }
+libc_hidden_def (__libc_valloc_core)
 
 void *
-__libc_pvalloc (size_t bytes)
+__libc_pvalloc_core (size_t bytes)
 {
   size_t pagesize = GLRO (dl_pagesize);
   size_t rounded_bytes;
@@ -3607,6 +3619,7 @@ __libc_pvalloc (size_t bytes)
 
   return _mid_memalign (pagesize, rounded_bytes & -pagesize);
 }
+libc_hidden_def (__libc_pvalloc_core)
 
 static void * __attribute_noinline__
 __libc_calloc2 (size_t sz)
@@ -3703,7 +3716,7 @@ __libc_calloc2 (size_t sz)
 }
 
 void *
-__libc_calloc (size_t n, size_t elem_size)
+__libc_calloc_core (size_t n, size_t elem_size)
 {
   size_t bytes;
 
@@ -3747,6 +3760,7 @@ __libc_calloc (size_t n, size_t elem_size)
 #endif
   return __libc_calloc2 (bytes);
 }
+libc_hidden_def (__libc_calloc_core)
 #endif /* IS_IN (libc) */
 
 /*
@@ -4754,12 +4768,13 @@ musable (void *mem)
 
 #if IS_IN (libc)
 size_t
-__malloc_usable_size (void *m)
+__malloc_usable_size_core (void *m)
 {
   if (m == NULL)
     return 0;
   return musable (m);
 }
+libc_hidden_def (__malloc_usable_size_core)
 #endif
 
 /*
@@ -5280,7 +5295,7 @@ malloc_printerr_tail (const char *str)
 #if IS_IN (libc)
 /* We need a wrapper function for one of the additions of POSIX.  */
 int
-__posix_memalign (void **memptr, size_t alignment, size_t size)
+__posix_memalign_core (void **memptr, size_t alignment, size_t size)
 {
   /* Test whether the SIZE argument is valid.  It must be a power of
      two multiple of sizeof (void *) (which must be either 4 or 8).  */
@@ -5295,7 +5310,7 @@ __posix_memalign (void **memptr, size_t alignment, size_t size)
   *memptr = mem;
   return 0;
 }
-weak_alias (__posix_memalign, posix_memalign)
+libc_hidden_def (__posix_memalign_core)
 #endif
 
 
@@ -5458,26 +5473,44 @@ __malloc_info (int options, FILE *fp)
 }
 #if IS_IN (libc)
 weak_alias (__malloc_info, malloc_info)
-
-weak_alias (__libc_calloc, calloc)
-strong_alias (__libc_free, free)
-strong_alias (__libc_malloc, malloc)
-weak_alias (__libc_memalign, memalign)
-strong_alias (__libc_realloc, realloc)
-weak_alias (__libc_valloc, valloc)
-weak_alias (__libc_pvalloc, pvalloc)
 weak_alias (__libc_mallinfo, mallinfo)
 weak_alias (__libc_mallinfo2, mallinfo2)
 weak_alias (__libc_mallopt, mallopt)
-
 weak_alias (__malloc_stats, malloc_stats)
-weak_alias (__malloc_usable_size, malloc_usable_size)
 weak_alias (__malloc_trim, malloc_trim)
-#endif
 
-#if SHLIB_COMPAT (libc, GLIBC_2_0, GLIBC_2_26)
-compat_symbol (libc, __libc_free, cfree, GLIBC_2_0);
-#endif
+/* On targets that do not support ifuncs we alias externally visible
+   functions as well as the __libc_* functions to their respective
+   *_core symbols.
+
+   For ifunc prototypes and resolvers see sysdeps/generic/malloc-ifuncs.h.
+ */
+# if !HAVE_IFUNC
+strong_alias (__libc_malloc_core, malloc)
+strong_alias (__libc_malloc_core, __libc_malloc)
+weak_alias (__libc_calloc_core, calloc)
+strong_alias (__libc_calloc_core, __libc_calloc)
+weak_alias (__libc_memalign_core, memalign)
+strong_alias (__libc_memalign_core, __libc_memalign)
+weak_alias (__libc_valloc_core, valloc)
+strong_alias (__libc_valloc_core, __libc_valloc)
+weak_alias (__libc_pvalloc_core, pvalloc)
+strong_alias (__libc_pvalloc_core, __libc_pvalloc)
+strong_alias (__libc_realloc_core, realloc)
+strong_alias (__libc_realloc_core, __libc_realloc)
+weak_alias (__posix_memalign_core, posix_memalign)
+#  if SHLIB_COMPAT (libc, GLIBC_2_0, GLIBC_2_26)
+compat_symbol (libc, __libc_free_core, cfree, GLIBC_2_0);
+#  endif
+strong_alias (__libc_free_core, free)
+strong_alias (__libc_free_core, __libc_free)
+weak_alias (__malloc_usable_size_core, malloc_usable_size)
+weak_alias (__aligned_alloc_core, aligned_alloc)
+weak_alias (__free_sized_core, free_sized)
+weak_alias (__free_aligned_sized_core, free_aligned_sized)
+# endif /* !HAVE_IFUNC */
+
+#endif /* IS_IN (libc) */
 
 /* ------------------------------------------------------------
    History:

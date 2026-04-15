@@ -16,6 +16,8 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
+#include <string.h>
+
 static __always_inline void *
 clear_memory (INTERNAL_SIZE_T *d, unsigned long clearsize)
 {

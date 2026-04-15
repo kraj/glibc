@@ -102,6 +102,9 @@ $(objpfx)tst-sme-clone3: $(objpfx)clone3.o $(objpfx)__arm_za_disable.o
 endif
 
 ifeq ($(subdir),malloc)
+sysdep_routines += \
+  malloc-ifuncs \
+  # sysdep_routines
 sysdep_malloc_debug_routines = \
   __mtag_tag_region \
   __mtag_tag_zero_region \

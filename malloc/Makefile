@@ -411,6 +411,12 @@ endif
 endif
 endif
 
+tests-special += \
+  $(objpfx)tst-check-internal-calls.out \
+  # tests-special
+$(objpfx)tst-check-internal-calls.out: tst-check-internal-calls.sh malloc.c
+	$(SHELL) $^ > $@; $(evaluate-test)
+
 include ../Rules
 
 CFLAGS-mcheck-init.c += $(PIC-ccflag)

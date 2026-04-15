@@ -43,6 +43,9 @@ endif
 endif
 
 ifeq ($(subdir),malloc)
+sysdep_routines += \
+  malloc-ifuncs \
+  # sysdep_routines
 sysdep_malloc_debug_routines += \
   hugepages \
   # sysdep_malloc_debug_routines
