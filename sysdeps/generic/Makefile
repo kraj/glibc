@@ -16,27 +16,42 @@
 # <https://www.gnu.org/licenses/>.
 
 ifeq ($(subdir),string)
-sysdep_routines += tls-internal
+sysdep_routines += \
+  tls-internal \
+  # sysdep_routines
 CFLAGS-wordcopy.c += -Wno-uninitialized
 endif
 
 ifeq ($(subdir),elf)
 ifeq ($(enable-gsframe),yes)
-sysdep_routines += sframe-read sframe
+sysdep_routines += \
+  sframe \
+  sframe-read \
+  # sysdep_routines
 endif
 ifeq (yes:yes,$(build-shared):$(unwind-find-fde))
 # This is needed to support g++ v2 and v3.
-sysdep_routines += framestate unwind-pe
-shared-only-routines += framestate unwind-pe
+sysdep_routines += \
+  framestate \
+  unwind-pe \
+  # sysdep_routines
+shared-only-routines += \
+  framestate \
+  unwind-pe \
+  # shared-only-routines
 endif
 endif
 
 ifeq ($(subdir),malloc)
-sysdep_malloc_debug_routines += hugepages
+sysdep_malloc_debug_routines += \
+  hugepages \
+  # sysdep_malloc_debug_routines
 endif
 
 ifeq ($(subdir),misc)
-sysdep_routines += hugepages
+sysdep_routines += \
+  hugepages \
+  # sysdep_routines
 endif
 
 ifeq ($(subdir),support)
