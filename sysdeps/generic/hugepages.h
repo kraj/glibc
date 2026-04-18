@@ -37,7 +37,8 @@ unsigned long int __get_thp_size (void) attribute_hidden;
 
 enum thp_mode_t
 {
-  thp_mode_not_supported = 0,
+  thp_mode_unknown = 0,
+  thp_mode_not_supported,
   thp_mode_always,
   thp_mode_madvise,
   thp_mode_never
@@ -63,5 +64,18 @@ void __get_hugepage_config (size_t requested, size_t *pagesize, int *flags)
 #ifndef MAX_THP_PAGESIZE
 # define MAX_THP_PAGESIZE	(32 * 1024 * 1024)
 #endif
+
+/* If THP page size is above MAX_THP_PAGESIZE, return 0 to cap the THP
+   size at MAX_THP_PAGESIZE to avoid over-aligning on systems with very
+   large normal pages (like 64K pages with 512M huge pages).  */
+
+static inline unsigned long int
+get_capped_thp_size (void)
+{
+  unsigned long int size = __get_thp_size ();
+  if (size > MAX_THP_PAGESIZE)
+    size = 0;
+  return size;
+}
 
 #endif /* _HUGEPAGES_H */

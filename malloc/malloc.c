@@ -1529,7 +1529,7 @@ static struct malloc_par mp_ =
   .mmap_threshold = DEFAULT_MMAP_THRESHOLD,
   .trim_threshold = DEFAULT_TRIM_THRESHOLD,
   .arena_test = sizeof (long) == 4 ? 2 : 8,
-  .thp_mode = thp_mode_not_supported
+  .thp_mode = thp_mode_unknown
 #if USE_TCACHE
   ,
   .tcache_count = TCACHE_FILL_COUNT,
@@ -4657,13 +4657,41 @@ do_set_mxfast (size_t value)
   return 1;
 }
 
+#ifdef HAVE_THP
+static __always_inline enum thp_mode_t
+get_dl_thp_mode (void)
+{
+  return GL(dl_thp_mode);
+}
+
+static __always_inline unsigned long int
+get_dl_elf_thp_pagesize (void)
+{
+  return GL(dl_elf_thp_pagesize);
+}
+#else
+# define get_dl_thp_mode()		__get_thp_mode ()
+# define get_dl_elf_thp_pagesize()	__get_thp_size ()
+#endif
+
 static __always_inline int
 do_set_hugetlb (size_t value)
 {
+  /* If __get_thp_mode and __get_thp_size have been called during
+     startup, don't call them again here.  */
+  enum thp_mode_t thp_mode = get_dl_thp_mode ();
+
   /* Enable THP if MALLOC_DEFAULT_THP_PAGESIZE is non-zero.  */
   if (MALLOC_DEFAULT_THP_PAGESIZE > 0)
     {
-      mp_.thp_mode = thp_mode_madvise;
+      /* If thp_mode is unknown, THP segment load is disabled by
+	 GLIBC_TUNABLES=glibc.elf.thp=0.  In this case, set
+	 mp_.thp_mode to madvise.  Otherwise, set it to thp_mode to
+	 keep mp_.thp_mode in sync with GL(dl_thp_mode).  */
+      if (thp_mode == thp_mode_unknown)
+	mp_.thp_mode = thp_mode_madvise;
+      else
+	mp_.thp_mode = thp_mode;
       mp_.thp_pagesize = MALLOC_DEFAULT_THP_PAGESIZE;
     }
 
@@ -4680,9 +4708,27 @@ do_set_hugetlb (size_t value)
       if (MALLOC_DEFAULT_THP_PAGESIZE > 0)
 	return 0;
 
-      mp_.thp_mode = __get_thp_mode ();
-      if (mp_.thp_mode == thp_mode_madvise || mp_.thp_mode == thp_mode_always)
-	mp_.thp_pagesize = __get_thp_size ();
+      if (thp_mode == thp_mode_unknown)
+	{
+	  /* Call __get_thp_mode and __get_thp_size when THP segment load
+	     is disabled.  */
+	  mp_.thp_mode = __get_thp_mode ();
+	  if (mp_.thp_mode == thp_mode_madvise
+	      || mp_.thp_mode == thp_mode_always)
+	    mp_.thp_pagesize = __get_thp_size ();
+	}
+      else
+	{
+	  /* THP segment load is enabled.  GL(dl_elf_thp_pagesize) is
+	     set to DL_MAP_DEFAULT_THP_PAGESIZE if it isn't zero.  In
+	     this case, call get_capped_thp_size () instead of using
+	     DL_MAP_DEFAULT_THP_PAGESIZE for malloc.  */
+	  mp_.thp_mode = thp_mode;
+	  if (DL_MAP_DEFAULT_THP_PAGESIZE != 0)
+	    mp_.thp_pagesize = get_capped_thp_size ();
+	  else
+	    mp_.thp_pagesize = get_dl_elf_thp_pagesize ();
+	}
     }
   else if (value >= 2)
     __get_hugepage_config (value == 2 ? 0 : value, &mp_.hp_pagesize,

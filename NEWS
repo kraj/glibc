@@ -9,6 +9,15 @@ Version 2.44
 
 Major new features:
 
+* A new tunable, glibc.elf.thp, is added to map read-only segments with
+  Transparent Huge Pages (THP) if THP isn't disable in kernel.  When
+  glibc.elf.thp is set to 1, malloc uses the actual kernel THP mode
+  instead of defaulting to madvise mode and madvise_thp will stop issuing
+  MADV_HUGEPAGE if kernel THP mode is always.
+
+* THP page size in malloc is capped to MAX_THP_PAGESIZE.  If THP page
+  size is above MAX_THP_PAGESIZE, THP in malloc is disabled.
+
 * Additional optimized and correctly rounded mathematical functions have
   been imported from the CORE-MATH project, in particular cosh, sinh, and
   tanh.

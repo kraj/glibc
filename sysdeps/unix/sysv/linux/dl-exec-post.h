@@ -48,14 +48,7 @@ _dl_get_thp_config (void)
       GL(dl_thp_mode) = __get_thp_mode ();
       if (GL(dl_thp_mode) == thp_mode_always
 	  || GL(dl_thp_mode) == thp_mode_madvise)
-	{
-	  GL(dl_elf_thp_pagesize) = __get_thp_size ();
-	  /* We cap the huge page size at MAX_THP_PAGESIZE to avoid
-	     over-aligning on systems with very large normal pages
-	     (like 64K pages with 512M huge pages).  */
-	  if (GL(dl_elf_thp_pagesize) > MAX_THP_PAGESIZE)
-	    GL(dl_elf_thp_pagesize) = 0;
-	}
+	GL(dl_elf_thp_pagesize) = get_capped_thp_size ();
       else
 	GL(dl_elf_thp_pagesize) = 0;
 
