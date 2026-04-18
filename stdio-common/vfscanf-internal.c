@@ -853,8 +853,7 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
 			{
 			  /* Enlarge the buffer.  */
 			  size_t newsize
-			    = strsize
-			      + (strsize >= width ? width - 1 : strsize);
+			    = strsize + (strsize >= width ? width : strsize);
 
 			  str = (char *) realloc (*strptr, newsize);
 			  if (str == NULL)
@@ -925,7 +924,7 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
 		      && wstr == (wchar_t *) *strptr + strsize)
 		    {
 		      size_t newsize
-			= strsize + (strsize > width ? width - 1 : strsize);
+			= strsize + (strsize >= width ? width : strsize);
 		      /* Enlarge the buffer.  */
 		      wstr = (wchar_t *) realloc (*strptr,
 						  newsize * sizeof (wchar_t));
@@ -980,7 +979,7 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
 		    && wstr == (wchar_t *) *strptr + strsize)
 		  {
 		    size_t newsize
-		      = strsize + (strsize > width ? width - 1 : strsize);
+		      = strsize + (strsize >= width ? width : strsize);
 		    /* Enlarge the buffer.  */
 		    wstr = (wchar_t *) realloc (*strptr,
 						newsize * sizeof (wchar_t));
