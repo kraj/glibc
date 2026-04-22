@@ -927,11 +927,9 @@ libc_hidden_proto (__libc_mallopt)
 #define RETURN_ADDRESS(X_) (NULL)
 #endif
 
-/* Forward declarations.  */
-struct malloc_chunk;
-typedef struct malloc_chunk* mchunkptr;
-
 /* Internal routines.  */
+
+typedef struct malloc_chunk* mchunkptr;
 
 static void*  _int_malloc(mstate, size_t);
 static void _int_free_chunk (mstate, mchunkptr, INTERNAL_SIZE_T, int);
@@ -979,27 +977,7 @@ static size_t musable (void *mem);
 
 
 /*
-  This struct declaration is misleading (but accurate and necessary).
-  It declares a "view" into memory allowing access to necessary
-  fields at known offsets from a given base. See explanation below.
-*/
-
-struct malloc_chunk {
-
-  INTERNAL_SIZE_T      mchunk_prev_size;  /* Size of previous chunk (if free).  */
-  INTERNAL_SIZE_T      mchunk_size;       /* Size in bytes, including overhead. */
-
-  struct malloc_chunk* fd;         /* double links -- used only if free. */
-  struct malloc_chunk* bk;
-
-  /* Only used for large blocks: pointer to next larger size.  */
-  struct malloc_chunk* fd_nextsize; /* double links -- used only if free. */
-  struct malloc_chunk* bk_nextsize;
-};
-
-
-/*
-   malloc_chunk details:
+   malloc_chunk details (see malloc-chunk.h):
 
     (The following includes lightly edited explanations by Colin Plumb.)
 
@@ -1105,96 +1083,34 @@ nextchunk-> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
   ---------- Size and alignment checks and conversions ----------
 */
 
-/* The chunk header is two SIZE_SZ elements, but this is used widely, so
-   we define it here for clarity later.  */
-#define CHUNK_HDR_SZ (2 * SIZE_SZ)
-
 /* Convert a chunk address to a user mem pointer.  */
 #define chunk2mem(p) ((void*)((char*)(p) + CHUNK_HDR_SZ))
 
 /* Convert a user mem pointer to a chunk address.  */
 #define mem2chunk(mem) ((mchunkptr) (((char*)(mem) - CHUNK_HDR_SZ)))
 
-/* The smallest possible chunk */
-#define MIN_CHUNK_SIZE        (offsetof(struct malloc_chunk, fd_nextsize))
-
-/* The smallest size we can malloc is an aligned minimal chunk */
-
-#define MINSIZE  \
-  (unsigned long)(((MIN_CHUNK_SIZE+MALLOC_ALIGN_MASK) & ~MALLOC_ALIGN_MASK))
-
 /* Check if m has acceptable alignment */
 
 #define misaligned_mem(m)  ((uintptr_t)(m) & MALLOC_ALIGN_MASK)
 
-#define misaligned_chunk(p) (misaligned_mem( chunk2mem (p)))
-
-/* pad request bytes into a usable size -- internal version */
-/* Note: This must be a macro that evaluates to a compile time constant
-   if passed a literal constant.  */
-#define request2size(req)                                         \
-  (((req) + SIZE_SZ + MALLOC_ALIGN_MASK < MINSIZE)  ?             \
-   MINSIZE :                                                      \
-   ((req) + SIZE_SZ + MALLOC_ALIGN_MASK) & ~MALLOC_ALIGN_MASK)
-
-/* Check if REQ overflows when padded and aligned and if the resulting
-   value is less than PTRDIFF_T.  Returns the requested size or
-   MINSIZE in case the value is less than MINSIZE, or SIZE_MAX if any
-   of the previous checks fail.  */
-static __always_inline size_t
-checked_request2size (size_t req) __nonnull (1)
-{
-  if (__glibc_unlikely (req > PTRDIFF_MAX))
-    return SIZE_MAX;
-  return request2size (req);
-}
+#define misaligned_chunk(p) (misaligned_mem (chunk2mem (p)))
 
 /*
    --------------- Physical chunk operations ---------------
  */
 
 
-/* size field is or'ed with PREV_INUSE when previous adjacent chunk in use */
-#define PREV_INUSE 0x1
-
 /* extract inuse bit of previous chunk */
 #define prev_inuse(p)       ((p)->mchunk_size & PREV_INUSE)
 
-
-/* size field is or'ed with IS_MMAPPED if the chunk was obtained with mmap() */
-#define IS_MMAPPED 0x2
-
 /* check for mmap()'ed chunk */
 #define chunk_is_mmapped(p) ((p)->mchunk_size & IS_MMAPPED)
-
-
-/* size field is or'ed with NON_MAIN_ARENA if the chunk was obtained
-   from a non-main arena.  This is only set immediately before handing
-   the chunk to the user, if necessary.  */
-#define NON_MAIN_ARENA 0x4
 
 /* Check for chunk from main arena.  */
 #define chunk_main_arena(p) (((p)->mchunk_size & NON_MAIN_ARENA) == 0)
 
 /* Mark a chunk as not being on the main arena.  */
 #define set_non_main_arena(p) ((p)->mchunk_size |= NON_MAIN_ARENA)
-
-
-/*
-   Bits to mask off when extracting size
-
-   Note: IS_MMAPPED is intentionally not masked off from size field in
-   macros for which mmapped chunks should never be seen. This should
-   cause helpful core dumps to occur if it is tried by accident by
-   people extending or adapting this malloc.
- */
-#define SIZE_BITS (PREV_INUSE | IS_MMAPPED | NON_MAIN_ARENA)
-
-/* Get size, ignoring use bits */
-#define chunksize(p) (chunksize_nomask (p) & ~(SIZE_BITS))
-
-/* Like chunksize, but do not mask SIZE_BITS.  */
-#define chunksize_nomask(p)         ((p)->mchunk_size)
 
 /* Ptr to next physical malloc_chunk. */
 #define next_chunk(p) ((mchunkptr) (((char *) (p)) + chunksize (p)))
@@ -1245,10 +1161,6 @@ checked_request2size (size_t req) __nonnull (1)
 
 #pragma GCC poison mchunk_size
 #pragma GCC poison mchunk_prev_size
-
-/* This is the size of the real usable data in the chunk.  Not valid for
-   dumped heap chunks.  */
-#define memsize(p) (chunksize (p) - CHUNK_HDR_SZ + SIZE_SZ)
 
 /* Huge page used for an mmap chunk.  */
 #define MMAP_HP 0x1
