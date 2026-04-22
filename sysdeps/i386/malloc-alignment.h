@@ -19,6 +19,20 @@
 #ifndef _I386_MALLOC_ALIGNMENT_H
 #define _I386_MALLOC_ALIGNMENT_H
 
+#include <stddef.h>
+
+/* INTERNAL_SIZE_T is the word-size used for internal bookkeeping of
+   chunk sizes.  See sysdeps/generic/malloc-alignment.h for details.  */
+#ifndef INTERNAL_SIZE_T
+# define INTERNAL_SIZE_T size_t
+#endif
+
+/* The corresponding word size.  */
+#define SIZE_SZ (sizeof (INTERNAL_SIZE_T))
+
 #define MALLOC_ALIGNMENT 16
+
+/* The corresponding bit mask value.  */
+#define MALLOC_ALIGN_MASK (MALLOC_ALIGNMENT - 1)
 
 #endif /* !defined(_I386_MALLOC_ALIGNMENT_H) */
