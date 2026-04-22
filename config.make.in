@@ -78,8 +78,6 @@ multi-arch = @multi_arch@
 
 mach-interface-list = @mach_interface_list@
 
-memory-tagging = @memory_tagging@
-
 # Configuration options.
 build-shared = @shared@
 build-profile = @profile@

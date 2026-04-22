@@ -116,11 +116,6 @@ glibc {
   }
 
   mem {
-    tagging {
-      type: INT_32
-      minval: 0
-      maxval: 255
-    }
     decorate_maps {
       type: INT_32
       minval: 0
