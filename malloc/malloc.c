@@ -405,27 +405,17 @@ verify (PTRDIFF_MAX <= SIZE_MAX / 2);
    tagging is not enabled, it simply returns the original pointer.
 */
 
-#ifdef USE_MTAG
-static bool mtag_enabled = false;
-static int mtag_mmap_flags = 0;
-#else
-# define mtag_enabled false
-# define mtag_mmap_flags 0
-#endif
+static int extra_mmap_prot = 0;
 
 static __always_inline void *
 tag_region (void *ptr, size_t size)
 {
-  if (__glibc_unlikely (mtag_enabled))
-    return __libc_mtag_tag_region (ptr, size);
   return ptr;
 }
 
 static __always_inline void *
 tag_new_zero_region (void *ptr, size_t size)
 {
-  if (__glibc_unlikely (mtag_enabled))
-    return __libc_mtag_tag_zero_region (__libc_mtag_new_tag (ptr), size);
   return memset (ptr, 0, size);
 }
 
@@ -436,8 +426,6 @@ tag_new_usable (void *ptr);
 static __always_inline void *
 tag_at (void *ptr)
 {
-  if (__glibc_unlikely (mtag_enabled))
-    return __libc_mtag_address_get_tag (ptr);
   return ptr;
 }
 
@@ -1261,23 +1249,6 @@ checked_request2size (size_t req) __nonnull (1)
 {
   if (__glibc_unlikely (req > PTRDIFF_MAX))
     return SIZE_MAX;
-
-  /* When using tagged memory, we cannot share the end of the user
-     block with the header for the next chunk, so ensure that we
-     allocate blocks that are rounded up to the granule size.  Take
-     care not to overflow from close to MAX_SIZE_T to a small
-     number.  Ideally, this would be part of request2size(), but that
-     must be a macro that produces a compile time constant if passed
-     a constant literal.  */
-  if (__glibc_unlikely (mtag_enabled))
-    {
-      /* Ensure this is not evaluated if !mtag_enabled, see gcc PR 99551.  */
-      asm ("");
-
-      req = (req + (__MTAG_GRANULE_SIZE - 1)) &
-	    ~(size_t)(__MTAG_GRANULE_SIZE - 1);
-    }
-
   return request2size (req);
 }
 
@@ -1380,25 +1351,11 @@ checked_request2size (size_t req) __nonnull (1)
 
 /* This is the size of the real usable data in the chunk.  Not valid for
    dumped heap chunks.  */
-#define memsize(p)                                                    \
-  (__MTAG_GRANULE_SIZE > SIZE_SZ && __glibc_unlikely (mtag_enabled) ? \
-    chunksize (p) - CHUNK_HDR_SZ :                                    \
-    chunksize (p) - CHUNK_HDR_SZ + SIZE_SZ)
-
-/* If memory tagging is enabled the layout changes to accommodate the granule
-   size, this is wasteful for small allocations so not done by default.
-   Both the chunk header and user data has to be granule aligned.  */
-_Static_assert (__MTAG_GRANULE_SIZE <= CHUNK_HDR_SZ,
-		"memory tagging is not supported with large granule.");
+#define memsize(p) (chunksize (p) - CHUNK_HDR_SZ + SIZE_SZ)
 
 static __always_inline void *
 tag_new_usable (void *ptr)
 {
-  if (__glibc_unlikely (mtag_enabled) && ptr)
-    {
-      mchunkptr cp = mem2chunk(ptr);
-      ptr = __libc_mtag_tag_region (__libc_mtag_new_tag (ptr), memsize (cp));
-    }
   return ptr;
 }
 
@@ -2235,7 +2192,7 @@ sysmalloc_mmap (INTERNAL_SIZE_T nb, size_t pagesize, int extra_flags)
   size_t size = ALIGN_UP (nb + padding + CHUNK_HDR_SZ, pagesize);
 
   char *mm = (char *) MMAP (NULL, size,
-			    mtag_mmap_flags | PROT_READ | PROT_WRITE,
+			    extra_mmap_prot | PROT_READ | PROT_WRITE,
 			    extra_flags);
   if (mm == MAP_FAILED)
     return mm;
@@ -2276,7 +2233,7 @@ sysmalloc_mmap_fallback (size_t *s, size_t size, size_t minsize,
     size = minsize;
 
   char *mbrk = (char *) (MMAP (NULL, size,
-			       mtag_mmap_flags | PROT_READ | PROT_WRITE,
+			       extra_mmap_prot | PROT_READ | PROT_WRITE,
 			       extra_flags));
   if (mbrk == MAP_FAILED)
     return MAP_FAILED;
@@ -3303,11 +3260,6 @@ __libc_free_core (void *mem)
   if (mem == NULL)                              /* free(0) has no effect */
     return;
 
-  /* Quickly check that the freed pointer matches the tag for the memory.
-     This gives a useful double-free detection.  */
-  if (__glibc_unlikely (mtag_enabled))
-    *(volatile char *)mem;
-
   p = mem2chunk (mem);
 
   /* Mark the chunk as belonging to the library again.  */
@@ -3374,11 +3326,6 @@ __libc_realloc_core (void *oldmem, size_t bytes)
       __libc_free_core (oldmem); return NULL;
     }
 #endif
-
-  /* Perform a quick check to ensure that the pointer's tag matches the
-     memory's tag.  */
-  if (__glibc_unlikely (mtag_enabled))
-    *(volatile char*) oldmem;
 
   /* chunk corresponding to oldmem */
   const mchunkptr oldp = mem2chunk (oldmem);
@@ -3686,12 +3633,6 @@ __libc_calloc2 (size_t sz)
 
   p = mem2chunk (mem);
 
-  /* If we are using memory tagging, then we need to set the tags
-     regardless of MORECORE_CLEARS, so we zero the whole block while
-     doing so.  */
-  if (__glibc_unlikely (mtag_enabled))
-    return tag_new_zero_region (mem, memsize (p));
-
   csz = chunksize (p);
 
   /* Two optional cases in which clearing not necessary */
@@ -3738,9 +3679,6 @@ __libc_calloc_core (size_t n, size_t elem_size)
 	  if (tcache->entries[tc_idx] != NULL)
 	    {
 	      void *mem = tcache_get (tc_idx);
-	      if (__glibc_unlikely (mtag_enabled))
-		return tag_new_zero_region (mem, memsize (mem2chunk (mem)));
-
 	      return clear_memory ((INTERNAL_SIZE_T *) mem, tidx2usize (tc_idx));
 	    }
 	}
@@ -3750,9 +3688,6 @@ __libc_calloc_core (size_t n, size_t elem_size)
 	  void *mem = tcache_get_large (tc_idx, nb);
 	  if (mem != NULL)
 	    {
-	      if (__glibc_unlikely (mtag_enabled))
-	        return tag_new_zero_region (mem, memsize (mem2chunk (mem)));
-
 	      return memset (mem, 0, memsize (mem2chunk (mem)));
 	    }
 	}

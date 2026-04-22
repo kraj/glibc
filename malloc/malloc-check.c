@@ -217,11 +217,6 @@ free_check (void *mem)
 
   int err = errno;
 
-  /* Quickly check that the freed pointer matches the tag for the memory.
-     This gives a useful double-free detection.  */
-  if (__glibc_unlikely (mtag_enabled))
-    *(volatile char *)mem;
-
   __libc_lock_lock (main_arena.mutex);
   p = mem2chunk_check (mem, NULL);
   if (!p)
@@ -262,11 +257,6 @@ realloc_check (void *oldmem, size_t bytes)
       free_check (oldmem);
       return NULL;
     }
-
-  /* Quickly check that the freed pointer matches the tag for the memory.
-     This gives a useful double-free detection.  */
-  if (__glibc_unlikely (mtag_enabled))
-    *(volatile char *)oldmem;
 
   __libc_lock_lock (main_arena.mutex);
   const mchunkptr oldp = mem2chunk_check (oldmem, &magic_p);

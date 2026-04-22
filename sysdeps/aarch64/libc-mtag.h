@@ -19,10 +19,7 @@
 #ifndef _AARCH64_LIBC_MTAG_H
 #define _AARCH64_LIBC_MTAG_H 1
 
-#ifndef USE_MTAG
-/* Generic bindings for systems that do not support memory tagging.  */
-#include_next "libc-mtag.h"
-#else
+#if 0
 
 /* Used to ensure additional alignment when objects need to have distinct
    tags.  */

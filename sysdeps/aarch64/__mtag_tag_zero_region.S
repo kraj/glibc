@@ -18,8 +18,6 @@
 
 #include <sysdep.h>
 
-#ifdef USE_MTAG
-
 /* Assumptions:
  *
  * ARMv8-a, AArch64, MTE, LP64 ABI.
@@ -107,4 +105,3 @@ L(no_zva_loop):
 	ret
 
 END (__libc_mtag_tag_zero_region)
-#endif /* USE_MTAG */
