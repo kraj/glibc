@@ -37,7 +37,7 @@
 #define tmp	x4
 #define zva_val	x4
 
-ENTRY (__libc_mtag_tag_region)
+ENTRY (__mte_tag_region_zero)
 	add	dstend, dstin, count
 
 	cmp	count, 96
@@ -49,9 +49,9 @@ ENTRY (__libc_mtag_tag_region)
 	lsr	tmp, count, 5
 	add	tmp, dstin, tmp, lsl 4
 	cbz     count, L(end)
-	stg	dstin, [dstin]
-	stg	dstin, [tmp]
-	stg	dstin, [dstend, -16]
+	stzg	dstin, [dstin]
+	stzg	dstin, [tmp]
+	stzg	dstin, [dstend, -16]
 L(end):
 	ret
 
@@ -59,9 +59,9 @@ L(end):
 	/* Set 64..96 bytes.  Write 64 bytes from the start and
 	   32 bytes from the end.  */
 L(set96):
-	st2g	dstin, [dstin]
-	st2g	dstin, [dstin, 32]
-	st2g	dstin, [dstend, -32]
+	stz2g	dstin, [dstin]
+	stz2g	dstin, [dstin, 32]
+	stz2g	dstin, [dstend, -32]
 	ret
 
 	.p2align 4
@@ -76,8 +76,8 @@ L(set_long):
 	cmp	zva_val, 4		/* ZVA size is 64 bytes.  */
 	b.ne	L(no_zva)
 #endif
-	st2g	dstin, [dstin]
-	st2g	dstin, [dstin, 32]
+	stz2g	dstin, [dstin]
+	stz2g	dstin, [dstin, 32]
 	bic	dst, dstin, 63
 	sub	count, dstend, dst	/* Count is now 64 too large.  */
 	sub	count, count, 128	/* Adjust count and bias for loop.  */
@@ -85,23 +85,23 @@ L(set_long):
 	.p2align 4
 L(zva_loop):
 	add	dst, dst, 64
-	dc	gva, dst
+	dc	gzva, dst
 	subs	count, count, 64
 	b.hi	L(zva_loop)
-	st2g	dstin, [dstend, -64]
-	st2g	dstin, [dstend, -32]
+	stz2g	dstin, [dstend, -64]
+	stz2g	dstin, [dstend, -32]
 	ret
 
 L(no_zva):
 	sub	dst, dstin, 32		/* Dst is biased by -32.  */
 	sub	count, count, 64	/* Adjust count for loop.  */
 L(no_zva_loop):
-	st2g	dstin, [dst, 32]
-	st2g	dstin, [dst, 64]!
+	stz2g	dstin, [dst, 32]
+	stz2g	dstin, [dst, 64]!
 	subs	count, count, 64
 	b.hi	L(no_zva_loop)
-	st2g	dstin, [dstend, -64]
-	st2g	dstin, [dstend, -32]
+	stz2g	dstin, [dstend, -64]
+	stz2g	dstin, [dstend, -32]
 	ret
 
-END (__libc_mtag_tag_region)
+END (__mte_tag_region_zero)
