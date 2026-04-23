@@ -283,6 +283,7 @@ tests = \
   tst-cleanup5 \
   tst-cond26 \
   tst-context1 \
+  tst-deadlk \
   tst-default-attr \
   tst-dlsym1 \
   tst-exec4 \
