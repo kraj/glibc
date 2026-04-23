@@ -35,3 +35,19 @@ PROCINFO_CLASS unsigned long _dl_aarch64_gcs
 ,
 # endif
 #endif
+
+#if !IS_IN (ldconfig)
+# if !defined PROCINFO_DECL && defined SHARED
+  ._dl_aarch64_mte
+# else
+PROCINFO_CLASS int _dl_aarch64_mte
+# endif
+# ifndef PROCINFO_DECL
+= 0
+# endif
+# if !defined SHARED || defined PROCINFO_DECL
+;
+# else
+,
+# endif
+#endif

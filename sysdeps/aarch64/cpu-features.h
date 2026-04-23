@@ -59,6 +59,13 @@ enum {
   BTI_CHECK_ENFORCED = 1,
 };
 
+enum {
+  MTE_TUNABLE_NONE = 0,
+  MTE_TUNABLE_AUTO = 1,
+  MTE_TUNABLE_SYNC = 2,
+  MTE_TUNABLE_ASYNC = 3,
+};
+
 struct cpu_features
 {
   uint64_t midr_el1;
@@ -69,6 +76,7 @@ struct cpu_features
   bool unused;
   bool mops;
   bool sve2;
+  bool mte;
 };
 
 #endif /* _CPU_FEATURES_AARCH64_H  */

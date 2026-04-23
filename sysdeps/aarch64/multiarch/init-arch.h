@@ -25,7 +25,7 @@
   unsigned __attribute__((unused)) zva_size =				      \
     GLRO(dl_aarch64_cpu_features).zva_size;				      \
   bool __attribute__((unused)) bti = GLRO(dl_aarch64_cpu_features).bti;	      \
-  bool __attribute__((unused)) mte = GLRO(dl_hwcap2) & HWCAP2_MTE;	      \
+  bool __attribute__((unused)) mte = GLRO(dl_aarch64_cpu_features).mte;	      \
   bool __attribute__((unused)) sve = GLRO(dl_aarch64_cpu_features).sve;	      \
   bool __attribute__((unused)) sve2 = GLRO(dl_aarch64_cpu_features).sve2;     \
   bool __attribute__((unused)) mops = GLRO(dl_aarch64_cpu_features).mops;

@@ -34,4 +34,9 @@ glibc {
       default: 0
     }
   }
+  mem {
+    aarch64_mte {
+      type: STRING
+    }
+  }
 }
