@@ -66,6 +66,8 @@ ENTRY (_start)
 	cbnz	w0, L(failed_gcs_lock)
 L(skip_gcs_enable):
 
+	bl	HIDDEN_JUMPTARGET(__mte_init)
+
 .globl _dl_start_user
 .type _dl_start_user, %function
 _dl_start_user:
