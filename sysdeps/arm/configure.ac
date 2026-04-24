@@ -1,6 +1,35 @@
 GLIBC_PROVIDES dnl See aclocal.m4 in the top level source directory.
 # Local configure fragment for sysdeps/arm.
 
+dnl Test if the foolchain supports static PIE, the -static-pie should not only
+dnl be accepted, but also generate a ET_DYN without a INTERP entry.
+AC_CACHE_CHECK([if compiler support static PIE],
+libc_cv_static_pie_on_arm, [
+cat > conftest.S <<\EOF
+.text
+.global _start
+.type _start,#function
+_start:
+
+.data
+.align 2
+ptr:
+  /* This should produce an R_ARM_RELATIVE.  */
+  .word _start
+EOF
+
+  libc_cv_static_pie_on_arm=no
+  if AC_TRY_COMMAND([${CC-cc} $CFLAGS $CPPFLAGS $LDFLAGS -static-pie -nostdlib -fPIE -o conftest conftest.S]) \
+     && AC_TRY_COMMAND([LC_ALL=C $READELF -Wr conftest | grep -q R_ARM_RELATIVE]) \
+     && ! AC_TRY_COMMAND([LC_ALL=C $READELF -Wl conftest | grep -q INTERP])
+  then
+    libc_cv_static_pie_on_arm=yes
+  fi
+  rm -rf conftest* ])
+if test "$libc_cv_static_pie_on_arm" = yes; then
+  AC_DEFINE(SUPPORT_STATIC_PIE)
+fi
+
 # We check to see if the compiler and flags are
 # selecting the hard-float ABI and if they are then
 # we set libc_cv_arm_pcs_vfp to yes which causes

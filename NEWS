@@ -18,6 +18,9 @@ Major new features:
 
 * New locale added: hrx_BR (Hunsrik language spoken in Brazil).
 
+* Static PIE is now supported for arm-*-linux-gnueabi.  It requires toolchain
+  support to correctly set the expected linker options.
+
 Deprecated and removed features, and other changes affecting compatibility:
 
 * Although malloc and related functions currently return pointers
