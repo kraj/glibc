@@ -22,6 +22,8 @@
 #define TUNABLE_NAMESPACE malloc
 #include <elf/dl-tunables.h>
 
+#include <malloc-init.h>
+
 /* Compile-time constants.  */
 
 #define HEAP_MIN_SIZE (32 * 1024)
@@ -288,6 +290,9 @@ __ptmalloc_init (void)
 	do_set_mmap_threshold (mp_.hp_pagesize);
       __always_fail_morecore = true;
     }
+
+  /* Perform any target-specific initialisation.  */
+  ARCH_INIT_MALLOC ();
 }
 
 /* Managing heaps and arenas (for concurrent threads) */

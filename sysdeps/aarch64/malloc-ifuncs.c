@@ -20,12 +20,19 @@
 
 #include <malloc/malloc-internal.h>
 #include <malloc-ifuncs.h>
+#include <ldsodefs.h>
+
+#include "malloc-mte.h"
+
+#define MTE_ENABLED (GL (dl_aarch64_mte) != MTE_TUNABLE_NONE)
 
 /* AArch64-specific resolvers for malloc ifuncs.  */
 
 IFUNC_PROTO (__libc_malloc);
 IFUNC_RESOLVER (__libc_malloc, uint64_t arg0, uint64_t arg1[])
 {
+  if (MTE_ENABLED)
+    return __libc_malloc_mte;
   return __libc_malloc_core;
 }
 strong_alias (__libc_malloc, malloc)
@@ -33,6 +40,8 @@ strong_alias (__libc_malloc, malloc)
 IFUNC_PROTO (__libc_calloc);
 IFUNC_RESOLVER (__libc_calloc, uint64_t arg0, uint64_t arg1[])
 {
+  if (MTE_ENABLED)
+    return __libc_calloc_mte;
   return __libc_calloc_core;
 }
 weak_alias (__libc_calloc, calloc)
@@ -40,6 +49,8 @@ weak_alias (__libc_calloc, calloc)
 IFUNC_PROTO (__libc_memalign);
 IFUNC_RESOLVER (__libc_memalign, uint64_t arg0, uint64_t arg1[])
 {
+  if (MTE_ENABLED)
+    return __libc_memalign_mte;
   return __libc_memalign_core;
 }
 weak_alias (__libc_memalign, memalign)
@@ -47,6 +58,8 @@ weak_alias (__libc_memalign, memalign)
 IFUNC_PROTO (__libc_valloc);
 IFUNC_RESOLVER (__libc_valloc, uint64_t arg0, uint64_t arg1[])
 {
+  if (MTE_ENABLED)
+    return __libc_valloc_mte;
   return __libc_valloc_core;
 }
 weak_alias (__libc_valloc, valloc)
@@ -54,6 +67,8 @@ weak_alias (__libc_valloc, valloc)
 IFUNC_PROTO (__libc_pvalloc);
 IFUNC_RESOLVER (__libc_pvalloc, uint64_t arg0, uint64_t arg1[])
 {
+  if (MTE_ENABLED)
+    return __libc_pvalloc_mte;
   return __libc_pvalloc_core;
 }
 weak_alias (__libc_pvalloc, pvalloc)
@@ -61,6 +76,8 @@ weak_alias (__libc_pvalloc, pvalloc)
 IFUNC_PROTO (__libc_realloc);
 IFUNC_RESOLVER (__libc_realloc, uint64_t arg0, uint64_t arg1[])
 {
+  if (MTE_ENABLED)
+    return __libc_realloc_mte;
   return __libc_realloc_core;
 }
 strong_alias (__libc_realloc, realloc)
@@ -68,6 +85,8 @@ strong_alias (__libc_realloc, realloc)
 IFUNC_PROTO (__libc_free);
 IFUNC_RESOLVER (__libc_free, uint64_t arg0, uint64_t arg1[])
 {
+  if (MTE_ENABLED)
+    return __libc_free_mte;
   return __libc_free_core;
 }
 # if SHLIB_COMPAT (libc, GLIBC_2_0, GLIBC_2_26)
@@ -78,6 +97,8 @@ strong_alias (__libc_free, free)
 IFUNC_PROTO (__malloc_usable_size);
 IFUNC_RESOLVER (__malloc_usable_size, uint64_t arg0, uint64_t arg1[])
 {
+  if (MTE_ENABLED)
+    return __malloc_usable_size_mte;
   return __malloc_usable_size_core;
 }
 weak_alias (__malloc_usable_size, malloc_usable_size)

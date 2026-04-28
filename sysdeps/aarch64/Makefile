@@ -105,6 +105,7 @@ endif
 ifeq ($(subdir),malloc)
 sysdep_routines += \
   malloc-ifuncs \
+  malloc-mte \
   # sysdep_routines
 endif # malloc directory
 
