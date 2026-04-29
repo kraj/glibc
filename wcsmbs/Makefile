@@ -210,6 +210,12 @@ tests := \
 # This test runs for a long time.
 xtests += test-wcsncmp-nonarray
 
+tests-internal += \
+  tst-wcsmbs-clone-overflow
+
+tests-static += \
+  tst-wcsmbs-clone-overflow
+
 
 include ../Rules
 
@@ -241,6 +247,7 @@ $(objpfx)tst-c32-state.out: $(gen-locales)
 $(objpfx)test-c8rtomb.out: $(gen-locales)
 $(objpfx)test-mbrtoc8.out: $(gen-locales)
 $(objpfx)tst-wscanf-to_inpunct.out: $(gen-locales)
+$(objpfx)tst-wcsmbs-clone-overflow.out: $(gen-locales)
 endif
 
 $(objpfx)tst-wcstod-round: $(libm)
