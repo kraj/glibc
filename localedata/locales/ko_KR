@@ -16,8 +16,8 @@ escape_char /
 % Fax:
 % Language: ko
 % Territory: KR
-% Revision: 1.1
-% Date: 2000-11-09
+% Revision: 1.2
+% Date: 2026-02-19
 % Application: general
 % Users: general
 
@@ -43,6 +43,9 @@ escape_char /
 %       Some cosmetic changes
 % 2001-10-08: Won-kyu Park <wkpark@chem.skku.ac.kr>
 %       Fixed a typo in Hangul portion of LC_COLLATE
+% 2026-02-19: Jiho Lee <elmitash@gmail.com>
+%	Updated LC_ADDRESS to follow the modern South Korean address format
+%	Update LC_NAME to the standard Korean order (Surname + Given Name)
 
 LC_IDENTIFICATION
 title      "Korean locale for Republic of Korea"
@@ -54,8 +57,8 @@ tel        ""
 fax        ""
 language   "Korean"
 territory  "South Korea"
-revision   "1.1"
-date       "2000-11-09"
+revision   "1.2"
+date       "2026-02-19"
 
 category "i18n:2012";LC_IDENTIFICATION
 category "i18n:2012";LC_CTYPE
@@ -6220,11 +6223,12 @@ copy "i18n"
 END LC_MEASUREMENT
 
 LC_NAME
-name_fmt    "%d%t%g%t%m%t%f"
+name_fmt    "%f%g"
 END LC_NAME
 
 LC_ADDRESS
-postal_fmt    "%f%N%a%N%d%N%b%N%s %h %e %r%N%z %T%N%c%N"
+postal_fmt    "%c%N%S %T %l %s %h%N%b %e %r%N%f %d%N%n %a%N%z"
+
 country_name "대한민국"
 country_ab2 "KR"
 country_ab3 "KOR"
