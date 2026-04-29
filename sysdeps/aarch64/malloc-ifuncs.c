@@ -106,6 +106,8 @@ weak_alias (__malloc_usable_size, malloc_usable_size)
 IFUNC_PROTO (__posix_memalign);
 IFUNC_RESOLVER (__posix_memalign, uint64_t arg0, uint64_t arg1[])
 {
+  if (MTE_ENABLED)
+    return __posix_memalign_mte;
   return __posix_memalign_core;
 }
 weak_alias (__posix_memalign, posix_memalign)
@@ -113,6 +115,8 @@ weak_alias (__posix_memalign, posix_memalign)
 IFUNC_PROTO (__aligned_alloc);
 IFUNC_RESOLVER (__aligned_alloc, uint64_t arg0, uint64_t arg1[])
 {
+  if (MTE_ENABLED)
+    return __aligned_alloc_mte;
   return __aligned_alloc_core;
 }
 weak_alias (__aligned_alloc, aligned_alloc)
@@ -120,6 +124,8 @@ weak_alias (__aligned_alloc, aligned_alloc)
 IFUNC_PROTO (__free_sized);
 IFUNC_RESOLVER (__free_sized, uint64_t arg0, uint64_t arg1[])
 {
+  if (MTE_ENABLED)
+    return __free_sized_mte;
   return __free_sized_core;
 }
 weak_alias (__free_sized, free_sized)
@@ -127,6 +133,8 @@ weak_alias (__free_sized, free_sized)
 IFUNC_PROTO (__free_aligned_sized);
 IFUNC_RESOLVER (__free_aligned_sized, uint64_t arg0, uint64_t arg1[])
 {
+  if (MTE_ENABLED)
+    return __free_aligned_sized_mte;
   return __free_aligned_sized_core;
 }
 weak_alias (__free_aligned_sized, free_aligned_sized)
