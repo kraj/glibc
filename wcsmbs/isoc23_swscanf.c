@@ -33,6 +33,6 @@ __isoc23_swscanf (const wchar_t *s, const wchar_t *format, ...)
   done = __vfwscanf_internal (f, format, arg,
 			      SCANF_ISOC99_A | SCANF_ISOC23_BIN_CST);
   va_end (arg);
-
+  _IO_wstrfile_fclose_stack (f);
   return done;
 }

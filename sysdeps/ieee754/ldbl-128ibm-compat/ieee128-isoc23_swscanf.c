@@ -35,7 +35,7 @@ ___ieee128_isoc23_swscanf (const wchar_t *string, const wchar_t *format, ...)
   va_start (ap, format);
   done = __vfwscanf_internal (fp, format, ap, mode_flags);
   va_end (ap);
-
+  _IO_wstrfile_fclose_stack (fp);
   return done;
 }
 strong_alias (___ieee128_isoc23_swscanf, __isoc23_swscanfieee128)

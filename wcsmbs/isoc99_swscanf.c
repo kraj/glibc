@@ -32,6 +32,6 @@ __isoc99_swscanf (const wchar_t *s, const wchar_t *format, ...)
   va_start (arg, format);
   done = __vfwscanf_internal (f, format, arg, SCANF_ISOC99_A);
   va_end (arg);
-
+  _IO_wstrfile_fclose_stack (f);
   return done;
 }

@@ -37,7 +37,7 @@ __swscanf (const wchar_t *s, const wchar_t *format, ...)
   va_start (arg, format);
   done = __vfwscanf_internal (f, format, arg, 0);
   va_end (arg);
-
+  _IO_wstrfile_fclose_stack (f);
   return done;
 }
 ldbl_strong_alias (__swscanf, swscanf)

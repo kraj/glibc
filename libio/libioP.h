@@ -645,6 +645,7 @@ extern FILE* _IO_new_file_fopen (FILE *, const char *, const char *,
 				     int);
 extern void _IO_no_init (FILE *, int, int, struct _IO_wide_data *,
 			 const struct _IO_jump_t *) __THROW;
+extern void _IO_wstrfile_fclose_stack (FILE *) attribute_hidden;
 extern void _IO_new_file_init_internal (struct _IO_FILE_plus *)
   __THROW attribute_hidden;
 extern FILE* _IO_new_file_setbuf (FILE *, char *, ssize_t);

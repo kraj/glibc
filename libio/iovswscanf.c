@@ -38,6 +38,8 @@ __vswscanf (const wchar_t *string, const wchar_t *format, va_list args)
   _IO_strfile sf;
   struct _IO_wide_data wd;
   FILE *f = _IO_strfile_readw (&sf, &wd, string);
-  return __vfwscanf_internal (f, format, args, 0);
+  int done = __vfwscanf_internal (f, format, args, 0);
+  _IO_wstrfile_fclose_stack (f);
+  return done;
 }
 ldbl_weak_alias (__vswscanf, vswscanf)

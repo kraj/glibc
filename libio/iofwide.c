@@ -251,3 +251,18 @@ __libio_codecvt_length (struct _IO_codecvt *codecvt, __mbstate_t *statep,
 
   return result;
 }
+
+void
+_IO_wstrfile_fclose_stack (FILE *fp)
+{
+  _IO_FINISH (fp);
+  if (fp->_mode > 0)
+    {
+      struct _IO_codecvt *cc = fp->_codecvt;
+
+      __libc_lock_lock (__gconv_lock);
+      __gconv_release_step (cc->__cd_in.step);
+      __gconv_release_step (cc->__cd_out.step);
+      __libc_lock_unlock (__gconv_lock);
+    }
+}

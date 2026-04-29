@@ -34,7 +34,7 @@ ___ieee128_swscanf (const wchar_t *string, const wchar_t *format, ...)
   done = __vfwscanf_internal (fp, format, ap,
 			      SCANF_LDBL_USES_FLOAT128);
   va_end (ap);
-
+  _IO_wstrfile_fclose_stack (fp);
   return done;
 }
 strong_alias (___ieee128_swscanf, __swscanfieee128)

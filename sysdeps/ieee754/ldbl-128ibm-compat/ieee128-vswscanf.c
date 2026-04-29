@@ -27,6 +27,8 @@ ___ieee128_vswscanf (const wchar_t *string, const wchar_t *format,
   _IO_strfile sf;
   struct _IO_wide_data wd;
   FILE *fp = _IO_strfile_readw (&sf, &wd, string);
-  return __vfwscanf_internal (fp, format, ap, SCANF_LDBL_USES_FLOAT128);
+  int done = __vfwscanf_internal (fp, format, ap, SCANF_LDBL_USES_FLOAT128);
+  _IO_wstrfile_fclose_stack (fp);
+  return done;
 }
 strong_alias (___ieee128_vswscanf, __vswscanfieee128)

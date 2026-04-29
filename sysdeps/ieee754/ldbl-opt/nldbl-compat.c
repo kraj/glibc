@@ -391,7 +391,9 @@ __nldbl_vswscanf (const wchar_t *s, const wchar_t *fmt, va_list ap)
   struct _IO_wide_data wd;
   FILE *f = _IO_strfile_readw (&sf, &wd, s);
 
-  return __vfwscanf_internal (f, fmt, ap, SCANF_LDBL_IS_DBL);
+  int ret = __vfwscanf_internal (f, fmt, ap, SCANF_LDBL_IS_DBL);
+  _IO_wstrfile_fclose_stack (f);
+  return ret;
 }
 libc_hidden_def (__nldbl_vswscanf)
 
@@ -955,7 +957,9 @@ __nldbl___isoc99_vswscanf (const wchar_t *s, const wchar_t *fmt, va_list ap)
   struct _IO_wide_data wd;
   FILE *f = _IO_strfile_readw (&sf, &wd, s);
 
-  return __vfwscanf_internal (f, fmt, ap, SCANF_LDBL_IS_DBL | SCANF_ISOC99_A);
+  int ret = __vfwscanf_internal (f, fmt, ap, SCANF_LDBL_IS_DBL | SCANF_ISOC99_A);
+  _IO_wstrfile_fclose_stack (f);
+  return ret;
 }
 libc_hidden_def (__nldbl___isoc99_vswscanf)
 
@@ -1115,9 +1119,11 @@ __nldbl___isoc23_vswscanf (const wchar_t *s, const wchar_t *fmt, va_list ap)
   struct _IO_wide_data wd;
   FILE *f = _IO_strfile_readw (&sf, &wd, s);
 
-  return __vfwscanf_internal (f, fmt, ap,
+  int ret = __vfwscanf_internal (f, fmt, ap,
 			      SCANF_LDBL_IS_DBL | SCANF_ISOC99_A
 			      | SCANF_ISOC23_BIN_CST);
+  _IO_wstrfile_fclose_stack (f);
+  return ret;
 }
 libc_hidden_def (__nldbl___isoc23_vswscanf)
 

@@ -27,6 +27,8 @@ ___ieee128_isoc99_vswscanf (wchar_t *string, const wchar_t *format, va_list ap)
   struct _IO_wide_data wd;
   FILE *fp = _IO_strfile_readw (&sf, &wd, string);
   int mode_flags = SCANF_ISOC99_A | SCANF_LDBL_USES_FLOAT128;
-  return __vfwscanf_internal (fp, format, ap, mode_flags);
+  int done = __vfwscanf_internal (fp, format, ap, mode_flags);
+  _IO_wstrfile_fclose_stack (fp);
+  return done;
 }
 strong_alias (___ieee128_isoc99_vswscanf, __isoc99_vswscanfieee128)
