@@ -84,6 +84,7 @@ tests = \
   bug-ungetwc1 \
   bug-ungetwc2 \
   bug-wfflush \
+  bug-wgenops-bz33998 \
   bug-wmemstream1 \
   bug-wsetpos \
   test-fmemopen \

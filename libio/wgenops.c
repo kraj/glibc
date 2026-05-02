@@ -108,8 +108,8 @@ _IO_wdefault_pbackfail (FILE *fp, wint_t c)
 {
   if (fp->_wide_data->_IO_read_ptr > fp->_wide_data->_IO_read_base
       && !_IO_in_backup (fp)
-      && (wint_t) fp->_IO_read_ptr[-1] == c)
-    --fp->_IO_read_ptr;
+      && (wint_t) fp->_wide_data->_IO_read_ptr[-1] == c)
+    --fp->_wide_data->_IO_read_ptr;
   else
     {
       /* Need to handle a filebuf in write mode (switch to read mode). FIXME!*/
