@@ -22,13 +22,21 @@ subdir = intl
 include ../Makeconfig
 
 headers = libintl.h
-routines = bindtextdom dcgettext dgettext gettext	\
+routines = bindtextdom dcgettext dgettext gettext \
 	   dcigettext dcngettext dngettext ngettext \
 	   finddomain loadmsgcat localealias textdomain
-aux =	   l10nflist explodename plural plural-exp hash-string
+aux = l10nflist explodename plural plural-exp hash-string
 
 multithread-test-srcs := tst-gettext4 tst-gettext5 tst-gettext6
-test-srcs := tst-gettext tst-translit tst-gettext2 tst-codeset tst-gettext3
+test-srcs := \
+	tst-gettext \
+	tst-translit \
+	tst-gettext2 \
+	tst-codeset \
+	tst-gettext3 \
+	tst-plural-eval
+	# test-srcs
+
 ifeq ($(have-thread-library),yes)
 test-srcs += $(multithread-test-srcs)
 endif
@@ -53,9 +61,15 @@ $(objpfx)plural.o: $(objpfx)plural.c
 ifeq ($(run-built-tests),yes)
 ifeq (yes,$(build-shared))
 ifneq ($(strip $(MSGFMT)),:)
-tests-special += $(objpfx)tst-translit.out $(objpfx)tst-gettext.out \
-		 $(objpfx)tst-gettext2.out $(objpfx)tst-codeset.out \
-		 $(objpfx)tst-gettext3.out
+tests-special += \
+	$(objpfx)tst-translit.out \
+	$(objpfx)tst-gettext.out \
+	$(objpfx)tst-gettext2.out \
+	$(objpfx)tst-codeset.out \
+	$(objpfx)tst-gettext3.out \
+	$(objpfx)tst-plural-eval.out
+	# tests-special
+
 ifeq ($(have-thread-library),yes)
 tests-special += $(objpfx)tst-gettext4.out $(objpfx)tst-gettext5.out \
 		 $(objpfx)tst-gettext6.out
@@ -103,6 +117,10 @@ $(objpfx)tst-gettext4.out: tst-gettext4.sh $(objpfx)tst-gettext4
 $(objpfx)tst-gettext6.out: tst-gettext6.sh $(objpfx)tst-gettext6
 	$(SHELL) $< $(common-objpfx) '$(test-program-prefix)' $(common-objpfx)intl/; \
 	$(evaluate-test)
+$(objpfx)tst-plural-eval.out: tst-plural-eval.sh $(objpfx)tst-plural-eval
+	$(SHELL) $< $(common-objpfx) '$(test-program-prefix)' \
+	  $(common-objpfx)intl/; \
+	$(evaluate-test)
 
 $(objpfx)tst-codeset.out: $(codeset_mo)
 $(objpfx)tst-gettext3.out: $(codeset_mo)
@@ -140,6 +158,7 @@ CFLAGS-tst-gettext3.c += -DOBJPFX=\"$(objpfx)\"
 CFLAGS-tst-gettext4.c += -DOBJPFX=\"$(objpfx)\"
 CFLAGS-tst-gettext5.c += -DOBJPFX=\"$(objpfx)\"
 CFLAGS-tst-gettext6.c += -DOBJPFX=\"$(objpfx)\"
+CFLAGS-tst-plural-eval.c += -DOBJPFX=\"$(objpfx)\"
 
 ifeq ($(have-thread-library),yes)
 ifeq (yes,$(build-shared))
@@ -156,6 +175,7 @@ $(objpfx)tst-gettext3.out: $(objpfx)tst-gettext.out
 $(objpfx)tst-gettext4.out: $(objpfx)tst-gettext.out
 $(objpfx)tst-gettext5.out: $(objpfx)tst-gettext.out
 $(objpfx)tst-gettext6.out: $(objpfx)tst-gettext.out
+$(objpfx)tst-plural-eval.out: $(objpfx)tst-gettext.out
 
 CPPFLAGS += -D'LOCALEDIR="$(localedir)"' \
 	    -D'LOCALE_ALIAS_PATH="$(localedir)"' \
