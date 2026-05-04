@@ -68,20 +68,6 @@ extern int errno;
 
 #include <locale.h>
 
-#ifdef _LIBC
-  /* Guess whether integer division by zero raises signal SIGFPE.
-     Set to 1 only if you know for sure.  In case of doubt, set to 0.  */
-# if defined __alpha__ || defined __arm__ || defined __i386__ \
-     || defined __m68k__ || defined __s390x__
-#  define INTDIV0_RAISES_SIGFPE 1
-# else
-#  define INTDIV0_RAISES_SIGFPE 0
-# endif
-#endif
-#if !INTDIV0_RAISES_SIGFPE
-# include <signal.h>
-#endif
-
 #if defined HAVE_SYS_PARAM_H || defined _LIBC
 # include <sys/param.h>
 #endif
@@ -1381,14 +1367,19 @@ plural_lookup (struct loaded_l10nfile *domain, unsigned long int n,
 	       const char *translation, size_t translation_len)
 {
   struct loaded_domain *domaindata = (struct loaded_domain *) domain->data;
+  struct eval_result result;
   unsigned long int index;
   const char *p;
 
-  index = plural_eval (domaindata->plural, n);
-  if (index >= domaindata->nplurals)
-    /* This should never happen.  It means the plural expression and the
-       given maximum value do not match.  */
+  result = plural_eval (domaindata->plural, n);
+  if (result.status != PE_OK)
+    /* The plural expression evaluation failed.  */
     index = 0;
+  else if (result.value >= domaindata->nplurals)
+    /* The plural expression and the given maximum value do not match.  */
+    index = 0;
+  else
+    index = result.value;
 
   /* Skip INDEX strings at TRANSLATION.  */
   p = translation;

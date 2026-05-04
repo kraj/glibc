@@ -26,6 +26,7 @@
 extern "C" {
 #endif
 
+/* Parsing a plural expression.  */
 
 enum expression_operator
 {
@@ -109,8 +110,26 @@ extern void EXTRACT_PLURAL_EXPRESSION (const char *nullentry,
 				       unsigned long int *npluralsp)
      attribute_hidden;
 
+/* Evaluating a parsed plural expression.  */
+
+enum eval_status
+{
+  PE_OK,        /* Evaluation succeeded, produced a value */
+  PE_INTDIV,    /* Integer division by zero */
+  PE_INTOVF,    /* Integer overflow */
+  PE_STACKOVF,  /* Stack overflow */
+  PE_ASSERT     /* Assertion failure */
+};
+
+struct eval_result
+{
+  enum eval_status status;
+  unsigned long int value;      /* Only relevant for status == PE_OK */
+};
+
+
 #if !defined (_LIBC) && !defined (IN_LIBINTL) && !defined (IN_LIBGLOCALE)
-extern unsigned long int plural_eval (const struct expression *pexp,
+extern struct eval_result plural_eval (const struct expression *pexp,
 				      unsigned long int n);
 #endif
 
