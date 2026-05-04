@@ -128,21 +128,48 @@ test_run (void)
   support_capture_subprocess_free (&proc);
   free (expected);
 
-  expected = xasprintf ("\nDifferences:\n"
-                        "error: descriptor %d changed from \"/dev/null\""
-                        " to \"/dev\"\n"
-                        "error: descriptor %d changed ino ",
-                        free_descriptor, free_descriptor);
   good = good && !support_record_failure_is_failed ();
   proc = support_capture_subprocess (&subprocess_changed_descriptor, NULL);
   good = good && support_record_failure_is_failed ();
   support_record_failure_reset (); /* Discard the reported error.  */
   report_subprocess_output ("subprocess_changed_descriptor", &proc);
-  TEST_VERIFY (strstr (proc.out.buffer, expected) != NULL);
+
+  expected = xasprintf ("\nDifferences:\n"
+                        "error: descriptor %d changed from \"/dev/null\""
+                        " to \"/dev\"\n"
+                        "error: descriptor %d changed ino ",
+                        free_descriptor, free_descriptor);
+  if (strstr (proc.out.buffer, expected) != NULL)
+    {
+      /* No change of device.  */
+      free (expected);
+    }
+  else
+    {
+      /* The device changed in addition to the inode number.  This
+         happens if /dev/null is bind-mounted from another file
+         system, so that /dev is on a difference device.  */
+      expected = xasprintf ("\nDifferences:\n"
+                            "error: descriptor %d changed from \"/dev/null\""
+                            " to \"/dev\"\n"
+                            "error: descriptor %d changed device ",
+                            free_descriptor, free_descriptor);
+      TEST_VERIFY (strstr (proc.out.buffer, expected) != NULL);
+      free (expected);
+
+      /* We assume that the inode number changes, although in theory
+         it is possible that the directory happens to have the same
+         inode number as the null device because it is on a different
+         file system.  */
+      expected = xasprintf ("\nerror: descriptor %d changed ino ",
+                            free_descriptor);
+      TEST_VERIFY (strstr (proc.out.buffer, expected) != NULL);
+      free (expected);
+    }
+
   support_capture_subprocess_check (&proc, "subprocess_changed_descriptor",
                                     0, sc_allow_stdout);
   support_capture_subprocess_free (&proc);
-  free (expected);
 }
 
 static int
