@@ -19,6 +19,9 @@ sysdep_routines += \
   strlen \
   strlen-generic \
   strlen-vector \
+  strncmp \
+  strncmp-generic \
+  strncmp-vector \
   # sysdep_routines
 
 CFLAGS-memcpy_noalignment.c += -mno-strict-align
