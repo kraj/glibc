@@ -128,8 +128,8 @@ struct eval_result
 };
 
 
-#if !defined (_LIBC) && !defined (IN_LIBINTL) && !defined (IN_LIBGLOCALE)
-extern struct eval_result plural_eval (const struct expression *pexp,
+#if !defined (_LIBC) && !defined (IN_LIBINTL)
+extern unsigned long int plural_eval (const struct expression *pexp,
 				      unsigned long int n);
 #endif
 

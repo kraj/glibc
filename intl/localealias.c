@@ -294,14 +294,7 @@ read_alias_file (const char *fname, int fname_len)
 	      else if (cp[0] != '\0')
 		*cp++ = '\0';
 
-#ifdef IN_LIBGLOCALE
-	      /* glibc's locale.alias contains entries for ja_JP and ko_KR
-		 that make it impossible to use a Japanese or Korean UTF-8
-		 locale under the name "ja_JP" or "ko_KR".  Ignore these
-		 entries.  */
-	      if (strchr (alias, '_') == NULL)
-#endif
-		{
+	      {
 		  size_t alias_len;
 		  size_t value_len;
 

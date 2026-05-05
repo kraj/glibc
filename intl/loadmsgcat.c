@@ -1256,12 +1256,7 @@ _nl_load_domain (struct loaded_l10nfile *domain_file,
 #endif
 
   /* Get the header entry and look for a plural specification.  */
-#ifdef IN_LIBGLOCALE
-  nullentry =
-    _nl_find_msg (domain_file, domainbinding, NULL, "", &nullentrylen);
-#else
   nullentry = _nl_find_msg (domain_file, domainbinding, "", 0, &nullentrylen);
-#endif
   if (__builtin_expect (nullentry == (char *) -1, 0))
     {
 #ifdef _LIBC
