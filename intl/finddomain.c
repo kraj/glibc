@@ -50,7 +50,6 @@
 /* List of already loaded domains.  */
 static struct loaded_l10nfile *_nl_loaded_domains;
 
-
 /* Return a data structure describing the message catalog described by
    the DOMAINNAME and CATEGORY parameters with respect to the currently
    established bindings.  */
@@ -133,54 +132,51 @@ _nl_find_domain (const char *dirname, char *locale,
 
   /* Now we determine the single parts of the locale name.  First
      look for the language.  Termination symbols are `_', '.', and `@'.  */
-  mask = _nl_explode_name (locale, &language, &modifier, &territory,
-			   &codeset, &normalized_codeset);
-  if (mask == -1)
-    /* This means we are out of core.  */
-    return NULL;
-
-  /* We need to protect modifying the _NL_LOADED_DOMAINS data.  */
-  gl_rwlock_wrlock (lock);
-
-  /* Create all possible locale entries which might be interested in
-     generalization.  */
-  retval = _nl_make_l10nflist (&_nl_loaded_domains, dirname,
-			       strlen (dirname) + 1, mask, language, territory,
-			       codeset, normalized_codeset, modifier,
-			       domainname, 1);
-
-  gl_rwlock_unlock (lock);
-
-  if (retval == NULL)
-    /* This means we are out of core.  */
-    goto out;
-
-  if (retval->decided <= 0)
-    _nl_load_domain (retval, domainbinding);
-  if (retval->data == NULL)
+  mask = _nl_explode_name (locale, &language, &modifier, &territory, &codeset,
+			   &normalized_codeset);
+  if (mask != -1) /* Not out of memory?  */
     {
-      int cnt;
-      for (cnt = 0; retval->successor[cnt] != NULL; ++cnt)
+      /* We need to protect modifying the _NL_LOADED_DOMAINS data.  */
+      gl_rwlock_wrlock (lock);
+
+      /* Create all possible locale entries which might be interested in
+         generalization.  */
+      retval = _nl_make_l10nflist (&_nl_loaded_domains, dirname,
+				   strlen (dirname) + 1, mask, language,
+				   territory, codeset, normalized_codeset,
+				   modifier, domainname, 1);
+
+      gl_rwlock_unlock (lock);
+
+      if (retval != NULL) /* Not out of memory?  */
 	{
-	  if (retval->successor[cnt]->decided <= 0)
-	    _nl_load_domain (retval->successor[cnt], domainbinding);
-	  if (retval->successor[cnt]->data != NULL)
-	    break;
+	  if (retval->decided <= 0)
+	    _nl_load_domain (retval, domainbinding);
+	  if (retval->data == NULL)
+	    {
+	      int cnt;
+	      for (cnt = 0; retval->successor[cnt] != NULL; ++cnt)
+		{
+		  if (retval->successor[cnt]->decided <= 0)
+		    _nl_load_domain (retval->successor[cnt], domainbinding);
+		  if (retval->successor[cnt]->data != NULL)
+		    break;
+		}
+	    }
 	}
+
+      /* The space for normalized_codeset is dynamically allocated.
+         Free it.  */
+      if (mask & XPG_NORM_CODESET)
+	free ((void *) normalized_codeset);
     }
 
   /* The room for an alias was dynamically allocated.  Free it now.  */
   if (alias_value != NULL)
     free (locale);
 
-out:
-  /* The space for normalized_codeset is dynamically allocated.  Free it.  */
-  if (mask & XPG_NORM_CODESET)
-    free ((void *) normalized_codeset);
-
   return retval;
 }
-
 
 #ifdef _LIBC
 /* This is called from iconv/gconv_db.c's free_mem, as locales must
