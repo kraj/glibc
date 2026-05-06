@@ -25,6 +25,7 @@
 #include <stdbool.h>
 #include <support/capture_subprocess.h>
 #include <support/check.h>
+#include <support/test-pointer.h>
 
 #include "tst-malloc-aux.h"
 
@@ -93,7 +94,10 @@ test_tcache (void *closure)
   free (b);
   free (c);
 
-  /* Corrupt the pointer with a random value, and avoid optimizations.  */
+  /* Corrupt the pointer with a random value, and avoid optimizations.
+     If memory tagging is used, we need to make sure that tag in ptr
+     is cleared.  */
+  c = support_ptr_after_free (c);
   printf ("Before: c=%p, c[0]=%p\n", c, ((void **)c)[0]);
   memset (c, mask & 0xFF, size);
   printf ("After: c=%p, c[0]=%p\n", c, ((void **)c)[0]);

@@ -20,6 +20,7 @@
 #include <stdlib.h>
 
 #include <support/support.h>
+#include <support/test-pointer.h>
 #include <libc-diag.h>
 
 #include "tst-malloc-aux.h"
@@ -37,7 +38,10 @@ call_free (void *ptr)
      by a prior call to free().  */
   DIAG_IGNORE_NEEDS_COMMENT (12, "-Wuse-after-free");
 #endif
-  *(size_t *)(ptr - sizeof (size_t)) = 1;
+  /* We attempt to write to the chunk header thus corrupting memory.
+     If memory tagging is used, we need to make sure that tag in ptr
+     is cleared.  */
+  *(size_t *)(support_ptr_after_free (ptr) - sizeof (size_t)) = 1;
 #if __GNUC_PREREQ (12, 0)
   DIAG_POP_NEEDS_COMMENT;
 #endif

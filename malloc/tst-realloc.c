@@ -22,7 +22,7 @@
 #include <string.h>
 #include <libc-diag.h>
 #include <support/check.h>
-#include <support/address-diff.h>
+#include <support/test-pointer.h>
 
 #include "tst-malloc-aux.h"
 

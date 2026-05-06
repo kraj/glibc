@@ -1,4 +1,4 @@
-/* Support functions for pointer arithmetic for AArch64.
+/* Support functions for pointer arithmetic: aarch64 version.
    Copyright (C) 2026 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -16,7 +16,7 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#include "address-diff.h"
+#include "test-pointer.h"
 
 #include <sys/ifunc.h>
 #include <sys/auxv.h>

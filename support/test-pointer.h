@@ -1,4 +1,4 @@
-/* Support functions for pointer arithmetic: generic version.
+/* Support functions for tests that check pointers.
    Copyright (C) 2026 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -16,11 +16,16 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#include "test-pointer.h"
+#ifndef _SUPPORT_TEST_POINTER_H
+#define _SUPPORT_TEST_POINTER_H 1
 
-#include <libc-pointer-arith.h>
+#include <stddef.h>
 
-ptrdiff_t support_address_diff (const void *lhs, const void *rhs)
-{
-  return PTR_DIFF (lhs, rhs);
-}
+/* Returns difference in bytes between addresses of two pointers.  */
+ptrdiff_t support_address_diff (const void *lhs, const void *rhs);
+
+/* Returns pointer suitable for tests that rely on use-after-free
+   behaviour.  */
+void *support_ptr_after_free (void *ptr);
+
+#endif /* _SUPPORT_TEST_POINTER_H */

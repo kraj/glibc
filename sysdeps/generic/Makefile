@@ -57,5 +57,6 @@ endif
 ifeq ($(subdir),support)
 libsupport-sysdep_routines += \
   support-address-diff \
+  support-use-after-free \
   # libsupport-sysdep_routines
 endif

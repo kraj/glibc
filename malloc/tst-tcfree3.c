@@ -19,6 +19,8 @@
 #include <malloc.h>
 #include <string.h>
 
+#include <support/test-pointer.h>
+
 static int
 do_test (void)
 {
@@ -35,6 +37,10 @@ do_test (void)
   memset (c, 0xff, 127 * 1024);
 
   free (a); // puts in tcache
+
+  /* If memory tagging is used, we need to make sure that tag in ptr
+     is cleared.  */
+  a = support_ptr_after_free (a);
 
   /* A is now free and contains the key we use to detect in-tcache.
      Copy the key to the other chunks.  */
