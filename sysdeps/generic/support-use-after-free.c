@@ -1,4 +1,4 @@
-/* Support functions for pointer arithmetic.
+/* Support functions testing malloc: generic version.
    Copyright (C) 2026 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -16,12 +16,9 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#ifndef _POINTER_ARITH_H
-#define _POINTER_ARITH_H 1
+#include "test-pointer.h"
 
-#include <stddef.h>
-
-/* Returns difference in bytes between addresses of two pointers.  */
-ptrdiff_t support_address_diff (const void *lhs, const void *rhs);
-
-#endif /* _POINTER_ARITH_H */
+void *support_ptr_after_free (void *ptr)
+{
+  return ptr;
+}

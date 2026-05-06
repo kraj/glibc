@@ -24,7 +24,7 @@
 #include <unistd.h>
 #include <array_length.h>
 #include <libc-pointer-arith.h>
-#include <support/address-diff.h>
+#include <support/test-pointer.h>
 #include <support/check.h>
 #include <support/xthread.h>
 #include "tst-malloc-aux.h"
