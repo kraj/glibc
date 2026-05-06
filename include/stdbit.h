@@ -5,8 +5,8 @@
 #ifndef _ISOMAC
 # include <stdint.h>
 
-#  if __glibc_has_builtin (___builtin_stdc_rotate_right)
-#   define stdc_rotate_right(__x, __n) (___builtin_stdc_rotate_right (__x, __n))
+#  if __glibc_has_builtin (__builtin_stdc_rotate_right)
+#   define stdc_rotate_right(__x, __n) (__builtin_stdc_rotate_right (__x, __n))
 #   define stdc_rotate_right_uc(__x, __n) (stdc_rotate_right (__x, __n))
 #   define stdc_rotate_right_us(__x, __n) (stdc_rotate_right (__x, __n))
 #   define stdc_rotate_right_ui(__x, __n) (stdc_rotate_right (__x, __n))
@@ -62,7 +62,7 @@ __ror64_inline (uint64_t __x, unsigned int __n)
 #    define stdc_rotate_right_ul(__x, __n) (__ror32_inline (__x, __n))
 #   endif
 #   define stdc_rotate_right_ull(__x, __n) (__ror64_inline (__x, __n))
-#  endif /* __glibc_has_builtin (___builtin_stdc_rotate_right) */
+#  endif /* __glibc_has_builtin (__builtin_stdc_rotate_right) */
 
 # endif /* _ISOMAC */
 
