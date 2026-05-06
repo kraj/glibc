@@ -11,6 +11,7 @@
 #   define stdc_rotate_right_us(__x, __n) (stdc_rotate_right (__x, __n))
 #   define stdc_rotate_right_ui(__x, __n) (stdc_rotate_right (__x, __n))
 #   define stdc_rotate_right_ul(__x, __n) (stdc_rotate_right (__x, __n))
+#   define stdc_rotate_right_ull(__x, __n) (stdc_rotate_right (__x, __n))
 #  else
 #   if __WORDSIZE == 64
 #    define __ROR_UL_GENERIC __ror64_inline
