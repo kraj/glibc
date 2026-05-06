@@ -125,6 +125,7 @@ init_cpu_features (struct cpu_features *cpu_features)
 
   /* Check if SVE is supported.  */
   cpu_features->sve = GLRO (dl_hwcap) & HWCAP_SVE;
+  cpu_features->sve2 = GLRO (dl_hwcap2) & HWCAP2_SVE2;
 
   /* Check if MOPS is supported.  */
   cpu_features->mops = GLRO (dl_hwcap2) & HWCAP2_MOPS;

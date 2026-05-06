@@ -69,6 +69,7 @@ struct cpu_features
   bool sve;
   bool unused;
   bool mops;
+  bool sve2;
 };
 
 #endif /* _CPU_FEATURES_AARCH64_H  */
