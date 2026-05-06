@@ -113,6 +113,7 @@ gnulib:
   stdlib/setenv.c
   stdlib/strtoll.c
   stdlib/strtoul.c
+  stdlib/tst-stdc_rotate_left.c
   stdlib/tst-stdc_rotate_right.c
   # Merged from gnulib 2014-6-26, needs merge back
   string/memchr.c
