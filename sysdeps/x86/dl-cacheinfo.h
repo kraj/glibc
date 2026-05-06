@@ -1308,7 +1308,9 @@ dl_init_cacheinfo (struct cpu_features *cpu_features)
   /* Do `rep_stosb_thresh = non_temporal_thresh` after setting/getting the
      final value of `x86_memset_non_temporal_threshold`. In some cases this can
      be a matter of correctness.  */
-  if (CPU_FEATURES_ARCH_P (cpu_features, Avoid_STOSB))
+  if (CPU_FEATURES_ARCH_P (cpu_features, Avoid_STOSB)
+      || (!TUNABLE_IS_INITIALIZED (x86_rep_stosb_threshold)
+	  && rep_stosb_threshold > memset_non_temporal_threshold))
     rep_stosb_threshold
 	= TUNABLE_GET (x86_memset_non_temporal_threshold, long int, NULL);
   TUNABLE_SET_WITH_BOUNDS (x86_rep_stosb_threshold, rep_stosb_threshold, 1,
