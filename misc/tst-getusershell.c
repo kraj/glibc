@@ -1,5 +1,5 @@
 /* Test the getusershell series functions.
-   Copyright (C) 2026 The GNU Toolchain Authors.
+   Copyright The GNU Toolchain Authors.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
