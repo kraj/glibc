@@ -75,11 +75,14 @@ _dl_map_segment (const struct loadcmd *c, ElfW(Addr) mappref,
 static __always_inline const char *
 _dl_map_segments (struct link_map *l, int fd,
                   const ElfW(Ehdr) *header, int type,
-                  const struct loadcmd loadcmds[], size_t nloadcmds,
+                  struct dl_pt_load_iterator *it,
                   const size_t maplength, bool has_holes,
                   struct link_map *loader)
 {
-  const struct loadcmd *c = loadcmds;
+  /* Fetch the first PT_LOAD segment.  _dl_pt_load_iterator_init already
+     verified nloadcmds > 0, so this call always succeeds.  */
+  struct loadcmd c = { 0 };
+  _dl_pt_load_iterator_next (it, &c);
 
   if (__glibc_likely (type == ET_DYN))
     {
@@ -95,16 +98,16 @@ _dl_map_segments (struct link_map *l, int fd,
          prefer to map such objects at; but this is only a preference,
          the OS can do whatever it likes. */
       ElfW(Addr) mappref
-        = (ELF_PREFERRED_ADDRESS (loader, maplength, c->mapstart)
+        = (ELF_PREFERRED_ADDRESS (loader, maplength, c.mapstart)
            - MAP_BASE_ADDR (l));
 
       /* Remember which part of the address space this object uses.  */
-      l->l_map_start = _dl_map_segment (c, mappref, maplength, fd);
+      l->l_map_start = _dl_map_segment (&c, mappref, maplength, fd);
       if (__glibc_unlikely ((void *) l->l_map_start == MAP_FAILED))
         return DL_MAP_SEGMENTS_ERROR_MAP_SEGMENT;
 
       l->l_map_end = l->l_map_start + maplength;
-      l->l_addr = l->l_map_start - c->mapstart;
+      l->l_addr = l->l_map_start - c.mapstart;
 
       if (has_holes)
         {
@@ -113,12 +116,11 @@ _dl_map_segments (struct link_map *l, int fd,
              unallocated.  Then jump into the normal segment-mapping loop to
              handle the portion of the segment past the end of the file
              mapping.  */
-	  if (__glibc_unlikely (loadcmds[nloadcmds - 1].mapstart <
-				c->mapend))
-	    return N_("ELF load command address/offset not page-aligned");
+          if (__glibc_unlikely (it->last_mapstart < c.mapend))
+            return N_("ELF load command address/offset not page-aligned");
           if (__glibc_unlikely
-              (__mprotect ((caddr_t) (l->l_addr + c->mapend),
-                           loadcmds[nloadcmds - 1].mapstart - c->mapend,
+              (__mprotect ((caddr_t) (l->l_addr + c.mapend),
+                           it->last_mapstart - c.mapend,
                            PROT_NONE) < 0))
             return DL_MAP_SEGMENTS_ERROR_MPROTECT;
         }
@@ -129,32 +131,32 @@ _dl_map_segments (struct link_map *l, int fd,
     }
 
   /* Remember which part of the address space this object uses.  */
-  l->l_map_start = c->mapstart + l->l_addr;
+  l->l_map_start = c.mapstart + l->l_addr;
   l->l_map_end = l->l_map_start + maplength;
   l->l_contiguous = !has_holes;
 
-  while (c < &loadcmds[nloadcmds])
+  do
     {
-      if (c->mapend > c->mapstart
+      if (c.mapend > c.mapstart
           /* Map the segment contents from the file.  */
-          && (__mmap ((void *) (l->l_addr + c->mapstart),
-                      c->mapend - c->mapstart, c->prot,
+          && (__mmap ((void *) (l->l_addr + c.mapstart),
+                      c.mapend - c.mapstart, c.prot,
                       MAP_FIXED|MAP_COPY|MAP_FILE,
-                      fd, c->mapoff)
+                      fd, c.mapoff)
               == MAP_FAILED))
         return DL_MAP_SEGMENTS_ERROR_MAP_SEGMENT;
 
     postmap:
-      _dl_postprocess_loadcmd (l, header, c);
+      _dl_postprocess_loadcmd (l, header, &c);
 
-      if (c->allocend > c->dataend)
+      if (c.allocend > c.dataend)
         {
           /* Extra zero pages should appear at the end of this segment,
              after the data mapped from the file.   */
           ElfW(Addr) zero, zeroend, zeropage;
 
-          zero = l->l_addr + c->dataend;
-          zeroend = l->l_addr + c->allocend;
+          zero = l->l_addr + c.dataend;
+          zeroend = l->l_addr + c.allocend;
           zeropage = ((zero + GLRO(dl_pagesize) - 1)
                       & ~(GLRO(dl_pagesize) - 1));
 
@@ -166,18 +168,18 @@ _dl_map_segments (struct link_map *l, int fd,
           if (zeropage > zero)
             {
               /* Zero the final part of the last page of the segment.  */
-              if (__glibc_unlikely ((c->prot & PROT_WRITE) == 0))
+              if (__glibc_unlikely ((c.prot & PROT_WRITE) == 0))
                 {
                   /* Dag nab it.  */
                   if (__mprotect ((caddr_t) (zero
                                              & ~(GLRO(dl_pagesize) - 1)),
-                                  GLRO(dl_pagesize), c->prot|PROT_WRITE) < 0)
+                                  GLRO(dl_pagesize), c.prot|PROT_WRITE) < 0)
                     return DL_MAP_SEGMENTS_ERROR_MPROTECT;
                 }
               memset ((void *) zero, '\0', zeropage - zero);
-              if (__glibc_unlikely ((c->prot & PROT_WRITE) == 0))
+              if (__glibc_unlikely ((c.prot & PROT_WRITE) == 0))
                 __mprotect ((caddr_t) (zero & ~(GLRO(dl_pagesize) - 1)),
-                            GLRO(dl_pagesize), c->prot);
+                            GLRO(dl_pagesize), c.prot);
             }
 
           if (zeroend > zeropage)
@@ -187,7 +189,7 @@ _dl_map_segments (struct link_map *l, int fd,
 
               caddr_t mapat;
               mapat = __mmap ((caddr_t) zeropage, zeroend - zeropage,
-                              c->prot, MAP_ANON|MAP_PRIVATE|MAP_FIXED,
+                              c.prot, MAP_ANON|MAP_PRIVATE|MAP_FIXED,
                               -1, 0);
               if (__glibc_unlikely (mapat == MAP_FAILED))
                 return DL_MAP_SEGMENTS_ERROR_MAP_ZERO_FILL;
@@ -220,13 +222,12 @@ _dl_map_segments (struct link_map *l, int fd,
                 }
             }
         }
-
-      ++c;
     }
+  while (_dl_pt_load_iterator_next (it, &c));
 
   /* Notify ELF_PREFERRED_ADDRESS that we have to load this one
      fixed.  */
-  ELF_FIXED_ADDRESS (loader, c->mapstart);
+  ELF_FIXED_ADDRESS (loader, it->last_mapstart);
 
   return NULL;
 }

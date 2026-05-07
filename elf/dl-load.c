@@ -935,6 +935,70 @@ _dl_notify_new_object (int mode, Lmid_t nsid, struct link_map *l)
 #endif
 }
 
+/* Initialize the PT_LOAD iterator IT by scanning the program header table
+   PHDR of PHNUM entries using PAGESIZE for alignment.  Precomputes
+   p_align_max, has_holes, and first/last segment metadata needed by
+   _dl_map_segments.
+   Returns NULL on success or an error message string on failure.  */
+static const char *
+_dl_pt_load_iterator_init (struct dl_pt_load_iterator *it,
+			   const ElfW(Phdr) *phdr, uint16_t phnum,
+			   bool *has_holes)
+{
+  const size_t pagesize = GLRO(dl_pagesize);
+  it->phdr = phdr;
+  it->phdr_end = phdr + phnum;
+  it->pagesize= pagesize;
+  it->p_align_max   = 0;
+  it->nloadcmds = 0;
+  it->first_mapstart = 0;
+  it->last_mapstart  = 0;
+  it->last_allocend  = 0;
+  *has_holes = false;
+
+  ElfW(Addr) prev_mapend = 0;
+
+  for (const ElfW(Phdr) *ph = phdr; ph < phdr + phnum; ++ph)
+    {
+      if (ph->p_type != PT_LOAD)
+	continue;
+
+      if (__glibc_unlikely (((ph->p_vaddr - ph->p_offset)
+			     & (pagesize - 1)) != 0))
+	return N_("ELF load command address/offset not page-aligned");
+
+      ElfW(Addr) mapstart = ALIGN_DOWN (ph->p_vaddr, pagesize);
+      ElfW(Addr) mapend = ALIGN_UP (ph->p_vaddr + ph->p_filesz, pagesize);
+      ElfW(Off) mapoff = ALIGN_DOWN (ph->p_offset, pagesize);
+      int prot = pf_to_prot (ph->p_flags);
+      /* Remember the maximum p_align.  */
+      if (powerof2 (ph->p_align) && ph->p_align > it->p_align_max)
+	it->p_align_max = ph->p_align;
+
+      /* Use architecture-specific logic to potentially adjust p_align_max
+	 (e.g., for Transparent Huge Page eligibility on Linux).  */
+      it->p_align_max = _dl_map_segment_align (&(struct loadcmd) {
+					         .mapstart = mapstart,
+						 .mapend = mapend,
+						 .mapoff = mapoff,
+						 .prot = prot },
+					       it->p_align_max);
+
+      if (it->nloadcmds > 0 && prev_mapend != mapstart)
+	*has_holes = true;
+      prev_mapend = mapend;
+
+      if (it->nloadcmds == 0)
+	it->first_mapstart = mapstart;
+
+      it->last_mapstart = mapstart;
+      it->last_allocend = ph->p_vaddr + ph->p_memsz;
+      it->nloadcmds++;
+    }
+
+  return NULL;
+}
+
 /* Map in the shared object NAME, actually located in REALNAME, and already
    opened on FD.  */
 
@@ -1099,17 +1163,25 @@ _dl_map_object_from_fd (const char *name, const char *origname, int fd,
    unsigned int stack_flags = DEFAULT_STACK_PROT_PERMS;
 
   {
-    /* Scan the program header table, collecting its load commands.  */
-    struct loadcmd loadcmds[l->l_phnum];
-    size_t nloadcmds = 0;
-    bool has_holes = false;
+    /* Scan the program header table, collecting its load commands.  The init
+       pass precomputes p_align_max, has_holes, and first/last segment
+       metadata; subsequent calls to _dl_pt_load_iterator_next yield one
+       loadcmd at a time.  */
+    struct dl_pt_load_iterator it;
+    bool has_holes;
     bool empty_dynamic = false;
-    ElfW(Addr) p_align_max = 0;
 
-    /* The struct is initialized to zero so this is not necessary:
-    l->l_ld = 0;
-    l->l_phdr = 0;
-    l->l_addr = 0; */
+    errstring = _dl_pt_load_iterator_init (&it, phdr, l->l_phnum, &has_holes);
+    if (__glibc_unlikely (errstring != NULL))
+      goto lose;
+
+    if (__glibc_unlikely (it.nloadcmds == 0))
+      {
+	/* Avoid the below calculation for bogus objects.  */
+	errstring = N_("object file has no loadable segments");
+	goto lose;
+      }
+
     for (ph = phdr; ph < &phdr[l->l_phnum]; ++ph)
       switch (ph->p_type)
 	{
@@ -1135,46 +1207,7 @@ _dl_map_object_from_fd (const char *name, const char *origname, int fd,
 	  break;
 
 	case PT_LOAD:
-	  /* A load command tells us to map in part of the file.
-	     We record the load commands and process them all later.  */
-	  if (__glibc_unlikely (((ph->p_vaddr - ph->p_offset)
-				 & (GLRO(dl_pagesize) - 1)) != 0))
-	    {
-	      errstring
-		= N_("ELF load command address/offset not page-aligned");
-	      goto lose;
-	    }
-
-	  struct loadcmd *c = &loadcmds[nloadcmds++];
-	  c->mapstart = ALIGN_DOWN (ph->p_vaddr, GLRO(dl_pagesize));
-	  c->mapend = ALIGN_UP (ph->p_vaddr + ph->p_filesz, GLRO(dl_pagesize));
-	  c->dataend = ph->p_vaddr + ph->p_filesz;
-	  c->allocend = ph->p_vaddr + ph->p_memsz;
-	  /* Remember the maximum p_align.  */
-	  if (powerof2 (ph->p_align) && ph->p_align > p_align_max)
-	    p_align_max = ph->p_align;
-	  c->mapoff = ALIGN_DOWN (ph->p_offset, GLRO(dl_pagesize));
-
-	  DIAG_PUSH_NEEDS_COMMENT;
-
-#if __GNUC_PREREQ (11, 0)
-	  /* Suppress invalid GCC warning:
-	     ‘(((char *)loadcmds.113_68 + _933 + 16))[329406144173384849].mapend’ may be used uninitialized [-Wmaybe-uninitialized]
-	     See: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=106008
-	   */
-	  DIAG_IGNORE_NEEDS_COMMENT_GCC (11, "-Wmaybe-uninitialized");
-#endif
-	  /* Determine whether there is a gap between the last segment
-	     and this one.  */
-	  if (nloadcmds > 1 && c[-1].mapend != c->mapstart)
-	    has_holes = true;
-	  DIAG_POP_NEEDS_COMMENT;
-
-	  /* Optimize a common case.  */
-	  c->prot = pf_to_prot (ph->p_flags);
-
-	  /* Architecture-specific adjustment of segment alignment. */
-	  p_align_max = _dl_map_segment_align (c, p_align_max);
+	  /* PT_LOAD segments are handled by the iterator.  */
 	  break;
 
 	case PT_TLS:
@@ -1189,7 +1222,7 @@ _dl_map_object_from_fd (const char *name, const char *origname, int fd,
 	  else
 	    l->l_tls_firstbyte_offset = ph->p_vaddr & (ph->p_align - 1);
 	  l->l_tls_initimage_size = ph->p_filesz;
-	  /* Since we don't know the load address yet only store the
+	  /* Since we don’t know the load address yet only store the
 	     offset.  We will adjust it later.  */
 	  l->l_tls_initimage = (void *) ph->p_vaddr;
 
@@ -1220,19 +1253,6 @@ _dl_map_object_from_fd (const char *name, const char *origname, int fd,
 	  break;
 	}
 
-    if (__glibc_unlikely (nloadcmds == 0))
-      {
-	/* This only happens for a bogus object that will be caught with
-	   another error below.  But we don't want to go through the
-	   calculations below using NLOADCMDS - 1.  */
-	errstring = N_("object file has no loadable segments");
-	goto lose;
-      }
-
-    /* Align all PT_LOAD segments to the maximum p_align.  */
-    for (size_t i = 0; i < nloadcmds; i++)
-      loadcmds[i].mapalign = p_align_max;
-
     /* dlopen of an executable is not valid because it is not possible
        to perform proper relocations, handle static TLS, or run the
        ELF constructors.  For PIE, the check needs the dynamic
@@ -1254,13 +1274,13 @@ _dl_map_object_from_fd (const char *name, const char *origname, int fd,
       }
 
     /* Length of the sections to be loaded.  */
-    maplength = loadcmds[nloadcmds - 1].allocend - loadcmds[0].mapstart;
+    maplength = it.last_allocend - it.first_mapstart;
 
     /* Now process the load commands and map segments into memory.
        This is responsible for filling in:
        l_map_start, l_map_end, l_addr, l_contiguous, l_phdr
      */
-    errstring = _dl_map_segments (l, fd, header, type, loadcmds, nloadcmds,
+    errstring = _dl_map_segments (l, fd, header, type, &it,
 				  maplength, has_holes, loader);
     if (__glibc_unlikely (errstring != NULL))
       {

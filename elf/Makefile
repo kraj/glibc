@@ -404,6 +404,7 @@ tests += \
   tst-auxobj \
   tst-auxobj-dlopen \
   tst-big-note \
+  tst-bz26577 \
   tst-debug1 \
   tst-deep1 \
   tst-dl-is_dso \
@@ -1223,6 +1224,7 @@ modules-names-nobuild += \
   tst-audit24bmod1 \
   tst-audit24bmod2 \
   tst-big-note-lib \
+  tst-bz26577-mod \
   tst-nodeps1-mod \
   tst-nodeps2-mod \
   tst-ro-dynamic-mod \
@@ -2757,6 +2759,13 @@ $(objpfx)tst-big-note: $(objpfx)tst-big-note-lib.so
 # test.
 $(objpfx)tst-big-note-lib.so: $(objpfx)tst-big-note-lib.o
 	$(LINK.o) -shared -o $@ $(LDFLAGS.so) $(dt-relr-ldflag) $<
+
+tst-bz26577-ARGS = -- $(host-test-program-cmd)
+$(objpfx)tst-bz26577.out: $(objpfx)tst-bz26577-mod.so
+$(objpfx)tst-bz26577-mod.so: gen-tst-bz26577-mod.py $(..)/scripts/glibcelf.py \
+			      $(objpfx)ld.so
+	PYTHONPATH=$(..)scripts $(PYTHON) $< $@ $(objpfx)ld.so
+generated += tst-bz26577-mod.so
 
 $(objpfx)tst-unwind-ctor: $(objpfx)tst-unwind-ctor-lib.so
 LDLIBS-tst-unwind-ctor += $(libunwind)

@@ -22,6 +22,8 @@
 
 #include <link.h>
 #include <sys/mman.h>
+#include <libc-pointer-arith.h>
+#include <stackinfo.h>
 
 
 /* On some systems, no flag bits are given to specify file mapping.  */
@@ -81,6 +83,49 @@ struct loadcmd
 };
 
 
+/* Iterator for PT_LOAD program header segments.  It should be initialized
+   by _dl_pt_load_iterator_init once, then _dl_pt_load_iterator_next
+   repeatedly to walk each PT_LOAD segment without storing them all.  */
+struct dl_pt_load_iterator
+{
+  const ElfW(Phdr) *phdr;       /* Current position in program header table.  */
+  const ElfW(Phdr) *phdr_end;   /* End of program header table.  */
+  ElfW(Addr) p_align_max;       /* Maximum p_align over all PT_LOAD segments.  */
+  ElfW(Addr) pagesize;          /* System page size (GLRO(dl_pagesize)).  */
+
+  /* Fields below are precomputed by _dl_pt_load_iterator_init and
+     are intended for use by _dl_map_segments.  */
+  ElfW(Addr) first_mapstart;    /* mapstart of the first PT_LOAD segment.  */
+  ElfW(Addr) last_mapstart;     /* mapstart of the last PT_LOAD segment.  */
+  ElfW(Addr) last_allocend;     /* allocend of the last PT_LOAD segment.  */
+  size_t nloadcmds;             /* Number of PT_LOAD segments found.  */
+};
+
+/* Advance iterator IT to the next PT_LOAD segment and fill C with its
+   decoded load command.  Returns true when a segment was found, false
+   when the end of the program header table has been reached.  */
+static __always_inline bool
+_dl_pt_load_iterator_next (struct dl_pt_load_iterator *it, struct loadcmd *c)
+{
+  while (it->phdr < it->phdr_end)
+    {
+      const ElfW(Phdr) *ph = it->phdr++;
+      if (ph->p_type != PT_LOAD)
+        continue;
+
+      c->mapstart = ALIGN_DOWN (ph->p_vaddr, it->pagesize);
+      c->mapend = ALIGN_UP (ph->p_vaddr + ph->p_filesz, it->pagesize);
+      c->dataend = ph->p_vaddr + ph->p_filesz;
+      c->allocend = ph->p_vaddr + ph->p_memsz;
+      c->mapoff = ALIGN_DOWN (ph->p_offset, it->pagesize);
+      c->prot = pf_to_prot (ph->p_flags);
+      c->mapalign = it->p_align_max;
+      return true;
+    }
+  return false;
+}
+
+
 /* This is a subroutine of _dl_map_segments.  It should be called for each
    load command, some time after L->l_addr has been set correctly.  It is
    responsible for setting the l_phdr fields  */
@@ -113,8 +158,7 @@ _dl_postprocess_loadcmd (struct link_map *l, const ElfW(Ehdr) *header,
 
 static const char *_dl_map_segments (struct link_map *l, int fd,
                                      const ElfW(Ehdr) *header, int type,
-                                     const struct loadcmd loadcmds[],
-                                     size_t nloadcmds,
+                                     struct dl_pt_load_iterator *it,
                                      const size_t maplength,
                                      bool has_holes,
                                      struct link_map *loader); */
