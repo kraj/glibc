@@ -24,6 +24,7 @@
 #include <sys/mman.h>
 #include <libc-pointer-arith.h>
 #include <stackinfo.h>
+#include <not-cancel.h>
 
 
 /* On some systems, no flag bits are given to specify file mapping.  */
@@ -85,11 +86,15 @@ struct loadcmd
 
 /* Iterator for PT_LOAD program header segments.  It should be initialized
    by _dl_pt_load_iterator_init once, then _dl_pt_load_iterator_next
-   repeatedly to walk each PT_LOAD segment without storing them all.  */
+   repeatedly to walk each PT_LOAD segment without storing them all.
+   Segments are re-read one at a time via pread so that no large stack
+   buffer is needed for the program header table.  */
 struct dl_pt_load_iterator
 {
-  const ElfW(Phdr) *phdr;       /* Current position in program header table.  */
-  const ElfW(Phdr) *phdr_end;   /* End of program header table.  */
+  int fd;                       /* File descriptor for pread.  */
+  ElfW(Off) phoff;              /* Program header table file offset.  */
+  ElfW(Half) phnum;             /* Total number of program headers.  */
+  ElfW(Half) idx;               /* Index of next header to read.  */
   ElfW(Addr) p_align_max;       /* Maximum p_align over all PT_LOAD segments.  */
   ElfW(Addr) pagesize;          /* System page size (GLRO(dl_pagesize)).  */
 
@@ -103,22 +108,28 @@ struct dl_pt_load_iterator
 
 /* Advance iterator IT to the next PT_LOAD segment and fill C with its
    decoded load command.  Returns true when a segment was found, false
-   when the end of the program header table has been reached.  */
+   when the end of the program header table has been reached or a read
+   error occurs.  */
 static __always_inline bool
 _dl_pt_load_iterator_next (struct dl_pt_load_iterator *it, struct loadcmd *c)
 {
-  while (it->phdr < it->phdr_end)
+  while (it->idx < it->phnum)
     {
-      const ElfW(Phdr) *ph = it->phdr++;
-      if (ph->p_type != PT_LOAD)
+      ElfW(Phdr) ph;
+      ElfW(Off) off = it->phoff + (ElfW(Off)) it->idx * sizeof ph;
+      it->idx++;
+      if (__pread64_nocancel (it->fd, &ph, sizeof ph, off)
+	  != (ssize_t) sizeof ph)
+        return false;
+      if (ph.p_type != PT_LOAD)
         continue;
 
-      c->mapstart = ALIGN_DOWN (ph->p_vaddr, it->pagesize);
-      c->mapend = ALIGN_UP (ph->p_vaddr + ph->p_filesz, it->pagesize);
-      c->dataend = ph->p_vaddr + ph->p_filesz;
-      c->allocend = ph->p_vaddr + ph->p_memsz;
-      c->mapoff = ALIGN_DOWN (ph->p_offset, it->pagesize);
-      c->prot = pf_to_prot (ph->p_flags);
+      c->mapstart = ALIGN_DOWN (ph.p_vaddr, it->pagesize);
+      c->mapend   = ALIGN_UP (ph.p_vaddr + ph.p_filesz, it->pagesize);
+      c->dataend  = ph.p_vaddr + ph.p_filesz;
+      c->allocend = ph.p_vaddr + ph.p_memsz;
+      c->mapoff   = ALIGN_DOWN (ph.p_offset, it->pagesize);
+      c->prot     = pf_to_prot (ph.p_flags);
       c->mapalign = it->p_align_max;
       return true;
     }

@@ -405,6 +405,7 @@ tests += \
   tst-auxobj-dlopen \
   tst-big-note \
   tst-bz26577 \
+  tst-bz26577-minstack \
   tst-debug1 \
   tst-deep1 \
   tst-dl-is_dso \
@@ -2766,6 +2767,9 @@ $(objpfx)tst-bz26577-mod.so: gen-tst-bz26577-mod.py $(..)/scripts/glibcelf.py \
 			      $(objpfx)ld.so
 	PYTHONPATH=$(..)scripts $(PYTHON) $< $@ $(objpfx)ld.so
 generated += tst-bz26577-mod.so
+
+$(objpfx)tst-bz26577-minstack: $(shared-thread-library)
+$(objpfx)tst-bz26577-minstack.out: $(objpfx)tst-bz26577-mod.so
 
 $(objpfx)tst-unwind-ctor: $(objpfx)tst-unwind-ctor-lib.so
 LDLIBS-tst-unwind-ctor += $(libunwind)

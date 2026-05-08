@@ -36,8 +36,37 @@
     return true;							      \
   }
 
-/* Search the program headers for the ABI Flags.  */
+/* Machine-specific data collected during the program-header scan.
+   Captures the PT_MIPS_ABIFLAGS entry if present, so
+   elf_machine_reject_phdr_p does not need to re-scan the headers.  */
+struct dl_machine_phdr_info
+{
+  bool has_mips_abiflags;	/* True if mips_abiflags is valid.  */
+  ElfW(Phdr) mips_abiflags;	/* Copy of the PT_MIPS_ABIFLAGS phdr.  */
+};
 
+/* Initialize INFO before the program-header scan begins.  */
+static inline void
+elf_machine_phdr_info_init (struct dl_machine_phdr_info *info)
+{
+  info->has_mips_abiflags = false;
+}
+
+/* Record the PT_MIPS_ABIFLAGS phdr, if present, so it is available
+   without re-reading the program header table.  */
+static inline void
+elf_machine_phdr_collect (struct dl_machine_phdr_info *info,
+			  const ElfW(Phdr) *ph)
+{
+  if (!info->has_mips_abiflags && ph->p_type == PT_MIPS_ABIFLAGS)
+    {
+      info->mips_abiflags = *ph;
+      info->has_mips_abiflags = true;
+    }
+}
+
+/* Search the program headers of an already-loaded object for its
+   PT_MIPS_ABIFLAGS entry (used by cached_fpabi_reject_phdr_p).  */
 static inline const ElfW(Phdr) *
 find_mips_abiflags (const ElfW(Phdr) *phdr, ElfW(Half) phnum)
 {
@@ -145,18 +174,17 @@ static const struct abi_req reqs[Val_GNU_MIPS_ABI_FP_MAX + 1] =
 
 static const struct abi_req none_req = { true, true, true, false, true };
 
-/* Return true iff ELF program headers are incompatible with the running
-   host.  This verifies that floating-point ABIs are compatible and
-   re-configures the hardware mode if necessary.  This code handles both the
-   DT_NEEDED libraries and the dlopen'ed libraries.  It also accounts for the
-   impact of dlclose.  */
+/* Return true iff the program headers collected in INFO are incompatible
+   with the running host.  This verifies that floating-point ABIs are
+   compatible and re-configures the hardware mode if necessary.  This code
+   handles both the DT_NEEDED libraries and the dlopen'ed libraries.  It
+   also accounts for the impact of dlclose.  */
 
 static bool __attribute_used__
-elf_machine_reject_phdr_p (const ElfW(Phdr) *phdr, unsigned int phnum,
-			   const char *buf, size_t len, struct link_map *map,
-			   int fd)
+elf_machine_reject_phdr_p (const struct dl_machine_phdr_info *info,
+			   struct link_map *map, int fd)
 {
-  const ElfW(Phdr) *ph = find_mips_abiflags (phdr, phnum);
+  const ElfW(Phdr) *ph = info->has_mips_abiflags ? &info->mips_abiflags : NULL;
   struct link_map *l;
   Lmid_t nsid;
   int in_abi = -1;

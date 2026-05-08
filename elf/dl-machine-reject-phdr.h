@@ -21,12 +21,36 @@
 
 #include <stdbool.h>
 
-/* Return true iff ELF program headers are incompatible with the running
-   host.  */
+/* Machine-specific data collected during the program-header scan for use
+   by elf_machine_reject_phdr_p.  Ports that override elf_machine_reject_phdr_p
+   must define their own layout; this generic version carries no data.  */
+struct dl_machine_phdr_info
+{
+};
+
+/* Initialize INFO before the program-header scan begins.  */
+static inline void
+elf_machine_phdr_info_init (struct dl_machine_phdr_info *info
+			    __attribute__ ((__unused__)))
+{
+}
+
+/* Called once per ELF program header PH during the scan.  Records any
+   machine-specific data from PH that elf_machine_reject_phdr_p needs.  */
+static inline void
+elf_machine_phdr_collect (struct dl_machine_phdr_info *info
+			  __attribute__ ((__unused__)),
+			  const ElfW(Phdr) *ph __attribute__ ((__unused__)))
+{
+}
+
+/* Return true iff the program-header data collected in INFO is incompatible
+   with the running host.  */
 static inline bool
-elf_machine_reject_phdr_p (const ElfW(Phdr) *phdr, unsigned int phnum,
-			   const char *buf, size_t len, struct link_map *map,
-			   int fd)
+elf_machine_reject_phdr_p (const struct dl_machine_phdr_info *info
+			   __attribute__ ((__unused__)),
+			   struct link_map *map __attribute__ ((__unused__)),
+			   int fd __attribute__ ((__unused__)))
 {
   return false;
 }
