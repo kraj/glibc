@@ -85,30 +85,25 @@ do_test (size_t align, size_t pos, size_t len, size_t n, int seek_char)
   size_t i;
   CHAR *result;
 
-  if ((align + len) * sizeof (CHAR) >= page_size)
+  if ((align + len) * sizeof (CHAR) >= buf1_size)
     return;
 
   CHAR *buf = (CHAR *) (buf1);
 
-  for (i = 0; i < len; ++i)
+  for (i = 0; i <= len; ++i)
     {
       buf[align + i] = 1 + 23 * i % SMALL_CHAR;
       if (buf[align + i] == seek_char)
 	buf[align + i] = seek_char + 1;
     }
-  buf[align + len] = 0;
 
-  if (pos < MIN(n, len))
+  if (pos < MIN (n, len) || (pos == len && n > len))
     {
       buf[align + pos] = seek_char;
-      buf[align + len] = -seek_char;
       result = (CHAR *) (buf + align + pos);
     }
   else
-    {
-      result = NULL;
-      buf[align + len] = seek_char;
-    }
+    result = NULL;
 
   FOR_EACH_IMPL (impl, 0)
     do_one_test (impl, (CHAR *) (buf + align), seek_char, n, result);
@@ -152,7 +147,7 @@ do_random_tests (void)
   size_t i, j, n, align, pos, len;
   int seek_char;
   CHAR *result;
-  UCHAR *p = (UCHAR *) (buf1 + page_size) - 512;
+  UCHAR *p = (UCHAR *) (buf1 + buf1_size) - 512;
 
   for (n = 0; n < ITERATIONS; n++)
     {
@@ -257,11 +252,13 @@ test_main (void)
      with address near end of the page.  */
   for (i = 2; i < 16; ++i)
     {
-      /* page_size is in fact getpagesize() * 2.  */
-      do_test (page_size / 2 - i, i, i, 1, 0x9B);
-      do_test (page_size / 2 - i, i - 1, i - 1, 1, 0x9B);
-      do_test (page_size / 2 - (i * 4), i + 128, i + 128, i, 0x9B);
+      do_test ((buf1_size / sizeof(CHAR)) - i, i - 1, i - 1, 1, 0x9B);
+      do_test ((buf1_size / sizeof(CHAR)) - (i * 4), 128, i * 4 - 1, i, 0x9B);
     }
+
+  /* Check memchr won't overread after matching at the end of a page.  */
+  for (i = 1; i <= 256; i += 5)
+    do_test ((buf1_size / sizeof(CHAR)) - i - 1, i, i, 1024, 0x9B);
 
   do_random_tests ();
   do_overflow_tests ();

@@ -69,7 +69,7 @@ extern impl_t __start_impls[], __stop_impls[];
 unsigned char *buf1, *buf2;
 int ret, do_srandom;
 unsigned int seed;
-size_t page_size;
+size_t page_size, buf1_size, buf2_size;
 
 # ifndef ITERATIONS
 size_t iterations = 100000;
@@ -207,6 +207,9 @@ test_init (void)
 
   memset (buf1, 0xa5, BUF1PAGES * page_size);
   memset (buf2, 0x5a, page_size);
+
+  buf1_size = BUF1PAGES * page_size;
+  buf2_size = page_size;
 }
 
 #endif
