@@ -125,3 +125,12 @@ _IO_wmem_setbuf (FILE *fp, char *p, ssize_t len)
   /* Wmemstreams manage a growable buffer internally.  */
   return fp;
 }
+
+
+int
+_IO_wmem_doallocate (FILE *fp)
+{
+  /* Wmemstreams manage a growable buffer internally.  The doallocate
+     hook must not replace it with a generic stdio buffer.  */
+  return 1;
+}

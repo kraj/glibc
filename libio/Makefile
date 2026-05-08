@@ -120,6 +120,7 @@ tests = \
   tst-fwrite-error \
   tst-getdelim \
   tst-memstream-setbuf \
+  tst-memstream-setvbuf-doallocate \
   tst-memstream1 \
   tst-memstream2 \
   tst-memstream3 \
@@ -144,6 +145,7 @@ tests = \
   tst-wfiledoallocate-static \
   tst-widetext \
   tst-wmemstream-setbuf \
+  tst-wmemstream-setvbuf-doallocate \
   tst-wmemstream1 \
   tst-wmemstream2 \
   tst-wmemstream3 \

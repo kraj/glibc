@@ -79,10 +79,12 @@
 # pragma weak _IO_mem_finish
 # pragma weak _IO_mem_setbuf
 # pragma weak _IO_mem_sync
+# pragma weak _IO_mem_doallocate
 
 # pragma weak _IO_wmem_finish
 # pragma weak _IO_wmem_setbuf
 # pragma weak _IO_wmem_sync
+# pragma weak _IO_wmem_doallocate
 
 # pragma weak __printf_buffer_as_file_overflow
 # pragma weak __printf_buffer_as_file_xsputn
@@ -338,7 +340,7 @@ const struct _IO_jump_t __io_vtables[] attribute_relro =
     JUMP_INIT (seekpos, _IO_default_seekpos),
     JUMP_INIT (setbuf, _IO_mem_setbuf),
     JUMP_INIT (sync, _IO_mem_sync),
-    JUMP_INIT (doallocate, _IO_default_doallocate),
+    JUMP_INIT (doallocate, _IO_mem_doallocate),
     JUMP_INIT (read, _IO_default_read),
     JUMP_INIT (write, _IO_default_write),
     JUMP_INIT (seek, _IO_default_seek),
@@ -361,7 +363,7 @@ const struct _IO_jump_t __io_vtables[] attribute_relro =
     JUMP_INIT (seekpos, _IO_default_seekpos),
     JUMP_INIT (setbuf, _IO_wmem_setbuf),
     JUMP_INIT (sync, _IO_wmem_sync),
-    JUMP_INIT (doallocate, _IO_wdefault_doallocate),
+    JUMP_INIT (doallocate, _IO_wmem_doallocate),
     JUMP_INIT (read, _IO_default_read),
     JUMP_INIT (write, _IO_default_write),
     JUMP_INIT (seek, _IO_default_seek),

@@ -743,10 +743,12 @@ extern int _IO_mem_sync (FILE* fp) __THROW attribute_hidden;
 extern void _IO_mem_finish (FILE* fp, int) __THROW attribute_hidden;
 extern FILE *_IO_mem_setbuf (FILE *fp, char *buf, ssize_t size)
   __THROW attribute_hidden;
+extern int _IO_mem_doallocate (FILE *fp) __THROW attribute_hidden;
 extern int _IO_wmem_sync (FILE* fp) __THROW attribute_hidden;
 extern void _IO_wmem_finish (FILE* fp, int) __THROW attribute_hidden;
 extern FILE *_IO_wmem_setbuf (FILE *fp, char *buf, ssize_t size)
   __THROW attribute_hidden;
+extern int _IO_wmem_doallocate (FILE *fp) __THROW attribute_hidden;
 
 /* Other strfile functions */
 struct _IO_strfile_;

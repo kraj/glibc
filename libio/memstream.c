@@ -120,3 +120,12 @@ _IO_mem_setbuf (FILE *fp, char *p, ssize_t len)
   /* Memstream manage a growable buffer internally.  */
   return fp;
 }
+
+
+int
+_IO_mem_doallocate (FILE *fp)
+{
+  /* Memstream manage a growable buffer internally.  The doallocate
+     hook must not replace it with a generic stdio buffer.  */
+  return 1;
+}
