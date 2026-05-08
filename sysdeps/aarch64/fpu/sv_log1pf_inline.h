@@ -31,6 +31,7 @@ static const struct sv_log1pf_data
   float c1, c3, c5, c7;
   float ln2, exp_bias, quarter;
   uint32_t four, three_quarters;
+  uint32_t inf, nan;
 } sv_log1pf_data = {
   /* Do not store first term of polynomial, which is -0.5, as
      this can be fmov-ed directly instead of including it in
@@ -39,7 +40,7 @@ static const struct sv_log1pf_data
   .c3 = -0x1.54ef78p-3f,	.c4 = 0x1.28a1f4p-3f,  .c5 = -0x1.0da91p-3f,
   .c6 = 0x1.abcb6p-4f,		.c7 = -0x1.6f0d5ep-5f, .ln2 = 0x1.62e43p-1f,
   .exp_bias = 0x1p-23f,		.quarter = 0x1p-2f,    .four = 0x40800000,
-  .three_quarters = 0x3f400000,
+  .three_quarters = 0x3f400000, .inf = 0x7f800000,     .nan = 0x7fc00000,
 };
 
 static inline svfloat32_t
@@ -93,5 +94,4 @@ sv_log1pf_inline (svfloat32_t x, svbool_t pg)
   svfloat32_t scale_back = svmul_lane_f32 (svcvt_f32_x (pg, k), fconst, 1);
   return svmla_lane_f32 (p, scale_back, fconst, 0);
 }
-
 #endif
