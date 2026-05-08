@@ -117,3 +117,11 @@ _IO_wmem_finish (FILE *fp, int dummy)
 
   _IO_wstr_finish (fp, 0);
 }
+
+
+FILE *
+_IO_wmem_setbuf (FILE *fp, char *p, ssize_t len)
+{
+  /* Wmemstreams manage a growable buffer internally.  */
+  return fp;
+}

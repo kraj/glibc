@@ -112,3 +112,11 @@ _IO_mem_finish (FILE *fp, int dummy)
 
   _IO_str_finish (fp, 0);
 }
+
+
+FILE *
+_IO_mem_setbuf (FILE *fp, char *p, ssize_t len)
+{
+  /* Memstream manage a growable buffer internally.  */
+  return fp;
+}

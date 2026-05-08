@@ -119,6 +119,7 @@ tests = \
   tst-ftell-partial-wide \
   tst-fwrite-error \
   tst-getdelim \
+  tst-memstream-setbuf \
   tst-memstream1 \
   tst-memstream2 \
   tst-memstream3 \
@@ -142,6 +143,7 @@ tests = \
   tst-wfile-sync \
   tst-wfiledoallocate-static \
   tst-widetext \
+  tst-wmemstream-setbuf \
   tst-wmemstream1 \
   tst-wmemstream2 \
   tst-wmemstream3 \

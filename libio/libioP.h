@@ -741,8 +741,12 @@ extern size_t __IO_obstack_xsputn (FILE *fp, const void *data, size_t n)
 /* Jumptable functions for open_{w}memstream.  */
 extern int _IO_mem_sync (FILE* fp) __THROW attribute_hidden;
 extern void _IO_mem_finish (FILE* fp, int) __THROW attribute_hidden;
+extern FILE *_IO_mem_setbuf (FILE *fp, char *buf, ssize_t size)
+  __THROW attribute_hidden;
 extern int _IO_wmem_sync (FILE* fp) __THROW attribute_hidden;
 extern void _IO_wmem_finish (FILE* fp, int) __THROW attribute_hidden;
+extern FILE *_IO_wmem_setbuf (FILE *fp, char *buf, ssize_t size)
+  __THROW attribute_hidden;
 
 /* Other strfile functions */
 struct _IO_strfile_;
