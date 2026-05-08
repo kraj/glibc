@@ -25,7 +25,7 @@
 # define aio_start_notify_thread __aio_start_notify_thread
 # define aio_create_helper_thread __aio_create_helper_thread
 
-extern inline void
+static inline void
 __aio_start_notify_thread (void)
 {
   sigset_t ss;
@@ -34,7 +34,7 @@ __aio_start_notify_thread (void)
 			 __NSIG_BYTES);
 }
 
-extern inline int
+static inline int
 __aio_create_helper_thread (pthread_t *threadp, void *(*tf) (void *),
 			    void *arg)
 {
