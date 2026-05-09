@@ -1255,6 +1255,14 @@ dl_init_cacheinfo (struct cpu_features *cpu_features)
   if (tunable_size > minimum_non_temporal_threshold
       && tunable_size <= maximum_non_temporal_threshold)
     non_temporal_threshold = tunable_size;
+  else if (cpu_features->basic.kind == arch_kind_hygon)
+    {
+      /* Hygon benefits from entering the non-temporal copy path earlier.
+         Use 3/8 of the shared cache size per thread for memcpy and
+         memmove.  The memset threshold has already been initialized
+         above and is intentionally left unchanged.  */
+      non_temporal_threshold = shared_per_thread * 3 / 8;
+    }
 
   tunable_size = TUNABLE_GET (x86_memset_non_temporal_threshold, long int, NULL);
   if (tunable_size > minimum_non_temporal_threshold
