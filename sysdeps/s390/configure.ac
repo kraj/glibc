@@ -169,17 +169,22 @@ EOF
   libc_cv_s390x_staticpie_req_runtime=no
   # Check if the static linker does not generate dynamic TLS relocs in PIE
   # (binutils PR ld/22263), if it accepts --no-dynamic-linker
-  # (by using -static-pie), and if it adds a DT_JMPREL pointing to .rela.iplt
-  # with static pie.
+  # (by using -static-pie).
+  # If the R_390_IRELATIVE relocation lands in .rela.plt, ensure that there is
+  # DT_JMPREL pointing to it (binutils).  Otherwise there should be a .rela.dyn
+  # without DT_JMPREL (lld>=19).
   if AC_TRY_COMMAND([${CC-cc} $CFLAGS $CPPFLAGS $LDFLAGS -fPIE -c conftest1.c -o conftest1.o]) \
      && AC_TRY_COMMAND([${CC-cc} $CFLAGS $CPPFLAGS $LDFLAGS -fPIE -c conftest2.c -o conftest2.o]) \
      && AC_TRY_COMMAND([${CC-cc} $CFLAGS $CPPFLAGS $LDFLAGS -static-pie -nostartfiles -nostdlib -fPIE -o conftest conftest1.o conftest2.o]) \
      && AC_TRY_COMMAND([! LC_ALL=C $READELF -Wr conftest | grep R_390_TLS_TPOFF] >&AS_MESSAGE_LOG_FD) \
-     && AC_TRY_COMMAND([LC_ALL=C $READELF -Wd conftest | grep JMPREL >&AS_MESSAGE_LOG_FD])
+     && AC_TRY_COMMAND([LC_ALL=C $READELF -Wr conftest | grep R_390_IRELATIVE] >&AS_MESSAGE_LOG_FD) \
+     && ( AC_TRY_COMMAND([LC_ALL=C $READELF -Wr conftest | grep \.rela\.plt >&AS_MESSAGE_LOG_FD]) \
+	  && AC_TRY_COMMAND([LC_ALL=C $READELF -Wd conftest | grep JMPREL >&AS_MESSAGE_LOG_FD]) \
+	  || AC_TRY_COMMAND([LC_ALL=C $READELF -Wr conftest | grep \.rela\.dyn >&AS_MESSAGE_LOG_FD]) )
   then
     libc_cv_s390x_staticpie_req_runtime=yes
   fi
-  rm -rf conftest.*])
+  rm -rf conftest*])
 
 if test $libc_cv_s390x_staticpie_req_runtime = yes; then
    # Some kernels might fail with /proc/sys/kernel/randomize_va_space set to 0
