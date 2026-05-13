@@ -20,6 +20,7 @@
 #define NO_THUMB
 #include <sysdep.h>
 #include <libc-symbols.h>
+#include <rtld-global-offsets.h>
 
 	.text
 	.globl _dl_runtime_resolve
@@ -36,13 +37,40 @@ _dl_runtime_resolve:
 	@	ip contains &GOT[n+3] (pointer to function)
 	@	lr points to &GOT[2]
 
-	@ Save arguments.  We save r4 to realign the stack.
+	@ Save arguments.  We save r4 to realign the stack and to hold
+	@ the hwcap value used to decide whether to save VFP registers.
 	push	{r0-r4}
 	cfi_adjust_cfa_offset (20)
 	cfi_rel_offset (r0, 0)
 	cfi_rel_offset (r1, 4)
 	cfi_rel_offset (r2, 8)
 	cfi_rel_offset (r3, 12)
+	cfi_rel_offset (r4, 16)
+
+#ifdef SHARED
+	@ Preserve all call-clobbered VFP registers across _dl_fixup.
+	@ VFP may be used by IFUNC resolvers, audit modules, interposed
+	@ malloc, and the __aeabi_mem* helpers required by RTABI32,
+	@ which mandates that those helpers only corrupt integer core
+	@ registers.
+	LDR_GLOBAL (r4, r3, C_SYMBOL_NAME(_rtld_global_ro), \
+		    RTLD_GLOBAL_RO_DL_HWCAP_OFFSET)
+
+	tst	r4, #HWCAP_ARM_VFP
+	beq	.Lno_vfp_save
+
+# define VFP_STACK_REQ (32*8 + 8)
+	sub	sp, sp, VFP_STACK_REQ
+	cfi_adjust_cfa_offset (VFP_STACK_REQ)
+	mov	r3, sp
+	.inst	0xeca30b20	@ vstmia r3!, {d0-d15}
+	tst	r4, #HWCAP_ARM_VFPD32
+	beq	1f
+	.inst	0xece30b20	@ vstmia r3!, {d16-d31}
+1:	.inst	0xeef12a10	@ vmrs r2, fpscr
+	str	r2, [r3]
+.Lno_vfp_save:
+#endif /* SHARED */
 
 	@ get pointer to linker struct
 	ldr	r0, [lr, #-4]
@@ -59,8 +87,23 @@ _dl_runtime_resolve:
 	@ save the return
 	mov	ip, r0
 
-	@ get arguments and return address back.  We restore r4
-	@ only to realign the stack.
+#ifdef SHARED
+	tst	r4, #HWCAP_ARM_VFP
+	beq	.Lno_vfp_restore
+	mov	r3, sp
+	.inst	0xecb30b20	@ vldmia r3!, {d0-d15}
+	tst	r4, #HWCAP_ARM_VFPD32
+	beq	2f
+	.inst	0xecf30b20	@ vldmia r3!, {d16-d31}
+2:	ldr	r2, [r3]
+	.inst	0xeee12a10	@ vmsr fpscr, r2
+	add	sp, sp, VFP_STACK_REQ
+	cfi_adjust_cfa_offset (-VFP_STACK_REQ)
+.Lno_vfp_restore:
+#endif /* SHARED */
+
+	@ get arguments and return address back.  We restore r4 to
+	@ its original value as well.
 	pop	{r0-r4,lr}
 	cfi_adjust_cfa_offset (-24)
 
@@ -124,13 +167,70 @@ _dl_runtime_profile:
 	add	r3, sp, #8
 	stmia	r3!, {r0,r1}
 
+	@ Preserve all call-clobbered VFP registers across
+	@ _dl_profile_fixup.  See the matching comment in
+	@ _dl_runtime_resolve above for the rationale (BZ 34144,
+	@ BZ 15792).
+	@
+	@ Stack layout below the current sp (which becomes the new sp
+	@ after the sub):
+	@   sp +  0 ..   3: outgoing arg (framesizep) for _dl_profile_fixup
+	@   sp +  4 ..   7: saved hwcap (so we can test it after the call)
+	@   sp +  8 ..  11: saved r2 (used as scratch for LDR_GLOBAL)
+	@   sp + 12 ..  15: padding (for 8-byte alignment of the VFP area)
+	@   sp + 16 .. 16+VFP_STACK_REQ-1: VFP regs + fpscr
+#define VFP_PROFILE_STACK (16 + VFP_STACK_REQ)
+	sub	sp, sp, #VFP_PROFILE_STACK
+	cfi_adjust_cfa_offset (VFP_PROFILE_STACK)
+
+	@ r2 holds the retaddr (3rd arg to _dl_profile_fixup); spill
+	@ it so we can use it as the LDR_GLOBAL destination.
+	str	r2, [sp, #8]
+
+	LDR_GLOBAL (r2, ip, C_SYMBOL_NAME(_rtld_global_ro), \
+		    RTLD_GLOBAL_RO_DL_HWCAP_OFFSET)
+	str	r2, [sp, #4]
+
+	tst	r2, #HWCAP_ARM_VFP
+	beq	.Lprofile_no_vfp_save
+	add	ip, sp, #16
+	.inst	0xecac0b20	@ vstmia ip!, {d0-d15}
+	tst	r2, #HWCAP_ARM_VFPD32
+	beq	7f
+	.inst	0xecec0b20	@ vstmia ip!, {d16-d31}
+7:	.inst	0xeef12a10	@ vmrs r2, fpscr
+	str	r2, [ip]
+.Lprofile_no_vfp_save:
+
+	@ Restore r2 (retaddr) for _dl_profile_fixup.
+	ldr	r2, [sp, #8]
+
 	@ Set up extra args for _dl_profile_fixup.
-	@ r2 and r3 are already loaded.
-	add	ip, sp, #208
+	@ The framesize slot is at the old sp+208, which is the new
+	@ sp + VFP_PROFILE_STACK + 208 -- compute in two steps because
+	@ the combined offset is not encodable as an ARM immediate.
+	add	ip, sp, #VFP_PROFILE_STACK
+	add	ip, ip, #208
 	str	ip, [sp, #0]
 
 	@ call profiling fixup routine
 	bl	_dl_profile_fixup
+
+	@ Restore VFP registers.  r0 holds the resolved function
+	@ address; r1/r2/ip are caller-saved by the call.
+	ldr	r1, [sp, #4]
+	tst	r1, #HWCAP_ARM_VFP
+	beq	.Lprofile_no_vfp_restore
+	add	ip, sp, #16
+	.inst	0xecbc0b20	@ vldmia ip!, {d0-d15}
+	tst	r1, #HWCAP_ARM_VFPD32
+	beq	8f
+	.inst	0xecfc0b20	@ vldmia ip!, {d16-d31}
+8:	ldr	r2, [ip]
+	.inst	0xeee12a10	@ vmsr fpscr, r2
+.Lprofile_no_vfp_restore:
+	add	sp, sp, #VFP_PROFILE_STACK
+	cfi_adjust_cfa_offset (-VFP_PROFILE_STACK)
 
 	@ The address to call is now in r0.
 
