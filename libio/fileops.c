@@ -111,8 +111,8 @@ _IO_new_file_init_internal (struct _IO_FILE_plus *fp)
   fp->file._offset = _IO_pos_BAD;
   fp->file._flags |= CLOSED_FILEBUF_FLAGS;
 
-  _IO_link_in (fp);
   fp->file._fileno = -1;
+  _IO_link_in (fp);
 }
 
 /* External version of _IO_new_file_init_internal which switches off

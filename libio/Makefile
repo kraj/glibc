@@ -108,6 +108,7 @@ tests = \
   tst-fgetc-after-eof \
   tst-fgetwc \
   tst-fgetws \
+  tst-file-init-race \
   tst-fopenloc2 \
   tst-fputws \
   tst-freopen \
@@ -160,6 +161,8 @@ tests-static += \
 # tests-static
 
 $(objpfx)tst-popen-fork: $(shared-thread-library)
+
+$(objpfx)tst-file-init-race: $(shared-thread-library)
 
 tests-internal = tst-vtables tst-vtables-interposed
 

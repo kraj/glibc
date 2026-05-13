@@ -108,8 +108,8 @@ _IO_old_file_init_internal (struct _IO_FILE_plus *fp)
      _IO_vtable_offset is used to detect the old binaries.  */
   fp->file._vtable_offset = ((int) sizeof (struct _IO_FILE)
 			     - (int) sizeof (struct _IO_FILE_complete));
-  _IO_link_in (fp);
   fp->file._fileno = -1;
+  _IO_link_in (fp);
 
   if (&_IO_stdin_used != NULL || !_IO_legacy_file ((FILE *) fp))
     /* The object is dynamically allocated and large enough.  Initialize
