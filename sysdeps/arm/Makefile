@@ -30,6 +30,25 @@ $(objpfx)tst-armtlsdescloc: $(objpfx)tst-armtlsdesclocmod.so
 $(objpfx)tst-armtlsdescextnow: $(objpfx)tst-armtlsdescextnowmod.so
 $(objpfx)tst-armtlsdescextlazy: $(objpfx)tst-armtlsdescextlazymod.so
 endif
+
+tests += \
+  tst-bz34144 \
+  tst-bz34144-audit \
+  # tests
+modules-names += \
+  tst-bz34144-auditmod \
+  tst-bz34144-mod \
+  # modules-names
+$(objpfx)tst-bz34144: $(objpfx)tst-bz34144-mod.so
+$(objpfx)tst-bz34144-audit: $(objpfx)tst-bz34144-mod.so
+$(objpfx)tst-bz34144-audit.out: $(objpfx)tst-bz34144-auditmod.so
+# Use lazy binding to check if _dl_runtime_resolve correctly save/restore
+# the VFP state.
+LDFLAGS-tst-bz34144 = -Wl,-z,lazy
+# With LD_AUDIT, lazy resolution goes through _dl_runtime_profile, which
+# must also save/restore VFP state (BZ 34144).
+LDFLAGS-tst-bz34144-audit = -Wl,-z,lazy
+tst-bz34144-audit-ENV = LD_AUDIT=$(objpfx)tst-bz34144-auditmod.so
 endif
 endif
 
