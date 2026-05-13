@@ -34,31 +34,6 @@
 #include <gnu/lib-names.h>
 #include <dl-tunables.h>
 
-/* Type for the buffer we put the ELF header and hopefully the program
-   header.  This buffer does not really have to be too large.  In most
-   cases the program header follows the ELF header directly.  If this
-   is not the case all bets are off and we can make the header
-   arbitrarily large and still won't get it read.  This means the only
-   question is how large are the ELF and program header combined.  The
-   ELF header 32-bit files is 52 bytes long and in 64-bit files is 64
-   bytes long.  Each program header entry is again 32 and 56 bytes
-   long respectively.  I.e., even with a file which has 10 program
-   header entries we only have to read 372B/624B respectively.  Add to
-   this a bit of margin for program notes and reading 512B and 832B
-   for 32-bit and 64-bit files respectively is enough.  If this
-   heuristic should really fail for some file the code in
-   `_dl_map_object_from_fd' knows how to recover.  */
-struct filebuf
-{
-  ssize_t len;
-#if __WORDSIZE == 32
-# define FILEBUF_SIZE 512
-#else
-# define FILEBUF_SIZE 832
-#endif
-  char buf[FILEBUF_SIZE] __attribute__ ((aligned (__alignof (ElfW(Ehdr)))));
-};
-
 #include "dynamic-link.h"
 #include "get-dynamic-info.h"
 #include <abi-tag.h>
@@ -936,13 +911,18 @@ _dl_notify_new_object (int mode, Lmid_t nsid, struct link_map *l)
 }
 
 /* Initialize the PT_LOAD iterator IT for reading program headers from FD
-   at file offset PHOFF with PHNUM entries.  Zeros all precomputed fields
-   so the caller's scan loop can fill them in.  */
+   at file offset PHOFF with PHNUM entries.  FBP is used as scratch space
+   for batched program-header reads; if open_verify's initial read into
+   FBP->buf already covers the whole phdr table, the iterator runs
+   entirely from that buffer without any further pread.  Zeros all
+   precomputed fields so the caller's scan loop can fill them in.  */
 static void
-_dl_pt_load_iterator_init (struct dl_pt_load_iterator *it,
-			   int fd, ElfW(Off) phoff, uint16_t phnum)
+_dl_pt_load_iterator_init (struct dl_pt_load_iterator *it, int fd,
+			   struct filebuf *fbp, ElfW(Off) phoff,
+			   uint16_t phnum)
 {
   it->fd = fd;
+  it->fbp = fbp;
   it->phoff = phoff;
   it->phnum = phnum;
   it->idx = 0;
@@ -952,161 +932,134 @@ _dl_pt_load_iterator_init (struct dl_pt_load_iterator *it,
   it->first_mapstart = 0;
   it->last_mapstart = 0;
   it->last_allocend = 0;
+  it->cached = (phoff + (ElfW(Off)) phnum * sizeof (ElfW(Phdr))
+		<= (ElfW(Off)) fbp->len);
+  it->buf_base = 0;
+  it->buf_count = it->cached ? phnum : 0;
 }
 
-/* Scan all program headers from IT->fd in chunks, using FBP->buf as a
-   scratch buffer.  Fills in IT's precomputed PT_LOAD metadata and collects
-   segment attributes into L.  Returns NULL on success, or an error message
-   string on failure; sets *ERRVALP to errno for I/O errors, 0 otherwise.  */
+/* Scan all program headers from IT->fd, using the iterator's filebuf as a
+   scratch buffer for batched reads (skipped entirely if open_verify
+   already read the whole table).  Fills in IT's precomputed PT_LOAD
+   metadata and collects segment attributes into L.  Returns NULL on
+   success, or an error message string on failure; sets *ERRVALP to errno
+   for I/O errors, 0 otherwise.  */
 static const char *
 _dl_map_object_scan_phdrs (struct dl_pt_load_iterator *it,
-			   struct filebuf *fbp, struct link_map *l, int mode,
+			   struct link_map *l, int mode,
 			   unsigned int *stack_flagsp, bool *has_holesp,
 			   bool *empty_dynamicp, int *errvalp)
 {
   ElfW(Addr) prev_mapend = 0;
-  const ElfW(Half) phdrs_per_buf = sizeof (fbp->buf) / sizeof (ElfW(Phdr));
-  ElfW(Phdr) *chunk = (ElfW(Phdr) *) fbp->buf;
   struct dl_machine_phdr_info minfo;
   elf_machine_phdr_info_init (&minfo);
 
-  /* Fast path: if all program headers fit within the bytes already read
-     into fbp->buf by open_verify, iterate them directly without any
-     additional pread syscalls.  The slow path falls through to pread
-     in chunks (which overwrites fbp->buf, but the caller has already
-     saved the ELF header to a local copy).  */
-  const bool cached
-    = (it->phoff + (ElfW(Off)) it->phnum * sizeof (ElfW(Phdr))
-       <= (ElfW(Off)) fbp->len);
-
-  for (ElfW(Half) base = 0; base < it->phnum; )
+  for (ElfW(Half) i = 0; i < it->phnum; i++)
     {
-      ElfW(Half) batch;
-      const ElfW(Phdr) *batch_ptr;
-
-      if (__glibc_likely (cached))
+      const ElfW(Phdr) *ph = _dl_pt_load_iterator_phdr_at (it, i);
+      if (__glibc_unlikely (ph == NULL))
 	{
-	  batch = it->phnum;
-	  batch_ptr = (const ElfW(Phdr) *) (fbp->buf + it->phoff);
+	  *errvalp = errno;
+	  return N_("cannot read file data");
 	}
-      else
+      elf_machine_phdr_collect (&minfo, ph);
+      switch (ph->p_type)
 	{
-	  batch = it->phnum - base;
-	  if (batch > phdrs_per_buf)
-	    batch = phdrs_per_buf;
-	  size_t bytes = (size_t) batch * sizeof (ElfW(Phdr));
-	  ElfW(Off) off = it->phoff + (ElfW(Off)) base * sizeof (ElfW(Phdr));
-	  if (__pread64_nocancel (it->fd, chunk, bytes, off) != bytes)
-	    {
-	      *errvalp = errno;
-	      return N_("cannot read file data");
-	    }
-	  batch_ptr = chunk;
-	}
-
-      for (ElfW(Half) i = 0; i < batch; i++)
-	{
-	  const ElfW(Phdr) *ph = &batch_ptr[i];
-	  elf_machine_phdr_collect (&minfo, ph);
-	  switch (ph->p_type)
-	    {
-	    case PT_LOAD:
+	case PT_LOAD:
+	  {
+	    if (__glibc_unlikely (((ph->p_vaddr - ph->p_offset)
+				   & (it->pagesize - 1)) != 0))
 	      {
-		if (__glibc_unlikely (((ph->p_vaddr - ph->p_offset)
-				       & (it->pagesize - 1)) != 0))
-		  {
-		    *errvalp = 0;
-		    return N_("ELF load command address/offset not page-aligned");
-		  }
-		ElfW(Addr) mapstart = ALIGN_DOWN (ph->p_vaddr, it->pagesize);
-		ElfW(Addr) mapend = ALIGN_UP (ph->p_vaddr + ph->p_filesz,
-					      it->pagesize);
-		ElfW(Off)  mapoff = ALIGN_DOWN (ph->p_offset, it->pagesize);
-		int prot = pf_to_prot (ph->p_flags);
-		if (powerof2 (ph->p_align) && ph->p_align > it->p_align_max)
-		  it->p_align_max = ph->p_align;
-		it->p_align_max = _dl_map_segment_align (&(struct loadcmd) {
-							   .mapstart = mapstart,
-							   .mapend   = mapend,
-							   .mapoff   = mapoff,
-							   .prot     = prot },
-							 it->p_align_max);
-		if (it->nloadcmds > 0 && prev_mapend != mapstart)
-		  *has_holesp = true;
-		prev_mapend = mapend;
-		if (it->nloadcmds == 0)
-		  it->first_mapstart = mapstart;
-		it->last_mapstart = mapstart;
-		it->last_allocend = ph->p_vaddr + ph->p_memsz;
-		it->nloadcmds++;
+		*errvalp = 0;
+		return N_("ELF load command address/offset not page-aligned");
 	      }
-	      break;
+	    ElfW(Addr) mapstart = ALIGN_DOWN (ph->p_vaddr, it->pagesize);
+	    ElfW(Addr) mapend = ALIGN_UP (ph->p_vaddr + ph->p_filesz,
+					  it->pagesize);
+	    ElfW(Off)  mapoff = ALIGN_DOWN (ph->p_offset, it->pagesize);
+	    int prot = pf_to_prot (ph->p_flags);
+	    if (powerof2 (ph->p_align) && ph->p_align > it->p_align_max)
+	      it->p_align_max = ph->p_align;
+	    it->p_align_max = _dl_map_segment_align (&(struct loadcmd) {
+						       .mapstart = mapstart,
+						       .mapend   = mapend,
+						       .mapoff   = mapoff,
+						       .prot     = prot },
+						     it->p_align_max);
+	    if (it->nloadcmds > 0 && prev_mapend != mapstart)
+	      *has_holesp = true;
+	    prev_mapend = mapend;
+	    if (it->nloadcmds == 0)
+	      it->first_mapstart = mapstart;
+	    it->last_mapstart = mapstart;
+	    it->last_allocend = ph->p_vaddr + ph->p_memsz;
+	    it->nloadcmds++;
+	  }
+	  break;
 
-	    /* These entries tell us where to find things once the file's
-	       segments are mapped in.  We record the addresses it says
-	       verbatim, and later correct for the run-time load address.  */
-	    case PT_DYNAMIC:
-	      if (ph->p_filesz == 0)
-		*empty_dynamicp = true; /* Usually separate debuginfo.  */
-	      else
-		{
-		  /* Debuginfo only files from "objcopy --only-keep-debug"
-		     contain a PT_DYNAMIC segment with p_filesz == 0.  Skip
-		     such a segment to avoid a crash later.  */
-		  l->l_ld = (void *) ph->p_vaddr;
-		  l->l_ldnum = ph->p_memsz / sizeof (ElfW(Dyn));
-		  l->l_ld_readonly = (ph->p_flags & PF_W) == 0;
-		}
-	      break;
-
-	    case PT_PHDR:
-	      l->l_phdr = (void *) ph->p_vaddr;
-	      break;
-
-	    case PT_TLS:
-	      if (ph->p_memsz == 0)
-		/* Nothing to do for an empty segment.  */
-		break;
-
-	      l->l_tls_blocksize = ph->p_memsz;
-	      l->l_tls_align = ph->p_align;
-	      if (ph->p_align == 0)
-		l->l_tls_firstbyte_offset = 0;
-	      else
-		l->l_tls_firstbyte_offset = ph->p_vaddr & (ph->p_align - 1);
-	      l->l_tls_initimage_size = ph->p_filesz;
-	      /* Since we don't know the load address yet only store the
-		 offset.  We will adjust it later.  */
-	      l->l_tls_initimage = (void *) ph->p_vaddr;
-
-	      /* l->l_tls_modid is assigned below, once there is no
-		 possibility for failure.  */
-
-	      if (l->l_type != lt_library
-		  && GL(dl_tls_dtv_slotinfo_list) == NULL)
-		{
-#ifdef SHARED
-		  /* We are loading the executable itself when the dynamic
-		     linker was executed directly.  The setup will happen
-		     later.  */
-		  assert (l->l_prev == NULL || (mode & __RTLD_AUDIT) != 0);
-#else
-		  assert (false && "TLS not initialized in static application");
-#endif
-		}
-	      break;
-
-	    case PT_GNU_STACK:
-	      *stack_flagsp = pf_to_prot (ph->p_flags);
-	      break;
-
-	    case PT_GNU_RELRO:
-	      l->l_relro_addr = ph->p_vaddr;
-	      l->l_relro_size = ph->p_memsz;
-	      break;
+	/* These entries tell us where to find things once the file's
+	   segments are mapped in.  We record the addresses it says
+	   verbatim, and later correct for the run-time load address.  */
+	case PT_DYNAMIC:
+	  if (ph->p_filesz == 0)
+	    *empty_dynamicp = true; /* Usually separate debuginfo.  */
+	  else
+	    {
+	      /* Debuginfo only files from "objcopy --only-keep-debug"
+		 contain a PT_DYNAMIC segment with p_filesz == 0.  Skip
+		 such a segment to avoid a crash later.  */
+	      l->l_ld = (void *) ph->p_vaddr;
+	      l->l_ldnum = ph->p_memsz / sizeof (ElfW(Dyn));
+	      l->l_ld_readonly = (ph->p_flags & PF_W) == 0;
 	    }
+	  break;
+
+	case PT_PHDR:
+	  l->l_phdr = (void *) ph->p_vaddr;
+	  break;
+
+	case PT_TLS:
+	  if (ph->p_memsz == 0)
+	    /* Nothing to do for an empty segment.  */
+	    break;
+
+	  l->l_tls_blocksize = ph->p_memsz;
+	  l->l_tls_align = ph->p_align;
+	  if (ph->p_align == 0)
+	    l->l_tls_firstbyte_offset = 0;
+	  else
+	    l->l_tls_firstbyte_offset = ph->p_vaddr & (ph->p_align - 1);
+	  l->l_tls_initimage_size = ph->p_filesz;
+	  /* Since we don't know the load address yet only store the
+	     offset.  We will adjust it later.  */
+	  l->l_tls_initimage = (void *) ph->p_vaddr;
+
+	  /* l->l_tls_modid is assigned below, once there is no
+	     possibility for failure.  */
+
+	  if (l->l_type != lt_library
+	      && GL(dl_tls_dtv_slotinfo_list) == NULL)
+	    {
+#ifdef SHARED
+	      /* We are loading the executable itself when the dynamic
+		 linker was executed directly.  The setup will happen
+		 later.  */
+	      assert (l->l_prev == NULL || (mode & __RTLD_AUDIT) != 0);
+#else
+	      assert (false && "TLS not initialized in static application");
+#endif
+	    }
+	  break;
+
+	case PT_GNU_STACK:
+	  *stack_flagsp = pf_to_prot (ph->p_flags);
+	  break;
+
+	case PT_GNU_RELRO:
+	  l->l_relro_addr = ph->p_vaddr;
+	  l->l_relro_size = ph->p_memsz;
+	  break;
 	}
-      base += batch;
     }
 
   if (__glibc_unlikely (elf_machine_reject_phdr_p (&minfo, l, it->fd)))
@@ -1275,10 +1228,10 @@ _dl_map_object_from_fd (const char *name, const char *origname, int fd,
     bool has_holes;
     bool empty_dynamic = false;
 
-    _dl_pt_load_iterator_init (&it, fd, header.e_phoff, l->l_phnum);
+    _dl_pt_load_iterator_init (&it, fd, fbp, header.e_phoff, l->l_phnum);
     has_holes = false;
 
-    errstring = _dl_map_object_scan_phdrs (&it, fbp, l, mode, &stack_flags,
+    errstring = _dl_map_object_scan_phdrs (&it, l, mode, &stack_flags,
 					   &has_holes, &empty_dynamic, &errval);
     if (__glibc_unlikely (errstring != NULL))
       goto lose;

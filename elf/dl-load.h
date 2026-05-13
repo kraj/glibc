@@ -21,10 +21,39 @@
 #define _DL_LOAD_H	1
 
 #include <link.h>
+#include <stddef.h>
 #include <sys/mman.h>
+#include <sys/types.h>
 #include <libc-pointer-arith.h>
 #include <stackinfo.h>
 #include <not-cancel.h>
+
+
+/* Type for the buffer we put the ELF header and hopefully the program
+   header.  This buffer does not really have to be too large.  In most
+   cases the program header follows the ELF header directly.  If this
+   is not the case all bets are off and we can make the header
+   arbitrarily large and still won't get it read.  This means the only
+   question is how large are the ELF and program header combined.  The
+   ELF header for 32-bit files is 52 bytes long and for 64-bit files
+   64 bytes long.  Each program header entry is 32 and 56 bytes long
+   respectively.
+
+   Size for at least 16 entries (with a little margin for program notes)
+   needs 52 + 16*32 = 564 bytes on 32-bit and 64 + 16*56 = 960 bytes on
+   64-bit; round up to 640 and  1024 respectively.  If this heuristic
+   should still fail for some file the code in
+   `_dl_map_object_from_fd' knows how to recover.  */
+struct filebuf
+{
+  ssize_t len;
+#if __WORDSIZE == 32
+# define FILEBUF_SIZE 640
+#else
+# define FILEBUF_SIZE 1024
+#endif
+  char buf[FILEBUF_SIZE] __attribute__ ((aligned (__alignof (ElfW(Ehdr)))));
+};
 
 
 /* On some systems, no flag bits are given to specify file mapping.  */
@@ -84,27 +113,64 @@ struct loadcmd
 };
 
 
-/* Iterator for PT_LOAD program header segments.  It should be initialized
-   by _dl_pt_load_iterator_init once, then _dl_pt_load_iterator_next
-   repeatedly to walk each PT_LOAD segment without storing them all.
-   Segments are re-read one at a time via pread so that no large stack
-   buffer is needed for the program header table.  */
+/* Iterator for program header segments.  Initialize with
+   _dl_pt_load_iterator_init, then either walk PT_LOAD segments via
+   _dl_pt_load_iterator_next or do random access via
+   _dl_pt_load_iterator_phdr_at.  A scratch buffer (fbp->buf) is used to
+   batch-read program headers; if the entire program header table was
+   already loaded by open_verify's initial read no pread is issued.  */
 struct dl_pt_load_iterator
 {
   int fd;                       /* File descriptor for pread.  */
+  struct filebuf *fbp;          /* Scratch buffer for batched phdr reads.  */
   ElfW(Off) phoff;              /* Program header table file offset.  */
   ElfW(Half) phnum;             /* Total number of program headers.  */
   ElfW(Half) idx;               /* Index of next header to read.  */
+  ElfW(Half) buf_base;          /* Index of phdr at start of fbp->buf
+                                   (chunked mode only).  */
+  ElfW(Half) buf_count;         /* Number of phdrs currently in fbp->buf.  */
+  bool cached;                  /* True iff entire phdr table is already
+                                   resident in fbp->buf from open_verify.  */
   ElfW(Addr) p_align_max;       /* Maximum p_align over all PT_LOAD segments.  */
   ElfW(Addr) pagesize;          /* System page size (GLRO(dl_pagesize)).  */
 
-  /* Fields below are precomputed by _dl_pt_load_iterator_init and
-     are intended for use by _dl_map_segments.  */
+  /* Fields below are precomputed by _dl_map_object_scan_phdrs and are
+     intended for use by _dl_map_segments.  */
   ElfW(Addr) first_mapstart;    /* mapstart of the first PT_LOAD segment.  */
   ElfW(Addr) last_mapstart;     /* mapstart of the last PT_LOAD segment.  */
   ElfW(Addr) last_allocend;     /* allocend of the last PT_LOAD segment.  */
   size_t nloadcmds;             /* Number of PT_LOAD segments found.  */
 };
+
+/* Return a pointer to the program header at INDEX.  If the entire phdr
+   table is already cached in fbp->buf (from open_verify), it is served
+   directly with no syscall; otherwise a batch of up to FILEBUF_SIZE /
+   sizeof(ElfW(Phdr)) entries is read into fbp->buf via a single pread.
+   Subsequent calls within the same batch hit the buffer.  Returns NULL on
+   read failure (errno set by pread).  */
+static __always_inline const ElfW(Phdr) *
+_dl_pt_load_iterator_phdr_at (struct dl_pt_load_iterator *it, ElfW(Half) idx)
+{
+  if (__glibc_likely (it->cached))
+    return (const ElfW(Phdr) *) (it->fbp->buf + it->phoff) + idx;
+
+  if (idx < it->buf_base || idx >= it->buf_base + it->buf_count)
+    {
+      const ElfW(Half) phdrs_per_buf
+	= sizeof (it->fbp->buf) / sizeof (ElfW(Phdr));
+      ElfW(Half) batch = it->phnum - idx;
+      if (batch > phdrs_per_buf)
+	batch = phdrs_per_buf;
+      size_t bytes = (size_t) batch * sizeof (ElfW(Phdr));
+      ElfW(Off) off = it->phoff + (ElfW(Off)) idx * sizeof (ElfW(Phdr));
+      if (__pread64_nocancel (it->fd, it->fbp->buf, bytes, off)
+	  != (ssize_t) bytes)
+	return NULL;
+      it->buf_base = idx;
+      it->buf_count = batch;
+    }
+  return (const ElfW(Phdr) *) it->fbp->buf + (idx - it->buf_base);
+}
 
 /* Advance iterator IT to the next PT_LOAD segment and fill C with its
    decoded load command.  Returns true when a segment was found, false
@@ -115,21 +181,19 @@ _dl_pt_load_iterator_next (struct dl_pt_load_iterator *it, struct loadcmd *c)
 {
   while (it->idx < it->phnum)
     {
-      ElfW(Phdr) ph;
-      ElfW(Off) off = it->phoff + (ElfW(Off)) it->idx * sizeof ph;
+      const ElfW(Phdr) *ph = _dl_pt_load_iterator_phdr_at (it, it->idx);
       it->idx++;
-      if (__pread64_nocancel (it->fd, &ph, sizeof ph, off)
-	  != (ssize_t) sizeof ph)
+      if (__glibc_unlikely (ph == NULL))
         return false;
-      if (ph.p_type != PT_LOAD)
+      if (ph->p_type != PT_LOAD)
         continue;
 
-      c->mapstart = ALIGN_DOWN (ph.p_vaddr, it->pagesize);
-      c->mapend   = ALIGN_UP (ph.p_vaddr + ph.p_filesz, it->pagesize);
-      c->dataend  = ph.p_vaddr + ph.p_filesz;
-      c->allocend = ph.p_vaddr + ph.p_memsz;
-      c->mapoff   = ALIGN_DOWN (ph.p_offset, it->pagesize);
-      c->prot     = pf_to_prot (ph.p_flags);
+      c->mapstart = ALIGN_DOWN (ph->p_vaddr, it->pagesize);
+      c->mapend   = ALIGN_UP (ph->p_vaddr + ph->p_filesz, it->pagesize);
+      c->dataend  = ph->p_vaddr + ph->p_filesz;
+      c->allocend = ph->p_vaddr + ph->p_memsz;
+      c->mapoff   = ALIGN_DOWN (ph->p_offset, it->pagesize);
+      c->prot     = pf_to_prot (ph->p_flags);
       c->mapalign = it->p_align_max;
       return true;
     }
