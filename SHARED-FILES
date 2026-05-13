@@ -212,8 +212,9 @@ unicode:
 # The following files are shared with the upstream tzcode project and must be
 # updated regularly to stay in sync with the upstream releases.
 #
-# Currently synced to TZDB 2024b, announced and distributed here:
-#	https://github.com/eggert/tz/releases/tag/2024b
+# Currently synced to TZDB 2026b, distributed at:
+#	https://github.com/eggert/tz/releases/tag/2026b
+#	https://data.iana.org/time-zones/releases/tzdb-2026b.tar.lz
 tzcode:
   timezone/private.h
   timezone/tzfile.h
@@ -258,7 +259,7 @@ tzdata:
 # FLT_EVAL_METHOD equal to 2 (i386).  Additionally, extra optimizations
 # are applied to share the internal data table across different
 # implementations.
-# 
+#
 # The project is distribute here:
 #       https://gitlab.inria.fr/core-math/core-math/
 core-math:
