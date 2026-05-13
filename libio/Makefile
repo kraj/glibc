@@ -70,6 +70,7 @@ routines_no_fortify += \
   # routines_no_fortify
 
 tests = \
+  bug-fmemopen \
   bug-fopena+ \
   bug-fseek \
   bug-ftell \
