@@ -1255,6 +1255,10 @@ ifeq (yes,$(build-shared))
 tests += \
   tst-ifunc-fault-bindnow \
   tst-ifunc-fault-lazy \
+  tst-ifunc-plt \
+  tst-ifunc-plt-bindnow \
+  tst-ifunc-plt-dlopen \
+  tst-ifunc-plt-dlopen-bindnow \
   # tests
 # Note: sysdeps/x86_64/ifuncmain8.c uses ifuncmain8.
 tests-internal += \
@@ -1317,6 +1321,8 @@ modules-names += \
   ifuncmod1 \
   ifuncmod3 \
   ifuncmod6 \
+  tst-ifunc-plt-dep \
+  tst-ifunc-plt-lib \
   # modules-names
 ifeq (no,$(with-lld))
 modules-names += ifuncmod5
@@ -1796,6 +1802,7 @@ unload4mod1.so-no-z-defs = yes
 ifuncmod1.so-no-z-defs = yes
 ifuncmod5.so-no-z-defs = yes
 ifuncmod6.so-no-z-defs = yes
+tst-ifunc-plt-lib.so-no-z-defs = yes
 tst-auditmod9a.so-no-z-defs = yes
 tst-auditmod9b.so-no-z-defs = yes
 tst-nodelete-uniquemod.so-no-z-defs = yes
@@ -2428,6 +2435,19 @@ $(objpfx)tst-ifunc-fault-lazy.out: $(objpfx)tst-ifunc-fault-lazy $(objpfx)ld.so
 $(objpfx)tst-ifunc-fault-bindnow.out: $(objpfx)tst-ifunc-fault-bindnow \
    $(objpfx)ld.so
 	$(tst-ifunc-fault-script)
+
+LDFLAGS-tst-ifunc-plt-lib.so = -Wl,-z,lazy
+
+tst-ifunc-plt-bindnow-ENV = LD_BIND_NOW=1
+tst-ifunc-plt-dlopen-bindnow-ENV = LD_BIND_NOW=1
+
+$(objpfx)tst-ifunc-plt-lib.so: $(objpfx)tst-ifunc-plt-dep.so
+$(objpfx)tst-ifunc-plt: $(objpfx)tst-ifunc-plt-lib.so
+$(objpfx)tst-ifunc-plt-bindnow: $(objpfx)tst-ifunc-plt-lib.so
+$(objpfx)tst-ifunc-plt-dlopen.out: \
+  $(objpfx)tst-ifunc-plt-lib.so $(objpfx)tst-ifunc-plt-dep.so
+$(objpfx)tst-ifunc-plt-dlopen-bindnow.out: \
+  $(objpfx)tst-ifunc-plt-lib.so $(objpfx)tst-ifunc-plt-dep.so
 
 $(objpfx)tst-unique1.out: $(objpfx)tst-unique1mod1.so \
 			  $(objpfx)tst-unique1mod2.so

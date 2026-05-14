@@ -42,6 +42,7 @@
 #endif
 
 #define ELF_MACHINE_JMP_SLOT R_RISCV_JUMP_SLOT
+#define ELF_MACHINE_IRELATIVE R_RISCV_IRELATIVE
 
 #define elf_machine_type_class(type)				\
   ((ELF_RTYPE_CLASS_PLT * ((type) == ELF_MACHINE_JMP_SLOT	\

@@ -78,7 +78,8 @@ elf_machine_lazy_rel (struct link_map *map, struct r_scope_elem *scope[],
    consumes precisely the very end of the DT_REL*, or DT_JMPREL and DT_REL*
    are completely separate and there is a gap between them.  */
 
-# define _ELF_DYNAMIC_DO_RELOC(RELOC, reloc, map, scope, do_lazy, skip_ifunc, test_rel) \
+# define _ELF_DYNAMIC_DO_RELOC(RELOC, reloc, map, scope, do_lazy, skip_ifunc, \
+			       test_rel)				      \
   do {									      \
     struct { ElfW(Addr) start, size;					      \
 	     __typeof (((ElfW(Dyn) *) 0)->d_un.d_val) nrelative; int lazy; }  \
@@ -118,13 +119,34 @@ elf_machine_lazy_rel (struct link_map *map, struct r_scope_elem *scope[],
 	  }								      \
       }									      \
 									      \
-      for (int ranges_index = 0; ranges_index < 2; ++ranges_index)	      \
-        elf_dynamic_do_##reloc ((map), scope,				      \
-				ranges[ranges_index].start,		      \
-				ranges[ranges_index].size,		      \
-				ranges[ranges_index].nrelative,		      \
-				ranges[ranges_index].lazy,		      \
-				skip_ifunc);				      \
+      /* Defer all IRELATIVE relocations until after all non-IRELATIVE	      \
+	 relocations (including PLT lazy-binding setup) have been processed   \
+	 for both sections.  This ensures IRELATIVE resolvers can call PLT    \
+	 stubs safely regardless of which section R_*_IRELATIVE was placed in \
+	 by the linker.  */						      \
+      if (!DO_RTLD_BOOTSTRAP)						      \
+	{								      \
+	  for (int ranges_index = 0; ranges_index < 2; ++ranges_index)	      \
+	    elf_dynamic_do_##reloc ((map), scope,			      \
+				    ranges[ranges_index].start,		      \
+				    ranges[ranges_index].size,		      \
+				    ranges[ranges_index].nrelative,	      \
+				    ranges[ranges_index].lazy);		      \
+	  for (int ranges_index = 0; ranges_index < 2; ++ranges_index)	      \
+	    elf_dynamic_do_##reloc##_irelative ((map), scope,		      \
+						ranges[ranges_index].start,   \
+						ranges[ranges_index].size,    \
+						ranges[ranges_index].nrelative,\
+						ranges[ranges_index].lazy,    \
+						skip_ifunc);		      \
+	}								      \
+      else								      \
+	for (int ranges_index = 0; ranges_index < 2; ++ranges_index)	      \
+	  elf_dynamic_do_##reloc ((map), scope,				      \
+				  ranges[ranges_index].start,		      \
+				  ranges[ranges_index].size,		      \
+				  ranges[ranges_index].nrelative,	      \
+				  ranges[ranges_index].lazy);		      \
   } while (0)
 
 # if ELF_MACHINE_NO_REL || ELF_MACHINE_NO_RELA

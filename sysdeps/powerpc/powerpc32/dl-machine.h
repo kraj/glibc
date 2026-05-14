@@ -146,6 +146,7 @@ __elf_preferred_address(struct link_map *loader, size_t maplength,
 
 /* A reloc type used for ld.so cmdline arg lookups to reject PLT entries.  */
 #define ELF_MACHINE_JMP_SLOT	R_PPC_JMP_SLOT
+#define ELF_MACHINE_IRELATIVE	R_PPC_IRELATIVE
 
 /* We define an initialization function to initialize HWCAP/HWCAP2 and
    platform data so it can be copied into the TCB later.  This is called

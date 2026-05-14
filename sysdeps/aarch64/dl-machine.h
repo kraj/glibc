@@ -119,6 +119,7 @@ elf_machine_runtime_setup (struct link_map *l, struct r_scope_elem *scope[],
    | (((type) == R_AARCH64_COPY) * ELF_RTYPE_CLASS_COPY))
 
 #define ELF_MACHINE_JMP_SLOT	R_AARCH64_JUMP_SLOT
+#define ELF_MACHINE_IRELATIVE	R_AARCH64_IRELATIVE
 
 #define DL_PLATFORM_INIT dl_platform_init ()
 
