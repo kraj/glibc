@@ -51,10 +51,16 @@ static int
 do_test (void)
 {
   char *path = xasprintf ("%s/elf/tst-bz26577-mod.so", support_objdir_root);
+  size_t stacksize =
+#ifdef PTHREAD_STACK_MIN
+    PTHREAD_STACK_MIN
+#else
+    support_small_thread_stack_size ();
+#endif
 
   pthread_attr_t attr;
   xpthread_attr_init (&attr);
-  xpthread_attr_setstacksize (&attr, PTHREAD_STACK_MIN);
+  xpthread_attr_setstacksize (&attr, stacksize);
   pthread_t thr = xpthread_create (&attr, dlopen_thread, path);
   xpthread_join (thr);
   xpthread_attr_destroy (&attr);
