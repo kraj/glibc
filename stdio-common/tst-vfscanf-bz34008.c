@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <malloc.h>
 #include <support/check.h>
+#include <libc-diag.h>
 
 #define WIDTH 0x410
 #define SCANFSTR "%1040mc"
@@ -37,7 +38,14 @@ do_test (void)
   input[WIDTH] = '\0';
 
   char *buf = NULL;
+
+  /* clang does not recognize the 'm' scanf specifier and incorrectly warns
+     that the buf argument may overflow ((argument 3 has size 8, but the
+     corresponding specifier may require size 1040).  */
+  DIAG_PUSH_NEEDS_COMMENT_CLANG;
+  DIAG_IGNORE_NEEDS_COMMENT_CLANG (18, "-Wfortify-source");
   TEST_VERIFY (sscanf (input, SCANFSTR, &buf) != -1);
+  DIAG_POP_NEEDS_COMMENT_CLANG;
   TEST_VERIFY (buf != NULL);
 
   free (buf);
