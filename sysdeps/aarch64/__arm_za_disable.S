@@ -88,20 +88,10 @@ L(save_loop):
 L(end):
 	ret
 L(fail):
-	paciasp
-	cfi_negate_ra_state
-	stp	x29, x30, [sp, -32]!
-	cfi_adjust_cfa_offset (32)
-	cfi_rel_offset (x29, 0)
-	cfi_rel_offset (x30, 8)
-	mov	x29, sp
-	.inst	0x04e0e3f0  /* cntd	x16  */
-	str	x16, [sp, 16]
-	cfi_rel_offset (46, 16)
 	.inst	0xd503467f  /* smstop  */
 	adrp	x0, L(msg)
 	add	x0, x0, :lo12:L(msg)
-	bl	HIDDEN_JUMPTARGET (__libc_fatal)
+	b	HIDDEN_JUMPTARGET (__libc_fatal)
 END (__libc_arm_za_disable)
 
 	.section        .rodata

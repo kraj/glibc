@@ -23,7 +23,7 @@ struct blk {
 };
 
 /* Read SVCR to get SM (bit0) and ZA (bit1) state.  */
-static unsigned long
+static unsigned long __attribute_maybe_unused__
 get_svcr (void)
 {
   register unsigned long x0 asm ("x0");
@@ -34,7 +34,7 @@ get_svcr (void)
 }
 
 /* Returns tpidr2.  */
-static void *
+static __attribute_maybe_unused__ void *
 get_tpidr2 (void)
 {
   register unsigned long x0 asm ("x0");
@@ -45,7 +45,7 @@ get_tpidr2 (void)
 }
 
 /* Obtains current streaming SVE vector register size.  */
-static unsigned long
+static unsigned long __attribute_maybe_unused__
 get_svl (void)
 {
   register unsigned long x0 asm ("x0");
@@ -56,7 +56,7 @@ get_svl (void)
 }
 
 /* PSTATE.ZA = 1, set ZA state to active.  */
-static void
+static void __attribute_maybe_unused__
 start_za (void)
 {
   asm volatile (
@@ -64,7 +64,7 @@ start_za (void)
 }
 
 /* Load data into ZA byte by byte from p.  */
-static void __attribute__ ((noinline))
+static void __attribute_maybe_unused__ __attribute__ ((noinline))
 load_za (const void *buf, unsigned long svl)
 {
   register unsigned long x15 asm ("x15") = 0;
@@ -84,7 +84,7 @@ load_za (const void *buf, unsigned long svl)
 }
 
 /* Set tpidr2 to BLK.  */
-static void
+static void __attribute_maybe_unused__
 set_tpidr2 (struct blk *blk)
 {
   register unsigned long x0 asm ("x0") = (unsigned long)blk;

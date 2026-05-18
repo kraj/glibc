@@ -96,9 +96,11 @@ tests-internal += \
   tst-sme-clone3 \
   tst-sme-fork \
   tst-sme-vfork \
+  tst-sme-za-disable-fail \
   # tests-internal
 
 $(objpfx)tst-sme-clone3: $(objpfx)clone3.o $(objpfx)__arm_za_disable.o
+$(objpfx)tst-sme-za-disable-fail: $(objpfx)__arm_za_disable.o
 endif
 
 ifeq ($(subdir),malloc)
