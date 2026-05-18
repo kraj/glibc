@@ -1,4 +1,4 @@
-/* Optimized memcpy for Huawei Kupeng 950 processor.
+/* Optimized memcpy for Huawei Kunpeng 950 processor.
    Copyright (C) 2026 Free Software Foundation, Inc.
 
    This file is part of the GNU C Library.

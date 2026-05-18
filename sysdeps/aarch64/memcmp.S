@@ -42,8 +42,11 @@
 #define src1end	x7
 #define src2end	x8
 
+#ifndef MEMCMP
+# define MEMCMP memcmp
+#endif
 
-ENTRY (memcmp)
+ENTRY (MEMCMP)
 	cmp	limit, 16
 	b.lo	L(less16)
 	ldp	data1, data3, [src1]
@@ -197,10 +200,10 @@ L(loop64):
 	cneg	result, result, lo
 	ret
 
-END (memcmp)
+END (MEMCMP)
 #undef bcmp
-weak_alias (memcmp, bcmp)
+weak_alias (MEMCMP, bcmp)
 #undef __memcmpeq
-strong_alias (memcmp, __memcmpeq)
-libc_hidden_builtin_def (memcmp)
+strong_alias (MEMCMP, __memcmpeq)
+libc_hidden_builtin_def (MEMCMP)
 libc_hidden_def (__memcmpeq)

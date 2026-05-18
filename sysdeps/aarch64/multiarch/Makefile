@@ -1,5 +1,7 @@
 ifeq ($(subdir),string)
 sysdep_routines += \
+  memcmp_generic \
+  memcmp_kunpeng950 \
   memcpy_a64fx \
   memcpy_generic \
   memcpy_kunpeng950 \
