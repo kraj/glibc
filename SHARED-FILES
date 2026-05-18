@@ -152,9 +152,7 @@ gnulib:
   time/strptime.c
   time/timegm.c
 
-# The last merge was 2014-12-11 and merged gettext 0.19.3 into glibc with a
-# patch submitted to the gettext mailing list for changes that could be merged
-# back.
+# Synced with GNU gettext 1.0 (2026-05-18), through gettext commit 2ebbdd0e2.
 #
 # This commit was omitted from the merge as it does not appear to be compatible
 # with how glibc expects things to work:
@@ -171,6 +169,7 @@ gettext:
   intl/dcngettext.c
   intl/dgettext.c
   intl/dngettext.c
+  intl/eval-plural.h
   intl/explodename.c
   intl/finddomain.c
   intl/gettext.c
