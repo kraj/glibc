@@ -22,12 +22,16 @@ static struct link_map *
 _dl_sym_find_caller_link_map (ElfW(Addr) caller)
 {
   struct link_map *l = _dl_find_dso_for_object (caller);
-  if (l != NULL)
+  /* A constructor that tail-calls dlsym makes the caller address point
+     into the dynamic linker itself.  The ld.so link map has no l_scope
+     set, so using it for a symbol lookup would dereference NULL.  Treat
+     that like an unknown caller.  */
+  if (l != NULL && l->l_scope != NULL)
     return l;
-  else
-    /* If the address is not recognized the call comes from the main
-       program (we hope).  */
-    return GL(dl_ns)[LM_ID_BASE]._ns_loaded;
+  /* The address does not belong to any loaded object (e.g. it is in
+     JIT-generated code or in the main program).  Fall back to the main
+     program's link map.  */
+  return GL(dl_ns)[LM_ID_BASE]._ns_loaded;
 }
 
 /* Translates RESULT, *REF, VALUE into a symbol address from the point
