@@ -122,6 +122,7 @@ tests += \
   tst-resolv-noaaaa \
   tst-resolv-noaaaa-vc \
   tst-resolv-nondecimal \
+  tst-resolv-res_init-failure \
   tst-resolv-res_init-multi \
   tst-resolv-search \
   tst-resolv-semi-failure \
@@ -307,6 +308,8 @@ $(objpfx)tst-resolv-dns-section: $(objpfx)libresolv.so \
 $(objpfx)tst-resolv-edns: $(objpfx)libresolv.so $(shared-thread-library)
 $(objpfx)tst-resolv-network: $(objpfx)libresolv.so $(shared-thread-library)
 $(objpfx)tst-resolv-res_init: $(objpfx)libresolv.so
+$(objpfx)tst-resolv-res_init-failure: $(objpfx)libresolv.so \
+  $(shared-thread-library)
 $(objpfx)tst-resolv-res_init-multi: $(objpfx)libresolv.so \
   $(shared-thread-library)
 $(objpfx)tst-resolv-res_init-thread: $(objpfx)libresolv.so \

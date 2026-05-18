@@ -1183,7 +1183,6 @@ resolv_test_start (struct resolv_redirect_config config)
   /* Disable IPv6 name server addresses.  The code below only
      overrides the IPv4 addresses.  */
   __res_iclose (&_res, true);
-  _res._u._ext.nscount = 0;
 
   /* Redirect queries to the server socket.  */
   if (test_verbose)

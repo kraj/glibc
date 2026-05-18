@@ -89,7 +89,9 @@
 #include <stdlib.h>
 
 /* Close all open sockets.  If FREE_ADDR is true, deallocate any
-   separately allocated name server addresses.  */
+   separately allocated name server addresses, detach the extended
+   resolver configuration, and reset the cached extended-state count
+   so subsequent name lookups reinitialize the extended state.  */
 void
 __res_iclose (res_state statp, bool free_addr)
 {
@@ -114,7 +116,10 @@ __res_iclose (res_state statp, bool free_addr)
           }
       }
   if (free_addr)
-    __resolv_conf_detach (statp);
+    {
+      __resolv_conf_detach (statp);
+      statp->_u._ext.nscount = 0;
+    }
 }
 libc_hidden_def (__res_iclose)
 
