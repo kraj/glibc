@@ -21,7 +21,6 @@
 #define AARCH64_FPU_SV_LOG1PF_INLINE_H
 
 #include "sv_math.h"
-#include "vecmath_config.h"
 
 #define SignExponentMask 0xff800000
 
