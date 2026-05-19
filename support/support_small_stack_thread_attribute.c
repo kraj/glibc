@@ -24,7 +24,7 @@ allocate (void *closure)
 {
   pthread_attr_t *result = malloc (sizeof (*result));
   xpthread_attr_init (result);
-  support_set_small_thread_stack_size (result);
+  support_set_small_thread_stack_size (result, false);
   return result;
 }
 

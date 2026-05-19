@@ -90,11 +90,13 @@ void xpthread_attr_setguardsize (pthread_attr_t *attr,
 
 void xpthread_kill (pthread_t thr, int signo);
 
-/* Return the stack size used on support_set_small_thread_stack_size.  */
-size_t support_small_thread_stack_size (void);
-/* Set the stack size in ATTR to a small value, but still large enough
-   to cover most internal glibc stack usage.  */
-void support_set_small_thread_stack_size (pthread_attr_t *attr);
+/* Return the stack size used on support_set_small_thread_stack_size,
+   or PTHREAD_STACK_MIN (if defined) is USE_STACK_MIN is set.  */
+size_t support_small_thread_stack_size (bool use_stack_min);
+/* Set the stack size in ATTR to a small value.  Use PTHREAD_STACK_MIN (if
+   defined) or a large enough to cover most internal glibc stack usage.  */
+void support_set_small_thread_stack_size (pthread_attr_t *attr,
+					  bool use_stack_min);
 
 /* Return a pointer to a thread attribute which requests a small
    stack.  The caller must not free this pointer.  */

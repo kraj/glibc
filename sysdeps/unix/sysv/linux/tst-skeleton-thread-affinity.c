@@ -208,7 +208,7 @@ early_test (struct conf *conf)
       printf ("error: pthread_attr_init failed: %s\n", strerror (ret));
       return false;
     }
-  support_set_small_thread_stack_size (&attr);
+  support_set_small_thread_stack_size (&attr, false);
 
   /* This count assumes that all the threads below are created
      successfully, and call pthread_barrier_wait().  If any threads

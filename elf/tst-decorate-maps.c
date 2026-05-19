@@ -128,7 +128,7 @@ do_test_threads (bool set_guard)
       {
 	pthread_attr_t attr;
 	xpthread_attr_init (&attr);
-	size_t stacksize = support_small_thread_stack_size ();
+	size_t stacksize = support_small_thread_stack_size (false);
 	void *stack = xmmap (0,
 			     stacksize,
 			     PROT_READ | PROT_WRITE,

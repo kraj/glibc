@@ -136,7 +136,7 @@ early_test (struct conf *conf)
       printf ("error: pthread_attr_init failed: %s\n", strerror (ret));
       return false;
     }
-  support_set_small_thread_stack_size (&attr);
+  support_set_small_thread_stack_size (&attr, false);
 
   /* Spawn a thread pinned to each available CPU.  */
   for (int cpu = 0; cpu <= conf->last_cpu; ++cpu)

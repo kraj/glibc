@@ -81,7 +81,7 @@ do_realpath (void *arg)
   const size_t syscall_usage = 1 * PATH_MAX + 1024;
   const size_t realpath_usage = 2 * PATH_MAX + 1024;
   const size_t thread_usage = 1 * PATH_MAX + 1024;
-  size_t stack_size = support_small_thread_stack_size ()
+  size_t stack_size = support_small_thread_stack_size (false)
 		      - syscall_usage - realpath_usage - thread_usage;
   char stack[stack_size];
   char *resolved = stack + stack_size - thread_usage + 1024;
