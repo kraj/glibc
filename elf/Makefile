@@ -410,6 +410,7 @@ tests += \
   tst-debug1 \
   tst-deep1 \
   tst-dl-is_dso \
+  tst-dl-path-buf \
   tst-dlclose-lazy \
   tst-dlmodcount \
   tst-dlmopen-dlerror \
@@ -703,6 +704,7 @@ ifeq (yes,$(build-shared))
 ifneq ($(PERL),no)
 tests-special += \
   $(objpfx)noload-mem.out \
+  $(objpfx)tst-dl-path-buf-mem.out \
   $(objpfx)tst-leaks1-mem.out \
   # tests-special
 endif
@@ -912,6 +914,7 @@ modules-names += \
   tst-deep1mod1 \
   tst-deep1mod2 \
   tst-deep1mod3 \
+  tst-dl-path-buf-mod \
   tst-dl_find_object-mod1 \
   tst-dl_find_object-mod2 \
   tst-dl_find_object-mod3 \
@@ -2277,6 +2280,16 @@ $(objpfx)tst-dlopenrpath: $(objpfx)tst-dlopenrpathmod.so
 CFLAGS-tst-dlopenrpath.c += -DPFX=\"$(objpfx)\"
 LDFLAGS-tst-dlopenrpathmod.so += -Wl,-rpath,\$$ORIGIN/test-subdir
 $(objpfx)tst-dlopenrpath.out: $(objpfx)firstobj.so
+
+$(objpfx)tst-dl-path-buf: $(objpfx)tst-dl-path-buf-mod.so $(shared-thread-library)
+LDFLAGS-tst-dl-path-buf += -Wl,-rpath,\$$ORIGIN/tst-dl-path-buf-subdir
+tst-dl-path-buf-TUNABLES = glibc.mem.decorate_maps=1
+tst-dl-path-buf-ENV = MALLOC_TRACE=$(objpfx)tst-dl-path-buf.mtrace \
+		      LD_PRELOAD=$(common-objpfx)/malloc/libc_malloc_debug.so
+
+$(objpfx)tst-dl-path-buf-mem.out: $(objpfx)tst-dl-path-buf.out
+	$(common-objpfx)malloc/mtrace $(objpfx)tst-dl-path-buf.mtrace > $@; \
+	$(evaluate-test)
 
 $(objpfx)tst-deep1mod2.so: $(objpfx)tst-deep1mod3.so
 $(objpfx)tst-deep1: $(objpfx)tst-deep1mod1.so

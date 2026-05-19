@@ -33,6 +33,7 @@
 #include <sys/types.h>
 #include <gnu/lib-names.h>
 #include <dl-tunables.h>
+#include <dl-scratch-buffer.h>
 
 #include "dynamic-link.h"
 #include "get-dynamic-info.h"
@@ -96,7 +97,9 @@ is_trusted_path_normalize (const char *path, size_t len)
   if (len == 0)
     return false;
 
-  char *npath = (char *) alloca (len + 2);
+  struct dl_scratch_buffer scratch = dl_scratch_buffer_init ();
+  dl_scratch_buffer_allocate (&scratch, len + 2, 0);
+  char *npath = scratch.data;
   char *wnp = npath;
   while (*path != '\0')
     {
@@ -131,19 +134,24 @@ is_trusted_path_normalize (const char *path, size_t len)
   if (wnp == npath || wnp[-1] != '/')
     *wnp++ = '/';
 
+  bool result = false;
   const char *trun = system_dirs;
 
   for (size_t idx = 0; idx < nsystem_dirs_len; ++idx)
     {
       if (wnp - npath >= system_dirs_len[idx]
 	  && memcmp (trun, npath, system_dirs_len[idx]) == 0)
-	/* Found it.  */
-	return true;
+	{
+	  /* Found it.  */
+	  result = true;
+	  break;
+	}
 
       trun += system_dirs_len[idx] + 1;
     }
 
-  return false;
+  dl_scratch_buffer_free (&scratch);
+  return result;
 }
 
 /* Given a substring starting at INPUT, just after the DST '$' start
@@ -1470,12 +1478,17 @@ cannot enable executable stack as shared object requires");
   return l;
 }
 
-/* Print search path.  */
+/* Print search path.  BUF is a scratch buffer provided by the caller;
+   it must be large enough to hold the longest "<dirname><capstr>" plus
+   a trailing NUL byte -- i.e. at least
+   max_dirnamelen + max_capstrlen + 1 bytes.  open_path's path buffer
+   (max_dirnamelen + max_capstrlen + namelen, namelen >= 1) is reused
+   here so that enabling LD_DEBUG=libs does not require an extra mmap
+   per call.  */
 static void
 print_search_path (struct r_search_path_elem **list,
-		   const char *what, const char *name)
+		   const char *what, const char *name, char *buf)
 {
-  char buf[max_dirnamelen + max_capstrlen];
   int first = 1;
 
   _dl_debug_printf (" search path=");
@@ -1725,7 +1738,6 @@ open_path (const char *name, size_t namelen, int mode,
 	   bool *found_other_class)
 {
   struct r_search_path_elem **dirs = sps->dirs;
-  char *buf;
   int fd = -1;
   const char *current_what = NULL;
   int any = 0;
@@ -1735,7 +1747,18 @@ open_path (const char *name, size_t namelen, int mode,
        given on the command line when rtld is run directly.  */
     return -1;
 
-  buf = alloca (max_dirnamelen + max_capstrlen + namelen);
+  /* The scratch buffer below is sized to satisfy both this function's
+     candidate-path construction (max_dirnamelen + max_capstrlen + namelen)
+     and print_search_path's buffer precondition
+     (max_dirnamelen + max_capstrlen + 1).  An empty NAME would under-size the
+     buffer for the latter and would also produce a meaningless lookup (the
+     loader rejects empty names well before reaching here).  */
+  assert (namelen >= 1);
+
+  size_t bufsize = max_dirnamelen + max_capstrlen + namelen;
+  struct dl_scratch_buffer scratch = dl_scratch_buffer_init ();
+  dl_scratch_buffer_allocate (&scratch, bufsize, 0);
+  char *buf = scratch.data;
   do
     {
       struct r_search_path_elem *this_dir = *dirs;
@@ -1750,7 +1773,7 @@ open_path (const char *name, size_t namelen, int mode,
 	  && current_what != this_dir->what)
 	{
 	  current_what = this_dir->what;
-	  print_search_path (dirs, current_what, this_dir->where);
+	  print_search_path (dirs, current_what, this_dir->where, buf);
 	}
 
       edp = (char *) __mempcpy (buf, this_dir->dirname, this_dir->dirnamelen);
@@ -1838,6 +1861,7 @@ open_path (const char *name, size_t namelen, int mode,
 	  if (*realname != NULL)
 	    {
 	      memcpy (*realname, buf, buflen);
+	      dl_scratch_buffer_free (&scratch);
 	      return fd;
 	    }
 	  else
@@ -1845,6 +1869,7 @@ open_path (const char *name, size_t namelen, int mode,
 	      /* No memory for the name, we certainly won't be able
 		 to load and link it.  */
 	      __close_nocancel (fd);
+	      dl_scratch_buffer_free (&scratch);
 	      return -1;
 	    }
 	}
@@ -1854,7 +1879,10 @@ open_path (const char *name, size_t namelen, int mode,
 	 directory (for instance, if the component is a existing file meaning
 	 essentially that the pathname is invalid - ENOTDIR).  */
       if (here_any && errno != ENOENT && errno != EACCES && errno != ENOTDIR)
-	return -1;
+	{
+	  dl_scratch_buffer_free (&scratch);
+	  return -1;
+	}
 
       /* Remember whether we found anything.  */
       any |= here_any;
@@ -1875,6 +1903,7 @@ open_path (const char *name, size_t namelen, int mode,
 	sps->dirs = (void *) -1;
     }
 
+  dl_scratch_buffer_free (&scratch);
   return -1;
 }
 
