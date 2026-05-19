@@ -78,6 +78,7 @@ dl-routines = \
   dl-reloc \
   dl-runtime \
   dl-scope \
+  dl-scratch-buffer \
   dl-setup_hash \
   dl-sort-maps \
   dl-thread_gscope_wait \
