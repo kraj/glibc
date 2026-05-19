@@ -422,7 +422,10 @@ struct r_search_path_struct __rtld_search_dirs attribute_relro;
 
 static size_t max_dirnamelen;
 
-static struct r_search_path_elem **
+/* Tokenize RPATH (in place) and populate RESULT with one entry per non-empty
+   directory.  Returns false if a per-entry allocation fails, leaving the
+   caller responsible for signaling any error.  */
+static bool
 fillin_rpath (char *rpath, struct r_search_path_elem **result, const char *sep,
 	      const char *what, const char *where, struct link_map *l)
 {
@@ -490,8 +493,10 @@ fillin_rpath (char *rpath, struct r_search_path_elem **result, const char *sep,
 	    malloc (sizeof (*dirp) + ncapstr * sizeof (enum r_dir_status)
 		    + where_len + len + 1);
 	  if (dirp == NULL)
-	    _dl_signal_error (ENOMEM, NULL, NULL,
-			      N_("cannot create cache for search path"));
+	    {
+	      free (to_free);
+	      return false;
+	    }
 
 	  dirp->dirname = ((char *) dirp + sizeof (*dirp)
 			   + ncapstr * sizeof (enum r_dir_status));
@@ -528,7 +533,7 @@ fillin_rpath (char *rpath, struct r_search_path_elem **result, const char *sep,
   /* Terminate the array.  */
   result[nelems] = NULL;
 
-  return result;
+  return true;
 }
 
 
@@ -609,7 +614,13 @@ decompose_rpath (struct r_search_path_struct *sps,
       _dl_signal_error (ENOMEM, NULL, NULL, errstring);
     }
 
-  fillin_rpath (copy, result, ":", what, where, l);
+  if (!fillin_rpath (copy, result, ":", what, where, l))
+    {
+      free (copy);
+      free (result);
+      errstring = N_("cannot create cache for search path");
+      goto signal_error;
+    }
 
   /* Free the copied RPATH string.  `fillin_rpath' make own copies if
      necessary.  */
@@ -782,12 +793,13 @@ _dl_init_paths (const char *llp, const char *source,
 
   if (llp != NULL && *llp != '\0')
     {
-      char *llp_tmp = strdupa (llp);
-
-      /* Decompose the LD_LIBRARY_PATH contents.  First determine how many
-	 elements it has.  */
+      /* Count entries directly off the const LD_LIBRARY_PATH so the
+	 search-path dirs array can be allocated before the scratch buffer is
+	 live; that way an OOM on either of the two heap allocations the
+	 loader controls (the dirs array or the per-entry malloc inside
+	 fillin_rpath) is signalled after the scratch has been released.  */
       size_t nllp = 1;
-      for (const char *cp = llp_tmp; *cp != '\0'; ++cp)
+      for (const char *cp = llp; *cp != '\0'; ++cp)
 	if (*cp == ':' || *cp == ';')
 	  ++nllp;
 
@@ -799,8 +811,25 @@ _dl_init_paths (const char *llp, const char *source,
 	  goto signal_error;
 	}
 
-      (void) fillin_rpath (llp_tmp, __rtld_env_path_list.dirs, ":;",
-			   source, NULL, l);
+      /* fillin_rpath needs a mutable copy because __strsep punches NULs
+	 into it as it tokenizes.  */
+      size_t llp_len = strlen (llp);
+      struct dl_scratch_buffer scratch = dl_scratch_buffer_init ();
+      dl_scratch_buffer_allocate (&scratch, llp_len + 1, 0);
+      char *llp_tmp = memcpy (scratch.data, llp, llp_len + 1);
+
+      bool ok = fillin_rpath (llp_tmp, __rtld_env_path_list.dirs, ":;",
+			      source, NULL, l);
+
+      dl_scratch_buffer_free (&scratch);
+
+      if (!ok)
+	{
+	  free (__rtld_env_path_list.dirs);
+	  __rtld_env_path_list.dirs = NULL;
+	  errstring = N_("cannot create cache for search path");
+	  goto signal_error;
+	}
 
       if (__rtld_env_path_list.dirs[0] == NULL)
 	{

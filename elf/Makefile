@@ -411,6 +411,7 @@ tests += \
   tst-debug1 \
   tst-deep1 \
   tst-dl-is_dso \
+  tst-dl-llp-stack \
   tst-dl-path-buf \
   tst-dlclose-lazy \
   tst-dlmodcount \
