@@ -21,6 +21,7 @@
 #include <ldsodefs.h>
 #include <sys/mman.h>
 #include <dl-cache.h>
+#include <dl-scratch-buffer.h>
 #include <stdint.h>
 #include <_itoa.h>
 #include <dl-hwcaps.h>
@@ -490,12 +491,15 @@ _dl_load_cache_lookup (const char *name)
   /* The double copy is *required* since malloc may be interposed
      and call dlopen itself whose completion would unmap the data
      we are accessing. Therefore we must make the copy of the
-     mapping data without using malloc.  */
-  char *temp;
+     mapping data without using malloc.  The DL_SCRATCH_NO_MALLOC
+     forces any spill to anonymous mmap rather than the malloc.  */
+  struct dl_scratch_buffer scratch = dl_scratch_buffer_init ();
   size_t best_len = strlen (best) + 1;
-  temp = alloca (best_len);
-  memcpy (temp, best, best_len);
-  return __strdup (temp);
+  dl_scratch_buffer_allocate (&scratch, best_len, DL_SCRATCH_NO_MALLOC);
+  memcpy (scratch.data, best, best_len);
+  char *result = __strdup (scratch.data);
+  dl_scratch_buffer_free (&scratch);
+  return result;
 }
 
 #ifndef MAP_COPY

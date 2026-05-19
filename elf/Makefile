@@ -293,6 +293,7 @@ CRT-tst-tls1-static-non-pie := $(csu-objpfx)crt1.o
 tst-tls1-static-non-pie-no-pie = yes
 
 tests-container := \
+  tst-dl-cache-long-path \
   tst-ldconfig-bad-aux-cache \
   tst-ldconfig-ld_so_conf-update \
   # tests-container
@@ -2885,6 +2886,10 @@ $(objpfx)tst-dlopen-nodelete-reloc-mod17.so: \
 LDFLAGS-tst-dlopen-nodelete-reloc-mod17.so = -Wl,--no-as-needed
 
 $(objpfx)tst-ldconfig-ld_so_conf-update.out: $(objpfx)tst-ldconfig-ld-mod.so
+
+# Reuses the trivial module already built for tst-dl-path-buf.
+$(objpfx)tst-dl-cache-long-path: $(shared-thread-library)
+$(objpfx)tst-dl-cache-long-path.out: $(objpfx)tst-dl-path-buf-mod.so
 
 LDFLAGS-tst-filterobj-flt.so = -Wl,--filter=$(objpfx)tst-filterobj-filtee.so
 $(objpfx)tst-filterobj: $(objpfx)tst-filterobj-flt.so
