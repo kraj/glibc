@@ -32,7 +32,7 @@ struct servent_data {};
 LINE_PARSER
 ("#",
  STRING_FIELD (result->s_name, isspace, 1);
- INT_FIELD (result->s_port, ISSLASH, 10, 0, htons);
+ INT_FIELD (result->s_port, ISSLASH, 0, 10, htons);
  STRING_FIELD (result->s_proto, isspace, 1);
  )
 
