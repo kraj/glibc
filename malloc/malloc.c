@@ -441,7 +441,6 @@ tag_at (void *ptr)
   return ptr;
 }
 
-#include <string.h>
 
 /*
   MORECORE-related declarations. By default, rely on sbrk
@@ -2206,7 +2205,7 @@ do_check_malloc_state (mstate av)
   /* top chunk is OK */
   check_chunk (av, av->top);
 }
-#endif
+#endif /* MALLOC_DEBUG */
 
 
 /* ----------------- Support for debugging hooks -------------------- */
@@ -4744,7 +4743,7 @@ __malloc_usable_size (void *m)
     return 0;
   return musable (m);
 }
-#endif
+#endif /* IS_IN (libc) */
 
 /*
    ------------------------------ mallinfo ------------------------------
@@ -5251,7 +5250,7 @@ malloc_printerr_tail (const char *str)
     return;
   malloc_printerr (str);
 }
-#endif
+#endif /* USE_TCACHE */
 
 #if IS_IN (libc)
 /* We need a wrapper function for one of the additions of POSIX.  */
@@ -5271,8 +5270,7 @@ __posix_memalign (void **memptr, size_t alignment, size_t size)
   *memptr = mem;
   return 0;
 }
-weak_alias (__posix_memalign, posix_memalign)
-#endif
+#endif /* IS_IN (libc) */
 
 
 int
@@ -5432,24 +5430,25 @@ __malloc_info (int options, FILE *fp)
 
   return 0;
 }
-#if IS_IN (libc)
-weak_alias (__malloc_info, malloc_info)
 
-weak_alias (__libc_calloc, calloc)
-strong_alias (__libc_free, free)
+#if IS_IN (libc)
 strong_alias (__libc_malloc, malloc)
-weak_alias (__libc_memalign, memalign)
 strong_alias (__libc_realloc, realloc)
+strong_alias (__libc_free, free)
+weak_alias (__libc_calloc, calloc)
+weak_alias (__libc_memalign, memalign)
+weak_alias (__posix_memalign, posix_memalign)
 weak_alias (__libc_valloc, valloc)
 weak_alias (__libc_pvalloc, pvalloc)
+weak_alias (__malloc_usable_size, malloc_usable_size)
+
+weak_alias (__malloc_info, malloc_info)
 weak_alias (__libc_mallinfo, mallinfo)
 weak_alias (__libc_mallinfo2, mallinfo2)
 weak_alias (__libc_mallopt, mallopt)
-
 weak_alias (__malloc_stats, malloc_stats)
-weak_alias (__malloc_usable_size, malloc_usable_size)
 weak_alias (__malloc_trim, malloc_trim)
-#endif
+#endif /* IS_IN (libc) */
 
 #if SHLIB_COMPAT (libc, GLIBC_2_0, GLIBC_2_26)
 compat_symbol (libc, __libc_free, cfree, GLIBC_2_0);
