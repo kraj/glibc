@@ -36,16 +36,16 @@ LINE_PARSER
        unsigned int number;
 
        if (cnt < 5)
-	 INT_FIELD (number, ISCOLON , 0, 16, (unsigned int))
+	 INT_FIELD (number, ISCOLON , false, 16, (unsigned int))
        else
-	 INT_FIELD (number, isspace, 1, 16, (unsigned int))
+	 INT_FIELD (number, isspace, true, 16, (unsigned int))
 
        if (number > 0xff)
 	 return 0;
        result->e_addr.ether_addr_octet[cnt] = number;
      }
  };
- STRING_FIELD (result->e_name, isspace, 1);
+ STRING_FIELD (result->e_name, isspace, true);
  )
 
 

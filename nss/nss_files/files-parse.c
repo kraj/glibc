@@ -20,6 +20,7 @@
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <nss_files.h>
 

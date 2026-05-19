@@ -29,8 +29,8 @@ struct rpcent_data {};
 #include "files-parse.c"
 LINE_PARSER
 ("#",
- STRING_FIELD (result->r_name, isspace, 1);
- INT_FIELD (result->r_number, isspace, 1, 10,);
+ STRING_FIELD (result->r_name, isspace, true);
+ INT_FIELD (result->r_number, isspace, true, 10,);
  )
 
 #include GENERIC

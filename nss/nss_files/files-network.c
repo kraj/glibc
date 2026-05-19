@@ -38,9 +38,9 @@ LINE_PARSER
    char *cp;
    int n = 1;
 
-   STRING_FIELD (result->n_name, isspace, 1);
+   STRING_FIELD (result->n_name, isspace, true);
 
-   STRING_FIELD (addr, isspace, 1);
+   STRING_FIELD (addr, isspace, true);
    /* 'inet_network' does not add zeroes at the end if the network number
       does not contain four byte values.  We shift result ourselves if
       necessary.  */

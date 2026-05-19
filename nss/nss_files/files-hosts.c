@@ -53,7 +53,7 @@ LINE_PARSER
  {
    char *addr;
 
-   STRING_FIELD (addr, isspace, 1);
+   STRING_FIELD (addr, isspace, true);
 
    /* Parse address.  */
    if (__inet_pton (af == AF_UNSPEC ? AF_INET : af, addr, entdata->host_addr)
@@ -96,7 +96,7 @@ LINE_PARSER
    entdata->h_addr_ptrs[1] = NULL;
    result->h_addr_list = entdata->h_addr_ptrs;
 
-   STRING_FIELD (result->h_name, isspace, 1);
+   STRING_FIELD (result->h_name, isspace, true);
  })
 
 #define EXTRA_ARGS_VALUE , AF_INET, 0
