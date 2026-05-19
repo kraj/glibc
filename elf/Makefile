@@ -434,6 +434,7 @@ tests += \
   tst-dlopenfail-2 \
   tst-dlopenrpath \
   tst-dlsym-error \
+  tst-dst-needed-minstack \
   tst-filterobj \
   tst-filterobj-dlopen \
   tst-glibc-hwcaps \
@@ -946,6 +947,8 @@ modules-names += \
   tst-dlopenfailmod3 \
   tst-dlopenfailnodelmod \
   tst-dlopenrpathmod \
+  tst-dst-needed-leaf-mod \
+  tst-dst-needed-wrap-mod \
   tst-filterobj-aux \
   tst-filterobj-filtee \
   tst-filterobj-flt \
@@ -2890,6 +2893,12 @@ $(objpfx)tst-ldconfig-ld_so_conf-update.out: $(objpfx)tst-ldconfig-ld-mod.so
 # Reuses the trivial module already built for tst-dl-path-buf.
 $(objpfx)tst-dl-cache-long-path: $(shared-thread-library)
 $(objpfx)tst-dl-cache-long-path.out: $(objpfx)tst-dl-path-buf-mod.so
+
+LDFLAGS-tst-dst-needed-leaf-mod.so = \
+  -Wl,-soname,\$$ORIGIN/\$$ORIGIN/\$$ORIGIN/\$$ORIGIN/\$$ORIGIN/leaf.so
+$(objpfx)tst-dst-needed-wrap-mod.so: $(objpfx)tst-dst-needed-leaf-mod.so
+$(objpfx)tst-dst-needed-minstack: $(shared-thread-library)
+$(objpfx)tst-dst-needed-minstack.out: $(objpfx)tst-dst-needed-wrap-mod.so
 
 LDFLAGS-tst-filterobj-flt.so = -Wl,--filter=$(objpfx)tst-filterobj-filtee.so
 $(objpfx)tst-filterobj: $(objpfx)tst-filterobj-flt.so

@@ -30,6 +30,7 @@
 #include <scratch_buffer.h>
 
 #include <dl-dst.h>
+#include <dl-scratch-buffer.h>
 
 /* Whether an shared object references one or more auxiliary objects
    is signaled by the AUXTAG entry in l_info.  */
@@ -80,47 +81,35 @@ struct list
   };
 
 
-/* Macro to expand DST.  It is an macro since we use `alloca'.  */
-#define expand_dst(l, str, fatal) \
-  ({									      \
-    const char *__str = (str);						      \
-    const char *__result = __str;					      \
-    size_t __dst_cnt = _dl_dst_count (__str);				      \
-									      \
-    if (__dst_cnt != 0)							      \
-      {									      \
-	char *__newp;							      \
-									      \
-	/* DST must not appear in SUID/SGID programs.  */		      \
-	if (__libc_enable_secure)					      \
-	  _dl_signal_error (0, __str, NULL, N_("\
-DST not allowed in SUID/SGID programs"));				      \
-									      \
-	__newp = (char *) alloca (DL_DST_REQUIRED (l, __str, strlen (__str),  \
-						   __dst_cnt));		      \
-									      \
-	__result = _dl_dst_substitute (l, __str, __newp);		      \
-									      \
-	if (*__result == '\0')						      \
-	  {								      \
-	    /* The replacement for the DST is not known.  We can't	      \
-	       processed.  */						      \
-	    if (fatal)							      \
-	      _dl_signal_error (0, __str, NULL, N_("\
-empty dynamic string token substitution"));				      \
-	    else							      \
-	      {								      \
-		/* This is for DT_AUXILIARY.  */			      \
-		if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_LIBS))   \
-		  _dl_debug_printf (N_("\
-cannot load auxiliary `%s' because of empty dynamic string token "	      \
-					    "substitution\n"), __str);	      \
-		continue;						      \
-	      }								      \
-	  }								      \
-      }									      \
-									      \
-    __result; })
+/* Expand the dynamic-string-tokens ($ORIGIN / $LIB / $PLATFORM) in INPUT
+   using L's context.  Returns the expanded string -- a pointer either into
+   SCRATCH->data (when expansion was needed) or back at INPUT (when no DSTs
+   were present, so no allocation happened).  Returns NULL when a DST was
+   present but could not be resolved.
+
+   SCRATCH must be an init'd dl_scratch_buffer the caller will release once
+   the returned string is no longer needed.  This function never returns when
+   called for a SUID/SGID that contains DSTs: it raises a loader error.  */
+static const char *
+expand_dst (struct link_map *l, const char *input,
+	    struct dl_scratch_buffer *scratch)
+{
+  size_t dst_cnt = _dl_dst_count (input);
+  if (dst_cnt == 0)
+    return input;
+
+  /* DST must not appear in SUID/SGID programs.  */
+  if (__libc_enable_secure)
+    _dl_signal_error (0, input, NULL, N_("\
+DST not allowed in SUID/SGID programs"));
+
+  size_t total = DL_DST_REQUIRED (l, input, strlen (input), dst_cnt);
+  dl_scratch_buffer_allocate (scratch, total + 1, 0);
+  const char *result = _dl_dst_substitute (l, input, scratch->data);
+  if (*result == '\0')
+    return NULL;
+  return result;
+}
 
 static void
 preload (struct list *known, unsigned int *nlist, struct link_map *map)
@@ -224,12 +213,26 @@ _dl_map_object_deps (struct link_map *map,
 		/* Map in the needed object.  */
 		struct link_map *dep;
 
-		/* Recognize DSTs.  */
-		name = expand_dst (l, strtab + d->d_un.d_val, 0);
+		/* Recognize DSTs.  Empty substitution for DT_NEEDED is
+		   non-fatal: log and skip this entry.  */
+		struct dl_scratch_buffer scratch
+		  = dl_scratch_buffer_init ();
+		name = expand_dst (l, strtab + d->d_un.d_val, &scratch);
+		if (__glibc_unlikely (name == NULL))
+		  {
+		    if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_LIBS))
+		      _dl_debug_printf (N_("\
+cannot load auxiliary `%s' because of empty dynamic string token "
+					    "substitution\n"),
+					strtab + d->d_un.d_val);
+		    dl_scratch_buffer_free (&scratch);
+		    continue;
+		  }
 		/* Store the tag in the argument structure.  */
 		args.name = name;
 
 		int err = _dl_catch_exception (&exception, openaux, &args);
+		dl_scratch_buffer_free (&scratch);
 		if (__glibc_unlikely (exception.errstring != NULL))
 		  {
 		    if (err)
@@ -267,9 +270,25 @@ _dl_map_object_deps (struct link_map *map,
 	      {
 		struct list *newp;
 
-		/* Recognize DSTs.  */
-		name = expand_dst (l, strtab + d->d_un.d_val,
-				   d->d_tag == DT_AUXILIARY);
+		/* Recognize DSTs.  DT_AUXILIARY is fatal on unresolved
+		   DST; DT_FILTER is non-fatal and is skipped.  */
+		struct dl_scratch_buffer scratch
+		  = dl_scratch_buffer_init ();
+		name = expand_dst (l, strtab + d->d_un.d_val, &scratch);
+		if (__glibc_unlikely (name == NULL))
+		  {
+		    dl_scratch_buffer_free (&scratch);
+		    if (d->d_tag == DT_AUXILIARY)
+		      _dl_signal_error (0, strtab + d->d_un.d_val, NULL,
+					N_("empty dynamic string token "
+					   "substitution"));
+		    if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_LIBS))
+		      _dl_debug_printf (N_("\
+cannot load auxiliary `%s' because of empty dynamic string token "
+					    "substitution\n"),
+					strtab + d->d_un.d_val);
+		    continue;
+		  }
 		/* Store the tag in the argument structure.  */
 		args.name = name;
 
@@ -285,6 +304,9 @@ _dl_map_object_deps (struct link_map *map,
 		   object is not available.  For filter objects the dependency
 		   must be available.  */
 		int err = _dl_catch_exception (&exception, openaux, &args);
+		/* NAME is consumed by openaux above; release the DST
+		   scratch buffer regardless of outcome.  */
+		dl_scratch_buffer_free (&scratch);
 		if (__glibc_unlikely (exception.errstring != NULL))
 		  {
 		    if (d->d_tag == DT_AUXILIARY)
