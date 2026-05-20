@@ -113,6 +113,7 @@
 #define HAVE_LIBINTL_H	1
 #define HAVE_WCTYPE_H	1
 #define HAVE_ISWCTYPE	1
+#define HAVE_MEMPCPY	1
 #define ENABLE_NLS	1
 
 /* The symbols in all the user (non-_) macros are C symbols.  */

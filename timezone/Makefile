@@ -67,7 +67,7 @@ tz-cflags = -DTZDIR='"$(zonedir)"' \
 	    -DTZDEFAULT='"$(localtime-file)"' \
 	    -DTZDEFRULES='"$(posixrules-file)"' \
 	    -DTM_GMTOFF=tm_gmtoff -DTM_ZONE=tm_zone \
-	    -DHAVE_GETTEXT -DUSE_LTZ=0 -D_ISOMAC -DTZ_DOMAIN='"libc"' \
+	    -DHAVE_GETTEXT -DUSE_LTZ=0 -DTZ_DOMAIN='"libc"' \
 	    -include $(common-objpfx)config.h $(config-cflags-wno-maybe-uninitialized)
 
 CFLAGS-zdump.c += $(tz-cflags)
