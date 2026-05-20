@@ -170,6 +170,9 @@
 /* Mach specific: define if the `vm_set_size_limit' RPC is available.  */
 #undef  HAVE_MACH_VM_SET_SIZE_LIMIT
 
+/* Mach specific: define if the `task_max_priority' RPC is available.  */
+#undef  HAVE_MACH_TASK_MAX_PRIORITY
+
 /* Mach/i386 specific: define if the `i386_io_perm_*' RPCs are available.  */
 #undef	HAVE_I386_IO_PERM_MODIFY
 

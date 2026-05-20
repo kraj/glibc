@@ -641,6 +641,36 @@ if test $libc_cv_mach_rpc_vm_get_size_limit = yes; then
 
 fi
 
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for task_max_priority in mach_host.defs" >&5
+printf %s "checking for task_max_priority in mach_host.defs... " >&6; }
+if test ${libc_cv_mach_rpc_task_max_priority+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <mach/mach_host.defs>
+
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP_TRADITIONAL "task_max_priority" >/dev/null 2>&1
+then :
+  libc_cv_mach_rpc_task_max_priority=yes
+else case e in #(
+  e) libc_cv_mach_rpc_task_max_priority=no ;;
+esac
+fi
+rm -rf conftest*
+ ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_cv_mach_rpc_task_max_priority" >&5
+printf "%s\n" "$libc_cv_mach_rpc_task_max_priority" >&6; }
+if test $libc_cv_mach_rpc_task_max_priority = yes; then
+  printf "%s\n" "#define HAVE_MACH_TASK_MAX_PRIORITY 1" >>confdefs.h
+
+fi
+
 
 ac_fn_c_check_header_preproc "$LINENO" "mach/machine/ndr_def.h" "ac_cv_header_mach_machine_ndr_def_h"
 if test "x$ac_cv_header_mach_machine_ndr_def_h" = xyes
