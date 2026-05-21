@@ -703,7 +703,6 @@ INSTALL_PROGRAM
 base_machine
 build_pt_chown
 build_nscd
-memory_tagging
 enable_werror
 force_install
 bindnow
@@ -811,7 +810,6 @@ enable_maintainer_mode
 enable_kernel
 enable_werror
 enable_multi_arch
-enable_memory_tagging
 enable_systemtap
 enable_build_nscd
 enable_nscd
@@ -1490,8 +1488,6 @@ Optional Features:
   --disable-werror        do not build with -Werror
   --enable-multi-arch     enable single DSO with optimizations for multiple
                           architectures
-  --enable-memory-tagging enable memory tagging if supported by the
-                          architecture [default=no]
   --enable-systemtap      enable systemtap static probe points [default=no]
   --disable-build-nscd    disable building and installing the nscd daemon
   --disable-nscd          library functions will not contact the nscd daemon
@@ -4687,26 +4683,6 @@ then :
 else case e in #(
   e) multi_arch=default ;;
 esac
-fi
-
-
-# Check whether --enable-memory-tagging was given.
-if test ${enable_memory_tagging+y}
-then :
-  enableval=$enable_memory_tagging; memory_tagging=$enableval
-else case e in #(
-  e) memory_tagging=no ;;
-esac
-fi
-
-if test "$memory_tagging" = yes; then
-  # Only enable this on architectures that support it.
-  case $host_cpu in
-    aarch64)
-      printf "%s\n" "#define USE_MTAG 1" >>confdefs.h
-
-      ;;
-  esac
 fi
 
 
