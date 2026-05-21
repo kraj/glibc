@@ -9,5 +9,7 @@ endef
 endif
 
 ifeq ($(subdir),iconv)
-sysdep_routines += gconv_simple
+sysdep_routines += \
+  gconv_simple \
+  # sysdep_routines
 endif
