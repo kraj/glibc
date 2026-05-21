@@ -204,11 +204,22 @@ main (int argc, char *argv[])
       result = 1;
     }
 
-  /* Now the same tests with LANG deciding.  */
+  /* Now the same tests with LANG deciding.  Unset every LC_* category so that
+     values inherited from the invoking shell (e.g. LC_PAPER) cannot leak into
+     setlocale (LC_ALL, "") below and force it to look up a locale that is not
+     under the test's LOCPATH.  */
   unsetenv ("LC_MESSAGES");
   unsetenv ("LC_CTYPE");
   unsetenv ("LC_TIME");
   unsetenv ("LC_NUMERIC");
+  unsetenv ("LC_COLLATE");
+  unsetenv ("LC_MONETARY");
+  unsetenv ("LC_PAPER");
+  unsetenv ("LC_NAME");
+  unsetenv ("LC_ADDRESS");
+  unsetenv ("LC_TELEPHONE");
+  unsetenv ("LC_MEASUREMENT");
+  unsetenv ("LC_IDENTIFICATION");
   setenv ("LANG", "existing-locale", 1);
   check_setlocale (LC_ALL, "");
   /* This is the name of the existing domain with a catalog for the
