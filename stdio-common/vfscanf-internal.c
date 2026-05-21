@@ -265,6 +265,19 @@ char_buffer_add (struct char_buffer *buffer, CHAR_T ch)
     *buffer->current++ = ch;
 }
 
+/* Calculate the result size of expanded char array in %ms, %mS, %m[
+  or %lm[.  OLDSIZE is current allocation size and NEED is the
+   remaining field-width budget (chars still to read) or negative if
+   unbounded.  */
+static __always_inline size_t
+grow_to_fit (size_t oldsize, int need)
+{
+  if (need < 0 || oldsize < need)
+    return oldsize * 2;
+  /* oldsize >= need: grow requested capacity and 1 byte for `\0' */
+  return oldsize + need + 1;
+}
+
 /* Read formatted input from S according to the format string
    FORMAT, using the argument list in ARG.
    Return the number of assignments made, or -1 for an input error.  */
@@ -804,7 +817,8 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
 		      && *strptr + strsize - str <= MB_LEN_MAX)
 		    {
 		      /* We have to enlarge the buffer if the `m' flag
-			 was given.  */
+			 was given.  And we may not expand str by width
+			 as the wcrtomb may return various bytes.  */
 		      size_t strleng = str - *strptr;
 		      char *newstr;
 
@@ -1098,7 +1112,8 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
 			&& *strptr + strsize - str <= MB_LEN_MAX)
 		      {
 			/* We have to enlarge the buffer if the `a' or `m'
-			   flag was given.  */
+			   flag was given.  And we may not expand str by
+			   width as the wcrtomb may return various bytes.  */
 			size_t strleng = str - *strptr;
 			char *newstr;
 
@@ -1156,7 +1171,9 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
 			  && (char *) str == *strptr + strsize)
 			{
 			  /* Enlarge the buffer.  */
-			  str = (char *) realloc (*strptr, 2 * strsize);
+			  size_t newsize = grow_to_fit (strsize, width);
+
+			  str = (char *) realloc (*strptr, newsize);
 			  if (str == NULL)
 			    {
 			      /* Can't allocate that much.  Last-ditch
@@ -1188,7 +1205,7 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
 			    {
 			      *strptr = (char *) str;
 			      str += strsize;
-			      strsize *= 2;
+			      strsize = newsize;
 			    }
 			}
 		    }
@@ -1286,9 +1303,10 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
 			&& wstr == (wchar_t *) *strptr + strsize)
 		      {
 			/* Enlarge the buffer.  */
-			wstr = (wchar_t *) realloc (*strptr,
-						    (2 * strsize)
-						    * sizeof (wchar_t));
+			size_t newsize = grow_to_fit (strsize, width);
+
+			wstr = (wchar_t *) realloc (
+			    *strptr, newsize * sizeof (wchar_t));
 			if (wstr == NULL)
 			  {
 			    /* Can't allocate that much.  Last-ditch
@@ -1322,7 +1340,7 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
 			  {
 			    *strptr = (char *) wstr;
 			    wstr += strsize;
-			    strsize *= 2;
+			    strsize = newsize;
 			  }
 		      }
 		  }
@@ -1362,9 +1380,10 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
 		      && wstr == (wchar_t *) *strptr + strsize)
 		    {
 		      /* Enlarge the buffer.  */
+		      size_t newsize = grow_to_fit (strsize, width);
+
 		      wstr = (wchar_t *) realloc (*strptr,
-						  (2 * strsize
-						   * sizeof (wchar_t)));
+						  newsize * sizeof (wchar_t));
 		      if (wstr == NULL)
 			{
 			  /* Can't allocate that much.  Last-ditch effort.  */
@@ -1397,7 +1416,7 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
 			{
 			  *strptr = (char *) wstr;
 			  wstr += strsize;
-			  strsize *= 2;
+			  strsize = newsize;
 			}
 		    }
 		}
@@ -2754,9 +2773,10 @@ digits_extended_fail:
 			  && wstr == (wchar_t *) *strptr + strsize)
 			{
 			  /* Enlarge the buffer.  */
-			  wstr = (wchar_t *) realloc (*strptr,
-						      (2 * strsize)
-						      * sizeof (wchar_t));
+			  size_t newsize = grow_to_fit (strsize, width);
+
+			  wstr = (wchar_t *) realloc (
+			      *strptr, newsize * sizeof (wchar_t));
 			  if (wstr == NULL)
 			    {
 			      /* Can't allocate that much.  Last-ditch
@@ -2790,7 +2810,7 @@ digits_extended_fail:
 			    {
 			      *strptr = (char *) wstr;
 			      wstr += strsize;
-			      strsize *= 2;
+			      strsize = newsize;
 			    }
 			}
 		    }
@@ -2839,9 +2859,10 @@ digits_extended_fail:
 			  && wstr == (wchar_t *) *strptr + strsize)
 			{
 			  /* Enlarge the buffer.  */
-			  wstr = (wchar_t *) realloc (*strptr,
-						      (2 * strsize
-						       * sizeof (wchar_t)));
+			  size_t newsize = grow_to_fit (strsize, width);
+
+			  wstr = (wchar_t *) realloc (
+			      *strptr, newsize * sizeof (wchar_t));
 			  if (wstr == NULL)
 			    {
 			      /* Can't allocate that much.  Last-ditch
@@ -2875,7 +2896,7 @@ digits_extended_fail:
 			    {
 			      *strptr = (char *) wstr;
 			      wstr += strsize;
-			      strsize *= 2;
+			      strsize = newsize;
 			    }
 			}
 		    }
@@ -2983,7 +3004,9 @@ digits_extended_fail:
 		      if ((flags & MALLOC)
 			  && *strptr + strsize - str <= MB_LEN_MAX)
 			{
-			  /* Enlarge the buffer.  */
+			  /* Enlarge the buffer.  And we may not
+			   expand str by width as the wcrtomb may
+			   return various bytes.  */
 			  size_t strleng = str - *strptr;
 			  char *newstr;
 
@@ -3051,7 +3074,7 @@ digits_extended_fail:
 			  && (char *) str == *strptr + strsize)
 			{
 			  /* Enlarge the buffer.  */
-			  size_t newsize = 2 * strsize;
+			  size_t newsize = grow_to_fit (strsize, width);
 
 			allocagain:
 			  str = (char *) realloc (*strptr, newsize);
