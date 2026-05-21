@@ -25,6 +25,7 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <support/capture_subprocess.h>
@@ -37,6 +38,7 @@
 #include <support/xstdio.h>
 #include <support/xthread.h>
 #include <support/xunistd.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 /* Starts out as zero, changed to 1 or 2 by the debugger, depending on
@@ -65,6 +67,51 @@ read_elf_header (const char *path, struct elf_prefix *elf)
   return result;
 }
 
+/* Runs gdb with a minimal probe script and returns true if gdb prints
+   'dlopen failed' while attempting to load libthread_db.  */
+static bool
+libthread_db_probe_fails (const char *gdb_path)
+{
+  support_need_proc ("Reads /proc/self/exec to probe gdb");
+
+  /* The probe inferior just needs to be any pthread-linked binary; reusing
+     /proc/self/exe avoids hard-coding a path.  */
+  char *self = xreadlink ("/proc/self/exe");
+
+  char *probe_script;
+  xclose (create_temp_file ("tst-pthread-gdb-attach-probe-", &probe_script));
+  FILE *fp = xfopen (probe_script, "w");
+  fprintf (fp,
+           "set debuginfod enabled off\n"
+           "set debug libthread-db 1\n"
+           "set auto-load safe-path %1$s/nptl_db\n"
+           "set libthread-db-search-path %1$s/nptl_db\n"
+           "file %2$s\n"
+           "start\n",
+           support_objdir_root, self);
+  xfclose (fp);
+  free (self);
+
+  char *cmd = xasprintf ("%s -nx -batch -x %s 2>&1",
+                         gdb_path, probe_script);
+  FILE *gdb_out = popen (cmd, "r");
+  free (cmd);
+
+  bool fails = false;
+  if (gdb_out != NULL)
+    {
+      char *line = NULL;
+      size_t linecap = 0;
+      while (xgetline (&line, &linecap, gdb_out) > 0)
+        if (strstr (line, "dlopen failed") != NULL)
+          fails = true;
+      free (line);
+      pclose (gdb_out);
+    }
+  free (probe_script);
+  return fails;
+}
+
 /* Searches for "gdb" alongside the path variable.  See execvpe.  */
 static char *
 find_gdb (void)
@@ -76,7 +123,10 @@ find_gdb (void)
     {
       const char *colon = strchrnul (path, ':');
       char *candidate = xasprintf ("%.*s/gdb", (int) (colon - path), path);
-      if (access (candidate, X_OK) == 0)
+      struct stat st;
+      if (access (candidate, X_OK) == 0
+          && stat (candidate, &st) == 0
+          && S_ISREG (st.st_mode))
         return candidate;
       free (candidate);
       if (*colon == '\0')
@@ -199,9 +249,19 @@ do_test (void)
           FAIL_UNSUPPORTED ("GDB at %s has wrong data", gdb_path);
         if (elf_gdb.e_machine != elf_threaddb.e_machine)
           FAIL_UNSUPPORTED ("GDB at %s has wrong machine", gdb_path);
+
       }
     free (threaddb_path);
   }
+
+  /* Probe gdb with a minimal script that triggers libthread_db loading.  If
+     the probe reports a dlopen failure (e.g. because the libc gdb is linked
+     against is older than the one in-tree libthread_db.so.1 requires, see
+     BZ #33212), skip the test as UNSUPPORTED.  */
+  if (libthread_db_probe_fails (gdb_path))
+    FAIL_UNSUPPORTED ("gdb cannot dlopen the in-tree libthread_db.so.1;"
+                      " its libc is missing a required ABI version"
+                      " (see BZ #33212)");
 
   /* Check if our subprocess can be debugged with ptrace.  */
   {
