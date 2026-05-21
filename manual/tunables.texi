@@ -40,7 +40,6 @@ glibc.malloc.perturb: 0 (min: 0, max: 255)
 glibc.cpu.x86_shared_cache_size: 0x100000 (min: 0x0, max: 0xffffffffffffffff)
 glibc.pthread.rseq: 1 (min: 0, max: 1)
 glibc.cpu.prefer_map_32bit_exec: 0 (min: 0, max: 1)
-glibc.mem.tagging: 0 (min: 0, max: 255)
 glibc.malloc.hugetlb: 0x0 (min: 0x0, max: 0xffffffffffffffff)
 glibc.cpu.x86_rep_movsb_threshold: 0x2000 (min: 0x100, max: 0xffffffffffffffff)
 glibc.malloc.mxfast: 0x0 (min: 0x0, max: 0xffffffffffffffff)
@@ -664,34 +663,6 @@ locked.  GCS markings will not be checked for any binaries.
 @deftp {Tunable namespace} glibc.mem
 This tunable namespace supports operations that affect the way @theglibc{}
 and the process manage memory.
-@end deftp
-
-@deftp Tunable glibc.mem.tagging
-If the hardware supports memory tagging, this tunable can be used to
-control the way @theglibc{} uses this feature.  At present this is only
-supported on AArch64 systems with the MTE extension; it is ignored for
-all other systems.
-
-This tunable takes a value between 0 and 255 and acts as a bitmask
-that enables various capabilities.
-
-Bit 0 (the least significant bit) causes the @code{malloc}
-subsystem to allocate
-tagged memory, with each allocation being assigned a random tag.
-
-Bit 1 enables precise faulting mode for tag violations on systems that
-support deferred tag violation reporting.  This may cause programs
-to run more slowly.
-
-Bit 2 enables either precise or deferred faulting mode for tag violations
-whichever is preferred by the system.
-
-Other bits are currently reserved.
-
-@Theglibc{} startup code will automatically enable memory tagging
-support in the kernel if this tunable has any non-zero value.
-
-The default value is @samp{0}, which disables all memory tagging.
 @end deftp
 
 @deftp Tunable glibc.mem.decorate_maps

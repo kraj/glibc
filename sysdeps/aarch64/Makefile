@@ -82,8 +82,8 @@ sysdep_headers += \
 sysdep_routines += \
   __alloc_gcs \
   __arm_za_disable \
-  __mtag_tag_region \
-  __mtag_tag_zero_region \
+  __mte_tag_region \
+  __mte_tag_region_zero \
   # sysdep_routines
 
 tests += \
@@ -104,10 +104,7 @@ $(objpfx)tst-sme-za-disable-fail: $(objpfx)__arm_za_disable.o
 endif
 
 ifeq ($(subdir),malloc)
-sysdep_malloc_debug_routines = \
-  __mtag_tag_region \
-  __mtag_tag_zero_region \
-  # sysdep_malloc_debug_routines
+
 endif # malloc directory
 
 ifeq ($(subdir),support)

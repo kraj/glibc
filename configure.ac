@@ -328,21 +328,6 @@ AC_ARG_ENABLE([multi-arch],
 	      [multi_arch=$enableval],
 	      [multi_arch=default])
 
-AC_ARG_ENABLE([memory-tagging],
-	      AS_HELP_STRING([--enable-memory-tagging],
-			     [enable memory tagging if supported by the architecture @<:@default=no@:>@]),
-	      [memory_tagging=$enableval],
-	      [memory_tagging=no])
-if test "$memory_tagging" = yes; then
-  # Only enable this on architectures that support it.
-  case $host_cpu in
-    aarch64)
-      AC_DEFINE(USE_MTAG)
-      ;;
-  esac
-fi
-AC_SUBST(memory_tagging)
-
 AC_ARG_ENABLE([systemtap],
               [AS_HELP_STRING([--enable-systemtap],
 	       [enable systemtap static probe points @<:@default=no@:>@])],
