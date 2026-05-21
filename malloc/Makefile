@@ -351,6 +351,19 @@ $(objpfx)%-threaded-worker.o: CPPFLAGS += -DTEST_IN_THREAD=TEST_THREAD_WORKER
 $(objpfx)%-threaded-worker.o: %.c $(before-compile)
 	$(compile-command.c)
 
+# Compile the hugetlb={1,2} test variants from their base sources with
+# -DTEST_HUGETLB so support/test-driver.c gates them on kernel support.
+$(foreach t,$(tests-malloc-hugetlb1),\
+  $(eval libof-$(t)-malloc-hugetlb1 := testsuite))
+$(foreach t,$(tests-malloc-hugetlb2),\
+  $(eval libof-$(t)-malloc-hugetlb2 := testsuite))
+$(objpfx)%-malloc-hugetlb1.o: CPPFLAGS += -DTEST_HUGETLB
+$(objpfx)%-malloc-hugetlb1.o: %.c $(before-compile)
+	$(compile-command.c)
+$(objpfx)%-malloc-hugetlb2.o: CPPFLAGS += -DTEST_HUGETLB
+$(objpfx)%-malloc-hugetlb2.o: %.c $(before-compile)
+	$(compile-command.c)
+
 # Include the cleanup handler.
 aux := set-freeres thread-freeres
 

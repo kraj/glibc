@@ -103,9 +103,19 @@
 
 #include <string.h>
 
+#ifdef TEST_HUGETLB
+# include <support/support_check_hugetlb.h>
+#endif
+
 int
 main (int argc, char **argv)
 {
+#ifdef TEST_HUGETLB
+  /* For malloc hugetlb=1/=2 test variants: skip the test (UNSUPPORTED)
+     when the kernel cannot honor the requested mode.  */
+  support_check_malloc_hugetlb ();
+#endif
+
   struct test_config test_config;
   memset (&test_config, 0, sizeof (test_config));
 

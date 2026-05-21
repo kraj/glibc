@@ -288,7 +288,8 @@ $(addprefix $(objpfx),$(binaries-malloc-check-tests)): %-malloc-check: %.o \
 endif
 
 ifneq "$(strip $(binaries-malloc-hugetlb1-tests))" ""
-$(addprefix $(objpfx),$(binaries-malloc-hugetlb1-tests)): %-malloc-hugetlb1: %.o \
+$(addprefix $(objpfx),$(binaries-malloc-hugetlb1-tests)): \
+%-malloc-hugetlb1: %-malloc-hugetlb1.o \
   $(link-extra-libs-tests) \
   $(sort $(filter $(common-objpfx)lib%,$(link-libc))) \
   $(addprefix $(csu-objpfx),start.o) $(+preinit) $(+postinit)
@@ -296,7 +297,8 @@ $(addprefix $(objpfx),$(binaries-malloc-hugetlb1-tests)): %-malloc-hugetlb1: %.o
 endif
 
 ifneq "$(strip $(binaries-malloc-hugetlb2-tests))" ""
-$(addprefix $(objpfx),$(binaries-malloc-hugetlb2-tests)): %-malloc-hugetlb2: %.o \
+$(addprefix $(objpfx),$(binaries-malloc-hugetlb2-tests)): \
+%-malloc-hugetlb2: %-malloc-hugetlb2.o \
   $(link-extra-libs-tests) \
   $(sort $(filter $(common-objpfx)lib%,$(link-libc))) \
   $(addprefix $(csu-objpfx),start.o) $(+preinit) $(+postinit)
