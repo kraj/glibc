@@ -21,5 +21,9 @@
 
 asm ("memset = __memset_generic");
 asm ("strlen = __strlen_generic");
+#ifndef SHARED
+asm ("memcpy = __memcpy_generic");
+asm ("memmove = __memmove_generic");
+#endif
 
 #endif

@@ -20,12 +20,11 @@
 #define _LIBC_START_H
 
 #ifndef SHARED
-/* By default we perform STT_GNU_IFUNC resolution *before* TLS
-   initialization, and this means you cannot, without machine
-   knowledge, access TLS from an IFUNC resolver.  */
+/* Static startup runs ARCH_SETUP_TLS (and writes the stack-protector
+   canary) before ARCH_SETUP_IREL, so IFUNC resolvers can read TLS and
+   stack-protector instrumented resolvers do not fault.  */
+#define ARCH_SETUP_TLS()  __libc_setup_tls ()
 #define ARCH_SETUP_IREL() apply_irel ()
-#define ARCH_SETUP_TLS() __libc_setup_tls ()
-#define ARCH_APPLY_IREL()
 #endif /* ! SHARED  */
 
 #endif /* _LIBC_START_H  */

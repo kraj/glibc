@@ -18,7 +18,6 @@
 
 #ifndef SHARED
 # define ARCH_SETUP_IREL() apply_irel ()
-# define ARCH_APPLY_IREL()
 # ifdef __CET__
 /* Get CET features enabled in the static executable.  */
 

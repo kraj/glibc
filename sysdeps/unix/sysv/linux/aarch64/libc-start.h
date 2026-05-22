@@ -76,7 +76,6 @@ aarch64_libc_setup_tls (void)
 
 # define ARCH_SETUP_IREL() apply_irel ()
 # define ARCH_SETUP_TLS() aarch64_libc_setup_tls ()
-# define ARCH_APPLY_IREL()
 #endif /* ! SHARED  */
 
 #endif /* _LIBC_START_H  */

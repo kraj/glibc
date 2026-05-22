@@ -1197,10 +1197,15 @@ void __tls_init_tp (void) attribute_hidden;
 void __libc_setup_tls (void);
 
 # if ENABLE_STATIC_PIE
-/* Relocate static executable with PIE.  */
+/* _dl_relocate_static_pie runs every relocation except IRELATIVE.  The
+   second entry point _dl_relocate_static_pie_ifunc must be invoked
+   afterwards -- but only once the TCB and the stack-protector canary
+   are usable -- to fire the IFUNC resolvers.  */
 extern void _dl_relocate_static_pie (void) attribute_hidden;
+extern void _dl_relocate_static_pie_ifunc (void) attribute_hidden;
 # else
 #  define _dl_relocate_static_pie()
+#  define _dl_relocate_static_pie_ifunc()
 # endif
 #endif
 

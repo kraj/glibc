@@ -289,8 +289,17 @@ tests-static-internal := \
   tst-tunables-enable_secure \
   # tests-static-internal
 
+ifeq (yes,$(have-gcc-ifunc))
+tests-static-internal += \
+  tst-ifunc-resolver-protector-static \
+  tst-ifunc-resolver-protector-static-non-pie \
+  # tests-static-internal
+endif
+
 CRT-tst-tls1-static-non-pie := $(csu-objpfx)crt1.o
 tst-tls1-static-non-pie-no-pie = yes
+CRT-tst-ifunc-resolver-protector-static-non-pie := $(csu-objpfx)crt1.o
+tst-ifunc-resolver-protector-static-non-pie-no-pie = yes
 
 tests-container := \
   tst-dl-cache-long-path \
@@ -744,6 +753,19 @@ test-extras += \
   tst-tlsmod17a \
   tst-tlsmod18a \
   # test-extras
+
+ifeq (yes,$(have-gcc-ifunc))
+# The resolver helper needs <tls.h> for the TCB-canary STACK_CHK_GUARD
+# macro, so it must be compiled with MODULE_NAME=testsuite_internal.
+extra-test-objs += \
+  tst-ifunc-resolver-protector-static-mod.o \
+  tst-ifunc-resolver-protector-static-non-pie-mod.o \
+  # extra-test-objs
+test-internal-extras += \
+  tst-ifunc-resolver-protector-static-mod \
+  tst-ifunc-resolver-protector-static-non-pie-mod \
+  # test-internal-extras
+endif
 modules-names += \
   circlemod1 \
   circlemod1a \
@@ -1256,7 +1278,11 @@ tests-ifuncstatic := \
   ifuncmain7static \
   # tests-ifuncstatic
 ifeq (yes,$(have-gcc-ifunc))
-tests-ifuncstatic += ifuncmain9static ifuncmain9picstatic
+tests-ifuncstatic += \
+  ifuncmain9picstatic \
+  ifuncmain9static \
+  tst-ifunc-bz28817 \
+  # tests-ifuncstatic
 endif
 tests-static += $(tests-ifuncstatic)
 tests-internal += $(tests-ifuncstatic)
@@ -1268,6 +1294,7 @@ tests += \
   tst-ifunc-plt-bindnow \
   tst-ifunc-plt-dlopen \
   tst-ifunc-plt-dlopen-bindnow \
+  tst-ifunc-resolver-protector \
   tst-ifunc-tls-init \
   tst-ifunc-tls-write \
   # tests
@@ -1334,6 +1361,7 @@ modules-names += \
   ifuncmod6 \
   tst-ifunc-plt-dep \
   tst-ifunc-plt-lib \
+  tst-ifunc-resolver-protector-mod \
   tst-ifunc-tls-init-lib1 \
   tst-ifunc-tls-init-lib2 \
   tst-ifunc-tls-write-lib \
@@ -1743,6 +1771,19 @@ $(objpfx)tst-nodelete-opened.out: $(objpfx)tst-nodelete-opened-lib.so
 
 $(objpfx)tst-tlsalign-extern: $(objpfx)tst-tlsalign-vars.o
 $(objpfx)tst-tlsalign-extern-static: $(objpfx)tst-tlsalign-vars.o
+
+# The resolver translation unit must always be compiled with
+# -fstack-protector-all so the canary code is emitted regardless of the
+# default.
+CFLAGS-tst-ifunc-resolver-protector-static-mod.c = -fstack-protector-all
+CFLAGS-tst-ifunc-resolver-protector-static-non-pie-mod.c = -fstack-protector-all
+CFLAGS-tst-ifunc-resolver-protector-mod.c = -fstack-protector-all
+$(objpfx)tst-ifunc-resolver-protector-static: \
+  $(objpfx)tst-ifunc-resolver-protector-static-mod.o
+$(objpfx)tst-ifunc-resolver-protector-static-non-pie: \
+  $(objpfx)tst-ifunc-resolver-protector-static-non-pie-mod.o
+$(objpfx)tst-ifunc-resolver-protector: \
+  $(objpfx)tst-ifunc-resolver-protector-mod.so
 
 tst-null-argv-ENV = LD_DEBUG=all LD_DEBUG_OUTPUT=$(objpfx)tst-null-argv.debug.out
 LDFLAGS-nodel2mod3.so = -Wl,--no-as-needed

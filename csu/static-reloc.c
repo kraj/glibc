@@ -23,4 +23,9 @@ void
 _dl_relocate_static_pie (void)
 {
 }
+
+void
+_dl_relocate_static_pie_ifunc (void)
+{
+}
 #endif

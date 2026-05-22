@@ -31,8 +31,10 @@
 #include "dynamic-link.h"
 #include "get-dynamic-info.h"
 
-/* Relocate static executable with PIE.  */
-
+/* Phase 1: relocate static PIE - non-IRELATIVE pass.  IFUNC resolvers are
+   deferred to _dl_relocate_static_pie_ifunc so that csu/libc-start.c can
+   initialise the TCB (and write the stack-protector canary into it) between
+   the two passes.  */
 void
 _dl_relocate_static_pie (void)
 {
@@ -76,10 +78,9 @@ _dl_relocate_static_pie (void)
   ELF_MACHINE_BEFORE_RTLD_RELOC (main_map, main_map->l_info);
 # endif
 
-  /* Relocate ourselves so we can do normal function calls and
-     data access using the global offset table.  */
-  ELF_DYNAMIC_RELOCATE (main_map, NULL, 0, 0, 0);
-  main_map->l_relocated = 1;
+  /* Relocate ourselves so we can do normal function calls and data access
+     using the global offset table.  IRELATIVE entries are deferred.  */
+  ELF_DYNAMIC_RELOCATE_NOIFUNC (main_map, NULL, 0, 0);
 
   /* Initialize _r_debug_extended.  */
   struct r_debug *r = _dl_debug_initialize (0, LM_ID_BASE);
@@ -88,5 +89,16 @@ _dl_relocate_static_pie (void)
   /* Set up debugging before the debugger is notified for the first
      time.  */
   elf_setup_debug_entry (main_map, r);
+}
+
+/* Phase 2: run the deferred IRELATIVE entries for the static-pie main map.
+   Must be called after the TCB is set up and the stack-protector canary is
+   written, so that an instrumented IFUNC resolver does not fault.  */
+void
+_dl_relocate_static_pie_ifunc (void)
+{
+  struct link_map *main_map = _dl_get_dl_main_map ();
+  ELF_DYNAMIC_RELOCATE_IFUNC (main_map, NULL, 0, 0);
+  main_map->l_relocated = 1;
 }
 #endif

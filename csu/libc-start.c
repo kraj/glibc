@@ -268,33 +268,28 @@ LIBC_START_MAIN (int (*main) (int, char **, char ** MAIN_AUXVEC_DECL),
 
   ARCH_INIT_CPU_FEATURES ();
 
-  /* Do static pie self relocation after tunables and cpu features
-     are setup for ifunc resolvers. Before this point relocations
-     must be avoided.  */
+  /* Do static-pie self relocation for the non-IRELATIVE part after tunables
+     and cpu features are set up.  IFUNC entries are deferred until after the
+     TCB and the stack-protector canary are usable, so that an instrumented
+     resolver does not fault.  Before this point relocations must be
+     avoided.  */
   _dl_relocate_static_pie ();
 
-  /* Perform IREL{,A} relocations.  */
-  ARCH_SETUP_IREL ();
-
-  /* The stack guard goes into the TCB, so initialize it early.  */
+  /* Set up the TCB so that the IFUNC pass below can fire resolvers
+     compiled with stack protection, and so that resolvers reading TLS
+     (errno, __thread variables, powerpc's hwcap / at_platform in the
+     TCB) observe an initialised slot.  */
   ARCH_SETUP_TLS ();
 
-  /* In some architectures, IREL{,A} relocations happen after TLS setup in
-     order to let IFUNC resolvers benefit from TCB information, e.g. powerpc's
-     hwcap and platform fields available in the TCB.  */
-  ARCH_APPLY_IREL ();
-
-  /* Set up the stack checker's canary.  */
+  /* Set up the stack checker's canary.  Must happen before any IFUNC resolver
+     runs so a resolver compiled with stack protection loads a defined
+     canary.  */
   uintptr_t stack_chk_guard = _dl_setup_stack_chk_guard (_dl_random);
 # ifdef THREAD_SET_STACK_GUARD
   THREAD_SET_STACK_GUARD (stack_chk_guard);
 # else
   __stack_chk_guard = stack_chk_guard;
 # endif
-
-  /* Initialize libpthread if linked in.  */
-  if (__pthread_initialize_minimal != NULL)
-    __pthread_initialize_minimal ();
 
   /* Set up the pointer guard value.  */
   uintptr_t pointer_chk_guard = _dl_setup_pointer_guard (_dl_random,
@@ -304,6 +299,17 @@ LIBC_START_MAIN (int (*main) (int, char **, char ** MAIN_AUXVEC_DECL),
 # else
   __pointer_chk_guard_local = pointer_chk_guard;
 # endif
+
+  /* Now that the TCB, canary, and pointer guard are in place, run the
+     deferred IFUNC relocations.  For non-PIE static binaries this is
+     ARCH_SETUP_IREL (apply_irel); for static-pie it is the IRELATIVE
+     phase of _dl_relocate_static_pie above.  */
+  _dl_relocate_static_pie_ifunc ();
+  ARCH_SETUP_IREL ();
+
+  /* Initialize libpthread if linked in.  */
+  if (__pthread_initialize_minimal != NULL)
+    __pthread_initialize_minimal ();
 
 #endif /* !SHARED  */
 
