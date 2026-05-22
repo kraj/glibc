@@ -1268,6 +1268,8 @@ tests += \
   tst-ifunc-plt-bindnow \
   tst-ifunc-plt-dlopen \
   tst-ifunc-plt-dlopen-bindnow \
+  tst-ifunc-tls-init \
+  tst-ifunc-tls-write \
   # tests
 # Note: sysdeps/x86_64/ifuncmain8.c uses ifuncmain8.
 tests-internal += \
@@ -1332,6 +1334,9 @@ modules-names += \
   ifuncmod6 \
   tst-ifunc-plt-dep \
   tst-ifunc-plt-lib \
+  tst-ifunc-tls-init-lib1 \
+  tst-ifunc-tls-init-lib2 \
+  tst-ifunc-tls-write-lib \
   # modules-names
 ifeq (no,$(with-lld))
 modules-names += ifuncmod5
@@ -2467,6 +2472,11 @@ $(objpfx)tst-ifunc-plt-dlopen.out: \
   $(objpfx)tst-ifunc-plt-lib.so $(objpfx)tst-ifunc-plt-dep.so
 $(objpfx)tst-ifunc-plt-dlopen-bindnow.out: \
   $(objpfx)tst-ifunc-plt-lib.so $(objpfx)tst-ifunc-plt-dep.so
+
+$(objpfx)tst-ifunc-tls-init: $(objpfx)tst-ifunc-tls-init-lib1.so
+$(objpfx)tst-ifunc-tls-init.out: \
+  $(objpfx)tst-ifunc-tls-init-lib2.so
+$(objpfx)tst-ifunc-tls-write: $(objpfx)tst-ifunc-tls-write-lib.so
 
 $(objpfx)tst-unique1.out: $(objpfx)tst-unique1mod1.so \
 			  $(objpfx)tst-unique1mod2.so

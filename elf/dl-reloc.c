@@ -107,22 +107,21 @@ _dl_try_allocate_static_tls (struct link_map *map, bool optional)
 # error "Either TLS_TCB_AT_TP or TLS_DTV_AT_TP must be defined"
 #endif
 
-  /* If the object is not yet relocated we cannot initialize the
-     static TLS region.  Delay it.  */
-  if (map->l_real->l_relocated)
-    {
+  /* Initialise the static TLS region, the map may not yet be l_relocated (a
+     TLS reloc inside the relocation loop triggered the allocation), but
+     _dl_init_static_tls only writes .tdata into the static TLS slot, which is
+     independent of relocation state.
+     Doing this inline ensures any IFUNC resolver that fires later in the same
+     object's relocation pass sees an initialised TLS slot, and the
+     post-relocation TLS init loop in dl_open_worker_begin becomes a no-op for
+     this map.  */
 #ifdef SHARED
-      /* Update the DTV of the current thread.  Note: GL(dl_load_tls_lock)
-	 is held here so normal load of the generation counter is valid.  */
-      if (__builtin_expect (THREAD_DTV()[0].counter != GL(dl_tls_generation),
-			    0))
-	(void) _dl_update_slotinfo (map->l_tls_modid, GL(dl_tls_generation));
+  /* Update the DTV of the current thread.  Note: GL(dl_load_tls_lock)
+     is held here so normal load of the generation counter is valid.  */
+  if (__glibc_unlikely (THREAD_DTV()[0].counter != GL(dl_tls_generation)))
+    _dl_update_slotinfo (map->l_tls_modid, GL(dl_tls_generation));
 #endif
-
-      _dl_init_static_tls (map);
-    }
-  else
-    map->l_need_tls_init = 1;
+  _dl_init_static_tls (map);
 
   return 0;
 }
