@@ -35,11 +35,11 @@ __old_setrlimit64 (enum __rlimit_resource resource,
 {
   struct rlimit64 krlimits;
 
-  if (rlimits->rlim_cur == OLD_RLIM64_INFINITY)
+  if (rlimits->rlim_cur >= OLD_RLIM64_INFINITY)
     krlimits.rlim_cur = RLIM64_INFINITY;
   else
     krlimits.rlim_cur = rlimits->rlim_cur;
-  if (rlimits->rlim_max == OLD_RLIM64_INFINITY)
+  if (rlimits->rlim_max >= OLD_RLIM64_INFINITY)
     krlimits.rlim_max = RLIM64_INFINITY;
   else
     krlimits.rlim_max = rlimits->rlim_max;
