@@ -289,8 +289,9 @@
 #define INTERNAL_SYSCALL(name, nr, args...) \
   ({									      \
     unsigned long int resultvar;					      \
-    register long int r3 asm ("%r3") = SYS_ify (name);			      \
+    register long int r3 asm ("%r3");					      \
     SUBSTITUTE_ARGS_##nr(args);						      \
+    r3 = SYS_ify (name);						      \
 									      \
     asm volatile (SYSCALL_INST_STR##nr SYSCALL_INST_PAD			      \
 		  : "=z" (resultvar)					      \
@@ -303,8 +304,9 @@
 #define INTERNAL_SYSCALL_NCS(name, nr, args...) \
   ({									      \
     unsigned long int resultvar;					      \
-    register long int r3 asm ("%r3") = (name);				      \
+    register long int r3 asm ("%r3");					      \
     SUBSTITUTE_ARGS_##nr(args);						      \
+    r3 = (name);							      \
 									      \
     asm volatile (SYSCALL_INST_STR##nr SYSCALL_INST_PAD			      \
 		  : "=z" (resultvar)					      \
