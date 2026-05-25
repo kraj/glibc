@@ -36,6 +36,15 @@ msync (void *addr, size_t length, int flags)
   vm_address_t cur = (vm_address_t) addr;
   vm_address_t target = cur + length;
 
+  if (flags & ~(MS_ASYNC | MS_INVALIDATE | MS_SYNC))
+    return __hurd_fail (EINVAL);
+
+  if (flags & MS_ASYNC && flags & MS_SYNC)
+    return __hurd_fail (EINVAL);
+
+  if (target < cur)
+    return __hurd_fail (ENOMEM);
+
   vm_size_t len;
   vm_prot_t prot;
   vm_prot_t max_prot;
@@ -45,6 +54,7 @@ msync (void *addr, size_t length, int flags)
   vm_offset_t offset;
 
   kern_return_t err;
+  kern_return_t unmapped_error = KERN_SUCCESS;
   int cancel_oldtype;
 
   while (cur < target)
@@ -59,13 +69,16 @@ msync (void *addr, size_t length, int flags)
 	return __hurd_fail (err);
 
       if (begin > cur)
-	/* We were given an address before the first region,
-	   or we found a hole.  */
-	cur = begin;
+	{
+	  /* We were given an address before the first region,
+	     or we found a hole.  */
+	  cur = begin;
+	  unmapped_error = ENOMEM;
+	}
 
       if (cur >= target)
 	/* We were given an ending address within a hole. */
-	break;
+	return __hurd_fail (ENOMEM);
 
       if (MACH_PORT_VALID (obj))
 	{
@@ -90,5 +103,7 @@ msync (void *addr, size_t length, int flags)
       cur = begin + len;
     }
 
+  if (unmapped_error != KERN_SUCCESS)
+    return __hurd_fail (unmapped_error);
   return 0;
 }
