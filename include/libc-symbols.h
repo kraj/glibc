@@ -671,7 +671,7 @@ for linking")
 
 /* Helper / base  macros for indirect function symbols.  */
 #define __ifunc_resolver(type_name, name, expr, init, classifier, ...)	\
-  classifier inhibit_stack_protector					\
+  classifier								\
   __typeof (type_name) *name##_ifunc (__VA_ARGS__)			\
   {									\
     init ();								\
