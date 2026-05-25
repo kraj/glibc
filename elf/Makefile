@@ -1296,6 +1296,7 @@ tests += \
   tst-ifunc-plt-dlopen-bindnow \
   tst-ifunc-resolver-protector \
   tst-ifunc-tls-init \
+  tst-ifunc-tls-init-gd-ld \
   tst-ifunc-tls-write \
   tst-tls-tdata-reloc \
   # tests
@@ -1363,11 +1364,20 @@ modules-names += \
   tst-ifunc-plt-dep \
   tst-ifunc-plt-lib \
   tst-ifunc-resolver-protector-mod \
+  tst-ifunc-tls-init-gd-global-lib \
+  tst-ifunc-tls-init-gd-lib \
+  tst-ifunc-tls-init-ld-lib \
   tst-ifunc-tls-init-lib1 \
   tst-ifunc-tls-init-lib2 \
   tst-ifunc-tls-write-lib \
   tst-tls-tdata-reloc-lib \
   # modules-names
+ifneq (no,$(have-test-mtls-descriptor))
+tests += tst-ifunc-tls-init-tlsdesc
+modules-names += tst-ifunc-tls-init-tlsdesc-lib
+CFLAGS-tst-ifunc-tls-init-tlsdesc-lib.c += \
+  -mtls-dialect=$(have-test-mtls-descriptor)
+endif
 ifeq (no,$(with-lld))
 modules-names += ifuncmod5
 endif
@@ -2521,6 +2531,20 @@ $(objpfx)tst-ifunc-tls-init.out: \
   $(objpfx)tst-ifunc-tls-init-lib2.so
 $(objpfx)tst-ifunc-tls-write: $(objpfx)tst-ifunc-tls-write-lib.so
 $(objpfx)tst-tls-tdata-reloc: $(objpfx)tst-tls-tdata-reloc-lib.so
+
+$(objpfx)tst-ifunc-tls-init-gd-ld: $(shared-thread-library)
+$(objpfx)tst-ifunc-tls-init-gd-ld.out: \
+  $(objpfx)tst-ifunc-tls-init-gd-lib.so \
+  $(objpfx)tst-ifunc-tls-init-gd-global-lib.so \
+  $(objpfx)tst-ifunc-tls-init-ld-lib.so
+tst-ifunc-tls-init-gd-ld-TUNABLES = glibc.rtld.optional_static_tls=0
+
+ifneq (no,$(have-test-mtls-descriptor))
+$(objpfx)tst-ifunc-tls-init-tlsdesc: $(shared-thread-library)
+$(objpfx)tst-ifunc-tls-init-tlsdesc.out: \
+  $(objpfx)tst-ifunc-tls-init-tlsdesc-lib.so
+tst-ifunc-tls-init-tlsdesc-TUNABLES = glibc.rtld.optional_static_tls=0
+endif # $(have-test-mtls-descriptor)
 
 $(objpfx)tst-unique1.out: $(objpfx)tst-unique1mod1.so \
 			  $(objpfx)tst-unique1mod2.so

@@ -658,6 +658,31 @@ dl_open_worker_begin (void *a)
 
   bool relocation_in_progress = false;
 
+  /* This only performs the memory allocations.  The actual update of
+     the scopes happens below, after failure is impossible.  */
+  resize_scopes (new);
+
+  /* Increase the size of the GL (dl_tls_dtv_slotinfo_list) data
+     structure.  */
+  bool any_tls = resize_tls_slotinfo (new);
+
+  /* Perform the necessary allocations for adding new global objects
+     to the global scope below.  */
+  if (mode & RTLD_GLOBAL)
+    add_to_global_resize (new);
+
+  /* Install the new modules in the DTV slotinfo and initialise their
+     static TLS *before* relocation, so an IFUNC resolver firing during
+     the relocation loop below can reach its DSO's __thread storage via
+     __tls_get_addr / TLSDESC.  Without this, the resolver's TLS access
+     for a just-loaded module would index into an unallocated DTV slot
+     and crash.  If relocation later fails, the subsequent _dl_close_worker
+     cleans up these slotinfo entries via remove_slotinfo.  */
+  if (any_tls)
+    /* FIXME: This calls _dl_update_slotinfo, which aborts the process
+       on memory allocation failure.  See bug 16134.  */
+    update_tls_slotinfo (new);
+
   /* Perform relocation.  This can trigger lazy binding in IFUNC
      resolvers.  For NODELETE mappings, these dependencies are not
      recorded because the flag has not been applied to the newly
@@ -682,19 +707,6 @@ dl_open_worker_begin (void *a)
     _dl_open_relocate_one_object (args, r, new->l_initfini[i], reloc_mode,
 				  &relocation_in_progress);
 
-  /* This only performs the memory allocations.  The actual update of
-     the scopes happens below, after failure is impossible.  */
-  resize_scopes (new);
-
-  /* Increase the size of the GL (dl_tls_dtv_slotinfo_list) data
-     structure.  */
-  bool any_tls = resize_tls_slotinfo (new);
-
-  /* Perform the necessary allocations for adding new global objects
-     to the global scope below.  */
-  if (mode & RTLD_GLOBAL)
-    add_to_global_resize (new);
-
   /* Demarcation point: After this, no recoverable errors are allowed.
      All memory allocations for new objects must have happened
      before.  */
@@ -715,19 +727,6 @@ dl_open_worker_begin (void *a)
   if (!_dl_find_object_update (new))
     _dl_signal_error (ENOMEM, new->l_libname->name, NULL,
 		      N_ ("cannot allocate address lookup data"));
-
-  /* FIXME: It is unclear whether the order here is correct.
-     Shouldn't new objects be made available for binding (and thus
-     execution) only after there TLS data has been set up fully?
-     Fixing bug 16134 will likely make this distinction less
-     important.  */
-
-  /* Second stage after resize_tls_slotinfo: Update the slotinfo data
-     structures.  */
-  if (any_tls)
-    /* FIXME: This calls _dl_update_slotinfo, which aborts the process
-       on memory allocation failure.  See bug 16134.  */
-    update_tls_slotinfo (new);
 
   /* Notify the debugger all new objects have been relocated.  */
   if (relocation_in_progress)
