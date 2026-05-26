@@ -499,6 +499,7 @@ libc_hidden_proto (__libc_free)
   set to zero.
 */
 void*  __libc_calloc(size_t, size_t);
+libc_hidden_proto (__libc_calloc)
 
 /*
   realloc(void* p, size_t n)
@@ -551,6 +552,7 @@ libc_hidden_proto (__libc_memalign)
   size of the system. If the pagesize is unknown, 4096 is used.
 */
 void*  __libc_valloc(size_t);
+libc_hidden_proto (__libc_valloc)
 
 
 
@@ -585,6 +587,7 @@ struct mallinfo __libc_mallinfo(void);
   round up n to nearest pagesize.
  */
 void*  __libc_pvalloc(size_t);
+libc_hidden_proto (__libc_pvalloc)
 
 /*
   malloc_trim(size_t pad);
@@ -628,6 +631,7 @@ int      __malloc_trim(size_t);
 
 */
 size_t   __malloc_usable_size(void*);
+libc_hidden_proto (__malloc_usable_size)
 
 /*
   malloc_stats();
@@ -657,6 +661,7 @@ void     __malloc_stats(void);
   POSIX wrapper like memalign(), checking for validity of size.
 */
 int      __posix_memalign(void **, size_t, size_t);
+libc_hidden_proto (__posix_memalign)
 #endif /* IS_IN (libc) */
 
 /*
@@ -3320,8 +3325,11 @@ libc_hidden_def (__libc_memalign)
 
 /* For ISO C17.  */
 void *
-weak_function
-aligned_alloc (size_t alignment, size_t bytes)
+__aligned_alloc (size_t alignment, size_t bytes);
+libc_hidden_proto (__aligned_alloc)
+
+void *
+__aligned_alloc (size_t alignment, size_t bytes)
 {
 /* Starting with ISO C17 the standard requires an error for alignments
    that are not supported.  Only integral powers of 2 are valid.  */
@@ -3333,11 +3341,15 @@ aligned_alloc (size_t alignment, size_t bytes)
 
   return _mid_memalign (alignment, bytes);
 }
+libc_hidden_def (__aligned_alloc)
 
 /* For ISO C23.  */
 void
-weak_function
-free_sized (void *ptr, __attribute_maybe_unused__ size_t size)
+__free_sized (void *ptr, __attribute_maybe_unused__ size_t size);
+libc_hidden_proto (__free_sized)
+
+void
+__free_sized (void *ptr, __attribute_maybe_unused__ size_t size)
 {
   /* We do not perform validation that size is the same as the original
      requested size at this time. We leave that to the sanitizers.  We
@@ -3346,11 +3358,16 @@ free_sized (void *ptr, __attribute_maybe_unused__ size_t size)
 
   free (ptr);
 }
+libc_hidden_def (__free_sized)
 
 /* For ISO C23.  */
 void
-weak_function
-free_aligned_sized (void *ptr, __attribute_maybe_unused__ size_t alignment,
+__free_aligned_sized (void *ptr, __attribute_maybe_unused__ size_t alignment,
+                    __attribute_maybe_unused__ size_t size);
+libc_hidden_proto (__free_aligned_sized)
+
+void
+__free_aligned_sized (void *ptr, __attribute_maybe_unused__ size_t alignment,
                     __attribute_maybe_unused__ size_t size)
 {
   /* We do not perform validation that size and alignment is the same as
@@ -3360,6 +3377,7 @@ free_aligned_sized (void *ptr, __attribute_maybe_unused__ size_t alignment,
 
   free (ptr);
 }
+libc_hidden_def (__free_aligned_sized)
 
 static void *
 _mid_memalign (size_t alignment, size_t bytes)
@@ -3408,6 +3426,7 @@ __libc_valloc (size_t bytes)
 {
   return _mid_memalign (GLRO (dl_pagesize), bytes);
 }
+libc_hidden_def (__libc_valloc)
 
 void *
 __libc_pvalloc (size_t bytes)
@@ -3425,6 +3444,7 @@ __libc_pvalloc (size_t bytes)
 
   return _mid_memalign (pagesize, rounded_bytes & -pagesize);
 }
+libc_hidden_def (__libc_pvalloc)
 
 static void * __attribute_noinline__
 __libc_calloc2 (size_t sz)
@@ -3551,6 +3571,7 @@ __libc_calloc (size_t n, size_t elem_size)
 #endif
   return __libc_calloc2 (bytes);
 }
+libc_hidden_def (__libc_calloc)
 #endif /* IS_IN (libc) */
 
 /*
@@ -4547,6 +4568,7 @@ __malloc_usable_size (void *m)
     return 0;
   return musable (m);
 }
+libc_hidden_def (__malloc_usable_size)
 #endif /* IS_IN (libc) */
 
 /*
@@ -5074,6 +5096,7 @@ __posix_memalign (void **memptr, size_t alignment, size_t size)
   *memptr = mem;
   return 0;
 }
+libc_hidden_def (__posix_memalign)
 #endif /* IS_IN (libc) */
 
 
@@ -5236,6 +5259,9 @@ __malloc_info (int options, FILE *fp)
 }
 
 #if IS_IN (libc)
+
+/* See sysdeps/generic/malloc-ifuncs.h for details.  */
+# if !defined (USE_MULTIARCH_MALLOC)
 strong_alias (__libc_malloc, malloc)
 strong_alias (__libc_realloc, realloc)
 strong_alias (__libc_free, free)
@@ -5245,6 +5271,10 @@ weak_alias (__posix_memalign, posix_memalign)
 weak_alias (__libc_valloc, valloc)
 weak_alias (__libc_pvalloc, pvalloc)
 weak_alias (__malloc_usable_size, malloc_usable_size)
+weak_alias (__aligned_alloc, aligned_alloc)
+weak_alias (__free_sized, free_sized)
+weak_alias (__free_aligned_sized, free_aligned_sized)
+#endif /* !USE_MULTIARCH_MALLOC */
 
 weak_alias (__malloc_info, malloc_info)
 weak_alias (__libc_mallinfo, mallinfo)

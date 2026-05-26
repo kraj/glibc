@@ -24,6 +24,9 @@
 #include <malloc-size.h>
 #include <hugepages.h>
 #include <calloc-clear-memory.h>
+#if defined(USE_MULTIARCH)
+# include <malloc-ifuncs.h>
+#endif
 
 /* Called in the parent process before a fork.  */
 void __malloc_fork_lock_parent (void) attribute_hidden;
