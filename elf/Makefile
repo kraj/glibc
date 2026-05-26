@@ -1297,6 +1297,7 @@ tests += \
   tst-ifunc-resolver-protector \
   tst-ifunc-tls-init \
   tst-ifunc-tls-write \
+  tst-tls-tdata-reloc \
   # tests
 # Note: sysdeps/x86_64/ifuncmain8.c uses ifuncmain8.
 tests-internal += \
@@ -1365,6 +1366,7 @@ modules-names += \
   tst-ifunc-tls-init-lib1 \
   tst-ifunc-tls-init-lib2 \
   tst-ifunc-tls-write-lib \
+  tst-tls-tdata-reloc-lib \
   # modules-names
 ifeq (no,$(with-lld))
 modules-names += ifuncmod5
@@ -2518,6 +2520,7 @@ $(objpfx)tst-ifunc-tls-init: $(objpfx)tst-ifunc-tls-init-lib1.so
 $(objpfx)tst-ifunc-tls-init.out: \
   $(objpfx)tst-ifunc-tls-init-lib2.so
 $(objpfx)tst-ifunc-tls-write: $(objpfx)tst-ifunc-tls-write-lib.so
+$(objpfx)tst-tls-tdata-reloc: $(objpfx)tst-tls-tdata-reloc-lib.so
 
 $(objpfx)tst-unique1.out: $(objpfx)tst-unique1mod1.so \
 			  $(objpfx)tst-unique1mod2.so

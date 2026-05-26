@@ -269,9 +269,29 @@ _dl_relocate_object_no_relro (struct link_map *l, struct r_scope_elem *scope[],
     }
 
   {
-    /* Do the actual relocation of the object's GOT and other data.  */
+    /* Do the actual relocation of the object's GOT and other data.
 
-    ELF_DYNAMIC_RELOCATE (l, scope, lazy, consider_profiling, skip_ifunc);
+       Process the non-IRELATIVE pass first so .tdata is fully relocated
+       (including R_*_RELATIVE / R_*_64 fixups for TLS initialisers, e.g. a
+       file-scope thread-local initialised with the address of a function),
+       then refresh the static TLS slot before the IRELATIVE pass runs the
+       IFUNC resolvers.  Without this, a resolver would see the unrelocated
+       initialiser bytes that were placed into the slot by the early
+       _dl_allocate_tls_init.  */
+    ELF_DYNAMIC_RELOCATE_NOIFUNC (l, scope, lazy, consider_profiling);
+
+#ifdef SHARED
+    /* Re-initialise the static TLS slot with the .tdata so the IRELATIVE
+       pass observes a fully-relocated initialiser image.  Skipped for objects
+       without static TLS or before the main thread TCB has been set up.  */
+    if (l->l_tls_blocksize != 0
+	&& __rtld_tls_init_tp_called
+	&& l->l_tls_offset != NO_TLS_OFFSET
+	&& l->l_tls_offset != FORCED_DYNAMIC_TLS_OFFSET)
+      _dl_init_static_tls (l);
+#endif
+
+    ELF_DYNAMIC_RELOCATE_IFUNC (l, scope, lazy, skip_ifunc);
 
     if ((consider_profiling || consider_symbind)
 	&& l->l_info[DT_PLTRELSZ] != NULL)
