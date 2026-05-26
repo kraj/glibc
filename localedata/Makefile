@@ -287,7 +287,7 @@ install-others := $(addprefix $(inst_i18ndir)/, \
 			      $(locales))
 endif
 
-tests: $(objdir)/iconvdata/gconv-modules
+tests: $(gen-gconv-modules)
 
 tests-static += \
   tst-langinfo-newlocale-static \
@@ -412,6 +412,7 @@ LOCALES := \
   # LOCALES
 
 include ../gen-locales.mk
+include ../gen-gconv-modules.mk
 
 $(objpfx)tst-iconv-emojis-trans.out: $(gen-locales)
 
@@ -587,6 +588,3 @@ $(objpfx)mtrace-tst-leaks.out: $(objpfx)tst-leaks.out
 
 bug-setlocale1-ENV-only = LOCPATH=$(objpfx) LC_CTYPE=de_DE.UTF-8
 bug-setlocale1-static-ENV-only = $(bug-setlocale1-ENV-only)
-
-$(objdir)/iconvdata/gconv-modules:
-	$(MAKE) -C ../iconvdata subdir=iconvdata $@

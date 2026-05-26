@@ -30,8 +30,11 @@
 static int
 do_test (void)
 {
-  if (setlocale (LC_ALL, "de_DE.ISO-8859-1") == NULL)
-    FAIL_EXIT1 ("setlocale failed, check if de_DE.ISO-8859-1 is generated");
+  locale_t loc_obj = newlocale (LC_ALL_MASK, "de_DE.ISO-8859-1", NULL);
+  if (loc_obj == NULL)
+    FAIL_EXIT1 ("newlocale failed, check if de_DE.ISO-8859-1 is generated");
+
+  uselocale (loc_obj);
 
   wchar_t buf[32] = L"123";
   int j;
@@ -41,7 +44,7 @@ do_test (void)
     FAIL_EXIT1 ("swscanf failed");
 
   /* Retrieve the current gconv_fcts from the LC_CTYPE locale data.  */
-  struct __locale_data *loc = _NL_CURRENT_DATA (LC_CTYPE);
+  struct __locale_data *loc = loc_obj->__locales[LC_CTYPE];
   struct lc_ctype_data *ctype = loc->private;
   const struct gconv_fcts *fcts = ctype->fcts;
 
@@ -50,6 +53,9 @@ do_test (void)
 
   /* Capture the reference counter.  */
   int initial_counter = fcts->towc->__counter;
+
+  if (fcts->towc->__shlib_handle == NULL)
+    FAIL_EXIT1 ("__shlib_handle is NULL!");
 
   /* Perform a second iteration of swscanf. If the stack-allocated FILE
      leaks the gconv reference, the counter will increment.  */
