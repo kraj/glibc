@@ -237,6 +237,7 @@ tests = \
   bug-setlocale1 \
   bug-usesetlocale \
   tst-bz12701-lc \
+  tst-bz12701-lc2 \
   tst-c-utf8-consistency \
   tst-digits \
   tst-iconv-emojis-trans \
