@@ -39,7 +39,7 @@ __adjtime (const struct timeval *delta, struct timeval *olddelta)
     {
       if (delta->tv_usec >=  TIME_MICROS_MAX ||
           delta->tv_usec <= -TIME_MICROS_MAX)
-       return EINVAL;
+       return __hurd_fail (EINVAL);
 
       rpc_delta.seconds = delta->tv_sec;
       rpc_delta.microseconds = delta->tv_usec;
@@ -55,7 +55,7 @@ __adjtime (const struct timeval *delta, struct timeval *olddelta)
       rpc_delta.microseconds = MACH_ADJTIME_USECS_OMIT;
     }
 #else
-    return EINVAL;
+    return __hurd_fail (EINVAL);
 #endif
 
   err = __host_adjust_time (hostpriv, rpc_delta, &rpc_olddelta);
