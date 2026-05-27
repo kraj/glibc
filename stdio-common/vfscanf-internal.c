@@ -780,9 +780,9 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
 		    conv_error ();					      \
 		} while (0)
 #ifdef COMPILE_WSCANF
-	      STRING_ARG (str, char, 100);
+	      STRING_ARG (str, char, (width > 0 ? width : 1));
 #else
-	      STRING_ARG (str, char, (width > 1024 ? 1024 : width));
+	      STRING_ARG (str, char, (width > 0 ? width : 1));
 #endif
 
 	      c = inchar ();
@@ -891,6 +891,11 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
 
 	      if (!(flags & SUPPRESS))
 		{
+		  /* If the buffer isn't completely filled, pad it with NULs.  */
+		  if (flags & MALLOC)
+		    while (width-- > 0)
+		      *str++ = '\0';
+
 		  if ((flags & MALLOC) && str - *strptr != strsize)
 		    {
 		      char *cp = (char *) realloc (*strptr, str - *strptr);
@@ -908,7 +913,7 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
 	  if (width == -1)
 	    width = 1;
 
-	  STRING_ARG (wstr, wchar_t, (width > 1024 ? 1024 : width));
+	  STRING_ARG (wstr, wchar_t, (width > 0 ? width : 1));
 
 	  c = inchar ();
 	  if (__glibc_unlikely (c == EOF))
@@ -1044,6 +1049,11 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
 
 	  if (!(flags & SUPPRESS))
 	    {
+	      /* If the buffer isn't completely filled, pad it with NULs.  */
+	      if (flags & MALLOC)
+		while (width-- > 0)
+		  *wstr++ = L'\0';
+
 	      if ((flags & MALLOC) && wstr - (wchar_t *) *strptr != strsize)
 		{
 		  wchar_t *cp = (wchar_t *) realloc (*strptr,
