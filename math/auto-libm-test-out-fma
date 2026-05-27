@@ -13364,6 +13364,31 @@ fma 0x1.000002p-126 -0x1.000002p-26 -0x1p103
 = fma tonearest ibm128 0x4.000008p-128 -0x4.000008p-28 -0x8p+100 : -0x8p+100 : inexact
 = fma towardzero ibm128 0x4.000008p-128 -0x4.000008p-28 -0x8p+100 : -0x8p+100 : inexact
 = fma upward ibm128 0x4.000008p-128 -0x4.000008p-28 -0x8p+100 : -0x8p+100 : inexact
+fma 0x1.000008p+0 0x1.000008p+0 0x1p+11
+= fma downward binary32 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.01p+8 : inexact
+= fma tonearest binary32 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.01p+8 : inexact
+= fma towardzero binary32 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.01p+8 : inexact
+= fma upward binary32 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.01001p+8 : inexact
+= fma downward binary64 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001p+8 : inexact
+= fma tonearest binary64 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001p+8 : inexact
+= fma towardzero binary64 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001p+8 : inexact
+= fma upward binary64 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001000008p+8 : inexact
+= fma downward intel96 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001000004p+8 :
+= fma tonearest intel96 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001000004p+8 :
+= fma towardzero intel96 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001000004p+8 :
+= fma upward intel96 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001000004p+8 :
+= fma downward m68k96 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001000004p+8 :
+= fma tonearest m68k96 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001000004p+8 :
+= fma towardzero m68k96 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001000004p+8 :
+= fma upward m68k96 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001000004p+8 :
+= fma downward binary128 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001000004p+8 :
+= fma tonearest binary128 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001000004p+8 :
+= fma towardzero binary128 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001000004p+8 :
+= fma upward binary128 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001000004p+8 :
+= fma downward ibm128 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001000004p+8 :
+= fma tonearest ibm128 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001000004p+8 :
+= fma towardzero ibm128 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001000004p+8 :
+= fma upward ibm128 0x1.000008p+0 0x1.000008p+0 0x8p+8 : 0x8.0100001000004p+8 :
 fma 0x1.7fp+13 0x1.0000000000001p+0 0x1.ffep-48
 = fma downward binary64 0x2.fep+12 0x1.0000000000001p+0 0x1.ffep-48 : 0x2.fe00000000002p+12 : inexact
 = fma tonearest binary64 0x2.fep+12 0x1.0000000000001p+0 0x1.ffep-48 : 0x2.fe00000000002p+12 : inexact
