@@ -114,7 +114,10 @@ __fma (double x, double y, double z)
 	  zhi = nz.m;
 	  e = nz.e - 64;
 	  d -= 64;
-	  if (d < 64)
+	  if (d == 0)
+	    /* No further shift of r needed; rhi/rlo are unchanged.  */
+	    ;
+	  else if (d < 64)
 	    {
 	      rlo = rhi << (64 - d) | rlo >> d | !!(rlo << (64 - d));
 	      rhi = rhi >> d;
