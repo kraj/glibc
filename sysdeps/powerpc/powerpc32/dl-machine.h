@@ -362,7 +362,7 @@ elf_machine_rela (struct link_map *map, struct r_scope_elem *scope[],
 	  else if (sym_map != NULL)
 	    {
 #ifndef SHARED
-	      CHECK_STATIC_TLS (map, sym_map);
+	      CHECK_STATIC_TLS (map, sym_map, sym);
 #else
 	      if (TRY_STATIC_TLS (map, sym_map))
 #endif
@@ -415,7 +415,7 @@ elf_machine_rela (struct link_map *map, struct r_scope_elem *scope[],
       if (!NOT_BOOTSTRAP || sym_map != NULL)
 	{
 	  if (NOT_BOOTSTRAP)
-	    CHECK_STATIC_TLS (map, sym_map);
+	    CHECK_STATIC_TLS (map, sym_map, sym);
 	  *reloc_addr = TLS_TPREL_VALUE (sym_map, sym, reloc);
 	}
       break;

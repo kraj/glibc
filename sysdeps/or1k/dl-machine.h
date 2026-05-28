@@ -254,7 +254,7 @@ elf_machine_rela (struct link_map *map, struct r_scope_elem *scope[],
 # else
 	    if (sym_map != NULL)
 	      {
-		CHECK_STATIC_TLS (map, sym_map);
+		CHECK_STATIC_TLS (map, sym_map, sym);
 		*reloc_addr = sym->st_value + reloc->r_addend +
 		  sym_map->l_tls_offset - TLS_TCB_SIZE;
 	      }

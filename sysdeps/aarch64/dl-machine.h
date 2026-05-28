@@ -237,7 +237,7 @@ elf_machine_rela (struct link_map *map, struct r_scope_elem *scope[],
 	    else
 	      {
 # ifndef SHARED
-		CHECK_STATIC_TLS (map, sym_map);
+		CHECK_STATIC_TLS (map, sym_map, sym);
 # else
 		if (!TRY_STATIC_TLS (map, sym_map))
 		  {
@@ -271,7 +271,7 @@ elf_machine_rela (struct link_map *map, struct r_scope_elem *scope[],
 	case R_AARCH64_TLS_TPREL:
 	  if (sym)
 	    {
-	      CHECK_STATIC_TLS (map, sym_map);
+	      CHECK_STATIC_TLS (map, sym_map, sym);
 	      *reloc_addr =
 		sym->st_value + reloc->r_addend + sym_map->l_tls_offset;
 	    }

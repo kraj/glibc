@@ -566,7 +566,7 @@ __process_machine_rela (struct link_map *map,
     case R_PPC_TPREL##suffix:						      \
       if (sym_map != NULL)						      \
 	{								      \
-	  CHECK_STATIC_TLS (map, sym_map);				      \
+	  CHECK_STATIC_TLS (map, sym_map, sym);				      \
 	  do_reloc##suffix ("R_PPC_TPREL"#suffix,			      \
 			    TLS_TPREL_VALUE (sym_map, sym, reloc));	      \
 	}								      \

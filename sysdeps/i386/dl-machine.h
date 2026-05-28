@@ -342,7 +342,7 @@ and creates an unsatisfiable circular dependency.\n",
 	      {
 # ifndef RTLD_BOOTSTRAP
 #  ifndef SHARED
-		CHECK_STATIC_TLS (map, sym_map);
+		CHECK_STATIC_TLS (map, sym_map, sym);
 #  else
 		if (!TRY_STATIC_TLS (map, sym_map))
 		  {
@@ -372,7 +372,7 @@ and creates an unsatisfiable circular dependency.\n",
 	     block we subtract the offset from that of the TLS block.  */
 	  if (sym != NULL)
 	    {
-	      CHECK_STATIC_TLS (map, sym_map);
+	      CHECK_STATIC_TLS (map, sym_map, sym);
 	      *reloc_addr += sym_map->l_tls_offset - sym->st_value;
 	    }
 # endif
@@ -387,7 +387,7 @@ and creates an unsatisfiable circular dependency.\n",
 	     thread pointer.  */
 	  if (sym != NULL)
 	    {
-	      CHECK_STATIC_TLS (map, sym_map);
+	      CHECK_STATIC_TLS (map, sym_map, sym);
 	      *reloc_addr += sym->st_value - sym_map->l_tls_offset;
 	    }
 # endif

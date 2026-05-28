@@ -474,7 +474,7 @@ elf_machine_reloc (struct link_map *map, struct r_scope_elem *scope[],
 	  case R_MIPS_TLS_TPREL64:
 	    if (sym)
 	      {
-		CHECK_STATIC_TLS (map, sym_map);
+		CHECK_STATIC_TLS (map, sym_map, sym);
 		if (inplace_p)
 		  r_addend = *addr_field;
 		*addr_field = r_addend + TLS_TPREL_VALUE (sym_map, sym);

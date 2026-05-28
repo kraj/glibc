@@ -1231,7 +1231,9 @@ rtld_hidden_proto (_dl_allocate_tls)
 /* Get size and alignment requirements of the static TLS block.  */
 extern void _dl_get_tls_static_info (size_t *sizep, size_t *alignp);
 
-extern void _dl_allocate_static_tls (struct link_map *map) attribute_hidden;
+extern void _dl_allocate_static_tls (struct link_map *map,
+				     struct link_map *sym_map,
+				     const ElfW(Sym) *sym) attribute_hidden;
 
 extern void *_dl_allocate_tls_storage (void) attribute_hidden;
 extern void *_dl_allocate_tls_init (void *result, bool main_thread);

@@ -37,6 +37,47 @@
 #endif
 
 
+/* Return the number of bytes that would be allocated in the static
+   TLS block for MAP.  If the available space is insufficient, return a
+   value greater than the available space to indicate failure.  OFFSET_OUT
+   is updated with the TLS offset of the map.  */
+static inline size_t
+__attribute__ ((always_inline))
+_dl_static_tls_allocation (struct link_map *map, size_t *offset_out)
+{
+#if TLS_TCB_AT_TP
+  size_t freebytes = GLRO(dl_tls_static_size) - GL(dl_tls_static_used);
+  if (freebytes < TLS_TCB_SIZE)
+    return TLS_TCB_SIZE + map->l_tls_blocksize;
+  freebytes -= TLS_TCB_SIZE;
+
+  size_t blsize = map->l_tls_blocksize + map->l_tls_firstbyte_offset;
+  if (freebytes < blsize)
+    return TLS_TCB_SIZE + blsize;
+
+  size_t n = (freebytes - blsize) / map->l_tls_align;
+
+  /* Account optional static TLS surplus usage.  */
+  size_t use = freebytes - n * map->l_tls_align - map->l_tls_firstbyte_offset;
+  *offset_out = GL(dl_tls_static_used) + use;
+  return use;
+#elif TLS_DTV_AT_TP
+  /* dl_tls_static_used includes the TCB at the beginning.  */
+  size_t offset = (ALIGN_UP(GL(dl_tls_static_used)
+			    - map->l_tls_firstbyte_offset,
+			    map->l_tls_align)
+		   + map->l_tls_firstbyte_offset);
+  size_t used = offset + map->l_tls_blocksize;
+
+  /* Account optional static TLS surplus usage.  */
+  size_t use = used - GL(dl_tls_static_used);
+  *offset_out = offset;
+  return use;
+#else
+# error "Either TLS_TCB_AT_TP or TLS_DTV_AT_TP must be defined"
+#endif
+}
+
 /* We are trying to perform a static TLS relocation in MAP, but it was
    dynamically loaded.  This can only work if there is enough surplus in
    the static TLS area already allocated for each running thread.  If this
@@ -54,57 +95,30 @@ _dl_try_allocate_static_tls (struct link_map *map, bool optional)
   /* If we've already used the variable with dynamic access, or if the
      alignment requirements are too high, fail.  */
   if (map->l_tls_offset == FORCED_DYNAMIC_TLS_OFFSET
-      || map->l_tls_align > GLRO (dl_tls_static_align))
+      || map->l_tls_align > GLRO(dl_tls_static_align))
     {
     fail:
       return -1;
     }
 
-#if TLS_TCB_AT_TP
-  size_t freebytes = GLRO (dl_tls_static_size) - GL(dl_tls_static_used);
-  if (freebytes < TLS_TCB_SIZE)
-    goto fail;
-  freebytes -= TLS_TCB_SIZE;
+  size_t offset = 0;
+  size_t use = _dl_static_tls_allocation (map, &offset);
 
-  size_t blsize = map->l_tls_blocksize + map->l_tls_firstbyte_offset;
-  if (freebytes < blsize)
-    goto fail;
-
-  size_t n = (freebytes - blsize) / map->l_tls_align;
-
-  /* Account optional static TLS surplus usage.  */
-  size_t use = freebytes - n * map->l_tls_align - map->l_tls_firstbyte_offset;
-  if (optional && use > GL(dl_tls_static_optional))
-    goto fail;
-  else if (optional)
-    GL(dl_tls_static_optional) -= use;
-
-  size_t offset = GL(dl_tls_static_used) + use;
-
-  map->l_tls_offset = GL(dl_tls_static_used) = offset;
-#elif TLS_DTV_AT_TP
-  /* dl_tls_static_used includes the TCB at the beginning.  */
-  size_t offset = (ALIGN_UP(GL(dl_tls_static_used)
-			    - map->l_tls_firstbyte_offset,
-			    map->l_tls_align)
-		   + map->l_tls_firstbyte_offset);
-  size_t used = offset + map->l_tls_blocksize;
-
-  if (used > GLRO (dl_tls_static_size))
+  if (use > GLRO(dl_tls_static_size) - GL(dl_tls_static_used))
     goto fail;
 
   /* Account optional static TLS surplus usage.  */
-  size_t use = used - GL(dl_tls_static_used);
   if (optional && use > GL(dl_tls_static_optional))
     goto fail;
   else if (optional)
     GL(dl_tls_static_optional) -= use;
 
   map->l_tls_offset = offset;
+#if TLS_TCB_AT_TP
+  GL(dl_tls_static_used) = offset;
+#elif TLS_DTV_AT_TP
   map->l_tls_firstbyte_offset = GL(dl_tls_static_used);
-  GL(dl_tls_static_used) = used;
-#else
-# error "Either TLS_TCB_AT_TP or TLS_DTV_AT_TP must be defined"
+  GL(dl_tls_static_used) = offset + map->l_tls_blocksize;
 #endif
 
   /* Initialise the static TLS region, the map may not yet be l_relocated (a
@@ -131,13 +145,57 @@ _dl_try_allocate_static_tls (struct link_map *map, bool optional)
    not be inlined as much as possible.  */
 void
 __attribute_noinline__
-_dl_allocate_static_tls (struct link_map *map)
+_dl_allocate_static_tls (struct link_map *map, struct link_map *sym_map,
+			 const ElfW(Sym) *sym)
 {
-  if (map->l_tls_offset == FORCED_DYNAMIC_TLS_OFFSET
-      || _dl_try_allocate_static_tls (map, false))
+  if (sym_map->l_tls_offset == FORCED_DYNAMIC_TLS_OFFSET
+      || _dl_try_allocate_static_tls (sym_map, false))
     {
-      _dl_signal_error (0, map->l_name, NULL, N_("\
-cannot allocate memory in static TLS block"));
+      const char *symname = "unknown";
+      const char *def_map_info = "";
+      const char *def_map_name = "";
+      struct dl_exception exception;
+
+      if (sym != NULL)
+	{
+	  const char *strtab
+	      = (const char *) D_PTR (sym_map, l_info[DT_STRTAB]);
+	  symname = strtab + sym->st_name;
+	  if (symname[0] == '\0')
+	    symname = "unknown";
+	}
+
+      if (sym_map != map)
+	{
+	  def_map_info = " defined in ";
+	  def_map_name = DSO_FILENAME (sym_map->l_name);
+	}
+
+      if (sym_map->l_tls_offset == FORCED_DYNAMIC_TLS_OFFSET)
+	{
+	  /* XXX We cannot translate the message.  */
+	  _dl_exception_create_format (
+	      &exception, DSO_FILENAME (map->l_name),
+	      "cannot allocate memory in static TLS block: "
+	      "%s%s%s: previously used as global-dynamic",
+	      symname, def_map_info, def_map_name);
+	}
+      else
+	{
+	  size_t offset = 0;
+	  size_t requested = _dl_static_tls_allocation (sym_map, &offset);
+	  size_t available
+	      = (GLRO(dl_tls_static_size) - GL(dl_tls_static_used));
+
+	  /* XXX We cannot translate the message.  */
+	  _dl_exception_create_format (
+	      &exception, DSO_FILENAME (map->l_name),
+	      "cannot allocate memory in static TLS block: "
+	      "%s%s%s: requested %zx, available %zx",
+	      symname, def_map_info, def_map_name, requested, available);
+	}
+
+      _dl_signal_exception (0, &exception, N_("TLS allocation error"));
     }
 }
 

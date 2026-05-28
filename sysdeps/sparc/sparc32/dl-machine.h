@@ -372,7 +372,7 @@ elf_machine_rela (struct link_map *map, struct r_scope_elem *scope[],
 	 thread pointer.  */
       if (sym != NULL)
 	{
-	  CHECK_STATIC_TLS (map, sym_map);
+	  CHECK_STATIC_TLS (map, sym_map, sym);
 	  *reloc_addr = sym->st_value - sym_map->l_tls_offset
 	    + reloc->r_addend;
 	}
@@ -382,7 +382,7 @@ elf_machine_rela (struct link_map *map, struct r_scope_elem *scope[],
     case R_SPARC_TLS_LE_LOX10:
       if (sym != NULL)
 	{
-	  CHECK_STATIC_TLS (map, sym_map);
+	  CHECK_STATIC_TLS (map, sym_map, sym);
 	  value = sym->st_value - sym_map->l_tls_offset
 	    + reloc->r_addend;
 	  if (r_type == R_SPARC_TLS_LE_HIX22)

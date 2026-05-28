@@ -205,7 +205,7 @@ elf_machine_rela (struct link_map *map, struct r_scope_elem *scope[],
       break;
 
     case __WORDSIZE == 64 ? R_LARCH_TLS_TPREL64 : R_LARCH_TLS_TPREL32:
-      CHECK_STATIC_TLS (map, sym_map);
+      CHECK_STATIC_TLS (map, sym_map, sym);
       *addr_field = TLS_TPREL_VALUE (sym_map, sym) + reloc->r_addend;
       break;
 
@@ -220,7 +220,7 @@ elf_machine_rela (struct link_map *map, struct r_scope_elem *scope[],
 	else
 	  {
 # ifndef SHARED
-	    CHECK_STATIC_TLS (map, sym_map);
+	    CHECK_STATIC_TLS (map, sym_map, sym);
 # else
 	    if (!TRY_STATIC_TLS (map, sym_map))
 	      {

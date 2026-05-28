@@ -372,7 +372,7 @@ and creates an unsatisfiable circular dependency.\n",
 	    else
 	      {
 #  ifndef SHARED
-		CHECK_STATIC_TLS (map, sym_map);
+		CHECK_STATIC_TLS (map, sym_map, sym);
 #  else
 		if (!TRY_STATIC_TLS (map, sym_map))
 		  {
@@ -394,7 +394,7 @@ and creates an unsatisfiable circular dependency.\n",
 	  /* The offset is negative, forward from the thread pointer.  */
 	  if (sym != NULL)
 	    {
-	      CHECK_STATIC_TLS (map, sym_map);
+	      CHECK_STATIC_TLS (map, sym_map, sym);
 	      /* We know the offset of the object the symbol is contained in.
 		 It is a negative value which will be added to the
 		 thread pointer.  */

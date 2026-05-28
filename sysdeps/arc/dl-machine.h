@@ -283,7 +283,7 @@ elf_machine_rela (struct link_map *map, struct r_scope_elem *scope[],
         case R_ARC_TLS_TPOFF:
           if (sym != NULL)
             {
-              CHECK_STATIC_TLS (map, sym_map);
+              CHECK_STATIC_TLS (map, sym_map, sym);
               *reloc_addr = sym_map->l_tls_offset + sym->st_value + reloc->r_addend;
             }
           break;

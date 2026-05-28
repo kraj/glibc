@@ -33,10 +33,10 @@
 		       && ((sym_map)->l_tls_offset			\
 			   != FORCED_DYNAMIC_TLS_OFFSET), 1))
 
-#define CHECK_STATIC_TLS(map, sym_map)					\
+#define CHECK_STATIC_TLS(map, sym_map, sym)					\
     do {								\
       if (!HAVE_STATIC_TLS (map, sym_map))				\
-	_dl_allocate_static_tls (sym_map);				\
+	_dl_allocate_static_tls (map, sym_map, sym);			\
     } while (0)
 
 #define TRY_STATIC_TLS(map, sym_map)					\

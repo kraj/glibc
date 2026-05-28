@@ -714,7 +714,7 @@ elf_machine_rela (struct link_map *map, struct r_scope_elem *scope[],
       /* The offset is negative, forward from the thread pointer */
       if (sym != NULL)
 	{
-	  CHECK_STATIC_TLS (map, sym_map);
+	  CHECK_STATIC_TLS (map, sym_map, sym);
 	  value = sym_map->l_tls_offset + sym->st_value + reloc->r_addend;
 	}
       break;
