@@ -100,7 +100,14 @@ extern const char doc[];
 
 #define TEST_COND_ibm128 (MANT_DIG == 106)
 
-#define TEST_COND_arg_ibm128 (ARG_MANT_DIG == 106)
+/* For non-narrowing tests there is no argument format distinct from
+   the result format, so arg-format conditions are always false (and
+   ARG_PREFIX is not defined).  */
+#ifdef ARG_FLOAT
+# define TEST_COND_arg_ibm128 (ARG_MANT_DIG == 106)
+#else
+# define TEST_COND_arg_ibm128 0
+#endif
 
 #define TEST_COND_intel96 (MANT_DIG == 64	\
 			   && MIN_EXP == -16381	\

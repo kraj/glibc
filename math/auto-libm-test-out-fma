@@ -12789,11 +12789,11 @@ fma 0x1p-149 0x1p-149 0x1p-126
 = fma tonearest ibm128 0x8p-152 0x8p-152 0x4p-128 : 0x4p-128 : inexact
 = fma towardzero ibm128 0x8p-152 0x8p-152 0x4p-128 : 0x4p-128 : inexact
 = fma upward ibm128 0x8p-152 0x8p-152 0x4p-128 : 0x4.00000000000000000000000002p-128 : inexact
-fma 0x1p-149 -0x1p-149 0x1p-126
-= fma downward binary32 0x8p-152 -0x8p-152 0x4p-128 : 0x3.fffff8p-128 : inexact underflow errno-erange-ok
-= fma tonearest binary32 0x8p-152 -0x8p-152 0x4p-128 : 0x4p-128 : inexact underflow:before-rounding errno-erange-ok:before-rounding
-= fma towardzero binary32 0x8p-152 -0x8p-152 0x4p-128 : 0x3.fffff8p-128 : inexact underflow errno-erange-ok
-= fma upward binary32 0x8p-152 -0x8p-152 0x4p-128 : 0x4p-128 : inexact underflow:before-rounding errno-erange-ok:before-rounding
+fma 0x1p-149 -0x1p-149 0x1p-126 missing-underflow:arg-ibm128
+= fma downward binary32 0x8p-152 -0x8p-152 0x4p-128 : 0x3.fffff8p-128 : inexact underflow underflow-ok:arg-ibm128 errno-erange-ok
+= fma tonearest binary32 0x8p-152 -0x8p-152 0x4p-128 : 0x4p-128 : inexact underflow:before-rounding underflow-ok:arg-ibm128:before-rounding errno-erange-ok:before-rounding
+= fma towardzero binary32 0x8p-152 -0x8p-152 0x4p-128 : 0x3.fffff8p-128 : inexact underflow underflow-ok:arg-ibm128 errno-erange-ok
+= fma upward binary32 0x8p-152 -0x8p-152 0x4p-128 : 0x4p-128 : inexact underflow:before-rounding underflow-ok:arg-ibm128:before-rounding errno-erange-ok:before-rounding
 = fma downward binary64 0x8p-152 -0x8p-152 0x4p-128 : 0x3.ffffffffffffep-128 : inexact
 = fma tonearest binary64 0x8p-152 -0x8p-152 0x4p-128 : 0x4p-128 : inexact
 = fma towardzero binary64 0x8p-152 -0x8p-152 0x4p-128 : 0x3.ffffffffffffep-128 : inexact
@@ -12814,11 +12814,11 @@ fma 0x1p-149 -0x1p-149 0x1p-126
 = fma tonearest ibm128 0x8p-152 -0x8p-152 0x4p-128 : 0x4p-128 : inexact
 = fma towardzero ibm128 0x8p-152 -0x8p-152 0x4p-128 : 0x3.ffffffffffffffffffffffffffp-128 : inexact
 = fma upward ibm128 0x8p-152 -0x8p-152 0x4p-128 : 0x4p-128 : inexact
-fma 0x1p-149 0x1p-149 -0x1p-126
-= fma downward binary32 0x8p-152 0x8p-152 -0x4p-128 : -0x4p-128 : inexact underflow:before-rounding errno-erange-ok:before-rounding
-= fma tonearest binary32 0x8p-152 0x8p-152 -0x4p-128 : -0x4p-128 : inexact underflow:before-rounding errno-erange-ok:before-rounding
-= fma towardzero binary32 0x8p-152 0x8p-152 -0x4p-128 : -0x3.fffff8p-128 : inexact underflow errno-erange-ok
-= fma upward binary32 0x8p-152 0x8p-152 -0x4p-128 : -0x3.fffff8p-128 : inexact underflow errno-erange-ok
+fma 0x1p-149 0x1p-149 -0x1p-126 missing-underflow:arg-ibm128
+= fma downward binary32 0x8p-152 0x8p-152 -0x4p-128 : -0x4p-128 : inexact underflow:before-rounding underflow-ok:arg-ibm128:before-rounding errno-erange-ok:before-rounding
+= fma tonearest binary32 0x8p-152 0x8p-152 -0x4p-128 : -0x4p-128 : inexact underflow:before-rounding underflow-ok:arg-ibm128:before-rounding errno-erange-ok:before-rounding
+= fma towardzero binary32 0x8p-152 0x8p-152 -0x4p-128 : -0x3.fffff8p-128 : inexact underflow underflow-ok:arg-ibm128 errno-erange-ok
+= fma upward binary32 0x8p-152 0x8p-152 -0x4p-128 : -0x3.fffff8p-128 : inexact underflow underflow-ok:arg-ibm128 errno-erange-ok
 = fma downward binary64 0x8p-152 0x8p-152 -0x4p-128 : -0x4p-128 : inexact
 = fma tonearest binary64 0x8p-152 0x8p-152 -0x4p-128 : -0x4p-128 : inexact
 = fma towardzero binary64 0x8p-152 0x8p-152 -0x4p-128 : -0x3.ffffffffffffep-128 : inexact
@@ -12864,11 +12864,11 @@ fma 0x1p-149 -0x1p-149 -0x1p-126
 = fma tonearest ibm128 0x8p-152 -0x8p-152 -0x4p-128 : -0x4p-128 : inexact
 = fma towardzero ibm128 0x8p-152 -0x8p-152 -0x4p-128 : -0x4p-128 : inexact
 = fma upward ibm128 0x8p-152 -0x8p-152 -0x4p-128 : -0x4p-128 : inexact
-fma 0x1p-149 0x1p-149 0x0.fffffep-126
-= fma downward binary32 0x8p-152 0x8p-152 0x3.fffff8p-128 : 0x3.fffff8p-128 : inexact underflow errno-erange-ok
-= fma tonearest binary32 0x8p-152 0x8p-152 0x3.fffff8p-128 : 0x3.fffff8p-128 : inexact underflow errno-erange-ok
-= fma towardzero binary32 0x8p-152 0x8p-152 0x3.fffff8p-128 : 0x3.fffff8p-128 : inexact underflow errno-erange-ok
-= fma upward binary32 0x8p-152 0x8p-152 0x3.fffff8p-128 : 0x4p-128 : inexact underflow errno-erange-ok
+fma 0x1p-149 0x1p-149 0x0.fffffep-126 missing-underflow:arg-ibm128
+= fma downward binary32 0x8p-152 0x8p-152 0x3.fffff8p-128 : 0x3.fffff8p-128 : inexact underflow underflow-ok:arg-ibm128 errno-erange-ok
+= fma tonearest binary32 0x8p-152 0x8p-152 0x3.fffff8p-128 : 0x3.fffff8p-128 : inexact underflow underflow-ok:arg-ibm128 errno-erange-ok
+= fma towardzero binary32 0x8p-152 0x8p-152 0x3.fffff8p-128 : 0x3.fffff8p-128 : inexact underflow underflow-ok:arg-ibm128 errno-erange-ok
+= fma upward binary32 0x8p-152 0x8p-152 0x3.fffff8p-128 : 0x4p-128 : inexact underflow underflow-ok:arg-ibm128 errno-erange-ok
 = fma downward binary64 0x8p-152 0x8p-152 0x3.fffff8p-128 : 0x3.fffff8p-128 : inexact
 = fma tonearest binary64 0x8p-152 0x8p-152 0x3.fffff8p-128 : 0x3.fffff8p-128 : inexact
 = fma towardzero binary64 0x8p-152 0x8p-152 0x3.fffff8p-128 : 0x3.fffff8p-128 : inexact
@@ -12889,11 +12889,11 @@ fma 0x1p-149 0x1p-149 0x0.fffffep-126
 = fma tonearest ibm128 0x8p-152 0x8p-152 0x3.fffff8p-128 : 0x3.fffff8p-128 : inexact
 = fma towardzero ibm128 0x8p-152 0x8p-152 0x3.fffff8p-128 : 0x3.fffff8p-128 : inexact
 = fma upward ibm128 0x8p-152 0x8p-152 0x3.fffff8p-128 : 0x3.fffff800000000000000000001p-128 : inexact
-fma 0x1p-149 -0x1p-149 0x0.fffffep-126
-= fma downward binary32 0x8p-152 -0x8p-152 0x3.fffff8p-128 : 0x3.fffffp-128 : inexact underflow errno-erange-ok
-= fma tonearest binary32 0x8p-152 -0x8p-152 0x3.fffff8p-128 : 0x3.fffff8p-128 : inexact underflow errno-erange-ok
-= fma towardzero binary32 0x8p-152 -0x8p-152 0x3.fffff8p-128 : 0x3.fffffp-128 : inexact underflow errno-erange-ok
-= fma upward binary32 0x8p-152 -0x8p-152 0x3.fffff8p-128 : 0x3.fffff8p-128 : inexact underflow errno-erange-ok
+fma 0x1p-149 -0x1p-149 0x0.fffffep-126 missing-underflow:arg-ibm128
+= fma downward binary32 0x8p-152 -0x8p-152 0x3.fffff8p-128 : 0x3.fffffp-128 : inexact underflow underflow-ok:arg-ibm128 errno-erange-ok
+= fma tonearest binary32 0x8p-152 -0x8p-152 0x3.fffff8p-128 : 0x3.fffff8p-128 : inexact underflow underflow-ok:arg-ibm128 errno-erange-ok
+= fma towardzero binary32 0x8p-152 -0x8p-152 0x3.fffff8p-128 : 0x3.fffffp-128 : inexact underflow underflow-ok:arg-ibm128 errno-erange-ok
+= fma upward binary32 0x8p-152 -0x8p-152 0x3.fffff8p-128 : 0x3.fffff8p-128 : inexact underflow underflow-ok:arg-ibm128 errno-erange-ok
 = fma downward binary64 0x8p-152 -0x8p-152 0x3.fffff8p-128 : 0x3.fffff7ffffffep-128 : inexact
 = fma tonearest binary64 0x8p-152 -0x8p-152 0x3.fffff8p-128 : 0x3.fffff8p-128 : inexact
 = fma towardzero binary64 0x8p-152 -0x8p-152 0x3.fffff8p-128 : 0x3.fffff7ffffffep-128 : inexact
@@ -12914,11 +12914,11 @@ fma 0x1p-149 -0x1p-149 0x0.fffffep-126
 = fma tonearest ibm128 0x8p-152 -0x8p-152 0x3.fffff8p-128 : 0x3.fffff8p-128 : inexact
 = fma towardzero ibm128 0x8p-152 -0x8p-152 0x3.fffff8p-128 : 0x3.fffff7ffffffffffffffffffffp-128 : inexact
 = fma upward ibm128 0x8p-152 -0x8p-152 0x3.fffff8p-128 : 0x3.fffff8p-128 : inexact
-fma 0x1p-149 0x1p-149 -0x0.fffffep-126
-= fma downward binary32 0x8p-152 0x8p-152 -0x3.fffff8p-128 : -0x3.fffff8p-128 : inexact underflow errno-erange-ok
-= fma tonearest binary32 0x8p-152 0x8p-152 -0x3.fffff8p-128 : -0x3.fffff8p-128 : inexact underflow errno-erange-ok
-= fma towardzero binary32 0x8p-152 0x8p-152 -0x3.fffff8p-128 : -0x3.fffffp-128 : inexact underflow errno-erange-ok
-= fma upward binary32 0x8p-152 0x8p-152 -0x3.fffff8p-128 : -0x3.fffffp-128 : inexact underflow errno-erange-ok
+fma 0x1p-149 0x1p-149 -0x0.fffffep-126 missing-underflow:arg-ibm128
+= fma downward binary32 0x8p-152 0x8p-152 -0x3.fffff8p-128 : -0x3.fffff8p-128 : inexact underflow underflow-ok:arg-ibm128 errno-erange-ok
+= fma tonearest binary32 0x8p-152 0x8p-152 -0x3.fffff8p-128 : -0x3.fffff8p-128 : inexact underflow underflow-ok:arg-ibm128 errno-erange-ok
+= fma towardzero binary32 0x8p-152 0x8p-152 -0x3.fffff8p-128 : -0x3.fffffp-128 : inexact underflow underflow-ok:arg-ibm128 errno-erange-ok
+= fma upward binary32 0x8p-152 0x8p-152 -0x3.fffff8p-128 : -0x3.fffffp-128 : inexact underflow underflow-ok:arg-ibm128 errno-erange-ok
 = fma downward binary64 0x8p-152 0x8p-152 -0x3.fffff8p-128 : -0x3.fffff8p-128 : inexact
 = fma tonearest binary64 0x8p-152 0x8p-152 -0x3.fffff8p-128 : -0x3.fffff8p-128 : inexact
 = fma towardzero binary64 0x8p-152 0x8p-152 -0x3.fffff8p-128 : -0x3.fffff7ffffffep-128 : inexact
@@ -12939,11 +12939,11 @@ fma 0x1p-149 0x1p-149 -0x0.fffffep-126
 = fma tonearest ibm128 0x8p-152 0x8p-152 -0x3.fffff8p-128 : -0x3.fffff8p-128 : inexact
 = fma towardzero ibm128 0x8p-152 0x8p-152 -0x3.fffff8p-128 : -0x3.fffff7ffffffffffffffffffffp-128 : inexact
 = fma upward ibm128 0x8p-152 0x8p-152 -0x3.fffff8p-128 : -0x3.fffff7ffffffffffffffffffffp-128 : inexact
-fma 0x1p-149 -0x1p-149 -0x0.fffffep-126
-= fma downward binary32 0x8p-152 -0x8p-152 -0x3.fffff8p-128 : -0x4p-128 : inexact underflow errno-erange-ok
-= fma tonearest binary32 0x8p-152 -0x8p-152 -0x3.fffff8p-128 : -0x3.fffff8p-128 : inexact underflow errno-erange-ok
-= fma towardzero binary32 0x8p-152 -0x8p-152 -0x3.fffff8p-128 : -0x3.fffff8p-128 : inexact underflow errno-erange-ok
-= fma upward binary32 0x8p-152 -0x8p-152 -0x3.fffff8p-128 : -0x3.fffff8p-128 : inexact underflow errno-erange-ok
+fma 0x1p-149 -0x1p-149 -0x0.fffffep-126 missing-underflow:arg-ibm128
+= fma downward binary32 0x8p-152 -0x8p-152 -0x3.fffff8p-128 : -0x4p-128 : inexact underflow underflow-ok:arg-ibm128 errno-erange-ok
+= fma tonearest binary32 0x8p-152 -0x8p-152 -0x3.fffff8p-128 : -0x3.fffff8p-128 : inexact underflow underflow-ok:arg-ibm128 errno-erange-ok
+= fma towardzero binary32 0x8p-152 -0x8p-152 -0x3.fffff8p-128 : -0x3.fffff8p-128 : inexact underflow underflow-ok:arg-ibm128 errno-erange-ok
+= fma upward binary32 0x8p-152 -0x8p-152 -0x3.fffff8p-128 : -0x3.fffff8p-128 : inexact underflow underflow-ok:arg-ibm128 errno-erange-ok
 = fma downward binary64 0x8p-152 -0x8p-152 -0x3.fffff8p-128 : -0x3.fffff80000002p-128 : inexact
 = fma tonearest binary64 0x8p-152 -0x8p-152 -0x3.fffff8p-128 : -0x3.fffff8p-128 : inexact
 = fma towardzero binary64 0x8p-152 -0x8p-152 -0x3.fffff8p-128 : -0x3.fffff8p-128 : inexact
@@ -12964,11 +12964,11 @@ fma 0x1p-149 -0x1p-149 -0x0.fffffep-126
 = fma tonearest ibm128 0x8p-152 -0x8p-152 -0x3.fffff8p-128 : -0x3.fffff8p-128 : inexact
 = fma towardzero ibm128 0x8p-152 -0x8p-152 -0x3.fffff8p-128 : -0x3.fffff8p-128 : inexact
 = fma upward ibm128 0x8p-152 -0x8p-152 -0x3.fffff8p-128 : -0x3.fffff8p-128 : inexact
-fma 0x1p-149 0x1p-149 0x1p-149
-= fma downward binary32 0x8p-152 0x8p-152 0x8p-152 : 0x8p-152 : inexact underflow errno-erange-ok
-= fma tonearest binary32 0x8p-152 0x8p-152 0x8p-152 : 0x8p-152 : inexact underflow errno-erange-ok
-= fma towardzero binary32 0x8p-152 0x8p-152 0x8p-152 : 0x8p-152 : inexact underflow errno-erange-ok
-= fma upward binary32 0x8p-152 0x8p-152 0x8p-152 : 0x1p-148 : inexact underflow errno-erange-ok
+fma 0x1p-149 0x1p-149 0x1p-149 missing-underflow:arg-ibm128
+= fma downward binary32 0x8p-152 0x8p-152 0x8p-152 : 0x8p-152 : inexact underflow underflow-ok:arg-ibm128 errno-erange-ok
+= fma tonearest binary32 0x8p-152 0x8p-152 0x8p-152 : 0x8p-152 : inexact underflow underflow-ok:arg-ibm128 errno-erange-ok
+= fma towardzero binary32 0x8p-152 0x8p-152 0x8p-152 : 0x8p-152 : inexact underflow underflow-ok:arg-ibm128 errno-erange-ok
+= fma upward binary32 0x8p-152 0x8p-152 0x8p-152 : 0x1p-148 : inexact underflow underflow-ok:arg-ibm128 errno-erange-ok
 = fma downward binary64 0x8p-152 0x8p-152 0x8p-152 : 0x8p-152 : inexact
 = fma tonearest binary64 0x8p-152 0x8p-152 0x8p-152 : 0x8p-152 : inexact
 = fma towardzero binary64 0x8p-152 0x8p-152 0x8p-152 : 0x8p-152 : inexact
@@ -12989,11 +12989,11 @@ fma 0x1p-149 0x1p-149 0x1p-149
 = fma tonearest ibm128 0x8p-152 0x8p-152 0x8p-152 : 0x8p-152 : inexact
 = fma towardzero ibm128 0x8p-152 0x8p-152 0x8p-152 : 0x8p-152 : inexact
 = fma upward ibm128 0x8p-152 0x8p-152 0x8p-152 : 0x8.00000000000000000000000004p-152 : inexact
-fma 0x1p-149 -0x1p-149 0x1p-149 missing-errno
-= fma downward binary32 0x8p-152 -0x8p-152 0x8p-152 : 0x0p+0 : inexact underflow errno-erange errno-erange-ok
-= fma tonearest binary32 0x8p-152 -0x8p-152 0x8p-152 : 0x8p-152 : inexact underflow errno-erange-ok
-= fma towardzero binary32 0x8p-152 -0x8p-152 0x8p-152 : 0x0p+0 : inexact underflow errno-erange errno-erange-ok
-= fma upward binary32 0x8p-152 -0x8p-152 0x8p-152 : 0x8p-152 : inexact underflow errno-erange-ok
+fma 0x1p-149 -0x1p-149 0x1p-149 missing-errno missing-underflow:arg-ibm128
+= fma downward binary32 0x8p-152 -0x8p-152 0x8p-152 : 0x0p+0 : inexact underflow underflow-ok:arg-ibm128 errno-erange errno-erange-ok
+= fma tonearest binary32 0x8p-152 -0x8p-152 0x8p-152 : 0x8p-152 : inexact underflow underflow-ok:arg-ibm128 errno-erange-ok
+= fma towardzero binary32 0x8p-152 -0x8p-152 0x8p-152 : 0x0p+0 : inexact underflow underflow-ok:arg-ibm128 errno-erange errno-erange-ok
+= fma upward binary32 0x8p-152 -0x8p-152 0x8p-152 : 0x8p-152 : inexact underflow underflow-ok:arg-ibm128 errno-erange-ok
 = fma downward binary64 0x8p-152 -0x8p-152 0x8p-152 : 0x7.ffffffffffffcp-152 : inexact
 = fma tonearest binary64 0x8p-152 -0x8p-152 0x8p-152 : 0x8p-152 : inexact
 = fma towardzero binary64 0x8p-152 -0x8p-152 0x8p-152 : 0x7.ffffffffffffcp-152 : inexact
@@ -13014,11 +13014,11 @@ fma 0x1p-149 -0x1p-149 0x1p-149 missing-errno
 = fma tonearest ibm128 0x8p-152 -0x8p-152 0x8p-152 : 0x8p-152 : inexact
 = fma towardzero ibm128 0x8p-152 -0x8p-152 0x8p-152 : 0x7.fffffffffffffffffffffffffep-152 : inexact
 = fma upward ibm128 0x8p-152 -0x8p-152 0x8p-152 : 0x8p-152 : inexact
-fma 0x1p-149 0x1p-149 -0x1p-149 missing-errno
-= fma downward binary32 0x8p-152 0x8p-152 -0x8p-152 : -0x8p-152 : inexact underflow errno-erange-ok
-= fma tonearest binary32 0x8p-152 0x8p-152 -0x8p-152 : -0x8p-152 : inexact underflow errno-erange-ok
-= fma towardzero binary32 0x8p-152 0x8p-152 -0x8p-152 : -0x0p+0 : inexact underflow errno-erange errno-erange-ok
-= fma upward binary32 0x8p-152 0x8p-152 -0x8p-152 : -0x0p+0 : inexact underflow errno-erange errno-erange-ok
+fma 0x1p-149 0x1p-149 -0x1p-149 missing-errno missing-underflow:arg-ibm128
+= fma downward binary32 0x8p-152 0x8p-152 -0x8p-152 : -0x8p-152 : inexact underflow underflow-ok:arg-ibm128 errno-erange-ok
+= fma tonearest binary32 0x8p-152 0x8p-152 -0x8p-152 : -0x8p-152 : inexact underflow underflow-ok:arg-ibm128 errno-erange-ok
+= fma towardzero binary32 0x8p-152 0x8p-152 -0x8p-152 : -0x0p+0 : inexact underflow underflow-ok:arg-ibm128 errno-erange errno-erange-ok
+= fma upward binary32 0x8p-152 0x8p-152 -0x8p-152 : -0x0p+0 : inexact underflow underflow-ok:arg-ibm128 errno-erange errno-erange-ok
 = fma downward binary64 0x8p-152 0x8p-152 -0x8p-152 : -0x8p-152 : inexact
 = fma tonearest binary64 0x8p-152 0x8p-152 -0x8p-152 : -0x8p-152 : inexact
 = fma towardzero binary64 0x8p-152 0x8p-152 -0x8p-152 : -0x7.ffffffffffffcp-152 : inexact
@@ -13039,11 +13039,11 @@ fma 0x1p-149 0x1p-149 -0x1p-149 missing-errno
 = fma tonearest ibm128 0x8p-152 0x8p-152 -0x8p-152 : -0x8p-152 : inexact
 = fma towardzero ibm128 0x8p-152 0x8p-152 -0x8p-152 : -0x7.fffffffffffffffffffffffffep-152 : inexact
 = fma upward ibm128 0x8p-152 0x8p-152 -0x8p-152 : -0x7.fffffffffffffffffffffffffep-152 : inexact
-fma 0x1p-149 -0x1p-149 -0x1p-149
-= fma downward binary32 0x8p-152 -0x8p-152 -0x8p-152 : -0x1p-148 : inexact underflow errno-erange-ok
-= fma tonearest binary32 0x8p-152 -0x8p-152 -0x8p-152 : -0x8p-152 : inexact underflow errno-erange-ok
-= fma towardzero binary32 0x8p-152 -0x8p-152 -0x8p-152 : -0x8p-152 : inexact underflow errno-erange-ok
-= fma upward binary32 0x8p-152 -0x8p-152 -0x8p-152 : -0x8p-152 : inexact underflow errno-erange-ok
+fma 0x1p-149 -0x1p-149 -0x1p-149 missing-underflow:arg-ibm128
+= fma downward binary32 0x8p-152 -0x8p-152 -0x8p-152 : -0x1p-148 : inexact underflow underflow-ok:arg-ibm128 errno-erange-ok
+= fma tonearest binary32 0x8p-152 -0x8p-152 -0x8p-152 : -0x8p-152 : inexact underflow underflow-ok:arg-ibm128 errno-erange-ok
+= fma towardzero binary32 0x8p-152 -0x8p-152 -0x8p-152 : -0x8p-152 : inexact underflow underflow-ok:arg-ibm128 errno-erange-ok
+= fma upward binary32 0x8p-152 -0x8p-152 -0x8p-152 : -0x8p-152 : inexact underflow underflow-ok:arg-ibm128 errno-erange-ok
 = fma downward binary64 0x8p-152 -0x8p-152 -0x8p-152 : -0x8.0000000000008p-152 : inexact
 = fma tonearest binary64 0x8p-152 -0x8p-152 -0x8p-152 : -0x8p-152 : inexact
 = fma towardzero binary64 0x8p-152 -0x8p-152 -0x8p-152 : -0x8p-152 : inexact
@@ -15389,31 +15389,31 @@ fma 0x1.0000000000000000000000000001p-16382 -0x1.0000000000000000000000000001p-6
 = fma tonearest binary128 0x4.0000000000000000000000000004p-16384 -0x4.0000000000000000000000000004p-68 -0x8p+16316 : -0x8p+16316 : inexact
 = fma towardzero binary128 0x4.0000000000000000000000000004p-16384 -0x4.0000000000000000000000000004p-68 -0x8p+16316 : -0x8p+16316 : inexact
 = fma upward binary128 0x4.0000000000000000000000000004p-16384 -0x4.0000000000000000000000000004p-68 -0x8p+16316 : -0x8p+16316 : inexact
-fma 0x1.fffffep-126 0x1.fffffep25 0x1.fffffep127 missing-errno
-= fma downward binary32 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffffp+124 : inexact
+fma 0x1.fffffep-126 0x1.fffffep25 0x1.fffffep127 missing-errno xfail-rounding:ibm128-libgcc
+= fma downward binary32 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffffp+124 : xfail:ibm128-libgcc inexact
 = fma tonearest binary32 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffffp+124 : inexact
-= fma towardzero binary32 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffffp+124 : inexact
-= fma upward binary32 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : plus_infty : inexact overflow errno-erange errno-erange-ok
-= fma downward binary64 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffffp+124 : inexact
+= fma towardzero binary32 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffffp+124 : xfail:ibm128-libgcc inexact
+= fma upward binary32 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : plus_infty : xfail:ibm128-libgcc inexact overflow errno-erange errno-erange-ok
+= fma downward binary64 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffffp+124 : xfail:ibm128-libgcc inexact
 = fma tonearest binary64 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffffp+124 : inexact
-= fma towardzero binary64 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffffp+124 : inexact
-= fma upward binary64 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffff00000008p+124 : inexact
-= fma downward intel96 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffffp+124 : inexact
+= fma towardzero binary64 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffffp+124 : xfail:ibm128-libgcc inexact
+= fma upward binary64 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffff00000008p+124 : xfail:ibm128-libgcc inexact
+= fma downward intel96 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffffp+124 : xfail:ibm128-libgcc inexact
 = fma tonearest intel96 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffffp+124 : inexact
-= fma towardzero intel96 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffffp+124 : inexact
-= fma upward intel96 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffff0000000001p+124 : inexact
-= fma downward m68k96 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffffp+124 : inexact
+= fma towardzero intel96 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffffp+124 : xfail:ibm128-libgcc inexact
+= fma upward intel96 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffff0000000001p+124 : xfail:ibm128-libgcc inexact
+= fma downward m68k96 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffffp+124 : xfail:ibm128-libgcc inexact
 = fma tonearest m68k96 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffffp+124 : inexact
-= fma towardzero m68k96 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffffp+124 : inexact
-= fma upward m68k96 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffff0000000001p+124 : inexact
-= fma downward binary128 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffffp+124 : inexact
+= fma towardzero m68k96 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffffp+124 : xfail:ibm128-libgcc inexact
+= fma upward m68k96 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffff0000000001p+124 : xfail:ibm128-libgcc inexact
+= fma downward binary128 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffffp+124 : xfail:ibm128-libgcc inexact
 = fma tonearest binary128 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffffp+124 : inexact
-= fma towardzero binary128 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffffp+124 : inexact
-= fma upward binary128 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffff00000000000000000000008p+124 : inexact
-= fma downward ibm128 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffffp+124 : inexact
+= fma towardzero binary128 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffffp+124 : xfail:ibm128-libgcc inexact
+= fma upward binary128 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffff00000000000000000000008p+124 : xfail:ibm128-libgcc inexact
+= fma downward ibm128 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffffp+124 : xfail:ibm128-libgcc inexact
 = fma tonearest ibm128 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffffp+124 : inexact
-= fma towardzero ibm128 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffffp+124 : inexact
-= fma upward ibm128 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffff000000000000000000004p+124 : inexact
+= fma towardzero ibm128 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffffp+124 : xfail:ibm128-libgcc inexact
+= fma upward ibm128 0x7.fffff8p-128 0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffff000000000000000000004p+124 : xfail:ibm128-libgcc inexact
 fma 0x1.fffffep-126 -0x1.fffffep25 0x1.fffffep127
 = fma downward binary32 0x7.fffff8p-128 -0x3.fffffcp+24 0xf.fffffp+124 : 0xf.ffffep+124 : inexact
 = fma tonearest binary32 0x7.fffff8p-128 -0x3.fffffcp+24 0xf.fffffp+124 : 0xf.fffffp+124 : inexact
@@ -15464,52 +15464,52 @@ fma 0x1.fffffep-126 0x1.fffffep25 -0x1.fffffep127
 = fma tonearest ibm128 0x7.fffff8p-128 0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffffp+124 : inexact
 = fma towardzero ibm128 0x7.fffff8p-128 0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.ffffeffffffffffffffffffffcp+124 : inexact
 = fma upward ibm128 0x7.fffff8p-128 0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.ffffeffffffffffffffffffffcp+124 : inexact
-fma 0x1.fffffep-126 -0x1.fffffep25 -0x1.fffffep127 missing-errno
-= fma downward binary32 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : minus_infty : inexact overflow errno-erange errno-erange-ok
+fma 0x1.fffffep-126 -0x1.fffffep25 -0x1.fffffep127 missing-errno xfail-rounding:ibm128-libgcc
+= fma downward binary32 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : minus_infty : xfail:ibm128-libgcc inexact overflow errno-erange errno-erange-ok
 = fma tonearest binary32 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffffp+124 : inexact
-= fma towardzero binary32 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffffp+124 : inexact
-= fma upward binary32 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffffp+124 : inexact
-= fma downward binary64 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffff00000008p+124 : inexact
+= fma towardzero binary32 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffffp+124 : xfail:ibm128-libgcc inexact
+= fma upward binary32 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffffp+124 : xfail:ibm128-libgcc inexact
+= fma downward binary64 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffff00000008p+124 : xfail:ibm128-libgcc inexact
 = fma tonearest binary64 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffffp+124 : inexact
-= fma towardzero binary64 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffffp+124 : inexact
-= fma upward binary64 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffffp+124 : inexact
-= fma downward intel96 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffff0000000001p+124 : inexact
+= fma towardzero binary64 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffffp+124 : xfail:ibm128-libgcc inexact
+= fma upward binary64 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffffp+124 : xfail:ibm128-libgcc inexact
+= fma downward intel96 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffff0000000001p+124 : xfail:ibm128-libgcc inexact
 = fma tonearest intel96 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffffp+124 : inexact
-= fma towardzero intel96 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffffp+124 : inexact
-= fma upward intel96 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffffp+124 : inexact
-= fma downward m68k96 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffff0000000001p+124 : inexact
+= fma towardzero intel96 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffffp+124 : xfail:ibm128-libgcc inexact
+= fma upward intel96 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffffp+124 : xfail:ibm128-libgcc inexact
+= fma downward m68k96 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffff0000000001p+124 : xfail:ibm128-libgcc inexact
 = fma tonearest m68k96 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffffp+124 : inexact
-= fma towardzero m68k96 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffffp+124 : inexact
-= fma upward m68k96 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffffp+124 : inexact
-= fma downward binary128 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffff00000000000000000000008p+124 : inexact
+= fma towardzero m68k96 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffffp+124 : xfail:ibm128-libgcc inexact
+= fma upward m68k96 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffffp+124 : xfail:ibm128-libgcc inexact
+= fma downward binary128 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffff00000000000000000000008p+124 : xfail:ibm128-libgcc inexact
 = fma tonearest binary128 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffffp+124 : inexact
-= fma towardzero binary128 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffffp+124 : inexact
-= fma upward binary128 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffffp+124 : inexact
-= fma downward ibm128 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffff000000000000000000004p+124 : inexact
+= fma towardzero binary128 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffffp+124 : xfail:ibm128-libgcc inexact
+= fma upward binary128 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffffp+124 : xfail:ibm128-libgcc inexact
+= fma downward ibm128 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffff000000000000000000004p+124 : xfail:ibm128-libgcc inexact
 = fma tonearest ibm128 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffffp+124 : inexact
-= fma towardzero ibm128 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffffp+124 : inexact
-= fma upward ibm128 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffffp+124 : inexact
-fma 0x1.fffffffffffffp-1022 0x1.fffffffffffffp54 0x1.fffffffffffffp1023 missing-errno
-= fma downward binary64 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 0xf.ffffffffffff8p+1020 : 0xf.ffffffffffff8p+1020 : inexact
+= fma towardzero ibm128 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffffp+124 : xfail:ibm128-libgcc inexact
+= fma upward ibm128 0x7.fffff8p-128 -0x3.fffffcp+24 -0xf.fffffp+124 : -0xf.fffffp+124 : xfail:ibm128-libgcc inexact
+fma 0x1.fffffffffffffp-1022 0x1.fffffffffffffp54 0x1.fffffffffffffp1023 missing-errno xfail-rounding:ibm128-libgcc
+= fma downward binary64 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 0xf.ffffffffffff8p+1020 : 0xf.ffffffffffff8p+1020 : xfail:ibm128-libgcc inexact
 = fma tonearest binary64 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 0xf.ffffffffffff8p+1020 : 0xf.ffffffffffff8p+1020 : inexact
-= fma towardzero binary64 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 0xf.ffffffffffff8p+1020 : 0xf.ffffffffffff8p+1020 : inexact
-= fma upward binary64 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 0xf.ffffffffffff8p+1020 : plus_infty : inexact overflow errno-erange errno-erange-ok
-= fma downward intel96 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 0xf.ffffffffffff8p+1020 : 0xf.ffffffffffff8p+1020 : inexact
+= fma towardzero binary64 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 0xf.ffffffffffff8p+1020 : 0xf.ffffffffffff8p+1020 : xfail:ibm128-libgcc inexact
+= fma upward binary64 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 0xf.ffffffffffff8p+1020 : plus_infty : xfail:ibm128-libgcc inexact overflow errno-erange errno-erange-ok
+= fma downward intel96 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 0xf.ffffffffffff8p+1020 : 0xf.ffffffffffff8p+1020 : xfail:ibm128-libgcc inexact
 = fma tonearest intel96 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 0xf.ffffffffffff8p+1020 : 0xf.ffffffffffff8p+1020 : inexact
-= fma towardzero intel96 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 0xf.ffffffffffff8p+1020 : 0xf.ffffffffffff8p+1020 : inexact
-= fma upward intel96 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 0xf.ffffffffffff8p+1020 : 0xf.ffffffffffff801p+1020 : inexact
-= fma downward m68k96 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 0xf.ffffffffffff8p+1020 : 0xf.ffffffffffff8p+1020 : inexact
+= fma towardzero intel96 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 0xf.ffffffffffff8p+1020 : 0xf.ffffffffffff8p+1020 : xfail:ibm128-libgcc inexact
+= fma upward intel96 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 0xf.ffffffffffff8p+1020 : 0xf.ffffffffffff801p+1020 : xfail:ibm128-libgcc inexact
+= fma downward m68k96 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 0xf.ffffffffffff8p+1020 : 0xf.ffffffffffff8p+1020 : xfail:ibm128-libgcc inexact
 = fma tonearest m68k96 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 0xf.ffffffffffff8p+1020 : 0xf.ffffffffffff8p+1020 : inexact
-= fma towardzero m68k96 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 0xf.ffffffffffff8p+1020 : 0xf.ffffffffffff8p+1020 : inexact
-= fma upward m68k96 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 0xf.ffffffffffff8p+1020 : 0xf.ffffffffffff801p+1020 : inexact
-= fma downward binary128 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 0xf.ffffffffffff8p+1020 : 0xf.ffffffffffff8p+1020 : inexact
+= fma towardzero m68k96 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 0xf.ffffffffffff8p+1020 : 0xf.ffffffffffff8p+1020 : xfail:ibm128-libgcc inexact
+= fma upward m68k96 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 0xf.ffffffffffff8p+1020 : 0xf.ffffffffffff801p+1020 : xfail:ibm128-libgcc inexact
+= fma downward binary128 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 0xf.ffffffffffff8p+1020 : 0xf.ffffffffffff8p+1020 : xfail:ibm128-libgcc inexact
 = fma tonearest binary128 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 0xf.ffffffffffff8p+1020 : 0xf.ffffffffffff8p+1020 : inexact
-= fma towardzero binary128 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 0xf.ffffffffffff8p+1020 : 0xf.ffffffffffff8p+1020 : inexact
-= fma upward binary128 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 0xf.ffffffffffff8p+1020 : 0xf.ffffffffffff8000000000000008p+1020 : inexact
-= fma downward ibm128 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 0xf.ffffffffffff8p+1020 : 0xf.ffffffffffff8p+1020 : inexact
+= fma towardzero binary128 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 0xf.ffffffffffff8p+1020 : 0xf.ffffffffffff8p+1020 : xfail:ibm128-libgcc inexact
+= fma upward binary128 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 0xf.ffffffffffff8p+1020 : 0xf.ffffffffffff8000000000000008p+1020 : xfail:ibm128-libgcc inexact
+= fma downward ibm128 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 0xf.ffffffffffff8p+1020 : 0xf.ffffffffffff8p+1020 : xfail:ibm128-libgcc inexact
 = fma tonearest ibm128 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 0xf.ffffffffffff8p+1020 : 0xf.ffffffffffff8p+1020 : inexact
-= fma towardzero ibm128 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 0xf.ffffffffffff8p+1020 : 0xf.ffffffffffff8p+1020 : inexact
-= fma upward ibm128 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 0xf.ffffffffffff8p+1020 : 0xf.ffffffffffff80000000000004p+1020 : inexact
+= fma towardzero ibm128 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 0xf.ffffffffffff8p+1020 : 0xf.ffffffffffff8p+1020 : xfail:ibm128-libgcc inexact
+= fma upward ibm128 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 0xf.ffffffffffff8p+1020 : 0xf.ffffffffffff80000000000004p+1020 : xfail:ibm128-libgcc inexact
 fma 0x1.fffffffffffffp-1022 -0x1.fffffffffffffp54 0x1.fffffffffffffp1023 missing-errno
 = fma downward binary64 0x7.ffffffffffffcp-1024 -0x7.ffffffffffffcp+52 0xf.ffffffffffff8p+1020 : 0xf.ffffffffffffp+1020 : inexact
 = fma tonearest binary64 0x7.ffffffffffffcp-1024 -0x7.ffffffffffffcp+52 0xf.ffffffffffff8p+1020 : 0xf.ffffffffffff8p+1020 : inexact
@@ -15552,27 +15552,27 @@ fma 0x1.fffffffffffffp-1022 0x1.fffffffffffffp54 -0x1.fffffffffffffp1023 missing
 = fma tonearest ibm128 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : -0xf.ffffffffffff8p+1020 : inexact
 = fma towardzero ibm128 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : -0xf.ffffffffffff7ffffffffffffcp+1020 : inexact
 = fma upward ibm128 0x7.ffffffffffffcp-1024 0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : -0xf.ffffffffffff7ffffffffffffcp+1020 : inexact
-fma 0x1.fffffffffffffp-1022 -0x1.fffffffffffffp54 -0x1.fffffffffffffp1023 missing-errno
-= fma downward binary64 0x7.ffffffffffffcp-1024 -0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : minus_infty : inexact overflow errno-erange errno-erange-ok
+fma 0x1.fffffffffffffp-1022 -0x1.fffffffffffffp54 -0x1.fffffffffffffp1023 missing-errno xfail-rounding:ibm128-libgcc
+= fma downward binary64 0x7.ffffffffffffcp-1024 -0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : minus_infty : xfail:ibm128-libgcc inexact overflow errno-erange errno-erange-ok
 = fma tonearest binary64 0x7.ffffffffffffcp-1024 -0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : -0xf.ffffffffffff8p+1020 : inexact
-= fma towardzero binary64 0x7.ffffffffffffcp-1024 -0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : -0xf.ffffffffffff8p+1020 : inexact
-= fma upward binary64 0x7.ffffffffffffcp-1024 -0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : -0xf.ffffffffffff8p+1020 : inexact
-= fma downward intel96 0x7.ffffffffffffcp-1024 -0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : -0xf.ffffffffffff801p+1020 : inexact
+= fma towardzero binary64 0x7.ffffffffffffcp-1024 -0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : -0xf.ffffffffffff8p+1020 : xfail:ibm128-libgcc inexact
+= fma upward binary64 0x7.ffffffffffffcp-1024 -0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : -0xf.ffffffffffff8p+1020 : xfail:ibm128-libgcc inexact
+= fma downward intel96 0x7.ffffffffffffcp-1024 -0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : -0xf.ffffffffffff801p+1020 : xfail:ibm128-libgcc inexact
 = fma tonearest intel96 0x7.ffffffffffffcp-1024 -0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : -0xf.ffffffffffff8p+1020 : inexact
-= fma towardzero intel96 0x7.ffffffffffffcp-1024 -0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : -0xf.ffffffffffff8p+1020 : inexact
-= fma upward intel96 0x7.ffffffffffffcp-1024 -0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : -0xf.ffffffffffff8p+1020 : inexact
-= fma downward m68k96 0x7.ffffffffffffcp-1024 -0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : -0xf.ffffffffffff801p+1020 : inexact
+= fma towardzero intel96 0x7.ffffffffffffcp-1024 -0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : -0xf.ffffffffffff8p+1020 : xfail:ibm128-libgcc inexact
+= fma upward intel96 0x7.ffffffffffffcp-1024 -0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : -0xf.ffffffffffff8p+1020 : xfail:ibm128-libgcc inexact
+= fma downward m68k96 0x7.ffffffffffffcp-1024 -0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : -0xf.ffffffffffff801p+1020 : xfail:ibm128-libgcc inexact
 = fma tonearest m68k96 0x7.ffffffffffffcp-1024 -0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : -0xf.ffffffffffff8p+1020 : inexact
-= fma towardzero m68k96 0x7.ffffffffffffcp-1024 -0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : -0xf.ffffffffffff8p+1020 : inexact
-= fma upward m68k96 0x7.ffffffffffffcp-1024 -0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : -0xf.ffffffffffff8p+1020 : inexact
-= fma downward binary128 0x7.ffffffffffffcp-1024 -0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : -0xf.ffffffffffff8000000000000008p+1020 : inexact
+= fma towardzero m68k96 0x7.ffffffffffffcp-1024 -0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : -0xf.ffffffffffff8p+1020 : xfail:ibm128-libgcc inexact
+= fma upward m68k96 0x7.ffffffffffffcp-1024 -0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : -0xf.ffffffffffff8p+1020 : xfail:ibm128-libgcc inexact
+= fma downward binary128 0x7.ffffffffffffcp-1024 -0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : -0xf.ffffffffffff8000000000000008p+1020 : xfail:ibm128-libgcc inexact
 = fma tonearest binary128 0x7.ffffffffffffcp-1024 -0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : -0xf.ffffffffffff8p+1020 : inexact
-= fma towardzero binary128 0x7.ffffffffffffcp-1024 -0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : -0xf.ffffffffffff8p+1020 : inexact
-= fma upward binary128 0x7.ffffffffffffcp-1024 -0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : -0xf.ffffffffffff8p+1020 : inexact
-= fma downward ibm128 0x7.ffffffffffffcp-1024 -0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : -0xf.ffffffffffff80000000000004p+1020 : inexact
+= fma towardzero binary128 0x7.ffffffffffffcp-1024 -0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : -0xf.ffffffffffff8p+1020 : xfail:ibm128-libgcc inexact
+= fma upward binary128 0x7.ffffffffffffcp-1024 -0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : -0xf.ffffffffffff8p+1020 : xfail:ibm128-libgcc inexact
+= fma downward ibm128 0x7.ffffffffffffcp-1024 -0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : -0xf.ffffffffffff80000000000004p+1020 : xfail:ibm128-libgcc inexact
 = fma tonearest ibm128 0x7.ffffffffffffcp-1024 -0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : -0xf.ffffffffffff8p+1020 : inexact
-= fma towardzero ibm128 0x7.ffffffffffffcp-1024 -0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : -0xf.ffffffffffff8p+1020 : inexact
-= fma upward ibm128 0x7.ffffffffffffcp-1024 -0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : -0xf.ffffffffffff8p+1020 : inexact
+= fma towardzero ibm128 0x7.ffffffffffffcp-1024 -0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : -0xf.ffffffffffff8p+1020 : xfail:ibm128-libgcc inexact
+= fma upward ibm128 0x7.ffffffffffffcp-1024 -0x7.ffffffffffffcp+52 -0xf.ffffffffffff8p+1020 : -0xf.ffffffffffff8p+1020 : xfail:ibm128-libgcc inexact
 fma 0x1.fffffffffffffffep-16382 0x1.fffffffffffffffep65 0x1.fffffffffffffffep16383 missing-errno
 = fma downward intel96 0x7.fffffffffffffff8p-16384 0x3.fffffffffffffffcp+64 0xf.fffffffffffffffp+16380 : 0xf.fffffffffffffffp+16380 : inexact
 = fma tonearest intel96 0x7.fffffffffffffff8p-16384 0x3.fffffffffffffffcp+64 0xf.fffffffffffffffp+16380 : 0xf.fffffffffffffffp+16380 : inexact
