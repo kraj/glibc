@@ -39,8 +39,8 @@ struct protoent_data {};
 #include <nss/nss_files/files-parse.c>
 LINE_PARSER
 ("#",
- STRING_FIELD (result->p_name, isspace, 1);
- INT_FIELD (result->p_proto, isspace, 1, 10,);
+ STRING_FIELD (result->p_name, isspace, true);
+ INT_FIELD (result->p_proto, isspace, true, 10,);
  )
 
 enum nss_status

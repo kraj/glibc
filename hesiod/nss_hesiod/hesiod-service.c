@@ -39,9 +39,9 @@ struct servent_data {};
 #define ISSC_OR_SPACE(c)	((c) ==  ';' || isspace (c))
 LINE_PARSER
 ("#",
- STRING_FIELD (result->s_name, ISSC_OR_SPACE, 1);
- STRING_FIELD (result->s_proto, ISSC_OR_SPACE, 1);
- INT_FIELD (result->s_port, ISSC_OR_SPACE, 0, 10, htons);
+ STRING_FIELD (result->s_name, ISSC_OR_SPACE, true);
+ STRING_FIELD (result->s_proto, ISSC_OR_SPACE, true);
+ INT_FIELD (result->s_port, ISSC_OR_SPACE, false, 10, htons);
  )
 
 enum nss_status
