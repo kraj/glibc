@@ -1,6 +1,5 @@
-/* Test header that defines macros for GNU properties that need to be
-   used in some test assembly files where sysdep.h cannot be included
-   for some reason.
+/* Test header that defines feature-marking macros used in some test
+   assembly files where sysdep.h cannot be included for some reason.
    Copyright (C) 2024-2026 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -27,7 +26,6 @@
 #define FEATURE_1_PAC 2
 #define FEATURE_1_GCS 4
 
-/* Add a NT_GNU_PROPERTY_TYPE_0 note.  */
 #define GNU_PROPERTY(type, value)	\
   .section .note.gnu.property, "a";	\
   .p2align 3;				\
@@ -41,7 +39,32 @@
   .word 0;				\
   .text
 
-/* Add GNU property note with the supported features to all asm code
-   where sysdep.h is included.  */
-GNU_PROPERTY (FEATURE_1_AND, FEATURE_1_BTI|FEATURE_1_PAC|FEATURE_1_GCS)
+#ifdef __ARM_BUILDATTR64_FV
+/* Add AArch64 feature bits build attributes.  */
+# define FEATURE_1_AND_MARK(value)					\
+    .aeabi_subsection aeabi_feature_and_bits, optional, ULEB128;	\
+    .if ((value) & FEATURE_1_BTI);					\
+    .aeabi_attribute Tag_Feature_BTI, 1;				\
+    .else;								\
+    .aeabi_attribute Tag_Feature_BTI, 0;				\
+    .endif;								\
+    .if ((value) & FEATURE_1_GCS);					\
+    .aeabi_attribute Tag_Feature_GCS, 1;				\
+    .else;								\
+    .aeabi_attribute Tag_Feature_GCS, 0;				\
+    .endif;								\
+    .if ((value) & FEATURE_1_PAC);					\
+    .aeabi_attribute Tag_Feature_PAC, 1;				\
+    .else;								\
+    .aeabi_attribute Tag_Feature_PAC, 0;				\
+    .endif;								\
+    .text
+#else
+/* Add a NT_GNU_PROPERTY_TYPE_0 note.  */
+# define FEATURE_1_AND_MARK(value) GNU_PROPERTY (FEATURE_1_AND, value)
+#endif /* __ARM_BUILDATTR64_FV */
+
+/* Add marking with the supported features to all asm code where this header
+   is included.  */
+FEATURE_1_AND_MARK (FEATURE_1_BTI | FEATURE_1_PAC | FEATURE_1_GCS)
 #endif
