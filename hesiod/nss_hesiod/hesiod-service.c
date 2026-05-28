@@ -41,7 +41,7 @@ LINE_PARSER
 ("#",
  STRING_FIELD (result->s_name, ISSC_OR_SPACE, 1);
  STRING_FIELD (result->s_proto, ISSC_OR_SPACE, 1);
- INT_FIELD (result->s_port, ISSC_OR_SPACE, 10, 0, htons);
+ INT_FIELD (result->s_port, ISSC_OR_SPACE, 0, 10, htons);
  )
 
 enum nss_status
