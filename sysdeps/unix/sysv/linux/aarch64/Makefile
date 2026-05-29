@@ -372,6 +372,33 @@ gen-as-const-headers += ucontext_i.sym
 endif
 
 ifeq ($(subdir),malloc)
+ifneq ($(multi-arch),no)
+# Special test that check MTE memory tagging
+tests-for-mte += \
+  tst-mte-malloc \
+  tst-mte-malloc-static \
+  tst-mte-realloc \
+  tst-mte-realloc-static \
+  # tests-for-mte
+
+tests += $(tests-for-mte)
+
+tests-static += \
+  tst-mte-malloc-static \
+  tst-mte-realloc-static \
+  # tests-static
+
+CFLAGS-tst-mte-malloc.o += -march=armv9-a+memtag
+CFLAGS-tst-mte-malloc-static.o += -march=armv9-a+memtag
+CFLAGS-tst-mte-realloc.o += -march=armv9-a+memtag
+CFLAGS-tst-mte-realloc-static.o += -march=armv9-a+memtag
+
+tests-exclude-malloc-check += $(tests-for-mte)
+tests-exclude-mcheck += $(tests-for-mte)
+tests-exclude-hugetlb1 += $(tests-for-mte)
+tests-exclude-hugetlb2 += $(tests-for-mte)
+endif # ifneq ($(multi-arch),no)
+
 # Add MTE tunable to all malloc tests except malloc-check and mcheck variants
 tests-malloc-mte = \
   $(tests) \
