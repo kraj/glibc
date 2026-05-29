@@ -52,6 +52,7 @@
 #include <dl-find_object.h>
 #include <dl-audit-check.h>
 #include <dl-call_tls_init_tp.h>
+#include <rtld-setjmp.h>
 
 #include <assert.h>
 
@@ -452,6 +453,9 @@ _dl_start_final (void *arg, struct dl_start_final_info *info)
   ElfW(Addr) start_addr;
 
   __rtld_malloc_init_stubs ();
+#ifdef RTLD_USE_LIBC_SETJMP
+  __rtld_setjmp_init_stubs ();
+#endif
 
   /* Do not use an initializer for these members because it would
      interfere with __rtld_static_init.  */
@@ -2350,6 +2354,15 @@ dl_main (const ElfW(Phdr) *phdr,
 
       __rtld_mutex_init ();
       __rtld_malloc_init_real (main_map);
+
+#ifdef RTLD_USE_LIBC_SETJMP
+      /* Switch the dynamic linker's exception-handling setjmp/longjmp to the
+	 libc.so implementations, which mangle jmp_bufs with the pointer guard
+	 in the thread descriptor.  After this the ld.so-local copy is no
+	 longer used, so clear it.  */
+      __rtld_setjmp_init_real (main_map);
+      __pointer_chk_guard_local = 0;
+#endif
 
       /* Update copy-relocated _r_debug if necessary.  */
       _dl_debug_post_relocate (main_map);

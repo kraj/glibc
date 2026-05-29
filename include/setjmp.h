@@ -39,6 +39,11 @@ libc_hidden_proto (__sigsetjmp)
 extern __typeof (__sigsetjmp) __sigsetjmp attribute_hidden;
 # endif
 
+/* In the dynamic linker, redirect __sigsetjmp/__longjmp through the
+   setjmp/longjmp handoff pointers (analogous to how <stdlib.h> pulls in the
+   malloc redirection from <rtld-malloc.h>).  */
+# include <rtld-setjmp.h>
+
 #endif
 
 #endif

@@ -23,6 +23,7 @@
 #include <dl-sym-post.h>
 #include <_itoa.h>
 #include <dl-minimal-malloc.h>
+#include <rtld-setjmp.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <errno.h>
@@ -54,12 +55,13 @@ __rtld_malloc_is_complete (void)
   return __rtld_malloc != &__minimal_malloc;
 }
 
-/* Lookup NAME at VERSION in the scope of MATCH.  */
+/* Lookup NAME in the scope of MAIN_MAP at VERSION, or at the default
+   (current) version if VERSION is NULL.  Used to bind the rtld
+   function-pointer handoffs to the real libc.so implementations.  */
 static void *
-lookup_malloc_symbol (struct link_map *main_map, const char *name,
-		      struct r_found_version *version)
+lookup_libc_symbol (struct link_map *main_map, const char *name,
+		    struct r_found_version *version)
 {
-
   const ElfW(Sym) *ref = NULL;
   lookup_t result = _dl_lookup_symbol_x (name, main_map, &ref,
 					 main_map->l_scope,
@@ -88,21 +90,55 @@ __rtld_malloc_init_real (struct link_map *main_map)
   version.hash = _dl_elf_hash (version.name);
   version.filename = NULL;
 
-  void *new_calloc = lookup_malloc_symbol (main_map, "calloc", &version);
-  void *new_free = lookup_malloc_symbol (main_map, "free", &version);
-  void *new_malloc = lookup_malloc_symbol (main_map, "malloc", &version);
-  void *new_realloc = lookup_malloc_symbol (main_map, "realloc", &version);
+  void *new_calloc = lookup_libc_symbol (main_map, "calloc", &version);
+  void *new_free = lookup_libc_symbol (main_map, "free", &version);
+  void *new_malloc = lookup_libc_symbol (main_map, "malloc", &version);
+  void *new_realloc = lookup_libc_symbol (main_map, "realloc", &version);
 
   /* Update the pointers in one go, so that any internal allocations
-     performed by lookup_malloc_symbol see a consistent
-     implementation.  */
+     performed by lookup_libc_symbol see a consistent implementation.  */
   __rtld_calloc = new_calloc;
   __rtld_free = new_free;
   __rtld_malloc = new_malloc;
   __rtld_realloc = new_realloc;
 }
 
-
+#ifdef RTLD_USE_LIBC_SETJMP
+__typeof (__sigsetjmp) *__rtld_setjmp attribute_relro;
+__rtld_longjmp_t *__rtld_longjmp attribute_relro;
+
+/* Bind a distinct name to the real (asm) symbol so it is called directly.  */
+extern __typeof (__longjmp) __rtld_real_longjmp
+  __asm__ (__SYMBOL_PREFIX "__longjmp") attribute_hidden;
+
+/* ld.so provides __longjmp (operating on the inner __jmp_buf) but not the
+   _longjmp wrapper used for the libc.so implementation, so adapt it.  */
+static void __attribute__ ((__noreturn__))
+rtld_local_longjmp (struct __jmp_buf_tag env[1], int val)
+{
+  __rtld_real_longjmp (env[0].__jmpbuf, val);
+  __builtin_unreachable ();
+}
+
+void
+__rtld_setjmp_init_stubs (void)
+{
+  __rtld_setjmp = &__sigsetjmp;
+  __rtld_longjmp = &rtld_local_longjmp;
+}
+
+void
+__rtld_setjmp_init_real (struct link_map *main_map)
+{
+  void *new_setjmp = lookup_libc_symbol (main_map, "__sigsetjmp", NULL);
+  void *new_longjmp = lookup_libc_symbol (main_map, "_longjmp", NULL);
+
+  __rtld_setjmp = new_setjmp;
+  __rtld_longjmp = new_longjmp;
+}
+#endif /* RTLD_USE_LIBC_SETJMP */
+
+
 /* Avoid signal frobnication in setjmp/longjmp.  Keeps things smaller.  */
 
 #include <setjmp.h>

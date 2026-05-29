@@ -24,7 +24,10 @@
 
 #if IS_IN (rtld)
 /* We cannot use the thread descriptor because in ld.so we use setjmp
-   earlier than the descriptor is initialized.  */
+   earlier than the descriptor is initialized.  Also, enable the use of
+   libc function after libc relocation to avoid the need to duplicate the
+   __pointer_chk_guard value on __pointer_chk_guard_local.  */
+# define RTLD_USE_LIBC_SETJMP	1
 # ifdef __ASSEMBLER__
 #  define PTR_MANGLE(reg)	xor __pointer_chk_guard_local(%rip), reg;     \
 				rol $2*LP_SIZE+1, reg
