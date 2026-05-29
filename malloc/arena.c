@@ -22,6 +22,8 @@
 #define TUNABLE_NAMESPACE malloc
 #include <elf/dl-tunables.h>
 
+#include <malloc-init.h>
+
 /* Compile-time constants.  */
 
 #define HEAP_MIN_SIZE (32 * 1024)
@@ -248,6 +250,9 @@ static void tcache_key_initialize (void);
 void
 __ptmalloc_init (void)
 {
+  /* Perform any target-specific initialisation.  */
+  ARCH_INIT_MALLOC ();
+
 #if USE_TCACHE
   tcache_key_initialize ();
 #endif
@@ -403,7 +408,7 @@ alloc_new_heap  (size_t size, size_t top_pad, size_t pagesize,
             }
         }
     }
-  if (__mprotect (p2, size, extra_mmap_prot | PROT_READ | PROT_WRITE) != 0)
+  if (__mprotect (p2, size, extra_mmap_prot) != 0)
     {
       __munmap (p2, max_size);
       return NULL;
@@ -457,7 +462,7 @@ grow_heap (heap_info *h, long diff)
     {
       if (__mprotect ((char *) h + h->mprotect_size,
                       (unsigned long) new_size - h->mprotect_size,
-                      extra_mmap_prot | PROT_READ | PROT_WRITE) != 0)
+                      extra_mmap_prot) != 0)
         return -2;
 
       h->mprotect_size = new_size;
