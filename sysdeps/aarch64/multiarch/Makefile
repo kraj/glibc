@@ -23,6 +23,7 @@ endif # ifeq ($(subdir),string)
 
 ifeq ($(subdir),malloc)
 sysdep_routines += \
-  malloc-ifuncs
+  malloc-ifuncs \
+  malloc-mte \
   # sysdep_routines
 endif # ifeq ($(subdir),malloc)

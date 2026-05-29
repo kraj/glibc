@@ -1992,9 +1992,7 @@ sysmalloc_mmap (INTERNAL_SIZE_T nb, size_t pagesize, int extra_flags)
   size_t padding = MALLOC_ALIGNMENT - CHUNK_HDR_SZ;
   size_t size = ALIGN_UP (nb + padding + CHUNK_HDR_SZ, pagesize);
 
-  char *mm = (char *) MMAP (NULL, size,
-			    extra_mmap_prot | PROT_READ | PROT_WRITE,
-			    extra_flags);
+  char *mm = (char *) MMAP (NULL, size, extra_mmap_prot, extra_flags);
   if (mm == MAP_FAILED)
     return mm;
   if (extra_flags == 0)
@@ -2033,9 +2031,7 @@ sysmalloc_mmap_fallback (size_t *s, size_t size, size_t minsize,
   if (size < minsize)
     size = minsize;
 
-  char *mbrk = (char *) (MMAP (NULL, size,
-			       extra_mmap_prot | PROT_READ | PROT_WRITE,
-			       extra_flags));
+  char *mbrk = (char *) MMAP (NULL, size, extra_mmap_prot, extra_flags);
   if (mbrk == MAP_FAILED)
     return MAP_FAILED;
 
