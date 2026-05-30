@@ -93,7 +93,7 @@ do_test_call_rarg (FILE *stream, const char *format, long double ld,
   printf ("%20s", "__asprintf_chk: ");
   res = __asprintf_chk (&buffer, 1, format, ld, d);
   if (res == -1)
-    printf ("Error using vasprintf\n");
+    printf ("Error using asprintf\n");
   if (buffer == NULL)
     printf ("Error using asprintf\n");
   else
