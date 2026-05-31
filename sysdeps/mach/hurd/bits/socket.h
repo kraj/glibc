@@ -364,6 +364,8 @@ enum
 #define SO_OOBINLINE SO_OOBINLINE
     SO_REUSEPORT = 0x0200,	/* Allow local address and port reuse.  */
 #define SO_REUSEPORT SO_REUSEPORT
+    SO_TIMESTAMP = 0x0400,	/* Timestamp received dgram traffic */
+#define SO_TIMESTAMP SO_TIMESTAMP
     SO_SNDBUF = 0x1001,		/* Send buffer size.  */
 #define SO_SNDBUF SO_SNDBUF
     SO_RCVBUF = 0x1002,		/* Receive buffer.  */
