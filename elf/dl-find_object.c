@@ -465,7 +465,7 @@ _dl_find_object (void *pc1, struct dl_find_object *result)
 }
 rtld_hidden_def (_dl_find_object)
 
-/* Subroutine of _dlfo_process_initial to split out noncontigous link
+/* Subroutine of _dlfo_process_initial to split out noncontiguous link
    maps.  NODELETE is the number of used _dlfo_nodelete_mappings
    elements.  It is incremented as needed, and the new NODELETE value
    is returned.  */
@@ -586,7 +586,7 @@ _dl_find_object_init (void)
       {
         /* Non-contiguous main maps are handled in
            _dlfo_process_initial.  Mark as initialized, but not
-           coverying any valid PC.  */
+           covering any valid PC.  */
         _dlfo_main.map_start = -1;
         _dlfo_main.map_end = -1;
       }

@@ -485,7 +485,7 @@ _dl_close_worker (struct link_map *map, bool force)
   size_t tls_free_end;
   tls_free_start = tls_free_end = NO_TLS_OFFSET;
 
-  /* Protects global and module specitic TLS state.  */
+  /* Protects global and module specific TLS state.  */
   __rtld_lock_lock_recursive (GL(dl_load_tls_lock));
 
   /* We modify the list of loaded objects.  */

@@ -2810,7 +2810,7 @@ $(objpfx)tst-ldconfig-soname.out : tst-ldconfig-soname.sh \
 
 # Test static linking of all the libraries we can possibly link
 # together.  Note that in some configurations this may be less than the
-# complete list of libraries we build but we try to maxmimize this list.
+# complete list of libraries we build but we try to maximize this list.
 $(objpfx)tst-linkall-static: \
   $(common-objpfx)math/libm.a \
   $(common-objpfx)resolv/libresolv.a \

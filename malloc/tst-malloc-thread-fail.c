@@ -310,7 +310,7 @@ int
 do_test (void)
 {
   /* Limit the number of malloc arenas.  We use a very low number so
-     that despute the address space limit configured below, all
+     that despite the address space limit configured below, all
      requested arenas a can be created.  */
   if (mallopt (M_ARENA_MAX, 2) == 0)
     {

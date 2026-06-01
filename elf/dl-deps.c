@@ -557,7 +557,7 @@ cannot load auxiliary `%s' because of empty dynamic string token "
       /* Copy the binary into position 0.  */
       l_initfini[0] = map->l_searchlist.r_list[map_index];
 
-      /* Copy the filtees.  */
+      /* Copy the filters.  */
       for (i = 0; i < map_index; ++i)
 	l_initfini[i+1] = map->l_searchlist.r_list[i];
 

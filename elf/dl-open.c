@@ -777,7 +777,7 @@ dl_open_worker (void *a)
 
 #ifdef SHARED
 	if (was_not_consistent)
-	  /* Avoid redudant/recursive signalling.  */
+	  /* Avoid redundant/recursive signalling.  */
 	  _dl_audit_activity_nsid (nsid, LA_ACT_CONSISTENT);
 #endif
       }
