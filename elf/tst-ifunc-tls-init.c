@@ -39,6 +39,18 @@ test_tls_ifunc (int (*check_sentinel)(void),
 		int (*check_fptr)(void),
 		int (*check_ifunc_tls)(void))
 {
+  /* Force the IFUNC to be resolved before inspecting what the resolver
+     observed.  In a non-PIE executable the references to the IFUNC are
+     satisfied through a canonical IPLT entry in the executable, which under
+     lazy binding is resolved on first use rather than during startup
+     relocation.  Calling fptr/ifunc_tls here guarantees the resolver has run
+     regardless of PIE-ness or binding mode.   */
+  TEST_VERIFY (check_fptr != NULL);
+  TEST_COMPARE (check_fptr (), SENTINEL);
+
+  /* Issue the ifunc directly as well.  */
+  TEST_COMPARE (check_ifunc_tls (), SENTINEL);
+
   /* Primary check: 'get_last_seen_sentinel' returns the value of the DSO's
      thread-local 'sentinel' as observed by the resolver at the moment it ran
      for the IFUNC reloc that initialised fptr.  The getter is a regular
@@ -46,14 +58,6 @@ test_tls_ifunc (int (*check_sentinel)(void),
      does NOT go through a COPY relocation that could overwrite the resolver's
      write.  */
   TEST_COMPARE (check_sentinel (), SENTINEL);
-
-  /* Secondary check: fptr is set during IFUNC resolver call, then copied into
-     the exe's.  Returns SENTINEL only if the resolver picked impl_ok.  */
-  TEST_VERIFY (check_fptr != NULL);
-  TEST_COMPARE (check_fptr (), SENTINEL);
-
-  /* Sanity check: issue the ifunc.  */
-  TEST_COMPARE (check_ifunc_tls (), SENTINEL);
 }
 
 static int
