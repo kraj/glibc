@@ -28,13 +28,14 @@
 #include <support/check.h>
 
 bool
-support_thp_is_madvise (void)
+support_thp_work_madvise (void)
 {
   int fd = open ("/sys/kernel/mm/transparent_hugepage/enabled", O_RDONLY);
   if (fd == -1)
     return false;
 
 #define MODE_MADVISE "always [madvise] never\n"
+#define MODE_ALWAYS  "[always] madvise never\n"
 
   char str[sizeof(MODE_MADVISE)];
   ssize_t s = read (fd, str, sizeof (str));
@@ -42,7 +43,7 @@ support_thp_is_madvise (void)
   if (s != sizeof (str) - 1)
     return false;
   str[s] = '\0';
-  return strcmp (str, MODE_MADVISE) == 0;
+  return strcmp (str, MODE_MADVISE) == 0 || strcmp (str, MODE_ALWAYS) == 0;
 }
 
 bool
@@ -69,10 +70,10 @@ support_check_malloc_hugetlb (void)
     return;
 
   size_t hugetlb = TUNABLE_GET_FULL (glibc, malloc, hugetlb, size_t, NULL);
-  if (hugetlb == 1 && !support_thp_is_madvise ())
+  if (hugetlb == 1 && !support_thp_work_madvise ())
     FAIL_UNSUPPORTED ("glibc.malloc.hugetlb=1 requires"
                       " /sys/kernel/mm/transparent_hugepage/enabled"
-                      " = madvise");
+                      " either always or madvise");
   if (hugetlb == 2 && !support_hugepages_reserved ())
     FAIL_UNSUPPORTED ("glibc.malloc.hugetlb=2 requires"
                       " /proc/sys/vm/nr_hugepages > 0");
