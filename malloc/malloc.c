@@ -1126,24 +1126,19 @@ nextchunk-> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
 #define misaligned_chunk(p) (misaligned_mem( chunk2mem (p)))
 
-/* pad request bytes into a usable size -- internal version */
-/* Note: This must be a macro that evaluates to a compile time constant
-   if passed a literal constant.  */
-#define request2size(req)                                         \
-  (((req) + SIZE_SZ + MALLOC_ALIGN_MASK < MINSIZE)  ?             \
-   MINSIZE :                                                      \
-   ((req) + SIZE_SZ + MALLOC_ALIGN_MASK) & ~MALLOC_ALIGN_MASK)
-
 /* Check if REQ overflows when padded and aligned and if the resulting
    value is less than PTRDIFF_T.  Returns the requested size or
    MINSIZE in case the value is less than MINSIZE, or SIZE_MAX if any
    of the previous checks fail.  */
 static __always_inline size_t
-checked_request2size (size_t req) __nonnull (1)
+checked_request2size (size_t req)
 {
   if (__glibc_unlikely (req > PTRDIFF_MAX))
     return SIZE_MAX;
-  return request2size (req);
+
+  return (req + SIZE_SZ + MALLOC_ALIGN_MASK < MINSIZE
+	  ? MINSIZE
+	  : (req + SIZE_SZ + MALLOC_ALIGN_MASK) & ~MALLOC_ALIGN_MASK);
 }
 
 /*
@@ -3035,7 +3030,7 @@ tcache_init (mstate av)
   size_t bytes = sizeof (tcache_perthread_struct);
   if (av)
     tcache =
-      (tcache_perthread_struct *) _int_malloc (av, request2size (bytes));
+      (tcache_perthread_struct *) _int_malloc (av, bytes);
   else
     tcache = (tcache_perthread_struct *) __libc_malloc2 (bytes);
 
@@ -3433,7 +3428,6 @@ __libc_calloc2 (size_t sz)
   mchunkptr oldtop, p;
   INTERNAL_SIZE_T oldtopsize, csz;
   void *mem;
-  unsigned long clearsize;
 
   if (SINGLE_THREAD_P)
     av = &main_arena;
@@ -3510,8 +3504,7 @@ __libc_calloc2 (size_t sz)
     }
 #endif
 
-  clearsize = csz - SIZE_SZ;
-  return clear_memory ((INTERNAL_SIZE_T *) mem, clearsize);
+  return clear_memory (mem, csz - SIZE_SZ);
 }
 
 void *
@@ -3532,16 +3525,13 @@ __libc_calloc (size_t n, size_t elem_size)
     {
       size_t tc_idx = csize2tidx (nb);
 
-      if (__glibc_unlikely (tc_idx < TCACHE_SMALL_BINS))
-        {
+      if (__glibc_likely (tc_idx < TCACHE_SMALL_BINS))
+	{
 	  if (tcache->entries[tc_idx] != NULL)
-	    {
-	      void *mem = tcache_get (tc_idx);
-	      return clear_memory ((INTERNAL_SIZE_T *) mem, tidx2usize (tc_idx));
-	    }
+	    return clear_memory (tcache_get (tc_idx), tidx2usize (tc_idx));
 	}
       else
-        {
+	{
 	  tc_idx = large_csize2tidx (nb);
 	  void *mem = tcache_get_large (tc_idx, nb);
 	  if (mem != NULL)
@@ -4754,7 +4744,7 @@ do_set_tcache_max (size_t value)
   if (value > PTRDIFF_MAX)
     return 0;
 
-  size_t nb = request2size (value);
+  size_t nb = checked_request2size (value);
   size_t tc_idx = csize2tidx (nb);
 
   if (tc_idx >= TCACHE_SMALL_BINS)

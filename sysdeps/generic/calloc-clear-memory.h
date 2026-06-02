@@ -19,12 +19,13 @@
 #include <string.h>
 
 static __always_inline void *
-clear_memory (INTERNAL_SIZE_T *d, unsigned long clearsize)
+clear_memory (void *p, unsigned long clearsize)
 {
+  INTERNAL_SIZE_T *d = (INTERNAL_SIZE_T *) p;
   /* Unroll clear memory size up to 9 * INTERNAL_SIZE_T bytes.  We know
      that contents have an odd number of INTERNAL_SIZE_T-sized words;
      minimally 3 words.  */
-  unsigned long nclears = clearsize / sizeof (INTERNAL_SIZE_T);
+  unsigned long nclears = clearsize / SIZE_SZ;
 
   if (nclears > 9)
     return memset (d, 0, clearsize);
