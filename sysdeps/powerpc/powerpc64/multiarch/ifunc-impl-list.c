@@ -218,6 +218,26 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 			      __memcmp_power4)
 	      IFUNC_IMPL_ADD (array, i, memcmp, 1, __memcmp_ppc))
 
+  /* Support sysdeps/powerpc/powerpc64/multiarch/memcmpeq.c.
+     Pre-POWER10 variants reuse __memcmp_* since memcmp's return value
+     satisfies __memcmpeq's zero/non-zero contract. */
+
+  IFUNC_IMPL (i, name, __memcmpeq,
+#ifdef __LITTLE_ENDIAN__
+	      IFUNC_IMPL_ADD (array, i, __memcmpeq,
+			      hwcap2 & PPC_FEATURE2_ARCH_3_1
+			      && hwcap & PPC_FEATURE_HAS_VSX,
+			      __memcmpeq_power10)
+#endif
+	      IFUNC_IMPL_ADD (array, i, __memcmpeq, hwcap2 & PPC_FEATURE2_ARCH_2_07
+			      && hwcap & PPC_FEATURE_HAS_ALTIVEC,
+			      __memcmp_power8)
+	      IFUNC_IMPL_ADD (array, i, __memcmpeq, hwcap & PPC_FEATURE_ARCH_2_06,
+			      __memcmp_power7)
+	      IFUNC_IMPL_ADD (array, i, __memcmpeq, hwcap & PPC_FEATURE_POWER4,
+			      __memcmp_power4)
+	      IFUNC_IMPL_ADD (array, i, __memcmpeq, 1, __memcmp_ppc))
+
   /* Support sysdeps/powerpc/powerpc64/multiarch/mempcpy.c.  */
   IFUNC_IMPL (i, name, mempcpy,
 	      IFUNC_IMPL_ADD (array, i, mempcpy,

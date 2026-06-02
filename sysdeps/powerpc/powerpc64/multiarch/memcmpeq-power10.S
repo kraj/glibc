@@ -1,4 +1,5 @@
-/* Copyright (C) 2013-2026 Free Software Foundation, Inc.
+/* Wrapper for POWER10 __memcmpeq implementation.
+   Copyright (C) 2026 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -15,24 +16,13 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#include <string.h>
+#define MEMCMPEQ __memcmpeq_power10
 
-#define MEMCMP __memcmp_ppc
+#undef libc_hidden_builtin_def
+#define libc_hidden_builtin_def(name)
+#undef libc_hidden_def
+#define libc_hidden_def(name)
 #undef weak_alias
-#define weak_alias(name, aliasname) \
-  extern __typeof (__memcmp_ppc) aliasname \
-    __attribute__ ((weak, alias ("__memcmp_ppc")));
-/* __memcmpeq is now owned by the memcmpeq IFUNC selector (memcmpeq.os) */
-#undef strong_alias
-#define strong_alias(name, aliasname)
-#if IS_IN (libc) && defined(SHARED)
-# undef libc_hidden_builtin_def
-# define libc_hidden_builtin_def(name) \
-  __hidden_ver1(__memcmp_ppc, __GI_memcmp, __memcmp_ppc);
-# undef libc_hidden_def
-# define libc_hidden_def(name)
-#endif
+#define weak_alias(name, alias)
 
-extern __typeof (memcmp) __memcmp_ppc attribute_hidden;
-
-#include <string/memcmp.c>
+#include <sysdeps/powerpc/powerpc64/le/power10/memcmpeq.S>
