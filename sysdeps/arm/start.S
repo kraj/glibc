@@ -105,7 +105,7 @@ _start:
 	/* Let the libc call main and exit with its return code.  */
 	bl __libc_start_main(PLT)
 # else
-	ldr a1, .L_main_rel	/* Load the relative offset of main. */
+	ldr a1, .L_main_rel	/* Load the relative offset of __wrap_main. */
 	adr a4, .L_main_rel	/* Load the actual runtime address of the label. */
 	add a1, a4, a1		/* Add them together to get the absolute address. */
 
@@ -136,12 +136,23 @@ _start:
 	.word main(GOT)
 # else
 .L_main_rel:
-	.word main - .L_main_rel
+	.word __wrap_main - .L_main_rel
 # endif
 #endif
 
        .cantunwind
        .fnend
+
+#if defined PIC && !defined SHARED
+/* When main is not defined in the executable but in a shared library then
+   a wrapper is needed, because crt1.o and rcrt1.o share this code and the
+   latter (static PIE) must avoid GOT relocations before __libc_start_main
+   is called.  The branch to main is turned into a PLT entry by every linker,
+   unlike a REL32 data relocation against main.  */
+	.type __wrap_main, %function
+__wrap_main:
+	b main
+#endif
 
 /* Define a symbol for the first piece of initialized data.  */
 	.data
