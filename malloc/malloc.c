@@ -1115,7 +1115,8 @@ checked_request2size (size_t req)
 
 /* This is the size of the real usable data in the chunk.  Not valid for
    dumped heap chunks.  */
-#define memsize(p) (chunksize (p) - CHUNK_HDR_SZ + SIZE_SZ)
+#define chunksize2usable(n) (n - CHUNK_HDR_SZ + SIZE_SZ)
+#define memsize(p) (chunksize2usable (chunksize (p)))
 
 /* Huge page used for an mmap chunk.  */
 #define MMAP_HP 0x1
@@ -3299,17 +3300,17 @@ __libc_pvalloc (size_t bytes)
 libc_hidden_def (__libc_pvalloc)
 
 static void * __attribute_noinline__
-__libc_calloc2 (size_t sz)
+__libc_calloc2 (size_t usable_size)
 {
   mstate av;
   mchunkptr oldtop, p;
-  INTERNAL_SIZE_T oldtopsize, csz;
+  INTERNAL_SIZE_T oldtopsize;
   void *mem;
 
   if (SINGLE_THREAD_P)
     av = &main_arena;
   else
-    arena_get (av, sz);
+    arena_get (av, usable_size);
 
   if (av)
     {
@@ -3338,18 +3339,18 @@ __libc_calloc2 (size_t sz)
       oldtop = NULL;
       oldtopsize = 0;
     }
-  mem = _int_malloc (av, sz);
+  mem = _int_malloc (av, usable_size);
 
   assert (!mem || chunk_is_mmapped (mem2chunk (mem)) ||
-          av == arena_for_chunk (mem2chunk (mem)));
+	  av == arena_for_chunk (mem2chunk (mem)));
 
   if (!SINGLE_THREAD_P)
     {
       if (mem == NULL && av != NULL)
 	{
-	  LIBC_PROBE (memory_calloc_retry, 1, sz);
-	  av = arena_get_retry (av, sz);
-	  mem = _int_malloc (av, sz);
+	  LIBC_PROBE (memory_calloc_retry, 1, usable_size);
+	  av = arena_get_retry (av, usable_size);
+	  mem = _int_malloc (av, usable_size);
 	}
 
       if (av != NULL)
@@ -3362,26 +3363,30 @@ __libc_calloc2 (size_t sz)
 
   p = mem2chunk (mem);
 
-  csz = chunksize (p);
-
   /* Two optional cases in which clearing not necessary */
-  if (chunk_is_mmapped (p))
-    {
-      if (__glibc_unlikely (perturb_byte))
-        return memset (mem, 0, sz);
-
-      return mem;
-    }
+  if (__glibc_unlikely (chunk_is_mmapped (p)) && perturb_byte == 0)
+    return mem;
 
 #if MORECORE_CLEARS
-  if (perturb_byte == 0 && (p == oldtop && csz > oldtopsize))
-    {
-      /* clear only the bytes from non-freshly-sbrked memory */
-      csz = oldtopsize;
-    }
+  /* clear only the bytes from non-freshly-sbrked memory */
+  if (__glibc_unlikely (p == oldtop)
+      && usable_size >= oldtopsize && perturb_byte == 0)
+    usable_size = chunksize2usable (oldtopsize);
 #endif
 
-  return clear_memory (mem, csz - SIZE_SZ);
+  /* Clear requested size.  */
+  return memset (mem, 0, usable_size);
+}
+
+static void * __attribute_noinline__
+__libc_calloc_small (size_t usable_size)
+{
+  void *mem = __libc_malloc2 (usable_size);
+
+  if (mem == NULL)
+    return NULL;
+
+  return clear_memory (mem, usable_size);
 }
 
 void *
@@ -3395,8 +3400,9 @@ __libc_calloc (size_t n, size_t elem_size)
        return NULL;
     }
 
-#if USE_TCACHE
   size_t nb = checked_request2size (bytes);
+
+#if USE_TCACHE
 
   if (nb < mp_.tcache_max_bytes)
     {
@@ -3406,17 +3412,19 @@ __libc_calloc (size_t n, size_t elem_size)
 	{
 	  if (tcache->entries[tc_idx] != NULL)
 	    return clear_memory (tcache_get (tc_idx), tidx2usize (tc_idx));
+
+	  return __libc_calloc_small (chunksize2usable (nb));
 	}
       else
 	{
 	  tc_idx = large_csize2tidx (nb);
 	  void *mem = tcache_get_large (tc_idx, nb);
 	  if (mem != NULL)
-	    return memset (mem, 0, memsize (mem2chunk (mem)));
+	    return memset (mem, 0, chunksize2usable (nb));
 	}
     }
 #endif
-  return __libc_calloc2 (bytes);
+  return __libc_calloc2 (chunksize2usable (nb));
 }
 libc_hidden_def (__libc_calloc)
 #endif /* IS_IN (libc) */
