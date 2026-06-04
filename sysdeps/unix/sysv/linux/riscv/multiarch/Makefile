@@ -1,5 +1,8 @@
 ifeq ($(subdir),string)
 sysdep_routines += \
+  memcmp \
+  memcmp-generic \
+  memcmp-vector \
   memcpy \
   memcpy-generic \
   memcpy-vector \

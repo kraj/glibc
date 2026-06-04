@@ -1,5 +1,5 @@
-/* Symbol redirection for loader/static initialization code.
-   Copyright (C) 2025-2026 Free Software Foundation, Inc.
+/* Re-include the default memcmp implementation.
+   Copyright (C) 2026 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -16,14 +16,15 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#ifndef _DL_IFUNC_GENERIC_H
-#define _DL_IFUNC_GENERIC_H
+#include <string.h>
 
-#ifndef SHARED
-asm ("memcmp = __memcmp_generic");
-asm ("memcpy = __memcpy_generic");
-asm ("memset = __memset_generic");
-asm ("strlen = __strlen_generic");
-#endif
-
+#if IS_IN(libc)
+# define MEMCMP __memcmp_generic
+# undef libc_hidden_def
+# define libc_hidden_def(x)
+# undef weak_alias
+# define weak_alias(x, x2)
+# undef strong_alias
+# define strong_alias(x, x2)
+# include <string/memcmp.c>
 #endif
