@@ -9,6 +9,16 @@ modules-names += \
 LDFLAGS-tst-tlsdesc-pac = -rdynamic
 
 $(objpfx)tst-tlsdesc-pac.out: $(objpfx)tst-tlsdesc-pac-mod.so
+
+ifeq (yes,$(enable-static-pie))
+tests += \
+  tst-cpu-tunable-static-pie \
+  # tests
+tests-static += \
+  tst-cpu-tunable-static-pie \
+  # tests-static
+tst-cpu-tunable-static-pie-TUNABLES = glibc.cpu.name=generic
+endif
 endif
 
 ifeq ($(subdir),misc)

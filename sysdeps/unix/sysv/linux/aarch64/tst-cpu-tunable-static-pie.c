@@ -1,5 +1,6 @@
-/* Symbol redirection for loader/static initialization code.
-   Copyright (C) 2022-2026 Free Software Foundation, Inc.
+/* Test that the glibc.cpu.name tunable is parsed correctly during early
+   startup of a static PIE binary (bug 34205).
+   Copyright (C) 2026 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -16,15 +17,10 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#ifndef _DL_IFUNC_GENERIC_H
-#define _DL_IFUNC_GENERIC_H
+static int
+do_test (void)
+{
+  return 0;
+}
 
-asm ("memset = __memset_generic");
-asm ("strlen = __strlen_generic");
-#ifndef SHARED
-asm ("memcpy = __memcpy_generic");
-asm ("memmove = __memmove_generic");
-asm ("memcmp = __memcmp_generic");
-#endif
-
-#endif
+#include <support/test-driver.c>

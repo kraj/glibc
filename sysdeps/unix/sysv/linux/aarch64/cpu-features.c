@@ -33,29 +33,32 @@
    to see when pointer have been correctly tagged.  */
 #define MTE_ALLOWED_TAGS (0xfffe << PR_MTE_TAG_SHIFT)
 
-struct cpu_list
-{
-  const char *name;
-  size_t len;
-  uint64_t midr;
+static const char cpu_list_name[] = {
+  "kunpeng920\0"
+  "kunpeng950\0"
+  "a64fx\0"
+  "generic\0",
 };
 
-static const struct cpu_list cpu_list[] =
-{
-#define CPU_LIST_ENTRY(__str, __num) { __str, sizeof (__str) - 1, __num }
-  CPU_LIST_ENTRY ("kunpeng920",     0x481FD010),
-  CPU_LIST_ENTRY ("kunpeng950",     0x480FD060),
-  CPU_LIST_ENTRY ("a64fx",          0x460F0010),
-  CPU_LIST_ENTRY ("generic",        0x0),
+static const uint64_t cpu_list_midr[] = {
+  0x481FD010,
+  0x480FD060,
+  0x460F0010,
+  0x0,
 };
 
 static uint64_t
 get_midr_from_mcpu (const struct tunable_str_t *mcpu)
 {
-  for (int i = 0; i < array_length (cpu_list); i++)
-    if (tunable_strcmp (mcpu, cpu_list[i].name, cpu_list[i].len))
-      return cpu_list[i].midr;
-
+  const char *name = cpu_list_name;
+  size_t offset = 0;
+  for (int i = 0; i < array_length (cpu_list_midr); i++)
+    {
+      size_t len = strlen (name);
+      if (tunable_strcmp (mcpu, cpu_list_name + offset, len))
+	return cpu_list_midr[i];
+      offset += len;
+    }
   return UINT64_MAX;
 }
 

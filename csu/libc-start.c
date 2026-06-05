@@ -59,6 +59,7 @@ uintptr_t __pointer_chk_guard_local attribute_relro attribute_hidden;
 #ifndef SHARED
 # include <link.h>
 # include <dl-irel.h>
+# include <dl-symbol-redir-ifunc.h>
 
 # ifdef ELF_MACHINE_IRELA
 #  define IREL_T	ElfW(Rela)
