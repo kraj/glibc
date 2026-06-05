@@ -3,6 +3,9 @@ sysdep_routines += \
   memccpy \
   memccpy-generic \
   memccpy-vector \
+  memchr \
+  memchr-generic \
+  memchr-vector \
   memcmp \
   memcmp-generic \
   memcmp-vector \
