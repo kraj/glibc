@@ -95,5 +95,10 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 			      __memchr_vector)
 	      IFUNC_IMPL_ADD (array, i, memchr, 1, __memchr_generic))
 
+  IFUNC_IMPL (i, name, strchr,
+	      IFUNC_IMPL_ADD (array, i, strchr, rvv_enabled,
+			      __strchr_vector)
+	      IFUNC_IMPL_ADD (array, i, strchr, 1, __strchr_generic))
+
   return 0;
 }

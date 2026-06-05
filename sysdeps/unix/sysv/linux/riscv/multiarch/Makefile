@@ -19,6 +19,9 @@ sysdep_routines += \
   strcat \
   strcat-generic \
   strcat-vector \
+  strchr \
+  strchr-generic \
+  strchr-vector \
   strcmp \
   strcmp-generic \
   strcmp-vector \
