@@ -46,7 +46,7 @@ do_test (void)
 
   {
     /* Install the default implementation of libmarkermod1.so.  */
-    char *conf_path = xasprintf ("%s/ld.so.conf", support_sysconfdir_prefix);
+    char *conf_path = xasprintf ("%s/ld.so.conf.d/hwcaps.conf", support_sysconfdir_prefix);
     xmkdirp (support_sysconfdir_prefix, 0777);
     support_write_file_string (conf_path, "/glibc-test/lib\n");
     free (conf_path);
