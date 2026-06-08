@@ -186,7 +186,7 @@ cache_addpw (struct database_dyn *db, int fd, request_header *req,
 	       + pw_name_len + pw_passwd_len
 	       + pw_gecos_len + pw_dir_len + pw_shell_len);
 
-      /* If we refill the cache, first assume the reconrd did not
+      /* If we refill the cache, first assume the record did not
 	 change.  Allocate memory on the cache since it is likely
 	 discarded anyway.  If it turns out to be necessary to have a
 	 new record we can still allocate real memory.  */

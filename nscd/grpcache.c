@@ -192,7 +192,7 @@ cache_addgr (struct database_dyn *db, int fd, request_header *req,
 	       + gr_mem_cnt * sizeof (uint32_t)
 	       + gr_name_len + gr_passwd_len + gr_mem_len_total);
 
-      /* If we refill the cache, first assume the reconrd did not
+      /* If we refill the cache, first assume the record did not
 	 change.  Allocate memory on the cache since it is likely
 	 discarded anyway.  If it turns out to be necessary to have a
 	 new record we can still allocate real memory.  */

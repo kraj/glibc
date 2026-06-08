@@ -245,7 +245,7 @@ addinitgroupsX (struct database_dyn *db, int fd, request_header *req,
 
       total = offsetof (struct dataset, strdata) + start * sizeof (int32_t);
 
-      /* If we refill the cache, first assume the reconrd did not
+      /* If we refill the cache, first assume the record did not
 	 change.  Allocate memory on the cache since it is likely
 	 discarded anyway.  If it turns out to be necessary to have a
 	 new record we can still allocate real memory.  */

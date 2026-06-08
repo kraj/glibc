@@ -180,7 +180,7 @@ cache_addserv (struct database_dyn *db, int fd, request_header *req,
 		+ s_proto_len
 		+ s_aliases_cnt * sizeof (uint32_t));
 
-      /* If we refill the cache, first assume the reconrd did not
+      /* If we refill the cache, first assume the record did not
 	 change.  Allocate memory on the cache since it is likely
 	 discarded anyway.  If it turns out to be necessary to have a
 	 new record we can still allocate real memory.  */
