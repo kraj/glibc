@@ -174,8 +174,8 @@
 #endif
 
 #if defined __USE_UNIX98 || defined __USE_XOPEN2K8
-# define F_SETOWN	__F_SETOWN /* Get owner (process receiving SIGIO).  */
-# define F_GETOWN	__F_GETOWN /* Set owner (process receiving SIGIO).  */
+# define F_SETOWN	__F_SETOWN /* Set owner (process receiving SIGIO).  */
+# define F_GETOWN	__F_GETOWN /* Get owner (process receiving SIGIO).  */
 #endif
 
 #ifndef __F_SETSIG
@@ -183,15 +183,15 @@
 # define __F_GETSIG	11	/* Get number of signal to be sent.  */
 #endif
 #ifndef __F_SETOWN_EX
-# define __F_SETOWN_EX	15	/* Get owner (thread receiving SIGIO).  */
-# define __F_GETOWN_EX	16	/* Set owner (thread receiving SIGIO).  */
+# define __F_SETOWN_EX	15	/* Set owner (thread receiving SIGIO).  */
+# define __F_GETOWN_EX	16	/* Get owner (thread receiving SIGIO).  */
 #endif
 
 #ifdef __USE_GNU
 # define F_SETSIG	__F_SETSIG	/* Set number of signal to be sent.  */
 # define F_GETSIG	__F_GETSIG	/* Get number of signal to be sent.  */
-# define F_SETOWN_EX	__F_SETOWN_EX	/* Get owner (thread receiving SIGIO).  */
-# define F_GETOWN_EX	__F_GETOWN_EX	/* Set owner (thread receiving SIGIO).  */
+# define F_SETOWN_EX	__F_SETOWN_EX	/* Set owner (thread receiving SIGIO).  */
+# define F_GETOWN_EX	__F_GETOWN_EX	/* Get owner (thread receiving SIGIO).  */
 #endif
 
 #ifdef __USE_GNU
@@ -201,7 +201,7 @@
 # define F_DUPFD_QUERY  1027    /* Compare two file descriptors for sameness.  */
 # define F_CREATED_QUERY 1028   /* Was the file just created?  */
 # define F_SETPIPE_SZ	1031	/* Set pipe page size array.  */
-# define F_GETPIPE_SZ	1032	/* Set pipe page size array.  */
+# define F_GETPIPE_SZ	1032	/* Get pipe page size array.  */
 # define F_ADD_SEALS	1033	/* Add seals to file.  */
 # define F_GET_SEALS	1034	/* Get seals for file.  */
 /* Set / get write life time hints.  */
