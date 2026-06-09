@@ -138,7 +138,8 @@ $(objpfx)test-iconvconfig.out: $(objpfx)iconvconfig
 	 rm -f $$tmp) > $@; \
 	$(evaluate-test)
 
-$(objpfx)tst-iconv_prog.out: tst-iconv_prog.sh $(objpfx)iconv_prog
+$(objpfx)tst-iconv_prog.out: tst-iconv_prog.sh $(objpfx)iconv_prog \
+  $(gen-locales)
 	$(BASH) $< $(common-objdir) '$(test-wrapper-env)' \
 		 '$(run-program-env)' > $@; \
 	$(evaluate-test)
