@@ -51,6 +51,10 @@ riscv_libc_ifunc (__libc_memcmp, select_memcmp_ifunc);
 # undef bcmp
 strong_alias (__libc_memcmp, memcmp);
 weak_alias (memcmp, bcmp);
+
+# undef __memcmpeq
+strong_alias (__libc_memcmp, __memcmpeq);
+libc_hidden_def (__memcmpeq);
 # ifdef SHARED
 __hidden_ver1 (memcmp, __GI_memcmp, __redirect_memcmp)
   __attribute__ ((visibility ("hidden"))) __attribute_copy__ (memcmp);
