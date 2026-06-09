@@ -144,8 +144,10 @@
     if (irreversible == NULL)						      \
       {									      \
 	/* This means we are in call from __gconv_transliterate.  In this     \
-	   case we are not doing any error recovery ourselves.  */	      \
-	result = __gconv_mark_illegal_input (step_data);		      \
+	   case we are not doing any error recovery ourselves.  Do not create \
+	   a persistent error state.  If __gconv_transliterate exhausts all   \
+	   alternatives, it will call __gconv_mark_illegal_input itself.  */  \
+	result = __GCONV_ILLEGAL_INPUT;					      \
 	break;								      \
       }									      \
 									      \

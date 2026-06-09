@@ -29,10 +29,10 @@ LIBPATH=$codir:$codir/iconvdata
 
 # How the start the iconv(1) program.  $from is not defined/expanded yet.
 ICONV='
+$test_wrapper_env $run_program_env
 $codir/elf/ld.so --library-path $library_path:$LIBPATH --inhibit-rpath ${from}.so
 $codir/iconv/iconv_prog
 '
-ICONV="$test_wrapper_env $run_program_env $ICONV"
 
 TIMEOUTFACTOR=${TIMEOUTFACTOR:-1}
 
@@ -220,6 +220,7 @@ testarray=(
 "\x00\x00;;INVALID;UTF-8;1"
 "\x00\x00;;UTF-8;INVALID;1"
 "\xc3\xa9;;UTF-8;ASCII//TRANSLIT;0"
+"X\xc2\xbdY;;UTF-8;ASCII//TRANSLIT;0"
 )
 
 # Requires $twobyte input, $c flag, $from, and $to to be set; sets $ret
@@ -280,12 +281,21 @@ check_errtest_result ()
   fi
 }
 
-for testcommand in "${testarray[@]}"; do
-  twobyte="$(echo "$testcommand" | cut -d";" -f 1)"
-  c="$(echo "$testcommand" | cut -d";" -f 2)"
-  from="$(echo "$testcommand" | cut -d";" -f 3)"
-  to="$(echo "$testcommand" | cut -d";" -f 4)"
-  eret="$(echo "$testcommand" | cut -d";" -f 5)"
-  execute_test
-  check_errtest_result
-done
+run_test_array ()
+{
+  for testcommand in "${testarray[@]}"; do
+    twobyte="$(echo "$testcommand" | cut -d";" -f 1)"
+    c="$(echo "$testcommand" | cut -d";" -f 2)"
+    from="$(echo "$testcommand" | cut -d";" -f 3)"
+    to="$(echo "$testcommand" | cut -d";" -f 4)"
+    eret="$(echo "$testcommand" | cut -d";" -f 5)"
+    execute_test
+    check_errtest_result
+  done
+}
+
+echo "info: testing C locale"
+run_test_array
+echo "info: testing en_US.UTF-8 locale"
+run_program_env="$run_program_env LC_ALL=en_US.UTF-8"
+run_test_array
