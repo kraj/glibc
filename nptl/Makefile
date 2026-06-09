@@ -353,6 +353,7 @@ tests = \
   tst-rwlock22 \
   tst-sched1 \
   tst-sem17 \
+  tst-setuid-eagain \
   tst-signal3 \
   tst-stack2 \
   tst-stack3 \
