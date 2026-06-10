@@ -305,7 +305,7 @@ do_test (int argc, char *argv[])
 
   mtrace ();
 
-  if (PREC && printf ("prec:%i\n", PREC) < 0)
+  if (PREC != 0 && printf ("prec:%i\n", PREC) < 0)
     {
       perror ("printf");
       return EXIT_FAILURE;
