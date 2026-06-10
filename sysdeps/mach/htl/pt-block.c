@@ -46,7 +46,7 @@ __pthread_block (struct __pthread *thread)
   err = __mach_msg (&msg, MACH_RCV_MSG | MSG_OPTIONS, 0, sizeof msg,
 		    thread->wakeupmsg.msgh_remote_port,
 		    MACH_MSG_TIMEOUT_NONE, MACH_PORT_NULL);
-  if ((MSG_OPTIONS & MACH_RCV_INTERRUPT) && err == MACH_RCV_INTERRUPTED)
+  if ((MSG_OPTIONS & MACH_RCV_INTERRUPT) != 0 && err == MACH_RCV_INTERRUPTED)
     RETURN(EINTR);
   assert_perror (err);
   RETURN(0);

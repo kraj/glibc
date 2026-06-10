@@ -63,7 +63,7 @@ __pthread_timedblock (struct __pthread *thread,
 		    timeout, MACH_PORT_NULL);
   if (err == EMACH_RCV_TIMED_OUT)
     return ETIMEDOUT;
-  if ((MSG_OPTIONS & MACH_RCV_INTERRUPT) && err == MACH_RCV_INTERRUPTED)
+  if ((MSG_OPTIONS & MACH_RCV_INTERRUPT) != 0 && err == MACH_RCV_INTERRUPTED)
     return EINTR;
 
   assert_perror (err);
