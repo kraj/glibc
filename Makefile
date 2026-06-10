@@ -684,26 +684,41 @@ $(objpfx)check-local-headers.out: scripts/check-local-headers.sh
 	$(evaluate-test)
 
 ifneq "$(headers)" ""
-# Special test of all the installed headers in this directory.
+# Special test of all the installed headers in this directory.  See
+# Rules for the per-header split rationale.
 tests-special += $(objpfx)check-installed-headers-c.out
 libof-check-installed-headers-c := testsuite
-$(objpfx)check-installed-headers-c.out: \
++cih-c-iouts := $(patsubst %,$(objpfx)check-installed-headers-c/%.iout,\
+			   $(headers))
+$(+cih-c-iouts): $(objpfx)check-installed-headers-c/%.iout: \
     scripts/check-installed-headers.sh $(headers)
-	$(SHELL) $(..)scripts/check-installed-headers.sh c $(supported-fortify) \
-	  "$(CC) $(test-config-cflags-finput-charset-ascii) \
-	     $(filter-out -std=%,$(CFLAGS)) -D_ISOMAC $(+includes)" \
-	  $(headers) > $@; \
+	$(make-target-directory)
+	($(SHELL) $(..)scripts/check-installed-headers.sh c $(supported-fortify) \
+	   "$(CC) $(test-config-cflags-finput-charset-ascii) \
+	      $(filter-out -std=%,$(CFLAGS)) -D_ISOMAC $(+includes)" \
+	   $*; echo $$? > $@-ret) > $@T; \
+	mv -f $@T $@
+$(objpfx)check-installed-headers-c.out: $(+cih-c-iouts)
+	cat $^ > $@; \
+	! grep -qv '^0$$' $(+cih-c-iouts:%=%-ret); \
 	$(evaluate-test)
 
 ifneq "$(CXX)" ""
 tests-special += $(objpfx)check-installed-headers-cxx.out
 libof-check-installed-headers-cxx := testsuite
-$(objpfx)check-installed-headers-cxx.out: \
++cih-cxx-iouts := $(patsubst %,$(objpfx)check-installed-headers-cxx/%.iout,\
+			     $(headers))
+$(+cih-cxx-iouts): $(objpfx)check-installed-headers-cxx/%.iout: \
     scripts/check-installed-headers.sh $(headers)
-	$(SHELL) $(..)scripts/check-installed-headers.sh c++ $(supported-fortify) \
-	  "$(CXX) $(test-config-cxxflags-finput-charset-ascii) \
-	     $(filter-out -std=%,$(CXXFLAGS)) -D_ISOMAC $(+includes)" \
-	  $(headers) > $@; \
+	$(make-target-directory)
+	($(SHELL) $(..)scripts/check-installed-headers.sh c++ $(supported-fortify) \
+	   "$(CXX) $(test-config-cxxflags-finput-charset-ascii) \
+	      $(filter-out -std=%,$(CXXFLAGS)) -D_ISOMAC $(+includes)" \
+	   $*; echo $$? > $@-ret) > $@T; \
+	mv -f $@T $@
+$(objpfx)check-installed-headers-cxx.out: $(+cih-cxx-iouts)
+	cat $^ > $@; \
+	! grep -qv '^0$$' $(+cih-cxx-iouts:%=%-ret); \
 	$(evaluate-test)
 endif # $(CXX)
 
