@@ -792,8 +792,13 @@ else
 LINKS_DSO_PROGRAM = links-dso-program
 endif
 
+# The testroot is only used by the container tests, which are not run
+# when run-built-tests is no; skip the installation entirely in that
+# case.
+ifeq ($(run-built-tests),yes)
 $(tests-container) $(addsuffix /tests,$(subdirs)) : \
 		$(objpfx)testroot.pristine/install.stamp
+endif
 $(objpfx)testroot.pristine/install.stamp :
 	test -d $(objpfx)testroot.pristine || \
 	  mkdir $(objpfx)testroot.pristine
