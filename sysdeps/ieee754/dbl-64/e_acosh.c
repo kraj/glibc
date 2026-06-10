@@ -4,7 +4,7 @@
 Copyright (c) 2023-2026 Alexei Sibidanov.
 
 The original version of this file was copied from the CORE-MATH
-project (file src/binary64/acosh/acosh.c, revision 6736002f).
+project (file src/binary64/acosh/acosh.c, revision 887cab6f).
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,10 +29,6 @@ SOFTWARE. */
        double-word arithmetic, by Mioara Joldeş, Jean-Michel Muller,
        and Valentina Popescu, ACM Transactions on Mathematical Software,
        44(2), 2017.
-   [2] Formalization of double-word arithmetic, and comments on ”Tight and
-       rigorous error bounds for basic building blocks of double-word
-       arithmetic”, Jean-Michel Muller, Laurence Rideau,
-       https://hal.science/hal-02972245v2, 2021.
 */
 
 #include <array_length.h>
@@ -97,11 +93,14 @@ __ieee754_acosh (double x)
 	return 0;
       return __math_invalid (x);
     }
-  double g;
+  // now x > 1
+  double g, eps;
   int off = 0x3fe;
   uint64_t t = ix;
-  if (ix < UINT64_C (0x3ff1e83e425aee63)) // 0 <= x < 0x1.1e83e425aee63p+0
+  if (ix < UINT64_C (0x3ff1e83e425aee63)) // 1 < x < 0x1.1e83e425aee63p+0
     {
+      /* this branch was checked exhaustively, with and without FMA
+	 contraction */
       double z = x - 1;
       double iz = (-0.25) / z, zt = 2 * z;
       double sh = sqrt (zt),
@@ -121,7 +120,9 @@ __ieee754_acosh (double x)
 				    * ((cl[5] + z * cl[6])
 				       + z2 * (cl[7] + z * cl[8]))),
 		 sl);
-      double eps = ds * 0x1.fcp-51 - 0x1p-104 * sh;
+      /* fails with eps = ds*0x1.ffp-51 - 0x1p-104*sh, x=0x1.00a800422847ap+0
+	 and rndz (both with/without FMA contraction) */
+      eps = ds * 0x1.00p-50 - 0x1p-104 * sh;
       double lb = sh + (ds - eps), ub = sh + (ds + eps);
       if (lb == ub)
 	return lb;
@@ -129,7 +130,8 @@ __ieee754_acosh (double x)
     }
   else if (__glibc_likely (ix < UINT64_C (0x405bf00000000000)))
     {
-      // 0x1.1e83e425aee63p+0 <= x < 0x1.bfp+6
+      /* 0x1.1e83e425aee63p+0 <= x < 111.75: this branch was checked
+	 exhaustively with/without FMA contraction */
       off = 0x3ff;
       double x2h = x * x, wh = x2h - 1, wl = fma (x, x, -x2h);
       double sh = sqrt (wh), ish = 0.5 / wh,
@@ -138,42 +140,53 @@ __ieee754_acosh (double x)
       tl += sl;
       t = asuint64 (th);
       g = tl / th;
+      eps = 0x1.81p-63;
     }
   else if (ix < UINT64_C (0x4087100000000000))
     {
-      // 0x1.bfp+6 <= x < 0x1.71p+9
+      /* 111.75 <= x < 738: this branch was tested exhaustively
+	 with/without FMA contraction */
       static const double cl[]
 	  = { 0x1.5c4b6148816e2p-66, -0x1.000000000005cp-2,
 	      -0x1.7fffffebf3e6cp-4, -0x1.aab6691f2bae7p-5 };
       double z = 1 / (x * x);
       g = cl[0] + z * (cl[1] + z * (cl[2] + z * cl[3]));
+      eps = 0x1.c3p-63;
     }
   else if (ix < UINT64_C (0x40e0100000000000))
     {
-      // 0x1.71p+9 <= x < 0x1.01p+15
+      /* 738 <= x < 32896: this branch was tested exhaustively
+	 with/without FMA contraction */
       static const double cl[]
 	  = { -0x1.7f77c8429c6c6p-67, -0x1.ffffffffff214p-3,
 	      -0x1.8000268641bfep-4 };
       double z = 1 / (x * x);
       g = cl[0] + z * (cl[1] + z * cl[2]);
+      eps = 0x1.9ap-63;
     }
   else if (ix < UINT64_C (0x41ea000000000000))
     {
-      // 0x1.01p+15 <= x < 0x1.ap+31
+      // 32896 <= x < 0x1.ap+31
+      /* this branch was tested exhaustively with/without FMA contraction
+	 only for 32896 <= x < 2^16. */
       static const double cl[]
 	  = { 0x1.7a0ed2effdd1p-67, -0x1.000000017d048p-2 };
       double z = 1 / (x * x);
       g = cl[0] + z * cl[1];
+      eps = 0x1.99p-63;
     }
   else
     {
       // 0x1.ap+31 <= x
       g = 0;
+      eps = 0x1.b2p-63;
     }
   int ex = t >> 52, e = ex - off;
-  t &= ~UINT64_C (0) >> 12;
-  double ed = e;
+  t &= ~UINT64_C (0) >> 12; // zero out the exponent field
+  double ed = e; // 2*x = (1+t/2^52)*2^ed
+  // upper 5 bits of the significand (without leading 1)
   uint64_t i = t >> (52 - 5);
+  // low 47 bits of the significand
   int64_t d = t & (~UINT64_C (0) >> 17);
   uint64_t j
       = (t + ((uint64_t) B[i].c0 << 33) + ((int64_t) B[i].c1 * (d >> 16)))
@@ -183,15 +196,19 @@ __ieee754_acosh (double x)
   double r = r1[i1] * r2[i2], dx = fma (r, asdouble(t), -1), dx2 = dx * dx;
   double f
       = dx2 * ((c[0] + dx * c[1]) + dx2 * ((c[2] + dx * c[3]) + dx2 * c[4]));
+  /* l2h+l2l is a double-double approximation of log(2), with error less
+     than 2^-102.018, and l2h representable on 42 bits, so that l2h*ed
+     is exact */
   const double l2h = 0x1.62e42fefa38p-1, l2l = 0x1.ef35793c7673p-45;
-  double lh = (l1[i1][1] + l2[i2][1]) + l2h * ed, ll = dx + l2l * ed;
-  ll += g;
-  ll += l1[i1][0] + l2[i2][0];
-  ll += f;
-  double eps = 2.8e-19;
+  double lh = (l1[i1][1] + l2[i2][1]) + l2h * ed;
+  double t1 = (l2l * ed) + (l1[i1][0] + l2[i2][0]);
+  double t2 = f + t1;
+  double t3 = g + t2;
+  double ll = dx + t3;
   double lb = lh + (ll - eps), ub = lh + (ll + eps);
   if (__glibc_likely (lb == ub))
     return lb;
+  // 0x1.71547652b82fep+0 approximates 1/log(2)
   return as_acosh_refine (x, 0x1.71547652b82fep+0 * lb);
 }
 libm_alias_finite (__ieee754_acosh, __acosh)
@@ -199,17 +216,15 @@ libm_alias_finite (__ieee754_acosh, __acosh)
 static __attribute__ ((noinline)) double
 as_acosh_database (double x, double f)
 {
+  // exceptional values sorted by increasing value
   static const double db[][3] = {
     { 0x1.5bff041b260fep+0, 0x1.a6031cd5f93bap-1, 0x1p-55 },
     { 0x1.9efdca62b700ap+0, 0x1.104b648f113a1p+0, 0x1p-54 },
-    { 0x1.9efdca62b700ap+0, 0x1.104b648f113a1p+0, 0x1p-54 },
     { 0x1.a5bf3acfde4b2p+0, 0x1.1585720f35cd9p+0, -0x1p-54 },
-    { 0x1.d888dd2101d93p+1, 0x1.faf8b7a12cf9fp+0, -0x1p-54 },
-    { 0x1.0151def34c2b8p+5, 0x1.0a7b6e3fed72p+2, 0x1p-52 },
     { 0x1.45ea160ddc71fp+7, 0x1.725811dcf6782p+2, 0x1p-52 },
-    { 0x1.13570067acc9fp+9, 0x1.c04672343dccfp+2, -0x1p-52 },
     { 0x1.2a686e4b567cep+10, 0x1.f1c928e7f1e65p+2, 0x1p-52 },
     { 0x1.cb62eec26bd78p+15, 0x1.759a2ad4c4d56p+3, 0x1p-51 },
+    { 0x1.3bf8009648dcp+16, 0x1.7fce95ea5c653p+3, -0x1p-53 },
   };
   int a = 0, b = array_length (db) - 1, m = (a + b) / 2;
   while (a <= b)
@@ -228,31 +243,40 @@ as_acosh_database (double x, double f)
   return f;
 }
 
+// a is an approximation of acosh(x)/log(2)
 static double
 as_acosh_refine (double x, double a)
 {
+  // for 0 <= i <= 16, t1[i] is a 26-bit approximation of 2^(-i/2^4)
   static const double t1[]
       = { 0x1p+0,	  0x1.ea4afap-1, 0x1.d5818ep-1,	 0x1.c199bep-1,
 	  0x1.ae89f98p-1, 0x1.9c4918p-1, 0x1.8ace54p-1,	 0x1.7a1147p-1,
 	  0x1.6a09e68p-1, 0x1.5ab07ep-1, 0x1.4bfdad8p-1, 0x1.3dea65p-1,
 	  0x1.306fe08p-1, 0x1.2387a7p-1, 0x1.172b84p-1,	 0x1.0b5587p-1,
 	  0x1p-1 };
+  // for 0 <= i < 16, t2[i] is a 26-bit approximation of 2^(-i/2^8)
   static const double t2[]
       = { 0x1p+0,	  0x1.fe9d968p-1, 0x1.fd3c228p-1, 0x1.fbdba38p-1,
 	  0x1.fa7c18p-1,  0x1.f91d8p-1,	  0x1.f7bfdbp-1,  0x1.f663278p-1,
 	  0x1.f507658p-1, 0x1.f3ac948p-1, 0x1.f252b38p-1, 0x1.f0f9c2p-1,
 	  0x1.efa1bfp-1,  0x1.ee4aaap-1,  0x1.ecf483p-1,  0x1.eb9f488p-1 };
+  // for 0 <= i < 16, t3[i] is a 26-bit approximation of 2^(-i/2^12)
   static const double t3[]
       = { 0x1p+0,	  0x1.ffe9d2p-1,  0x1.ffd3a58p-1, 0x1.ffbd798p-1,
 	  0x1.ffa74e8p-1, 0x1.ff91248p-1, 0x1.ff7afb8p-1, 0x1.ff64d38p-1,
 	  0x1.ff4eac8p-1, 0x1.ff38868p-1, 0x1.ff22618p-1, 0x1.ff0c3dp-1,
 	  0x1.fef61ap-1,  0x1.fedff78p-1, 0x1.fec9d68p-1, 0x1.feb3b6p-1 };
+  // for 0 <= i < 16, t4[i] is a 26-bit approximation of 2^(-i/2^16)
   static const double t4[]
       = { 0x1p+0,	  0x1.fffe9dp-1,  0x1.fffd3ap-1,  0x1.fffbd78p-1,
 	  0x1.fffa748p-1, 0x1.fff9118p-1, 0x1.fff7ae8p-1, 0x1.fff64cp-1,
 	  0x1.fff4e9p-1,  0x1.fff386p-1,  0x1.fff2238p-1, 0x1.fff0c08p-1,
 	  0x1.ffef5d8p-1, 0x1.ffedfa8p-1, 0x1.ffec98p-1,  0x1.ffeb35p-1 };
   static const double LL[4][17][3] = {
+    /* for 0 <= i <= 16, LL[0][i] is a triple-double approximation
+       (h,m,l) of -log(t1[i])/2, where h is a multiple of 2^-40 and |h|<0.347,
+       m is a multiple of 2^-91 and |m| < 2^-41, and |l| < 2^-92
+    */
     {
 	{ 0x0p+0, 0x0p+0, 0x0p+0 },
 	{ 0x1.62e432b24p-6, -0x1.745af34bb54b8p-42, -0x1.17e3ec05cde7p-97 },
@@ -272,6 +296,10 @@ as_acosh_refine (double x, double a)
 	{ 0x1.4cb5ec93f4p-2, 0x1.3d50980ea513p-42, 0x1.67f0ea083b1c4p-93 },
 	{ 0x1.62e42fefa4p-2, -0x1.8432a1b0e264p-44, 0x1.803f2f6af40f3p-93 },
     },
+    /* for 0 <= i < 16, LL[1][i] is a triple-double approximation
+       (h,m,l) of -log(t2[i])/2 (LL[1][16] is not used), where h is a
+       multiple of 2^-40 and |h| < 0.021, m is a multiple of 2^-91 and
+       |m| < 2^-41, and |l| < 2^-92 */
     {
 	{ 0x0p+0, 0x0p+0, 0x0p+0 },
 	{ 0x1.62e462b4p-10, 0x1.061d003b97318p-42, 0x1.d7faee66a2e1ep-93 },
@@ -289,8 +317,11 @@ as_acosh_refine (double x, double a)
 	{ 0x1.2059691e8p-6, -0x1.abcc3412f264p-43, -0x1.fe6e998e48673p-95 },
 	{ 0x1.3687a768p-6, -0x1.43901e5c97a9p-42, 0x1.b54cdd52a5d88p-96 },
 	{ 0x1.4cb5eb5d8p-6, -0x1.8f106f00f13b8p-42, -0x1.8f793f5fce148p-93 },
-	{ 0x1.62e432b24p-6, -0x1.745af34bb54b8p-42, -0x1.17e3ec05cde7p-97 },
     },
+    /* for 0 <= i < 16, LL[2][i] is a triple-double approximation
+       (h,m,l) of -log(t3[i])/2 (LL[2][16] is not used), where h is a
+       multiple of 2^-40 and |h| < 0.002, m is a multiple of 2^-91 and
+       |m| < 2^-41, and |l| < 2^-92 */
     {
 	{ 0x0p+0, 0x0p+0, 0x0p+0 },
 	{ 0x1.62e7bp-14, -0x1.868625640a68p-44, -0x1.34bf0db910f65p-93 },
@@ -308,8 +339,11 @@ as_acosh_refine (double x, double a)
 	{ 0x1.2059a338p-10, -0x1.96422d90df4p-44, -0x1.90800fbbf2ed3p-94 },
 	{ 0x1.36879824p-10, 0x1.0f9054001812p-44, 0x1.9567e01e48f9ap-93 },
 	{ 0x1.4cb602cp-10, -0x1.0d709a5ec0b5p-43, 0x1.253dfd44635d2p-94 },
-	{ 0x1.62e462b4p-10, 0x1.061d003b97318p-42, 0x1.d7faee66a2e1ep-93 },
     },
+    /* for 0 <= i < 16, LL[3][i] is a triple-double approximation
+       (h,m,l) of -log(t4[i])/2 (LL[3][16] is not used), where h is a
+       multiple of 2^-40 and |h| < 0.001, m is a multiple of 2^-91 and
+       |m| < 2^-41, and |l| < 2^-92 */
     {
 	{ 0x0p+0, 0x0p+0, 0x0p+0 },
 	{ 0x1.63007cp-18, -0x1.db0e38e5aaaap-43, 0x1.259a7b94815b9p-93 },
@@ -327,7 +361,6 @@ as_acosh_refine (double x, double a)
 	{ 0x1.205d134p-14, -0x1.214a2e893fccp-43, 0x1.548a9500c9822p-93 },
 	{ 0x1.3685e28p-14, 0x1.e23588646103p-43, 0x1.2a97b26da2d88p-94 },
 	{ 0x1.4cb6c18p-14, 0x1.2b7cfcea9e0d8p-42, -0x1.5095048a6b824p-93 },
-	{ 0x1.62e7bp-14, -0x1.868625640a68p-44, -0x1.34bf0db910f65p-93 },
     },
   };
   static const double ch[][2] = {
@@ -339,33 +372,43 @@ as_acosh_refine (double x, double a)
       = { -0x1p-3, 0x1.9999999a0754fp-4, -0x1.55555555c3157p-4 };
   uint64_t ix = asuint64 (x);
   double zh, zl;
-  if (ix < UINT64_C (0x4190000000000000))
+  int huge = 0; // exponent adjustment
+  if (ix < UINT64_C (0x4190000000000000)) // x < 2^26
     {
       double x2h = x * x, x2l = fma (x, x, -x2h);
       double wl, wh = x2h - 1;
       wh = fasttwosum (wh, x2l, &wl);
-      double sh = sqrt (wh), ish = 0.5 / wh,
-	     sl = (ish * sh) * (wl - fma (sh, sh, -wh));
+      double sh = sqrt (wh),
+	     sl = (wl - fma (sh, sh, -wh)) / (2.0 * sh);
       zh = fasttwosum (x, sh, &zl);
       zl += sl;
       zh = fasttwosum (zh, zl, &zl);
     }
-  else if (ix < UINT64_C (0x4330000000000000))
+  else if (ix < UINT64_C (0x4330000000000000)) // x < 2^52
     {
       zh = 2 * x;
       zl = -0.5 / x;
     }
-  else
+  else // x >= 2^52
     {
+      /* we don't set zh = 2*x since this will overflow for x > 2^1023,
+	 instead we add 1 to e below with zl == 0 */
       zh = x;
       zl = 0;
+      huge = 1; // to avoid overflow in zh=2*x
     }
+  /* zh+zl is a double-double approximation of x+sqrt(x^2-1),
+     or of (x+sqrt(x^2-1))/2 for x >= 2^52 */
   uint64_t t = asuint64 (zh);
-  int ex = t >> 52, e = ex - 0x3ff + (zl == 0.0);
+  int ex = t >> 52, e = ex - 0x3ff + huge; // 0 <= e <= 1024
   t &= ~UINT64_C (0) >> 12;
   t |= UINT64_C (0x3ff) << 52;
+  // now 1 <= t < 2 and x=sqrt(x^2-1) ~ t*2^e
   double ed = e;
   uint64_t v = asuint64 (a - ed + 0x1.00008p+0);
+  // since a ~ log2(x+sqrt(x^2-1)) and x+sqrt(x^2-1) ~ 2^e*t
+  // we have a ~ e+log2(t) thus a-e ~ log2(t)
+  // i = floor(2^16*(v-1))
   uint64_t i = (v - (UINT64_C (0x3ff) << 52)) >> (52 - 16);
   int i1 = (i >> 12) & 0x1f, i2 = (i >> 8) & 0xf, i3 = (i >> 4) & 0xf,
       i4 = i & 0xf;
@@ -373,8 +416,15 @@ as_acosh_refine (double x, double a)
 	       l22 = -0x1.9ff0342542fc3p-91;
   double el2 = l22 * ed, el1 = l21 * ed, el0 = l20 * ed;
   double L[3];
+  /* since all LL[.][.][0] are multiples of 2^-40, |LL[0][i1][0]| < 0.347,
+     |LL[1][i2][0]| < 0.021, |LL[2][i3][0]| < 0.002, |LL[3][i4][0]| < 0.001,
+     the sum L[0] is exact and less than 0.371 */
   L[0] = LL[0][i1][0] + LL[1][i2][0] + (LL[2][i3][0] + LL[3][i4][0]);
+  /* since all LL[.][.][1] are multiples of 2^-91 and less than 2^-41 in
+     absolute value, the sum L[1] is exact and less than 2^-39 */
   L[1] = LL[0][i1][1] + LL[1][i2][1] + (LL[2][i3][1] + LL[3][i4][1]);
+  /* since all  LL[.][.][2] are less than 2^-92, the sum L[2] is less
+     than 2^-90 */
   L[2] = LL[0][i1][2] + LL[1][i2][2] + (LL[2][i3][2] + LL[3][i4][2]);
   L[0] += el0;
   double t12 = t1[i1] * t2[i2], t34 = t3[i3] * t4[i4];
@@ -386,15 +436,15 @@ as_acosh_refine (double x, double a)
   if (zl != 0.0)
     {
       t = asuint64 (zl);
-      t -= (int64_t) e << 52;
+      t -= (int64_t) e << 52; // divide by 2^e like t was zh/2^e
       xl += th * asdouble (t);
     }
-  xh = adddd (xh, xl, sh, sl, &xl);
+  xh = adddd2 (xh, xl, sh, sl, &xl);
   sl = xh * (cl[0] + xh * (cl[1] + xh * cl[2]));
   sh = polydd3 (xh, xl, 3, ch, &sl);
   sh = muldd_acc2 (xh, xl, sh, sl, &sl);
-  sh = adddd (sh, sl, el1, el2, &sl);
-  sh = adddd (sh, sl, L[1], L[2], &sl);
+  sh = adddd2 (sh, sl, el1, el2, &sl);
+  sh = adddd2 (sh, sl, L[1], L[2], &sl);
   double v2, v0 = fasttwosum (L[0], sh, &v2), v1 = fasttwosum (v2, sl, &v2);
   v0 *= 2;
   v1 *= 2;

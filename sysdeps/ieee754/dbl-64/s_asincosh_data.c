@@ -25,6 +25,8 @@ SOFTWARE. */
 
 #include "s_asincosh_data.h"
 
+/* coefficient of a linear piece-wise approximation of log2(x) in [1,2]
+   range with an error ~< 5.8e-4 */
 const struct __asincosh_B_t __asincosh_B[] = {
   { 301, 27565 },    { 7189, 24786 },	{ 13383, 22167 },  { 18923, 19696 },
   { 23845, 17361 },  { 28184, 15150 },	{ 31969, 13054 },  { 35231, 11064 },
@@ -35,6 +37,7 @@ const struct __asincosh_B_t __asincosh_B[] = {
   { 30341, -11985 }, { 27345, -12916 }, { 24115, -13816 }, { 20661, -14685 },
   { 16989, -15526 }, { 13107, -16339 }, { 9022, -17126 },  { 4740, -17889 }
 };
+// 20-bit approximation of 2^(-i/32)
 const double __asincosh_r1[]
     = { 0x1p+0,	      0x1.f5076p-1, 0x1.ea4bp-1,  0x1.dfc98p-1, 0x1.d5818p-1,
 	0x1.cb72p-1,  0x1.c199cp-1, 0x1.b7f76p-1, 0x1.ae8ap-1,	0x1.a5504p-1,
@@ -43,6 +46,7 @@ const double __asincosh_r1[]
 	0x1.4bfdap-1, 0x1.44e08p-1, 0x1.3dea6p-1, 0x1.371a8p-1, 0x1.306fep-1,
 	0x1.29e9ep-1, 0x1.2387ap-1, 0x1.1d488p-1, 0x1.172b8p-1, 0x1.11302p-1,
 	0x1.0b558p-1, 0x1.059bp-1,  0x1p-1 };
+// 20-bit approximation of 2^(-i/1024)
 const double __asincosh_r2[]
     = { 0x1p+0,	      0x1.ffa74p-1, 0x1.ff4eap-1, 0x1.fef62p-1, 0x1.fe9dap-1,
 	0x1.fe452p-1, 0x1.fdeccp-1, 0x1.fd946p-1, 0x1.fd3c2p-1, 0x1.fce3ep-1,
@@ -51,6 +55,7 @@ const double __asincosh_r2[]
 	0x1.f91d8p-1, 0x1.f8c6p-1,  0x1.f86e8p-1, 0x1.f8172p-1, 0x1.f7bfep-1,
 	0x1.f768ap-1, 0x1.f7116p-1, 0x1.f6ba4p-1, 0x1.f6632p-1, 0x1.f60c2p-1,
 	0x1.f5b52p-1, 0x1.f55e4p-1, 0x1.f5076p-1 };
+// natural logarithm of 1/r1[i]
 const double __asincosh_l1[][2]
     = { { 0x0p+0, 0x0p+0 },
 	{ -0x1.269e2038315b3p-46, 0x1.62e4eacd4p-6 },
@@ -85,6 +90,7 @@ const double __asincosh_l1[][2]
 	{ 0x1.f7d0a25d154f2p-44, 0x1.4cb5f9fc02p-1 },
 	{ 0x1.15ede4d803b18p-44, 0x1.57cd28421a8p-1 },
 	{ 0x1.ef35793c7673p-45, 0x1.62e42fefa38p-1 } };
+// natural logarithm of 1/r2[i]
 const double __asincosh_l2[][2]
     = { { 0x0p+0, 0x0p+0 },
 	{ 0x1.5abdac3638e99p-44, 0x1.631ec81ep-11 },
@@ -119,6 +125,8 @@ const double __asincosh_l2[][2]
 	{ 0x1.e330dccce602bp-45, 0x1.4cb7034fap-6 },
 	{ 0x1.2f32b5d18eefbp-49, 0x1.57cd01187p-6 },
 	{ -0x1.269e2038315b3p-46, 0x1.62e4eacd4p-6 } };
+/* x+c[0]*x^2+c[1]*x^3+...+c[4]*x^6 is a degree-6 approximation of log(1+x),
+   with absolute error bounded by 2^-85.878 for |x| < 2^-11.296 */
 const double __asincosh_c[]
     = { -0x1p-1, 0x1.555555555553p-2, -0x1.fffffffffffap-3,
 	0x1.99999e33a6366p-3, -0x1.555559ef9525fp-3 };
