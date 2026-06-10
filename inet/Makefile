@@ -134,10 +134,6 @@ endif
 $(inst_sysconfdir)/rpc: etc.rpc $(+force)
 	$(do-install)
 
-ifeq ($(build-static-nss),yes)
-CFLAGS += -DSTATIC_NSS
-endif
-
 ifeq ($(have-test-clang),yes)
 CFLAGS-tst-deadline.c += -Wno-ignored-attributes
 endif
