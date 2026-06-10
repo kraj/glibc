@@ -508,21 +508,28 @@ endef
 #  * The edges requested by the Depend files (emitted by gen-sorted.awk
 #    as subdir-deps-*) are preserved.
 #
-#  * elf stays last, as in the sorted list.  Its rtld build recurses into
-#    the other subdirectories' object directories via elf/rtld-Rules.
+#  * elf stays last for the object-building classes, as in the sorted
+#    list: its rtld link consumes $(common-objpfx)libc_pic.a, which
+#    aggregates every other subdirectory's objects, and its rtld-Rules
+#    recursion compiles into the other subdirectories' object
+#    directories.  The others/tests/xtests classes have no such
+#    dependency (the pass barriers below provide everything they need),
+#    so elf is unordered there.
 #
 #  * Only target classes without cross-directory file conflicts use this
 #    sparse ordering; everything else (install, clean, abi, stubs) keeps
 #    the previous total order via a serial chain.
 
-+parallel_subdir_targets := \
-  subdir_lib \
-  objects \
++elf_last_subdir_targets := \
+  subdir_lib objects \
   objs \
+  subdir_objs \
+  # +elf_last_subdir_targets
++parallel_subdir_targets := \
+  $(+elf_last_subdir_targets) \
   others \
   tests \
   xtests \
-  subdir_objs \
   # +parallel_subdir_targets
 +serial_subdir_targets := $(filter-out $(+parallel_subdir_targets),\
 				       $(+subdir_targets))
@@ -552,14 +559,19 @@ $(foreach t,$(+ordered_parallel_subdir_targets),$(eval \
 $(foreach d,$(+subdir-pregen),$(foreach t,$(+ordered_parallel_subdir_targets),$(eval \
   $(d)/$(t): $(addsuffix /$(t),$(+subdir-pregen-prev))))\
   $(eval +subdir-pregen-prev := $(d)))
-# Edges pointing to elf are dropped; the sorted list always forces elf
-# last, overriding any Depend request, and the elf-last edges below would
-# otherwise create a cycle.
-$(foreach t,$(+ordered_parallel_subdir_targets),$(foreach d,$(+subdir-rest),$(eval \
+# For the classes where elf is forced last, edges pointing to elf are
+# dropped: the sorted list always overrides such Depend requests today
+# (e.g. support/Depend), and the elf-last edges below would otherwise
+# create a cycle.  The remaining classes honor them.
+$(foreach t,$(+elf_last_subdir_targets),$(foreach d,$(+subdir-rest),$(eval \
   $(d)/$(t): $(addsuffix /$(t),\
 	      $(filter-out elf,$(filter $(subdirs),$(subdir-deps-$(d))))))))
+$(foreach t,$(filter-out $(+elf_last_subdir_targets),\
+		         $(+ordered_parallel_subdir_targets)),\
+  $(foreach d,$(+subdir-rest),$(eval \
+  $(d)/$(t): $(addsuffix /$(t),$(filter $(subdirs),$(subdir-deps-$(d)))))))
 ifneq (,$(filter elf,$(subdirs)))
-$(foreach t,$(+ordered_parallel_subdir_targets),$(eval \
+$(foreach t,$(+elf_last_subdir_targets),$(eval \
   elf/$(t): $(addsuffix /$(t),$(filter-out elf,$(subdirs)))))
 endif
 
