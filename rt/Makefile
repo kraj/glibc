@@ -109,3 +109,11 @@ LDFLAGS-rt.so = -Wl,--enable-new-dtags,-z,nodelete
 $(objpfx)librt.so: $(shared-thread-library)
 
 tst-mqueue7-ARGS = -- $(host-test-program-cmd)
+
+# The timer and message-queue tests here are timing-sensitive and better
+# do not run in parallel.
+ifeq ($(run-built-tests),yes)
+ifneq ($(filter %tests,$(MAKECMDGOALS)),)
+.NOTPARALLEL:
+endif
+endif

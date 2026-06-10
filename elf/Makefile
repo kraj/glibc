@@ -1450,6 +1450,7 @@ ifndef avoid-generated
 # Makefile fragment to be included.
 define include_dsosort_tests
 $(objpfx)$(1).generated-makefile: $(1)
+	$$(make-target-directory)
 	$(PYTHON) $(..)scripts/dso-ordering-test.py \
 	--description-file $$< --objpfx $(objpfx) --output-makefile $$@T
 	mv $$@T $$@
@@ -1458,6 +1459,7 @@ endef
 # Likewise, where the .def file itself is generated.
 define include_dsosort_tests_objpfx
 $(objpfx)$(1).generated-makefile: $(objpfx)$(1)
+	$$(make-target-directory)
 	$(PYTHON) $(..)scripts/dso-ordering-test.py \
 	--description-file $$< --objpfx $(objpfx) --output-makefile $$@T
 	mv $$@T $$@
@@ -1476,12 +1478,15 @@ $(eval $(call include_dsosort_tests,dso-sort-tests-1.def))
 $(eval $(call include_dsosort_tests,dso-sort-tests-2.def))
 
 $(objpfx)dso-sort-tests-all2.def: dso-sort-tests-all.py
+	$(make-target-directory)
 	$(PYTHON) $< 2 > $@
 
 $(objpfx)dso-sort-tests-all3.def: dso-sort-tests-all.py
+	$(make-target-directory)
 	$(PYTHON) $< 3 > $@
 
 $(objpfx)dso-sort-tests-all4.def: dso-sort-tests-all.py
+	$(make-target-directory)
 	$(PYTHON) $< 4 > $@
 
 $(eval $(call include_dsosort_tests_objpfx,dso-sort-tests-all2.def))

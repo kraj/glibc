@@ -1184,12 +1184,35 @@ ALL_BUILD_CFLAGS = $(BUILD_CFLAGS) $(BUILD_CPPFLAGS) -D_GNU_SOURCE \
 		   -DIS_IN_build -include $(common-objpfx)config.h
 
 # Support the GNU standard name for this target.
-.PHONY: check
+# Special target xcheck runs tests which cannot be run unconditionally;
+# maintainers should use this target.
+.PHONY: check xcheck
+
+# Building and running a subdirectory's tests are fused in its sub-make,
+# and run-built-tests is fixed for a make instance, so the only way to
+# build every test program with the recursion fully parallel while the
+# run still honors the per-subdirectory .NOTPARALLEL (nptl/htl/rt) and the
+# run-time ordering is to use two passes.  At the top level, 'make check'
+# therefore builds the test programs (run-built-tests=no, recursion fully
+# parallel) and then runs them (run-built-tests=yes).  'make tests' and a
+# subdirectory's own 'check' stay single-pass.
+check-twopass :=
+ifndef subdir
+ifeq (yes,$(run-built-tests))
+check-twopass := yes
+endif
+endif
+ifeq (yes,$(check-twopass))
+check:
+	$(MAKE) run-built-tests=no  tests
+	$(MAKE) run-built-tests=yes tests
+xcheck:
+	$(MAKE) run-built-tests=no  xtests
+	$(MAKE) run-built-tests=yes xtests
+else
 check: tests
-# Special target to run tests which cannot be run unconditionally.
-# Maintainers should use this target.
-.PHONY: xcheck
 xcheck: xtests
+endif
 
 # Also handle test inputs in sysdeps.
 vpath %.input $(sysdirs)

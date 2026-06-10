@@ -54,9 +54,6 @@ configure: configure.ac aclocal.m4; $(autoconf-it)
 endif # $(AUTOCONF) = no
 
 
-# We don't want to run anything here in parallel.
-.NOTPARALLEL:
-
 # These are the targets that are made by making them in each subdirectory.
 +subdir_targets	:= subdir_lib objects objs others subdir_mostlyclean	\
 		   subdir_clean subdir_distclean subdir_realclean	\
@@ -129,6 +126,13 @@ lib-noranlib: subdir_lib
 ifeq (yes,$(build-shared))
 # Build the shared object from the PIC object library.
 lib: $(common-objpfx)libc.so $(common-objpfx)linkobj/libc.so
+ifdef libc.so-version
+# Every program linked in the others pass lists the versioned name
+# (through link-libc-between-gnulib) as a prerequisite, and the rule
+# creating the symbolic link is visible in every sub-make.  Build it
+# here once so the concurrent sub-makes do not race to create it.
+lib: $(common-objpfx)libc.so$(libc.so-version)
+endif
 endif # $(build-shared)
 
 # Used to build testrun.sh.
@@ -490,6 +494,134 @@ subdir=$(@D)$(if $($(@D)-srcdir),\
 endef
 
 .PHONY: $(+subdir_targets) $(all-subdirs-targets)
+
+# Encode the topological ordering computed by scripts/gen-sorted.awk as
+# explicit dependencies between the per-subdirectory targets, so that
+# independent subdirectories build concurrently.  In summary:
+#
+#  * Every subdirectory depends on the first sorted one (csu, or mach on
+#    Hurd): its sub-make also materializes the shared generated files in
+#    $(common-objpfx) (abi-versions.h, sysd-syscalls, before-compile
+#    headers, ...) that concurrent sub-makes would otherwise race to
+#    create.
+#
+#  * The edges requested by the Depend files (emitted by gen-sorted.awk
+#    as subdir-deps-*) are preserved.
+#
+#  * elf stays last, as in the sorted list.  Its rtld build recurses into
+#    the other subdirectories' object directories via elf/rtld-Rules.
+#
+#  * Only target classes without cross-directory file conflicts use this
+#    sparse ordering; everything else (install, clean, abi, stubs) keeps
+#    the previous total order via a serial chain.
+
++parallel_subdir_targets := \
+  subdir_lib \
+  objects \
+  objs \
+  others \
+  tests \
+  xtests \
+  subdir_objs \
+  # +parallel_subdir_targets
++serial_subdir_targets := $(filter-out $(+parallel_subdir_targets),\
+				       $(+subdir_targets))
+
+# The tests and xtests classes run, rather than build, the per-directory
+# test programs; once the 'others' pass barrier below has built the tree
+# they are mutually independent and carry no cross-directory ordering.
+# Keeping them out of the generated-file and Depend edges below is what
+# lets 'make subdir/tests' run only that subdirectory's tests.
++barrier_only_subdir_targets := tests xtests
++ordered_parallel_subdir_targets := \
+  $(filter-out $(+barrier_only_subdir_targets),$(+parallel_subdir_targets))
+
+# The subdirectories that generate shared files in $(common-objpfx)
+# consumed by the rest of the build without explicit dependencies: csu
+# provides the gen-as-const headers, and on Hurd the mach and hurd
+# directories generate the MiG RPC headers (every other subdirectory
+# otherwise runs a nested make in hurd/ to create them, racing under
+# parallel recursion; see sysdeps/mach/hurd/Makefile).  Run them serially,
+# in their sorted order (mach, hurd, csu).
++subdir-pregen := $(filter mach hurd csu,$(subdirs))
++subdir-rest := $(filter-out $(+subdir-pregen),$(subdirs))
+
+$(foreach t,$(+ordered_parallel_subdir_targets),$(eval \
+  $(addsuffix /$(t),$(+subdir-rest)): $(addsuffix /$(t),$(+subdir-pregen))))
++subdir-pregen-prev :=
+$(foreach d,$(+subdir-pregen),$(foreach t,$(+ordered_parallel_subdir_targets),$(eval \
+  $(d)/$(t): $(addsuffix /$(t),$(+subdir-pregen-prev))))\
+  $(eval +subdir-pregen-prev := $(d)))
+# Edges pointing to elf are dropped; the sorted list always forces elf
+# last, overriding any Depend request, and the elf-last edges below would
+# otherwise create a cycle.
+$(foreach t,$(+ordered_parallel_subdir_targets),$(foreach d,$(+subdir-rest),$(eval \
+  $(d)/$(t): $(addsuffix /$(t),\
+	      $(filter-out elf,$(filter $(subdirs),$(subdir-deps-$(d))))))))
+ifneq (,$(filter elf,$(subdirs)))
+$(foreach t,$(+ordered_parallel_subdir_targets),$(eval \
+  elf/$(t): $(addsuffix /$(t),$(filter-out elf,$(subdirs)))))
+endif
+
+# Pass barriers: a subdirectory 'others' build links programs against
+# the libraries, so the 'lib' pass (including the top-level libc.so
+# link) must have completed.
+# 'tests' and 'xtests' additionally require the 'others' pass.  The
+# testroot used by the container tests performs a full installation in
+# its recipe, which must not run concurrently with the build passes.
+$(addsuffix /others,$(subdirs)): lib
+$(addsuffix /tests,$(subdirs)) $(addsuffix /xtests,$(subdirs)): others
+$(objpfx)testroot.pristine/install.stamp: | others
+
+# Timing-sensitive test runs: the threading tests (nptl/htl) and the realtime
+# tests (rt) are perturbed by the machine load, so run them after the rest of
+# the test run has finished and one group at a time.  Those subdirectories
+# also serialize their own tests (.NOTPARALLEL in their Makefiles).
+#
+# This only orders a full-suite run ('make check'/'tests'); a targeted
+# 'make subdir/tests' is left alone.  And it only orders the test run
+# (run-built-tests=yes); the "build the tests" pass (run-built-tests=no)
+# is left fully parallel, so every test program still builds concurrently.
+ifeq ($(run-built-tests),yes)
+ifneq (,$(filter tests xtests check xcheck,$(MAKECMDGOALS)))
++late-test-subdirs := $(filter nptl htl,$(subdirs)) $(filter rt,$(subdirs))
++test-run-prev := \
+  $(addsuffix /tests,$(filter-out $(+late-test-subdirs),$(subdirs)))
+$(foreach d,$(+late-test-subdirs),\
+  $(eval $(d)/tests: $(+test-run-prev))\
+  $(eval +test-run-prev += $(d)/tests))
+endif
+endif
+
+ifeq (yes,$(build-shared))
+# The top-level libc.so and linkobj/libc_pic.a rules list these
+# subdirectory-built files as prerequisites, but no rule at this level
+# builds them.  The explicit empty recipe (';') is required, a
+# prerequisite-only rule would send make on an implicitrule search and
+# have this level compile them itself with the wrong context.
+$(elf-objpfx)ld.so $(elf-objpfx)sofini.os $(elf-objpfx)interp.os: \
+  | elf/subdir_lib ;
+ifneq (,$(filter sunrpc,$(subdirs)))
+# Makerules explicit adds librpc_compat_pic.a as a dependency of
+# libc_pic.a.
+$(common-objpfx)sunrpc/librpc_compat_pic.a: | sunrpc/subdir_lib ;
+endif
+# Hurd sysdedp Makeilfe links libc.so against the lib*user-link.so
+# objects, built by the %-link.so: %_pic.a pattern rule from archives
+# that only the mach and hurd sub-makes create.
+ifneq (,$(filter mach,$(subdirs)))
+$(common-objpfx)mach/libmachuser_pic.a: | mach/subdir_lib ;
+endif
+ifneq (,$(filter hurd,$(subdirs)))
+$(common-objpfx)hurd/libhurduser_pic.a: | hurd/subdir_lib ;
+endif
+endif
+
+# The remaining target classes keep the old total order.
++subdir-chain-prev :=
+$(foreach d,$(subdirs),$(foreach t,$(+serial_subdir_targets),$(eval \
+  $(d)/$(t): $(addsuffix /$(t),$(+subdir-chain-prev))))\
+  $(eval +subdir-chain-prev := $(d)))
 
 # Targets to clean things up to various degrees.
 

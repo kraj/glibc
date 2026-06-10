@@ -60,6 +60,14 @@ vpath %.c ../locale/programs
 
 include ../Rules
 
+# The catalog-generation tests below run gencat under specific locales,
+# and tst-catgets reads the resulting catalog, so the build must wait for
+# those locales to be generated.  Without this dependency a parallel build
+# races catgets against localedata and gencat can run before the locale
+# exists (it then falls back to C and the test fails).
+LOCALES := de_DE.ISO-8859-1 hr_HR.ISO-8859-2 ja_JP.SJIS
+include ../gen-locales.mk
+
 $(objpfx)gencat: $(gencat-modules:%=$(objpfx)%.o)
 
 catgets-CPPFLAGS := -DNLSPATH='"$(localedir)/%L/%N:$(localedir)/%L/LC_MESSAGES/%N:$(localedir)/%l/%N:$(localedir)/%l/LC_MESSAGES/%N:"'
@@ -95,7 +103,7 @@ tst-catgets-ENV = NLSPATH="$(objpfx)%l/%N.cat" LANG=de \
 ifeq ($(run-built-tests),yes)
 # This test just checks whether the program produces any error or not.
 # The result is not tested.
-$(objpfx)test1.cat: test1.msg $(objpfx)gencat
+$(objpfx)test1.cat: test1.msg $(objpfx)gencat $(gen-locales)
 	$(built-program-cmd-before-env) \
 	$(run-program-env) LC_ALL=hr_HR.ISO-8859-2 \
 	$(built-program-cmd-after-env) -H $(objpfx)test1.h $@ $<; \
@@ -103,7 +111,7 @@ $(objpfx)test1.cat: test1.msg $(objpfx)gencat
 $(objpfx)test2.cat: test2.msg $(objpfx)gencat
 	$(built-program-cmd) -H $(objpfx)test2.h $@ $<; \
 	$(evaluate-test)
-$(objpfx)de/libc.cat: $(objpfx)de.msg $(objpfx)gencat
+$(objpfx)de/libc.cat: $(objpfx)de.msg $(objpfx)gencat $(gen-locales)
 	$(make-target-directory)
 	$(built-program-cmd-before-env) \
 	$(run-program-env) LC_ALL=de_DE.ISO-8859-1 \
@@ -116,7 +124,7 @@ $(objpfx)de.msg: xopen-msg.awk $(..)po/de.po
 	LC_ALL=C $(AWK) -f $^ $< > $@
 
 $(objpfx)test-gencat.out: test-gencat.sh $(objpfx)test-gencat \
-			  $(objpfx)sample.SJIS.cat
+			  $(objpfx)sample.SJIS.cat $(gen-locales)
 	$(SHELL) $< $(common-objpfx) '$(test-program-cmd-before-env)' \
 		 '$(run-program-env)' '$(test-program-cmd-after-env)'; \
 	$(evaluate-test)
