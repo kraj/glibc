@@ -108,5 +108,11 @@ END {
   }
   printf "%s\n", saw_elf ? " elf" : "";
 
+  # Also emit the raw dependency edges so the parent makefile can
+  # parallelize the subdirectory recursion while preserving the
+  # relative ordering the Depend files request.
+  for (i = 0; i < dnt; ++i)
+    printf "subdir-deps-%s += %s\n", from[i], to[i];
+
   print "sysd-sorted-done := t"
 }
