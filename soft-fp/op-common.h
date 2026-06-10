@@ -1510,7 +1510,7 @@
 	    }								\
 									\
 	  if (_FP_EXPBIAS_##fs + (rsize) - 1 < _FP_EXPMAX_##fs		\
-	      && (rsigned)						\
+	      && (rsigned) != 0						\
 	      && X##_s							\
 	      && X##_e == _FP_EXPBIAS_##fs + (rsize) - 1)		\
 	    {								\
@@ -1555,7 +1555,7 @@
 				  _FP_FRACBITS_##fs);			\
 	      _FP_FRAC_ASSEMBLE_##wc ((r), X, (rsize));			\
 	    }								\
-	  if ((rsigned) && X##_s)					\
+	  if ((rsigned) != 0 && X##_s)					\
 	    (r) = -(r);							\
 	  if ((rsigned) == 2 && X##_e >= _FP_EXPBIAS_##fs + (rsize) - 1) \
 	    {								\
