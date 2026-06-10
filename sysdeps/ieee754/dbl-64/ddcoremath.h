@@ -3,7 +3,7 @@
 Copyright (c) 2023-2025 Alexei Sibidanov.
 
 The original version of this file was copied from the CORE-MATH
-project (file src/binary64/acosh/acosh.c, revision 1bd85b89).
+project (file src/binary64/acosh/acosh.c, revision 887cab6f).
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +31,10 @@ SOFTWARE. */
        double-word arithmetic, by Mioara Joldeş, Jean-Michel Muller,
        and Valentina Popescu, ACM Transactions on Mathematical Software,
        44(2), 2017.
+   [2] Formalization of double-word arithmetic, and comments on ”Tight and
+       rigorous error bounds for basic building blocks of double-word
+       arithmetic”, Jean-Michel Muller, Laurence Rideau,
+       https://hal.science/hal-02972245v2, 2021.
 */
 
 static inline double
@@ -86,6 +90,15 @@ adddd (double xh, double xl, double ch, double cl, double *l)
   return s;
 }
 
+/* This function returns twosum (xh, ch) + (xl + cl).  */
+static inline double
+adddd2 (double xh, double xl, double ch, double cl, double *l)
+{
+  double s = twosum (xh, ch, l);
+  *l += xl + cl;
+  return s;
+}
+
 /* This function implements Algorithm 10 (DWTimesDW1) from [1]
    Its relative error (for round-to-nearest ties-to-even) is bounded by 5u^2
    (Theorem 2.6 of [2]), where u = 2^-53 for double precision,
@@ -102,7 +115,12 @@ muldd_acc (double xh, double xl, double ch, double cl, double *l)
   return ch;
 }
 
-/* Note: in revision 085972b, we replaced the last two lines
+/* This function implements Algorithm 10 (DWTimesDW1) from [1]
+   Its relative error (for round-to-nearest ties-to-even) is bounded by 7u^2
+   (Theorem 5.1 of [1]), where u = 2^-53 for double precision,
+   assuming xh = RN(xh + xl), which implies |xl| <= 1/2 ulp(xh),
+   and similarly for ch, cl.
+   Note: in revision 085972b, we replaced the last two lines
    ch = ahhh + ahhl and *l = (ahhh - ch) + ahhl by fasttwosum (ahhh, ahhl, l).
    Indeed, these last two lines did emulate a FastTwoSum.
    However, they did emulate another variant of fasttwosum, with
@@ -213,13 +231,13 @@ polydd3 (double xh, double xl, int n, const double c[][2], double *l)
   double ch, cl;
   ch = fasttwosum (c[i][0], *l, &cl);
   cl += c[i][1];
-  while(--i>=0){
-    ch = muldd_acc2 (xh, xl, ch, cl, &cl);
-    double th, tl;
-    th = fasttwosum (c[i][0], ch, &tl);
-    ch = th;
-    cl += tl + c[i][1];
-  }
+  while (--i >= 0)
+    {
+      ch = muldd_acc2 (xh, xl, ch, cl, &cl);
+      double tl, th = fasttwosum (c[i][0], ch, &tl);
+      ch = th;
+      cl += tl + c[i][1];
+    }
   *l = cl;
   return ch;
 }
