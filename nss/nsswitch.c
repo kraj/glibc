@@ -33,10 +33,6 @@
 #include <shadow.h>
 #include <unistd.h>
 
-#if !defined DO_STATIC_NSS || defined SHARED
-# include <gnu/lib-names.h>
-#endif
-
 #include "nsswitch.h"
 #include "../nscd/nscd_proto.h"
 #include <sysdep.h>
