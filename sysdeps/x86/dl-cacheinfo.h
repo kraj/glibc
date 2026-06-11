@@ -98,6 +98,15 @@ static const struct intel_02_cache_info
 
 #define nintel_02_known (sizeof (intel_02_known) / sizeof (intel_02_known [0]))
 
+/* Cache for redundant cpuid queries in handle_intel, intel_check_word and
+   get_common_cache_info.  Currently, this has only been shown to significantly
+   improve performance on a specific Intel CPU (Xeon 6430).  */
+struct intel_cpuid_cache
+{
+  unsigned char leaf2_valid, leaf4_valid; /* Number of cached (sub)leaves.  */
+  unsigned int leaf2[4], leaf4[0x10][4];
+};
+
 static int
 intel_02_known_compare (const void *p1, const void *p2)
 {
@@ -118,7 +127,8 @@ static long int
 __attribute__ ((noinline))
 intel_check_word (int name, unsigned int value, bool *has_level_2,
 		  bool *no_level_2_or_3,
-		  const struct cpu_features *cpu_features)
+		  const struct cpu_features *cpu_features,
+		  struct intel_cpuid_cache *cache)
 {
   if ((value & 0x80000000) != 0)
     /* The register value is reserved.  */
@@ -152,7 +162,21 @@ intel_check_word (int name, unsigned int value, bool *has_level_2,
 	  unsigned int round = 0;
 	  while (1)
 	    {
-	      __cpuid_count (4, round, eax, ebx, ecx, edx);
+	      if (round < cache->leaf4_valid)
+		/* Subleaf was queried before.  Do not execute cpuid again.  */
+		eax = cache->leaf4[round][0], ebx = cache->leaf4[round][1],
+		ecx = cache->leaf4[round][2], edx = cache->leaf4[round][3];
+	      else if (round == cache->leaf4_valid
+		       && round < sizeof(cache->leaf4)/sizeof(*cache->leaf4))
+		{
+		  /* Cache the cpuid result if we have space.  */
+		  __cpuid_count (4, round, eax, ebx, ecx, edx);
+		  cache->leaf4[round][0] = eax, cache->leaf4[round][1] = ebx;
+		  cache->leaf4[round][2] = ecx, cache->leaf4[round][3] = edx;
+		  cache->leaf4_valid++;
+		}
+	      else
+		__cpuid_count (4, round, eax, ebx, ecx, edx);
 
 	      enum { null = 0, data = 1, inst = 2, uni = 3 } type = eax & 0x1f;
 	      if (type == null)
@@ -247,7 +271,8 @@ intel_check_word (int name, unsigned int value, bool *has_level_2,
 
 
 static long int __attribute__ ((noinline))
-handle_intel (int name, const struct cpu_features *cpu_features)
+handle_intel (int name, const struct cpu_features *cpu_features,
+	      struct intel_cpuid_cache *cache)
 {
   unsigned int maxidx = cpu_features->basic.max_cpuid;
 
@@ -260,41 +285,33 @@ handle_intel (int name, const struct cpu_features *cpu_features)
   long int result = 0;
   bool no_level_2_or_3 = false;
   bool has_level_2 = false;
-  unsigned int eax;
-  unsigned int ebx;
-  unsigned int ecx;
-  unsigned int edx;
-  __cpuid (2, eax, ebx, ecx, edx);
+  int i;
+
+  if (!cache->leaf2_valid)
+    {
+      __cpuid (2, cache->leaf2[0], cache->leaf2[1],
+		  cache->leaf2[2], cache->leaf2[3]);
+      cache->leaf2_valid = 1;
+    }
 
   /* The low byte of EAX of CPUID leaf 2 should always return 1 and it
      should be ignored.  If it isn't 1, use CPUID leaf 4 instead.  */
-  if ((eax & 0xff) != 1)
+  if ((cache->leaf2[0] & 0xff) != 1)
     return intel_check_word (name, 0xff, &has_level_2, &no_level_2_or_3,
-			     cpu_features);
-  else
+			     cpu_features, cache);
+
+  /* Process all descriptors in leaf 2.  */
+  result = intel_check_word (name, cache->leaf2[0]&0xffffff00, &has_level_2,
+			    &no_level_2_or_3, cpu_features, cache);
+  if (result != 0)
+    return result;
+
+  for (i = 1; i < 4; i++)
     {
-      eax &= 0xffffff00;
-
-      /* Process the individual registers' value.  */
-      result = intel_check_word (name, eax, &has_level_2,
-				 &no_level_2_or_3, cpu_features);
+      result = intel_check_word (name, cache->leaf2[i], &has_level_2,
+				&no_level_2_or_3, cpu_features, cache);
       if (result != 0)
-	return result;
-
-      result = intel_check_word (name, ebx, &has_level_2,
-				 &no_level_2_or_3, cpu_features);
-      if (result != 0)
-	return result;
-
-      result = intel_check_word (name, ecx, &has_level_2,
-				 &no_level_2_or_3, cpu_features);
-      if (result != 0)
-	return result;
-
-      result = intel_check_word (name, edx, &has_level_2,
-				 &no_level_2_or_3, cpu_features);
-      if (result != 0)
-	return result;
+        return result;
     }
 
   if (name >= _SC_LEVEL2_CACHE_SIZE && name <= _SC_LEVEL3_CACHE_LINESIZE
@@ -569,7 +586,7 @@ handle_zhaoxin (int name)
 
 static void
 get_common_cache_info (long int *shared_ptr, long int * shared_per_thread_ptr, unsigned int *threads_ptr,
-                long int core)
+                long int core, struct intel_cpuid_cache *cache)
 {
   unsigned int eax;
   unsigned int ebx;
@@ -627,7 +644,14 @@ get_common_cache_info (long int *shared_ptr, long int * shared_per_thread_ptr, u
           int check = 0x1 | (threads_l3 == 0) << 1;
           do
             {
-              __cpuid_count (4, i++, eax, ebx, ecx, edx);
+              if (cache != NULL && i < cache->leaf4_valid)
+                eax = cache->leaf4[i][0], ebx = cache->leaf4[i][1],
+                ecx = cache->leaf4[i][2], edx = cache->leaf4[i][3];
+              else
+                /* Do not attempt to cache queries at this point,
+		   because get_common_cache_info is called last.  */
+                __cpuid_count (4, i, eax, ebx, ecx, edx);
+              i++;
 
               /* There seems to be a bug in at least some Pentium Ds
                  which sometimes fail to iterate all cache parameters.
@@ -807,35 +831,38 @@ dl_init_cacheinfo (struct cpu_features *cpu_features)
 
   if (cpu_features->basic.kind == arch_kind_intel)
     {
-      data = handle_intel (_SC_LEVEL1_DCACHE_SIZE, cpu_features);
-      shared = handle_intel (_SC_LEVEL3_CACHE_SIZE, cpu_features);
+      struct intel_cpuid_cache cache;
+      cache.leaf2_valid = cache.leaf4_valid = 0;
+
+      data = handle_intel (_SC_LEVEL1_DCACHE_SIZE, cpu_features, &cache);
+      shared = handle_intel (_SC_LEVEL3_CACHE_SIZE, cpu_features, &cache);
       shared_per_thread = shared;
 
       level1_icache_size
-	= handle_intel (_SC_LEVEL1_ICACHE_SIZE, cpu_features);
+	= handle_intel (_SC_LEVEL1_ICACHE_SIZE, cpu_features, &cache);
       level1_icache_linesize
-	= handle_intel (_SC_LEVEL1_ICACHE_LINESIZE, cpu_features);
+	= handle_intel (_SC_LEVEL1_ICACHE_LINESIZE, cpu_features, &cache);
       level1_dcache_size = data;
       level1_dcache_assoc
-	= handle_intel (_SC_LEVEL1_DCACHE_ASSOC, cpu_features);
+	= handle_intel (_SC_LEVEL1_DCACHE_ASSOC, cpu_features, &cache);
       level1_dcache_linesize
-	= handle_intel (_SC_LEVEL1_DCACHE_LINESIZE, cpu_features);
+	= handle_intel (_SC_LEVEL1_DCACHE_LINESIZE, cpu_features, &cache);
       level2_cache_size
-	= handle_intel (_SC_LEVEL2_CACHE_SIZE, cpu_features);
+	= handle_intel (_SC_LEVEL2_CACHE_SIZE, cpu_features, &cache);
       level2_cache_assoc
-	= handle_intel (_SC_LEVEL2_CACHE_ASSOC, cpu_features);
+	= handle_intel (_SC_LEVEL2_CACHE_ASSOC, cpu_features, &cache);
       level2_cache_linesize
-	= handle_intel (_SC_LEVEL2_CACHE_LINESIZE, cpu_features);
+	= handle_intel (_SC_LEVEL2_CACHE_LINESIZE, cpu_features, &cache);
       level3_cache_size = shared;
       level3_cache_assoc
-	= handle_intel (_SC_LEVEL3_CACHE_ASSOC, cpu_features);
+	= handle_intel (_SC_LEVEL3_CACHE_ASSOC, cpu_features, &cache);
       level3_cache_linesize
-	= handle_intel (_SC_LEVEL3_CACHE_LINESIZE, cpu_features);
+	= handle_intel (_SC_LEVEL3_CACHE_LINESIZE, cpu_features, &cache);
       level4_cache_size
-	= handle_intel (_SC_LEVEL4_CACHE_SIZE, cpu_features);
+	= handle_intel (_SC_LEVEL4_CACHE_SIZE, cpu_features, &cache);
 
       get_common_cache_info (&shared, &shared_per_thread, &threads,
-			     level2_cache_size);
+			     level2_cache_size, &cache);
     }
   else if (cpu_features->basic.kind == arch_kind_zhaoxin)
     {
@@ -856,7 +883,7 @@ dl_init_cacheinfo (struct cpu_features *cpu_features)
       level3_cache_linesize = handle_zhaoxin (_SC_LEVEL3_CACHE_LINESIZE);
 
       get_common_cache_info (&shared, &shared_per_thread, &threads,
-			     level2_cache_size);
+			     level2_cache_size, NULL);
     }
   else if (cpu_features->basic.kind == arch_kind_amd)
     {
