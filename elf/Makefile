@@ -279,6 +279,7 @@ tests-static-normal := \
   # tests-static-normal
 
 tests-static-internal := \
+  tst-atrandom-scrub-static \
   tst-dl-printf-static \
   tst-dl_find_object-static \
   tst-env-setuid-tunables \
@@ -548,6 +549,7 @@ tests-internal += \
   neededtest2 \
   neededtest3 \
   neededtest4 \
+  tst-atrandom-scrub \
   tst-audit19a \
   tst-create_format1 \
   tst-dl-hwcaps_split \
@@ -2419,6 +2421,9 @@ tst-ptrguard1-ARGS = --command "$(host-test-program-cmd) --child"
 # __pointer_chk_guard_local.
 CFLAGS-tst-ptrguard1-static.c += -DPTRGUARD_LOCAL
 tst-ptrguard1-static-ARGS = --command "$(objpfx)tst-ptrguard1-static --child"
+
+# Likewise, the static pointer guard lives in __pointer_chk_guard_local.
+CFLAGS-tst-atrandom-scrub-static.c += -DPTRGUARD_LOCAL
 
 $(objpfx)tst-leaks1-mem.out: $(objpfx)tst-leaks1.out
 	$(common-objpfx)malloc/mtrace $(objpfx)tst-leaks1.mtrace > $@; \
