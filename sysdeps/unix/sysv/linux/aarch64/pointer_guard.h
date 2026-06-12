@@ -19,30 +19,16 @@
 #ifndef POINTER_GUARD_H
 #define POINTER_GUARD_H
 
-/* Pointer mangling is supported for AArch64.  */
-#if (IS_IN (rtld) \
-     || (!defined SHARED && (IS_IN (libc) \
-                             || IS_IN (libpthread))))
-# ifdef __ASSEMBLER__
-#  define PTR_MANGLE(dst, src, tmp)					    \
-	adrp    tmp, C_SYMBOL_NAME(__pointer_chk_guard_local);		    \
-	ldr	tmp, [tmp, :lo12:C_SYMBOL_NAME(__pointer_chk_guard_local)]; \
-	eor	dst, src, tmp
-#  define PTR_DEMANGLE(dst, src, tmp) PTR_MANGLE (dst, src, tmp)
-# else
+#include <pointer_guard-asm.h>
+
+#ifndef __ASSEMBLER__
+# if (IS_IN (rtld) \
+      || (!defined SHARED && (IS_IN (libc) \
+                              || IS_IN (libpthread))))
 extern uintptr_t __pointer_chk_guard_local attribute_relro attribute_hidden;
 #  define PTR_MANGLE(var) \
   (var) = (__typeof (var)) ((uintptr_t) (var) ^ __pointer_chk_guard_local)
 #  define PTR_DEMANGLE(var)     PTR_MANGLE (var)
-# endif
-#else
-# ifdef __ASSEMBLER__
-#  define PTR_MANGLE(dst, src, tmp)					  \
-	adrp	tmp, :got:C_SYMBOL_NAME(__pointer_chk_guard);		  \
-	ldr	tmp, [tmp, :got_lo12:C_SYMBOL_NAME(__pointer_chk_guard)]; \
-	ldr	tmp, [tmp];						  \
-	eor	dst, src, tmp;
-#  define PTR_DEMANGLE(dst, src, tmp) PTR_MANGLE (dst, src, tmp)
 # else
 #  include <stdint.h>
 extern uintptr_t __pointer_chk_guard attribute_relro;

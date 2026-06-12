@@ -1,4 +1,4 @@
-/* Pointer obfuscation implenentation.  C-SKY version.
+/* Pointer obfuscation implementation, assembly version.  Generic (no-op).
    Copyright (C) 2022-2026 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -16,25 +16,4 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#ifndef POINTER_GUARD_H
-#define POINTER_GUARD_H
-
-#include <pointer_guard-asm.h>
-
-#ifndef __ASSEMBLER__
-# if (IS_IN (rtld) \
-      || (!defined SHARED && (IS_IN (libc) || IS_IN (libpthread))))
-extern uintptr_t __pointer_chk_guard_local;
-#  define PTR_MANGLE(var) \
-  (var) = (__typeof (var)) ((uintptr_t) (var) ^ __pointer_chk_guard_local)
-#  define PTR_DEMANGLE(var) PTR_MANGLE (var)
-# else
-# include <stdint.h>
-extern uintptr_t __pointer_chk_guard;
-#  define PTR_MANGLE(var) \
-  (var) = (__typeof (var)) ((uintptr_t) (var) ^ __pointer_chk_guard)
-#  define PTR_DEMANGLE(var) PTR_MANGLE (var)
-# endif
-#endif
-
-#endif /* POINTER_GUARD_H */
+/* Assembler definitions for pointer obfuscation, if the ABI required it.  */

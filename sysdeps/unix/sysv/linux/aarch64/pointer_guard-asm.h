@@ -1,5 +1,5 @@
-/* Pointer guard implementation.  Alpha version.
-   Copyright (C) 2006-2026 Free Software Foundation, Inc.
+/* Pointer guard implementation, assembly version.  AArch64 version.
+   Copyright (C) 2014-2026 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -16,25 +16,26 @@
    License along with the GNU C Library.  If not, see
    <https://www.gnu.org/licenses/>.  */
 
-#ifndef POINTER_GUARD_H
-#define POINTER_GUARD_H
+#ifndef POINTER_GUARD_ASM_H
+#define POINTER_GUARD_ASM_H
 
-#include <pointer_guard-asm.h>
-
-#ifndef __ASSEMBLER__
-# include <stdint.h>
+#ifdef __ASSEMBLER__
 # if (IS_IN (rtld) \
       || (!defined SHARED && (IS_IN (libc) \
                               || IS_IN (libpthread))))
-extern uintptr_t __pointer_chk_guard_local attribute_relro attribute_hidden;
-#  define PTR_MANGLE(var) \
-        (var) = (__typeof (var)) ((uintptr_t) (var) ^ __pointer_chk_guard_local)
+#  define PTR_MANGLE(dst, src, tmp)					    \
+	adrp    tmp, C_SYMBOL_NAME(__pointer_chk_guard_local);		    \
+	ldr	tmp, [tmp, :lo12:C_SYMBOL_NAME(__pointer_chk_guard_local)]; \
+	eor	dst, src, tmp
+#  define PTR_DEMANGLE(dst, src, tmp) PTR_MANGLE (dst, src, tmp)
 # else
-extern uintptr_t __pointer_chk_guard attribute_relro;
-#  define PTR_MANGLE(var) \
-        (var) = (__typeof(var)) ((uintptr_t) (var) ^ __pointer_chk_guard)
+#  define PTR_MANGLE(dst, src, tmp)					  \
+	adrp	tmp, :got:C_SYMBOL_NAME(__pointer_chk_guard);		  \
+	ldr	tmp, [tmp, :got_lo12:C_SYMBOL_NAME(__pointer_chk_guard)]; \
+	ldr	tmp, [tmp];						  \
+	eor	dst, src, tmp;
+#  define PTR_DEMANGLE(dst, src, tmp) PTR_MANGLE (dst, src, tmp)
 # endif
-# define PTR_DEMANGLE(var)  PTR_MANGLE(var)
-#endif /* ASSEMBLER */
+#endif
 
-#endif /* POINTER_GUARD_H */
+#endif /* POINTER_GUARD_ASM_H */

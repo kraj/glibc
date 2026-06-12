@@ -19,19 +19,14 @@
 #ifndef POINTER_GUARD_H
 #define POINTER_GUARD_H
 
-#include <x86-lp_size.h>
-#include <tcb-offsets.h>
+#include <pointer_guard-asm.h>
 
-#if (IS_IN (rtld) \
-     || (!defined SHARED && (IS_IN (libc) || IS_IN (libpthread))))
-# ifdef __ASSEMBLER__
-#  define PTR_MANGLE(reg)	xor __pointer_chk_guard_local(%rip), reg;     \
-				rol $2*LP_SIZE+1, reg
-#  define PTR_DEMANGLE(reg)	ror $2*LP_SIZE+1, reg;			      \
-				xor __pointer_chk_guard_local(%rip), reg
-# else
-#  include <stdbit.h>
-#  include <stdint.h>
+#ifndef __ASSEMBLER__
+# include <stdbit.h>
+# include <stdint.h>
+
+# if (IS_IN (rtld) \
+      || (!defined SHARED && (IS_IN (libc) || IS_IN (libpthread))))
 extern uintptr_t __pointer_chk_guard_local attribute_relro attribute_hidden;
 #  define PTR_MANGLE(var)						      \
     do {								      \
@@ -47,18 +42,7 @@ extern uintptr_t __pointer_chk_guard_local attribute_relro attribute_hidden;
       (var) = (__typeof (var)) ((uintptr_t) (var)			      \
 				^ __pointer_chk_guard_local);		      \
     } while (0)
-# endif
-#else
-# ifdef __ASSEMBLER__
-#  define PTR_MANGLE(reg)	mov __pointer_chk_guard@GOTPCREL(%rip), %R11_LP;\
-				xor (%R11_LP), reg;			      \
-				rol $2*LP_SIZE+1, reg
-#  define PTR_DEMANGLE(reg)	ror $2*LP_SIZE+1, reg;			      \
-				mov __pointer_chk_guard@GOTPCREL(%rip), %R11_LP;\
-				xor (%R11_LP), reg
 # else
-#  include <stdbit.h>
-#  include <stdint.h>
 extern uintptr_t __pointer_chk_guard attribute_relro;
 #  define PTR_MANGLE(var)						      \
     do {								      \

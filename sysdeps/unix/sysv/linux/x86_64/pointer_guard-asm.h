@@ -1,5 +1,5 @@
-/* Pointer obfuscation implenentation.  C-SKY version.
-   Copyright (C) 2022-2026 Free Software Foundation, Inc.
+/* Pointer obfuscation implementation, assembly version.  x86-64 version.
+   Copyright (C) 2005-2026 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -16,25 +16,27 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#ifndef POINTER_GUARD_H
-#define POINTER_GUARD_H
+#ifndef POINTER_GUARD_ASM_H
+#define POINTER_GUARD_ASM_H
 
-#include <pointer_guard-asm.h>
+#ifdef __ASSEMBLER__
+# include <x86-lp_size.h>
+# include <tcb-offsets.h>
 
-#ifndef __ASSEMBLER__
 # if (IS_IN (rtld) \
       || (!defined SHARED && (IS_IN (libc) || IS_IN (libpthread))))
-extern uintptr_t __pointer_chk_guard_local;
-#  define PTR_MANGLE(var) \
-  (var) = (__typeof (var)) ((uintptr_t) (var) ^ __pointer_chk_guard_local)
-#  define PTR_DEMANGLE(var) PTR_MANGLE (var)
+#  define PTR_MANGLE(reg)   xor __pointer_chk_guard_local(%rip), reg;	      \
+			    rol $2*LP_SIZE+1, reg
+#  define PTR_DEMANGLE(reg) ror $2*LP_SIZE+1, reg;			      \
+			    xor __pointer_chk_guard_local(%rip), reg
 # else
-# include <stdint.h>
-extern uintptr_t __pointer_chk_guard;
-#  define PTR_MANGLE(var) \
-  (var) = (__typeof (var)) ((uintptr_t) (var) ^ __pointer_chk_guard)
-#  define PTR_DEMANGLE(var) PTR_MANGLE (var)
+#  define PTR_MANGLE(reg)   mov __pointer_chk_guard@GOTPCREL(%rip), %R11_LP;  \
+			    xor (%R11_LP), reg;				      \
+			    rol $2*LP_SIZE+1, reg
+#  define PTR_DEMANGLE(reg) ror $2*LP_SIZE+1, reg;			      \
+			    mov __pointer_chk_guard@GOTPCREL(%rip), %R11_LP;  \
+			    xor (%R11_LP), reg
 # endif
 #endif
 
-#endif /* POINTER_GUARD_H */
+#endif /* POINTER_GUARD_ASM_H */

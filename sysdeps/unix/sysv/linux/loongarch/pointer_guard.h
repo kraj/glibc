@@ -19,52 +19,23 @@
 #ifndef POINTER_GUARD_H
 #define POINTER_GUARD_H
 
-#if (IS_IN (rtld) \
-     || (!defined SHARED && (IS_IN (libc) \
-     || IS_IN (libpthread))))
+#include <pointer_guard-asm.h>
 
-#ifdef __ASSEMBLER__
-#define PTR_MANGLE(dst, src, guard) \
-  LOAD_LOCAL (guard, __pointer_chk_guard_local); \
-  PTR_MANGLE2 (dst, src, guard);
-#define PTR_DEMANGLE(dst, src, guard) \
-  LOAD_LOCAL (guard, __pointer_chk_guard_local); \
-  PTR_DEMANGLE2 (dst, src, guard);
-/* Use PTR_MANGLE2 for efficiency if guard is already loaded.  */
-#define PTR_MANGLE2(dst, src, guard) \
-  xor  dst, src, guard;
-#define PTR_DEMANGLE2(dst, src, guard) \
-  PTR_MANGLE2 (dst, src, guard);
-#else
+#ifndef __ASSEMBLER__
 # include <stdint.h>
+# if (IS_IN (rtld) \
+      || (!defined SHARED && (IS_IN (libc) \
+      || IS_IN (libpthread))))
 extern uintptr_t __pointer_chk_guard_local attribute_relro attribute_hidden;
-#define PTR_MANGLE(var) \
+#  define PTR_MANGLE(var) \
   (var) = (__typeof (var)) ((uintptr_t) (var) ^ __pointer_chk_guard_local)
-#define PTR_DEMANGLE(var) PTR_MANGLE (var)
-#endif
-
-#else
-
-#ifdef __ASSEMBLER__
-#define PTR_MANGLE(dst, src, guard) \
-  LOAD_GLOBAL (guard, __pointer_chk_guard); \
-  PTR_MANGLE2 (dst, src, guard);
-#define PTR_DEMANGLE(dst, src, guard) \
-  LOAD_GLOBAL (guard, __pointer_chk_guard); \
-  PTR_DEMANGLE2 (dst, src, guard);
-/* Use PTR_MANGLE2 for efficiency if guard is already loaded.  */
-#define PTR_MANGLE2(dst, src, guard) \
-  xor dst, src, guard;
-#define PTR_DEMANGLE2(dst, src, guard) \
-  PTR_MANGLE2 (dst, src, guard);
-#else
-# include <stdint.h>
+#  define PTR_DEMANGLE(var) PTR_MANGLE (var)
+# else
 extern uintptr_t __pointer_chk_guard attribute_relro;
-#define PTR_MANGLE(var) \
+#  define PTR_MANGLE(var) \
   (var) = (__typeof (var)) ((uintptr_t) (var) ^ __pointer_chk_guard)
-#define PTR_DEMANGLE(var) PTR_MANGLE (var)
-#endif
-
+#  define PTR_DEMANGLE(var) PTR_MANGLE (var)
+# endif
 #endif
 
 #endif /* POINTER_GUARD_H */

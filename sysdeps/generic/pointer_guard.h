@@ -19,8 +19,8 @@
 #ifndef POINTER_GUARD_H
 #define POINTER_GUARD_H
 
-/* Assembler code depends on PTR_MANGLE not being defined for
-   optimization purposes.  */
+#include <pointer_guard-asm.h>
+
 #ifndef __ASSEMBLER__
 # define PTR_MANGLE(x) (void) (x)
 # define PTR_DEMANGLE(x) (void) (x)

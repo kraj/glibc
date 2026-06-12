@@ -1,4 +1,4 @@
-/* Pointer obfuscation implenentation.  s390x version.
+/* Pointer obfuscation implementation, assembly version.  s390x version.
    Copyright (C) 2005-2026 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -16,23 +16,27 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#ifndef POINTER_GUARD_H
-#define POINTER_GUARD_H
+#ifndef POINTER_GUARD_ASM_H
+#define POINTER_GUARD_ASM_H
 
-#include <pointer_guard-asm.h>
-
-#ifndef __ASSEMBLER__
-# include <stdint.h>
+#ifdef __ASSEMBLER__
 # if IS_IN (rtld) || !defined SHARED
-extern uintptr_t __pointer_chk_guard_local attribute_relro attribute_hidden;
-#  define PTR_GUARD_VALUE	__pointer_chk_guard_local
+#  define PTR_GUARD_LOAD(tmpreg)					\
+	larl	tmpreg,__pointer_chk_guard_local;			\
+	lg	tmpreg,0(tmpreg)
 # else
-extern uintptr_t __pointer_chk_guard attribute_relro;
-#  define PTR_GUARD_VALUE	__pointer_chk_guard
+#  define PTR_GUARD_LOAD(tmpreg)					\
+	larl	tmpreg,__pointer_chk_guard@GOTENT;			\
+	lg	tmpreg,0(tmpreg);					\
+	lg	tmpreg,0(tmpreg)
 # endif
-# define PTR_MANGLE(var) \
-  (var) = (void *) ((uintptr_t) (var) ^ PTR_GUARD_VALUE)
-# define PTR_DEMANGLE(var)	PTR_MANGLE (var)
+# define PTR_MANGLE(reg, tmpreg) \
+	PTR_GUARD_LOAD (tmpreg);					\
+	xgr	reg,tmpreg
+# define PTR_MANGLE2(reg, tmpreg) \
+	xgr	reg,tmpreg
+# define PTR_DEMANGLE(reg, tmpreg) PTR_MANGLE (reg, tmpreg)
+# define PTR_DEMANGLE2(reg, tmpreg) PTR_MANGLE2 (reg, tmpreg)
 #endif
 
-#endif /* POINTER_GUARD_H */
+#endif /* POINTER_GUARD_ASM_H */
