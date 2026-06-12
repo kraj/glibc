@@ -19,40 +19,36 @@
 #ifndef POINTER_GUARD_H
 #define POINTER_GUARD_H
 
-#if IS_IN (rtld)
-# include <sysdeps/generic/pointer_guard.h>
-#else
-# ifdef __ASSEMBLER__
-#  ifdef SHARED
-#   define PTR_GUARD_LOAD(tmpreg)					\
+#ifdef __ASSEMBLER__
+# if IS_IN (rtld) || !defined SHARED
+#  define PTR_GUARD_LOAD(tmpreg)					\
+	larl	tmpreg,__pointer_chk_guard_local;			\
+	lg	tmpreg,0(tmpreg)
+# else
+#  define PTR_GUARD_LOAD(tmpreg)					\
 	larl	tmpreg,__pointer_chk_guard@GOTENT;			\
 	lg	tmpreg,0(tmpreg);					\
 	lg	tmpreg,0(tmpreg)
-#  else
-#   define PTR_GUARD_LOAD(tmpreg)					\
-	larl	tmpreg,__pointer_chk_guard_local;			\
-	lg	tmpreg,0(tmpreg)
-#  endif
-#  define PTR_MANGLE(reg, tmpreg) \
+# endif
+# define PTR_MANGLE(reg, tmpreg) \
 	PTR_GUARD_LOAD (tmpreg);					\
 	xgr	reg,tmpreg
-#  define PTR_MANGLE2(reg, tmpreg) \
+# define PTR_MANGLE2(reg, tmpreg) \
 	xgr	reg,tmpreg
-#  define PTR_DEMANGLE(reg, tmpreg) PTR_MANGLE (reg, tmpreg)
-#  define PTR_DEMANGLE2(reg, tmpreg) PTR_MANGLE2 (reg, tmpreg)
-# else
-#  include <stdint.h>
-#  ifdef SHARED
-extern uintptr_t __pointer_chk_guard attribute_relro;
-#   define PTR_GUARD_VALUE	__pointer_chk_guard
-#  else
+# define PTR_DEMANGLE(reg, tmpreg) PTR_MANGLE (reg, tmpreg)
+# define PTR_DEMANGLE2(reg, tmpreg) PTR_MANGLE2 (reg, tmpreg)
+#else
+# include <stdint.h>
+# if IS_IN (rtld) || !defined SHARED
 extern uintptr_t __pointer_chk_guard_local attribute_relro attribute_hidden;
-#   define PTR_GUARD_VALUE	__pointer_chk_guard_local
-#  endif
-#  define PTR_MANGLE(var) \
-  (var) = (void *) ((uintptr_t) (var) ^ PTR_GUARD_VALUE)
-#  define PTR_DEMANGLE(var)	PTR_MANGLE (var)
+#  define PTR_GUARD_VALUE	__pointer_chk_guard_local
+# else
+extern uintptr_t __pointer_chk_guard attribute_relro;
+#  define PTR_GUARD_VALUE	__pointer_chk_guard
 # endif
+# define PTR_MANGLE(var) \
+  (var) = (void *) ((uintptr_t) (var) ^ PTR_GUARD_VALUE)
+# define PTR_DEMANGLE(var)	PTR_MANGLE (var)
 #endif
 
 #endif /* POINTER_GUARD_H */

@@ -19,52 +19,46 @@
 #ifndef POINTER_GUARD_H
 #define POINTER_GUARD_H
 
-#if IS_IN (rtld)
-/* We cannot use the thread descriptor because in ld.so we use setjmp
-   earlier than the descriptor is initialized.  */
-# include <sysdeps/generic/pointer_guard.h>
-#else
-# ifdef __ASSEMBLER__
-#  include <sysdep.h>
-#  ifdef SHARED
-#   define PTR_GUARD_SYM	__pointer_chk_guard
-#  else
-#   define PTR_GUARD_SYM	__pointer_chk_guard_local
-#  endif
-#  ifdef PIC
+#ifdef __ASSEMBLER__
+# include <sysdep.h>
+# if IS_IN (rtld) || !defined SHARED
+#  define PTR_GUARD_SYM	__pointer_chk_guard_local
+# else
+#  define PTR_GUARD_SYM	__pointer_chk_guard
+# endif
+# ifdef PIC
 /* Load the guard through the GOT.  SETUP_PIC_REG_LEAF computes the GOT
    pointer in %o2 while preserving %o7, using %o3 as a scratch register.  */
-#   define PTR_GUARD_LOAD(tmpreg)					\
+#  define PTR_GUARD_LOAD(tmpreg)					\
 	SETUP_PIC_REG_LEAF(o2, o3);					\
 	sethi	%gdop_hix22(PTR_GUARD_SYM), tmpreg;			\
 	xor	tmpreg, %gdop_lox10(PTR_GUARD_SYM), tmpreg;		\
 	ldx	[%o2 + tmpreg], tmpreg, %gdop(PTR_GUARD_SYM);		\
 	ldx	[tmpreg], tmpreg
-#  else
-#   define PTR_GUARD_LOAD(tmpreg)					\
+# else
+#  define PTR_GUARD_LOAD(tmpreg)					\
 	sethi	%hi(PTR_GUARD_SYM), tmpreg;				\
 	ldx	[tmpreg + %lo(PTR_GUARD_SYM)], tmpreg
-#  endif
-#  define PTR_MANGLE(dreg, reg, tmpreg) \
+# endif
+# define PTR_MANGLE(dreg, reg, tmpreg) \
 	PTR_GUARD_LOAD (tmpreg);					\
 	xor	reg, tmpreg, dreg
-#  define PTR_DEMANGLE(dreg, reg, tmpreg) PTR_MANGLE (dreg, reg, tmpreg)
-#  define PTR_MANGLE2(dreg, reg, tmpreg) \
+# define PTR_DEMANGLE(dreg, reg, tmpreg) PTR_MANGLE (dreg, reg, tmpreg)
+# define PTR_MANGLE2(dreg, reg, tmpreg) \
 	xor	reg, tmpreg, dreg
-#  define PTR_DEMANGLE2(dreg, reg, tmpreg) PTR_MANGLE2 (dreg, reg, tmpreg)
-# else
-#  include <stdint.h>
-#  ifdef SHARED
-extern uintptr_t __pointer_chk_guard attribute_relro;
-#   define PTR_MANGLE(var) \
-  (var) = (__typeof (var)) ((uintptr_t) (var) ^ __pointer_chk_guard)
-#  else
+# define PTR_DEMANGLE2(dreg, reg, tmpreg) PTR_MANGLE2 (dreg, reg, tmpreg)
+#else
+# include <stdint.h>
+# if IS_IN (rtld) || !defined SHARED
 extern uintptr_t __pointer_chk_guard_local attribute_relro attribute_hidden;
-#   define PTR_MANGLE(var) \
+#  define PTR_MANGLE(var) \
   (var) = (__typeof (var)) ((uintptr_t) (var) ^ __pointer_chk_guard_local)
-#  endif
-#  define PTR_DEMANGLE(var)     PTR_MANGLE (var)
+# else
+extern uintptr_t __pointer_chk_guard attribute_relro;
+#  define PTR_MANGLE(var) \
+  (var) = (__typeof (var)) ((uintptr_t) (var) ^ __pointer_chk_guard)
 # endif
+# define PTR_DEMANGLE(var)     PTR_MANGLE (var)
 #endif
 
 #endif /* POINTER_GUARD_H */

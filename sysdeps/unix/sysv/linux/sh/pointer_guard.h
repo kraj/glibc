@@ -19,17 +19,17 @@
 #ifndef POINTER_GUARD_H
 #define POINTER_GUARD_H
 
-#if IS_IN (rtld)
-# include <sysdeps/generic/pointer_guard.h>
-#else
-# ifdef __ASSEMBLER__
-#  ifdef SHARED
-#   define PTR_GUARD_SYM	__pointer_chk_guard
-#  else
-#   define PTR_GUARD_SYM	__pointer_chk_guard_local
-#  endif
-#  ifdef PIC
-#   define PTR_GUARD_LOAD(tmp)						\
+#ifdef __ASSEMBLER__
+# if IS_IN (rtld) || !defined SHARED
+#  define PTR_GUARD_SYM	__pointer_chk_guard_local
+# else
+#  define PTR_GUARD_SYM	__pointer_chk_guard
+# endif
+# ifdef PIC
+/* The GOT pointer is computed with the usual mova/mov.l sequence which
+   clobbers r0; in __longjmp r0 holds the return value, so it is saved in
+   r3 (dead at every mangling site) and restored.  */
+#  define PTR_GUARD_LOAD(tmp)						\
 	mov	r0, r3;							\
 	mova	.Lptrg_got, r0;						\
 	mov.l	.Lptrg_got, tmp;					\
@@ -46,8 +46,8 @@
 .Lptrg_sym:								\
 	.long	PTR_GUARD_SYM@GOT;					\
 .Lptrg_end:
-#  else
-#   define PTR_GUARD_LOAD(tmp)						\
+# else
+#  define PTR_GUARD_LOAD(tmp)						\
 	mov.l	.Lptrg_sym, tmp;					\
 	mov.l	@tmp, tmp;						\
 	bra	.Lptrg_end;						\
@@ -56,25 +56,24 @@
 .Lptrg_sym:								\
 	.long	PTR_GUARD_SYM;						\
 .Lptrg_end:
-#  endif
-#  define PTR_MANGLE(reg, tmp) \
-     PTR_GUARD_LOAD (tmp); xor tmp,reg
-#  define PTR_MANGLE2(reg, tmp) xor tmp,reg
-#  define PTR_DEMANGLE(reg, tmp)        PTR_MANGLE (reg, tmp)
-#  define PTR_DEMANGLE2(reg, tmp)       PTR_MANGLE2 (reg, tmp)
-# else
-#  include <stdint.h>
-#  ifdef SHARED
-extern uintptr_t __pointer_chk_guard attribute_relro;
-#   define PTR_MANGLE(var) \
-     (var) = (void *) ((uintptr_t) (var) ^ __pointer_chk_guard)
-#  else
-extern uintptr_t __pointer_chk_guard_local attribute_relro attribute_hidden;
-#   define PTR_MANGLE(var) \
-     (var) = (void *) ((uintptr_t) (var) ^ __pointer_chk_guard_local)
-#  endif
-#  define PTR_DEMANGLE(var)     PTR_MANGLE (var)
 # endif
+# define PTR_MANGLE(reg, tmp) \
+     PTR_GUARD_LOAD (tmp); xor tmp,reg
+# define PTR_MANGLE2(reg, tmp) xor tmp,reg
+# define PTR_DEMANGLE(reg, tmp)        PTR_MANGLE (reg, tmp)
+# define PTR_DEMANGLE2(reg, tmp)       PTR_MANGLE2 (reg, tmp)
+#else
+# include <stdint.h>
+# if IS_IN (rtld) || !defined SHARED
+extern uintptr_t __pointer_chk_guard_local attribute_relro attribute_hidden;
+#  define PTR_MANGLE(var) \
+     (var) = (void *) ((uintptr_t) (var) ^ __pointer_chk_guard_local)
+# else
+extern uintptr_t __pointer_chk_guard attribute_relro;
+#  define PTR_MANGLE(var) \
+     (var) = (void *) ((uintptr_t) (var) ^ __pointer_chk_guard)
+# endif
+# define PTR_DEMANGLE(var)     PTR_MANGLE (var)
 #endif
 
 #endif /* POINTER_GUARD_H */
