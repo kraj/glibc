@@ -22,6 +22,7 @@
 #include <ldsodefs.h>
 #include <link.h>
 #include <rseq-internal.h>
+#include <unistd.h>		/* For __libc_enable_secure.  */
 
 typedef ElfW(Addr) dl_parse_auxv_t[AT_MINSIGSTKSZ + 1];
 

@@ -18,6 +18,7 @@
 
 #include <endian.h>
 #include <stdint.h>
+#include <string.h>
 
 static inline uintptr_t __attribute__ ((always_inline))
 _dl_setup_stack_chk_guard (void *dl_random)
