@@ -35,7 +35,7 @@ void
 __longjmp (__jmp_buf env, int val)
 {
 #ifdef PTR_DEMANGLE
-  uintptr_t guard = THREAD_GET_POINTER_GUARD ();
+  uintptr_t guard = PTR_GUARD_VALUE;
 # ifdef CHECK_SP
   CHECK_SP (env, guard);
 # endif

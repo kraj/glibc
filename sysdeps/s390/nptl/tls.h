@@ -139,13 +139,6 @@ typedef struct
   ((descr)->header.stack_guard						      \
    = THREAD_GETMEM (THREAD_SELF, header.stack_guard))
 
-/* s390 doesn't have HP_TIMING_*, so for the time being
-   use stack_guard as pointer_guard.  */
-#define THREAD_GET_POINTER_GUARD() \
-  THREAD_GETMEM (THREAD_SELF, header.stack_guard)
-#define THREAD_SET_POINTER_GUARD(value)	((void) (value))
-#define THREAD_COPY_POINTER_GUARD(descr)
-
 /* Get and set the global scope generation counter in struct pthread.  */
 #define THREAD_GSCOPE_FLAG_UNUSED 0
 #define THREAD_GSCOPE_FLAG_USED   1

@@ -41,7 +41,7 @@ typedef struct
 #endif
   uintptr_t sysinfo;
   uintptr_t stack_guard;
-  uintptr_t pointer_guard;
+  uintptr_t __unused;
 #if __WORDSIZE != 64
   int gscope_flag;
 #endif
@@ -114,14 +114,6 @@ register struct pthread *__thread_self __asm__("%g7");
 # define THREAD_COPY_STACK_GUARD(descr) \
   ((descr)->header.stack_guard \
    = THREAD_GETMEM (THREAD_SELF, header.stack_guard))
-
-/* Get/set the stack guard field in TCB head.  */
-#define THREAD_GET_POINTER_GUARD() \
-  THREAD_GETMEM (THREAD_SELF, header.pointer_guard)
-#define THREAD_SET_POINTER_GUARD(value) \
-  THREAD_SETMEM (THREAD_SELF, header.pointer_guard, value)
-# define THREAD_COPY_POINTER_GUARD(descr) \
-  ((descr)->header.pointer_guard = THREAD_GET_POINTER_GUARD ())
 
 /* Get and set the global scope generation counter in struct pthread.  */
 #define THREAD_GSCOPE_FLAG_UNUSED 0

@@ -20,26 +20,37 @@
 #define POINTER_GUARD_H
 
 #if IS_IN (rtld)
-/* We cannot use the thread descriptor because in ld.so we use setjmp
-   earlier than the descriptor is initialized.  */
 # include <sysdeps/generic/pointer_guard.h>
 #else
-/* For the time being just use stack_guard rather than a separate
-   pointer_guard.  */
 # ifdef __ASSEMBLER__
+#  ifdef SHARED
+#   define PTR_GUARD_LOAD(tmpreg)					\
+	larl	tmpreg,__pointer_chk_guard@GOTENT;			\
+	lg	tmpreg,0(tmpreg);					\
+	lg	tmpreg,0(tmpreg)
+#  else
+#   define PTR_GUARD_LOAD(tmpreg)					\
+	larl	tmpreg,__pointer_chk_guard_local;			\
+	lg	tmpreg,0(tmpreg)
+#  endif
 #  define PTR_MANGLE(reg, tmpreg) \
-  ear     tmpreg,%a0;			\
-  sllg    tmpreg,tmpreg,32;		\
-  ear     tmpreg,%a1;			\
-  xg      reg,STACK_GUARD(tmpreg)
+	PTR_GUARD_LOAD (tmpreg);					\
+	xgr	reg,tmpreg
 #  define PTR_MANGLE2(reg, tmpreg) \
-  xg      reg,STACK_GUARD(tmpreg)
+	xgr	reg,tmpreg
 #  define PTR_DEMANGLE(reg, tmpreg) PTR_MANGLE (reg, tmpreg)
+#  define PTR_DEMANGLE2(reg, tmpreg) PTR_MANGLE2 (reg, tmpreg)
 # else
 #  include <stdint.h>
-#  include <tls.h>
+#  ifdef SHARED
+extern uintptr_t __pointer_chk_guard attribute_relro;
+#   define PTR_GUARD_VALUE	__pointer_chk_guard
+#  else
+extern uintptr_t __pointer_chk_guard_local attribute_relro attribute_hidden;
+#   define PTR_GUARD_VALUE	__pointer_chk_guard_local
+#  endif
 #  define PTR_MANGLE(var) \
-  (var) = (void *) ((uintptr_t) (var) ^ THREAD_GET_POINTER_GUARD ())
+  (var) = (void *) ((uintptr_t) (var) ^ PTR_GUARD_VALUE)
 #  define PTR_DEMANGLE(var)	PTR_MANGLE (var)
 # endif
 #endif

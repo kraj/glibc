@@ -52,8 +52,8 @@ ENTRY (____longjmp_chk)
 	/* Get the stack pointer.  */
 	movl	(JB_SP*4)(%ecx), %edi
 	cfi_undefined(%edi)
-	PTR_DEMANGLE (%edx)
-	PTR_DEMANGLE (%edi)
+	PTR_DEMANGLE (%edx, bx)
+	PTR_DEMANGLE (%edi, bx)
 
 	cmpl	%edi, %esp
 	jbe	.Lok

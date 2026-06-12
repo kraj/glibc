@@ -33,7 +33,7 @@
 typedef struct
 {
   dtv_t *dtv;
-  uintptr_t pointer_guard;
+  uintptr_t __unused;
 } tcbhead_t;
 
 # define TLS_MULTIPLE_THREADS_IN_TCB 1
@@ -108,19 +108,6 @@ typedef struct
   REGISTER (32, 32, REG_GBR * 4, -sizeof (struct pthread))
 
 # include <tcb-access.h>
-
-#define THREAD_GET_POINTER_GUARD() \
-  ({ tcbhead_t *__tcbp;							      \
-     __asm __volatile ("stc gbr,%0" : "=r" (__tcbp));			      \
-     __tcbp->pointer_guard;})
- #define THREAD_SET_POINTER_GUARD(value) \
-  ({ tcbhead_t *__tcbp;							      \
-     __asm __volatile ("stc gbr,%0" : "=r" (__tcbp));			      \
-     __tcbp->pointer_guard = (value);})
-#define THREAD_COPY_POINTER_GUARD(descr) \
-  ({ tcbhead_t *__tcbp;							      \
-     __asm __volatile ("stc gbr,%0" : "=r" (__tcbp));			      \
-     ((tcbhead_t *) (descr + 1))->pointer_guard	= __tcbp->pointer_guard;})
 
 /* Get and set the global scope generation counter in struct pthread.  */
 #define THREAD_GSCOPE_FLAG_UNUSED 0

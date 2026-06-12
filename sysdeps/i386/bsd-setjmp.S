@@ -42,13 +42,13 @@ ENTRY (setjmp)
 	movl %edi, (JB_DI*4)(%eax)
 	leal JMPBUF(%esp), %ecx	/* Save SP as it will be after we return.  */
 #ifdef PTR_MANGLE
-	PTR_MANGLE (%ecx)
+	PTR_MANGLE (%ecx, dx)
 #endif
 	movl %ecx, (JB_SP*4)(%eax)
 	movl 0(%esp), %ecx	/* Save PC we are returning to now.  */
 	LIBC_PROBE (setjmp, 3, 4@%eax, -4@$1, 4@%ecx)
 #ifdef PTR_MANGLE
-	PTR_MANGLE (%ecx)
+	PTR_MANGLE (%ecx, dx)
 #endif
 	movl %ecx, (JB_PC*4)(%eax)
 	movl %ebp, (JB_BP*4)(%eax) /* Save caller's frame pointer.  */

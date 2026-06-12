@@ -41,7 +41,7 @@ typedef struct
   int gscope_flag;
   uintptr_t sysinfo;
   uintptr_t stack_guard;
-  uintptr_t pointer_guard;
+  uintptr_t __unused;
   long __glibc_padding2[2];
   int private_futex;
   int __glibc_padding3;
@@ -125,12 +125,6 @@ THREAD_TCB (thread_t thread,
   ((descr)->stack_guard							\
    = THREAD_GETMEM (THREAD_SELF, stack_guard))
 
-/* Set the pointer guard field in the TCB head.  */
-# define THREAD_SET_POINTER_GUARD(value)				\
-  THREAD_SETMEM (THREAD_SELF, pointer_guard, value)
-# define THREAD_COPY_POINTER_GUARD(descr)				\
-  ((descr)->pointer_guard						\
-   = THREAD_GETMEM (THREAD_SELF, pointer_guard))
 
 /* From hurd.h, reproduced here to avoid a circular include.  */
 extern thread_t __hurd_thread_self (void);

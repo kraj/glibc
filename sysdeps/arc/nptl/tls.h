@@ -42,7 +42,7 @@
 typedef struct
 {
   dtv_t *dtv;
-  uintptr_t pointer_guard;
+  uintptr_t __unused;
 } tcbhead_t;
 
 /* This is the size of the initial TCB.  */

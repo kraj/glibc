@@ -60,8 +60,7 @@
 
 
 /* The stack_guard is accessed directly by GCC -fstack-protector code,
-   so it is a part of public ABI.  The dtv and pointer_guard fields
-   are private.  */
+   so it is a part of public ABI.  The dtv field is private.  */
 typedef struct
 {
   /* Reservation for HWCAP3 and HWCAP4 data.  To be accessed by GCC in
@@ -96,7 +95,7 @@ typedef struct
   uintptr_t ebb_ctx_pointer;
   uintptr_t ebb_reserved1;
   uintptr_t ebb_reserved2;
-  uintptr_t pointer_guard;
+  uintptr_t __unused2;
   uintptr_t stack_guard;
   dtv_t *dtv;
 } tcbhead_t;
@@ -185,17 +184,6 @@ extern tcbhead_t __tcb attribute_hidden;
 		     + TLS_PRE_TCB_SIZE))[-1].stack_guard		      \
      = ((tcbhead_t *) ((char *) __thread_register			      \
 		       - TLS_TCB_OFFSET))[-1].stack_guard)
-
-/* Set the stack guard field in TCB head.  */
-# define THREAD_GET_POINTER_GUARD() \
-    (((tcbhead_t *) ((char *) __thread_register				      \
-		     - TLS_TCB_OFFSET))[-1].pointer_guard)
-# define THREAD_SET_POINTER_GUARD(value) \
-    (THREAD_GET_POINTER_GUARD () = (value))
-# define THREAD_COPY_POINTER_GUARD(descr) \
-    (((tcbhead_t *) ((char *) (descr)					      \
-		     + TLS_PRE_TCB_SIZE))[-1].pointer_guard		      \
-     = THREAD_GET_POINTER_GUARD())
 
 /* hwcap & hwcap_extn fields in TCB head.  */
 # define THREAD_GET_HWCAP() \

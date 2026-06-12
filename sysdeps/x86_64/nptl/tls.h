@@ -49,7 +49,7 @@ typedef struct
   int gscope_flag;
   uintptr_t sysinfo;
   uintptr_t stack_guard;
-  uintptr_t pointer_guard;
+  uintptr_t __unused;
   unsigned long int unused_vgetcpu_cache[2];
   /* Bit 0: X86_FEATURE_1_IBT.
      Bit 1: X86_FEATURE_1_SHSTK.
@@ -184,14 +184,6 @@ _Static_assert (offsetof (tcbhead_t, __glibc_unused2) == 0x80,
 # define THREAD_COPY_STACK_GUARD(descr) \
     ((descr)->header.stack_guard					      \
      = THREAD_GETMEM (THREAD_SELF, header.stack_guard))
-
-
-/* Set the pointer guard field in the TCB head.  */
-# define THREAD_SET_POINTER_GUARD(value) \
-  THREAD_SETMEM (THREAD_SELF, header.pointer_guard, value)
-# define THREAD_COPY_POINTER_GUARD(descr) \
-  ((descr)->header.pointer_guard					      \
-   = THREAD_GETMEM (THREAD_SELF, header.pointer_guard))
 
 
 /* Get and set the global scope generation counter in the TCB head.  */

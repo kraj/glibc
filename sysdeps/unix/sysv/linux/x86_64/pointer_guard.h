@@ -22,9 +22,8 @@
 #include <x86-lp_size.h>
 #include <tcb-offsets.h>
 
-#if IS_IN (rtld)
-/* We cannot use the thread descriptor because in ld.so we use setjmp
-   earlier than the descriptor is initialized.  */
+#if (IS_IN (rtld) \
+     || (!defined SHARED && (IS_IN (libc) || IS_IN (libpthread))))
 # ifdef __ASSEMBLER__
 #  define PTR_MANGLE(reg)	xor __pointer_chk_guard_local(%rip), reg;     \
 				rol $2*LP_SIZE+1, reg
@@ -51,17 +50,20 @@ extern uintptr_t __pointer_chk_guard_local attribute_relro attribute_hidden;
 # endif
 #else
 # ifdef __ASSEMBLER__
-#  define PTR_MANGLE(reg)	xor %fs:POINTER_GUARD, reg;		      \
+#  define PTR_MANGLE(reg)	mov __pointer_chk_guard@GOTPCREL(%rip), %R11_LP;\
+				xor (%R11_LP), reg;			      \
 				rol $2*LP_SIZE+1, reg
 #  define PTR_DEMANGLE(reg)	ror $2*LP_SIZE+1, reg;			      \
-				xor %fs:POINTER_GUARD, reg
+				mov __pointer_chk_guard@GOTPCREL(%rip), %R11_LP;\
+				xor (%R11_LP), reg
 # else
 #  include <stdbit.h>
-#  include <tls.h>
+#  include <stdint.h>
+extern uintptr_t __pointer_chk_guard attribute_relro;
 #  define PTR_MANGLE(var)						      \
     do {								      \
       (var) = (__typeof (var)) ((uintptr_t) (var)			      \
-				^ ((tcbhead_t __seg_fs *)0)->pointer_guard);  \
+				^ __pointer_chk_guard);			      \
       (var) = (__typeof (var)) stdc_rotate_left ((uintptr_t) (var),	      \
 						 2 * sizeof (uintptr_t) + 1); \
     } while (0)
@@ -70,7 +72,7 @@ extern uintptr_t __pointer_chk_guard_local attribute_relro attribute_hidden;
       (var) = (__typeof (var)) stdc_rotate_right ((uintptr_t) (var),	      \
 						  2 * sizeof (uintptr_t) + 1); \
       (var) = (__typeof (var)) ((uintptr_t) (var)			      \
-				^ ((tcbhead_t __seg_fs *)0)->pointer_guard);  \
+				^ __pointer_chk_guard);			      \
     } while (0)
 # endif
 #endif

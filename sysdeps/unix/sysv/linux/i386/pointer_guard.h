@@ -19,26 +19,56 @@
 #ifndef POINTER_GUARD_H
 #define POINTER_GUARD_H
 
-#include <tcb-offsets.h>
-
 #if IS_IN (rtld)
 /* We cannot use the thread descriptor because in ld.so we use setjmp
-   earlier than the descriptor is initialized.  Using a global variable
-   is too complicated here since we have no PC-relative addressing mode.  */
+   earlier than the descriptor is initialized.  */
 # include <sysdeps/generic/pointer_guard.h>
 #else
 # ifdef __ASSEMBLER__
-#  define PTR_MANGLE(reg)	xorl %gs:POINTER_GUARD, reg;		      \
+#  include <sysdep.h>
+/* The PIC variants clobber TMP, a register name suffix as expected by
+   LOAD_PIC_REG (e.g. dx for %edx), to load the guard value.  */
+#  ifdef SHARED
+/* The global guard is reached through the GOT.  */
+#   define PTR_MANGLE(reg, tmp)	LOAD_PIC_REG (tmp);			      \
+				movl __pointer_chk_guard@GOT(%e##tmp), %e##tmp; \
+				xorl (%e##tmp), reg;			      \
 				roll $9, reg
-#  define PTR_DEMANGLE(reg)	rorl $9, reg;				      \
-				xorl %gs:POINTER_GUARD, reg
+#   define PTR_DEMANGLE(reg, tmp) \
+				rorl $9, reg;				      \
+				LOAD_PIC_REG (tmp);			      \
+				movl __pointer_chk_guard@GOT(%e##tmp), %e##tmp; \
+				xorl (%e##tmp), reg
+#  elif defined PIC
+/* Static PIE: the module-local guard is reached via @GOTOFF.  */
+#   define PTR_MANGLE(reg, tmp)	LOAD_PIC_REG (tmp);			      \
+				xorl __pointer_chk_guard_local@GOTOFF(%e##tmp), reg; \
+				roll $9, reg
+#   define PTR_DEMANGLE(reg, tmp) \
+				rorl $9, reg;				      \
+				LOAD_PIC_REG (tmp);			      \
+				xorl __pointer_chk_guard_local@GOTOFF(%e##tmp), reg
+#  else
+/* Position-dependent code addresses the guard directly.  */
+#   define PTR_MANGLE(reg, tmp)	xorl __pointer_chk_guard_local, reg;	      \
+				roll $9, reg
+#   define PTR_DEMANGLE(reg, tmp) \
+				rorl $9, reg;				      \
+				xorl __pointer_chk_guard_local, reg
+#  endif
 # else
 #  include <stdbit.h>
-#  include <tls.h>
+#  include <stdint.h>
+#  ifdef SHARED
+extern uintptr_t __pointer_chk_guard attribute_relro;
+#   define PTR_GUARD_VALUE	__pointer_chk_guard
+#  else
+extern uintptr_t __pointer_chk_guard_local attribute_relro attribute_hidden;
+#   define PTR_GUARD_VALUE	__pointer_chk_guard_local
+#  endif
 #  define PTR_MANGLE(var)						      \
     do {								      \
-      (var) = (__typeof (var)) ((uintptr_t) (var)			      \
-				^ ((tcbhead_t __seg_gs *)0)->pointer_guard);  \
+      (var) = (__typeof (var)) ((uintptr_t) (var) ^ PTR_GUARD_VALUE);	      \
       (var) = (__typeof (var)) stdc_rotate_left ((uintptr_t) (var),	      \
 						 2 * sizeof (uintptr_t) + 1); \
     } while (0)
@@ -46,8 +76,7 @@
     do {								      \
       (var) = (__typeof (var)) stdc_rotate_right ((uintptr_t) (var),	      \
 						  2 * sizeof (uintptr_t) + 1); \
-      (var) = (__typeof (var)) ((uintptr_t) (var)			      \
-				^ ((tcbhead_t __seg_gs *)0)->pointer_guard);  \
+      (var) = (__typeof (var)) ((uintptr_t) (var) ^ PTR_GUARD_VALUE);	      \
     } while (0)
 # endif
 #endif

@@ -31,8 +31,8 @@ ENTRY (__longjmp)
 	movl (JB_PC*4)(%eax), %edx
 	/* Get the stack pointer.  */
 	movl (JB_SP*4)(%eax), %ecx
-	PTR_DEMANGLE (%edx)
-	PTR_DEMANGLE (%ecx)
+	PTR_DEMANGLE (%edx, bx)
+	PTR_DEMANGLE (%ecx, bx)
 	LIBC_PROBE (longjmp, 3, 4@%eax, -4@8(%esp), 4@%edx)
 	cfi_def_cfa(%eax, 0)
 	cfi_register(%eip, %edx)
