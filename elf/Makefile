@@ -270,6 +270,7 @@ tests-static-normal := \
   tst-env-setuid-static \
   tst-getauxval-static \
   tst-linkall-static \
+  tst-ptrguard-static-dlopen \
   tst-single_threaded-pthread-static \
   tst-single_threaded-static \
   tst-tls-allocation-failure-static \
@@ -576,6 +577,7 @@ tests-container += \
   tst-dlopen-tlsmodid-container \
   tst-pldd \
   tst-preload-pthread-libc \
+  tst-ptrguard-static-dlopen \
   tst-rootdir \
   # tests-container
 
@@ -1013,6 +1015,7 @@ modules-names += \
   tst-null-argv-lib \
   tst-p_alignmod-base \
   tst-p_alignmod3 \
+  tst-ptrguard-static-dlopen-mod \
   tst-recursive-tlsmallocmod \
   tst-recursive-tlsmod0 \
   tst-recursive-tlsmod1 \
@@ -3200,6 +3203,9 @@ $(objpfx)tst-tls21mod.so: $(tst-tls-many-dynamic-modules:%=$(objpfx)%.so)
 
 $(objpfx)tst-getauxval-static.out: $(objpfx)tst-auxvalmod.so
 tst-getauxval-static-ENV = LD_LIBRARY_PATH=$(objpfx):$(common-objpfx)
+
+$(objpfx)tst-ptrguard-static-dlopen.out: \
+  $(objpfx)tst-ptrguard-static-dlopen-mod.so
 
 $(objpfx)tst-dlmopen-gethostbyname.out: $(objpfx)tst-dlmopen-gethostbyname-mod.so
 
