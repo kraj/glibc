@@ -20,7 +20,6 @@
 #include <jmpbuf-offsets.h>
 #include <stdint.h>
 #include <unwind.h>
-#include <pointer_guard.h>
 
 /* Test if longjmp to JMPBUF would unwind the frame
    containing a local variable at ADDRESS.  */
@@ -31,12 +30,12 @@
 #define _JMPBUF_CFA_UNWINDS_ADJ(_jmpbuf, _context, _adj) \
   _JMPBUF_UNWINDS_ADJ (_jmpbuf, (void *) _Unwind_GetCFA (_context), _adj)
 
+/* setjmp does not mangle the stack pointer on this ABI, so the saved
+   value is used as-is.  */
 static inline uintptr_t __attribute__ ((unused))
 _jmpbuf_sp (__jmp_buf jmpbuf)
 {
-  uintptr_t sp = jmpbuf[JB_SP];
-  PTR_DEMANGLE (sp);
-  return sp;
+  return jmpbuf[JB_SP];
 }
 
 #define _JMPBUF_UNWINDS_ADJ(_jmpbuf, _address, _adj) \
