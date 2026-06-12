@@ -21,25 +21,32 @@
 
 #ifdef __ASSEMBLER__
 # if IS_IN (rtld)
-#  define PTR_MANGLE(dst, src, tmp)                             \
+#  define PTR_GUARD_LOAD(tmp)                                   \
         ldah    tmp, __pointer_chk_guard_local($29) !gprelhigh; \
-        ldq     tmp, __pointer_chk_guard_local(tmp) !gprellow;  \
-        xor     src, tmp, dst
-#  define PTR_MANGLE2(dst, src, tmp)                            \
-        xor     src, tmp, dst
+        ldq     tmp, __pointer_chk_guard_local(tmp) !gprellow
 # elif defined SHARED
-#  define PTR_MANGLE(dst, src, tmp)             \
-        ldq     tmp, __pointer_chk_guard;       \
-        xor     src, tmp, dst
+#  define PTR_GUARD_LOAD(tmp)                   \
+        ldq     tmp, __pointer_chk_guard
 # else
-#  define PTR_MANGLE(dst, src, tmp)             \
-        ldq     tmp, __pointer_chk_guard_local; \
-        xor     src, tmp, dst
+#  define PTR_GUARD_LOAD(tmp)                   \
+        ldq     tmp, __pointer_chk_guard_local
 # endif
-# define PTR_MANGLE2(dst, src, tmp)             \
-        xor     src, tmp, dst
-# define PTR_DEMANGLE(dst, tmp)   PTR_MANGLE(dst, dst, tmp)
-# define PTR_DEMANGLE2(dst, tmp)  PTR_MANGLE2(dst, dst, tmp)
+# define PTR_MANGLE(dst, src, tmp, tmp2)        \
+        PTR_GUARD_LOAD (tmp);                   \
+        PTR_MANGLE2 (dst, src, tmp, tmp2)
+# define PTR_MANGLE2(dst, src, tmp, tmp2)       \
+        xor     src, tmp, dst;                  \
+        sll     dst, 17, tmp2;                  \
+        srl     dst, 47, dst;                   \
+        bis     dst, tmp2, dst
+# define PTR_DEMANGLE(dst, tmp, tmp2)           \
+        PTR_GUARD_LOAD (tmp);                   \
+        PTR_DEMANGLE2 (dst, tmp, tmp2)
+# define PTR_DEMANGLE2(dst, tmp, tmp2)          \
+        sll     dst, 47, tmp2;                  \
+        srl     dst, 17, dst;                   \
+        bis     dst, tmp2, dst;                 \
+        xor     dst, tmp, dst
 #endif
 
 #endif /* POINTER_GUARD_ASM_H */

@@ -54,9 +54,9 @@ ____longjmp_chk:
 	cmoveq  s1, 1, s1
 
 #ifdef PTR_DEMANGLE
-	PTR_DEMANGLE(s2, t1)
-	PTR_DEMANGLE2(s3, t1)
-	PTR_DEMANGLE2(fp, t1)
+	PTR_DEMANGLE(s2, t1, t2)
+	PTR_DEMANGLE2(s3, t1, t2)
+	PTR_DEMANGLE2(fp, t1, t2)
 #endif
 	/* ??? While this is a proper test for detecting a longjmp to an
 	   invalid frame within any given stack, the main thread stack is

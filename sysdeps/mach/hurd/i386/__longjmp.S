@@ -35,8 +35,8 @@ ENTRY (__longjmp)
 	movl (JB_SP*4)(%eax), %ecx
 	cfi_undefined(%ecx)
 #ifdef PTR_DEMANGLE
-	PTR_DEMANGLE (%edx)
-	PTR_DEMANGLE (%ecx)
+	PTR_DEMANGLE (%edx, bx)
+	PTR_DEMANGLE (%ecx, bx)
 #endif
 
 	movw	%ds, %si

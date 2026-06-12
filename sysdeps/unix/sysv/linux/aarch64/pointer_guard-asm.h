@@ -23,19 +23,23 @@
 # if (IS_IN (rtld) \
       || (!defined SHARED && (IS_IN (libc) \
                               || IS_IN (libpthread))))
-#  define PTR_MANGLE(dst, src, tmp)					    \
+#  define PTR_GUARD_LOAD(tmp)						    \
 	adrp    tmp, C_SYMBOL_NAME(__pointer_chk_guard_local);		    \
-	ldr	tmp, [tmp, :lo12:C_SYMBOL_NAME(__pointer_chk_guard_local)]; \
-	eor	dst, src, tmp
-#  define PTR_DEMANGLE(dst, src, tmp) PTR_MANGLE (dst, src, tmp)
+	ldr	tmp, [tmp, :lo12:C_SYMBOL_NAME(__pointer_chk_guard_local)]
 # else
-#  define PTR_MANGLE(dst, src, tmp)					  \
+#  define PTR_GUARD_LOAD(tmp)						  \
 	adrp	tmp, :got:C_SYMBOL_NAME(__pointer_chk_guard);		  \
 	ldr	tmp, [tmp, :got_lo12:C_SYMBOL_NAME(__pointer_chk_guard)]; \
-	ldr	tmp, [tmp];						  \
-	eor	dst, src, tmp;
-#  define PTR_DEMANGLE(dst, src, tmp) PTR_MANGLE (dst, src, tmp)
+	ldr	tmp, [tmp]
 # endif
+#  define PTR_MANGLE(dst, src, tmp)					    \
+	PTR_GUARD_LOAD (tmp);						    \
+	eor	dst, src, tmp;						    \
+	ror	dst, dst, #(64 - 17)
+#  define PTR_DEMANGLE(dst, src, tmp)					    \
+	PTR_GUARD_LOAD (tmp);						    \
+	ror	dst, src, #17;						    \
+	eor	dst, dst, tmp
 #endif
 
 #endif /* POINTER_GUARD_ASM_H */

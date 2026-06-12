@@ -55,10 +55,16 @@
 .Lptrg_end:
 # endif
 # define PTR_MANGLE(reg, tmp) \
-     PTR_GUARD_LOAD (tmp); xor tmp,reg
-# define PTR_MANGLE2(reg, tmp) xor tmp,reg
-# define PTR_DEMANGLE(reg, tmp)        PTR_MANGLE (reg, tmp)
-# define PTR_DEMANGLE2(reg, tmp)       PTR_MANGLE2 (reg, tmp)
+     PTR_GUARD_LOAD (tmp); PTR_MANGLE2 (reg, tmp)
+# define PTR_MANGLE2(reg, tmp) \
+     xor tmp,reg;							\
+     rotl reg; rotl reg; rotl reg; rotl reg; rotl reg;			\
+     rotl reg; rotl reg; rotl reg; rotl reg
+# define PTR_DEMANGLE(reg, tmp)        PTR_GUARD_LOAD (tmp); PTR_DEMANGLE2 (reg, tmp)
+# define PTR_DEMANGLE2(reg, tmp) \
+     rotr reg; rotr reg; rotr reg; rotr reg; rotr reg;			\
+     rotr reg; rotr reg; rotr reg; rotr reg;				\
+     xor tmp,reg
 #endif
 
 #endif /* POINTER_GUARD_ASM_H */

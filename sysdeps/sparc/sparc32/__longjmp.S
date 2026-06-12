@@ -28,7 +28,7 @@ ENTRY(__longjmp)
 
 	ld ENV(o0,JB_FP), %g3	/* Cache target FP in register %g3.  */
 #ifdef PTR_DEMANGLE
-	PTR_DEMANGLE (%g3, %g3, %g4)
+	PTR_DEMANGLE (%g3, %g3, %g4, %g5)
 #endif
 	mov %o0, %g1		/* ENV in %g1 */
 	orcc %o1, %g0, %g2	/* VAL in %g2 */
@@ -66,8 +66,8 @@ LOC(thread):
 #ifdef PTR_DEMANGLE
 	ld	ENV(g1,JB_PC), %g5 /* Set return PC. */
 	ld	ENV(g1,JB_SP), %g1 /* Set saved SP on restore below. */
-	PTR_DEMANGLE2 (%i7, %g5, %g4)
-	PTR_DEMANGLE2 (%fp, %g1, %g4)
+	PTR_DEMANGLE2 (%i7, %g5, %g4, %g3)
+	PTR_DEMANGLE2 (%fp, %g1, %g4, %g3)
 #else
 	ld	ENV(g1,JB_PC), %i7 /* Set return PC. */
 	ld	ENV(g1,JB_SP), %fp /* Set saved SP on restore below. */
@@ -78,7 +78,7 @@ LOC(thread):
 LOC(found):
 	/* We have unwound register windows so %fp matches the target.  */
 #ifdef PTR_DEMANGLE
-	PTR_DEMANGLE2 (%sp, %o0, %g4)
+	PTR_DEMANGLE2 (%sp, %o0, %g4, %g3)
 #else
 	mov %o0, %sp		/* OK, install new SP.  */
 #endif
@@ -86,7 +86,7 @@ LOC(found):
 LOC(sp_ok):
 	ld ENV(g1,JB_PC), %o0	/* Extract target return PC.  */
 #ifdef PTR_DEMANGLE
-	PTR_DEMANGLE2 (%o0, %o0, %g4)
+	PTR_DEMANGLE2 (%o0, %o0, %g4, %g3)
 #endif
 	jmp %o0 + 8		/* Return there.  */
 	 mov %g2, %o0		/* Delay slot: set return value.  */

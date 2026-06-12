@@ -23,6 +23,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <stdbit.h>
 #include <signal.h>
 #include <sys/syscall.h>
 
@@ -34,7 +35,8 @@
       uintptr_t cur_sp;							\
       uintptr_t new_sp = env->__gregs[9];				\
       __asm__ ("lgr %0, %%r15" : "=r" (cur_sp));			\
-      new_sp ^= guard;							\
+      new_sp = stdc_rotate_right (new_sp, 2 * sizeof (uintptr_t) + 1)	\
+	       ^ guard;							\
       if (new_sp < cur_sp)						\
 	{								\
 	  stack_t oss;							\

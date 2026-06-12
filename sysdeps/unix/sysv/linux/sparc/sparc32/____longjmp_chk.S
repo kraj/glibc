@@ -32,7 +32,7 @@ longjmp_msg:
 ENTRY (____longjmp_chk)
 	ld	ENV(o0,JB_SP), %g5
 #ifdef PTR_DEMANGLE
-	PTR_DEMANGLE (%g5, %g5, %g4)
+	PTR_DEMANGLE (%g5, %g5, %g4, %g3)
 #endif
 
 	cmp	%sp, %g5
@@ -82,7 +82,7 @@ ENTRY (____longjmp_chk)
 .Lok_norestore:
 	ld	ENV(o0,JB_FP), %g3	/* Cache target FP in register %g3.  */
 #ifdef PTR_DEMANGLE
-	PTR_DEMANGLE2 (%g3, %g3, %g4)
+	PTR_DEMANGLE2 (%g3, %g3, %g4, %g1)
 #endif
 
 	mov %o0, %g1		/* ENV in %g1 */
@@ -103,7 +103,7 @@ ENTRY (____longjmp_chk)
 	ta	ST_FLUSH_WINDOWS
 #ifdef PTR_DEMANGLE
 	ld	ENV(g1,JB_PC), %g1 /* Set return PC. */
-	PTR_DEMANGLE2 (%i7, %g1, %g4)
+	PTR_DEMANGLE2 (%i7, %g1, %g4, %g3)
 #else
 	ld	ENV(g1,JB_PC), %i7 /* Set return PC. */
 #endif

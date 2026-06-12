@@ -53,9 +53,9 @@ ENTRY(__longjmp)
 	ldt     $f8, JB_F8*8(a0)
 	ldt     $f9, JB_F9*8(a0)
 #ifdef PTR_DEMANGLE
-	PTR_DEMANGLE(ra, t1)
-	PTR_DEMANGLE2(t0, t1)
-	PTR_DEMANGLE2(fp, t1)
+	PTR_DEMANGLE(ra, t1, t2)
+	PTR_DEMANGLE2(t0, t1, t2)
+	PTR_DEMANGLE2(fp, t1, t2)
 #endif
 	cmoveq  v0, 1, v0
 	mov     t0, sp

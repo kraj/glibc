@@ -50,17 +50,36 @@
 	lwz	tmpreg,PTR_GUARD_SYM@l(tmpreg)
 # endif
 
+# if defined(__PPC64__) || defined(__powerpc64__)
+#  define PTR_ROT_MANGLE(dst, src)	rotldi	dst,src,17
+#  define PTR_ROT_DEMANGLE(dst, src)	rotldi	dst,src,47
+# else
+#  define PTR_ROT_MANGLE(dst, src)	rotlwi	dst,src,9
+#  define PTR_ROT_DEMANGLE(dst, src)	rotlwi	dst,src,23
+# endif
+
 # define PTR_MANGLE(reg, tmpreg) \
 	PTR_GUARD_LOAD (tmpreg); \
-	xor	reg,tmpreg,reg
+	xor	reg,tmpreg,reg; \
+	PTR_ROT_MANGLE (reg, reg)
 # define PTR_MANGLE2(reg, tmpreg) \
-	xor	reg,tmpreg,reg
+	xor	reg,tmpreg,reg; \
+	PTR_ROT_MANGLE (reg, reg)
 # define PTR_MANGLE3(destreg, reg, tmpreg) \
 	PTR_GUARD_LOAD (tmpreg); \
-	xor	destreg,tmpreg,reg
-# define PTR_DEMANGLE(reg, tmpreg) PTR_MANGLE (reg, tmpreg)
-# define PTR_DEMANGLE2(reg, tmpreg) PTR_MANGLE2 (reg, tmpreg)
-# define PTR_DEMANGLE3(destreg, reg, tmpreg) PTR_MANGLE3 (destreg, reg, tmpreg)
+	xor	destreg,tmpreg,reg; \
+	PTR_ROT_MANGLE (destreg, destreg)
+# define PTR_DEMANGLE(reg, tmpreg) \
+	PTR_GUARD_LOAD (tmpreg); \
+	PTR_ROT_DEMANGLE (reg, reg); \
+	xor	reg,tmpreg,reg
+# define PTR_DEMANGLE2(reg, tmpreg) \
+	PTR_ROT_DEMANGLE (reg, reg); \
+	xor	reg,tmpreg,reg
+# define PTR_DEMANGLE3(destreg, reg, tmpreg) \
+	PTR_GUARD_LOAD (tmpreg); \
+	PTR_ROT_DEMANGLE (destreg, reg); \
+	xor	destreg,tmpreg,destreg
 #endif
 
 #endif /* POINTER_GUARD_ASM_H */

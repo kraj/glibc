@@ -22,34 +22,36 @@
 #ifdef __ASSEMBLER__
 # if (IS_IN (rtld) \
       || (!defined SHARED && (IS_IN (libc) || IS_IN (libpthread))))
-#  define PTR_MANGLE(dst, src, guard)                   \
+#  define PTR_MANGLE_LOAD(guard)                        \
         grs     t0, 1f;                                 \
 1:                                                      \
         lrw     guard, 1b@GOTPC;                        \
         addu    t0, guard;                              \
         lrw     guard, __pointer_chk_guard_local@GOT;   \
         ldr.w   guard, (t0, guard << 0);                \
-        ldw     guard, (guard, 0);                      \
-        xor     dst, src, guard;
-#  define PTR_DEMANGLE(dst, src, guard) PTR_MANGLE (dst, src, guard)
-#  define PTR_MANGLE2(dst, src, guard) \
-        xor     dst, src, guard
-#  define PTR_DEMANGLE2(dst, src, guard) PTR_MANGLE2 (dst, src, guard)
+        ldw     guard, (guard, 0);
 # else
-#  define PTR_MANGLE(dst, src, guard)           \
-        grs     t0, 1f;                         \
-1:                                              \
-        lrw     guard, 1b@GOTPC;                \
-        addu    t0, guard;                      \
-        lrw     guard, __pointer_chk_guard@GOT; \
-        ldr.w   guard, (t0, guard << 0);        \
-        ldw     guard, (guard, 0);              \
-        xor     dst, src, guard;
-#  define PTR_DEMANGLE(dst, src, guard) PTR_MANGLE (dst, src, guard)
-#  define PTR_MANGLE2(dst, src, guard) \
-        xor     dst, src, guard
-#  define PTR_DEMANGLE2(dst, src, guard) PTR_MANGLE2 (dst, src, guard)
+#  define PTR_MANGLE_LOAD(guard)                        \
+        grs     t0, 1f;                                 \
+1:                                                      \
+        lrw     guard, 1b@GOTPC;                        \
+        addu    t0, guard;                              \
+        lrw     guard, __pointer_chk_guard@GOT;         \
+        ldr.w   guard, (t0, guard << 0);                \
+        ldw     guard, (guard, 0);
 # endif
+# define PTR_MANGLE(dst, src, guard)                    \
+        PTR_MANGLE_LOAD (guard);                        \
+        PTR_MANGLE2 (dst, src, guard)
+# define PTR_MANGLE2(dst, src, guard)                   \
+        xor     dst, src, guard;                        \
+        rotli   dst, dst, 9
+# define PTR_DEMANGLE(dst, src, guard)                  \
+        PTR_MANGLE_LOAD (guard);                        \
+        PTR_DEMANGLE2 (dst, src, guard)
+# define PTR_DEMANGLE2(dst, src, guard)                 \
+        rotli   dst, src, 23;                           \
+        xor     dst, dst, guard
 #endif
 
 #endif /* POINTER_GUARD_ASM_H */

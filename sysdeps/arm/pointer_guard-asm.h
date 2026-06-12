@@ -24,30 +24,23 @@
       || (!defined SHARED && (IS_IN (libc) || IS_IN (libpthread))))
 #  define PTR_MANGLE_LOAD(guard, tmp)                                   \
   LDR_HIDDEN (guard, tmp, C_SYMBOL_NAME(__pointer_chk_guard_local), 0)
-#  define PTR_MANGLE(dst, src, guard, tmp)                              \
-  PTR_MANGLE_LOAD(guard, tmp);                                          \
-  PTR_MANGLE2(dst, src, guard)
-/* Use PTR_MANGLE2 for efficiency if guard is already loaded.  */
-#  define PTR_MANGLE2(dst, src, guard)          \
-  eor dst, src, guard
-#  define PTR_DEMANGLE(dst, src, guard, tmp)    \
-  PTR_MANGLE (dst, src, guard, tmp)
-#  define PTR_DEMANGLE2(dst, src, guard)        \
-  PTR_MANGLE2 (dst, src, guard)
 # else
 #  define PTR_MANGLE_LOAD(guard, tmp)                                   \
-  LDR_GLOBAL (guard, tmp, C_SYMBOL_NAME(__pointer_chk_guard), 0);
-#  define PTR_MANGLE(dst, src, guard, tmp)                              \
+  LDR_GLOBAL (guard, tmp, C_SYMBOL_NAME(__pointer_chk_guard), 0)
+# endif
+# define PTR_MANGLE(dst, src, guard, tmp)                              \
   PTR_MANGLE_LOAD(guard, tmp);                                          \
   PTR_MANGLE2(dst, src, guard)
 /* Use PTR_MANGLE2 for efficiency if guard is already loaded.  */
-#  define PTR_MANGLE2(dst, src, guard)          \
-  eor dst, src, guard
-#  define PTR_DEMANGLE(dst, src, guard, tmp)    \
-  PTR_MANGLE (dst, src, guard, tmp)
-#  define PTR_DEMANGLE2(dst, src, guard)        \
-  PTR_MANGLE2 (dst, src, guard)
-# endif
+# define PTR_MANGLE2(dst, src, guard)          \
+  eor dst, src, guard;                         \
+  ror dst, dst, #23
+# define PTR_DEMANGLE(dst, src, guard, tmp)    \
+  PTR_MANGLE_LOAD(guard, tmp);                  \
+  PTR_DEMANGLE2(dst, src, guard)
+# define PTR_DEMANGLE2(dst, src, guard)        \
+  ror dst, src, #9;                            \
+  eor dst, dst, guard
 #endif
 
 #endif /* POINTER_GUARD_ASM_H */

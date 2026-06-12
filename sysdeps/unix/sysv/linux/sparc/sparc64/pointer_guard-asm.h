@@ -39,13 +39,22 @@
 	sethi	%hi(PTR_GUARD_SYM), tmpreg;				\
 	ldx	[tmpreg + %lo(PTR_GUARD_SYM)], tmpreg
 # endif
-# define PTR_MANGLE(dreg, reg, tmpreg) \
+# define PTR_MANGLE(dreg, reg, tmpreg, tmp2) \
 	PTR_GUARD_LOAD (tmpreg);					\
-	xor	reg, tmpreg, dreg
-# define PTR_DEMANGLE(dreg, reg, tmpreg) PTR_MANGLE (dreg, reg, tmpreg)
-# define PTR_MANGLE2(dreg, reg, tmpreg) \
-	xor	reg, tmpreg, dreg
-# define PTR_DEMANGLE2(dreg, reg, tmpreg) PTR_MANGLE2 (dreg, reg, tmpreg)
+	PTR_MANGLE2 (dreg, reg, tmpreg, tmp2)
+# define PTR_MANGLE2(dreg, reg, tmpreg, tmp2) \
+	xor	reg, tmpreg, dreg;					\
+	sllx	dreg, 17, tmp2;						\
+	srlx	dreg, 47, dreg;						\
+	or	dreg, tmp2, dreg
+# define PTR_DEMANGLE(dreg, reg, tmpreg, tmp2) \
+	PTR_GUARD_LOAD (tmpreg);					\
+	PTR_DEMANGLE2 (dreg, reg, tmpreg, tmp2)
+# define PTR_DEMANGLE2(dreg, reg, tmpreg, tmp2) \
+	srlx	reg, 17, tmp2;						\
+	sllx	reg, 47, dreg;						\
+	or	dreg, tmp2, dreg;					\
+	xor	dreg, tmpreg, dreg
 #endif
 
 #endif /* POINTER_GUARD_ASM_H */

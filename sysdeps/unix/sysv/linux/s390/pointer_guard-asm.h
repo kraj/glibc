@@ -32,11 +32,18 @@
 # endif
 # define PTR_MANGLE(reg, tmpreg) \
 	PTR_GUARD_LOAD (tmpreg);					\
-	xgr	reg,tmpreg
+	xgr	reg,tmpreg;						\
+	rllg	reg,reg,17
 # define PTR_MANGLE2(reg, tmpreg) \
+	xgr	reg,tmpreg;						\
+	rllg	reg,reg,17
+# define PTR_DEMANGLE(reg, tmpreg) \
+	PTR_GUARD_LOAD (tmpreg);					\
+	rllg	reg,reg,47;						\
 	xgr	reg,tmpreg
-# define PTR_DEMANGLE(reg, tmpreg) PTR_MANGLE (reg, tmpreg)
-# define PTR_DEMANGLE2(reg, tmpreg) PTR_MANGLE2 (reg, tmpreg)
+# define PTR_DEMANGLE2(reg, tmpreg) \
+	rllg	reg,reg,47;						\
+	xgr	reg,tmpreg
 #endif
 
 #endif /* POINTER_GUARD_ASM_H */

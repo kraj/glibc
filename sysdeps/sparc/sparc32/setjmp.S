@@ -38,9 +38,9 @@ ENTRY (__sigsetjmp)
 	ta	ST_FLUSH_WINDOWS
 
 #ifdef PTR_MANGLE
-	PTR_MANGLE (%g1, %o7, %g4)
-	PTR_MANGLE2 (%g2, %sp, %g4)
-	PTR_MANGLE2 (%g3, %fp, %g4)
+	PTR_MANGLE (%g1, %o7, %g4, %g5)
+	PTR_MANGLE2 (%g2, %sp, %g4, %g5)
+	PTR_MANGLE2 (%g3, %fp, %g4, %g5)
 	st	%g1, [%o0 + (JB_PC * 4)]
 	st	%g2, [%o0 + (JB_SP * 4)]
 	st	%g3, [%o0 + (JB_FP * 4)]

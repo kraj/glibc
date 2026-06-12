@@ -52,22 +52,22 @@ $sigsetjmp_local:
 	stq	s4, JB_S4*8(a0)
 	stq	s5, JB_S5*8(a0)
 #ifdef PTR_MANGLE
-	PTR_MANGLE(t1, ra, t0)
+	PTR_MANGLE(t1, ra, t0, t2)
 	stq	t1, JB_PC*8(a0)
 #else
 	stq	ra, JB_PC*8(a0)
 #endif
 #if defined(PTR_MANGLE) && FRAME == 0
-	PTR_MANGLE2(t1, sp, t0)
+	PTR_MANGLE2(t1, sp, t0, t2)
 #else
 	addq	sp, FRAME, t1
 # ifdef PTR_MANGLE
-	PTR_MANGLE2(t1, t1, t0)
+	PTR_MANGLE2(t1, t1, t0, t2)
 # endif
 #endif
 	stq	t1, JB_SP*8(a0)
 #ifdef PTR_MANGLE
-	PTR_MANGLE2(t1, fp, t0)
+	PTR_MANGLE2(t1, fp, t0, t2)
 	stq	t1, JB_FP*8(a0)
 #else
 	stq	fp, JB_FP*8(a0)

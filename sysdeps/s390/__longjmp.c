@@ -48,7 +48,9 @@ __longjmp (__jmp_buf env, int val)
 			   argument and target address.  */
 #ifdef PTR_DEMANGLE
 			"lmg  %%r4,%%r5,64(%1)\n\t"
+			"rllg %%r4,%%r4,47\n\t"
 			"xgr  %%r4,%2\n\t"
+			"rllg %%r5,%%r5,47\n\t"
 			"xgr  %%r5,%2\n\t"
 			LIBC_PROBE_ASM (longjmp, 8@%1 -4@%0 8@%%r4)
 #else
