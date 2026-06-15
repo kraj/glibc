@@ -1214,6 +1214,19 @@ check: tests
 xcheck: xtests
 endif
 
+# 'make check-parallel' runs the whole suite with maximum concurrency:
+# serialize-tests=no drops the per-subdirectory .NOTPARALLEL and the run-time
+# ordering, so every test builds and runs in parallel.  A single pass suffices
+# (there is no .NOTPARALLEL to work around, so the test programs already build
+# concurrently).
+# This is faster on an idle machine, at the cost of possible flakiness in the
+# timing-sensitive tests under the heavier load.
+.PHONY: check-parallel xcheck-parallel
+check-parallel:
+	$(MAKE) serialize-tests=no tests
+xcheck-parallel:
+	$(MAKE) serialize-tests=no xtests
+
 # Also handle test inputs in sysdeps.
 vpath %.input $(sysdirs)
 

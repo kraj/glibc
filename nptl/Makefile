@@ -738,8 +738,9 @@ tst-audit-threads-ENV = LD_AUDIT=$(objpfx)tst-audit-threads-mod1.so
 tst-setuid1-static-ENV = \
   LD_LIBRARY_PATH=$(ld-library-path):$(common-objpfx)elf:$(common-objpfx)nss
 
-# The tests here better do not run in parallel.
-ifeq ($(run-built-tests),yes)
+# The tests here better do not run in parallel, unless serialize-tests is
+# cleared (make check-parallel).
+ifeq (yes-yes,$(run-built-tests)-$(serialize-tests))
 ifneq ($(filter %tests,$(MAKECMDGOALS)),)
 .NOTPARALLEL:
 endif

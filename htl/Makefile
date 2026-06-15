@@ -259,7 +259,7 @@ $(addprefix $(objpfx),$(tests) $(test-srcs)): $(srcdir)/libpthread_syms.a $(objp
 endif
 
 # Like rt, these tests prefer to be run serially.
-ifeq ($(run-built-tests),yes)
+ifeq (yes-yes,$(run-built-tests)-$(serialize-tests))
 ifneq ($(filter %tests,$(MAKECMDGOALS)),)
 .NOTPARALLEL:
 endif

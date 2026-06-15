@@ -594,7 +594,9 @@ $(objpfx)testroot.pristine/install.stamp: | others
 # 'make subdir/tests' is left alone.  And it only orders the test run
 # (run-built-tests=yes); the "build the tests" pass (run-built-tests=no)
 # is left fully parallel, so every test program still builds concurrently.
+# serialize-tests=no ('make check-parallel') drops the ordering entirely.
 ifeq ($(run-built-tests),yes)
+ifeq (yes,$(serialize-tests))
 ifneq (,$(filter tests xtests check xcheck,$(MAKECMDGOALS)))
 +late-test-subdirs := $(filter nptl htl,$(subdirs)) $(filter rt,$(subdirs))
 +test-run-prev := \
@@ -602,6 +604,7 @@ ifneq (,$(filter tests xtests check xcheck,$(MAKECMDGOALS)))
 $(foreach d,$(+late-test-subdirs),\
   $(eval $(d)/tests: $(+test-run-prev))\
   $(eval +test-run-prev += $(d)/tests))
+endif
 endif
 endif
 

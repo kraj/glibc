@@ -782,6 +782,14 @@ run-built-tests = yes
 endif
 endif
 
+# Whether the timing-sensitive test runs are serialized: each is run with
+# .NOTPARALLEL and, at the top level, ordered after the rest of the test run.
+# This is the default; 'make check-parallel' clears it to run every test
+# concurrently.
+ifndef serialize-tests
+serialize-tests = yes
+endif
+
 # Whether to build the static math tests
 ifndef build-math-static-tests
 build-math-static-tests = no
