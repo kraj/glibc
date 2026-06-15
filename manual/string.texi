@@ -1803,6 +1803,12 @@ to an @code{unsigned char}) in the initial @var{size} bytes of the
 object beginning at @var{block}.  The return value is a pointer to the
 located byte, or a null pointer if no match was found.
 
+This function behaves as if it reads the bytes sequentially and stops at
+the first match, which means that if the object contains a match the
+behavior is defined even when the object size is less than @var{size}.
+This behavior guarantee is unusual, and is not shared by related
+functions like @code{memcmp} and @code{wmemchr}.
+
 In ISO C23 and later, this function is qualifier-generic:
 that is, it is also implemented as a function-like macro,
 and when the macro is used and @var{block} has a type
