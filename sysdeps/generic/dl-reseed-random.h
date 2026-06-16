@@ -19,15 +19,13 @@
 #ifndef _DL_RESEED_RANDOM_H
 #define _DL_RESEED_RANDOM_H
 
-#include <string.h>
+#include <stddef.h>
 
+/* Leave the kernel-provided bytes untouched rather than scrubbing them to a
+   predictable constant, the value is exposed through getauxval (AT_RANDOM). */
 static inline void __attribute__ ((always_inline))
 _dl_reseed_random (void **dl_random)
 {
-  if (*dl_random == NULL)
-    return;
-  memset (*dl_random, '\0', 16);
-  __asm__ __volatile__ ("" : : "r" (*dl_random) : "memory");
   *dl_random = NULL;
 }
 

@@ -19,23 +19,24 @@
 #ifndef _DL_RESEED_RANDOM_H
 #define _DL_RESEED_RANDOM_H
 
-#include <string.h>
 #include <not-cancel.h>
 #include <sys/random.h>
 
 /* The stack and pointer guards have been derived from the 16 AT_RANDOM
-   bytes pointed to by DL_RANDOM.  Scrub them first, so the guards cannot be
-   recovered even if the refill below fails, then refill them with fresh
-   entropy unrelated to the guards so that getauxval (AT_RANDOM) keeps
-   returning random bytes.  */
+   bytes pointed to by DL_RANDOM.  Overwrite them in place with fresh entropy
+   unrelated to the guards, so the value returned by getauxval (AT_RANDOM) no
+   longer reveals them while still being random.
+
+   This is best-effort and must not perturb process startup.  The getrandom
+   might not provide all the requested entropy, and leaving the original bytes
+   is deliberate: AT_RANDOM is exposed through getauxval, and a potential
+   leak of the guards is preferable to scrubbing the value to a predictable
+   constant.  */
 static inline void __attribute__ ((always_inline))
 _dl_reseed_random (void **dl_random)
 {
   if (*dl_random == NULL)
     return;
-  memset (*dl_random, '\0', 16);
-  __asm__ __volatile__ ("" : : "r" (*dl_random) : "memory");
-
   __getrandom_nocancel_nostatus_direct (*dl_random, 16, GRND_NONBLOCK);
   *dl_random = NULL;
 }
