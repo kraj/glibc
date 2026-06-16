@@ -80,3 +80,7 @@ sysdep_headers += \
   bits/types/struct_shmid_ds.h
   # sysdep_headers
 endif
+
+ifeq ($(subdir),socket)
+sysdep_headers += net/if_arp.h
+endif

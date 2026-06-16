@@ -477,7 +477,6 @@ ifeq ($(subdir),socket)
 sysdep_headers += \
   bits/socket-constants.h \
   net/ethernet.h \
-  net/if_arp.h \
   net/if_packet.h \
   net/if_ppp.h \
   net/if_shaper.h \

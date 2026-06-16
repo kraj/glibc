@@ -224,7 +224,7 @@ sysdep_headers += nfs/nfs.h
 endif
 
 ifeq ($(subdir),socket)
-sysdep_headers += net/ethernet.h net/if_arp.h net/if_ether.h net/route.h
+sysdep_headers += net/ethernet.h net/if_ether.h net/route.h
 endif
 
 ifeq ($(subdir),nis)
