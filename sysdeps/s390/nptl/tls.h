@@ -131,7 +131,7 @@ typedef struct
 #define THREAD_SET_STACK_GUARD(value) \
   do									      \
    {									      \
-     __asm__ __volatile__ ("" : : : "a0", "a1");			      \
+     __asm__ __volatile__ ("" : : : "a0", "a1", "memory");		      \
      THREAD_SETMEM (THREAD_SELF, header.stack_guard, value);		      \
    }									      \
   while (0)
