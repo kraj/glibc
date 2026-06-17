@@ -21,6 +21,13 @@ Major new features:
 * Static PIE is now supported for arm-*-linux-gnueabi.  It requires toolchain
   support to correctly set the expected linker options.
 
+* On AArch64 targets that support Guarded Control Stack extension all GCS
+  operations (including status, write on shadow stack, and push to shadow
+  stack) are locked after enabling GCS with ENFORCED or OVERRIDE GCS policy.
+  When a GCS operation is locked, a program cannot change this operation
+  status via prctl syscall.  This prevents disabling or corrupting GCS
+  shadow stack during runtime.
+
 Deprecated and removed features, and other changes affecting compatibility:
 
 * Although malloc and related functions currently return pointers
@@ -31,6 +38,10 @@ Deprecated and removed features, and other changes affecting compatibility:
   alignment greater than 1.
 
  * The s390-linux-gnu (31bit) configuration is no longer supported.
+
+* The --enable-memory-tagging configure option has been removed.
+  The corresponding AArch64-specific functionality that was previously
+  activated by this flag has been removed as well.
 
 Changes to build and runtime requirements:
 
