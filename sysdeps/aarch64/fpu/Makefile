@@ -44,10 +44,20 @@ float-sve-funcs = $(libmvec-supported-funcs)
 double-sve-funcs = $(libmvec-supported-funcs)
 
 ifeq ($(subdir),mathvec)
-libmvec-support = $(addsuffix f_advsimd,$(float-advsimd-funcs)) \
-                  $(addsuffix _advsimd,$(double-advsimd-funcs)) \
-                  $(addsuffix f_sve,$(float-sve-funcs)) \
-                  $(addsuffix _sve,$(double-sve-funcs)) \
+generated-dirs += advsimd sve
+generated += advsimd/stamp sve/stamp
+before-compile += $(addprefix $(objpfx),advsimd/stamp sve/stamp)
+
+$(objpfx)advsimd/stamp $(objpfx)sve/stamp:
+	$(make-target-directory)
+	touch $@
+
+sysd-rules-patterns += advsimd/%:advsimd/% sve/%:sve/%
+
+libmvec-support = $(addprefix advsimd/,$(addsuffix f,$(float-advsimd-funcs))) \
+                  $(addprefix advsimd/,$(double-advsimd-funcs)) \
+                  $(addprefix sve/,$(addsuffix f,$(float-sve-funcs))) \
+                  $(addprefix sve/,$(double-sve-funcs)) \
                   v_log_data \
                   v_exp_data \
                   v_log2_data \
@@ -96,18 +106,23 @@ ifeq ($(build-mathvec),yes)
 libmvec-tests += float-advsimd double-advsimd float-sve double-sve
 endif
 
-define sve-float-cflags-template
-CFLAGS-$(1)f_sve.c += $(sve-cflags)
+define sve-bench-float-cflags-template
 CFLAGS-bench-float-sve-$(1).c += $(sve-cflags)
 endef
 
-define sve-double-cflags-template
-CFLAGS-$(1)_sve.c += $(sve-cflags)
+define sve-bench-double-cflags-template
 CFLAGS-bench-double-sve-$(1).c += $(sve-cflags)
 endef
 
-$(foreach f,$(float-sve-funcs), $(eval $(call sve-float-cflags-template,$(f))))
-$(foreach f,$(double-sve-funcs), $(eval $(call sve-double-cflags-template,$(f))))
+$(foreach f,$(float-sve-funcs), $(eval $(call sve-bench-float-cflags-template,$(f))))
+$(foreach f,$(double-sve-funcs), $(eval $(call sve-bench-double-cflags-template,$(f))))
+
+# Specialize CFLAGS used for building SVE sources.
+define sve-object-cflags-template
+$(objpfx)sve/%$(1): CFLAGS += $(sve-cflags)
+endef
+
+$(foreach o,$(all-object-suffixes),$(eval $(call sve-object-cflags-template,$(o))))
 
 CFLAGS-test-float-sve-wrappers.c = $(sve-cflags)
 CFLAGS-test-double-sve-wrappers.c = $(sve-cflags)
