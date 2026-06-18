@@ -42,34 +42,40 @@ float-advsimd-funcs = $(libmvec-supported-funcs)
 double-advsimd-funcs = $(libmvec-supported-funcs)
 float-sve-funcs = $(libmvec-supported-funcs)
 double-sve-funcs = $(libmvec-supported-funcs)
+mathvec-types = float double
+mathvec-subdirs = advsimd sve
 
 ifeq ($(subdir),mathvec)
-generated-dirs += advsimd sve
-generated += advsimd/stamp sve/stamp
-before-compile += $(addprefix $(objpfx),advsimd/stamp sve/stamp)
+generated-dirs += $(mathvec-subdirs)
+generated += $(addsuffix /stamp,$(mathvec-subdirs))
+before-compile += $(addprefix $(objpfx),$(addsuffix /stamp,$(mathvec-subdirs)))
 
-$(objpfx)advsimd/stamp $(objpfx)sve/stamp:
+$(addprefix $(objpfx),$(addsuffix /stamp,$(mathvec-subdirs))):
 	$(make-target-directory)
 	touch $@
 
-sysd-rules-patterns += advsimd/%:advsimd/% sve/%:sve/%
+sysd-rules-patterns += $(foreach dir,$(mathvec-subdirs),$(dir)/%:$(dir)/%)
 
-libmvec-support = $(addprefix advsimd/,$(addsuffix f,$(float-advsimd-funcs))) \
-                  $(addprefix advsimd/,$(double-advsimd-funcs)) \
-                  $(addprefix sve/,$(addsuffix f,$(float-sve-funcs))) \
-                  $(addprefix sve/,$(double-sve-funcs)) \
-                  v_log_data \
-                  v_exp_data \
-                  v_log2_data \
-                  v_log10_data \
-                  erf_data \
-                  erff_data \
-                  v_exp_tail_data \
-                  erfc_data \
-                  erfcf_data \
-                  v_pow_exp_data \
-                  v_pow_log_data \
-                  v_powf_data
+define libmvec-routines-for
+$(addprefix $(1)/,$(addsuffix f,$(float-$(1)-funcs))) \
+$(addprefix $(1)/,$(double-$(1)-funcs))
+endef
+
+libmvec-vector-routines = $(foreach dir,$(mathvec-subdirs),\
+                           $(call libmvec-routines-for,$(dir)))
+libmvec-data-routines = v_log_data \
+                        v_exp_data \
+                        v_log2_data \
+                        v_log10_data \
+                        erf_data \
+                        erff_data \
+                        v_exp_tail_data \
+                        erfc_data \
+                        erfcf_data \
+                        v_pow_exp_data \
+                        v_pow_log_data \
+                        v_powf_data
+libmvec-support = $(libmvec-vector-routines) $(libmvec-data-routines)
 endif
 
 # Enable SVE for building libmvec.  Since CFLAGS may contain a -mcpu or -march,
@@ -78,21 +84,27 @@ endif
 
 sve-cflags = -mcpu=generic+sve -march=armv8-a+sve -mtune=neoverse-v1
 
+bench-script-advsimd = bench_libmvec_advsimd.py
+bench-script-sve = bench_libmvec_sve.py
+
+define bench-libmvec-for
+$(addprefix $(1)-$(2)-,$($(1)-$(2)-funcs))
+endef
+
 ifeq ($(build-mathvec),yes)
-bench-libmvec = $(addprefix float-advsimd-,$(float-advsimd-funcs)) \
-                $(addprefix double-advsimd-,$(double-advsimd-funcs)) \
-                $(addprefix float-sve-,$(float-sve-funcs)) \
-                $(addprefix double-sve-,$(double-sve-funcs))
+bench-libmvec = $(foreach type,$(mathvec-types),\
+                 $(foreach dir,$(mathvec-subdirs),\
+                 $(call bench-libmvec-for,$(type),$(dir))))
 endif
 
-$(objpfx)bench-float-advsimd-%.c:
-	$(PYTHON) $(..)sysdeps/aarch64/fpu/scripts/bench_libmvec_advsimd.py $(basename $(@F)) > $@
-$(objpfx)bench-double-advsimd-%.c:
-	$(PYTHON) $(..)sysdeps/aarch64/fpu/scripts/bench_libmvec_advsimd.py $(basename $(@F)) > $@
-$(objpfx)bench-float-sve-%.c:
-	$(PYTHON) $(..)sysdeps/aarch64/fpu/scripts/bench_libmvec_sve.py $(basename $(@F)) > $@
-$(objpfx)bench-double-sve-%.c:
-	$(PYTHON) $(..)sysdeps/aarch64/fpu/scripts/bench_libmvec_sve.py $(basename $(@F)) > $@
+define bench-libmvec-rule
+$(objpfx)bench-$(1)-$(2)-%.c:
+	$$(PYTHON) $$(..)sysdeps/aarch64/fpu/scripts/$$(bench-script-$(2)) $$(basename $$(@F)) > $$@
+endef
+
+$(foreach type,$(mathvec-types),\
+  $(foreach dir,$(mathvec-subdirs),\
+    $(eval $(call bench-libmvec-rule,$(type),$(dir)))))
 
 ifeq (${STATIC-BENCHTESTS},yes)
 libmvec-benchtests = $(common-objpfx)mathvec/libmvec.a $(common-objpfx)math/libm.a
@@ -103,19 +115,17 @@ endif
 $(addprefix $(objpfx)bench-,$(bench-libmvec)): $(libmvec-benchtests)
 
 ifeq ($(build-mathvec),yes)
-libmvec-tests += float-advsimd double-advsimd float-sve double-sve
+libmvec-tests += $(foreach type,$(mathvec-types),\
+                  $(foreach dir,$(mathvec-subdirs),$(type)-$(dir)))
 endif
 
-define sve-bench-float-cflags-template
-CFLAGS-bench-float-sve-$(1).c += $(sve-cflags)
+define sve-bench-cflags-template
+CFLAGS-bench-$(1)-sve-$(2).c += $(sve-cflags)
 endef
 
-define sve-bench-double-cflags-template
-CFLAGS-bench-double-sve-$(1).c += $(sve-cflags)
-endef
-
-$(foreach f,$(float-sve-funcs), $(eval $(call sve-bench-float-cflags-template,$(f))))
-$(foreach f,$(double-sve-funcs), $(eval $(call sve-bench-double-cflags-template,$(f))))
+$(foreach type,$(mathvec-types),\
+  $(foreach f,$($(type)-sve-funcs),\
+    $(eval $(call sve-bench-cflags-template,$(type),$(f)))))
 
 # Specialize CFLAGS used for building SVE sources.
 define sve-object-cflags-template
