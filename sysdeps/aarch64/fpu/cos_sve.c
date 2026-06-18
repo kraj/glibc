@@ -18,57 +18,85 @@
    <https://www.gnu.org/licenses/>.  */
 
 #include "sv_math.h"
+#include "sv_trig_fallback.h"
 
 static const struct data
 {
-  double inv_pio2, pio2_1, pio2_2, pio2_3, shift;
+  double inv_pio2, pio2_1, pio2_2, pio2_3, shift, range_val;
 } data = {
   /* Polynomial coefficients are hardwired in FTMAD instructions.  */
   .inv_pio2 = 0x1.45f306dc9c882p-1,
-  .pio2_1 = 0x1.921fb50000000p+0,
-  .pio2_2 = 0x1.110b460000000p-26,
-  .pio2_3 = 0x1.1a62633145c07p-54,
+  .pio2_1 = 0x1.921fb54442d18p+0,
+  .pio2_2 = 0x1.1a62633145c07p-54,
+  .pio2_3 = -0x1.f1976b7ed8fbcp-110,
   /* Original shift used in AdvSIMD cos,
      plus a contribution to set the bit #0 of q
      as expected by trigonometric instructions.  */
-  .shift = 0x1.8000000000001p52
+  .shift = 0x1.8000000000001p52,
+  .range_val = 0x1p23,
 };
 
-#define RangeVal 0x4160000000000000 /* asuint64 (0x1p23).  */
-
 static svfloat64_t NOINLINE
-special_case (svfloat64_t x, svfloat64_t y, svbool_t oob)
+special_case (svfloat64_t x, svfloat64_t y, svbool_t special)
 {
-  return sv_call_f64 (cos, x, y, oob);
+  svfloat64x2_t r = sv_large_range_reduction (x);
+
+  /* Unpack return struct.  */
+  svfloat64_t remainder = svget2 (r, 0);
+  svuint64_t quadrant = svreinterpret_u64 (svget2 (r, 1));
+
+  svfloat64x2_t eval = sv_sincos_eval (remainder);
+  svfloat64x2_t lookup = sv_sin_cos_lookup (quadrant);
+
+  svfloat64_t sin_r = svget2 (eval, 0);
+  svfloat64_t cosm1_r = svget2 (eval, 1);
+  svfloat64_t sin_k = svget2 (lookup, 0);
+  svfloat64_t cos_k = svget2 (lookup, 1);
+
+  /* Construct cos(x) from k and r, using angle addition formula, with
+    approximations of sin(r) and cos(r) - 1 to reduce rounding errors.
+    cos(x) = cos(k + r)
+      = cos(k)*cos(r) - sin(k)*sin(r)
+      = cos(k)*cosm1(r) - sin(k)*sin(r) + cos(k).  */
+
+  svfloat64_t large_cos = svmla_x (svptrue_b64 (), cos_k, cosm1_r, cos_k);
+  large_cos = svmls_x (svptrue_b64 (), large_cos, sin_k, sin_r);
+
+  /* Inf cases are handled correctly by the fast path, and incorrectly
+    by the slow path. However, it's less costly to the fast path to
+    handle them separately. So we do want to branch here for inf cases,
+    but then use the fast path value anyway.  */
+  special = svaclt (special, x, sv_f64 (INFINITY));
+  return svsel (special, large_cos, y);
 }
 
-/* A fast SVE implementation of cos based on trigonometric
-   instructions (FTMAD, FTSSEL, FTSMUL).
-   Maximum measured error: 2.108 ULPs.
-   SV_NAME_D1 (cos)(0x1.9b0ba158c98f3p+7) got -0x1.fddd4c65c7f07p-3
-					 want -0x1.fddd4c65c7f05p-3.  */
+/* Vector version of cos.
+   The maximum observed error is 1.53 + 0.5 ULP when |x| < 0x1p23.
+   _ZGVsMxv_cos (0x1.166b1063318b8p+19)
+    got 0x1.fff1e92b6c31ap-4
+   want 0x1.fff1e92b6c318p-4
+   The special domain has a higher maximum error than the fast path:
+   Maximum observed error is 2.44 + 0.5ULP when |x| >= 0x1p23.
+   _ZGVsMxv_cos (0x1.aac6f8bffec82p+206)
+    got -0x1.98ecd0b3020bfp-7
+   want -0x1.98ecd0b3020bcp-7.  */
 svfloat64_t SV_NAME_D1 (cos) (svfloat64_t x, const svbool_t pg)
 {
   const struct data *d = ptr_barrier (&data);
+  svfloat64_t inv_pio2 = svld1rq (svptrue_b64 (), &d->inv_pio2);
+  svfloat64_t pio2_23 = svld1rq (svptrue_b64 (), &d->pio2_2);
 
-  svfloat64_t r = svabs_x (pg, x);
-  svbool_t oob = svcmpge (pg, svreinterpret_u64 (r), RangeVal);
+  /* n = rint(x/(pi/2)).  */
+  svfloat64_t q = svmla_lane (sv_f64 (d->shift), x, inv_pio2, 0);
+  svfloat64_t n = svsub_x (pg, q, sv_f64 (d->shift));
 
-  /* Load some constants in quad-word chunks to minimise memory access.  */
-  svbool_t ptrue = svptrue_b64 ();
-  svfloat64_t invpio2_and_pio2_1 = svld1rq (ptrue, &d->inv_pio2);
-  svfloat64_t pio2_23 = svld1rq (ptrue, &d->pio2_2);
-
-  /* n = rint(|x|/(pi/2)).  */
-  svfloat64_t q = svmla_lane (sv_f64 (d->shift), r, invpio2_and_pio2_1, 0);
-  svfloat64_t n = svsub_x (pg, q, d->shift);
-
-  /* r = |x| - n*(pi/2)  (range reduction into -pi/4 .. pi/4).  */
-  r = svmls_lane (r, n, invpio2_and_pio2_1, 1);
+  /* r = x - n*(pi/2)  (range reduction into -pi/4 .. pi/4).  */
+  svfloat64_t r = x;
+  r = svmls_lane (r, n, inv_pio2, 1);
   r = svmls_lane (r, n, pio2_23, 0);
   r = svmls_lane (r, n, pio2_23, 1);
 
-  /* cos(r) poly approx.  */
+  /* sin(r) or cos(r) poly approx, selected by the quadrant bits in q.  */
   svfloat64_t r2 = svtsmul (r, svreinterpret_u64 (q));
   svfloat64_t y = sv_f64 (0.0);
   y = svtmad (y, r2, 7);
@@ -83,9 +111,10 @@ svfloat64_t SV_NAME_D1 (cos) (svfloat64_t x, const svbool_t pg)
   /* Final multiplicative factor: 1.0 or x depending on bit #0 of q.  */
   svfloat64_t f = svtssel (r, svreinterpret_u64 (q));
 
-  if (__glibc_unlikely (svptest_any (pg, oob)))
-    return special_case (x, svmul_x (svnot_z (pg, oob), y, f), oob);
+  svbool_t special = svacge (pg, x, d->range_val);
+  if (__glibc_unlikely (svptest_any (pg, special)))
+    return special_case (x, svmul_x (svptrue_b64 (), f, y), special);
 
   /* Apply factor.  */
-  return svmul_x (pg, f, y);
+  return svmul_x (svptrue_b64 (), f, y);
 }
