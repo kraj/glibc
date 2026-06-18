@@ -177,6 +177,11 @@ do_random_tests (void)
 	    }
 	}
 
+      /* Add matching chars before the start to improve test coverage.  */
+      i = random () & 31;
+      if (i < align)
+	p[i] = seek_char;
+
       if (pos < len)
 	{
 	  size_t r = random ();
