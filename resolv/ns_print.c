@@ -115,7 +115,6 @@ ns_sprintrrf(const u_char *msg, size_t msglen,
 
 	const char *comment;
 	char tmp[100];
-	char errbuf[40];
 	int len, x;
 
 	/*
@@ -590,20 +589,18 @@ ns_sprintrrf(const u_char *msg, size_t msglen,
 		T(addstr(tmp, len, &buf, &buflen));
 		break;
 	    }
-
 	default:
-		snprintf (errbuf, sizeof (errbuf), "unknown RR type %d", type);
-		comment = errbuf;
+		comment = "";
 		goto hexify;
 	}
 	return (buf - obuf);
  formerr:
-	comment = "RR format error";
+	comment = " ; RR format error";
  hexify: {
 	int n, m;
 	char *p;
 
-	len = SPRINTF((tmp, "\\# %u%s\t; %s", (unsigned)(edata - rdata),
+	len = SPRINTF((tmp, "\\# %u%s%s", (unsigned)(edata - rdata),
 		       rdlen != 0U ? " (" : "", comment));
 	T(addstr(tmp, len, &buf, &buflen));
 	while (rdata < edata) {
