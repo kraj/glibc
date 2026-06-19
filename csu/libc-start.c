@@ -51,11 +51,7 @@ extern void __libc_init_first (int argc, char **argv, char **envp);
    in thread local area.  */
 uintptr_t __stack_chk_guard attribute_relro;
 # endif
-# ifndef  THREAD_SET_POINTER_GUARD
-/* Only exported for architectures that don't store the pointer guard
-   value in thread local area.  */
 uintptr_t __pointer_chk_guard_local attribute_relro attribute_hidden;
-# endif
 #endif
 
 #ifndef SHARED
@@ -297,11 +293,7 @@ LIBC_START_MAIN (int (*main) (int, char **, char ** MAIN_AUXVEC_DECL),
   /* Set up the pointer guard value.  */
   uintptr_t pointer_chk_guard = _dl_setup_pointer_guard (_dl_random,
 							 stack_chk_guard);
-# ifdef THREAD_SET_POINTER_GUARD
-  THREAD_SET_POINTER_GUARD (pointer_chk_guard);
-# else
   __pointer_chk_guard_local = pointer_chk_guard;
-# endif
 
   /* We do not need the _dl_random value anymore.  Scrub the AT_RANDOM
      bytes and clear the pointer; on targets with an entropy source, refill

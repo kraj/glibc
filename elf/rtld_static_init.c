@@ -81,7 +81,6 @@ __rtld_static_init (struct link_map *map)
   dl->_dl_find_object = _dl_find_object;
   dl->_dl_readonly_area = _dl_readonly_area;
 
-#ifndef THREAD_SET_POINTER_GUARD
   extern uintptr_t __pointer_chk_guard_local attribute_hidden;
   const ElfW(Sym) *guard_sym
     = _dl_lookup_direct (map, "__pointer_chk_guard",
@@ -91,7 +90,6 @@ __rtld_static_init (struct link_map *map)
   assert (guard_sym != NULL);
   *(uintptr_t *) DL_SYMBOL_ADDRESS (map, guard_sym)
     = __pointer_chk_guard_local;
-#endif
 
   __rtld_static_init_arch (map, dl);
 }

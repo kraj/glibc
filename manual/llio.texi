@@ -2863,7 +2863,6 @@ aiocb64}, since the LFS transparently replaces the old interface.
 @c     _dl_deallocate_tls dup
 @c     munmap ok
 @c    THREAD_COPY_STACK_GUARD ok
-@c    THREAD_COPY_POINTER_GUARD ok
 @c    atomic_exchange_acquire ok
 @c    lll_futex_wake ok
 @c    deallocate_stack @asulock @ascuheap @aculock @acsmem

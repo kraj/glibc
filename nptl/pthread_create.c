@@ -740,11 +740,6 @@ __pthread_create_2_1 (pthread_t *newthread, const pthread_attr_t *attr,
   THREAD_COPY_STACK_GUARD (pd);
 #endif
 
-  /* Copy the pointer guard value.  */
-#ifdef THREAD_COPY_POINTER_GUARD
-  THREAD_COPY_POINTER_GUARD (pd);
-#endif
-
   /* Setup tcbhead.  */
   tls_setup_tcbhead (pd);
 

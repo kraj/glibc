@@ -167,12 +167,8 @@ rtld_hidden_data_def (_dl_argv)
 uintptr_t __stack_chk_guard attribute_relro;
 #endif
 
-/* Only exported for architectures that don't store the pointer guard
-   value in thread local area.  */
 uintptr_t __pointer_chk_guard_local attribute_relro attribute_hidden;
-#ifndef THREAD_SET_POINTER_GUARD
 strong_alias (__pointer_chk_guard_local, __pointer_chk_guard)
-#endif
 
 /* Check that AT_SECURE=0, or that the passed name does not contain
    directories and is not overly long.  Reject empty names
@@ -828,9 +824,6 @@ security_init (void)
   /* Set up the pointer guard as well, if necessary.  */
   uintptr_t pointer_chk_guard
     = _dl_setup_pointer_guard (_dl_random, stack_chk_guard);
-#ifdef THREAD_SET_POINTER_GUARD
-  THREAD_SET_POINTER_GUARD (pointer_chk_guard);
-#endif
   __pointer_chk_guard_local = pointer_chk_guard;
 
   /* We do not need the _dl_random value anymore.  Scrub the AT_RANDOM
