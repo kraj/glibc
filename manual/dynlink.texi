@@ -17,6 +17,7 @@ Dynamic linkers are sometimes called @dfn{dynamic loaders}.
 * Dynamic Linker Environment Variables:: Environment variables that control the
                                           dynamic linker.
 * Dynamic Linker Introspection::    Interfaces for querying mapping information.
+* Indirect Functions::          Selecting function implementations at load time.
 * Dynamic Linker Hardening::    Avoiding unexpected issues with dynamic linking.
 @end menu
 
@@ -735,6 +736,299 @@ A bit mask used to signal that the object contains SFrame data.  See
 
 @end table
 
+@node Indirect Functions
+@section Indirect Functions
+@cindex indirect function
+@cindex IFUNC
+@cindex @code{STT_GNU_IFUNC}
+@cindex resolver function (IFUNC)
+
+@dfn{Indirect functions} (often called @dfn{IFUNCs}) are a GNU
+extension to ELF that defers the selection of a function
+implementation until load time.  A symbol of type
+@code{STT_GNU_IFUNC} does not designate the implementation of a
+function.  Instead, it designates a @dfn{resolver function}.
+@Theglibc{} invokes the resolver while processing relocations that
+reference the symbol, and the address returned by the resolver becomes
+the target of those references.  The typical use of indirect functions
+is to select the variant of a function best suited to the system the
+program is running on, for example based on the available instruction
+set extensions.
+
+Indirect functions are usually defined using the @code{ifunc} function
+attribute provided by GCC and compatible compilers:
+
+@smallexample
+static int
+my_func_generic (int a)
+@{
+  /* @r{@dots{}} */
+@}
+
+static int
+my_func_vectorized (int a)
+@{
+  /* @r{@dots{}} */
+@}
+
+/* @r{The resolver returns the address of the selected
+   implementation.}  */
+static typeof (my_func_generic) *
+my_func_resolver (void)
+@{
+  if (vector_extension_available ())
+    return my_func_vectorized;
+  return my_func_generic;
+@}
+
+int my_func (int a) __attribute__ ((ifunc ("my_func_resolver")));
+@end smallexample
+
+@subsection IFUNC Resolver Calling Conventions
+
+The return value is the address of the selected implementation.
+On many architectures, the resolver receives arguments that describe
+the capabilities of the system, typically derived from the @code{AT_HWCAP}
+value in the auxiliary vector (@pxref{Auxiliary Vector}).  These arguments
+exist because of the restricted environment resolvers run in (see below):
+they allow a resolver to select an implementation without having to obtain
+the information through other means.  Where such arguments are available,
+resolvers should use them instead of querying the system through
+function calls.
+
+The architecture-specific conventions are:
+
+@table @asis
+@item AArch64
+@smallexample
+#include <sys/ifunc.h>
+
+void *resolver (uint64_t hwcap, const __ifunc_arg_t *arg);
+@end smallexample
+
+The first argument contains the @code{AT_HWCAP} value.  If the
+@code{_IFUNC_ARG_HWCAP} bit is set, the second argument is valid and
+points to a @code{__ifunc_arg_t} structure that provides access to all
+hardware capability values: the @code{_size} member contains the size of
+the structure in bytes, and the @code{_hwcap}, @code{_hwcap2},
+@code{_hwcap3}, and @code{_hwcap4} members contain the
+@code{AT_HWCAP}, @code{AT_HWCAP2}, @code{AT_HWCAP3}, and
+@code{AT_HWCAP4} values, respectively.  Resolvers must check
+@code{_size} before accessing a member, because @theglibc{} may pass
+a structure that ends before that member.  The @code{__ifunc_hwcap}
+inline function in @file{sys/ifunc.h} performs the required checks
+when obtaining a hardware capability value by index.
+
+The canonical documentation for this interface is the
+@cite{GNU C Library ifunc interface} section of the @cite{ELF for the
+Arm 64-bit Architecture (AArch64)} ABI, available at
+@uref{https://github.com/ARM-software/abi-aa/blob/main/sysvabi64/sysvabi64.rst}.
+
+@item Arm
+@smallexample
+void *resolver (unsigned long int hwcap);
+@end smallexample
+
+The argument contains the @code{AT_HWCAP} value.
+
+@item LoongArch
+@smallexample
+#include <sys/ifunc.h>
+
+void *resolver (const __ifunc_arg_t *arg);
+@end smallexample
+
+The argument points to a @code{__ifunc_arg_t} structure whose
+@code{_size} member contains the size of the structure in bytes and
+whose @code{_hwcap} member contains the @code{AT_HWCAP} value.  Resolvers
+must check @code{_size} before accessing members added by later versions
+of the structure.
+
+@item PowerPC (32-bit and 64-bit)
+@smallexample
+void *resolver (unsigned long int hwcap);
+@end smallexample
+
+The argument contains the @code{AT_HWCAP} value.  The
+@code{AT_HWCAP2} value is not passed as an argument.
+
+@item RISC-V
+@smallexample
+#include <sys/hwprobe.h>
+
+void *resolver (uint64_t hwcap, __riscv_hwprobe_t hwprobe,
+                void *reserved);
+@end smallexample
+
+The first argument contains the @code{AT_HWCAP} value.  The second
+argument is a pointer to the @code{__riscv_hwprobe} function
+(@pxref{RISC-V}), passed so that the resolver can probe for extensions
+without referencing a symbol in another object.  Versions of
+@theglibc{} before 2.40 pass a null pointer here, so resolvers must
+check the argument before calling it; the @code{__riscv_hwprobe_one}
+inline function in @file{sys/hwprobe.h} performs this check.  The
+third argument is reserved for future extension.
+
+@item s390 (64-bit)
+@smallexample
+void *resolver (unsigned long int hwcap);
+@end smallexample
+
+The argument contains the @code{AT_HWCAP} value.
+
+@item SPARC (32-bit and 64-bit)
+@smallexample
+void *resolver (int hwcap);
+@end smallexample
+
+The argument contains the @code{AT_HWCAP} value.
+
+@item x86 (i386 and x86-64)
+@smallexample
+void *resolver (void);
+@end smallexample
+
+No arguments are passed: on x86 the @code{CPUID} instruction can be
+executed directly from the resolver instead.  Resolvers can use the
+@code{__cpuid} and @code{__cpuid_count} macros from the GCC
+@file{cpuid.h} header.
+
+Alternatively, the @code{CPU_FEATURE_PRESENT} and
+@code{CPU_FEATURE_ACTIVE} macros from @file{sys/platform/x86.h}
+(@pxref{X86}) can be used; the data they consult is initialized by
+@theglibc{} before any resolver runs.
+@end table
+
+@subsection When IFUNC Resolvers Run
+
+Resolver functions run early, before the process or the newly loaded
+objects are fully initialized.  The exact point at which a resolver
+runs depends on how the indirect function is referenced and how the
+program is linked:
+
+@itemize @bullet
+@item
+In dynamically linked programs, resolvers for non-lazy references run
+during relocation processing at program startup, before ELF
+constructors and before @code{main}.  Non-lazy references include data
+relocations against the function address (for example, initialized
+function pointer variables), and all references if lazy binding is
+disabled (for example, with the @option{-z now} link-time option or
+the @env{LD_BIND_NOW} environment variable).
+
+@item
+With lazy binding, the resolver for a function call through the PLT
+may not run until the function is called for the first time.  Programs
+should not depend on whether a resolver runs at load time or at the
+time of the first call.
+
+@item
+For objects loaded with @code{dlopen}, resolvers run during the
+relocation of the newly loaded objects, before their ELF constructors
+run.
+
+@item
+In statically linked programs (including static PIE), resolvers are
+invoked by the startup code in @theglibc{}, before ELF constructors
+and before @code{main}.
+@end itemize
+
+A resolver can be invoked more than once: in general, it runs once for
+every relocation that references the indirect function symbol, and
+distinct objects referencing the same symbol cause separate resolver
+invocations.  Under lazy binding, resolver invocations can also happen
+concurrently on multiple threads.  Resolvers must therefore be
+idempotent: they should return the same implementation on every
+invocation and avoid side effects.
+
+@subsection Supported Functionality in IFUNC Resolvers
+
+Because resolvers run during relocation processing, only a restricted
+execution environment is available to them.  @Theglibc{} provides the
+guarantees listed below, each annotated with the version of @theglibc{}
+from which it applies.  Versions before 2.44 provided none of them:
+resolvers could run before thread-local storage, the TCB, and the stack
+protector were initialized, and before the relocations of other objects
+had been processed.  A resolver that must remain compatible with those
+versions should not rely on any of these guarantees, and should restrict
+itself to the architecture-provided resolver arguments and to data
+defined in the same translation unit.
+
+@itemize @bullet
+@item
+The thread control block (TCB) of the initial thread is set up before
+any resolver runs.  This applies to dynamically linked programs and to
+statically linked programs (including static PIE).  Consequently,
+resolvers may be compiled with stack protector instrumentation
+(@option{-fstack-protector} and its variants): the stack canary is
+initialized before the first resolver runs.  (Since @theglibc{} 2.44.)
+
+@item
+Tunables (@pxref{Tunables}) and the architecture-specific CPU feature
+detection used by @theglibc{} are processed before any resolver runs.
+A resolver that selects an implementation based on @theglibc{}'s CPU
+feature data therefore observes values that already reflect any tunable
+that masks hardware capabilities, such as @code{glibc.cpu.hwcaps}
+(@pxref{Hardware Capability Tunables}).  (Since @theglibc{} 2.44.)
+
+@item
+A resolver may read from and write to thread-local variables
+(@code{__thread}, @code{_Thread_local}) defined by the same object
+that defines the resolver, using any TLS access model.  The initial
+values of such variables are visible to the resolver, and stores
+performed by the resolver persist after it returns.  This applies to
+objects loaded at process startup, to objects loaded with
+@code{dlopen}, and to statically linked programs.  (Since @theglibc{}
+2.44.)
+
+@item
+At program startup, the regular (non-IFUNC) relocations of all
+initially loaded objects are processed before any resolver runs.  A
+resolver may therefore reference data and call functions defined in
+other initially loaded objects.  (Since @theglibc{} 2.44.)
+
+@item
+During @code{dlopen}, newly loaded objects are relocated after their
+dependencies.  A resolver in a newly loaded object may reference data
+and call functions defined by the object itself, by its dependencies
+(direct and indirect), and by objects that were already loaded before
+the @code{dlopen} call.  (Since @theglibc{} 2.44.)
+@end itemize
+
+@Theglibc{} itself defines indirect functions and the guarantees above
+apply to these internal resolvers as well.
+
+Everything not listed above should be considered unsupported.  In
+particular, the following restrictions apply:
+
+@itemize @bullet
+@item
+ELF constructors of the objects being loaded have not run when their
+resolvers are invoked.  Resolvers must not depend on any initialization
+performed by constructors, such as the construction of C++ global objects,
+even in other objects whose relocations have already been processed.
+
+@item
+Accessing thread-local variables defined by other objects is not
+supported.
+
+@item
+Functions that depend on a fully initialized @theglibc{}, or that may
+call back into the dynamic linker, are not supported in resolvers.
+This includes (but is not limited to) @code{malloc}, @code{dlopen},
+@code{dlsym}, and creating threads.
+
+@item
+Because a resolved address is bound permanently, resolvers must not
+base their decision on state that can change during the lifetime of
+the process (@pxref{Single-Threaded, , Detecting Single-Threaded
+Execution}, for an example involving
+@code{__libc_single_threaded}).
+@end itemize
+
+For recommendations on the use of indirect functions in hardened or
+security-sensitive applications, @pxref{Dynamic Linker Hardening}.
+
 @node Dynamic Linker Hardening
 @section Avoiding Unexpected Issues With Dynamic Linking
 
@@ -828,9 +1122,12 @@ Underlinking (see above) can hide the presence of cycles.
 
 @item
 Limit the creation of indirect function (IFUNC) resolvers.  These
-resolvers run during relocation processing, when @theglibc{} is not in
-a fully consistent state.  If you write your own IFUNC resolvers, do
-not depend on external data or function references in those resolvers.
+resolvers run during relocation processing, before the process or the
+newly loaded objects are fully initialized
+(@pxref{Indirect Functions}).  If you write your own IFUNC resolvers,
+keep them self-contained: do not depend on external data or function
+references in those resolvers, even where current versions of
+@theglibc{} support such references.
 
 @item
 Do not use the audit functionality (@code{LD_AUDIT}, @code{DT_AUDIT},
