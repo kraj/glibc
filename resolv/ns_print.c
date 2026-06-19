@@ -345,7 +345,8 @@ ns_sprintrrf(const u_char *msg, size_t msglen,
 	case ns_t_loc: {
 		char t[255];
 
-		/* XXX protocol format checking? */
+		if (rdlen != 16)
+		  goto formerr;
 		(void) loc_ntoa(rdata, t);
 		T(addstr(t, strlen(t), &buf, &buflen));
 		break;
@@ -479,13 +480,14 @@ ns_sprintrrf(const u_char *msg, size_t msglen,
 
 		/* address suffix: provided only when prefix len != 128 */
 		if (pbit < 128) {
-			if (rdata + pbyte >= edata) goto formerr;
+			unsigned int bytelen = sizeof(a) - pbyte;
+			if (edata - rdata < bytelen) goto formerr;
 			memset(&a, 0, sizeof(a));
-			memcpy(&a.s6_addr[pbyte], rdata, sizeof(a) - pbyte);
+			memcpy(&a.s6_addr[pbyte], rdata, bytelen);
 			if (inet_ntop (AF_INET6, &a, buf, buflen) == NULL)
 			  return -1;
 			addlen(strlen(buf), &buf, &buflen);
-			rdata += sizeof(a) - pbyte;
+			rdata += bytelen;
 		}
 
 		/* prefix name: provided only when prefix len > 0 */
