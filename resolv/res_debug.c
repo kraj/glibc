@@ -390,8 +390,6 @@ p_fqname(const u_char *cp, const u_char *msg, FILE *file) {
  * that C_ANY is a qclass but not a class.  (You can ask for records of class
  * C_ANY, but you can't have any records of that class in the database.)
  */
-extern const struct res_sym __p_class_syms[];
-libresolv_hidden_proto (__p_class_syms)
 const struct res_sym __p_class_syms[] = {
   {C_IN,    (char *) "IN"},
   {C_CHAOS, (char *) "CHAOS"},
@@ -426,8 +424,6 @@ const struct res_sym __p_update_section_syms[] attribute_hidden = {
  * Names of RR types and qtypes.  The list is incomplete because its
  * size is part of the ABI.
  */
-extern const struct res_sym __p_type_syms[];
-libresolv_hidden_proto (__p_type_syms)
 const struct res_sym __p_type_syms[] = {
   {ns_t_a,      (char *) "A",     (char *) "address"},
   {ns_t_ns,     (char *) "NS",    (char *) "name server"},
