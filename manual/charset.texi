@@ -1842,7 +1842,8 @@ two things: either all bytes from the input buffer are consumed or
 there are some bytes at the end of the buffer that possibly can form a
 complete character but the input is incomplete.  The second reason for a
 stop is that the output buffer is full.  And the third reason is that
-the input contains invalid characters.
+the input contains invalid characters or translation to the character
+encoding of the output is not possible.
 
 In all of these cases the buffer pointers after the last successful
 conversion, for the input and output buffers, are stored in @var{inbuf} and
@@ -1866,9 +1867,11 @@ the value pointed to by @var{inbytesleft} is nonzero.
 
 @table @code
 @item EILSEQ
-The conversion stopped because of an invalid byte sequence in the input.
+The conversion stopped because of an invalid byte sequence in the
+input or because translation of the byte sequence to the character
+encoding of the output is not possible.
 After the call, @code{*@var{inbuf}} points at the first byte of the
-invalid byte sequence.
+byte sequence which caused the error.
 
 @item E2BIG
 The conversion stopped because it ran out of space in the output buffer.
