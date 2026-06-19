@@ -70,6 +70,11 @@ libc_hidden_proto (__libc_res_nameinquery)
 extern __typeof (__res_queriesmatch) __libc_res_queriesmatch;
 libc_hidden_proto (__libc_res_queriesmatch)
 
+extern const struct res_sym __p_class_syms[];
+libresolv_hidden_proto (__p_class_syms)
+extern const struct res_sym __p_type_syms[];
+libresolv_hidden_proto (__p_type_syms)
+
 /* Variant of res_hnok which operates on binary (but uncompressed) names.  */
 bool __res_binary_hnok (const unsigned char *dn) attribute_hidden;
 
