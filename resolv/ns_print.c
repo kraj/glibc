@@ -167,8 +167,9 @@ ns_sprintrrf(const u_char *msg, size_t msglen,
 	switch (type) {
 	case ns_t_a:
 	  if (rdlen != (size_t)NS_INADDRSZ)
-			goto formerr;
-		(void) inet_ntop(AF_INET, rdata, buf, buflen);
+		  goto formerr;
+		if (inet_ntop (AF_INET, rdata, buf, buflen) == NULL)
+		  return -1;
 		addlen(strlen(buf), &buf, &buflen);
 		break;
 
@@ -334,9 +335,10 @@ ns_sprintrrf(const u_char *msg, size_t msglen,
 	    }
 
 	case ns_t_aaaa:
-	  if (rdlen != (size_t)NS_IN6ADDRSZ)
-			goto formerr;
-		(void) inet_ntop(AF_INET6, rdata, buf, buflen);
+		if (rdlen != (size_t)NS_IN6ADDRSZ)
+		  goto formerr;
+		if (inet_ntop (AF_INET6, rdata, buf, buflen) == NULL)
+		  return -1;
 		addlen(strlen(buf), &buf, &buflen);
 		break;
 
@@ -427,7 +429,8 @@ ns_sprintrrf(const u_char *msg, size_t msglen,
 			goto formerr;
 
 		/* Address. */
-		(void) inet_ntop(AF_INET, rdata, buf, buflen);
+		if (inet_ntop (AF_INET, rdata, buf, buflen) == NULL)
+		  return -1;
 		addlen(strlen(buf), &buf, &buflen);
 		rdata += NS_INADDRSZ;
 
@@ -569,7 +572,8 @@ ns_sprintrrf(const u_char *msg, size_t msglen,
 			if (rdata + pbyte >= edata) goto formerr;
 			memset(&a, 0, sizeof(a));
 			memcpy(&a.s6_addr[pbyte], rdata, sizeof(a) - pbyte);
-			(void) inet_ntop(AF_INET6, &a, buf, buflen);
+			if (inet_ntop (AF_INET6, &a, buf, buflen) == NULL)
+			  return -1;
 			addlen(strlen(buf), &buf, &buflen);
 			rdata += sizeof(a) - pbyte;
 		}
