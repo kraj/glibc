@@ -108,6 +108,7 @@ tests += \
   tst-ns_name \
   tst-ns_name_compress \
   tst-ns_name_pton \
+  tst-ns_sprintrr \
   tst-res_hconf_reorder \
   tst-res_hnok \
   tst-resolv-aliases \
@@ -341,5 +342,6 @@ $(objpfx)tst-ns_name: $(objpfx)libresolv.so
 $(objpfx)tst-ns_name.out: tst-ns_name.data
 $(objpfx)tst-ns_name_compress: $(objpfx)libresolv.so
 $(objpfx)tst-ns_name_pton: $(objpfx)libresolv.so
+$(objpfx)tst-ns_sprintrr: $(objpfx)libresolv.so
 $(objpfx)tst-res_hnok: $(objpfx)libresolv.so
 $(objpfx)tst-p_secstodate: $(objpfx)libresolv.so
