@@ -78,6 +78,24 @@ ns_sprintrr(const ns_msg *handle, const ns_rr *rr,
 }
 libresolv_hidden_def (ns_sprintrr)
 
+/* Writes the class/type symbol NUMBER to *BUF, using the name from
+   *SYMS if possible.  If NUMBER is not found in *SYMS, print the
+   number with PREFIX.  */
+static int
+addsym (const struct res_sym *syms, int number, const char *prefix,
+	char **buf, size_t *buflen)
+{
+  for (; syms->name != NULL; syms++)
+    if (number == syms->number)
+      {
+	T (addstr (" ", 1, buf, buflen));
+	return addstr (syms->name, strlen (syms->name), buf, buflen);
+      }
+  char tmp[20];
+  int len = snprintf (tmp, sizeof (tmp), " %s%d", prefix, number);
+  return addstr (tmp, len, buf, buflen);
+}
+
 /*%
  *	Convert the fields of an RR into presentation format.
  *
@@ -128,11 +146,21 @@ ns_sprintrrf(const u_char *msg, size_t msglen,
 	/*
 	 * TTL, Class, Type.
 	 */
-	T(x = ns_format_ttl(ttl, buf, buflen));
-	addlen(x, &buf, &buflen);
-	len = SPRINTF((tmp, " %s %s", p_class(class), p_type(type)));
-	T(addstr(tmp, len, &buf, &buflen));
-	T(spaced = addtab(x + len, 16, spaced, &buf, &buflen));
+	{
+	  char *start = buf;
+
+	  T (x = ns_format_ttl (ttl, buf, buflen));
+	  addlen (x, &buf, &buflen);
+	  T (addsym (__p_class_syms, class, "CLASS", &buf, &buflen));
+	  if (type == ns_t_a6)
+	    /* A6 is not part of __p_type_syms, which is exported.
+	       Adding A6 there would change its size.  Handle it here.  */
+	    T (addstr (" A6", 3, &buf, &buflen));
+	  else
+	    T (addsym (__p_type_syms, type, "TYPE", &buf, &buflen));
+
+	  T (spaced = addtab(buf - start, 16, spaced, &buf, &buflen));
+	}
 
 	/*
 	 * RData.
