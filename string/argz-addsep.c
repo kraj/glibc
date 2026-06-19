@@ -30,10 +30,12 @@ __argz_add_sep (char **argz, size_t *argz_len, const char *string, int delim)
     {
       const char *rp;
       char *wp;
+      char *tmp_argz;
 
-      *argz = (char *) realloc (*argz, *argz_len + nlen);
-      if (*argz == NULL)
+      tmp_argz = (char *) realloc (*argz, *argz_len + nlen);
+      if (tmp_argz == NULL)
 	return ENOMEM;
+      *argz = tmp_argz;
 
       wp = *argz + *argz_len;
       rp = string;
