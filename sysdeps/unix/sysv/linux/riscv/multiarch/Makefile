@@ -13,6 +13,9 @@ sysdep_routines += \
   memcpy-generic \
   memcpy-vector \
   memcpy_noalignment \
+  memmove \
+  memmove-generic \
+  memmove-vector \
   memset \
   memset-generic \
   memset-vector \
