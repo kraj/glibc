@@ -4,12 +4,10 @@ sysdep-rtld-routines += aeabi_read_tp libc-do-syscall
 # an undefined reference to __libc_do_syscall.
 CFLAGS-tst-nolink-libc.c += -marm
 
-ifeq (yes,$(enable-static-pie))
-# These static PIE tests fail on arm due to limitations of arm32 kABI:
+# These static tests fail on arm due to limitations of arm32 kABI:
 # https://sourceware.org/bugzilla/show_bug.cgi?id=34096
 test-xfail-tst-thp-1-no-s-code-static = yes
 test-xfail-tst-thp-1-static = yes
-endif
 endif
 
 ifeq ($(subdir),misc)
