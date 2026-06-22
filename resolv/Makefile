@@ -158,6 +158,7 @@ tests += \
   tst-resolv-ai_idn-nolibidn2 \
   tst-resolv-canonname \
   tst-resolv-getaddrinfo-fqdn \
+  tst-resolv-gethostbyname_r-unaligned \
   tst-resolv-trustad \
 
 # Needs resolv_context.
@@ -307,6 +308,8 @@ $(objpfx)tst-resolv-byaddr: $(objpfx)libresolv.so $(shared-thread-library)
 $(objpfx)tst-resolv-dns-section: $(objpfx)libresolv.so \
   $(shared-thread-library)
 $(objpfx)tst-resolv-edns: $(objpfx)libresolv.so $(shared-thread-library)
+$(objpfx)tst-resolv-gethostbyname_r-unaligned: \
+  $(objpfx)libresolv.so $(shared-thread-library)
 $(objpfx)tst-resolv-network: $(objpfx)libresolv.so $(shared-thread-library)
 $(objpfx)tst-resolv-res_init: $(objpfx)libresolv.so
 $(objpfx)tst-resolv-res_init-failure: $(objpfx)libresolv.so \
