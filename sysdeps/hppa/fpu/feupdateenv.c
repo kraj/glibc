@@ -24,6 +24,7 @@ __feupdateenv (const fenv_t *envp)
 {
   union { unsigned long long l; unsigned int sw[2]; } s;
   fenv_t temp;
+
   /* Get the current exception status */
   __asm__ ("fstd %%fr0,0(%1)	\n\t"
            "fldd 0(%1),%%fr0	\n\t"
@@ -46,6 +47,10 @@ __feupdateenv (const fenv_t *envp)
 
   /* Install new environment.  */
   __fesetenv (&temp);
+
+  /* Raise exceptions.  */
+  __feraiseexcept (temp.__status_word >> 27);
+
   /* Success.  */
   return 0;
 }
