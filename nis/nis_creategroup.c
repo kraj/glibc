@@ -60,6 +60,7 @@ nis_creategroup (const_nis_name group, unsigned int flags)
 	  free (obj->zo_group);
 	  free (obj->zo_owner);
 	  free (obj->zo_name);
+	  free (obj->zo_domain);
 	  free (obj);
 	  return NIS_NOMEMORY;
 	}
