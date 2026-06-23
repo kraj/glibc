@@ -737,6 +737,7 @@ ifndef THP-PAGE-SIZE
 THP-PAGE-SIZE = 0x200000
 endif
 
+THP-PAGE-SIZE-CFLAGS = -DTHP_PAGE_SIZE=$(THP-PAGE-SIZE)
 THP-PAGE-SIZE-LDFLAGS = -Wl,-z,max-page-size=$(THP-PAGE-SIZE)
 
 # -Wl,-z,max-page-size=$(THP-PAGE-SIZE) alone doesn't work for PDE when
@@ -786,9 +787,11 @@ ifneq (yes,$(enable-static-pie))
 LDFLAGS-tst-thp-1-no-s-code-static += $(LOAD-THP-ADDRESS-LDFLAGS)
 endif
 
-$(objpfx)tst-thp-1-no-s-code: $(objpfx)tst-thp-size-mod.o
-$(objpfx)tst-thp-1-no-s-code-pde: $(objpfx)tst-thp-size-mod.o
-$(objpfx)tst-thp-1-no-s-code-static: $(objpfx)tst-thp-size-mod.o
+ASFLAGS-tst-thp-size.S = $(THP-PAGE-SIZE-CFLAGS)
+
+$(objpfx)tst-thp-1-no-s-code: $(objpfx)tst-thp-size.o
+$(objpfx)tst-thp-1-no-s-code-pde: $(objpfx)tst-thp-size.o
+$(objpfx)tst-thp-1-no-s-code-static: $(objpfx)tst-thp-size.o
 
 tst-thp-1-no-s-code-ENV = GLIBC_TUNABLES=glibc.elf.thp=1
 tst-thp-1-no-s-code-pde-ENV = GLIBC_TUNABLES=glibc.elf.thp=1
@@ -800,9 +803,9 @@ tst-thp-1-ENV = GLIBC_TUNABLES=glibc.elf.thp=1
 tst-thp-1-pde-ENV = GLIBC_TUNABLES=glibc.elf.thp=1
 tst-thp-1-static-ENV = GLIBC_TUNABLES=glibc.elf.thp=1
 
-$(objpfx)tst-thp-1: $(objpfx)tst-thp-size-mod.o
-$(objpfx)tst-thp-1-pde: $(objpfx)tst-thp-size-mod.o
-$(objpfx)tst-thp-1-static: $(objpfx)tst-thp-size-mod.o
+$(objpfx)tst-thp-1: $(objpfx)tst-thp-size.o
+$(objpfx)tst-thp-1-pde: $(objpfx)tst-thp-size.o
+$(objpfx)tst-thp-1-static: $(objpfx)tst-thp-size.o
 
 tst-thp-1-pde-no-pie = yes
 
