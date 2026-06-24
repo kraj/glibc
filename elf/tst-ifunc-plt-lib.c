@@ -22,6 +22,7 @@
    .rel{a}.plt).  This verifies that every IRELATIVE entry is deferred
    until after .rela.plt has been processed, not just the first one.  */
 
+#include <sys/cdefs.h>
 #include <stddef.h>
 
 extern int get_value (void);
@@ -38,14 +39,16 @@ impl_b (void)
   return 2;
 }
 
-static int (*
-resolve_a (void)) (void)
+static typeof (impl_a) *
+__attribute_used__
+resolve_a (void)
 {
   return get_value () == 42 ? impl_a : NULL;
 }
 
-static int (*
-resolve_b (void)) (void)
+static typeof (impl_b) *
+__attribute_used__
+resolve_b (void)
 {
   return get_value () == 42 ? impl_b : NULL;
 }

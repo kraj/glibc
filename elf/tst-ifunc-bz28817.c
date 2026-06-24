@@ -41,6 +41,7 @@ my_foo (void)
 
 static __typeof (foo) *
 inhibit_stack_protector
+__attribute_used__
 foo_ifunc (void)
 {
   init_foo ();

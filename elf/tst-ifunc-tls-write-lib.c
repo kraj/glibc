@@ -21,6 +21,8 @@
    overwrites counter with MARKER, and the test then reads counter back
    through a getter.  */
 
+#include <sys/cdefs.h>
+
 #define SENTINEL 0x5A5A1234u
 #define MARKER   0x32125A5Au
 
@@ -34,7 +36,9 @@ impl (void)
   return 0;
 }
 
-static unsigned int (*resolver (void)) (void)
+static typeof (impl) *
+__attribute_used__
+resolver (void)
 {
   counter = MARKER;
   return impl;

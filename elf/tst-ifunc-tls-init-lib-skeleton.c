@@ -20,6 +20,8 @@
    load, so the test is sensitive to whether the static TLS block has been
    populated rather than to any __tls_get_addr / DTV-update timing.  */
 
+#include <sys/cdefs.h>
+
 #define SENTINEL 0x5A5A1234
 
 /* The 'volatile' avoids constant fold optimization in impl_ok.  */
@@ -45,7 +47,9 @@ get_last_seen_sentinel (void)
   return last_seen_sentinel;
 }
 
-static int (*resolver (void)) (void)
+static typeof (impl_ok) *
+__attribute_used__
+resolver (void)
 {
   int s = sentinel;
   last_seen_sentinel = s;

@@ -25,6 +25,8 @@
    always observe an initialised canary; this test guards against any future
    reordering that would break that invariant.  */
 
+#include <sys/cdefs.h>
+
 #define SENTINEL 0x5A5A1234
 
 static volatile int resolver_ran;
@@ -44,6 +46,7 @@ impl_ok (int x)
 typedef int (*fn_t) (int);
 
 static fn_t
+__attribute_used__
 resolver (void)
 {
   /* Buffer + zero-fill force -fstack-protector-all canary code.  */

@@ -23,6 +23,8 @@
    TLSDESC equivalent).  That dynamic-TLS access can lazily allocate a
    per-module TLS block, which is the path being exercised.  */
 
+#include <sys/cdefs.h>
+
 #ifndef TLS_MODEL
 # error "tst-ifunc-tls-init-gd-ld-lib-skeleton.c needs TLS_MODEL defined"
 #endif
@@ -58,7 +60,9 @@ get_last_seen_sentinel (void)
   return last_seen_sentinel;
 }
 
-static int (*resolver (void)) (void)
+static typeof (impl_ok) *
+__attribute_used__
+resolver (void)
 {
   int s = sentinel;
   last_seen_sentinel = s;

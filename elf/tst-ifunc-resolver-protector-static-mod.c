@@ -50,6 +50,7 @@ impl_ok (int x)
 typedef int (*fn_t) (int);
 
 static fn_t
+__attribute_used__
 resolver (void)
 {
   /* Buffer forces -fstack-protector-all to emit canary code even with
