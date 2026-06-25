@@ -427,12 +427,9 @@ libnss_compat-routines	:= $(addprefix compat-,grp pwd spwd initgroups) \
 
 install-others		+= $(inst_vardbdir)/Makefile
 
-# Build static module into libc if requested
 libnss_db-inhibit-o	= $(filter-out .os,$(object-suffixes))
 libnss_compat-inhibit-o	= $(filter-out .os,$(object-suffixes))
-ifeq ($(build-static-nss),yes)
 tests-static		+= tst-nss-static
-endif
 extra-test-objs		+= nss_test1.os nss_test2.os nss_test_errno.os \
 			   nss_test_gai_hv2_canonname.os
 

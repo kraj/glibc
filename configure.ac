@@ -272,19 +272,6 @@ all|yes|no|strong) ;;
 *) AC_MSG_ERROR([Not a valid argument for --enable-stack-protector: "$enable_stack_protector"]);;
 esac
 
-dnl On some platforms we cannot use dynamic loading.  We must provide
-dnl static NSS modules.
-AC_ARG_ENABLE([static-nss],
-	      AS_HELP_STRING([--enable-static-nss],
-			     [build static NSS modules @<:@default=no@:>@]),
-	      [static_nss=$enableval],
-	      [static_nss=no])
-dnl Enable static NSS also if we build no shared objects.
-if test x"$static_nss" = xyes || test x"$shared" = xno; then
-  static_nss=yes
-  AC_DEFINE(DO_STATIC_NSS)
-fi
-
 AC_ARG_ENABLE([force-install],
 	      AS_HELP_STRING([--disable-force-install],
 			     [don't force installation of files from this package, even if they are older than the installed files]),
@@ -2200,7 +2187,6 @@ libc_cv_multidir=`${CC-cc} $CFLAGS $CPPFLAGS -print-multi-directory`
 AC_SUBST(libc_cv_multidir)
 
 AC_SUBST(profile)
-AC_SUBST(static_nss)
 
 AC_SUBST(DEFINES)
 

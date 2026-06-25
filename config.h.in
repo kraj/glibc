@@ -32,9 +32,6 @@
 /* Define if _Unwind_Find_FDE should be exported from glibc.  */
 #undef  EXPORT_UNWIND_FIND_FDE
 
-/* Define if static NSS modules are wanted.  */
-#undef	DO_STATIC_NSS
-
 /* Assume that the compiler supports __builtin_expect.
    This macro is necessary for proper compilation of code
    shared between GNU libc and GNU gettext projects.  */

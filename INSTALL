@@ -158,12 +158,6 @@ passed to 'configure'.  For example:
      Don't build libraries with profiling information.  You may want to
      use this option if you don't plan to do profiling.
 
-'--enable-static-nss'
-     Compile static versions of the NSS (Name Service Switch) libraries.
-     This is not recommended because it defeats the purpose of NSS; a
-     program linked statically with the NSS libraries cannot be
-     dynamically reconfigured to use a different name database.
-
 '--enable-hardcoded-path-in-tests'
      By default, dynamic tests are linked to run with the installed C
      library.  This option hardcodes the newly built C library path in

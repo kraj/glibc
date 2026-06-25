@@ -77,13 +77,11 @@ enum
 extern bool __nss_database_custom[NSS_DBSIDX_max] attribute_hidden;
 #endif
 
-/* Warning for NSS functions, which don't require dlopen if glibc
-   was built with --enable-static-nss.  */
-#ifdef DO_STATIC_NSS
-# define nss_interface_function(name)
-#else
-# define nss_interface_function(name) static_link_warning (name)
-#endif
+/* NSS lookups can load service modules via dlopen at runtime, so a
+   statically linked program still depends on the shared NSS modules
+   matching the libc it was built against.  Emit the static link
+   warning on the NSS interface functions accordingly.  */
+#define nss_interface_function(name) static_link_warning (name)
 
 
 /* Interface functions for NSS.  */

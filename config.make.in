@@ -81,7 +81,6 @@ mach-interface-list = @mach_interface_list@
 # Configuration options.
 build-shared = @shared@
 build-profile = @profile@
-build-static-nss = @static_nss@
 cross-compiling = @cross_compiling@
 force-install = @force_install@
 build-nscd = @build_nscd@

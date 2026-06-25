@@ -43,6 +43,11 @@ Deprecated and removed features, and other changes affecting compatibility:
   The corresponding AArch64-specific functionality that was previously
   activated by this flag has been removed as well.
 
+* The --enable-static-nss configure option has been removed.  It had no
+  effect on the build since the NSS reorganization in glibc 2.33; its only
+  remaining behavior was to suppress the link-time warnings on the NSS
+  interface functions in libc.a, which are now emitted unconditionally.
+
 Changes to build and runtime requirements:
 
   [Add changes to build and runtime requirements here]

@@ -616,7 +616,6 @@ RELEASE
 VERSION
 mach_interface_list
 DEFINES
-static_nss
 profile
 libc_cv_multidir
 test_enable_cet
@@ -804,7 +803,6 @@ enable_hardcoded_path_in_tests
 enable_hidden_plt
 enable_bind_now
 enable_stack_protector
-enable_static_nss
 enable_force_install
 enable_maintainer_mode
 enable_kernel
@@ -1477,7 +1475,6 @@ Optional Features:
   --enable-stack-protector=[yes|no|all|strong]
                           Use -fstack-protector[-all|-strong] to detect glibc
                           buffer overflows
-  --enable-static-nss     build static NSS modules [default=no]
   --disable-force-install don't force installation of files from this package,
                           even if they are older than the installed files
   --enable-maintainer-mode
@@ -4613,21 +4610,6 @@ case "$enable_stack_protector" in
 all|yes|no|strong) ;;
 *) as_fn_error $? "Not a valid argument for --enable-stack-protector: \"$enable_stack_protector\"" "$LINENO" 5;;
 esac
-
-# Check whether --enable-static-nss was given.
-if test ${enable_static_nss+y}
-then :
-  enableval=$enable_static_nss; static_nss=$enableval
-else case e in #(
-  e) static_nss=no ;;
-esac
-fi
-
-if test x"$static_nss" = xyes || test x"$shared" = xno; then
-  static_nss=yes
-  printf "%s\n" "#define DO_STATIC_NSS 1" >>confdefs.h
-
-fi
 
 # Check whether --enable-force-install was given.
 if test ${enable_force_install+y}
@@ -9587,7 +9569,6 @@ enable-gsframe = $enable_gsframe"
 # Set the `multidir' variable by grabbing the variable from the compiler.
 # We do it once and save the result in a generated makefile.
 libc_cv_multidir=`${CC-cc} $CFLAGS $CPPFLAGS -print-multi-directory`
-
 
 
 
