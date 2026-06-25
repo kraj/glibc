@@ -327,6 +327,7 @@ tests := \
   tst-scanf-binary-gnu11 \
   tst-scanf-binary-gnu89 \
   tst-scanf-bz27650 \
+  tst-scanf-bz34208 \
   tst-scanf-intn \
   tst-scanf-nan \
   tst-scanf-round \
@@ -351,6 +352,7 @@ tests := \
   tst-vfprintf-width-prec-alloc \
   tst-vfscanf-bz34008 \
   tst-wc-printf \
+  tst-wscanf-bz34208 \
   tstdiomisc \
   tstgetln \
   tstscanf \

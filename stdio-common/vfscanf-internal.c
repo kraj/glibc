@@ -2048,17 +2048,23 @@ digits_extended_fail:
 	    {
 	      /* Maybe "nan".  */
 	      char_buffer_add (&charbuf, c);
-	      if (__builtin_expect (width == 0
-				    || inchar () == EOF
-				    || TOLOWER (c) != L_('a'), 0))
+	      if (__glibc_unlikely (width == 0 || inchar () == EOF))
 		conv_error ();
+	      if (__glibc_unlikely (TOLOWER (c) != L_('a')))
+		{
+		  ungetc (c, s);
+		  conv_error ();
+		}
 	      if (width > 0)
 		--width;
 	      char_buffer_add (&charbuf, c);
-	      if (__builtin_expect (width == 0
-				    || inchar () == EOF
-				    || TOLOWER (c) != L_('n'), 0))
+	      if (__glibc_unlikely (width == 0 || inchar () == EOF))
 		conv_error ();
+	      if (__glibc_unlikely (TOLOWER (c) != L_('n')))
+		{
+		  ungetc (c, s);
+		  conv_error ();
+		}
 	      if (width > 0)
 		--width;
 	      char_buffer_add (&charbuf, c);
@@ -2092,6 +2098,7 @@ digits_extended_fail:
 			    {
 			      /* Invalid character was observed.  Only valid
 				 characters are [a-zA-Z0-9_] and ')'.  */
+			      ungetc (c, s);
 			      conv_error ();
 			      break;
 			    }
@@ -2113,17 +2120,23 @@ digits_extended_fail:
 	    {
 	      /* Maybe "inf" or "infinity".  */
 	      char_buffer_add (&charbuf, c);
-	      if (__builtin_expect (width == 0
-				    || inchar () == EOF
-				    || TOLOWER (c) != L_('n'), 0))
+	      if (__glibc_unlikely (width == 0 || inchar () == EOF))
 		conv_error ();
+	      if (__glibc_unlikely (TOLOWER (c) != L_('n')))
+		{
+		  ungetc (c, s);
+		  conv_error ();
+		}
 	      if (width > 0)
 		--width;
 	      char_buffer_add (&charbuf, c);
-	      if (__builtin_expect (width == 0
-				    || inchar () == EOF
-				    || TOLOWER (c) != L_('f'), 0))
+	      if (__glibc_unlikely (width == 0 || inchar () == EOF))
 		conv_error ();
+	      if (__glibc_unlikely (TOLOWER (c) != L_('f')))
+		{
+		  ungetc (c, s);
+		  conv_error ();
+		}
 	      if (width > 0)
 		--width;
 	      char_buffer_add (&charbuf, c);
@@ -2136,31 +2149,43 @@ digits_extended_fail:
 			--width;
 		      /* Now we have to read the rest as well.  */
 		      char_buffer_add (&charbuf, c);
-		      if (__builtin_expect (width == 0
-					    || inchar () == EOF
-					    || TOLOWER (c) != L_('n'), 0))
+		      if (__glibc_unlikely (width == 0 || inchar () == EOF))
 			conv_error ();
+		      if (__glibc_unlikely (TOLOWER (c) != L_('n')))
+			{
+			  ungetc (c, s);
+			  conv_error ();
+			}
 		      if (width > 0)
 			--width;
 		      char_buffer_add (&charbuf, c);
-		      if (__builtin_expect (width == 0
-					    || inchar () == EOF
-					    || TOLOWER (c) != L_('i'), 0))
+		      if (__glibc_unlikely (width == 0 || inchar () == EOF))
 			conv_error ();
+		      if (__glibc_unlikely (TOLOWER (c) != L_('i')))
+			{
+			  ungetc (c, s);
+			  conv_error ();
+			}
 		      if (width > 0)
 			--width;
 		      char_buffer_add (&charbuf, c);
-		      if (__builtin_expect (width == 0
-					    || inchar () == EOF
-					    || TOLOWER (c) != L_('t'), 0))
+		      if (__glibc_unlikely (width == 0 || inchar () == EOF))
 			conv_error ();
+		      if (__glibc_unlikely (TOLOWER (c) != L_('t')))
+			{
+			  ungetc (c, s);
+			  conv_error ();
+			}
 		      if (width > 0)
 			--width;
 		      char_buffer_add (&charbuf, c);
-		      if (__builtin_expect (width == 0
-					    || inchar () == EOF
-					    || TOLOWER (c) != L_('y'), 0))
+		      if (__glibc_unlikely (width == 0 || inchar () == EOF))
 			conv_error ();
+		      if (__glibc_unlikely (TOLOWER (c) != L_('y')))
+			{
+			  ungetc (c, s);
+			  conv_error ();
+			}
 		      if (width > 0)
 			--width;
 		      char_buffer_add (&charbuf, c);
