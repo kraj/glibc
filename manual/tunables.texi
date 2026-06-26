@@ -67,6 +67,7 @@ glibc.elf.thp: 0 (min: 0, max: 1)
 @end example
 
 @menu
+* System-wide Tunables:: Tunables that affect every process
 * Tunable names::  The structure of a tunable name
 * Memory Allocation Tunables::  Tunables in the memory allocation subsystem
 * Dynamic Linking Tunables:: Tunables in the dynamic linking subsystem
@@ -81,6 +82,99 @@ glibc.elf.thp: 0 (min: 0, max: 1)
                   aware alignment of ELF loadable segments
 
 @end menu
+
+@node System-wide Tunables
+@section System-wide Tunables
+@cindex System-wide Tunables
+@cindex /etc/tunables.conf
+
+In addition to setting the @code{GLIBC_TUNABLES} environment variable,
+tunables may be provided globally via the file
+@file{/etc/tunables.conf}, which gets stored in glibc's dynamic
+library cache @file{/etc/ld.so.cache} and read by every program at
+startup.  @file{/etc/tunables.conf} contains one tunable per line:
+
+@example
+glibc.malloc.trim_threshold=128
+glibc.malloc.check=3
+@end example
+
+@file{ldconfig} (with whatever options you normally use) will read the
+tunables in @file{/etc/tunables.conf} and save them as an extension
+in @file{/etc/ld.so.cache}.  Tunables in the cache are applied to
+every program at startup, programs which are already running are not
+affected.
+
+@file{/etc/tunables.conf} supports the same ``include @var{file}''
+syntax as @file{ld.so.conf}.
+
+Tunables in @file{/etc/tunables.conf} serve as defaults.  They
+override the built-in defaults in each program, but may be overridden
+by the @code{GLIBC_TUNABLES} environment variable.  Each tunable may
+have one or more prefixes which modifies the behavior of the tunable.
+
+@table @code
+
+@item overridable
+@item +
+@item nonoverridable
+@item -
+Prefixing the tunable name with @code{nonoverridable} or @code{-}
+blocks changes from the environment variable, giving the global
+setting precedence.  Prefixing with @code{overridable} or @code{+}
+(the default) reverts this behavior, which is only useful with the
+filters (below).
+
+@item onlysecure
+@item @@
+Tunables prefixed with @code{onlysecure} or @code{@@} will apply only
+to processes that are AT_SECURE (i.e. setuid or setgid binaries, or
+elevated capabilities).
+
+@item nonsecure
+@item $
+Tunables prefixed with @code{nonsecure} or @code{$} will apply only to
+processes that aren't AT_SECURE.
+
+@item anysecure
+@item *
+Tunables prefixed with @code{anysecure} or @code{*} will apply to all
+processes.
+
+@end table
+
+Filters make the system-wide tunables only affect certain programs.
+This allows having a non-overridable default for most of the system
+but a different, overridable, value for certain programs that might
+not work at all with the default setting.  The syntax for filters is
+to have each filter on its own line, followed by tunables that are
+applied when the filter matches, with this format:
+
+@example
+[ @var{filtername} : @var{pattern} ]
+@end example
+
+Existing filters are:
+
+@table @code
+@item proc
+Matches the process name.  The pattern is either a fully qualified
+path, or the basename of such a path.  The process name is read from
+@file{/proc/self/exe} (if available) or @file{argv[0]} (unless
+AT_SECURE is in effect).  Example:
+
+@example
+-glibc.cpu.x86_shstk=1
+[proc:/usr/bin/program_that_crashes_with_shstk]
++glibc.cpu.x86_shstk=0
+@end example
+
+@end table
+
+Note that the effects of a filter only last until the next filter, or
+a line with @code{[]} on it (``no filter''), or the end of the file
+(if the filter appears in an included file, at the end of the included
+file).
 
 @node Tunable names
 @section Tunable names
