@@ -28,6 +28,7 @@
 #include <dl-isa-level.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include "tunconf.h"
 
 /* This is the starting address and the size of the mmap()ed file.  */
 static struct cache_file *cache;
@@ -613,3 +614,56 @@ _dl_unload_cache (void)
      now.  */
 }
 #endif
+
+const struct tunable_header_cached *
+_dl_load_cache_tunables (const char **data)
+{
+  struct cache_extension_all_loaded ext;
+  struct tunable_header_cached *thc;
+  struct tunable_entry_cached *tec;
+  int i, count;
+
+  if (_dl_check_ldsocache_needs_loading ())
+    _dl_maybe_load_ldsocache ();
+
+  if (cache_new)
+    *data = (const char *) cache_new;
+  else
+    return NULL;
+
+  if (!cache_extension_load (cache_new, cache, cachesize, &ext))
+    return NULL;
+
+  /* Validate length/contents here. */
+  if (ext.sections[cache_extension_tag_tunables].size
+      < sizeof(struct tunable_header_cached))
+    return NULL;
+
+  thc = (struct tunable_header_cached *)
+    ext.sections[cache_extension_tag_tunables].base;
+  tec = thc->tunables;
+  count = thc->num_tunables;
+
+  if (ext.sections[cache_extension_tag_tunables].base
+      + ext.sections[cache_extension_tag_tunables].size
+      != (void *) & tec[count])
+    return NULL;
+
+  /* Validate each entry.  */
+  int s_start = (const char *) (&cache_new->libs[cache_new->nlibs]) - *data;
+  int s_end = s_start + cache_new->len_strings;
+  for (i = 0; i < count; i ++)
+    {
+      if (thc->tunables[i].name_offset < s_start
+	  || thc->tunables[i].name_offset >= s_end
+	  || thc->tunables[i].value_offset < s_start
+	  || thc->tunables[i].value_offset >= s_end)
+	return NULL;
+      if (thc->tunables[i].flag_offset != 0
+	  && (thc->tunables[i].flag_offset < s_start
+	      || thc->tunables[i].flag_offset >= s_end))
+	return NULL;
+    }
+
+  return thc;
+}

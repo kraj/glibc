@@ -37,3 +37,6 @@ void parse_tunconf (const char *filename, char *opt_chroot);
 struct tunable_header_cached * get_tunconf_ext (uint32_t str_offset);
 #define TUNCONF_SIZE(thc_p) (sizeof(struct tunable_header_cached)		\
 		     + thc_p->num_tunables * sizeof (struct tunable_entry_cached))
+
+extern const struct tunable_header_cached *
+_dl_load_cache_tunables (const char **data);

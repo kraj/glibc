@@ -37,6 +37,7 @@
 
 #define TUNABLES_INTERNAL 1
 #include "dl-tunables.h"
+#include "tunconf.h"
 
 static char **
 get_next_env (char **envp, char **name, char **val, char ***prev_envp)
@@ -301,6 +302,70 @@ __tunables_init (char **envp)
      is non-zero.  */
   if (MALLOC_DEFAULT_THP_PAGESIZE > 0)
     TUNABLE_SET (glibc, malloc, hugetlb, 1);
+
+#if defined(SHARED) && defined (USE_LDCONFIG)
+  const struct tunable_header_cached *thc;
+  const char *td;
+
+  thc = _dl_load_cache_tunables (&td);
+  if (thc != NULL)
+    {
+      for (int t = 0; t < thc->num_tunables; ++ t)
+	{
+	  const struct tunable_entry_cached *tec = &( thc->tunables[t] );
+	  int tid = tec->tunable_id;
+	  const char *name = td + tec->name_offset;
+	  const char *value = td + tec->value_offset;
+
+	  /* Check that we have the correct tunable, and search by
+	     name if needed.  We rely on order of operations here to
+	     avoid mis-indexing tunables[].  */
+	  if (tid < 0 || tid >= tunables_list_size
+	      || strcmp (name, tunable_list[tid].name) != 0)
+	    {
+	      /* It does not, search by name instead.  */
+	      tid = -1;
+	      for (int i = 0; i < tunables_list_size; i++)
+		{
+		  if (strcmp (name, tunable_list[i].name) == 0)
+		    {
+		      tid = i;
+		      break;
+		    }
+		}
+	      if (tid == -1)
+		continue;
+	    }
+	  /* At this point, TID is valid for the tunable we want.  See
+	     if the parsed type matches the desired type.  */
+
+	  if (tunable_list[tid].type.type_code == TUNABLE_TYPE_STRING)
+	    {
+	      /* This is a memory leak but there's no easy way around
+		 it, as the mapping will go away if the disk file is
+		 updated and the cache is reloaded.  */
+	      tunable_list[tid].val.strval.str = __strdup (value);
+	      tunable_list[tid].val.strval.len = strlen (value);
+	      tunable_list[tid].initialized = true;
+	    }
+	  else
+	    {
+	      tunable_val_t tval;
+	      if (tec->flags & TUNCONF_FLAG_PARSED)
+		{
+		  tval.numval = tec->parsed_value;
+		  do_tunable_update_val (& tunable_list[tid],
+					 &tval, NULL, NULL);
+		}
+	      else
+		{
+		  tunable_initialize (& tunable_list[tid],
+				      value, strlen (value));
+		}
+	    }
+	}
+    }
+#endif /* defined(SHARED) && defined (USE_LDCONFIG) */
 
   /* Ignore tunables for AT_SECURE programs.  */
   if (__libc_enable_secure)
