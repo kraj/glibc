@@ -36,6 +36,7 @@
 #include <dl-cache.h>
 #include <version.h>
 #include <stringtable.h>
+#include <tunconf.h>
 
 /* Used to store library names, paths, and other strings.  */
 static struct stringtable strings;
@@ -275,7 +276,8 @@ check_new_cache (struct cache_file_new *cache)
 
 /* Print the extension information in *EXT.  */
 static void
-print_extensions (struct cache_extension_all_loaded *ext)
+print_extensions (struct cache_extension_all_loaded *ext,
+		  const char *cache_data)
 {
   if (ext->sections[cache_extension_tag_generator].base != NULL)
     {
@@ -283,6 +285,43 @@ print_extensions (struct cache_extension_all_loaded *ext)
       fwrite (ext->sections[cache_extension_tag_generator].base, 1,
 	      ext->sections[cache_extension_tag_generator].size, stdout);
       putchar ('\n');
+    }
+  if (ext->sections[cache_extension_tag_tunables].base != NULL)
+    {
+      struct tunable_header_cached *thc;
+      struct tunable_entry_cached *tec;
+      int i, count;
+
+      thc = (struct tunable_header_cached *)
+	ext->sections[cache_extension_tag_tunables].base;
+      tec = thc->tunables;
+      count = thc->num_tunables;
+      printf("tunables sig 0x%08x ver 0x%08x count %u\n",
+	     thc->signature, thc->version, thc->num_tunables);
+      /* Check that COUNT won't overflow our data block.  */
+      assert (ext->sections[cache_extension_tag_tunables].base
+	      + ext->sections[cache_extension_tag_tunables].size
+	      == (void *) & tec[count]);
+      for (i = 0; i < count; ++ i)
+	{
+	  printf ("  [%d] %s = %s [flags 0x%08x (",
+		  i,
+		  cache_data + tec[i].name_offset,
+		  cache_data + tec[i].value_offset,
+		  tec[i].flags);
+	  if (tec[i].flags & TUNCONF_FLAG_PARSED)
+	    printf ("parsed,");
+	  if (tec[i].flags & TUNCONF_FLAG_NEGATIVE)
+	    printf ("negative,");
+	  if ((tec[i].flags & TUNCONF_FLAG_OVERRIDABLE)
+	      == TUNCONF_OVERRIDE_ALLOW)
+	    printf ("overridable");
+	  else
+	    printf ("nonoverridable");
+	  if (tec[i].flag_offset != 0)
+	    printf (",'%s'", cache_data + tec[i].flag_offset);
+	  printf (")]\n");
+	}
     }
 }
 
@@ -394,7 +433,7 @@ print_cache (const char *cache_name)
 		       cache_new->libs[i].hwcap, hwcaps_string,
 		       cache_data + cache_new->libs[i].value);
 	}
-      print_extensions (&ext);
+      print_extensions (&ext, cache_data);
     }
   /* Cleanup.  */
   munmap (cache, cache_size);
@@ -466,6 +505,18 @@ write_extensions (int fd, uint32_t str_offset,
     if (p->used)
       hwcaps_array[p->section_index] = str_offset + p->name->offset;
 
+  struct tunable_header_cached *tunable_data;
+  size_t tunable_size;
+  size_t tunable_aligner = 0;
+
+  tunable_data = get_tunconf_ext (str_offset);
+
+  if (tunable_data == NULL)
+    {
+      /* There is no section for tunables data.  */
+      hwcaps_offset  -= sizeof (struct cache_extension_section);
+    }
+
   /* This is the offset of the generator string.  */
   uint32_t generator_offset = hwcaps_offset;
   if (hwcaps_count == 0)
@@ -498,6 +549,23 @@ write_extensions (int fd, uint32_t str_offset,
       ext->sections[xid].size = hwcaps_size;
     }
 
+  if (tunable_data != NULL)
+    {
+      uint32_t tunable_offset_ua;
+      uint32_t tunable_offset;
+
+      tunable_size = TUNCONF_SIZE (tunable_data);
+      tunable_offset_ua = generator_offset + strlen (generator);
+      tunable_offset = ALIGN_UP (tunable_offset_ua, 8);
+      tunable_aligner = tunable_offset - tunable_offset_ua;
+
+      ++xid;
+      ext->sections[xid].tag = cache_extension_tag_tunables;
+      ext->sections[xid].flags = 0;
+      ext->sections[xid].offset = tunable_offset;
+      ext->sections[xid].size = tunable_size;
+    }
+
   ++xid;
   ext->count = xid;
   assert (xid <= cache_extension_count);
@@ -508,6 +576,14 @@ write_extensions (int fd, uint32_t str_offset,
       || write (fd, hwcaps_array, hwcaps_size) != hwcaps_size
       || write (fd, generator, strlen (generator)) != strlen (generator))
     error (EXIT_FAILURE, errno, _("Writing of cache extension data failed"));
+
+  if (tunable_data)
+    {
+      if (write (fd, "        ", tunable_aligner) != tunable_aligner
+	  || write (fd, tunable_data, tunable_size) != tunable_size)
+	error (EXIT_FAILURE, errno, _("Writing of cache tunable data failed"));
+      free (tunable_data);
+    }
 
   free (hwcaps_array);
   free (ext);
@@ -1105,4 +1181,10 @@ out_fail:
   /* Free allocated memory.  */
   free (temp_name);
   free (file_entries);
+}
+
+struct stringtable_entry *
+cache_store_string (const char *string)
+{
+  return stringtable_add (&strings, string);
 }

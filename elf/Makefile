@@ -225,6 +225,7 @@ ldconfig-modules := \
   readlib \
   static-stubs \
   stringtable \
+  tunconf \
   xmalloc \
   xstrdup \
   # ldconfig-modules

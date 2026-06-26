@@ -44,10 +44,15 @@
 #include <dl-cache.h>
 #include <dl-hwcaps.h>
 #include <dl-is_dso.h>
+#include "tunconf.h"
 
 
 #ifndef LD_SO_CONF
 # define LD_SO_CONF SYSCONFDIR "/ld.so.conf"
+#endif
+
+#ifndef TUNABLES_CONF
+# define TUNABLES_CONF SYSCONFDIR "/tunables.conf"
 #endif
 
 /* Get libc version number.  */
@@ -107,8 +112,11 @@ static int opt_ignore_aux_cache;
 /* Cache file to use.  */
 static char *cache_file;
 
-/* Configuration file.  */
+/* Configuration file for libraries.  */
 static const char *config_file;
+
+/* Configuration file for tunables.  */
+static const char *tunconfig_file;
 
 /* Name and version of program.  */
 static void print_version (FILE *stream, struct argp_state *state);
@@ -127,7 +135,8 @@ static const struct argp_option options[] =
   { NULL, 'X', NULL, 0, N_("Don't update symbolic links"), 0},
   { NULL, 'r', N_("ROOT"), 0, N_("Change to and use ROOT as root directory"), 0},
   { NULL, 'C', N_("CACHE"), 0, N_("Use CACHE as cache file"), 0},
-  { NULL, 'f', N_("CONF"), 0, N_("Use CONF as configuration file"), 0},
+  { NULL, 'f', N_("CONF"), 0, N_("Use CONF as configuration file for libraries"), 0},
+  { NULL, 't', N_("TUNCONF"), 0, N_("Use TUNCONF as configuration file for tunables"), 0},
   { NULL, 'n', NULL, 0, N_("Only process directories specified on the command line.  Don't build cache."), 0},
   { NULL, 'l', NULL, 0, N_("Manually link individual libraries."), 0},
   { "format", 'c', N_("FORMAT"), 0, N_("Format to use: new (default), old, or compat"), 0},
@@ -163,6 +172,9 @@ parse_opt (int key, char *arg, struct argp_state *state)
       break;
     case 'f':
       config_file = arg;
+      break;
+    case 't':
+      tunconfig_file = arg;
       break;
     case 'i':
       opt_ignore_aux_cache = 1;
@@ -421,7 +433,7 @@ add_dir_1 (const char *line, const char *from_file, int from_line)
 }
 
 static void
-add_dir_callback (const char *line, const char *from_file, int from_line)
+add_dir_callback (char *line, const char *from_file, int from_line)
 {
   if (!strncasecmp (line, "hwcap", 5) && isblank (line[5]))
     error (0, 0, _("%s:%u: hwcap directive ignored"), from_file, from_line);
@@ -1089,6 +1101,9 @@ main (int argc, char **argv)
   if (config_file == NULL)
     config_file = LD_SO_CONF;
 
+  if (tunconfig_file == NULL)
+    tunconfig_file = TUNABLES_CONF;
+
   if (opt_print_cache)
     {
       if (opt_chroot != NULL)
@@ -1163,6 +1178,8 @@ main (int argc, char **argv)
     init_aux_cache ();
 
   search_dirs ();
+
+  parse_tunconf (tunconfig_file, opt_chroot);
 
   if (opt_build_cache)
     {

@@ -74,6 +74,8 @@ extern void add_to_cache (const char *path, const char *filename,
 			  unsigned int isa_level,
 			  struct glibc_hwcaps_subdirectory *);
 
+extern struct stringtable_entry *cache_store_string (const char *string);
+
 extern void init_aux_cache (void);
 
 extern void load_aux_cache (const char *aux_cache_name);
@@ -112,8 +114,8 @@ enum opt_format
 extern enum opt_format opt_format;
 
 /* Declared in ldconfig-parse.c */
-typedef void (*ldconfig_parse_config_cb) (const char *line,
-					 const char *from_file, int from_line);
+typedef void (*ldconfig_parse_config_cb) (char *line,
+					  const char *from_file, int from_line);
 
 void ldconfig_parse_config (const char *filename, char *opt_chroot,
 			    ldconfig_parse_config_cb cb);
