@@ -435,6 +435,9 @@ add_dir_1 (const char *line, const char *from_file, int from_line)
 static void
 add_dir_callback (char *line, const char *from_file, int from_line)
 {
+  /* Denotes file boundaries.  Not needed here.  */
+  if (line == NULL)
+    return;
   if (!strncasecmp (line, "hwcap", 5) && isblank (line[5]))
     error (0, 0, _("%s:%u: hwcap directive ignored"), from_file, from_line);
   else

@@ -318,6 +318,28 @@ print_extensions (struct cache_extension_all_loaded *ext,
 	    printf ("overridable");
 	  else
 	    printf ("nonoverridable");
+	  switch (tec[i].flags & (TUNCONF_EXCLUDE_SECURE
+				  | TUNCONF_EXCLUDE_UNSECURE))
+	    {
+	    case TUNCONF_EXCLUDE_SECURE:
+	      printf(",nonsecure");
+	      break;
+	    case TUNCONF_EXCLUDE_UNSECURE:
+	      printf(",onlysecure");
+	      break;
+	    case TUNCONF_EXCLUDE_SECURE | TUNCONF_EXCLUDE_UNSECURE:
+	      printf(",ignore");
+	      break;
+	    case 0:
+	      printf(",anysecure");
+	      break;
+	    }
+	  switch (tec[i].flags & TUNCONF_FLAG_FILTER)
+	    {
+	    case TUNCONF_FILTER_PERPROC:
+	      printf(",[proc]");
+	      break;
+	    }
 	  if (tec[i].flag_offset != 0)
 	    printf (",'%s'", cache_data + tec[i].flag_offset);
 	  printf (")]\n");

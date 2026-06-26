@@ -292,7 +292,7 @@ parse_tunables (const char *valstring)
    ENV_ALIAS to find values.  Later we will also use the tunable names to find
    values.  */
 void
-__tunables_init (char **envp)
+__tunables_init (char **envp, char **argv)
 {
   char *envname = NULL;
   char *envval = NULL;
@@ -304,6 +304,14 @@ __tunables_init (char **envp)
     TUNABLE_SET (glibc, malloc, hugetlb, 1);
 
 #if defined(SHARED) && defined (USE_LDCONFIG)
+  const char *prog_name = (argv && argv[0]) ? argv[0] : "";
+  int prog_name_len = -1;
+  const char *base_name = NULL;
+#ifdef PATH_MAX
+  char exebuf[PATH_MAX];
+#else
+  char exebuf[256];
+#endif
   const struct tunable_header_cached *thc;
   const char *td;
 
@@ -336,9 +344,72 @@ __tunables_init (char **envp)
 	      if (tid == -1)
 		continue;
 	    }
-	  /* At this point, TID is valid for the tunable we want.  See
-	     if the parsed type matches the desired type.  */
+	  /* At this point, TID is valid for the tunable we want.  */
 
+	  if (tec->flags & TUNCONF_EXCLUDE_SECURE && __libc_enable_secure)
+	    goto skip_due_to_filter;
+	  if (tec->flags & TUNCONF_EXCLUDE_UNSECURE && !__libc_enable_secure)
+	    goto skip_due_to_filter;
+
+	  /* Apply selected filter, if any.  */
+	  switch (tec->flags & TUNCONF_FLAG_FILTER) {
+	  case TUNCONF_FILTER_NONE:
+	    break;
+	  case TUNCONF_FILTER_PERPROC:
+	    /* Perform one-time calculations that aren't needed if we
+	       don't use this filter.  */
+	    if (prog_name_len == -1)
+	      {
+		ssize_t n = readlink ("/proc/self/exe",
+				      exebuf, sizeof (exebuf) - 1);
+		if (n > 0 && n < sizeof(exebuf)-1)
+		  {
+		    /* If /proc/self/exe exists and we can read it,
+		       it's more reliable than argv[] so use it.  */
+		    exebuf[n] = '\0';
+		    prog_name = exebuf;
+		  }
+		else if (__libc_enable_secure)
+		  prog_name = NULL;
+		if (prog_name != NULL)
+		  {
+		    const char *slash = NULL, *cp;
+		    for (cp = prog_name; *cp; ++ cp)
+		      if (*cp == '/')
+			slash = cp;
+		    if (slash)
+		      base_name = slash + 1;
+		    else
+		      base_name = prog_name;
+		    prog_name_len = strlen (prog_name);
+		  }
+	      }
+	    /* prog_name and the cached string are both NUL terminated.  */
+	    if (prog_name)
+	      {
+		if (((const char *)(td + tec->flag_offset))[0] == '/')
+		  {
+		    if (strcmp (prog_name, td + tec->flag_offset) != 0)
+		      goto skip_due_to_filter;
+		  }
+		else
+		  {
+		    if (strcmp (base_name, td + tec->flag_offset) != 0)
+		      goto skip_due_to_filter;
+		  }
+	      }
+	    else
+	      /* Program is AT_SECURE but the only source of program
+		 name is argv[0], which is not secure, so we do not
+		 match any name-based filter.  */
+	      goto skip_due_to_filter;
+	    break;
+	  default:
+	    /* Unknown filter.  */
+	    goto skip_due_to_filter;
+	  }
+
+	  /* See if the parsed type matches the desired type.  */
 	  if (tunable_list[tid].type.type_code == TUNABLE_TYPE_STRING)
 	    {
 	      /* This is a memory leak but there's no easy way around
@@ -363,6 +434,8 @@ __tunables_init (char **envp)
 				      value, strlen (value));
 		}
 	    }
+
+	skip_due_to_filter:;
 	}
     }
 #endif /* defined(SHARED) && defined (USE_LDCONFIG) */

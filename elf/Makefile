@@ -336,6 +336,7 @@ tests-internal := \
   $(tests-static-internal) \
   tst-tls1 \
   tst-tls_tp_offset \
+  tst-tunconf1 \
   # tests-internal
 
 tests-static := $(tests-static-normal) $(tests-static-internal)
@@ -345,6 +346,8 @@ tests-static += \
   tst-single_threaded-static-dlopen \
   tst-tls9-static \
   # tests-static
+
+tst-tunconf1-TUNABLES-only = glibc.malloc.tcache_count=5
 
 static-dlopen-environment = \
   LD_LIBRARY_PATH=$(ld-library-path):$(common-objpfx)dlfcn
@@ -583,6 +586,7 @@ tests-container += \
   tst-preload-pthread-libc \
   tst-ptrguard-static-dlopen \
   tst-rootdir \
+  tst-tunconf1 \
   # tests-container
 
 test-srcs = \

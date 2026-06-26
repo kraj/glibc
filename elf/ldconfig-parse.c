@@ -47,8 +47,10 @@ ldconfig_parse_config_1 (const char *filename, bool do_chroot,
 
      opt_chroot - If non-NULL, all paths are relative to this.
 
-     callback - for each non-blank line in the file, this function is called
-	with the line and it's location.
+     callback - for each non-blank line in the file, this function is
+	called with the line and it's location.  Will also be called
+	with a NULL line at the start and end of each file, for
+	file-scoped config items.
  */
 
 void

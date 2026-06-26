@@ -47,7 +47,7 @@ typedef void (*tunable_callback_t) (tunable_val_t *);
 
 #include "dl-tunable-list.h"
 
-extern void __tunables_init (char **);
+extern void __tunables_init (char **, char **);
 extern void __tunables_print (void);
 extern bool __tunable_is_initialized (tunable_id_t);
 extern void __tunable_get_val (tunable_id_t, void *, tunable_callback_t);

@@ -61,19 +61,99 @@ typedef enum {
 struct tunable_entry_int {
   struct stringtable_entry *name;
   struct stringtable_entry *value;
+  struct stringtable_entry *filter;
   TOP top;
+  bool exclude_secure:1;
+  bool exclude_nonsecure:1;
   int tunable_id;
   int value_is_negative:1;
   int value_was_parsed:1;
   unsigned long long value_ull;
   signed long long value_sll;
+  long filter_flags;
 
   struct tunable_entry_int *next;
 };
 
 struct tunable_entry_int *entry_list;
 
+static int filter_flags = 0;
+static char *filter_string = NULL;
+
 /*----------------------------------------------------------------------*/
+
+static void
+clear_filter (void)
+{
+  free (filter_string);
+  filter_string = NULL;
+  filter_flags = 0;
+}
+
+/* Filters are lines the are bracketed, like
+   [prog:foo]
+*/
+static void
+parse_filter (char *line, const char *filename, int lineno)
+{
+  const char *colon = NULL;
+  const char *right_bracket = NULL;
+  const char *cp;
+
+  for (cp = line; *cp != 0; ++cp)
+    {
+      if (*cp == ':')
+	colon = cp;
+      if (*cp == ']')
+	{
+	  right_bracket = cp;
+	  break;
+	}
+    }
+  /* Special case: [] means "no filter" */
+  if (right_bracket != NULL && right_bracket == line + 1)
+    {
+      clear_filter ();
+      return;
+    }
+  if (colon == NULL)
+    {
+      error_at_line (0, 0, filename, lineno,
+		     "syntax error, filter line ignored: `%s' (missing ':')\n",
+		     line);
+      return;
+    }
+  if (right_bracket == NULL)
+    {
+      error_at_line (0, 0, filename, lineno,
+		     "syntax error, filter line ignored: `%s' (missing ']')\n",
+		     line);
+      return;
+    }
+
+  if (filter_string != NULL)
+    {
+      clear_filter ();
+    }
+
+  if (colon - line - 1 == 4 && memcmp ("proc", line + 1, 4) == 0)
+    {
+      /* Consider this example: [proc:foo] ..."  */
+      /* We allocate 4 bytes, [0] through [3].  */
+      filter_string = (char *) xmalloc (right_bracket - colon);
+      /* We copy "foo" for 3 bytes, [0] through [2].  */
+      memcpy (filter_string, colon + 1, right_bracket - colon - 1);
+      /*  [3] = 0 so now "foo\0".  */
+      filter_string [right_bracket - colon - 1] = 0;
+      filter_flags = TUNCONF_FILTER_PERPROC;
+    }
+
+  else
+    error_at_line (0, 0, filename, lineno,
+		   "unrecognized filter `%.*s', ignored\n",
+		   (int)(colon - line - 1), line + 1);
+}
+
 
 static void
 add_tunable (char *line, const char *filename, int lineno)
@@ -86,6 +166,14 @@ add_tunable (char *line, const char *filename, int lineno)
   struct tunable_entry_int *entry;
   int i, id;
   static struct tunable_entry_int **entry_list_next = &entry_list;
+  bool exclude_secure = 1, exclude_nonsecure = 0;
+
+  /* Denotes file boundaries.  */
+  if (line == NULL)
+    {
+      clear_filter();
+      return;
+    }
 
   orig_line = line;
 
@@ -117,6 +205,24 @@ add_tunable (char *line, const char *filename, int lineno)
 	  top = TOP_DENY;
 	  line += 15;
 	}
+      else if (strncmp (line, "onlysecure ", 11) == 0)
+	{
+	  exclude_nonsecure = 1;
+	  exclude_secure = 0;
+	  line += 10;
+	}
+      else if (strncmp (line, "nonsecure ", 10) == 0)
+	{
+	  exclude_secure = 1;
+	  exclude_nonsecure = 0;
+	  line += 9;
+	}
+      else if (strncmp (line, "anysecure ", 10) == 0)
+	{
+	  exclude_secure = 0;
+	  exclude_nonsecure = 0;
+	  line += 9;
+	}
       else switch (*line)
 	{
 	case '+':
@@ -125,6 +231,21 @@ add_tunable (char *line, const char *filename, int lineno)
 	case '-':
 	  top = TOP_DENY;
 	  break;
+	case '@':
+	  exclude_nonsecure = 1;
+	  exclude_secure = 0;
+	  break;
+	case '$':
+	  exclude_nonsecure = 0;
+	  exclude_secure = 1;
+	  break;
+	case '*':
+	  exclude_nonsecure = 0;
+	  exclude_secure = 0;
+	  break;
+	case '[':
+	  parse_filter (line, filename, lineno);
+	  return;
 	case ' ':
 	  break;
 
@@ -197,6 +318,14 @@ add_tunable (char *line, const char *filename, int lineno)
   entry->value = cache_store_string (value);
   entry->tunable_id = id;
   entry->top = top;
+  entry->exclude_secure = exclude_secure;
+  entry->exclude_nonsecure = exclude_nonsecure;
+
+  if (filter_flags)
+    {
+      entry->filter_flags = filter_flags;
+      entry->filter = cache_store_string (filter_string);
+    }
 
   if (value[0] == '-')
     {
@@ -274,11 +403,23 @@ get_tunconf_ext (uint32_t string_table_offset)
 	  tec->flags |= TUNCONF_OVERRIDE_DENY;
 	  break;
 	}
+      if (tei->exclude_secure)
+	tec->flags |= TUNCONF_EXCLUDE_SECURE;
+      if (tei->exclude_nonsecure)
+	tec->flags |= TUNCONF_EXCLUDE_UNSECURE;
 
       tec->tunable_id = tei->tunable_id;
       tec->name_offset = tei->name->offset + string_table_offset;
       tec->value_offset = tei->value->offset + string_table_offset;
-      tec->flag_offset = 0;
+
+      if (tei->filter_flags != 0)
+	{
+	  tec->flag_offset = tei->filter->offset + string_table_offset;
+	  tec->flags |= tei->filter_flags;
+	}
+      else
+	tec->flag_offset = 0;
+
       tec->unused_1 = 0;
       if (tei->value_is_negative)
 	tec->parsed_value = (uint64_t) tei->value_sll;

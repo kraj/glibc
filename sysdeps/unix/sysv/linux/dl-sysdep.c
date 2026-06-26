@@ -107,7 +107,7 @@ _dl_sysdep_start (void **start_argptr,
 
   dl_hwcap_check ();
 
-  __tunables_init (_environ);
+  __tunables_init (_environ, (char **) (start_argptr + 1));
 
   /* Initialize DSO sorting algorithm after tunables.  */
   _dl_sort_maps_init ();

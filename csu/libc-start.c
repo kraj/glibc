@@ -264,7 +264,7 @@ LIBC_START_MAIN (int (*main) (int, char **, char ** MAIN_AUXVEC_DECL),
   _dl_aux_init (auxvec);
 # endif
 
-  __tunables_init (__environ);
+  __tunables_init (__environ, argv);
 
   ARCH_INIT_CPU_FEATURES ();
 

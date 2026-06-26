@@ -98,7 +98,7 @@ _dl_sysdep_start (void **start_argptr,
 
       __libc_enable_secure = _dl_hurd_data->flags & EXEC_SECURE;
 
-      __tunables_init (_environ);
+      __tunables_init (_environ, _dl_argv);
 
       /* Initialize DSO sorting algorithm after tunables.  */
       _dl_sort_maps_init ();
