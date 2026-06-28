@@ -3007,41 +3007,87 @@ tcache_free_init (void *mem)
   __libc_free (mem);
 }
 
-/* If the arena does not change between chunks, keep the lock.  */
-static inline void
-__libc_free_batched_loop (bool do_lock, mstate av, mchunkptr p, INTERNAL_SIZE_T size,
+/* Adjacent tcache entries are merged locally before touching the heap,
+   so that _int_free_merge_chunk is called once for the whole block
+   instead of inserting and immediately unlinking individual chunks.
+   The arena lock acquisition is delayed until the first flush and
+   kept between flushes to the same arena.  */
+static __always_inline void
+__libc_free_batched_loop (bool do_lock, mchunkptr p, INTERNAL_SIZE_T size,
 			  tcache_perthread_struct *tc, size_t tc_idx)
 {
   /* Empty half of the tcache, for a hysteresis effect.  */
   unsigned int to_free = mp_.tcache_count / 2;
+  INTERNAL_SIZE_T chunk_size = size;
 
+  /* The currently locked arena.  */
+  mstate av;
   if (do_lock)
-    __libc_lock_lock (av->mutex);
+    /* Lazily acquire the lock before the first _int_free_merge_chunk call.  */
+    av = NULL;
+  else
+    /* No locking.  Chunks are always in the main arena.  */
+    av = &main_arena;
 
-  _int_free_merge_chunk (av, p, size);
-
+  /* Accumulate adjacent chunks from the tcache into [p, p+size)
+     without modifying the heap.  Flush to the heap when a
+     non-adjacent chunk is encountered.  */
   while (tc->entries[tc_idx] != NULL && to_free > 0)
     {
       void *mem = tcache_get_n (tc, tc_idx, &tc->entries[tc_idx], false);
-      p = mem2chunk (mem);
-      size = chunksize (p);
+      mchunkptr q = mem2chunk (mem);
 
-      /* Lock a different arena if necessary.  */
-      if (do_lock)
+      if ((char *) q + chunk_size == (char *) p)
 	{
-	  mstate chunk_av = arena_for_chunk (p);
-	  if (chunk_av != av)
-	    {
-	      __libc_lock_unlock (av->mutex);
-	      av = chunk_av;
-	      __libc_lock_lock (av->mutex);
-	    }
+	  /* q is immediately before our block, extend backward.  */
+	  p = q;
+	  size += chunk_size;
 	}
-
-      _int_free_merge_chunk (av, p, size);
+      else if ((char *) p + size == (char *) q)
+	{
+	  /* q is immediately after our block, extend forward.  */
+	  size += chunk_size;
+	}
+      else
+	{
+	  /* Not adjacent.  Flush the accumulated block.  */
+	  if (do_lock)
+	    {
+	      mstate new_av = arena_for_chunk (p);
+	      if (new_av != av)
+		{
+		  if (av != NULL)
+		    __libc_lock_unlock (av->mutex);
+		  av = new_av;
+		  __libc_lock_lock (av->mutex);
+		}
+	    }
+#ifdef MALLOC_DEBUG
+	  set_head (p, size | (chunksize_nomask (p) & SIZE_BITS));
+#endif
+	  _int_free_merge_chunk (av, p, size);
+	  p = q;
+	  size = chunk_size;
+	}
       to_free--;
     }
 
+  /* Flush the remaining accumulated block.  */
+  if (do_lock)
+    {
+      mstate new_av = arena_for_chunk (p);
+      if (new_av != av)
+	{
+	  if (av != NULL)
+	    __libc_lock_unlock (av->mutex);
+	  av = new_av;
+	  __libc_lock_lock (av->mutex);
+	}
+    }
+#ifdef MALLOC_DEBUG
+  set_head (p, size | (chunksize_nomask (p) & SIZE_BITS));
+#endif
+  _int_free_merge_chunk (av, p, size);
   if (do_lock)
     __libc_lock_unlock (av->mutex);
 }
@@ -3058,9 +3104,9 @@ __libc_free_batched (mchunkptr p, INTERNAL_SIZE_T size,
     return malloc_printerr_tail ("free(): invalid size (batch)");
 
   if (SINGLE_THREAD_P)
-    __libc_free_batched_loop (false, &main_arena, p, size, tc, tc_idx);
+    __libc_free_batched_loop (false, p, size, tc, tc_idx);
   else
-    __libc_free_batched_loop (true, arena_for_chunk (p), p, size, tc, tc_idx);
+    __libc_free_batched_loop (true, p, size, tc, tc_idx);
 }
 
 void
