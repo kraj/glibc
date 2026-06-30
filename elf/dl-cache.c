@@ -26,11 +26,21 @@
 #include <_itoa.h>
 #include <dl-hwcaps.h>
 #include <dl-isa-level.h>
+#include <fcntl.h>
+#include <sys/stat.h>
 
 /* This is the starting address and the size of the mmap()ed file.  */
 static struct cache_file *cache;
 static struct cache_file_new *cache_new;
 static size_t cachesize;
+static struct cache_extension_all_loaded ext;
+
+static struct {
+  typeof ((*(struct __stat64_t64 *)0).st_mtime) mtime;
+  typeof ((*(struct __stat64_t64 *)0).st_ino) ino;
+  typeof ((*(struct __stat64_t64 *)0).st_size) size;
+  typeof ((*(struct __stat64_t64 *)0).st_dev) dev;
+} cache_file_time, new_cache_file_time;
 
 #ifdef SHARED
 /* This is used to cache the priorities of glibc-hwcaps
@@ -53,6 +63,7 @@ glibc_hwcaps_priorities_free (void)
     free (glibc_hwcaps_priorities);
   glibc_hwcaps_priorities = NULL;
   glibc_hwcaps_priorities_allocated = 0;
+  glibc_hwcaps_priorities_length = 0;
 }
 
 /* Ordered comparison of a hwcaps string from the cache on the left
@@ -84,10 +95,6 @@ glibc_hwcaps_compare (uint32_t left_index, struct dl_hwcaps_priority *right)
 static void
 glibc_hwcaps_priorities_init (void)
 {
-  struct cache_extension_all_loaded ext;
-  if (!cache_extension_load (cache_new, cache, cachesize, &ext))
-    return;
-
   uint32_t length = (ext.sections[cache_extension_tag_glibc_hwcaps].size
 		     / sizeof (uint32_t));
   if (length > glibc_hwcaps_priorities_allocated)
@@ -374,6 +381,165 @@ _dl_cache_libcmp (const char *p1, const char *p2)
   return *p1 - *p2;
 }
 
+/* Set the cache back to the "no cache" state, which may include
+   cleaning up a loaded cache.  */
+static void
+_dl_maybe_unload_ldsocache (void)
+{
+  if (cache != NULL)
+    __munmap (cache, cachesize);
+
+  cache = NULL;
+  cache_new = NULL;
+  cachesize = 0;
+
+#ifdef SHARED
+  glibc_hwcaps_priorities_free ();
+#endif
+}
+
+/* Returns TRUE if for any reason the cache needs to be reloaded
+   (including, the first time, loaded).  */
+static bool
+_dl_check_ldsocache_needs_loading (void)
+{
+  int rv;
+  static bool copy_old_time = 0;
+  struct __stat64_t64 new_cache_file_stat;
+
+  /* Save the previous stat every time.  We only care when this
+     changes, and we only stat it here, so we can get away with doing
+     the copy now instead of at every single return statement in this
+     function.  However, we only need to copy it if the previous stat
+     succeeded.  The only way this could be subverted is if the admin
+     moves the file aside, then moves it back, but CACHE would be set
+     to NULL in the interim so that would be detected.  */
+  if (copy_old_time)
+    cache_file_time = new_cache_file_time;
+  rv = __fstatat64_time64 (AT_FDCWD, LD_SO_CACHE, &new_cache_file_stat, 0);
+  copy_old_time = (rv >= 0);
+
+  /* No file to load, but there used to be.  Assume user intentionally
+     deleted the cache and act accordingly.  */
+  if (rv < 0 && cache != NULL)
+    {
+      _dl_maybe_unload_ldsocache ();
+      return false;
+    }
+
+  /* No file to load and no loaded cache, so nothing to do.  */
+  if (rv < 0)
+    return false;
+
+  /* Any file is better than no file (likely the first time
+     through).  */
+  if (cache == NULL)
+    return true;
+
+  /* Store the fields we check, in order they're likely to differ.  */
+  new_cache_file_time.mtime = new_cache_file_stat.st_mtime;
+  new_cache_file_time.ino = new_cache_file_stat.st_ino;
+  new_cache_file_time.size = new_cache_file_stat.st_size;
+  new_cache_file_time.dev = new_cache_file_stat.st_dev;
+
+  /* At this point, NEW_CACHE_FILE_TIME is valid as well as
+     CACHE_FILE_TIME, so we compare them.  */
+  return (memcmp (&new_cache_file_time, &cache_file_time,
+		  sizeof(new_cache_file_time)));
+}
+
+/* Attempts to load and validate the cache.  On return, CACHE is either
+   unchanged (still loaded or still not loaded) or valid.  */
+static void
+_dl_maybe_load_ldsocache (void)
+{
+  struct cache_file *tmp_cache = NULL;
+  struct cache_file_new *tmp_cache_new = NULL;
+  size_t tmp_cachesize = 0;
+
+  /* Read the contents of the file.  */
+  void *file = _dl_sysdep_read_whole_file (LD_SO_CACHE, &tmp_cachesize,
+					   PROT_READ);
+
+  /* We can handle three different cache file formats here:
+     - only the new format
+     - the old libc5/glibc2.0/2.1 format
+     - the old format with the new format in it
+     The following checks if the cache contains any of these formats.  */
+  if (file != MAP_FAILED && tmp_cachesize > sizeof *cache_new
+      && memcmp (file, CACHEMAGIC_VERSION_NEW,
+		 sizeof CACHEMAGIC_VERSION_NEW - 1) == 0
+      /* Check for corruption, avoiding overflow.  */
+      && ((tmp_cachesize - sizeof *cache_new) / sizeof (struct file_entry_new)
+	  >= ((struct cache_file_new *) file)->nlibs))
+    {
+      if (! cache_file_new_matches_endian (file))
+	{
+	  __munmap (file, tmp_cachesize);
+	  return;
+	}
+
+      tmp_cache_new = file;
+      tmp_cache = file;
+    }
+  else if (file != MAP_FAILED && tmp_cachesize > sizeof *cache
+	   && memcmp (file, CACHEMAGIC, sizeof CACHEMAGIC - 1) == 0
+	   /* Check for corruption, avoiding overflow.  */
+	   && ((tmp_cachesize - sizeof *cache) / sizeof (struct file_entry)
+	       >= ((struct cache_file *) file)->nlibs))
+    {
+      size_t offset;
+      /* Looks ok.  */
+      tmp_cache = file;
+
+      /* Check for new version.  */
+      offset = ALIGN_CACHE (sizeof (struct cache_file)
+			    + tmp_cache->nlibs * sizeof (struct file_entry));
+
+      tmp_cache_new = (struct cache_file_new *) ((void *) tmp_cache + offset);
+      if (tmp_cachesize < (offset + sizeof (struct cache_file_new))
+	  || memcmp (tmp_cache_new->magic, CACHEMAGIC_VERSION_NEW,
+		     sizeof CACHEMAGIC_VERSION_NEW - 1) != 0)
+	tmp_cache_new = NULL;
+      else
+	{
+	  if (! cache_file_new_matches_endian (tmp_cache_new))
+	    /* The old-format part of the cache is bogus as well
+	       if the endianness does not match.  (But it is
+	       unclear how the new header can be located if the
+	       endianness does not match.)  */
+	    {
+	      __munmap (file, tmp_cachesize);
+	      return;
+	    }
+	}
+    }
+  else
+    {
+      if (file != MAP_FAILED)
+	__munmap (file, tmp_cachesize);
+      return;
+    }
+
+  struct cache_extension_all_loaded tmp_ext;
+  if (!cache_extension_load (tmp_cache_new, tmp_cache, tmp_cachesize, &tmp_ext))
+    {
+      /* The extension is corrupt, so the cache is corrupt.  */
+      __munmap (file, tmp_cachesize);
+      return;
+    }
+
+  /* If we've gotten here, the loaded cache is good and we need to
+     save it.  */
+  _dl_maybe_unload_ldsocache ();
+  cache = tmp_cache;
+  cache_new = tmp_cache_new;
+  cachesize = tmp_cachesize;
+  ext = tmp_ext;
+
+  assert (cache != NULL);
+}
+
 
 /* Look up NAME in ld.so.cache and return the file name stored there, or null
    if none is found.  The cache is loaded if it was not already.  If loading
@@ -389,81 +555,14 @@ _dl_load_cache_lookup (const char *name)
   if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_LIBS))
     _dl_debug_printf (" search cache=%s\n", LD_SO_CACHE);
 
+  if (_dl_check_ldsocache_needs_loading ())
+    _dl_maybe_load_ldsocache ();
+
   if (cache == NULL)
-    {
-      /* Read the contents of the file.  */
-      void *file = _dl_sysdep_read_whole_file (LD_SO_CACHE, &cachesize,
-					       PROT_READ);
-
-      /* We can handle three different cache file formats here:
-	 - only the new format
-	 - the old libc5/glibc2.0/2.1 format
-	 - the old format with the new format in it
-	 The following checks if the cache contains any of these formats.  */
-      if (file != MAP_FAILED && cachesize > sizeof *cache_new
-	  && memcmp (file, CACHEMAGIC_VERSION_NEW,
-		     sizeof CACHEMAGIC_VERSION_NEW - 1) == 0
-	  /* Check for corruption, avoiding overflow.  */
-	  && ((cachesize - sizeof *cache_new) / sizeof (struct file_entry_new)
-	      >= ((struct cache_file_new *) file)->nlibs))
-	{
-	  if (! cache_file_new_matches_endian (file))
-	    {
-	      __munmap (file, cachesize);
-	      file = (void *) -1;
-	    }
-	  cache_new = file;
-	  cache = file;
-	}
-      else if (file != MAP_FAILED && cachesize > sizeof *cache
-	       && memcmp (file, CACHEMAGIC, sizeof CACHEMAGIC - 1) == 0
-	       /* Check for corruption, avoiding overflow.  */
-	       && ((cachesize - sizeof *cache) / sizeof (struct file_entry)
-		   >= ((struct cache_file *) file)->nlibs))
-	{
-	  size_t offset;
-	  /* Looks ok.  */
-	  cache = file;
-
-	  /* Check for new version.  */
-	  offset = ALIGN_CACHE (sizeof (struct cache_file)
-				+ cache->nlibs * sizeof (struct file_entry));
-
-	  cache_new = (struct cache_file_new *) ((void *) cache + offset);
-	  if (cachesize < (offset + sizeof (struct cache_file_new))
-	      || memcmp (cache_new->magic, CACHEMAGIC_VERSION_NEW,
-			 sizeof CACHEMAGIC_VERSION_NEW - 1) != 0)
-	      cache_new = (void *) -1;
-	  else
-	    {
-	      if (! cache_file_new_matches_endian (cache_new))
-		{
-		  /* The old-format part of the cache is bogus as well
-		     if the endianness does not match.  (But it is
-		     unclear how the new header can be located if the
-		     endianness does not match.)  */
-		  cache = (void *) -1;
-		  cache_new = (void *) -1;
-		  __munmap (file, cachesize);
-		}
-	    }
-	}
-      else
-	{
-	  if (file != MAP_FAILED)
-	    __munmap (file, cachesize);
-	  cache = (void *) -1;
-	}
-
-      assert (cache != NULL);
-    }
-
-  if (cache == (void *) -1)
-    /* Previously looked for the cache file and didn't find it.  */
     return NULL;
 
   const char *best;
-  if (cache_new != (void *) -1)
+  if (cache_new != NULL)
     {
       const char *string_table = (const char *) cache_new;
       best = search_cache (string_table, cachesize,
@@ -510,14 +609,7 @@ _dl_load_cache_lookup (const char *name)
 void
 _dl_unload_cache (void)
 {
-  if (cache != NULL && cache != (struct cache_file *) -1)
-    {
-      __munmap (cache, cachesize);
-      cache = NULL;
-    }
-#ifdef SHARED
-  /* This marks the glibc_hwcaps_priorities array as out-of-date.  */
-  glibc_hwcaps_priorities_length = 0;
-#endif
+  /* Functionality is no longer needed, but kept for internal ABI for
+     now.  */
 }
 #endif

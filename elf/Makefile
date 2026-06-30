@@ -578,6 +578,7 @@ endif
 tests-container += \
   tst-dlopen-self-container \
   tst-dlopen-tlsmodid-container \
+  tst-ldconfig-cache \
   tst-pldd \
   tst-preload-pthread-libc \
   tst-ptrguard-static-dlopen \
@@ -735,6 +736,9 @@ one-hundred = $(foreach x,0 1 2 3 4 5 6 7 8 9, \
   0$x 1$x 2$x 3$x 4$x 5$x 6$x 7$x 8$x 9$x)
 tst-tls-many-dynamic-modules := \
   $(foreach n,$(one-hundred),tst-tls-manydynamic$(n)mod)
+tst-ldconfig-cache-modules := \
+  $(foreach n,01 02 03 04 05,tst-tls-manydynamic$(n)mod)
+$(objpfx)tst-ldconfig-cache.out: $(tst-ldconfig-cache-modules:%=$(objpfx)%.so)
 tst-tls-many-dynamic-modules-dep-suffixes = 0 1 2 3 4 5 6 7 8 9 10 11 12 13 \
 					    14 15 16 17 18 19
 tst-tls-many-dynamic-modules-dep = \
