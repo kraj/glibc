@@ -727,6 +727,7 @@ tests-special += $(tests-execstack-special-$(have-z-execstack))
 ifeq ($(run-built-tests),yes)
 tests-special += \
   $(objpfx)tst-ldconfig-X.out \
+  $(objpfx)tst-ldconfig-install.out \
   $(objpfx)tst-ldconfig-p.out \
   $(objpfx)tst-ldconfig-soname.out \
   $(objpfx)tst-rtld-help.out \
@@ -2845,6 +2846,11 @@ $(objpfx)tst-tls-manydynamic.out: \
 $(objpfx)tst-ldconfig-X.out : tst-ldconfig-X.sh $(objpfx)ldconfig
 	$(SHELL) $< '$(common-objpfx)' '$(test-wrapper-env)' \
 		 '$(run-program-env)' > $@; \
+	$(evaluate-test)
+
+$(objpfx)tst-ldconfig-install.out : tst-ldconfig-install.sh $(objpfx)ldconfig
+	$(SHELL) $< '$(common-objpfx)' '$(test-wrapper-env)' \
+		'$(run-program-env)' > $@; \
 	$(evaluate-test)
 
 $(objpfx)tst-ldconfig-p.out : tst-ldconfig-p.sh $(objpfx)ldconfig

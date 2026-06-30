@@ -109,6 +109,9 @@ static int opt_manual_link;
 /* Should we ignore an old auxiliary cache file?  */
 static int opt_ignore_aux_cache;
 
+/* Install a pre-existing cache file instead of generating a new one.  */
+static int opt_install;
+
 /* Cache file to use.  */
 static char *cache_file;
 
@@ -141,6 +144,7 @@ static const struct argp_option options[] =
   { NULL, 'l', NULL, 0, N_("Manually link individual libraries."), 0},
   { "format", 'c', N_("FORMAT"), 0, N_("Format to use: new (default), old, or compat"), 0},
   { "ignore-aux-cache", 'i', NULL, 0, N_("Ignore auxiliary cache file"), 0},
+  { "install", 'I', NULL, 0, N_("Install pre-existing cache file"), 0},
   { NULL, 0, NULL, 0, NULL, 0 }
 };
 
@@ -208,6 +212,9 @@ parse_opt (int key, char *arg, struct argp_state *state)
 	opt_format = opt_format_compat;
       else if (strcmp (arg, "new") == 0)
 	opt_format = opt_format_new;
+      break;
+    case 'I':
+      opt_install = 1;
       break;
     default:
       return ARGP_ERR_UNKNOWN;
@@ -1041,6 +1048,155 @@ search_dirs (void)
     }
 }
 
+static void
+install_cache_file (const char *source_arg)
+{
+  int e;
+
+  if (source_arg == NULL)
+    error (EXIT_FAILURE, 0, _("Missing source file name"));
+
+  const char *source = (opt_chroot
+			? chroot_canon (opt_chroot, source_arg)
+			: source_arg);
+  if (source == NULL)
+    error (EXIT_FAILURE, errno, _("Can't find %s"), source_arg);
+
+  int src_fd = open (source, O_RDONLY);
+  if (src_fd < 0)
+    error (EXIT_FAILURE, errno, _("Can't open %s"), source);
+
+  char *dest = xmalloc (strlen (cache_file) + 1 + 1);
+
+  /* This matches the temp file created by cache.c, and should be
+     on the same filesystem as the cache file.  */
+  sprintf (dest, "%s~", cache_file);
+  int dest_fd;
+
+  struct stat st;
+  if (fstat (src_fd, &st) < 0)
+    error (EXIT_FAILURE, errno, _("Can't stat %s"), source);
+
+  char buf[512];
+  ssize_t r, w = 0, sz = 0;
+  char *bp = buf;
+
+  /* Read the first part of the file and verify it looks
+     reasonable.  */
+  while (sz < sizeof (buf)
+	 && (r = read (src_fd, bp, sizeof (buf) - sz)) > 0)
+    {
+      sz += r;
+      bp += r;
+    }
+  if (r < 0)
+    error (EXIT_FAILURE, errno, _("Error reading file %s"), source);
+
+  if (! ((sz >= sizeof (CACHEMAGIC)
+	  && memcmp (buf, CACHEMAGIC,
+		     sizeof (CACHEMAGIC) - 1) == 0)
+	 || (sz >= sizeof (CACHEMAGIC_NEW)
+	     && memcmp (buf, CACHEMAGIC_NEW,
+			sizeof (CACHEMAGIC_NEW) - 1) == 0)))
+    {
+      error (EXIT_FAILURE, 0,
+	     _("File %s does not look like an ld.so.cache file"),
+	     source);
+    }
+
+  /* Now write that first part out.  */
+  dest_fd = open (dest, O_CREAT|O_WRONLY|O_TRUNC|O_NOFOLLOW,
+		  S_IRUSR|S_IWUSR);
+  if (dest_fd < 0)
+    error (EXIT_FAILURE, errno, _("Can't create %s"), dest);
+
+  r = sz;
+  bp = buf;
+  while (r > 0 && (w = write (dest_fd, bp, r)) > 0)
+    {
+      r -= w;
+      bp += w;
+    }
+  if (w < 0)
+    {
+      e = errno;
+      unlink (dest);
+      close (dest_fd);
+      error (EXIT_FAILURE, e, _("Error writing file %s"), dest);
+    }
+
+  /* At this point, sz contains the number of bytes copied so far.
+     Copy the rest of the file.  */
+  while ((r = read (src_fd, buf, sizeof(buf))) > 0)
+    {
+      bp = buf;
+      while (r > 0 && (w = write (dest_fd, bp, r)) > 0)
+	{
+	  bp += w;
+	  r -= w;
+	  sz += w;
+	}
+      if (w <= 0)
+	break;
+    }
+  if (r < 0)
+    {
+      e = errno;
+      unlink (dest);
+      close (dest_fd);
+      error (EXIT_FAILURE, e, _("Error reading file %s"), source);
+    }
+  if (w < 0)
+    {
+      e = errno;
+      unlink (dest);
+      close (dest_fd);
+      error (EXIT_FAILURE, e, _("Error writing file %s"), dest);
+    }
+
+  close (src_fd);
+
+  /* Make sure we copied it all.  */
+  if (sz < st.st_size)
+    {
+      unlink (dest);
+      close (dest_fd);
+      error (EXIT_FAILURE, 0, _("Unable to copy file %s to %s"),
+	     source, dest);
+    }
+
+  /* Make sure user can always read the cache file */
+  if (fchmod (dest_fd, S_IROTH|S_IRGRP|S_IRUSR|S_IWUSR))
+    {
+      e = errno;
+      unlink (dest);
+      close (dest_fd);
+      error (EXIT_FAILURE, e,
+	     _("Changing access rights of %s to %#o failed"), dest,
+	     S_IROTH|S_IRGRP|S_IRUSR|S_IWUSR);
+    }
+
+  if (fsync (dest_fd) != 0)
+    {
+      e = errno;
+      unlink (dest);
+      close (dest_fd);
+      error (EXIT_FAILURE, e, _("Writing to %s failed"), dest);
+    }
+
+  if (rename (dest, cache_file) < 0)
+    {
+      e = errno;
+      unlink (dest);
+      close (dest_fd);
+      error (EXIT_FAILURE, e, _("Can't rename %s to %s"),
+	     dest, cache_file);
+    }
+
+  if (close (dest_fd) != 0)
+    error (EXIT_FAILURE, errno, _("Writing to %s failed"), dest);
+  exit (0);
+}
 
 int
 main (int argc, char **argv)
@@ -1060,8 +1216,8 @@ main (int argc, char **argv)
   argp_parse (&argp, argc, argv, 0, &remaining, NULL);
 
   /* Remaining arguments are additional directories if opt_manual_link
-     is not set.  */
-  if (remaining != argc && !opt_manual_link)
+     and opt_install are not set.  */
+  if (remaining != argc && !opt_manual_link && !opt_install)
     {
       int i;
       for (i = remaining; i < argc; ++i)
@@ -1157,6 +1313,8 @@ main (int argc, char **argv)
       exit (0);
     }
 
+  if (opt_install)
+    install_cache_file (argv[remaining]);
 
   if (opt_build_cache)
     init_cache ();

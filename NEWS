@@ -37,6 +37,8 @@ Major new features:
   status via prctl syscall.  This prevents disabling or corrupting GCS
   shadow stack during runtime.
 
+* Pre-built ld.so.cache files can be installed with ldconfig.
+
 Deprecated and removed features, and other changes affecting compatibility:
 
 * Although malloc and related functions currently return pointers
