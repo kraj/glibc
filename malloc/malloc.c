@@ -3007,40 +3007,92 @@ tcache_free_init (void *mem)
   __libc_free (mem);
 }
 
-/* If the arena does not change between chunks, keep the lock.  */
-static inline void
-__libc_free_batched_loop (bool do_lock, mstate av, mchunkptr p, INTERNAL_SIZE_T size,
+#if USE_TCACHE
+/* Free the chunk at EXPECTED_BEFORE + SIZE.  Before that, if AV is
+   NULL, obtain the arena from the chunk and lock it.  Otherwise,
+   assume that AV matches the chunk.  Return the AV value.  */
+static __always_inline mstate
+__libc_free_batched_do_free (bool do_lock, mstate av, void *expected_before,
+			     void *expected_after, INTERNAL_SIZE_T size)
+{
+  mchunkptr chunk = expected_before + size;
+  if (do_lock && av == NULL)
+    {
+      av = arena_for_chunk (chunk);
+      __libc_lock_lock (av->mutex);
+    }
+  _int_free_merge_chunk (av, chunk, expected_after - (void *) chunk);
+  return av;
+}
+
+/* Free part of a tcache chain into the lower-level allocator.  */
+static __always_inline void
+__libc_free_batched_loop (bool do_lock, mchunkptr p, INTERNAL_SIZE_T size,
 			  tcache_perthread_struct *tc, size_t tc_idx)
 {
   /* Empty half of the tcache, for a hysteresis effect.  */
   unsigned int to_free = mp_.tcache_count / 2;
 
+  /* The arena lock is acquired lazily before changes are made to the
+     heap structure.  Merging of adjacent tcache chunks does not need
+     the lock.  */
+  mstate av;
   if (do_lock)
-    __libc_lock_lock (av->mutex);
+    av = NULL;
+  else
+    av = &main_arena;
 
-  _int_free_merge_chunk (av, p, size);
+  /* To avoid repeated linking and unlink of bins (or cluttering the
+     unsorted bin) as tcache chunks are freed, adjacent chunks are
+     merged at the tcache level.  A larger chunk is created and freed
+     directly.
+
+     These variables track the expected merge locations of the current
+     chunk that has not yet been committed to the lower-level
+     allocator.  Start with the merge locations of p.  */
+  void *expected_before = (void *) p - size;
+  void *expected_after = (void *) p + size;
+
 
   while (tc->entries[tc_idx] != NULL && to_free > 0)
     {
       void *mem = tcache_get_n (tc, tc_idx, &tc->entries[tc_idx], false);
       p = mem2chunk (mem);
-      size = chunksize (p);
+      if (size != chunksize (p))
+	malloc_printerr ("free(): corrupted tcache size");
 
-      /* Lock a different arena if necessary.  */
-      if (do_lock)
+      /* Check if the chunk can be merged.  This does not require the
+	 lock because there is no structural change of the heap yet. */
+      if (p == expected_before)
+	expected_before -= size;
+      else if (p == expected_after)
+	expected_after += size;
+      else
 	{
-	  mstate chunk_av = arena_for_chunk (p);
-	  if (chunk_av != av)
+	  /* Deallocate the previous chunk that could not be merged.  */
+	  av = __libc_free_batched_do_free (do_lock, av, expected_before,
+					    expected_after, size);
+
+	  /* If locking and the arena changes, release the lock now.
+	     It will be reacquired once there is no more tcache-level
+	     merging.  */
+	  if (do_lock && arena_for_chunk (p) != av)
 	    {
 	      __libc_lock_unlock (av->mutex);
-	      av = chunk_av;
-	      __libc_lock_lock (av->mutex);
+	      av = NULL;
 	    }
+
+	  /* Continue processing with the chunk that came from tcache.  */
+	  expected_before = (void *) p - size;
+	  expected_after = (void *) p + size;
 	}
 
-      _int_free_merge_chunk (av, p, size);
       to_free--;
     }
+
+  /* Free the last chunk.  */
+  av = __libc_free_batched_do_free (do_lock, av, expected_before,
+				    expected_after, size);
 
   if (do_lock)
     __libc_lock_unlock (av->mutex);
@@ -3058,10 +3110,11 @@ __libc_free_batched (mchunkptr p, INTERNAL_SIZE_T size,
     return malloc_printerr_tail ("free(): invalid size (batch)");
 
   if (SINGLE_THREAD_P)
-    __libc_free_batched_loop (false, &main_arena, p, size, tc, tc_idx);
+    __libc_free_batched_loop (false, p, size, tc, tc_idx);
   else
-    __libc_free_batched_loop (true, arena_for_chunk (p), p, size, tc, tc_idx);
+    __libc_free_batched_loop (true, p, size, tc, tc_idx);
 }
+#endif
 
 void
 __libc_free (void *mem)
