@@ -3008,6 +3008,68 @@ tcache_free_init (void *mem)
 }
 
 #if USE_TCACHE
+static __always_inline mstate
+__libc_free_batched_lock (bool do_lock, mstate av, mchunkptr p)
+{
+  if (do_lock && av == NULL)
+    {
+      av = arena_for_chunk (p);
+      __libc_lock_lock (av->mutex);
+    }
+  return av;
+}
+
+/* Try consolidating backwards.  *AV is locked opportunistically if
+   consolidation appears possible.  *EXPECTED_BEFORE is adjusted
+   accordingly.  */
+static __always_inline void
+__libc_free_batched_consolidate_backwards (bool do_lock, mstate *av,
+					   void **expected_before,
+					   mchunkptr p, INTERNAL_SIZE_T size)
+{
+  /* See the consolidation code in _int_free_merge_chunk.  */
+  if (!prev_inuse (p))
+    {
+      *av = __libc_free_batched_lock (do_lock, *av, p);
+      /* Recheck under the arena lock.  */
+      if (!prev_inuse (p))
+	{
+	  INTERNAL_SIZE_T prevsize = prev_size (p);
+	  p = chunk_at_offset(p, -((long) prevsize));
+	  if (__glibc_unlikely (chunksize(p) != prevsize))
+	    malloc_printerr ("corrupted size vs. prev_size"
+			     " while batch consolidating");
+	  unlink_chunk (*av, p);
+	  *expected_before = (void *) p - size;
+	}
+    }
+}
+
+/* Try consolidating forward.  *EXPECTED_AFTER is updated accordingly.  */
+static __always_inline void
+__libc_free_batched_consolidate_forward (bool do_lock, mstate av,
+					 void **expected_after,
+					 mchunkptr p, INTERNAL_SIZE_T size)
+{
+  if (do_lock && av == NULL)
+    /* It is not possible to check the in-use status of the next chunk
+       without the arena lock.  Its chunk size may change and move the
+       location of the in-use metadata bit.  */
+    return;
+  /* See the start of _int_free_create_chunk.  */
+  mchunkptr nextchunk = chunk_at_offset (p, size);
+  if (nextchunk == av->top)
+    return;
+  INTERNAL_SIZE_T nextsize = chunksize (nextchunk);
+  if (!inuse_bit_at_offset (nextchunk, nextsize))
+    {
+      unlink_chunk (av, nextchunk);
+      /* Set the in-use bit because _int_free_merge_chunk checks it.  */
+      set_inuse_bit_at_offset (nextchunk, nextsize);
+      *expected_after = (void *) nextchunk + nextsize;
+    }
+}
+
 /* Free the chunk at EXPECTED_BEFORE + SIZE.  Before that, if AV is
    NULL, obtain the arena from the chunk and lock it.  Otherwise,
    assume that AV matches the chunk.  Return the AV value.  */
@@ -3016,11 +3078,7 @@ __libc_free_batched_do_free (bool do_lock, mstate av, void *expected_before,
 			     void *expected_after, INTERNAL_SIZE_T size)
 {
   mchunkptr chunk = expected_before + size;
-  if (do_lock && av == NULL)
-    {
-      av = arena_for_chunk (chunk);
-      __libc_lock_lock (av->mutex);
-    }
+  av = __libc_free_batched_lock (do_lock, av, chunk);
   _int_free_merge_chunk (av, chunk, expected_after - (void *) chunk);
   return av;
 }
@@ -3051,8 +3109,11 @@ __libc_free_batched_loop (bool do_lock, mchunkptr p, INTERNAL_SIZE_T size,
      chunk that has not yet been committed to the lower-level
      allocator.  Start with the merge locations of p.  */
   void *expected_before = (void *) p - size;
+  __libc_free_batched_consolidate_backwards (do_lock, &av,
+					     &expected_before, p, size);
   void *expected_after = (void *) p + size;
-
+  __libc_free_batched_consolidate_forward (do_lock, av,
+					   &expected_after, p, size);
 
   while (tc->entries[tc_idx] != NULL && to_free > 0)
     {
@@ -3064,9 +3125,17 @@ __libc_free_batched_loop (bool do_lock, mchunkptr p, INTERNAL_SIZE_T size,
       /* Check if the chunk can be merged.  This does not require the
 	 lock because there is no structural change of the heap yet. */
       if (p == expected_before)
-	expected_before -= size;
+	{
+	  expected_before -= size;
+	  __libc_free_batched_consolidate_backwards (do_lock, &av,
+						     &expected_before, p, size);
+	}
       else if (p == expected_after)
-	expected_after += size;
+	{
+	  expected_after += size;
+	  __libc_free_batched_consolidate_forward (do_lock, av,
+						   &expected_after, p, size);
+	}
       else
 	{
 	  /* Deallocate the previous chunk that could not be merged.  */
@@ -3084,7 +3153,11 @@ __libc_free_batched_loop (bool do_lock, mchunkptr p, INTERNAL_SIZE_T size,
 
 	  /* Continue processing with the chunk that came from tcache.  */
 	  expected_before = (void *) p - size;
+	  __libc_free_batched_consolidate_backwards (do_lock, &av,
+						     &expected_before, p, size);
 	  expected_after = (void *) p + size;
+	  __libc_free_batched_consolidate_forward (do_lock, av,
+						   &expected_after, p, size);
 	}
 
       to_free--;
@@ -4108,7 +4181,7 @@ _int_free_merge_chunk (mstate av, mchunkptr p, INTERNAL_SIZE_T size)
 
   free_perturb (chunk2mem(p), size - CHUNK_HDR_SZ);
 
-  /* Consolidate backward.  */
+  /* Consolidate backward.  See __libc_free_batched_consolidate_backwards.  */
   if (!prev_inuse(p))
     {
       INTERNAL_SIZE_T prevsize = prev_size (p);
@@ -4134,6 +4207,8 @@ static INTERNAL_SIZE_T
 _int_free_create_chunk (mstate av, mchunkptr p, INTERNAL_SIZE_T size,
 			mchunkptr nextchunk, INTERNAL_SIZE_T nextsize)
 {
+  /* The start of this function (forward consolidation) is duplicated
+     in __libc_free_batched_consolidate_forward.  */
   if (nextchunk != av->top)
     {
       /* get and clear inuse bit */
