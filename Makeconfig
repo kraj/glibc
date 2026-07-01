@@ -823,8 +823,15 @@ $(subst $(empty) ,:,$(strip $(patsubst -Wl$(comma)-rpath-link=%, %,\
 run-via-rtld-prefix =							      \
   $(if $(strip $(filter $(notdir $(built-program-file)),		      \
 			$(tests-static) $(xtests-static))),, $(rtld-prefix))
+# $(container-via-rtld-prefix) is like $(run-via-rtld-prefix), but for the
+# support/test-container helper, which is always dynamically linked even
+# when the test it launches is static.  It must therefore always run
+# through the newly built loader, unlike $(run-via-rtld-prefix) which is
+# empty for tests listed in tests-static or xtests-static.
+container-via-rtld-prefix = $(rtld-prefix)
 else
 run-via-rtld-prefix =
+container-via-rtld-prefix =
 endif
 # $(run-program-env) is the default environment variable settings to
 # use when running a program built with the newly built library.
@@ -891,6 +898,7 @@ endif
 
 ifeq (yes,$(build-hardcoded-path-in-tests))
 test-via-rtld-prefix =
+test-container-via-rtld-prefix =
 test-program-prefix-before-env = $(test-wrapper-env)
 test-program-prefix-after-env =
 test-program-prefix = $(test-program-prefix-before-env) $(run-program-env) \
@@ -902,6 +910,7 @@ test-program-cmd = $(test-program-cmd-before-env) $(run-program-env) \
 host-test-program-cmd = $(built-program-file)
 else
 test-via-rtld-prefix = $(run-via-rtld-prefix)
+test-container-via-rtld-prefix = $(container-via-rtld-prefix)
 test-program-prefix-before-env = $(run-program-prefix-before-env)
 test-program-prefix-after-env = $(run-program-prefix-after-env)
 test-program-prefix = $(run-program-prefix)

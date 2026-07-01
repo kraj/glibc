@@ -429,7 +429,7 @@ $(objpfx)%.out: /dev/null $(objpfx)%	# Make it 2nd arg for canned sequence.
 # and pid namespaces) in which to run, should be added to
 # tests-container.
 $(tests-container:%=$(objpfx)%.out): $(objpfx)%.out : $(if $(wildcard $(objpfx)%.files),$(objpfx)%.files,/dev/null) $(objpfx)%
-	$(test-wrapper-env) $(run-program-env) $(test-via-rtld-prefix) \
+	$(test-wrapper-env) $(run-program-env) $(test-container-via-rtld-prefix) \
 	  $(common-objpfx)support/test-container env $(run-program-env) $($*-ENV) $(test-tunables) \
 	  $(host-test-program-cmd) $($*-ARGS) > $@; \
 	$(evaluate-test)
