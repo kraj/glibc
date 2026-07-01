@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libc 2.22-pre1\n"
 "Report-Msgid-Bugs-To: bug-coreutils@gnu.org\n"
-"POT-Creation-Date: 2026-01-19 16:22+0100\n"
+"POT-Creation-Date: 2026-07-01 10:52+0900\n"
 "PO-Revision-Date: 2016-01-04 23:59+0100\n"
 "Last-Translator: Primož Peterlin <primozz.peterlin@gmail.com>\n"
 "Language-Team: Slovenian <translation-team-sl@lists.sourceforge.net>\n"
@@ -128,11 +128,11 @@ msgstr ""
 "-o IZHODNA_DATOTEKA [VHODNA_DATOTEKA]...\n"
 "[IZHODNA_DATOTEKA [VHODNA_DATOTEKA]...]"
 
-#: catgets/gencat.c:231 debug/pcprofiledump.c:219 elf/ldconfig.c:216
+#: catgets/gencat.c:231 debug/pcprofiledump.c:219 elf/ldconfig.c:228
 #: elf/pldd.c:246 elf/sln.c:77 elf/sprof.c:372 iconv/iconv_prog.c:374
 #: iconv/iconvconfig.c:380 locale/programs/locale.c:275
 #: locale/programs/localedef.c:437 login/programs/pt_chown.c:88
-#: malloc/memusagestat.c:564 nss/getent.c:961 nss/makedb.c:371
+#: malloc/memusagestat.c:564 nss/getent.c:980 nss/makedb.c:371
 #: posix/getconf.c:551
 #, c-format
 msgid ""
@@ -143,11 +143,11 @@ msgstr ""
 "%s.\n"
 
 #: catgets/gencat.c:247 debug/pcprofiledump.c:235 debug/xtrace.sh:63
-#: elf/ldconfig.c:232 elf/ldd.bash.in:39 elf/pldd.c:262 elf/sotruss.sh:75
+#: elf/ldconfig.c:244 elf/ldd.bash.in:39 elf/pldd.c:262 elf/sotruss.sh:76
 #: elf/sprof.c:389 iconv/iconv_prog.c:391 iconv/iconvconfig.c:397
 #: locale/programs/locale.c:292 locale/programs/localedef.c:459
 #: login/programs/pt_chown.c:62 malloc/memusage.sh:70 malloc/memusagestat.c:582
-#: nscd/nscd.c:521 nss/getent.c:92 nss/makedb.c:387 posix/getconf.c:533
+#: nscd/nscd.c:521 nss/getent.c:96 nss/makedb.c:387 posix/getconf.c:533
 #, c-format
 msgid ""
 "Copyright (C) %s Free Software Foundation, Inc.\n"
@@ -160,10 +160,10 @@ msgstr ""
 "niti jamstev USTREZNOSTI ZA PRODAJO ali PRIMERNOSTI ZA RABO.\n"
 
 #: catgets/gencat.c:252 debug/pcprofiledump.c:240 debug/xtrace.sh:67
-#: elf/ldconfig.c:237 elf/pldd.c:267 elf/sprof.c:395 iconv/iconv_prog.c:396
+#: elf/ldconfig.c:249 elf/pldd.c:267 elf/sprof.c:395 iconv/iconv_prog.c:396
 #: iconv/iconvconfig.c:402 locale/programs/locale.c:297
 #: locale/programs/localedef.c:464 malloc/memusage.sh:74
-#: malloc/memusagestat.c:587 nscd/nscd.c:526 nss/getent.c:97 nss/makedb.c:392
+#: malloc/memusagestat.c:587 nscd/nscd.c:526 nss/getent.c:101 nss/makedb.c:392
 #: posix/getconf.c:538
 #, c-format
 msgid "Written by %s.\n"
@@ -284,7 +284,7 @@ msgstr "neveljavna velikost kazalca"
 msgid "Usage: xtrace [OPTION]... PROGRAM [PROGRAMOPTION]...\\n"
 msgstr "Uporaba: xtrace [IZBIRA]... PROGRAM [IZBIRA_PROGRAMA]...\\n"
 
-#: debug/xtrace.sh:31 elf/sotruss.sh:56 elf/sotruss.sh:67 elf/sotruss.sh:135
+#: debug/xtrace.sh:31 elf/sotruss.sh:56 elf/sotruss.sh:68 elf/sotruss.sh:136
 #: malloc/memusage.sh:25
 msgid "Try \\`%s --help' or \\`%s --usage' for more information.\\n"
 msgstr "Poskusite »%s --help« ali »%s --usage« za izčrpnejša navodila.\\n"
@@ -356,43 +356,43 @@ msgstr "napačna zaščita"
 msgid "invalid mode parameter"
 msgstr "napačen parameter zaščita"
 
-#: elf/cache.c:296 elf/ldconfig.c:1238
+#: elf/cache.c:357 elf/ldconfig.c:1116
 #, c-format
 msgid "Can't open cache file %s\n"
 msgstr "Ni mogoče odpreti predpomnilniške datoteke %s\n"
 
-#: elf/cache.c:310
+#: elf/cache.c:371
 #, c-format
 msgid "mmap of cache file failed.\n"
 msgstr "mmap predpomnilniške datoteke ni uspel.\n"
 
-#: elf/cache.c:314 elf/cache.c:328 elf/cache.c:339
+#: elf/cache.c:375 elf/cache.c:389 elf/cache.c:400
 #, c-format
 msgid "File is not a cache file.\n"
 msgstr "Datoteka ni predpomnilniška datoteka.\n"
 
-#: elf/cache.c:368 elf/cache.c:383
+#: elf/cache.c:429 elf/cache.c:444
 #, c-format
 msgid "%d libs found in cache `%s'\n"
 msgstr "%d knjižnic najdeno v predpomnilniku »%s«\n"
 
-#: elf/cache.c:685
+#: elf/cache.c:783
 #, c-format
 msgid "Can't create temporary cache file %s"
 msgstr "Začasne predpomnilniške datoteke %s ni mogoče ustvariti"
 
-#: elf/cache.c:693 elf/cache.c:703 elf/cache.c:707 elf/cache.c:712
-#: elf/cache.c:731
+#: elf/cache.c:791 elf/cache.c:801 elf/cache.c:805 elf/cache.c:810
+#: elf/cache.c:829
 #, c-format
 msgid "Writing of cache data failed"
 msgstr "Zapisovanje predpomnilniških podatkov ni uspelo"
 
-#: elf/cache.c:726
+#: elf/cache.c:824
 #, c-format
 msgid "Changing access rights of %s to %#o failed"
 msgstr "Sprememba pravic dostopa za %s na %#o ni uspela"
 
-#: elf/cache.c:735
+#: elf/cache.c:833
 #, c-format
 msgid "Renaming of %s to %s failed"
 msgstr "Preimenovanje %s v %s ni uspelo"
@@ -405,32 +405,32 @@ msgstr "napaka ob nalaganju deljene knjižnice"
 msgid "DYNAMIC LINKER BUG!!!"
 msgstr "NAPAKA DINAMIČNEGA POVEZOVALNIKA!!!"
 
-#: elf/dl-close.c:363 elf/dl-open.c:297
+#: elf/dl-close.c:368 elf/dl-open.c:297
 msgid "cannot create scope list"
 msgstr "seznama področja ni mogoče ustvariti"
 
-#: elf/dl-close.c:790
+#: elf/dl-close.c:795
 msgid "shared object not open"
 msgstr "deljeni predmet ni odprt"
 
-#: elf/dl-deps.c:96
+#: elf/dl-deps.c:103
 msgid "DST not allowed in SUID/SGID programs"
 msgstr "DST ni dovoljen pri programih SUID/SGID"
 
-#: elf/dl-deps.c:109
-msgid "empty dynamic string token substitution"
-msgstr "prazna zamenjava dinamičnega niza žetonov"
-
-#: elf/dl-deps.c:115
+#: elf/dl-deps.c:224 elf/dl-deps.c:286
 #, c-format
 msgid "cannot load auxiliary `%s' because of empty dynamic string token substitution\n"
 msgstr "pomožne datoteke »%s« ni mogoče naložiti zaradi prazne zamenjave dinamičnega niza žetonov\n"
 
-#: elf/dl-deps.c:427
+#: elf/dl-deps.c:283
+msgid "empty dynamic string token substitution"
+msgstr "prazna zamenjava dinamičnega niza žetonov"
+
+#: elf/dl-deps.c:449
 msgid "cannot allocate dependency list"
 msgstr "seznama odvisnosti ni mogoče dodeliti"
 
-#: elf/dl-deps.c:467
+#: elf/dl-deps.c:489
 msgid "cannot allocate symbol search list"
 msgstr "seznama iskalnih simbolov ni mogoče dodeliti"
 
@@ -438,131 +438,132 @@ msgstr "seznama iskalnih simbolov ni mogoče dodeliti"
 msgid "cannot create capability list"
 msgstr "seznama sposobnosti ni mogoče ustvariti"
 
-#: elf/dl-load.c:424
+#: elf/dl-load.c:408
 msgid "cannot allocate name record"
 msgstr "zapisa imena ni mogoče dodeliti"
 
-#: elf/dl-load.c:510 elf/dl-load.c:623 elf/dl-load.c:717 elf/dl-load.c:814
-msgid "cannot create cache for search path"
-msgstr "predpomnilnika za iskalno pot ni mogoče ustvariti"
-
-#: elf/dl-load.c:606
+#: elf/dl-load.c:595
 msgid "cannot create RUNPATH/RPATH copy"
 msgstr "kopije RUNPATH/RPATH ni mogoče ustvariti"
 
-#: elf/dl-load.c:703
+#: elf/dl-load.c:612 elf/dl-load.c:621 elf/dl-load.c:712 elf/dl-load.c:810
+#: elf/dl-load.c:830
+msgid "cannot create cache for search path"
+msgstr "predpomnilnika za iskalno pot ni mogoče ustvariti"
+
+#: elf/dl-load.c:698
 msgid "cannot create search path array"
 msgstr "polja iskalnih poti ni mogoče ustvariti"
 
-#: elf/dl-load.c:978
-msgid "cannot stat shared object"
-msgstr "statusa deljenega predmeta ni mogoče ugotoviti"
-
-#: elf/dl-load.c:1071 elf/dl-load.c:2160
-msgid "cannot create shared object descriptor"
-msgstr "deljenega predmetnega deskriptorja ni mogoče ustvariti"
-
-#: elf/dl-load.c:1090 elf/dl-load.c:1594 elf/dl-load.c:1704
+#: elf/dl-load.c:1000 elf/dl-load.c:1354 elf/dl-load.c:1647
 msgid "cannot read file data"
 msgstr "podatkov datoteke ni mogoče prebrati"
 
-#: elf/dl-load.c:1224
+#: elf/dl-load.c:1151
+msgid "cannot stat shared object"
+msgstr "statusa deljenega predmeta ni mogoče ugotoviti"
+
+#: elf/dl-load.c:1246 elf/dl-load.c:2203
+msgid "cannot create shared object descriptor"
+msgstr "deljenega predmetnega deskriptorja ni mogoče ustvariti"
+
+#: elf/dl-load.c:1278
 msgid "object file has no loadable segments"
 msgstr "predmetna datoteka nima včitljivega segmenta"
 
-#: elf/dl-load.c:1241
+#: elf/dl-load.c:1291
 msgid "cannot dynamically load executable"
 msgstr "dinamično nalaganje izvedljive datoteke ni mogoče"
 
-#: elf/dl-load.c:1248
+#: elf/dl-load.c:1298
 msgid "object file has no dynamic section"
 msgstr "predmetna datoteka nima dinamične sekcije"
 
-#: elf/dl-load.c:1285
+#: elf/dl-load.c:1335
 msgid "shared object cannot be dlopen()ed"
 msgstr "dlopen() na deljenih predmetih ni mogoč"
 
-#: elf/dl-load.c:1298
+#: elf/dl-load.c:1347
 msgid "cannot allocate memory for program header"
 msgstr "dodelitev pomnilnika za glavo programa ni mogoča"
 
-#: elf/dl-load.c:1323
+#: elf/dl-load.c:1377
 msgid "cannot enable executable stack as shared object requires"
 msgstr "izvedljivega sklada ni mogoče omogočiti, kot to zahteva deljeni predmet"
 
-#: elf/dl-load.c:1351
+#: elf/dl-load.c:1401
 msgid "cannot close file descriptor"
 msgstr "datotečnega deskriptorja ni mogoče zapreti"
 
-#: elf/dl-load.c:1594
+#: elf/dl-load.c:1647
 msgid "file too short"
 msgstr "datoteka je prekratka"
 
-#: elf/dl-load.c:1628
+#: elf/dl-load.c:1681
 msgid "invalid ELF header"
 msgstr "neveljavna glava ELF"
 
-#: elf/dl-load.c:1645
+#: elf/dl-load.c:1698
 msgid "ELF file data encoding not big-endian"
 msgstr "kodiranje podatkov datoteke ELF ni »big-endian«"
 
-#: elf/dl-load.c:1647
+#: elf/dl-load.c:1700
 msgid "ELF file data encoding not little-endian"
 msgstr "kodiranje podatkov datoteke ELF ni »little-endian«"
 
-#: elf/dl-load.c:1651
+#: elf/dl-load.c:1704
 msgid "ELF file version ident does not match current one"
 msgstr "identifikator različice datoteke ELF se ne ujema s trenutnim"
 
-#: elf/dl-load.c:1655
+#: elf/dl-load.c:1708
 msgid "ELF file OS ABI invalid"
 msgstr "OS ABI datoteke ELF ni veljaven"
 
-#: elf/dl-load.c:1658
+#: elf/dl-load.c:1711
 msgid "ELF file ABI version invalid"
 msgstr "različica ABI datoteke ELF ni veljavna"
 
-#: elf/dl-load.c:1661
+#: elf/dl-load.c:1714
 msgid "nonzero padding in e_ident"
 msgstr "neničelno zapolnjenje pri e_ident"
 
-#: elf/dl-load.c:1664
+#: elf/dl-load.c:1717
 msgid "internal error"
 msgstr "interna napaka"
 
-#: elf/dl-load.c:1671
+#: elf/dl-load.c:1724
 msgid "ELF file version does not match current one"
 msgstr "različica datoteke ELF se ne ujema s trenutno"
 
-#: elf/dl-load.c:1685
+#: elf/dl-load.c:1738
 msgid "only ET_DYN and ET_EXEC can be loaded"
 msgstr "samo ET_DYN in ET_EXEC je mogoče naložiti"
 
-#: elf/dl-load.c:1690
+#: elf/dl-load.c:1743
 msgid "ELF file's phentsize not the expected size"
 msgstr "phentsize datoteke ELF ni pričakovane velikosti"
 
-#: elf/dl-load.c:2179
+#: elf/dl-load.c:2222
 msgid "wrong ELF class: ELFCLASS64"
 msgstr "napačen razred ELF: ELFCLASS64"
 
-#: elf/dl-load.c:2180
+#: elf/dl-load.c:2223
 msgid "wrong ELF class: ELFCLASS32"
 msgstr "napačen razred ELF: ELFCLASS32"
 
-#: elf/dl-load.c:2183
+#: elf/dl-load.c:2226
 msgid "cannot open shared object file"
 msgstr "deljene predmetne datoteke ni mogoče odpreti"
 
-#: elf/dl-load.h:126
+#: elf/dl-load.h:249
 msgid "failed to map segment from shared object"
 msgstr "preslikava segmenta iz deljenega predmeta ni uspela"
 
-#: elf/dl-load.h:128
+#: elf/dl-load.h:251
 msgid "cannot change memory protections"
 msgstr "sprememba zaščite pomnilnika ni mogoča"
 
-#: elf/dl-load.h:130
+#: elf/dl-load.h:253
 msgid "cannot map zero-fill pages"
 msgstr "ničelnih strani ni mogoče preslikati"
 
@@ -578,36 +579,36 @@ msgstr "ni mogoče razširiti globalnega področja"
 msgid "TLS generation counter wrapped!  Please report this."
 msgstr "Zapletanje števca generacij TLS! Prosim, javite to napako."
 
-#: elf/dl-open.c:817
+#: elf/dl-open.c:816
 msgid "invalid mode for dlopen()"
 msgstr "neveljavni način za dlopen()"
 
-#: elf/dl-open.c:834
+#: elf/dl-open.c:833
 msgid "no more namespaces available for dlmopen()"
 msgstr "nobenega imenskega prostora za dlmopen() ni več na voljo"
 
-#: elf/dl-open.c:859
+#: elf/dl-open.c:858
 msgid "invalid target namespace in dlmopen()"
 msgstr "neveljavni ciljni imenski prostor pri dlmopen()"
 
-#: elf/dl-reloc.c:140
+#: elf/dl-reloc.c:139
 msgid "cannot allocate memory in static TLS block"
 msgstr "ni mogoče dodeliti pomnilnika v statičnem bloku TLS"
 
-#: elf/dl-reloc.c:283
+#: elf/dl-reloc.c:261
 msgid "cannot make segment writable for relocation"
 msgstr "segmenta se ne da odščititi za pisanje pred premikom"
 
-#: elf/dl-reloc.c:313
+#: elf/dl-reloc.c:311
 #, c-format
 msgid "%s: out of memory to store relocation results for %s\n"
 msgstr "%s: pomnilnika ni dovolj za shranjevanje rezultatov premikanja %s\n"
 
-#: elf/dl-reloc.c:328
+#: elf/dl-reloc.c:326
 msgid "cannot restore segment prot after reloc"
 msgstr "zaščite segmenta po premiku ni mogoče povrniti"
 
-#: elf/dl-reloc.c:366
+#: elf/dl-reloc.c:364
 msgid "cannot apply additional memory protection after relocation"
 msgstr "dodatne zaščite pomnilnika po premiku ni mogoče uporabiti"
 
@@ -615,7 +616,7 @@ msgstr "dodatne zaščite pomnilnika po premiku ni mogoče uporabiti"
 msgid "RTLD_NEXT used in code not dynamically loaded"
 msgstr "RTLD_NEXT uporabljen v kodi se ni dinamično naložil"
 
-#: elf/dl-tls.c:1217
+#: elf/dl-tls.c:1279
 msgid "cannot create TLS data structures"
 msgstr "podatkovnih struktur TLS ni mogoče ustvariti"
 
@@ -627,151 +628,12 @@ msgstr "napaka pri vpogledu v različico"
 msgid "cannot allocate version reference table"
 msgstr "ni mogoče dodeliti tabele sklicev različic"
 
-#: elf/ldconfig.c:124
-msgid "Print cache"
-msgstr "Izpiši vsebino predpomnilnika"
-
-#: elf/ldconfig.c:125
-msgid "Generate verbose messages"
-msgstr "Ustvarjaj obširna sporočila"
-
-#: elf/ldconfig.c:126
-msgid "Don't build cache"
-msgstr "Ne gradi predpomnilnika"
-
-#: elf/ldconfig.c:128
-msgid "Change to and use ROOT as root directory"
-msgstr "Spremeni delovni imenik v KOREN in ga uporabi kot korenski imenik"
-
-#: elf/ldconfig.c:128
-msgid "ROOT"
-msgstr "KOREN"
-
-#: elf/ldconfig.c:129
-msgid "CACHE"
-msgstr "PREDPOMNILNIK"
-
-#: elf/ldconfig.c:129
-msgid "Use CACHE as cache file"
-msgstr "Uporabi PREDPOMNILNIK kot predpomnilniško datoteko"
-
-#: elf/ldconfig.c:130
-msgid "CONF"
-msgstr "KONF"
-
-#: elf/ldconfig.c:130
-msgid "Use CONF as configuration file"
-msgstr "Uporabi KONF kot nastavitveno datoteko"
-
-#: elf/ldconfig.c:131
-msgid "Only process directories specified on the command line.  Don't build cache."
-msgstr "Obdelaj le imenike, določene v ukazni vrstici. Ne gradi predpomnilnika."
-
-#: elf/ldconfig.c:132
-msgid "Manually link individual libraries."
-msgstr "Ročno poveži posamične knjižnice."
-
-#: elf/ldconfig.c:133
-msgid "FORMAT"
-msgstr "OBLIKA"
-
-#: elf/ldconfig.c:134
-msgid "Ignore auxiliary cache file"
-msgstr "Ne upoštevaj nadomestne predpomnilniške datoteke"
-
-#: elf/ldconfig.c:142
-msgid "Configure Dynamic Linker Run Time Bindings."
-msgstr "Nastavi izvajalne povezave dinamičnega povezovalnika."
-
-#: elf/ldconfig.c:276
-#, c-format
-msgid "Path `%s' given more than once"
-msgstr "Pot »%s« je podana več kot enkrat"
-
-#: elf/ldconfig.c:405
-#, c-format
-msgid "Can't stat %s"
-msgstr "Statusa %s ni moč ugotoviti"
-
-#: elf/ldconfig.c:486
-#, c-format
-msgid "Can't stat %s\n"
-msgstr "Statusa %s ni moč ugotoviti\n"
-
-#: elf/ldconfig.c:496
-#, c-format
-msgid "%s is not a symbolic link\n"
-msgstr "%s ni simbolna povezava\n"
-
-#: elf/ldconfig.c:515
-#, c-format
-msgid "Can't unlink %s"
-msgstr "Ni mogoče odstraniti povezave %s"
-
-#: elf/ldconfig.c:521
-#, c-format
-msgid "Can't link %s to %s"
-msgstr "Ni mogoče ustvariti povezave %s na %s"
-
-#: elf/ldconfig.c:527
-msgid " (changed)\n"
-msgstr " (zamenjano)\n"
-
-#: elf/ldconfig.c:529
-msgid " (SKIPPED)\n"
-msgstr " (PRESKOČENO)\n"
-
-#: elf/ldconfig.c:584
-#, c-format
-msgid "Can't find %s"
-msgstr "Neuspelo iskanje %s"
-
-#: elf/ldconfig.c:600 elf/ldconfig.c:759 elf/ldconfig.c:826
-#, c-format
-msgid "Cannot lstat %s"
-msgstr "Ni mogoče izvesti lstat %s"
-
-#: elf/ldconfig.c:606
-#, c-format
-msgid "Ignored file %s since it is not a regular file."
-msgstr "Datoteka %s ni bila upoštevana, ker ni navadna datoteka."
-
-#: elf/ldconfig.c:614
-#, c-format
-msgid "No link created since soname could not be found for %s"
-msgstr "Povezava ni bila ustvarjena, ker ni bilo moč najti soname za %s"
-
-#: elf/ldconfig.c:715
-#, c-format
-msgid "Can't open directory %s"
-msgstr "Ni mogoče odpreti imenika %s"
-
-#: elf/ldconfig.c:776 elf/ldconfig.c:814 elf/readlib.c:81
-#, c-format
-msgid "Input file %s not found.\n"
-msgstr "Vhodne datoteke %s ni moč najti.\n"
-
-#: elf/ldconfig.c:783
-#, c-format
-msgid "Cannot stat %s"
-msgstr "Statusa %s ni moč ugotoviti"
-
-#: elf/ldconfig.c:902
-#, c-format
-msgid "libc6 library %s in wrong directory"
-msgstr "knjižnica libc6 %s v napačnem imeniku"
-
-#: elf/ldconfig.c:921
-#, c-format
-msgid "libraries %s and %s in directory %s have same soname but different type."
-msgstr "knjižnici %s in %s v imeniku %s imata isti soname, a sta različnega tipa."
-
-#: elf/ldconfig.c:1050
+#: elf/ldconfig-parse.c:90
 #, c-format
 msgid "Warning: ignoring configuration file that cannot be opened: %s"
 msgstr "Opozorilo: nastavitvene datoteke ni mogoče prebrati in se je ne upošteva: %s"
 
-#: elf/ldconfig.c:1117
+#: elf/ldconfig-parse.c:156
 #, c-format
 msgid "need absolute file name for configuration file when using -r"
 msgstr "ob izbiri -r je potrebo absolutno ime za nastavitveno datoteko"
@@ -782,29 +644,164 @@ msgstr "ob izbiri -r je potrebo absolutno ime za nastavitveno datoteko"
 # ! INEXACT
 # #-#-#-#-#  gettext-tools-0.18.3.sl.po (GNU gettext-tools 0.18.3)  #-#-#-#-#
 #  Morda ,,Zmanjkalo pomnilnika''?
-#: elf/ldconfig.c:1124 locale/programs/xasprintf.c:31
+#: elf/ldconfig-parse.c:163 locale/programs/xasprintf.c:31
 #: locale/programs/xmalloc.c:63 malloc/obstack.c:416 malloc/obstack.c:418
 #: posix/getconf.c:503 posix/getconf.c:745
 #, c-format
 msgid "memory exhausted"
 msgstr "pomnilnik porabljen"
 
-#: elf/ldconfig.c:1157
+#: elf/ldconfig-parse.c:196
 #, c-format
 msgid "%s:%u: cannot read directory %s"
 msgstr "%s:%u: imenika %s ni mogoče prebrati"
 
-#: elf/ldconfig.c:1195
+#: elf/ldconfig.c:132
+msgid "Print cache"
+msgstr "Izpiši vsebino predpomnilnika"
+
+#: elf/ldconfig.c:133
+msgid "Generate verbose messages"
+msgstr "Ustvarjaj obširna sporočila"
+
+#: elf/ldconfig.c:134
+msgid "Don't build cache"
+msgstr "Ne gradi predpomnilnika"
+
+#: elf/ldconfig.c:136
+msgid "Change to and use ROOT as root directory"
+msgstr "Spremeni delovni imenik v KOREN in ga uporabi kot korenski imenik"
+
+#: elf/ldconfig.c:136
+msgid "ROOT"
+msgstr "KOREN"
+
+#: elf/ldconfig.c:137
+msgid "CACHE"
+msgstr "PREDPOMNILNIK"
+
+#: elf/ldconfig.c:137
+msgid "Use CACHE as cache file"
+msgstr "Uporabi PREDPOMNILNIK kot predpomnilniško datoteko"
+
+#: elf/ldconfig.c:138
+msgid "CONF"
+msgstr "KONF"
+
+#: elf/ldconfig.c:140
+msgid "Only process directories specified on the command line.  Don't build cache."
+msgstr "Obdelaj le imenike, določene v ukazni vrstici. Ne gradi predpomnilnika."
+
+#: elf/ldconfig.c:141
+msgid "Manually link individual libraries."
+msgstr "Ročno poveži posamične knjižnice."
+
+#: elf/ldconfig.c:142
+msgid "FORMAT"
+msgstr "OBLIKA"
+
+#: elf/ldconfig.c:143
+msgid "Ignore auxiliary cache file"
+msgstr "Ne upoštevaj nadomestne predpomnilniške datoteke"
+
+#: elf/ldconfig.c:151
+msgid "Configure Dynamic Linker Run Time Bindings."
+msgstr "Nastavi izvajalne povezave dinamičnega povezovalnika."
+
+#: elf/ldconfig.c:288
+#, c-format
+msgid "Path `%s' given more than once"
+msgstr "Pot »%s« je podana več kot enkrat"
+
+#: elf/ldconfig.c:417
+#, c-format
+msgid "Can't stat %s"
+msgstr "Statusa %s ni moč ugotoviti"
+
+#: elf/ldconfig.c:511
+#, c-format
+msgid "Can't stat %s\n"
+msgstr "Statusa %s ni moč ugotoviti\n"
+
+#: elf/ldconfig.c:521
+#, c-format
+msgid "%s is not a symbolic link\n"
+msgstr "%s ni simbolna povezava\n"
+
+#: elf/ldconfig.c:540
+#, c-format
+msgid "Can't unlink %s"
+msgstr "Ni mogoče odstraniti povezave %s"
+
+#: elf/ldconfig.c:546
+#, c-format
+msgid "Can't link %s to %s"
+msgstr "Ni mogoče ustvariti povezave %s na %s"
+
+#: elf/ldconfig.c:552
+msgid " (changed)\n"
+msgstr " (zamenjano)\n"
+
+#: elf/ldconfig.c:554
+msgid " (SKIPPED)\n"
+msgstr " (PRESKOČENO)\n"
+
+#: elf/ldconfig.c:609
+#, c-format
+msgid "Can't find %s"
+msgstr "Neuspelo iskanje %s"
+
+#: elf/ldconfig.c:625 elf/ldconfig.c:784 elf/ldconfig.c:851
+#, c-format
+msgid "Cannot lstat %s"
+msgstr "Ni mogoče izvesti lstat %s"
+
+#: elf/ldconfig.c:631
+#, c-format
+msgid "Ignored file %s since it is not a regular file."
+msgstr "Datoteka %s ni bila upoštevana, ker ni navadna datoteka."
+
+#: elf/ldconfig.c:639
+#, c-format
+msgid "No link created since soname could not be found for %s"
+msgstr "Povezava ni bila ustvarjena, ker ni bilo moč najti soname za %s"
+
+#: elf/ldconfig.c:740
+#, c-format
+msgid "Can't open directory %s"
+msgstr "Ni mogoče odpreti imenika %s"
+
+#: elf/ldconfig.c:801 elf/ldconfig.c:839 elf/readlib.c:81
+#, c-format
+msgid "Input file %s not found.\n"
+msgstr "Vhodne datoteke %s ni moč najti.\n"
+
+#: elf/ldconfig.c:808
+#, c-format
+msgid "Cannot stat %s"
+msgstr "Statusa %s ni moč ugotoviti"
+
+#: elf/ldconfig.c:927
+#, c-format
+msgid "libc6 library %s in wrong directory"
+msgstr "knjižnica libc6 %s v napačnem imeniku"
+
+#: elf/ldconfig.c:946
+#, c-format
+msgid "libraries %s and %s in directory %s have same soname but different type."
+msgstr "knjižnici %s in %s v imeniku %s imata isti soname, a sta različnega tipa."
+
+#: elf/ldconfig.c:1070
 #, c-format
 msgid "relative path `%s' used to build cache"
 msgstr "relativna pot »%s« uporabljena za izgradnjo predpomnilnika"
 
-#: elf/ldconfig.c:1217
+#: elf/ldconfig.c:1092
 #, c-format
 msgid "Can't chdir to /"
 msgstr "Sprememba imenika na / ni mogoča"
 
-#: elf/ldconfig.c:1258
+#: elf/ldconfig.c:1136
 #, c-format
 msgid "Can't open cache file directory %s\n"
 msgstr "Ni mogoče odpreti imenika %s s predpomnilniško datoteko\n"
@@ -1099,14 +1096,14 @@ msgid "%s: option requires an argument -- '%s'\\n"
 msgstr "%s: izbira zahteva argument -- »%s«\\n"
 
 #: elf/sotruss.sh:61
-msgid "%s: option is ambiguous; possibilities:"
-msgstr "%s: izbira ni enopomenska; možnosti so:"
+msgid "%s: option '%s' is ambiguous; possibilities:"
+msgstr "%s: izbira »%s« ni enopomenska; možnosti so:"
 
-#: elf/sotruss.sh:79
+#: elf/sotruss.sh:80
 msgid "Written by %s.\\n"
 msgstr "Avtor(ica): %s.\\n"
 
-#: elf/sotruss.sh:86
+#: elf/sotruss.sh:87
 msgid ""
 "Usage: %s [-ef] [-F FROMLIST] [-o FILENAME] [-T TOLIST] [--exit]\n"
 "\t    [--follow] [--from FROMLIST] [--output FILENAME] [--to TOLIST]\n"
@@ -1118,7 +1115,7 @@ msgstr ""
 "       [-help] [--usage] [--version] [--]\n"
 "       PROGRAM [IZBIRA_PROGRAMA...]"
 
-#: elf/sotruss.sh:134
+#: elf/sotruss.sh:135
 msgid "%s: unrecognized option '%c%s'\\n"
 msgstr "%s: neprepoznana izbira »%c%s«\\n"
 
@@ -1875,7 +1872,7 @@ msgstr "Uspešno"
 msgid "NUMBER"
 msgstr "N"
 
-#: nscd/nscd.c:158 nss/getent.c:995 nss/makedb.c:208
+#: nscd/nscd.c:158 nss/getent.c:1014 nss/makedb.c:208
 #, c-format
 msgid "wrong number of arguments"
 msgstr "napačno število argumentov"
@@ -1972,7 +1969,7 @@ msgstr "Zaklepaj ) ali \\) brez para"
 msgid "No previous regular expression"
 msgstr "Manjkajoč prejšnji regularni izraz"
 
-#: stdio-common/psiginfo-data.h:46 timezone/zdump.c:445 timezone/zic.c:652
+#: stdio-common/psiginfo-data.h:46 timezone/zdump.c:424 timezone/zic.c:831
 msgid "I/O error"
 msgstr "V/I napaka"
 
@@ -2505,11 +2502,11 @@ msgstr "Operacija bi blokirala"
 msgid "cannot map pages for fdesc table"
 msgstr "strani za tabelo fdesc ni mogoče preslikati"
 
-#: sysdeps/hppa/dl-fptr.c:214
+#: sysdeps/hppa/dl-fptr.c:212
 msgid "cannot map pages for fptr table"
 msgstr "strani za tabelo fptr ni mogoče preslikati"
 
-#: sysdeps/hppa/dl-fptr.c:243
+#: sysdeps/hppa/dl-fptr.c:240
 msgid "internal error: symidx out of range of fptr table"
 msgstr "interna napaka: symidx je izven obsega tabele fptr"
 
@@ -2585,16 +2582,16 @@ msgstr "Parametrični niz nepravilno kodiran"
 # ! INEXACT
 # #-#-#-#-#  gnulib-3.0.0.6062.a6b16.sl.po (gnulib 3.0.0.6062.a6b16)  #-#-#-#-#
 # ! INEXACT
-#: timezone/zic.c:463
+#: timezone/zic.c:559
 #, c-format
 msgid "%s: Memory exhausted: %s\n"
 msgstr "%s: Pomnilnik porabljen: %s\n"
 
-#: timezone/zic.c:588
+#: timezone/zic.c:687
 msgid "standard input"
 msgstr "standardni vhod"
 
-#: timezone/zic.c:639
+#: timezone/zic.c:739
 #, c-format
 msgid "warning: "
 msgstr "opozorilo: "

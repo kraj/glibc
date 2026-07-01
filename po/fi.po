@@ -25,7 +25,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: libc 2.30.9000\n"
-"POT-Creation-Date: 2026-01-19 16:22+0100\n"
+"POT-Creation-Date: 2026-07-01 10:52+0900\n"
 "PO-Revision-Date: 2020-01-10 23:26+0200\n"
 "Last-Translator: Lauri Nurmi <lanurmi@iki.fi>\n"
 "Language-Team: Finnish <translation-team-fi@lists.sourceforge.net>\n"
@@ -149,11 +149,11 @@ msgstr ""
 "-o TULOSTIEDOSTO [SYÖTETIEDOSTO]...\n"
 "[TULOSTIEDOSTO [SYÖTETIEDOSTO]...]"
 
-#: catgets/gencat.c:231 debug/pcprofiledump.c:219 elf/ldconfig.c:216
+#: catgets/gencat.c:231 debug/pcprofiledump.c:219 elf/ldconfig.c:228
 #: elf/pldd.c:246 elf/sln.c:77 elf/sprof.c:372 iconv/iconv_prog.c:374
 #: iconv/iconvconfig.c:380 locale/programs/locale.c:275
 #: locale/programs/localedef.c:437 login/programs/pt_chown.c:88
-#: malloc/memusagestat.c:564 nss/getent.c:961 nss/makedb.c:371
+#: malloc/memusagestat.c:564 nss/getent.c:980 nss/makedb.c:371
 #: posix/getconf.c:551
 #, c-format
 msgid ""
@@ -164,11 +164,11 @@ msgstr ""
 "%s.\n"
 
 #: catgets/gencat.c:247 debug/pcprofiledump.c:235 debug/xtrace.sh:63
-#: elf/ldconfig.c:232 elf/ldd.bash.in:39 elf/pldd.c:262 elf/sotruss.sh:75
+#: elf/ldconfig.c:244 elf/ldd.bash.in:39 elf/pldd.c:262 elf/sotruss.sh:76
 #: elf/sprof.c:389 iconv/iconv_prog.c:391 iconv/iconvconfig.c:397
 #: locale/programs/locale.c:292 locale/programs/localedef.c:459
 #: login/programs/pt_chown.c:62 malloc/memusage.sh:70 malloc/memusagestat.c:582
-#: nscd/nscd.c:521 nss/getent.c:92 nss/makedb.c:387 posix/getconf.c:533
+#: nscd/nscd.c:521 nss/getent.c:96 nss/makedb.c:387 posix/getconf.c:533
 #, c-format
 msgid ""
 "Copyright (C) %s Free Software Foundation, Inc.\n"
@@ -180,10 +180,10 @@ msgstr ""
 "ole, ei edes KAUPALLISESTI HYVÄKSYTTÄVÄSTÄ LAADUSTA tai SOPIVUUDESTA TIETTYYN TARKOITUKSEEN.\n"
 
 #: catgets/gencat.c:252 debug/pcprofiledump.c:240 debug/xtrace.sh:67
-#: elf/ldconfig.c:237 elf/pldd.c:267 elf/sprof.c:395 iconv/iconv_prog.c:396
+#: elf/ldconfig.c:249 elf/pldd.c:267 elf/sprof.c:395 iconv/iconv_prog.c:396
 #: iconv/iconvconfig.c:402 locale/programs/locale.c:297
 #: locale/programs/localedef.c:464 malloc/memusage.sh:74
-#: malloc/memusagestat.c:587 nscd/nscd.c:526 nss/getent.c:97 nss/makedb.c:392
+#: malloc/memusagestat.c:587 nscd/nscd.c:526 nss/getent.c:101 nss/makedb.c:392
 #: posix/getconf.c:538
 #, c-format
 msgid "Written by %s.\n"
@@ -304,7 +304,7 @@ msgstr "virheellinen osoittimen koko"
 msgid "Usage: xtrace [OPTION]... PROGRAM [PROGRAMOPTION]...\\n"
 msgstr "Käyttö: xtrace [VALITSIN]... OHJELMA [OHJELMANVALITSIN]...\\n"
 
-#: debug/xtrace.sh:31 elf/sotruss.sh:56 elf/sotruss.sh:67 elf/sotruss.sh:135
+#: debug/xtrace.sh:31 elf/sotruss.sh:56 elf/sotruss.sh:68 elf/sotruss.sh:136
 #: malloc/memusage.sh:25
 msgid "Try \\`%s --help' or \\`%s --usage' for more information.\\n"
 msgstr "Kokeile ”%s --help” tai ”%s --usage” saadaksesi lisää tietoa.\\n"
@@ -367,43 +367,43 @@ msgstr "virheellinen tila"
 msgid "invalid mode parameter"
 msgstr "virheellinen tilaparametri"
 
-#: elf/cache.c:296 elf/ldconfig.c:1238
+#: elf/cache.c:357 elf/ldconfig.c:1116
 #, c-format
 msgid "Can't open cache file %s\n"
 msgstr "Välimuistitiedostoa %s ei voi avata\n"
 
-#: elf/cache.c:310
+#: elf/cache.c:371
 #, c-format
 msgid "mmap of cache file failed.\n"
 msgstr "välimuistitiedoston muistikartoitus epäonnistui.\n"
 
-#: elf/cache.c:314 elf/cache.c:328 elf/cache.c:339
+#: elf/cache.c:375 elf/cache.c:389 elf/cache.c:400
 #, c-format
 msgid "File is not a cache file.\n"
 msgstr "Tiedosto ei ole välimuistitiedosto.\n"
 
-#: elf/cache.c:368 elf/cache.c:383
+#: elf/cache.c:429 elf/cache.c:444
 #, c-format
 msgid "%d libs found in cache `%s'\n"
 msgstr "Välimuistista ”%2$s” löytyi %1$d kirjastoa\n"
 
-#: elf/cache.c:685
+#: elf/cache.c:783
 #, c-format
 msgid "Can't create temporary cache file %s"
 msgstr "Tilapäistä välimuistitiedostoa %s ei voi luoda"
 
-#: elf/cache.c:693 elf/cache.c:703 elf/cache.c:707 elf/cache.c:712
-#: elf/cache.c:731
+#: elf/cache.c:791 elf/cache.c:801 elf/cache.c:805 elf/cache.c:810
+#: elf/cache.c:829
 #, c-format
 msgid "Writing of cache data failed"
 msgstr "Välimuistidatan kirjoitus epäonnistui"
 
-#: elf/cache.c:726
+#: elf/cache.c:824
 #, c-format
 msgid "Changing access rights of %s to %#o failed"
 msgstr "Tiedoston %s oikeuksien muutos arvoon %#o epäonnistui"
 
-#: elf/cache.c:735
+#: elf/cache.c:833
 #, c-format
 msgid "Renaming of %s to %s failed"
 msgstr "Uudelleennimeäminen %s -> %s epäonnistui"
@@ -416,36 +416,36 @@ msgstr "virhe ladattaessa jaettuja kirjastoja"
 msgid "DYNAMIC LINKER BUG!!!"
 msgstr "DYNAAMISEN LINKITTIMEN OHJELMISTOVIKA!!!"
 
-#: elf/dl-close.c:363 elf/dl-open.c:297
+#: elf/dl-close.c:368 elf/dl-open.c:297
 msgid "cannot create scope list"
 msgstr "aluelistaa ei voi luoda"
 
-#: elf/dl-close.c:790
+#: elf/dl-close.c:795
 msgid "shared object not open"
 msgstr "jaettu objekti ei ole avoin"
 
-#: elf/dl-deps.c:96
+#: elf/dl-deps.c:103
 msgid "DST not allowed in SUID/SGID programs"
 msgstr "DST ei ole sallittu SUID/SGID-ohjelmissa"
 
-#: elf/dl-deps.c:109
-msgid "empty dynamic string token substitution"
-msgstr "tyhjän dynaamisen merkkijonon osan korvaus"
+#: elf/dl-deps.c:193
+msgid "cannot allocate dependency buffer"
+msgstr "riippuvuuspuskuria ei voi varata"
 
-#: elf/dl-deps.c:115
+#: elf/dl-deps.c:224 elf/dl-deps.c:286
 #, c-format
 msgid "cannot load auxiliary `%s' because of empty dynamic string token substitution\n"
 msgstr "ylimääräistä ”%s” ei voi ladata, koska dynaamisen merkkijonon osa korvattiin tyhjällä\n"
 
-#: elf/dl-deps.c:204
-msgid "cannot allocate dependency buffer"
-msgstr "riippuvuuspuskuria ei voi varata"
+#: elf/dl-deps.c:283
+msgid "empty dynamic string token substitution"
+msgstr "tyhjän dynaamisen merkkijonon osan korvaus"
 
-#: elf/dl-deps.c:427
+#: elf/dl-deps.c:449
 msgid "cannot allocate dependency list"
 msgstr "riippuvuuslistalle ei voi varata muistia"
 
-#: elf/dl-deps.c:467
+#: elf/dl-deps.c:489
 msgid "cannot allocate symbol search list"
 msgstr "symbolihakulistalle ei voi varata muistia"
 
@@ -453,119 +453,120 @@ msgstr "symbolihakulistalle ei voi varata muistia"
 msgid "cannot create capability list"
 msgstr "kykylistaa ei voi luoda"
 
-#: elf/dl-load.c:424
+#: elf/dl-load.c:408
 msgid "cannot allocate name record"
 msgstr "nimitietueelle ei voi varata muistia"
 
-#: elf/dl-load.c:510 elf/dl-load.c:623 elf/dl-load.c:717 elf/dl-load.c:814
-msgid "cannot create cache for search path"
-msgstr "hakupolulle ei voi luoda välimuistia"
-
-#: elf/dl-load.c:606
+#: elf/dl-load.c:595
 msgid "cannot create RUNPATH/RPATH copy"
 msgstr "RUNPATH/RPATH-kopiota ei voi luoda"
 
-#: elf/dl-load.c:703
+#: elf/dl-load.c:612 elf/dl-load.c:621 elf/dl-load.c:712 elf/dl-load.c:810
+#: elf/dl-load.c:830
+msgid "cannot create cache for search path"
+msgstr "hakupolulle ei voi luoda välimuistia"
+
+#: elf/dl-load.c:698
 msgid "cannot create search path array"
 msgstr "hakupolkutaulukkoa ei voi luoda"
 
-#: elf/dl-load.c:978
-msgid "cannot stat shared object"
-msgstr "jaetun objektin tilaa ei voi lukea"
-
-#: elf/dl-load.c:1071 elf/dl-load.c:2160
-msgid "cannot create shared object descriptor"
-msgstr "jaettua objektikahvaa ei voi luoda"
-
-#: elf/dl-load.c:1090 elf/dl-load.c:1594 elf/dl-load.c:1704
+#: elf/dl-load.c:1000 elf/dl-load.c:1354 elf/dl-load.c:1647
 msgid "cannot read file data"
 msgstr "tiedoston dataa ei voi lukea"
 
-#: elf/dl-load.c:1241
+#: elf/dl-load.c:1151
+msgid "cannot stat shared object"
+msgstr "jaetun objektin tilaa ei voi lukea"
+
+#: elf/dl-load.c:1246 elf/dl-load.c:2203
+msgid "cannot create shared object descriptor"
+msgstr "jaettua objektikahvaa ei voi luoda"
+
+#: elf/dl-load.c:1291
 msgid "cannot dynamically load executable"
 msgstr "suoritettavaa tiedostoa ei voi ladata dynaamisesti"
 
-#: elf/dl-load.c:1248
+#: elf/dl-load.c:1298
 msgid "object file has no dynamic section"
 msgstr "objektitiedostossa ei ole dynaamista osaa"
 
-#: elf/dl-load.c:1285
+#: elf/dl-load.c:1335
 msgid "shared object cannot be dlopen()ed"
 msgstr "jaettua objektia ei voi avata funktiolla dlopen()"
 
-#: elf/dl-load.c:1298
+#: elf/dl-load.c:1347
 msgid "cannot allocate memory for program header"
 msgstr "ohjelman otsakkeelle ei voi varata muistia"
 
-#: elf/dl-load.c:1351
+#: elf/dl-load.c:1401
 msgid "cannot close file descriptor"
 msgstr "tiedostokahvaa ei voi sulkea"
 
-#: elf/dl-load.c:1594
+#: elf/dl-load.c:1647
 msgid "file too short"
 msgstr "tiedosto on liian lyhyt"
 
-#: elf/dl-load.c:1628
+#: elf/dl-load.c:1681
 msgid "invalid ELF header"
 msgstr "virheellinen ELF-otsikko"
 
-#: elf/dl-load.c:1645
+#: elf/dl-load.c:1698
 msgid "ELF file data encoding not big-endian"
 msgstr "ELF-tiedoston tavujärjestys ei ole ”big-endian”"
 
-#: elf/dl-load.c:1647
+#: elf/dl-load.c:1700
 msgid "ELF file data encoding not little-endian"
 msgstr "ELF-tiedoston tavujärjestys ei ole ”little-endian”"
 
-#: elf/dl-load.c:1651
+#: elf/dl-load.c:1704
 msgid "ELF file version ident does not match current one"
 msgstr "ELF-tiedoston versiotunnus ei vastaa nykyistä"
 
-#: elf/dl-load.c:1655
+#: elf/dl-load.c:1708
 msgid "ELF file OS ABI invalid"
 msgstr "ELF-tiedoston OS ABI on virheellinen"
 
-#: elf/dl-load.c:1658
+#: elf/dl-load.c:1711
 msgid "ELF file ABI version invalid"
 msgstr "ELF-tiedoston ABI-versio virheellinen"
 
-#: elf/dl-load.c:1664
+#: elf/dl-load.c:1717
 msgid "internal error"
 msgstr "sisäinen virhe"
 
-#: elf/dl-load.c:1671
+#: elf/dl-load.c:1724
 msgid "ELF file version does not match current one"
 msgstr "ELF-tiedoston versio ei vastaa nykyistä"
 
-#: elf/dl-load.c:1685
+#: elf/dl-load.c:1738
 msgid "only ET_DYN and ET_EXEC can be loaded"
 msgstr "vain ET_DYN ja ET_EXEC voidaan ladata"
 
-#: elf/dl-load.c:1690
+#: elf/dl-load.c:1743
 msgid "ELF file's phentsize not the expected size"
 msgstr "ELF-tiedoston phent-koko ei ole odotetun kokoinen"
 
-#: elf/dl-load.c:2179
+#: elf/dl-load.c:2222
 msgid "wrong ELF class: ELFCLASS64"
 msgstr "väärä ELF-luokka: ELFCLASS64"
 
-#: elf/dl-load.c:2180
+#: elf/dl-load.c:2223
 msgid "wrong ELF class: ELFCLASS32"
 msgstr "väärä ELF-luokka: ELFCLASS32"
 
-#: elf/dl-load.c:2183
+#: elf/dl-load.c:2226
 msgid "cannot open shared object file"
 msgstr "jaettua objektitiedostoa ei voi avata"
 
-#: elf/dl-load.h:126
+#: elf/dl-load.h:249
 msgid "failed to map segment from shared object"
 msgstr "segmentin kartoitus jaetusta objektista epäonnistui"
 
-#: elf/dl-load.h:128
+#: elf/dl-load.h:251
 msgid "cannot change memory protections"
 msgstr "muistin suojausta ei voi muuttaa"
 
-#: elf/dl-load.h:130
+#: elf/dl-load.h:253
 msgid "cannot map zero-fill pages"
 msgstr "nollatäytteisiä sivuja ei voi kartoittaa"
 
@@ -581,15 +582,15 @@ msgstr "globaalia aluetta ei voi laajentaa"
 msgid "TLS generation counter wrapped!  Please report this."
 msgstr "TLS-luontilaskurin ylivuoto! Lähetä tästä raportti."
 
-#: elf/dl-open.c:817
+#: elf/dl-open.c:816
 msgid "invalid mode for dlopen()"
 msgstr "virheellinen tila funktiolle dlopen()"
 
-#: elf/dl-reloc.c:283
+#: elf/dl-reloc.c:261
 msgid "cannot make segment writable for relocation"
 msgstr "segmenttiä ei voi muuttaa kirjoitettavaksi uudelleensijoitusta varten"
 
-#: elf/dl-reloc.c:328
+#: elf/dl-reloc.c:326
 msgid "cannot restore segment prot after reloc"
 msgstr "segmentin suojausta ei voi palauttaa uudelleensijoituksen jälkeen"
 
@@ -597,7 +598,7 @@ msgstr "segmentin suojausta ei voi palauttaa uudelleensijoituksen jälkeen"
 msgid "RTLD_NEXT used in code not dynamically loaded"
 msgstr "RTLD_NEXT:iä käytetty koodissa, jota ei ole ladattu dynaamisesti"
 
-#: elf/dl-tls.c:1217
+#: elf/dl-tls.c:1279
 msgid "cannot create TLS data structures"
 msgstr "TLS-tietorakenteita ei voi luoda"
 
@@ -609,169 +610,165 @@ msgstr "virhe version selvittämisessä"
 msgid "cannot allocate version reference table"
 msgstr "versioviitetaulukolle ei voi varata muistia"
 
-#: elf/ldconfig.c:124
-msgid "Print cache"
-msgstr "Näytä välimuisti"
-
-#: elf/ldconfig.c:125
-msgid "Generate verbose messages"
-msgstr "Luo monisanaiset viestit"
-
-#: elf/ldconfig.c:126
-msgid "Don't build cache"
-msgstr "Älä luo välimuistia"
-
-#: elf/ldconfig.c:127
-msgid "Don't update symbolic links"
-msgstr "Älä päivitä symbolisia linkkejä"
-
-#: elf/ldconfig.c:128
-msgid "Change to and use ROOT as root directory"
-msgstr "Siirry ja käytä ROOTia juurihakemistona"
-
-#: elf/ldconfig.c:128
-msgid "ROOT"
-msgstr "JUURI"
-
-#: elf/ldconfig.c:129
-msgid "Use CACHE as cache file"
-msgstr "Käytä CACHEa välimuistitiedostona"
-
-#: elf/ldconfig.c:130
-msgid "Use CONF as configuration file"
-msgstr "Käytä CONFia asetustiedostona"
-
-#: elf/ldconfig.c:131
-msgid "Only process directories specified on the command line.  Don't build cache."
-msgstr "Käsittele vain komentorivillä annetut hakemistot. Älä luo välimuistia."
-
-#: elf/ldconfig.c:132
-msgid "Manually link individual libraries."
-msgstr "Linkitä yksittäisiä kirjastoja käsin."
-
-#: elf/ldconfig.c:133
-msgid "FORMAT"
-msgstr "MUOTO"
-
-#: elf/ldconfig.c:134
-msgid "Ignore auxiliary cache file"
-msgstr "Jätä huomiotta apuvälimuistitiedosto"
-
-#: elf/ldconfig.c:142
-msgid "Configure Dynamic Linker Run Time Bindings."
-msgstr "Säädä dynaamisen linkittäjän ajonaikaiset sidonnat."
-
-#: elf/ldconfig.c:276
-#, c-format
-msgid "Path `%s' given more than once"
-msgstr "Polku ”%s” on annettu useammin kuin kerran"
-
-#: elf/ldconfig.c:405
-#, c-format
-msgid "Can't stat %s"
-msgstr "Tiedoston %s tilaa ei voi lukea"
-
-#: elf/ldconfig.c:486
-#, c-format
-msgid "Can't stat %s\n"
-msgstr "Tiedoston %s tilaa ei voi lukea\n"
-
-#: elf/ldconfig.c:496
-#, c-format
-msgid "%s is not a symbolic link\n"
-msgstr "%s ei ole symbolinen linkki\n"
-
-#: elf/ldconfig.c:515
-#, c-format
-msgid "Can't unlink %s"
-msgstr "Tiedoston %s linkitystä ei voi poistaa"
-
-#: elf/ldconfig.c:521
-#, c-format
-msgid "Can't link %s to %s"
-msgstr "Linkitys %s -> %s ei onnistu"
-
-#: elf/ldconfig.c:527
-msgid " (changed)\n"
-msgstr " (muutettu)\n"
-
-#: elf/ldconfig.c:529
-msgid " (SKIPPED)\n"
-msgstr " (OHITETTU)\n"
-
-#: elf/ldconfig.c:584
-#, c-format
-msgid "Can't find %s"
-msgstr "%s ei löydy"
-
-#: elf/ldconfig.c:600 elf/ldconfig.c:759 elf/ldconfig.c:826
-#, c-format
-msgid "Cannot lstat %s"
-msgstr "Tiedoston %s tilaa ei voi lukea"
-
-#: elf/ldconfig.c:606
-#, c-format
-msgid "Ignored file %s since it is not a regular file."
-msgstr "Tiedostoa %s ei huomioitu, koska se ei ole tavallinen tiedosto."
-
-#: elf/ldconfig.c:614
-#, c-format
-msgid "No link created since soname could not be found for %s"
-msgstr "Linkkiä ei luotu, koska tiedostolle %s ei löytynyt so-nimeä"
-
-#: elf/ldconfig.c:715
-#, c-format
-msgid "Can't open directory %s"
-msgstr "Hakemistoa %s ei voi avata"
-
-#: elf/ldconfig.c:776 elf/ldconfig.c:814 elf/readlib.c:81
-#, c-format
-msgid "Input file %s not found.\n"
-msgstr "Syötetiedostoa %s ei löydy.\n"
-
-#: elf/ldconfig.c:783
-#, c-format
-msgid "Cannot stat %s"
-msgstr "Tiedoston %s tilaa ei voi lukea"
-
-#: elf/ldconfig.c:902
-#, c-format
-msgid "libc6 library %s in wrong directory"
-msgstr "libc6-kirjasto %s on väärässä hakemistossa"
-
-#: elf/ldconfig.c:921
-#, c-format
-msgid "libraries %s and %s in directory %s have same soname but different type."
-msgstr "kirjastoilla %s ja %s hakemistossa %s on sama so-nimi, mutta eri tyypit."
-
-#: elf/ldconfig.c:1050
+#: elf/ldconfig-parse.c:90
 #, c-format
 msgid "Warning: ignoring configuration file that cannot be opened: %s"
 msgstr "Varoitus: jätetään huomioimatta asetustiedosto, jota ei voi avata: %s"
 
-#: elf/ldconfig.c:1124 locale/programs/xasprintf.c:31
+#: elf/ldconfig-parse.c:163 locale/programs/xasprintf.c:31
 #: locale/programs/xmalloc.c:63 malloc/obstack.c:416 malloc/obstack.c:418
 #: posix/getconf.c:503 posix/getconf.c:745
 #, c-format
 msgid "memory exhausted"
 msgstr "muisti lopussa"
 
-#: elf/ldconfig.c:1157
+#: elf/ldconfig-parse.c:196
 #, c-format
 msgid "%s:%u: cannot read directory %s"
 msgstr "%s:%u: hakemistoa %s ei voi lukea"
 
-#: elf/ldconfig.c:1195
+#: elf/ldconfig.c:132
+msgid "Print cache"
+msgstr "Näytä välimuisti"
+
+#: elf/ldconfig.c:133
+msgid "Generate verbose messages"
+msgstr "Luo monisanaiset viestit"
+
+#: elf/ldconfig.c:134
+msgid "Don't build cache"
+msgstr "Älä luo välimuistia"
+
+#: elf/ldconfig.c:135
+msgid "Don't update symbolic links"
+msgstr "Älä päivitä symbolisia linkkejä"
+
+#: elf/ldconfig.c:136
+msgid "Change to and use ROOT as root directory"
+msgstr "Siirry ja käytä ROOTia juurihakemistona"
+
+#: elf/ldconfig.c:136
+msgid "ROOT"
+msgstr "JUURI"
+
+#: elf/ldconfig.c:137
+msgid "Use CACHE as cache file"
+msgstr "Käytä CACHEa välimuistitiedostona"
+
+#: elf/ldconfig.c:140
+msgid "Only process directories specified on the command line.  Don't build cache."
+msgstr "Käsittele vain komentorivillä annetut hakemistot. Älä luo välimuistia."
+
+#: elf/ldconfig.c:141
+msgid "Manually link individual libraries."
+msgstr "Linkitä yksittäisiä kirjastoja käsin."
+
+#: elf/ldconfig.c:142
+msgid "FORMAT"
+msgstr "MUOTO"
+
+#: elf/ldconfig.c:143
+msgid "Ignore auxiliary cache file"
+msgstr "Jätä huomiotta apuvälimuistitiedosto"
+
+#: elf/ldconfig.c:151
+msgid "Configure Dynamic Linker Run Time Bindings."
+msgstr "Säädä dynaamisen linkittäjän ajonaikaiset sidonnat."
+
+#: elf/ldconfig.c:288
+#, c-format
+msgid "Path `%s' given more than once"
+msgstr "Polku ”%s” on annettu useammin kuin kerran"
+
+#: elf/ldconfig.c:417
+#, c-format
+msgid "Can't stat %s"
+msgstr "Tiedoston %s tilaa ei voi lukea"
+
+#: elf/ldconfig.c:511
+#, c-format
+msgid "Can't stat %s\n"
+msgstr "Tiedoston %s tilaa ei voi lukea\n"
+
+#: elf/ldconfig.c:521
+#, c-format
+msgid "%s is not a symbolic link\n"
+msgstr "%s ei ole symbolinen linkki\n"
+
+#: elf/ldconfig.c:540
+#, c-format
+msgid "Can't unlink %s"
+msgstr "Tiedoston %s linkitystä ei voi poistaa"
+
+#: elf/ldconfig.c:546
+#, c-format
+msgid "Can't link %s to %s"
+msgstr "Linkitys %s -> %s ei onnistu"
+
+#: elf/ldconfig.c:552
+msgid " (changed)\n"
+msgstr " (muutettu)\n"
+
+#: elf/ldconfig.c:554
+msgid " (SKIPPED)\n"
+msgstr " (OHITETTU)\n"
+
+#: elf/ldconfig.c:609
+#, c-format
+msgid "Can't find %s"
+msgstr "%s ei löydy"
+
+#: elf/ldconfig.c:625 elf/ldconfig.c:784 elf/ldconfig.c:851
+#, c-format
+msgid "Cannot lstat %s"
+msgstr "Tiedoston %s tilaa ei voi lukea"
+
+#: elf/ldconfig.c:631
+#, c-format
+msgid "Ignored file %s since it is not a regular file."
+msgstr "Tiedostoa %s ei huomioitu, koska se ei ole tavallinen tiedosto."
+
+#: elf/ldconfig.c:639
+#, c-format
+msgid "No link created since soname could not be found for %s"
+msgstr "Linkkiä ei luotu, koska tiedostolle %s ei löytynyt so-nimeä"
+
+#: elf/ldconfig.c:740
+#, c-format
+msgid "Can't open directory %s"
+msgstr "Hakemistoa %s ei voi avata"
+
+#: elf/ldconfig.c:801 elf/ldconfig.c:839 elf/readlib.c:81
+#, c-format
+msgid "Input file %s not found.\n"
+msgstr "Syötetiedostoa %s ei löydy.\n"
+
+#: elf/ldconfig.c:808
+#, c-format
+msgid "Cannot stat %s"
+msgstr "Tiedoston %s tilaa ei voi lukea"
+
+#: elf/ldconfig.c:927
+#, c-format
+msgid "libc6 library %s in wrong directory"
+msgstr "libc6-kirjasto %s on väärässä hakemistossa"
+
+#: elf/ldconfig.c:946
+#, c-format
+msgid "libraries %s and %s in directory %s have same soname but different type."
+msgstr "kirjastoilla %s ja %s hakemistossa %s on sama so-nimi, mutta eri tyypit."
+
+#: elf/ldconfig.c:1070
 #, c-format
 msgid "relative path `%s' used to build cache"
 msgstr "suhteellista polkua ”%s” käytetään välimuistin luomiseen"
 
-#: elf/ldconfig.c:1217
+#: elf/ldconfig.c:1092
 #, c-format
 msgid "Can't chdir to /"
 msgstr "Juurihakemistoon / siirtyminen ei onnistu"
 
-#: elf/ldconfig.c:1258
+#: elf/ldconfig.c:1136
 #, c-format
 msgid "Can't open cache file directory %s\n"
 msgstr "Välimuistihakemistoa %s ei voi avata\n"
@@ -988,15 +985,11 @@ msgstr "Pakolliset argumentit pitkille valitsimille ovat pakollisia kaikille vas
 msgid "%s: option requires an argument -- '%s'\\n"
 msgstr "%s: valitsin vaatii argumentin -- ”%c”\\n"
 
-#: elf/sotruss.sh:61
-msgid "%s: option is ambiguous; possibilities:"
-msgstr "%s: valitsin on moniselitteinen; vaihtoehdot:"
-
-#: elf/sotruss.sh:79
+#: elf/sotruss.sh:80
 msgid "Written by %s.\\n"
 msgstr "Kirjoittanut %s.\\n"
 
-#: elf/sotruss.sh:134
+#: elf/sotruss.sh:135
 msgid "%s: unrecognized option '%c%s'\\n"
 msgstr "%s: tunnistamaton valitsin ”%c%s”\\n"
 
@@ -3327,7 +3320,7 @@ msgstr "yp_update: konenimeä ei voi muuntaa verkkonimeksi\n"
 msgid "yp_update: cannot get server address\n"
 msgstr "yp_update: palvelimen osoitetta ei löydy\n"
 
-#: nscd/aicache.c:68 nscd/hstcache.c:451
+#: nscd/aicache.c:77 nscd/hstcache.c:451
 #, c-format
 msgid "Haven't found \"%s\" in hosts cache!"
 msgstr "”%s” ei löytynyt konenimivälimuistista!"
@@ -3459,7 +3452,7 @@ msgstr "getgrouplist epäonnistui"
 msgid "setgroups failed"
 msgstr "setgroups epäonnistui"
 
-#: nscd/grpcache.c:384 nscd/hstcache.c:401 nscd/initgrcache.c:377
+#: nscd/grpcache.c:384 nscd/hstcache.c:402 nscd/initgrcache.c:377
 #: nscd/pwdcache.c:362 nscd/servicescache.c:309
 #, c-format
 msgid "short write in %s: %s"
@@ -3520,7 +3513,7 @@ msgstr "Käytä erillistä välimuistia jokaiselle käyttäjälle"
 msgid "Name Service Cache Daemon."
 msgstr "Nimipalvelun välimuistidemoni."
 
-#: nscd/nscd.c:158 nss/getent.c:995 nss/makedb.c:208
+#: nscd/nscd.c:158 nss/getent.c:1014 nss/makedb.c:208
 #, c-format
 msgid "wrong number of arguments"
 msgstr "väärä määrä argumentteja"
@@ -3674,21 +3667,21 @@ msgstr "tietokanta [avain ...]"
 msgid "Service configuration to be used"
 msgstr "Käytettävät palveluasetukset"
 
-#: nss/getent.c:154 nss/getent.c:466 nss/getent.c:513
+#: nss/getent.c:158 nss/getent.c:481 nss/getent.c:528
 #, c-format
 msgid "Enumeration not supported on %s\n"
 msgstr "%s ei tue luettelemista\n"
 
-#: nss/getent.c:905
+#: nss/getent.c:920
 #, c-format
 msgid "Unknown database name"
 msgstr "Tuntematon tietokannan nimi"
 
-#: nss/getent.c:939
+#: nss/getent.c:958
 msgid "Supported databases:\n"
 msgstr "Tuetut tietokannat:\n"
 
-#: nss/getent.c:1005
+#: nss/getent.c:1024
 #, c-format
 msgid "Unknown database: %s\n"
 msgstr "Tuntematon tietokanta: %s\n"
@@ -3900,7 +3893,7 @@ msgstr "Pariton ) tai \\)"
 msgid "No previous regular expression"
 msgstr "Ei edeltävää säännöllistä lauseketta"
 
-#: posix/wordexp.c:1794
+#: posix/wordexp.c:1806
 msgid "parameter null or not set"
 msgstr "parametri on null tai asettamatta"
 
@@ -4033,7 +4026,7 @@ msgstr "Käytettävissä olevat tulostepuskurit"
 msgid "Input message available"
 msgstr "Syöteviesti saatavilla"
 
-#: stdio-common/psiginfo-data.h:46 timezone/zdump.c:445 timezone/zic.c:652
+#: stdio-common/psiginfo-data.h:46 timezone/zdump.c:424 timezone/zic.c:831
 msgid "I/O error"
 msgstr "I/O-virhe"
 
@@ -5421,343 +5414,296 @@ msgstr "Parametrimerkkijono ei ole koodattu oikein"
 msgid "%s is for unknown machine %d.\n"
 msgstr "%s on tarkoitettu tuntemattomalle koneelle %d.\n"
 
-#: timezone/zdump.c:402
+#: timezone/zdump.c:381
 msgid "has characters other than ASCII alphanumerics, '-' or '+'"
 msgstr "sisältää muita kuin alfanumeerisia ASCII-merkkejä tai ”-”/”+”"
 
-#: timezone/zdump.c:404
+#: timezone/zdump.c:383
 msgid "has fewer than 3 characters"
 msgstr "merkkejä on alle 3"
 
-#: timezone/zdump.c:406
+#: timezone/zdump.c:385
 msgid "has more than 6 characters"
 msgstr "merkkejä on yli 6"
 
-#: timezone/zic.c:463
+#: timezone/zic.c:559
 #, c-format
 msgid "%s: Memory exhausted: %s\n"
 msgstr "%s: Muisti lopussa: %s\n"
 
-#: timezone/zic.c:470
+#: timezone/zic.c:566
 msgid "size overflow"
 msgstr "koon ylivuoto"
 
-#: timezone/zic.c:559
+#: timezone/zic.c:658
 msgid "integer overflow"
 msgstr "kokonaisluvun ylivuoto"
 
-#: timezone/zic.c:585
+#: timezone/zic.c:684
 msgid "command line"
 msgstr "komentorivi"
 
-#: timezone/zic.c:588
+#: timezone/zic.c:687
 msgid "standard input"
 msgstr "vakiosyöte"
 
-#: timezone/zic.c:616
+#: timezone/zic.c:716
 #, c-format
 msgid "\"%s\", line %<PRIdMAX>: "
 msgstr "”%s”, rivi %<PRIdMAX>: "
 
-#: timezone/zic.c:620
+#: timezone/zic.c:720
 #, c-format
 msgid " (rule from \"%s\", line %<PRIdMAX>)"
 msgstr " (sääntö tiedostosta ”%s”, riviltä %<PRIdMAX>)"
 
-#: timezone/zic.c:639
+#: timezone/zic.c:739
 #, c-format
 msgid "warning: "
 msgstr "varoitus: "
 
-#: timezone/zic.c:1025
-#, c-format
-msgid "%s: More than one -d option specified\n"
-msgstr "%s: Annettu useampi kuin yksi -d -valitsin\n"
-
-#: timezone/zic.c:1036
-#, c-format
-msgid "%s: More than one -l option specified\n"
-msgstr "%s: Annettu useampi kuin yksi -l -valitsin\n"
-
-#: timezone/zic.c:1047
-#, c-format
-msgid "%s: More than one -p option specified\n"
-msgstr "%s: Annettu useampi kuin yksi -p -valitsin\n"
-
-#: timezone/zic.c:1056
-#, c-format
-msgid "%s: More than one -t option specified\n"
-msgstr "%s: Annettu useampi kuin yksi -t -valitsin\n"
-
-#: timezone/zic.c:1071
-#, c-format
-msgid "%s: More than one -L option specified\n"
-msgstr "%s: Annettu useampi kuin yksi -L -valitsin\n"
-
-#: timezone/zic.c:1104
+#: timezone/zic.c:1352
 msgid "-s ignored"
 msgstr "-s jätetään huomiotta"
 
-#: timezone/zic.c:1171
+#: timezone/zic.c:1422
 msgid "empty file name"
 msgstr "tyhjä tiedostonimi"
 
-#: timezone/zic.c:1174
+#: timezone/zic.c:1425
 #, c-format
 msgid "file name '%s' begins with '/'"
 msgstr "tiedostonimi ”%s” alkaa ”/”-merkillä"
 
-#: timezone/zic.c:1184
+#: timezone/zic.c:1435
 #, c-format
 msgid "file name '%s' contains '%.*s' component"
 msgstr "tiedostonimi ”%s” sisältää ”%.*s”-komponentin"
 
-#: timezone/zic.c:1190
+#: timezone/zic.c:1441
 #, c-format
 msgid "file name '%s' component contains leading '-'"
 msgstr "tiedostonimen ”%s” komponentti sisältää edeltävän ”-”-merkin"
 
-#: timezone/zic.c:1193
+#: timezone/zic.c:1444
 #, c-format
 msgid "file name '%s' contains overlength component '%.*s...'"
 msgstr "tiedostonimi ”%s” sisältää ylipitkän ”%.*s...”-komponentin"
 
-#: timezone/zic.c:1221
+#: timezone/zic.c:1472
 #, c-format
 msgid "file name '%s' contains byte '%c'"
 msgstr "tiedostonimi ”%s” sisältää tavun ”%c”"
 
-#: timezone/zic.c:1222
+#: timezone/zic.c:1473
 #, c-format
 msgid "file name '%s' contains byte '\\%o'"
 msgstr "tiedostonimi ”%s” sisältää tavun ”\\%o”"
 
-#: timezone/zic.c:1369
-#, c-format
-msgid "%s: Can't create %s/%s: %s\n"
-msgstr "%s: Tiedostoa %s/%s ei voi luoda: %s\n"
-
-#: timezone/zic.c:1463
-#, c-format
-msgid "%s: Can't remove %s/%s: %s\n"
-msgstr "%s: Tiedostoa %s/%s ei voi poistaa: %s\n"
-
-#: timezone/zic.c:1536
+#: timezone/zic.c:1821
 #, c-format
 msgid "symbolic link used because hard link failed: %s"
 msgstr "käytetään symbolista linkkiä, sillä kova linkitys epäonnistui: %s"
 
-#: timezone/zic.c:1554
+#: timezone/zic.c:1839
 #, c-format
 msgid "copy used because hard link failed: %s"
 msgstr "käytetään kopiointia, sillä kova linkitys epäonnistui: %s"
 
-#: timezone/zic.c:1557
+#: timezone/zic.c:1844
 #, c-format
 msgid "copy used because symbolic link failed: %s"
 msgstr "käytetään kopiointia, sillä symbolinen linkitys epäonnistui: %s"
 
-#: timezone/zic.c:1608 timezone/zic.c:1610
+#: timezone/zic.c:1895 timezone/zic.c:1897
 msgid "same rule name in multiple files"
 msgstr "sama säännön nimi useassa tiedostossa"
 
-#: timezone/zic.c:1656
+#: timezone/zic.c:1943
 #, c-format
 msgid "%s in ruleless zone"
 msgstr "%s säännöttömässä vyöhykkeessä"
 
-#: timezone/zic.c:1688
+#: timezone/zic.c:1975
 msgid "line too long"
 msgstr "liian pitkä rivi"
 
-#: timezone/zic.c:1709
+#: timezone/zic.c:1996
 #, c-format
 msgid "%s: Can't open %s: %s\n"
 msgstr "%s: Tiedostoa %s ei voi avata: %s\n"
 
-#: timezone/zic.c:1734
+#: timezone/zic.c:2021
 msgid "input line of unknown type"
 msgstr "syöterivi tuntematonta tyyppiä"
 
-#: timezone/zic.c:1761
+#: timezone/zic.c:2049
 msgid "expected continuation line not found"
 msgstr "odotettua jatkoriviä ei löytynyt"
 
-#: timezone/zic.c:1797
+#: timezone/zic.c:2085
 msgid "fractional seconds rejected by pre-2018 versions of zic"
 msgstr "zic:n 2018:aa aikaisemmat versiot hylkäävät sekunnin murto-osat"
 
-#: timezone/zic.c:1815 timezone/zic.c:3760
-msgid "time overflow"
-msgstr "ajan ylivuoto"
-
-#: timezone/zic.c:1821
+#: timezone/zic.c:2105
 msgid "values over 24 hours not handled by pre-2007 versions of zic"
 msgstr "zic:n 2007:ää aikaisemmat versiot eivät käsittele yli 24 tunnin arvoja"
 
-#: timezone/zic.c:1839
+#: timezone/zic.c:2123
 msgid "invalid saved time"
 msgstr "virheellinen tallennettu aika"
 
-#: timezone/zic.c:1850
+#: timezone/zic.c:2134
 msgid "wrong number of fields on Rule line"
 msgstr "väärä määrä kenttiä Rule-rivillä"
 
-#: timezone/zic.c:1859
+#: timezone/zic.c:2143
 #, c-format
 msgid "Invalid rule name \"%s\""
 msgstr "Virheellinen säännön nimi ”%s”"
 
-#: timezone/zic.c:1883
+#: timezone/zic.c:2167
 msgid "wrong number of fields on Zone line"
 msgstr "väärä määrä kenttiä Zone-rivillä"
 
-#: timezone/zic.c:1887
+#: timezone/zic.c:2171
 #, c-format
 msgid "\"Zone %s\" line and -l option are mutually exclusive"
 msgstr "”Zone %s”-rivi ja -l -valitsin ovat toisensa poissulkevia"
 
-#: timezone/zic.c:1892
+#: timezone/zic.c:2176
 #, c-format
 msgid "\"Zone %s\" line and -p option are mutually exclusive"
 msgstr "”Zone %s”-rivi ja -p -valitsin ovat toisensa poissulkevia"
 
-#: timezone/zic.c:1913
+#: timezone/zic.c:2197
 msgid "wrong number of fields on Zone continuation line"
 msgstr "väärä määrä kenttiä Zone-jatkorivillä"
 
-#: timezone/zic.c:1952
+#: timezone/zic.c:2236
 msgid "invalid UT offset"
 msgstr "virheellinen UT-siirtymä"
 
-#: timezone/zic.c:1956
+#: timezone/zic.c:2241
 msgid "invalid abbreviation format"
 msgstr "virheellinen lyhennemuoto"
 
-#: timezone/zic.c:1986
+#: timezone/zic.c:2267
 msgid "Zone continuation line end time is not after end time of previous line"
 msgstr "Vyöhykkeen jatkorivin loppuaika ei ole edellisen rivin loppuaikaa myöhäisempi"
 
-#: timezone/zic.c:1997
+#: timezone/zic.c:2278
 #, c-format
 msgid "format '%s' not handled by pre-2015 versions of zic"
 msgstr "zic:n 2015:tä aikaisemmat versiot eivät käsittele ”%s”-muotoa"
 
-#: timezone/zic.c:2027
+#: timezone/zic.c:2308
 msgid "invalid leaping year"
 msgstr "virheellinen karkausvuosi"
 
-#: timezone/zic.c:2049 timezone/zic.c:2154
+#: timezone/zic.c:2330 timezone/zic.c:2427
 msgid "invalid month name"
 msgstr "virheellinen kuukauden nimi"
 
-#: timezone/zic.c:2062 timezone/zic.c:2252 timezone/zic.c:2266
+#: timezone/zic.c:2343 timezone/zic.c:2529 timezone/zic.c:2543
 msgid "invalid day of month"
 msgstr "virheellinen kuukauden päivä"
 
-#: timezone/zic.c:2067
-msgid "time too small"
-msgstr "aika on liian pieni"
-
-#: timezone/zic.c:2071
-msgid "time too large"
-msgstr "aika on liian suuri"
-
-#: timezone/zic.c:2075 timezone/zic.c:2183
+#: timezone/zic.c:2348 timezone/zic.c:2456
 msgid "invalid time of day"
 msgstr "virheellinen kellonaika"
 
-#: timezone/zic.c:2086
+#: timezone/zic.c:2359
 msgid "wrong number of fields on Leap line"
 msgstr "väärä määrä kenttiä Leap-rivillä"
 
-#: timezone/zic.c:2125
+#: timezone/zic.c:2398
 msgid "wrong number of fields on Link line"
 msgstr "väärä määrä kenttiä Link-rivillä"
 
-#: timezone/zic.c:2199
+#: timezone/zic.c:2472
 msgid "invalid starting year"
 msgstr "virheellinen aloitusvuosi"
 
-#: timezone/zic.c:2214
+#: timezone/zic.c:2487
 msgid "invalid ending year"
 msgstr "virheellinen päättymisvuosi"
 
-#: timezone/zic.c:2218
+#: timezone/zic.c:2491
 msgid "starting year greater than ending year"
 msgstr "aloitusvuosi suurempi kuin lopetusvuosi"
 
-#: timezone/zic.c:2257
+#: timezone/zic.c:2534
 msgid "invalid weekday name"
 msgstr "virheellinen viikonpäivän nimi"
 
-#: timezone/zic.c:2537
+#: timezone/zic.c:2831
 msgid "too many transition times"
 msgstr "liian monta siirtymäaikaa"
 
-#: timezone/zic.c:3186
+#: timezone/zic.c:3485
 #, c-format
 msgid "%s: pre-%d clients may mishandle distant timestamps"
 msgstr "%s: %d:ta vanhemmat asiakkaat saattavat käsitellä kaukaiset aikaleimat väärin"
 
-#: timezone/zic.c:3315
+#: timezone/zic.c:3611
 msgid "two rules for same instant"
 msgstr "kaksi sääntöä samalle hetkelle"
 
-#: timezone/zic.c:3388
+#: timezone/zic.c:3684
 msgid "can't determine time zone abbreviation to use just after until time"
 msgstr "ennen ”until”-aikaa käytettävää aikavyöhykelyhennettä ei voi määrittää"
 
-#: timezone/zic.c:3489
+#: timezone/zic.c:3787
 msgid "UT offset out of range"
 msgstr "UT-siirtymä sallitun välin ulkopuolella"
 
-#: timezone/zic.c:3512
+#: timezone/zic.c:3816
 msgid "too many local time types"
 msgstr "liian monta paikallisen ajan tyyppiä"
 
-#: timezone/zic.c:3530
-msgid "too many leap seconds"
-msgstr "liian monta karkaussekuntia"
-
-#: timezone/zic.c:3561
+#: timezone/zic.c:3860
 msgid "Leap seconds too close together"
 msgstr "Karkaussekunnit liian lähellä toisiaan"
 
-#: timezone/zic.c:3679
+#: timezone/zic.c:3981
 #, c-format
 msgid "\"%s\" is undocumented; use \"last%s\" instead"
 msgstr "”%s” on dokumentoimaton; käytä sen sijaan ”last%s”"
 
-#: timezone/zic.c:3710
+#: timezone/zic.c:4012
 #, c-format
 msgid "\"%s\" is ambiguous in pre-2017c zic"
 msgstr "”%s” on moniselitteinen zic:n 2017c:tä aikaisemmissa versioissa"
 
-#: timezone/zic.c:3741
+#: timezone/zic.c:4043
 msgid "Odd number of quotation marks"
 msgstr "Pariton määrä lainausmerkkejä"
 
-#: timezone/zic.c:3838
+#: timezone/zic.c:4062
+msgid "time overflow"
+msgstr "ajan ylivuoto"
+
+#: timezone/zic.c:4154
 msgid "use of 2/29 in non leap-year"
 msgstr "helmikuun 29. päivää käytetty muussa kuin karkausvuodessa"
 
-#: timezone/zic.c:3864
+#: timezone/zic.c:4180
 msgid "rule goes past start/end of month; will not work with pre-2004 versions of zic"
 msgstr "sääntö jatkuu kuukauden vaihteen yli; ei toimi zic:n 2004:ää vanhemmissa versioissa"
 
-#: timezone/zic.c:3891
+#: timezone/zic.c:4201
 msgid "time zone abbreviation has fewer than 3 characters"
 msgstr "aikavyöhykkeen lyhenteessä on alle 3 merkkiä"
 
-#: timezone/zic.c:3893
+#: timezone/zic.c:4203
 msgid "time zone abbreviation has too many characters"
 msgstr "aikavyöhykkeen lyhenteessä on liikaa merkkejä"
 
-#: timezone/zic.c:3895
+#: timezone/zic.c:4205
 msgid "time zone abbreviation differs from POSIX standard"
 msgstr "aikavyöhykkeen lyhenne eroaa POSIX-standardista"
 
-#: timezone/zic.c:3901
+#: timezone/zic.c:4246
 msgid "too many, or too long, time zone abbreviations"
 msgstr "liian monta tai liian pitkä aikavyöhykelyhenne"

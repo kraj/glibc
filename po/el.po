@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: libc 2.2.3\n"
-"POT-Creation-Date: 2026-01-19 16:22+0100\n"
+"POT-Creation-Date: 2026-07-01 10:52+0900\n"
 "PO-Revision-Date: 2001-05-21 19:20:31+0000\n"
 "Last-Translator: Nikos Mavroyanopoulos <nmav@hellug.gr>\n"
 "Language-Team: Greek <nls@tux.hellug.gr>\n"
@@ -117,11 +117,11 @@ msgstr ""
 "[ΑΡΧΕΙΟ-ΕΞΟΔΟΥ [ΑΡΧΕΙΟ-ΕΙΣΟΔΟΥ]...]"
 
 #: catgets/gencat.c:247 debug/pcprofiledump.c:235 debug/xtrace.sh:63
-#: elf/ldconfig.c:232 elf/ldd.bash.in:39 elf/pldd.c:262 elf/sotruss.sh:75
+#: elf/ldconfig.c:244 elf/ldd.bash.in:39 elf/pldd.c:262 elf/sotruss.sh:76
 #: elf/sprof.c:389 iconv/iconv_prog.c:391 iconv/iconvconfig.c:397
 #: locale/programs/locale.c:292 locale/programs/localedef.c:459
 #: login/programs/pt_chown.c:62 malloc/memusage.sh:70 malloc/memusagestat.c:582
-#: nscd/nscd.c:521 nss/getent.c:92 nss/makedb.c:387 posix/getconf.c:533
+#: nscd/nscd.c:521 nss/getent.c:96 nss/makedb.c:387 posix/getconf.c:533
 #, c-format
 msgid ""
 "Copyright (C) %s Free Software Foundation, Inc.\n"
@@ -134,10 +134,10 @@ msgstr ""
 "ΚΑΠΟΙΟ ΣΥΓΚΕΚΡΙΜΕΝΟ ΣΚΟΠΟ.\n"
 
 #: catgets/gencat.c:252 debug/pcprofiledump.c:240 debug/xtrace.sh:67
-#: elf/ldconfig.c:237 elf/pldd.c:267 elf/sprof.c:395 iconv/iconv_prog.c:396
+#: elf/ldconfig.c:249 elf/pldd.c:267 elf/sprof.c:395 iconv/iconv_prog.c:396
 #: iconv/iconvconfig.c:402 locale/programs/locale.c:297
 #: locale/programs/localedef.c:464 malloc/memusage.sh:74
-#: malloc/memusagestat.c:587 nscd/nscd.c:526 nss/getent.c:97 nss/makedb.c:392
+#: malloc/memusagestat.c:587 nscd/nscd.c:526 nss/getent.c:101 nss/makedb.c:392
 #: posix/getconf.c:538
 #, c-format
 msgid "Written by %s.\n"
@@ -201,7 +201,7 @@ msgstr "μη τερματιζόμενο μήνυμα"
 msgid "while opening old catalog file"
 msgstr "κατά το άνοιγμα παλιού αρχείου καταλόγου"
 
-#: elf/dl-open.c:817
+#: elf/dl-open.c:816
 msgid "invalid mode for dlopen()"
 msgstr "μη έγκυρη κατάσταση για την dlopen()"
 
@@ -209,21 +209,21 @@ msgstr "μη έγκυρη κατάσταση για την dlopen()"
 msgid "RTLD_NEXT used in code not dynamically loaded"
 msgstr "Το RTLD_NEXT που χρησιμοποιείται στον κώδικα δεν φορτώθηκε δυναμικά"
 
-#: elf/ldconfig.c:496
-#, c-format
-msgid "%s is not a symbolic link\n"
-msgstr "το %s δεν είναι συμβολικός σύνδεσμος\n"
-
-#: elf/ldconfig.c:527
-msgid " (changed)\n"
-msgstr " (άλλαξε)\n"
-
-#: elf/ldconfig.c:1124 locale/programs/xasprintf.c:31
+#: elf/ldconfig-parse.c:163 locale/programs/xasprintf.c:31
 #: locale/programs/xmalloc.c:63 malloc/obstack.c:416 malloc/obstack.c:418
 #: posix/getconf.c:503 posix/getconf.c:745
 #, c-format
 msgid "memory exhausted"
 msgstr "η μνήμη εξαντλήθηκε"
+
+#: elf/ldconfig.c:521
+#, c-format
+msgid "%s is not a symbolic link\n"
+msgstr "το %s δεν είναι συμβολικός σύνδεσμος\n"
+
+#: elf/ldconfig.c:552
+msgid " (changed)\n"
+msgstr " (άλλαξε)\n"
 
 #. TRANS This is a ``file doesn't exist'' error
 #. TRANS for ordinary files that are referenced in contexts where they are
@@ -1461,7 +1461,7 @@ msgstr "yp_update: αδυναμία μετατροπής ονόματος συσ
 msgid "yp_update: cannot get server address\n"
 msgstr "yp_update: αδυναμία λήψης διεύθυνσης διακομιστή\n"
 
-#: nscd/aicache.c:68 nscd/hstcache.c:451
+#: nscd/aicache.c:77 nscd/hstcache.c:451
 #, c-format
 msgid "Haven't found \"%s\" in hosts cache!"
 msgstr "Δε βρέθηκε το \"%s\" στην λανθάνουσα μνήμη συστημάτων!"
@@ -1501,7 +1501,7 @@ msgstr "σύντομη ανάγνωση κατά την ανάγνωση του 
 msgid "handle_request: request received (Version = %d)"
 msgstr "handle_request: λήψη αίτησης (Έκδοση = %d)"
 
-#: nscd/grpcache.c:384 nscd/hstcache.c:401 nscd/initgrcache.c:377
+#: nscd/grpcache.c:384 nscd/hstcache.c:402 nscd/initgrcache.c:377
 #: nscd/pwdcache.c:362 nscd/servicescache.c:309
 #, c-format
 msgid "short write in %s: %s"
@@ -1548,7 +1548,7 @@ msgstr "Χρήση ξεχωριστής λανθάνουσας μνήμης γι
 msgid "Name Service Cache Daemon."
 msgstr "Λανθάνουσα Υπηρεσία Εξυπηρέτησης Αντιστοιχιών Ονομάτων."
 
-#: nscd/nscd.c:158 nss/getent.c:995 nss/makedb.c:208
+#: nscd/nscd.c:158 nss/getent.c:1014 nss/makedb.c:208
 #, c-format
 msgid "wrong number of arguments"
 msgstr "λάθος αριθμός παραμέτρων"
@@ -1608,7 +1608,7 @@ msgstr ""
 msgid "database [key ...]"
 msgstr "βάση_δεδομένων [κλειδί ...]"
 
-#: nss/getent.c:1005
+#: nss/getent.c:1024
 #, c-format
 msgid "Unknown database: %s\n"
 msgstr "Άγνωστη βάση δεδομένων: %s\n"
@@ -1745,7 +1745,7 @@ msgstr "Εσωτερικό σφάλμα του αναλυτή διευθύνσε
 msgid "Unknown resolver error"
 msgstr "Άγνωστο σφάλμα αναλύτη διευθύνσεων"
 
-#: stdio-common/psiginfo-data.h:46 timezone/zdump.c:445 timezone/zic.c:652
+#: stdio-common/psiginfo-data.h:46 timezone/zdump.c:424 timezone/zic.c:831
 msgid "I/O error"
 msgstr "Σφάλμα εισόδου/εξόδου"
 
@@ -2965,166 +2965,142 @@ msgstr "Σφάλμα συστήματος"
 msgid "%s is for unknown machine %d.\n"
 msgstr "το %s είναι για το άγνωστο σύστημά %d.\n"
 
-#: timezone/zic.c:463
+#: timezone/zic.c:559
 #, c-format
 msgid "%s: Memory exhausted: %s\n"
 msgstr "%s: Η μνήμη εξαντλήθηκε: %s\n"
 
-#: timezone/zic.c:588
+#: timezone/zic.c:687
 msgid "standard input"
 msgstr "κανονική είσοδος"
 
-#: timezone/zic.c:639
+#: timezone/zic.c:739
 #, c-format
 msgid "warning: "
 msgstr "προειδοποίηση: "
 
-#: timezone/zic.c:1025
-#, c-format
-msgid "%s: More than one -d option specified\n"
-msgstr "%s: Περισσότερες από μία -d επιλογές καθορίστηκαν\n"
-
-#: timezone/zic.c:1036
-#, c-format
-msgid "%s: More than one -l option specified\n"
-msgstr "%s: Περισσότερες από μία -l επιλογές καθορίστηκαν\n"
-
-#: timezone/zic.c:1047
-#, c-format
-msgid "%s: More than one -p option specified\n"
-msgstr "%s: Περισσότερες από μία -p επιλογές καθορίστηκαν\n"
-
-#: timezone/zic.c:1071
-#, c-format
-msgid "%s: More than one -L option specified\n"
-msgstr "%s: Περισσότερες από μία -L επιλογές καθορίστηκαν\n"
-
-#: timezone/zic.c:1608 timezone/zic.c:1610
+#: timezone/zic.c:1895 timezone/zic.c:1897
 msgid "same rule name in multiple files"
 msgstr "ο ίδιος κανόνας σε πολλαπλά αρχεία"
 
-#: timezone/zic.c:1656
+#: timezone/zic.c:1943
 #, c-format
 msgid "%s in ruleless zone"
 msgstr "%s σε ακανόνιστη ζώνη"
 
-#: timezone/zic.c:1688
+#: timezone/zic.c:1975
 msgid "line too long"
 msgstr "πολύ μεγάλη γραμμή"
 
-#: timezone/zic.c:1709
+#: timezone/zic.c:1996
 #, c-format
 msgid "%s: Can't open %s: %s\n"
 msgstr "%s: Δεν είναι δυνατόν να ανοιχτεί το %s: %s\n"
 
-#: timezone/zic.c:1734
+#: timezone/zic.c:2021
 msgid "input line of unknown type"
 msgstr "γραμμή εισαγωγής αγνώστου τύπου"
 
-#: timezone/zic.c:1761
+#: timezone/zic.c:2049
 msgid "expected continuation line not found"
 msgstr "αναμενόταν γραμμή παράτασης και δεν βρέθηκε"
 
-#: timezone/zic.c:1815 timezone/zic.c:3760
-msgid "time overflow"
-msgstr "υπερχείλιση ώρας"
-
-#: timezone/zic.c:1839
+#: timezone/zic.c:2123
 msgid "invalid saved time"
 msgstr "μη έγκυρη σωσμένη ώρα"
 
-#: timezone/zic.c:1850
+#: timezone/zic.c:2134
 msgid "wrong number of fields on Rule line"
 msgstr "λάθος αριθμός πεδίων στη γραμμή Rule"
 
-#: timezone/zic.c:1883
+#: timezone/zic.c:2167
 msgid "wrong number of fields on Zone line"
 msgstr "λάθος αριθμός πεδίων στη γραμμή Zone"
 
-#: timezone/zic.c:1887
+#: timezone/zic.c:2171
 #, c-format
 msgid "\"Zone %s\" line and -l option are mutually exclusive"
 msgstr "\"Ζώνη %s\" γραμμή και επιλογή -l είναι αμοιβαίως αποκλειόμενα"
 
-#: timezone/zic.c:1892
+#: timezone/zic.c:2176
 #, c-format
 msgid "\"Zone %s\" line and -p option are mutually exclusive"
 msgstr "\"Ζώνη %s\" γραμμή και επιλογή -p είναι αμοιβαίως αποκλειόμενα"
 
-#: timezone/zic.c:1913
+#: timezone/zic.c:2197
 msgid "wrong number of fields on Zone continuation line"
 msgstr "λάθος αριθμός πεδίων στη γραμμή παράτασης Zone"
 
-#: timezone/zic.c:1956
+#: timezone/zic.c:2241
 msgid "invalid abbreviation format"
 msgstr "μη έγκυρη διαμόρφωση συντόμευσης"
 
-#: timezone/zic.c:1986
+#: timezone/zic.c:2267
 msgid "Zone continuation line end time is not after end time of previous line"
 msgstr "Ο χρόνος τέλους της γραμμής συνέχισης της ζώνης δεν είναι μετά από το χρόνο τέλους της προηγούμενης γραμμής"
 
-#: timezone/zic.c:2027
+#: timezone/zic.c:2308
 msgid "invalid leaping year"
 msgstr "μη έγκυρος χρόνος αναπήδης"
 
-#: timezone/zic.c:2049 timezone/zic.c:2154
+#: timezone/zic.c:2330 timezone/zic.c:2427
 msgid "invalid month name"
 msgstr "μη έγκυρο όνομα μήνα"
 
-#: timezone/zic.c:2062 timezone/zic.c:2252 timezone/zic.c:2266
+#: timezone/zic.c:2343 timezone/zic.c:2529 timezone/zic.c:2543
 msgid "invalid day of month"
 msgstr "μη έγκυρη μέρα του μήνα"
 
-#: timezone/zic.c:2075 timezone/zic.c:2183
+#: timezone/zic.c:2348 timezone/zic.c:2456
 msgid "invalid time of day"
 msgstr "μη έγκυρη ώρα της μέρας"
 
-#: timezone/zic.c:2086
+#: timezone/zic.c:2359
 msgid "wrong number of fields on Leap line"
 msgstr "λάθος αριθμός πεδίων στη γραμμή Leap"
 
-#: timezone/zic.c:2125
+#: timezone/zic.c:2398
 msgid "wrong number of fields on Link line"
 msgstr "λάθος αριθμός πεδίων στη γραμμή Link"
 
-#: timezone/zic.c:2199
+#: timezone/zic.c:2472
 msgid "invalid starting year"
 msgstr "μη έγκυρος χρόνος έναρξης"
 
-#: timezone/zic.c:2214
+#: timezone/zic.c:2487
 msgid "invalid ending year"
 msgstr "μη έγκυρος χρόνος λήξης"
 
-#: timezone/zic.c:2218
+#: timezone/zic.c:2491
 msgid "starting year greater than ending year"
 msgstr "το έτος έναρξης είναι μεγαλύτερος το έτος τερματισμού"
 
-#: timezone/zic.c:2257
+#: timezone/zic.c:2534
 msgid "invalid weekday name"
 msgstr "μη έγκυρο όνομα εβδομάδας"
 
-#: timezone/zic.c:3388
+#: timezone/zic.c:3684
 msgid "can't determine time zone abbreviation to use just after until time"
 msgstr ""
 "δεν είναι δυνατόν να καθοριστεί η συντόμευση της ζώνης ώρας για\n"
 "να χρησιμοποιηθεί αμέσως μετά το 'until time'"
 
-#: timezone/zic.c:3512
+#: timezone/zic.c:3816
 msgid "too many local time types"
 msgstr "υπορβολικά πολλοί τύποι τοπικής ώρας"
 
-#: timezone/zic.c:3530
-msgid "too many leap seconds"
-msgstr "υπερβολικά πολλά δευτερόλεπτα αναπήδησης"
-
-#: timezone/zic.c:3741
+#: timezone/zic.c:4043
 msgid "Odd number of quotation marks"
 msgstr "Περιττός αριθμός εισαγωγικών"
 
-#: timezone/zic.c:3838
+#: timezone/zic.c:4062
+msgid "time overflow"
+msgstr "υπερχείλιση ώρας"
+
+#: timezone/zic.c:4154
 msgid "use of 2/29 in non leap-year"
 msgstr "χρήση του 2/29 σε χρόνο μη δίσεκτο"
 
-#: timezone/zic.c:3901
+#: timezone/zic.c:4246
 msgid "too many, or too long, time zone abbreviations"
 msgstr "υπερβολικά πολλές, ή πολύ μακρές, συντομεύσεις ζώνης ώρας"

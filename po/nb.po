@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: libc 2.3.2\n"
-"POT-Creation-Date: 2026-01-19 16:22+0100\n"
+"POT-Creation-Date: 2026-07-01 10:52+0900\n"
 "PO-Revision-Date: 2003-08-28 09:27+0100\n"
 "Last-Translator: Eivind Tagseth <eivindt@multinet.no>\n"
 "Language-Team: Norwegian <i18n-nb@lister.ping.uio.no>\n"
@@ -114,11 +114,11 @@ msgstr ""
 "[UTFIL [INNFIL]...]"
 
 #: catgets/gencat.c:247 debug/pcprofiledump.c:235 debug/xtrace.sh:63
-#: elf/ldconfig.c:232 elf/ldd.bash.in:39 elf/pldd.c:262 elf/sotruss.sh:75
+#: elf/ldconfig.c:244 elf/ldd.bash.in:39 elf/pldd.c:262 elf/sotruss.sh:76
 #: elf/sprof.c:389 iconv/iconv_prog.c:391 iconv/iconvconfig.c:397
 #: locale/programs/locale.c:292 locale/programs/localedef.c:459
 #: login/programs/pt_chown.c:62 malloc/memusage.sh:70 malloc/memusagestat.c:582
-#: nscd/nscd.c:521 nss/getent.c:92 nss/makedb.c:387 posix/getconf.c:533
+#: nscd/nscd.c:521 nss/getent.c:96 nss/makedb.c:387 posix/getconf.c:533
 #, c-format
 msgid ""
 "Copyright (C) %s Free Software Foundation, Inc.\n"
@@ -131,10 +131,10 @@ msgstr ""
 "TIL NOEN SPESIELL OPPGAVE.\n"
 
 #: catgets/gencat.c:252 debug/pcprofiledump.c:240 debug/xtrace.sh:67
-#: elf/ldconfig.c:237 elf/pldd.c:267 elf/sprof.c:395 iconv/iconv_prog.c:396
+#: elf/ldconfig.c:249 elf/pldd.c:267 elf/sprof.c:395 iconv/iconv_prog.c:396
 #: iconv/iconvconfig.c:402 locale/programs/locale.c:297
 #: locale/programs/localedef.c:464 malloc/memusage.sh:74
-#: malloc/memusagestat.c:587 nscd/nscd.c:526 nss/getent.c:97 nss/makedb.c:392
+#: malloc/memusagestat.c:587 nscd/nscd.c:526 nss/getent.c:101 nss/makedb.c:392
 #: posix/getconf.c:538
 #, c-format
 msgid "Written by %s.\n"
@@ -198,7 +198,7 @@ msgstr "uavsluttet melding"
 msgid "while opening old catalog file"
 msgstr "da den gamle katalogfilen ble åpnet"
 
-#: elf/dl-open.c:817
+#: elf/dl-open.c:816
 msgid "invalid mode for dlopen()"
 msgstr "ugyldig modus for dlopen()"
 
@@ -206,7 +206,7 @@ msgstr "ugyldig modus for dlopen()"
 msgid "RTLD_NEXT used in code not dynamically loaded"
 msgstr "RTLD_NEXT brukt i kode som ikke er dynamisk lastet"
 
-#: elf/ldconfig.c:1124 locale/programs/xasprintf.c:31
+#: elf/ldconfig-parse.c:163 locale/programs/xasprintf.c:31
 #: locale/programs/xmalloc.c:63 malloc/obstack.c:416 malloc/obstack.c:418
 #: posix/getconf.c:503 posix/getconf.c:745
 #, c-format
@@ -1580,7 +1580,7 @@ msgstr "yp_update: kan ikke konvertere vert til nettnavn\n"
 msgid "yp_update: cannot get server address\n"
 msgstr "yp_update: kan ikke hente tjeneradresse\n"
 
-#: nscd/aicache.c:68 nscd/hstcache.c:451
+#: nscd/aicache.c:77 nscd/hstcache.c:451
 #, c-format
 msgid "Haven't found \"%s\" in hosts cache!"
 msgstr "Har ikke funnet «%s» i verts-nærbuffer!"
@@ -1615,7 +1615,7 @@ msgstr "avkortet lesing ved lesing av forespørsel: %s"
 msgid "handle_request: request received (Version = %d)"
 msgstr "handle_request: forespørsel mottatt (versjon = %d)"
 
-#: nscd/grpcache.c:384 nscd/hstcache.c:401 nscd/initgrcache.c:377
+#: nscd/grpcache.c:384 nscd/hstcache.c:402 nscd/initgrcache.c:377
 #: nscd/pwdcache.c:362 nscd/servicescache.c:309
 #, c-format
 msgid "short write in %s: %s"
@@ -1646,7 +1646,7 @@ msgstr "Start ANTALL tråder"
 msgid "Shut the server down"
 msgstr "Slå av tjeneren"
 
-#: nscd/nscd.c:158 nss/getent.c:995 nss/makedb.c:208
+#: nscd/nscd.c:158 nss/getent.c:1014 nss/makedb.c:208
 #, c-format
 msgid "wrong number of arguments"
 msgstr "feil antall argumenter"
@@ -1706,7 +1706,7 @@ msgstr ""
 msgid "database [key ...]"
 msgstr "database [nøkkel ...]"
 
-#: nss/getent.c:1005
+#: nss/getent.c:1024
 #, c-format
 msgid "Unknown database: %s\n"
 msgstr "Ukjent database: %s\n"
@@ -3007,159 +3007,135 @@ msgstr "ai_socktype er ikke støttet"
 msgid "System error"
 msgstr "Systemfeil"
 
-#: timezone/zic.c:463
+#: timezone/zic.c:559
 #, c-format
 msgid "%s: Memory exhausted: %s\n"
 msgstr "%s: Minnet oppbrukt: %s\n"
 
-#: timezone/zic.c:588
+#: timezone/zic.c:687
 msgid "standard input"
 msgstr "standard innkanal"
 
-#: timezone/zic.c:1025
-#, c-format
-msgid "%s: More than one -d option specified\n"
-msgstr "%s: Mer enn ett -d-flagg spesifisert\n"
-
-#: timezone/zic.c:1036
-#, c-format
-msgid "%s: More than one -l option specified\n"
-msgstr "%s: Mer enn ett -l-flagg spesifisert\n"
-
-#: timezone/zic.c:1047
-#, c-format
-msgid "%s: More than one -p option specified\n"
-msgstr "%s: Mer enn ett -p-flagg spesifisert\n"
-
-#: timezone/zic.c:1071
-#, c-format
-msgid "%s: More than one -L option specified\n"
-msgstr "%s: Mer enn ett -L-flagg spesifisert\n"
-
-#: timezone/zic.c:1608 timezone/zic.c:1610
+#: timezone/zic.c:1895 timezone/zic.c:1897
 msgid "same rule name in multiple files"
 msgstr "samme regel i flere filer"
 
-#: timezone/zic.c:1656
+#: timezone/zic.c:1943
 #, c-format
 msgid "%s in ruleless zone"
 msgstr "%s i sone uten regel"
 
-#: timezone/zic.c:1688
+#: timezone/zic.c:1975
 msgid "line too long"
 msgstr "for lang linje"
 
-#: timezone/zic.c:1709
+#: timezone/zic.c:1996
 #, c-format
 msgid "%s: Can't open %s: %s\n"
 msgstr "%s: Kan ikke åpne %s: %s\n"
 
-#: timezone/zic.c:1734
+#: timezone/zic.c:2021
 msgid "input line of unknown type"
 msgstr "innlinje av ukjent type"
 
-#: timezone/zic.c:1761
+#: timezone/zic.c:2049
 msgid "expected continuation line not found"
 msgstr "forventet fortsettelseslinje ikke funnet"
 
-#: timezone/zic.c:1815 timezone/zic.c:3760
-msgid "time overflow"
-msgstr "for stor tidsverdi"
-
-#: timezone/zic.c:1839
+#: timezone/zic.c:2123
 msgid "invalid saved time"
 msgstr "ugyldig lagret tid"
 
-#: timezone/zic.c:1850
+#: timezone/zic.c:2134
 msgid "wrong number of fields on Rule line"
 msgstr "feil antall felt på «Rule»-linje"
 
-#: timezone/zic.c:1883
+#: timezone/zic.c:2167
 msgid "wrong number of fields on Zone line"
 msgstr "feil antall felt på «Zone»-linje"
 
-#: timezone/zic.c:1887
+#: timezone/zic.c:2171
 #, c-format
 msgid "\"Zone %s\" line and -l option are mutually exclusive"
 msgstr "«Zone %s»-linje og flagget -l utelukker hverandre"
 
-#: timezone/zic.c:1892
+#: timezone/zic.c:2176
 #, c-format
 msgid "\"Zone %s\" line and -p option are mutually exclusive"
 msgstr "«Zone %s»-linje og flagget -p utelukker hverandre"
 
-#: timezone/zic.c:1913
+#: timezone/zic.c:2197
 msgid "wrong number of fields on Zone continuation line"
 msgstr "feil antall felt på «Zone»-fortsettelseslinje"
 
-#: timezone/zic.c:1956
+#: timezone/zic.c:2241
 msgid "invalid abbreviation format"
 msgstr "ugyldig forkortningsformat"
 
-#: timezone/zic.c:1986
+#: timezone/zic.c:2267
 msgid "Zone continuation line end time is not after end time of previous line"
 msgstr "Sluttiden på fortsetningslinjen til en sone kommer før sluttiden på foregående linje"
 
-#: timezone/zic.c:2027
+#: timezone/zic.c:2308
 msgid "invalid leaping year"
 msgstr "ugyldig skuddår"
 
-#: timezone/zic.c:2049 timezone/zic.c:2154
+#: timezone/zic.c:2330 timezone/zic.c:2427
 msgid "invalid month name"
 msgstr "ugyldig månedsnavn"
 
-#: timezone/zic.c:2062 timezone/zic.c:2252 timezone/zic.c:2266
+#: timezone/zic.c:2343 timezone/zic.c:2529 timezone/zic.c:2543
 msgid "invalid day of month"
 msgstr "ugyldig dag i måneden"
 
-#: timezone/zic.c:2075 timezone/zic.c:2183
+#: timezone/zic.c:2348 timezone/zic.c:2456
 msgid "invalid time of day"
 msgstr "ugyldig tid på dagen"
 
-#: timezone/zic.c:2086
+#: timezone/zic.c:2359
 msgid "wrong number of fields on Leap line"
 msgstr "feil antall felt på «Leap»-linje"
 
-#: timezone/zic.c:2125
+#: timezone/zic.c:2398
 msgid "wrong number of fields on Link line"
 msgstr "feil antall felt på «Link»-linje"
 
-#: timezone/zic.c:2199
+#: timezone/zic.c:2472
 msgid "invalid starting year"
 msgstr "ugyldig startår"
 
-#: timezone/zic.c:2214
+#: timezone/zic.c:2487
 msgid "invalid ending year"
 msgstr "ugyldig sluttår"
 
-#: timezone/zic.c:2218
+#: timezone/zic.c:2491
 msgid "starting year greater than ending year"
 msgstr "startår er større enn sluttår"
 
-#: timezone/zic.c:2257
+#: timezone/zic.c:2534
 msgid "invalid weekday name"
 msgstr "ugyldig ukedagsnavn"
 
-#: timezone/zic.c:3388
+#: timezone/zic.c:3684
 msgid "can't determine time zone abbreviation to use just after until time"
 msgstr "kan ikke avgjøre tidssoneforkortning for bruk rett etter «until»-tid"
 
-#: timezone/zic.c:3512
+#: timezone/zic.c:3816
 msgid "too many local time types"
 msgstr "for mange lokale tidstyper"
 
-#: timezone/zic.c:3530
-msgid "too many leap seconds"
-msgstr "for mange skuddsekunder"
-
-#: timezone/zic.c:3741
+#: timezone/zic.c:4043
 msgid "Odd number of quotation marks"
 msgstr "Odde antall siteringstegn"
 
-#: timezone/zic.c:3838
+#: timezone/zic.c:4062
+msgid "time overflow"
+msgstr "for stor tidsverdi"
+
+#: timezone/zic.c:4154
 msgid "use of 2/29 in non leap-year"
 msgstr "bruker 29/2 i ikke-skuddår"
 
-#: timezone/zic.c:3901
+#: timezone/zic.c:4246
 msgid "too many, or too long, time zone abbreviations"
 msgstr "for mange eller for lange tidssoneforkortelser"

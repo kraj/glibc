@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GNU libc 2.19.90\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-19 16:22+0100\n"
+"POT-Creation-Date: 2026-07-01 10:52+0900\n"
 "PO-Revision-Date: 2014-08-25 16:18-0700\n"
 "Last-Translator: Santiago Vila Doncel <sanvila@unex.es>\n"
 "Language-Team: Spanish <es@tp.org.es>\n"
@@ -134,11 +134,11 @@ msgstr ""
 "-o FICHERO-SALIDA [FICHERO-ENTRADA]...\n"
 "[FICHERO-SALIDA [FICHERO-ENTRADA]...]"
 
-#: catgets/gencat.c:231 debug/pcprofiledump.c:219 elf/ldconfig.c:216
+#: catgets/gencat.c:231 debug/pcprofiledump.c:219 elf/ldconfig.c:228
 #: elf/pldd.c:246 elf/sln.c:77 elf/sprof.c:372 iconv/iconv_prog.c:374
 #: iconv/iconvconfig.c:380 locale/programs/locale.c:275
 #: locale/programs/localedef.c:437 login/programs/pt_chown.c:88
-#: malloc/memusagestat.c:564 nss/getent.c:961 nss/makedb.c:371
+#: malloc/memusagestat.c:564 nss/getent.c:980 nss/makedb.c:371
 #: posix/getconf.c:551
 #, c-format
 msgid ""
@@ -149,11 +149,11 @@ msgstr ""
 "%s.\n"
 
 #: catgets/gencat.c:247 debug/pcprofiledump.c:235 debug/xtrace.sh:63
-#: elf/ldconfig.c:232 elf/ldd.bash.in:39 elf/pldd.c:262 elf/sotruss.sh:75
+#: elf/ldconfig.c:244 elf/ldd.bash.in:39 elf/pldd.c:262 elf/sotruss.sh:76
 #: elf/sprof.c:389 iconv/iconv_prog.c:391 iconv/iconvconfig.c:397
 #: locale/programs/locale.c:292 locale/programs/localedef.c:459
 #: login/programs/pt_chown.c:62 malloc/memusage.sh:70 malloc/memusagestat.c:582
-#: nscd/nscd.c:521 nss/getent.c:92 nss/makedb.c:387 posix/getconf.c:533
+#: nscd/nscd.c:521 nss/getent.c:96 nss/makedb.c:387 posix/getconf.c:533
 #, c-format
 msgid ""
 "Copyright (C) %s Free Software Foundation, Inc.\n"
@@ -166,10 +166,10 @@ msgstr ""
 "FIN DETERMINADO.\n"
 
 #: catgets/gencat.c:252 debug/pcprofiledump.c:240 debug/xtrace.sh:67
-#: elf/ldconfig.c:237 elf/pldd.c:267 elf/sprof.c:395 iconv/iconv_prog.c:396
+#: elf/ldconfig.c:249 elf/pldd.c:267 elf/sprof.c:395 iconv/iconv_prog.c:396
 #: iconv/iconvconfig.c:402 locale/programs/locale.c:297
 #: locale/programs/localedef.c:464 malloc/memusage.sh:74
-#: malloc/memusagestat.c:587 nscd/nscd.c:526 nss/getent.c:97 nss/makedb.c:392
+#: malloc/memusagestat.c:587 nscd/nscd.c:526 nss/getent.c:101 nss/makedb.c:392
 #: posix/getconf.c:538
 #, c-format
 msgid "Written by %s.\n"
@@ -294,7 +294,7 @@ msgstr "tamaño de puntero inválido"
 msgid "Usage: xtrace [OPTION]... PROGRAM [PROGRAMOPTION]...\\n"
 msgstr "Modo de empleo: xtrace [OPCIÓN]... PROGRAMA [OPCIÓNDEPROGRAMA]...\\n"
 
-#: debug/xtrace.sh:31 elf/sotruss.sh:56 elf/sotruss.sh:67 elf/sotruss.sh:135
+#: debug/xtrace.sh:31 elf/sotruss.sh:56 elf/sotruss.sh:68 elf/sotruss.sh:136
 #: malloc/memusage.sh:25
 msgid "Try \\`%s --help' or \\`%s --usage' for more information.\\n"
 msgstr "Pruebe \\`%s --help' o `%s --usage' para más información.\\n"
@@ -368,43 +368,43 @@ msgstr "modo inválido"
 msgid "invalid mode parameter"
 msgstr "parámetro de modo inválido"
 
-#: elf/cache.c:296 elf/ldconfig.c:1238
+#: elf/cache.c:357 elf/ldconfig.c:1116
 #, c-format
 msgid "Can't open cache file %s\n"
 msgstr "No se puede abrir el fichero de caché %s\n"
 
-#: elf/cache.c:310
+#: elf/cache.c:371
 #, c-format
 msgid "mmap of cache file failed.\n"
 msgstr "falló la operación `mmap' sobre el fichero de caché.\n"
 
-#: elf/cache.c:314 elf/cache.c:328 elf/cache.c:339
+#: elf/cache.c:375 elf/cache.c:389 elf/cache.c:400
 #, c-format
 msgid "File is not a cache file.\n"
 msgstr "El fichero no es un fichero de caché.\n"
 
-#: elf/cache.c:368 elf/cache.c:383
+#: elf/cache.c:429 elf/cache.c:444
 #, c-format
 msgid "%d libs found in cache `%s'\n"
 msgstr "%d bibliotecas se encontraron en la caché `%s'\n"
 
-#: elf/cache.c:685
+#: elf/cache.c:783
 #, c-format
 msgid "Can't create temporary cache file %s"
 msgstr "No se puede crear el fichero temporal de caché %s"
 
-#: elf/cache.c:693 elf/cache.c:703 elf/cache.c:707 elf/cache.c:712
-#: elf/cache.c:731
+#: elf/cache.c:791 elf/cache.c:801 elf/cache.c:805 elf/cache.c:810
+#: elf/cache.c:829
 #, c-format
 msgid "Writing of cache data failed"
 msgstr "Falló la escritura de los datos de la caché"
 
-#: elf/cache.c:726
+#: elf/cache.c:824
 #, c-format
 msgid "Changing access rights of %s to %#o failed"
 msgstr "El cambio de los derechos de acceso de %s a %#o falló"
 
-#: elf/cache.c:735
+#: elf/cache.c:833
 #, c-format
 msgid "Renaming of %s to %s failed"
 msgstr "Falló el renombramiento de %s a %s"
@@ -418,36 +418,36 @@ msgstr "error al cargar las bibliotecas compartidas"
 msgid "DYNAMIC LINKER BUG!!!"
 msgstr "¡¡¡HAY UN ERROR EN EL ENLAZADOR DINÁMICO!!!"
 
-#: elf/dl-close.c:363 elf/dl-open.c:297
+#: elf/dl-close.c:368 elf/dl-open.c:297
 msgid "cannot create scope list"
 msgstr "no se puede crear la lista de ámbito"
 
-#: elf/dl-close.c:790
+#: elf/dl-close.c:795
 msgid "shared object not open"
 msgstr "el objeto compartido no está abierto"
 
-#: elf/dl-deps.c:96
+#: elf/dl-deps.c:103
 msgid "DST not allowed in SUID/SGID programs"
 msgstr "No se permite DST en programas SUID/SGID"
 
-#: elf/dl-deps.c:109
-msgid "empty dynamic string token substitution"
-msgstr "sustitución dinámica de un elemento por una cadena vacía"
-
 # Hmm, me suena que lo que es dinámica aquí es la cadena, no la sustitución.
 # FIXME: Consultarlo. sv
-#: elf/dl-deps.c:115
+#: elf/dl-deps.c:224 elf/dl-deps.c:286
 #, c-format
 msgid "cannot load auxiliary `%s' because of empty dynamic string token substitution\n"
 msgstr ""
 "no se puede cargar el `%s' auxiliar debido a la sustitución dinámica\n"
 "de un elemento por cadena vacía\n"
 
-#: elf/dl-deps.c:427
+#: elf/dl-deps.c:283
+msgid "empty dynamic string token substitution"
+msgstr "sustitución dinámica de un elemento por una cadena vacía"
+
+#: elf/dl-deps.c:449
 msgid "cannot allocate dependency list"
 msgstr "no se pudo asignar espacio para la lista de dependencias"
 
-#: elf/dl-deps.c:467
+#: elf/dl-deps.c:489
 msgid "cannot allocate symbol search list"
 msgstr "no se puede asignar espacio para la lista de búsqueda de los símbolos"
 
@@ -455,133 +455,134 @@ msgstr "no se puede asignar espacio para la lista de búsqueda de los símbolos"
 msgid "cannot create capability list"
 msgstr "no se puede crear la lista de capacidades"
 
-#: elf/dl-load.c:424
+#: elf/dl-load.c:408
 msgid "cannot allocate name record"
 msgstr "no se puede asignar el registro del nombre"
 
-# He intentado mejorarlo un poco ...
-#
-#: elf/dl-load.c:510 elf/dl-load.c:623 elf/dl-load.c:717 elf/dl-load.c:814
-msgid "cannot create cache for search path"
-msgstr "no se puede crear un caché para la ruta de búsqueda"
-
-#: elf/dl-load.c:606
+#: elf/dl-load.c:595
 msgid "cannot create RUNPATH/RPATH copy"
 msgstr "no se puede crear una copia RUNPATH/RPATH"
 
-#: elf/dl-load.c:703
+# He intentado mejorarlo un poco ...
+#
+#: elf/dl-load.c:612 elf/dl-load.c:621 elf/dl-load.c:712 elf/dl-load.c:810
+#: elf/dl-load.c:830
+msgid "cannot create cache for search path"
+msgstr "no se puede crear un caché para la ruta de búsqueda"
+
+#: elf/dl-load.c:698
 msgid "cannot create search path array"
 msgstr "no se puede crear la matriz de la ruta de búsqueda"
 
-#: elf/dl-load.c:978
-msgid "cannot stat shared object"
-msgstr "no se puede efectuar `stat' sobre el objeto compartido"
-
-#: elf/dl-load.c:1071 elf/dl-load.c:2160
-msgid "cannot create shared object descriptor"
-msgstr "no se puede crear el descriptor del objeto compartido"
-
-#: elf/dl-load.c:1090 elf/dl-load.c:1594 elf/dl-load.c:1704
+#: elf/dl-load.c:1000 elf/dl-load.c:1354 elf/dl-load.c:1647
 msgid "cannot read file data"
 msgstr "no se pueden leer los datos del fichero"
 
-#: elf/dl-load.c:1224
+#: elf/dl-load.c:1151
+msgid "cannot stat shared object"
+msgstr "no se puede efectuar `stat' sobre el objeto compartido"
+
+#: elf/dl-load.c:1246 elf/dl-load.c:2203
+msgid "cannot create shared object descriptor"
+msgstr "no se puede crear el descriptor del objeto compartido"
+
+#: elf/dl-load.c:1278
 msgid "object file has no loadable segments"
 msgstr "el fichero objeto no tiene segmentos cargables"
 
-#: elf/dl-load.c:1241
+#: elf/dl-load.c:1291
 msgid "cannot dynamically load executable"
 msgstr "no se puede cargar el ejecutable dinámicamente"
 
-#: elf/dl-load.c:1248
+#: elf/dl-load.c:1298
 msgid "object file has no dynamic section"
 msgstr "el fichero objeto no tiene sección dinámica"
 
-#: elf/dl-load.c:1285
+#: elf/dl-load.c:1335
 msgid "shared object cannot be dlopen()ed"
 msgstr "no se puede efectuar dlopen() sobre el objeto compartido"
 
-#: elf/dl-load.c:1298
+#: elf/dl-load.c:1347
 msgid "cannot allocate memory for program header"
 msgstr "no se puede asignar memoria para la cabecera del programa"
 
-#: elf/dl-load.c:1323
+#: elf/dl-load.c:1377
 msgid "cannot enable executable stack as shared object requires"
 msgstr "no se puede activar la pila ejecutable tal y como el objeto compartido necesita"
 
-#: elf/dl-load.c:1351
+#: elf/dl-load.c:1401
 msgid "cannot close file descriptor"
 msgstr "no se puede cerrar el descriptor de fichero"
 
-#: elf/dl-load.c:1594
+#: elf/dl-load.c:1647
 msgid "file too short"
 msgstr "fichero demasiado corto"
 
-#: elf/dl-load.c:1628
+#: elf/dl-load.c:1681
 msgid "invalid ELF header"
 msgstr "cabecera ELF inválida"
 
-#: elf/dl-load.c:1645
+#: elf/dl-load.c:1698
 msgid "ELF file data encoding not big-endian"
 msgstr "La codificación de los datos del fichero ELF no es `big-endian'"
 
-#: elf/dl-load.c:1647
+#: elf/dl-load.c:1700
 msgid "ELF file data encoding not little-endian"
 msgstr "La codificación de los datos del fichero ELF no es `little-endian'"
 
-#: elf/dl-load.c:1651
+#: elf/dl-load.c:1704
 msgid "ELF file version ident does not match current one"
 msgstr "La identificación de versión del fichero ELF no encaja con la actual"
 
-#: elf/dl-load.c:1655
+#: elf/dl-load.c:1708
 msgid "ELF file OS ABI invalid"
 msgstr "ABI del OS del fichero ELF inválida"
 
-#: elf/dl-load.c:1658
+#: elf/dl-load.c:1711
 msgid "ELF file ABI version invalid"
 msgstr "Versión de ABI del fichero ELF inválida"
 
-#: elf/dl-load.c:1661
+#: elf/dl-load.c:1714
 msgid "nonzero padding in e_ident"
 msgstr "relleno con no ceros en e_ident"
 
-#: elf/dl-load.c:1664
+#: elf/dl-load.c:1717
 msgid "internal error"
 msgstr "error interno"
 
-#: elf/dl-load.c:1671
+#: elf/dl-load.c:1724
 msgid "ELF file version does not match current one"
 msgstr "La versión del fichero ELF no coincide con la actual"
 
-#: elf/dl-load.c:1685
+#: elf/dl-load.c:1738
 msgid "only ET_DYN and ET_EXEC can be loaded"
 msgstr "solamente pueden cargarse ET_DYN y ET_EXEC"
 
-#: elf/dl-load.c:1690
+#: elf/dl-load.c:1743
 msgid "ELF file's phentsize not the expected size"
 msgstr "El `phentsize' del fichero ELF no es el tamaño esperado"
 
-#: elf/dl-load.c:2179
+#: elf/dl-load.c:2222
 msgid "wrong ELF class: ELFCLASS64"
 msgstr "clase ELF errónea: ELFCLASS64"
 
-#: elf/dl-load.c:2180
+#: elf/dl-load.c:2223
 msgid "wrong ELF class: ELFCLASS32"
 msgstr "clase ELF errónea: ELFCLASS32"
 
-#: elf/dl-load.c:2183
+#: elf/dl-load.c:2226
 msgid "cannot open shared object file"
 msgstr "no se puede abrir el fichero del objeto compartido"
 
-#: elf/dl-load.h:126
+#: elf/dl-load.h:249
 msgid "failed to map segment from shared object"
 msgstr "fallo al asignar un segmento del objeto compartido"
 
-#: elf/dl-load.h:128
+#: elf/dl-load.h:251
 msgid "cannot change memory protections"
 msgstr "no se pueden cambiar las protecciones de memoria"
 
-#: elf/dl-load.h:130
+#: elf/dl-load.h:253
 msgid "cannot map zero-fill pages"
 msgstr "no se pueden asignar páginas de tipo `zero-fill'"
 
@@ -597,37 +598,37 @@ msgstr "no se puede extender el ámbito global"
 msgid "TLS generation counter wrapped!  Please report this."
 msgstr "¡El contador de generaciones TLS ha vuelto a cero! Por favor envíe un informe."
 
-#: elf/dl-open.c:817
+#: elf/dl-open.c:816
 msgid "invalid mode for dlopen()"
 msgstr "modo inválido para dlopen()"
 
-#: elf/dl-open.c:834
+#: elf/dl-open.c:833
 msgid "no more namespaces available for dlmopen()"
 msgstr "no hay más espacios de nombres disponibles para dlmopen()"
 
-#: elf/dl-open.c:859
+#: elf/dl-open.c:858
 msgid "invalid target namespace in dlmopen()"
 msgstr "espacio de nombres objetivo inválido para dlmopen()"
 
-#: elf/dl-reloc.c:140
+#: elf/dl-reloc.c:139
 msgid "cannot allocate memory in static TLS block"
 msgstr "No se pudo asignar memoria en el bloque TLS estático"
 
-#: elf/dl-reloc.c:283
+#: elf/dl-reloc.c:261
 msgid "cannot make segment writable for relocation"
 msgstr "no se puede hacer el segmento escribible para su relocalización"
 
-#: elf/dl-reloc.c:313
+#: elf/dl-reloc.c:311
 #, c-format
 msgid "%s: out of memory to store relocation results for %s\n"
 msgstr "%s: memoria agotada para almacenar los resultados de relocalización para %s\n"
 
 # Se admiten sugerencias. sv
-#: elf/dl-reloc.c:328
+#: elf/dl-reloc.c:326
 msgid "cannot restore segment prot after reloc"
 msgstr "no se puede restaurar el `prot' del segmento después de la relocalización"
 
-#: elf/dl-reloc.c:366
+#: elf/dl-reloc.c:364
 msgid "cannot apply additional memory protection after relocation"
 msgstr "no se pueden aplicar protecciones de memoria adicionales después de relocalizar"
 
@@ -635,7 +636,7 @@ msgstr "no se pueden aplicar protecciones de memoria adicionales después de rel
 msgid "RTLD_NEXT used in code not dynamically loaded"
 msgstr "Se ha usado RTLD_NEXT en una parte del código que no se cargó dinámicamente"
 
-#: elf/dl-tls.c:1217
+#: elf/dl-tls.c:1279
 msgid "cannot create TLS data structures"
 msgstr "no se pueden crear las estructuras de datos TLS"
 
@@ -647,182 +648,178 @@ msgstr "error de búsqueda de versión"
 msgid "cannot allocate version reference table"
 msgstr "no se puede asignar espacio para la tabla de versiones de referencia"
 
-#: elf/ldconfig.c:124
-msgid "Print cache"
-msgstr "Muestra la caché"
-
-#: elf/ldconfig.c:125
-msgid "Generate verbose messages"
-msgstr "Genera mensajes explicativos"
-
-#: elf/ldconfig.c:126
-msgid "Don't build cache"
-msgstr "No crea caché"
-
-#: elf/ldconfig.c:128
-msgid "Change to and use ROOT as root directory"
-msgstr "Cambia a RAÍZ y lo utiliza como directorio raíz"
-
-#: elf/ldconfig.c:128
-msgid "ROOT"
-msgstr "RAÍZ"
-
-#: elf/ldconfig.c:129
-msgid "CACHE"
-msgstr "CACHÉ"
-
-#: elf/ldconfig.c:129
-msgid "Use CACHE as cache file"
-msgstr "Utiliza CACHE como fichero de caché"
-
-#: elf/ldconfig.c:130
-msgid "CONF"
-msgstr "CONF"
-
-#: elf/ldconfig.c:130
-msgid "Use CONF as configuration file"
-msgstr "Utiliza CONF como fichero de configuración"
-
-#: elf/ldconfig.c:131
-msgid "Only process directories specified on the command line.  Don't build cache."
-msgstr ""
-"Procesa únicamente los directorios especificados en la línea de órdenes.\n"
-"No crea la caché."
-
-#: elf/ldconfig.c:132
-msgid "Manually link individual libraries."
-msgstr "Enlace bibliotecas individuales manualmente."
-
-#: elf/ldconfig.c:133
-msgid "FORMAT"
-msgstr "FORMATO"
-
-# Antes decía: .rhosts no es un fichero regular
-#: elf/ldconfig.c:134
-msgid "Ignore auxiliary cache file"
-msgstr "Descarta el fichero de caché auxiliar"
-
-# FIXME: Why So Many Uppercase Letters? sv
-#: elf/ldconfig.c:142
-msgid "Configure Dynamic Linker Run Time Bindings."
-msgstr "Configura las asociaciones de tiempo de ejecución del enlazador dinámico"
-
-#: elf/ldconfig.c:276
-#, c-format
-msgid "Path `%s' given more than once"
-msgstr "Se ha dado la ruta `%s' más de una vez"
-
-#: elf/ldconfig.c:405
-#, c-format
-msgid "Can't stat %s"
-msgstr "No se puede efectuar `stat' sobre %s"
-
-#: elf/ldconfig.c:486
-#, c-format
-msgid "Can't stat %s\n"
-msgstr "No se puede efectuar `stat' sobre %s\n"
-
-#: elf/ldconfig.c:496
-#, c-format
-msgid "%s is not a symbolic link\n"
-msgstr "%s no es un enlace simbólico\n"
-
-#: elf/ldconfig.c:515
-#, c-format
-msgid "Can't unlink %s"
-msgstr "No se puede efectuar `unlink' sobre %s"
-
-#: elf/ldconfig.c:521
-#, c-format
-msgid "Can't link %s to %s"
-msgstr "No se puede crear un enlace de %s a %s"
-
-#: elf/ldconfig.c:527
-msgid " (changed)\n"
-msgstr " (cambiado)\n"
-
-#: elf/ldconfig.c:529
-msgid " (SKIPPED)\n"
-msgstr " (SALTADO)\n"
-
-#: elf/ldconfig.c:584
-#, c-format
-msgid "Can't find %s"
-msgstr "No se encuentra %s"
-
-#: elf/ldconfig.c:600 elf/ldconfig.c:759 elf/ldconfig.c:826
-#, c-format
-msgid "Cannot lstat %s"
-msgstr "No se puede efectuar `lstat' sobre %s"
-
-#: elf/ldconfig.c:606
-#, c-format
-msgid "Ignored file %s since it is not a regular file."
-msgstr "Descartado el fichero %s dado que no es un fichero regular."
-
-#: elf/ldconfig.c:614
-#, c-format
-msgid "No link created since soname could not be found for %s"
-msgstr "No se creó el enlace ya que no se encontró el soname para %s"
-
-#: elf/ldconfig.c:715
-#, c-format
-msgid "Can't open directory %s"
-msgstr "No se puede abrir el directorio %s"
-
-#: elf/ldconfig.c:776 elf/ldconfig.c:814 elf/readlib.c:81
-#, c-format
-msgid "Input file %s not found.\n"
-msgstr "No se encontró el fichero de entrada %s.\n"
-
-#: elf/ldconfig.c:783
-#, c-format
-msgid "Cannot stat %s"
-msgstr "No se puede efectuar `stat' sobre %s"
-
-#: elf/ldconfig.c:902
-#, c-format
-msgid "libc6 library %s in wrong directory"
-msgstr "biblioteca libc6 %s en un directorio equivocado"
-
-#: elf/ldconfig.c:921
-#, c-format
-msgid "libraries %s and %s in directory %s have same soname but different type."
-msgstr "las bibliotecas %s y %s en el directorio %s tienen el mismo soname pero distinto tipo."
-
-#: elf/ldconfig.c:1050
+#: elf/ldconfig-parse.c:90
 #, c-format
 msgid "Warning: ignoring configuration file that cannot be opened: %s"
 msgstr "Atención: no se tendrá en cuenta el fichero de configuración que no se puede abrir: %s"
 
-#: elf/ldconfig.c:1117
+#: elf/ldconfig-parse.c:156
 #, c-format
 msgid "need absolute file name for configuration file when using -r"
 msgstr "se necesita un nombre de fichero absoluto para el fichero de configuración cuando se utiliza -r"
 
-#: elf/ldconfig.c:1124 locale/programs/xasprintf.c:31
+#: elf/ldconfig-parse.c:163 locale/programs/xasprintf.c:31
 #: locale/programs/xmalloc.c:63 malloc/obstack.c:416 malloc/obstack.c:418
 #: posix/getconf.c:503 posix/getconf.c:745
 #, c-format
 msgid "memory exhausted"
 msgstr "memoria agotada"
 
-#: elf/ldconfig.c:1157
+#: elf/ldconfig-parse.c:196
 #, c-format
 msgid "%s:%u: cannot read directory %s"
 msgstr "%s:%u: no se puede leer el directorio %s"
 
-#: elf/ldconfig.c:1195
+#: elf/ldconfig.c:132
+msgid "Print cache"
+msgstr "Muestra la caché"
+
+#: elf/ldconfig.c:133
+msgid "Generate verbose messages"
+msgstr "Genera mensajes explicativos"
+
+#: elf/ldconfig.c:134
+msgid "Don't build cache"
+msgstr "No crea caché"
+
+#: elf/ldconfig.c:136
+msgid "Change to and use ROOT as root directory"
+msgstr "Cambia a RAÍZ y lo utiliza como directorio raíz"
+
+#: elf/ldconfig.c:136
+msgid "ROOT"
+msgstr "RAÍZ"
+
+#: elf/ldconfig.c:137
+msgid "CACHE"
+msgstr "CACHÉ"
+
+#: elf/ldconfig.c:137
+msgid "Use CACHE as cache file"
+msgstr "Utiliza CACHE como fichero de caché"
+
+#: elf/ldconfig.c:138
+msgid "CONF"
+msgstr "CONF"
+
+#: elf/ldconfig.c:140
+msgid "Only process directories specified on the command line.  Don't build cache."
+msgstr ""
+"Procesa únicamente los directorios especificados en la línea de órdenes.\n"
+"No crea la caché."
+
+#: elf/ldconfig.c:141
+msgid "Manually link individual libraries."
+msgstr "Enlace bibliotecas individuales manualmente."
+
+#: elf/ldconfig.c:142
+msgid "FORMAT"
+msgstr "FORMATO"
+
+# Antes decía: .rhosts no es un fichero regular
+#: elf/ldconfig.c:143
+msgid "Ignore auxiliary cache file"
+msgstr "Descarta el fichero de caché auxiliar"
+
+# FIXME: Why So Many Uppercase Letters? sv
+#: elf/ldconfig.c:151
+msgid "Configure Dynamic Linker Run Time Bindings."
+msgstr "Configura las asociaciones de tiempo de ejecución del enlazador dinámico"
+
+#: elf/ldconfig.c:288
+#, c-format
+msgid "Path `%s' given more than once"
+msgstr "Se ha dado la ruta `%s' más de una vez"
+
+#: elf/ldconfig.c:417
+#, c-format
+msgid "Can't stat %s"
+msgstr "No se puede efectuar `stat' sobre %s"
+
+#: elf/ldconfig.c:511
+#, c-format
+msgid "Can't stat %s\n"
+msgstr "No se puede efectuar `stat' sobre %s\n"
+
+#: elf/ldconfig.c:521
+#, c-format
+msgid "%s is not a symbolic link\n"
+msgstr "%s no es un enlace simbólico\n"
+
+#: elf/ldconfig.c:540
+#, c-format
+msgid "Can't unlink %s"
+msgstr "No se puede efectuar `unlink' sobre %s"
+
+#: elf/ldconfig.c:546
+#, c-format
+msgid "Can't link %s to %s"
+msgstr "No se puede crear un enlace de %s a %s"
+
+#: elf/ldconfig.c:552
+msgid " (changed)\n"
+msgstr " (cambiado)\n"
+
+#: elf/ldconfig.c:554
+msgid " (SKIPPED)\n"
+msgstr " (SALTADO)\n"
+
+#: elf/ldconfig.c:609
+#, c-format
+msgid "Can't find %s"
+msgstr "No se encuentra %s"
+
+#: elf/ldconfig.c:625 elf/ldconfig.c:784 elf/ldconfig.c:851
+#, c-format
+msgid "Cannot lstat %s"
+msgstr "No se puede efectuar `lstat' sobre %s"
+
+#: elf/ldconfig.c:631
+#, c-format
+msgid "Ignored file %s since it is not a regular file."
+msgstr "Descartado el fichero %s dado que no es un fichero regular."
+
+#: elf/ldconfig.c:639
+#, c-format
+msgid "No link created since soname could not be found for %s"
+msgstr "No se creó el enlace ya que no se encontró el soname para %s"
+
+#: elf/ldconfig.c:740
+#, c-format
+msgid "Can't open directory %s"
+msgstr "No se puede abrir el directorio %s"
+
+#: elf/ldconfig.c:801 elf/ldconfig.c:839 elf/readlib.c:81
+#, c-format
+msgid "Input file %s not found.\n"
+msgstr "No se encontró el fichero de entrada %s.\n"
+
+#: elf/ldconfig.c:808
+#, c-format
+msgid "Cannot stat %s"
+msgstr "No se puede efectuar `stat' sobre %s"
+
+#: elf/ldconfig.c:927
+#, c-format
+msgid "libc6 library %s in wrong directory"
+msgstr "biblioteca libc6 %s en un directorio equivocado"
+
+#: elf/ldconfig.c:946
+#, c-format
+msgid "libraries %s and %s in directory %s have same soname but different type."
+msgstr "las bibliotecas %s y %s en el directorio %s tienen el mismo soname pero distinto tipo."
+
+#: elf/ldconfig.c:1070
 #, c-format
 msgid "relative path `%s' used to build cache"
 msgstr "se usa el camino relativo `%s' para construir el caché"
 
-#: elf/ldconfig.c:1217
+#: elf/ldconfig.c:1092
 #, c-format
 msgid "Can't chdir to /"
 msgstr "No se puede cambiar al directorio /"
 
-#: elf/ldconfig.c:1258
+#: elf/ldconfig.c:1136
 #, c-format
 msgid "Can't open cache file directory %s\n"
 msgstr "No se puede leer el directorio de ficheros de caché %s\n"
@@ -1129,15 +1126,15 @@ msgid "%s: option requires an argument -- '%s'\\n"
 msgstr "%s: la opción requiere un argumento -- '%c'\\n"
 
 #: elf/sotruss.sh:61
-msgid "%s: option is ambiguous; possibilities:"
-msgstr "%s: la opción es ambigua; posibilidades:"
+msgid "%s: option '%s' is ambiguous; possibilities:"
+msgstr "%s: la opción '%s' es ambigua; posibilidades:"
 
-#: elf/sotruss.sh:79
+#: elf/sotruss.sh:80
 msgid "Written by %s.\\n"
 msgstr "Escrito por %s.\\n"
 
 # FIXME: Posible errata en el msgid.
-#: elf/sotruss.sh:86
+#: elf/sotruss.sh:87
 msgid ""
 "Usage: %s [-ef] [-F FROMLIST] [-o FILENAME] [-T TOLIST] [--exit]\n"
 "\t    [--follow] [--from FROMLIST] [--output FILENAME] [--to TOLIST]\n"
@@ -1149,7 +1146,7 @@ msgstr ""
 "\t    [--help] [--usage] [--version] [--]\n"
 "\t    EJECUTABLE [OPCIÓN-DEL-EJECUTABLE...]\\n"
 
-#: elf/sotruss.sh:134
+#: elf/sotruss.sh:135
 msgid "%s: unrecognized option '%c%s'\\n"
 msgstr "%s: opción no reconocida '%c%s'\\n"
 
@@ -3604,12 +3601,12 @@ msgstr "yp_update: no se puede convertir el nombre del `host' a nombre de red\n"
 msgid "yp_update: cannot get server address\n"
 msgstr "yp_update: no se puede encontrar la dirección del servidor\n"
 
-#: nscd/aicache.c:68 nscd/hstcache.c:451
+#: nscd/aicache.c:77 nscd/hstcache.c:451
 #, c-format
 msgid "Haven't found \"%s\" in hosts cache!"
 msgstr "No se ha encontrado \"%s\" en el caché de `hosts'"
 
-#: nscd/aicache.c:70 nscd/hstcache.c:453
+#: nscd/aicache.c:79 nscd/hstcache.c:453
 #, c-format
 msgid "Reloading \"%s\" in hosts cache!"
 msgstr "Recargando \"%s\" en el caché de hosts"
@@ -3816,7 +3813,7 @@ msgstr "falló `getgrouplist'"
 msgid "setgroups failed"
 msgstr "falló `setgroups'"
 
-#: nscd/grpcache.c:384 nscd/hstcache.c:401 nscd/initgrcache.c:377
+#: nscd/grpcache.c:384 nscd/hstcache.c:402 nscd/initgrcache.c:377
 #: nscd/pwdcache.c:362 nscd/servicescache.c:309
 #, c-format
 msgid "short write in %s: %s"
@@ -3911,7 +3908,7 @@ msgstr "Utiliza una caché separada para cada usuario"
 msgid "Name Service Cache Daemon."
 msgstr "Daemon de Caché del Servicio de Nombres."
 
-#: nscd/nscd.c:158 nss/getent.c:995 nss/makedb.c:208
+#: nscd/nscd.c:158 nss/getent.c:1014 nss/makedb.c:208
 #, c-format
 msgid "wrong number of arguments"
 msgstr "número incorrecto de argumentos"
@@ -4309,25 +4306,25 @@ msgstr "Configuración del servicio"
 msgid "disable IDN encoding"
 msgstr "desactiva la codificación IDN"
 
-#: nss/getent.c:67
+#: nss/getent.c:68
 msgid "Get entries from administrative database."
 msgstr "Obtiene entradas de la base de datos administrativa."
 
-#: nss/getent.c:154 nss/getent.c:466 nss/getent.c:513
+#: nss/getent.c:158 nss/getent.c:481 nss/getent.c:528
 #, c-format
 msgid "Enumeration not supported on %s\n"
 msgstr "La enumeración no está soportada sobre %s\n"
 
-#: nss/getent.c:905
+#: nss/getent.c:920
 #, c-format
 msgid "Unknown database name"
 msgstr "Nombre de base de datos desconocido"
 
-#: nss/getent.c:939
+#: nss/getent.c:958
 msgid "Supported databases:\n"
 msgstr "Bases de datos admitidas:\n"
 
-#: nss/getent.c:1005
+#: nss/getent.c:1024
 #, c-format
 msgid "Unknown database: %s\n"
 msgstr "Base de datos desconocida: %s\n"
@@ -4570,7 +4567,7 @@ msgstr ") ó \\) desemparejados"
 msgid "No previous regular expression"
 msgstr "No existe ninguna expresión regular anterior"
 
-#: posix/wordexp.c:1794
+#: posix/wordexp.c:1806
 msgid "parameter null or not set"
 msgstr "parámetro nulo o no establecido"
 
@@ -4765,7 +4762,7 @@ msgstr "Hay búfers de salida disponibles"
 msgid "Input message available"
 msgstr "Mensaje de entrada disponible"
 
-#: stdio-common/psiginfo-data.h:46 timezone/zdump.c:445 timezone/zic.c:652
+#: stdio-common/psiginfo-data.h:46 timezone/zdump.c:424 timezone/zic.c:831
 msgid "I/O error"
 msgstr "Error de E/S"
 
@@ -6366,11 +6363,11 @@ msgstr "Programa RPC no disponible"
 msgid "cannot map pages for fdesc table"
 msgstr "no se pueden asignar páginas para la tabla fdesc"
 
-#: sysdeps/hppa/dl-fptr.c:214
+#: sysdeps/hppa/dl-fptr.c:212
 msgid "cannot map pages for fptr table"
 msgstr "no se pueden asignar páginas para la tabla fptr"
 
-#: sysdeps/hppa/dl-fptr.c:243
+#: sysdeps/hppa/dl-fptr.c:240
 msgid "internal error: symidx out of range of fptr table"
 msgstr "error interno: symidx fuera del rango de la tabla fptr"
 
@@ -6456,156 +6453,123 @@ msgstr "Cadena de parámetros codificada incorrectamente"
 msgid "%s is for unknown machine %d.\n"
 msgstr "%s es para la máquina desconocida %d.\n"
 
-#: timezone/zdump.c:411
+#: timezone/zdump.c:390
 #, c-format
 msgid "%s: warning: zone \"%s\" abbreviation \"%s\" %s\n"
 msgstr "%s: atención: zona \"%s\" abreviatura \"%s\" %s\n"
 
-#: timezone/zdump.c:543
+#: timezone/zdump.c:523
 #, c-format
 msgid "%s: wild -c argument %s\n"
 msgstr "%s: argumento %s descabellado para -c\n"
 
-#: timezone/zdump.c:576
+#: timezone/zdump.c:556
 #, c-format
 msgid "%s: wild -t argument %s\n"
 msgstr "%s: argumento %s descabellado para -t\n"
 
-#: timezone/zic.c:463
+#: timezone/zic.c:559
 #, c-format
 msgid "%s: Memory exhausted: %s\n"
 msgstr "%s: Memoria agotada: %s\n"
 
-#: timezone/zic.c:588
+#: timezone/zic.c:687
 msgid "standard input"
 msgstr "entrada estándar"
 
-#: timezone/zic.c:639
+#: timezone/zic.c:739
 #, c-format
 msgid "warning: "
 msgstr "atención: "
 
-#: timezone/zic.c:992
+#: timezone/zic.c:1249
 msgid "wild compilation-time specification of zic_t"
 msgstr "especificación de zic_t en tiempo de compilación descabellada"
 
-#: timezone/zic.c:1025
-#, c-format
-msgid "%s: More than one -d option specified\n"
-msgstr "%s: La opción -d se ha especificado más de una vez\n"
-
-#: timezone/zic.c:1036
-#, c-format
-msgid "%s: More than one -l option specified\n"
-msgstr "%s: La opción -l se ha especificado más de una vez\n"
-
-#: timezone/zic.c:1047
-#, c-format
-msgid "%s: More than one -p option specified\n"
-msgstr "%s: La opción -p se ha especificado más de una vez\n"
-
-#: timezone/zic.c:1071
-#, c-format
-msgid "%s: More than one -L option specified\n"
-msgstr "%s: La opción -L se ha especificado más de una vez\n"
-
-#: timezone/zic.c:1608 timezone/zic.c:1610
+#: timezone/zic.c:1895 timezone/zic.c:1897
 msgid "same rule name in multiple files"
 msgstr "mismo nombre de regla en varios ficheros"
 
-#: timezone/zic.c:1656
+#: timezone/zic.c:1943
 #, c-format
 msgid "%s in ruleless zone"
 msgstr "%s en una zona sin reglas"
 
-#: timezone/zic.c:1688
+#: timezone/zic.c:1975
 msgid "line too long"
 msgstr "línea demasiado larga"
 
-#: timezone/zic.c:1709
+#: timezone/zic.c:1996
 #, c-format
 msgid "%s: Can't open %s: %s\n"
 msgstr "%s: No se puede abrir %s: %s\n"
 
-#: timezone/zic.c:1734
+#: timezone/zic.c:2021
 msgid "input line of unknown type"
 msgstr "línea de entrada de tipo desconocido"
 
-#: timezone/zic.c:1761
+#: timezone/zic.c:2049
 msgid "expected continuation line not found"
 msgstr "la línea de continuación esperada no se encuentra"
 
-# Sugerencia: Desbordamiento de fecha. (?) sv+
-#: timezone/zic.c:1815 timezone/zic.c:3760
-msgid "time overflow"
-msgstr "desbordamiento horario"
-
-#: timezone/zic.c:1821
+#: timezone/zic.c:2105
 msgid "values over 24 hours not handled by pre-2007 versions of zic"
 msgstr "las versiones de zic anteriores a 2007 no manejan valores por encima de 24 horas"
 
-#: timezone/zic.c:1839
+#: timezone/zic.c:2123
 msgid "invalid saved time"
 msgstr "la hora almacenada no es válida"
 
-#: timezone/zic.c:1850
+#: timezone/zic.c:2134
 msgid "wrong number of fields on Rule line"
 msgstr "número incorrecto de argumentos en la línea de regla (Rule)"
 
-#: timezone/zic.c:1883
+#: timezone/zic.c:2167
 msgid "wrong number of fields on Zone line"
 msgstr "número de campos incorrecto en la línea de zona (Zone)"
 
-#: timezone/zic.c:1887
+#: timezone/zic.c:2171
 #, c-format
 msgid "\"Zone %s\" line and -l option are mutually exclusive"
 msgstr "la línea \"Zone %s\" y la opción -l son mutuamente excluyentes"
 
-#: timezone/zic.c:1892
+#: timezone/zic.c:2176
 #, c-format
 msgid "\"Zone %s\" line and -p option are mutually exclusive"
 msgstr "la línea \"Zone %s\" y la opción -p son mutuamente excluyentes"
 
-#: timezone/zic.c:1913
+#: timezone/zic.c:2197
 msgid "wrong number of fields on Zone continuation line"
 msgstr "número de campos incorrecto en la línea de continuación de zona (Zone)"
 
-#: timezone/zic.c:1952
+#: timezone/zic.c:2236
 msgid "invalid UT offset"
 msgstr "desplazamiento UT inválido"
 
-#: timezone/zic.c:1956
+#: timezone/zic.c:2241
 msgid "invalid abbreviation format"
 msgstr "formato de abreviatura incorrecto"
 
 # VER
-#: timezone/zic.c:1986
+#: timezone/zic.c:2267
 msgid "Zone continuation line end time is not after end time of previous line"
 msgstr ""
 "La línea de continuación de la zona no está después del tiempo de final\n"
 "de la línea anterior"
 
-#: timezone/zic.c:2027
+#: timezone/zic.c:2308
 msgid "invalid leaping year"
 msgstr "año bisiesto inválido"
 
-#: timezone/zic.c:2049 timezone/zic.c:2154
+#: timezone/zic.c:2330 timezone/zic.c:2427
 msgid "invalid month name"
 msgstr "nombre de mes incorrecto"
 
-#: timezone/zic.c:2062 timezone/zic.c:2252 timezone/zic.c:2266
+#: timezone/zic.c:2343 timezone/zic.c:2529 timezone/zic.c:2543
 msgid "invalid day of month"
 msgstr "día del mes inválido"
 
-#: timezone/zic.c:2067
-msgid "time too small"
-msgstr "tiempo demasiado pequeño"
-
-#: timezone/zic.c:2071
-msgid "time too large"
-msgstr "tiempo demasiado grande"
-
-#: timezone/zic.c:2075 timezone/zic.c:2183
+#: timezone/zic.c:2348 timezone/zic.c:2456
 msgid "invalid time of day"
 msgstr "hora del día inválida"
 
@@ -6619,75 +6583,76 @@ msgstr "hora del día inválida"
 # Si es mejor, ponlo en todos los sitios. Y si no, en ninguno.
 # Yo creo que es mucho mejor poner "número incorrecto ..."
 # Si no, queda como "al revés". sv+
-#: timezone/zic.c:2086
+#: timezone/zic.c:2359
 msgid "wrong number of fields on Leap line"
 msgstr "número incorrecto de campos en la línea de bisiesto (Leap)"
 
-#: timezone/zic.c:2125
+#: timezone/zic.c:2398
 msgid "wrong number of fields on Link line"
 msgstr "número incorrecto de campos en la línea de enlace (Link)"
 
-#: timezone/zic.c:2199
+#: timezone/zic.c:2472
 msgid "invalid starting year"
 msgstr "año de comienzo inválido"
 
-#: timezone/zic.c:2214
+#: timezone/zic.c:2487
 msgid "invalid ending year"
 msgstr "año de final inválido"
 
-#: timezone/zic.c:2218
+#: timezone/zic.c:2491
 msgid "starting year greater than ending year"
 msgstr "año de comienzo mayor que año de final"
 
-#: timezone/zic.c:2257
+#: timezone/zic.c:2534
 msgid "invalid weekday name"
 msgstr "nombre del día de la semana incorrecto"
 
-#: timezone/zic.c:2439
+#: timezone/zic.c:2729
 msgid "pre-2014 clients may mishandle more than 1200 transition times"
 msgstr "los clientes anteriores a 2014 pueden confundirse con más de 1200 tiempos de transición"
 
-#: timezone/zic.c:3186
+#: timezone/zic.c:3485
 #, c-format
 msgid "%s: pre-%d clients may mishandle distant timestamps"
 msgstr "%s: los clientes pre-%d pueden confundirse con marcas de tiempo distantes"
 
 # FUZZY
-#: timezone/zic.c:3388
+#: timezone/zic.c:3684
 msgid "can't determine time zone abbreviation to use just after until time"
 msgstr ""
 "No se puede determinar la abreviación de zona horaria que se usará justo\n"
 "después"
 
-#: timezone/zic.c:3489
+#: timezone/zic.c:3787
 msgid "UT offset out of range"
 msgstr "desplazamiento UT fuera de rango"
 
-#: timezone/zic.c:3512
+#: timezone/zic.c:3816
 msgid "too many local time types"
 msgstr "demasiados tipos de hora local"
 
-#: timezone/zic.c:3530
-msgid "too many leap seconds"
-msgstr "demasiados segundos intercalares"
-
-#: timezone/zic.c:3741
+#: timezone/zic.c:4043
 msgid "Odd number of quotation marks"
 msgstr "Número impar de comillas"
+
+# Sugerencia: Desbordamiento de fecha. (?) sv+
+#: timezone/zic.c:4062
+msgid "time overflow"
+msgstr "desbordamiento horario"
 
 # FIXME: non leap-year -> non-leap year.
 # A lo mejor si pones "veintinueve de febrero" o "29 de febrero"
 # se entiende mejor. no sé. sv
 # Si, estas pensando lo mismo que yo, 29 de febrero puede confundir, porque
 # en el fichero pondrá 2/29  em
-#: timezone/zic.c:3838
+#: timezone/zic.c:4154
 msgid "use of 2/29 in non leap-year"
 msgstr "uso de 2/29 en un año no bisiesto"
 
-#: timezone/zic.c:3895
+#: timezone/zic.c:4205
 msgid "time zone abbreviation differs from POSIX standard"
 msgstr "la abreviatura de la zona horaria difiere del estándar POSIX"
 
-#: timezone/zic.c:3901
+#: timezone/zic.c:4246
 msgid "too many, or too long, time zone abbreviations"
 msgstr "demasiadas abreviaturas de zona horaria, o demasiado largas"

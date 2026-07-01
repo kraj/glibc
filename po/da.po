@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: libc-2.11.1\n"
-"POT-Creation-Date: 2026-01-19 16:22+0100\n"
+"POT-Creation-Date: 2026-07-01 10:52+0900\n"
 "PO-Revision-Date: 2010-11-01 10:37+0100\n"
 "Last-Translator: Keld Simonsen <keld@keldix.com>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
@@ -127,11 +127,11 @@ msgstr ""
 "[UDFIL [INDFIL]...]"
 
 #: catgets/gencat.c:247 debug/pcprofiledump.c:235 debug/xtrace.sh:63
-#: elf/ldconfig.c:232 elf/ldd.bash.in:39 elf/pldd.c:262 elf/sotruss.sh:75
+#: elf/ldconfig.c:244 elf/ldd.bash.in:39 elf/pldd.c:262 elf/sotruss.sh:76
 #: elf/sprof.c:389 iconv/iconv_prog.c:391 iconv/iconvconfig.c:397
 #: locale/programs/locale.c:292 locale/programs/localedef.c:459
 #: login/programs/pt_chown.c:62 malloc/memusage.sh:70 malloc/memusagestat.c:582
-#: nscd/nscd.c:521 nss/getent.c:92 nss/makedb.c:387 posix/getconf.c:533
+#: nscd/nscd.c:521 nss/getent.c:96 nss/makedb.c:387 posix/getconf.c:533
 #, c-format
 msgid ""
 "Copyright (C) %s Free Software Foundation, Inc.\n"
@@ -144,10 +144,10 @@ msgstr ""
 "TIL NOGEN SPECIEL OPGAVE.\n"
 
 #: catgets/gencat.c:252 debug/pcprofiledump.c:240 debug/xtrace.sh:67
-#: elf/ldconfig.c:237 elf/pldd.c:267 elf/sprof.c:395 iconv/iconv_prog.c:396
+#: elf/ldconfig.c:249 elf/pldd.c:267 elf/sprof.c:395 iconv/iconv_prog.c:396
 #: iconv/iconvconfig.c:402 locale/programs/locale.c:297
 #: locale/programs/localedef.c:464 malloc/memusage.sh:74
-#: malloc/memusagestat.c:587 nscd/nscd.c:526 nss/getent.c:97 nss/makedb.c:392
+#: malloc/memusagestat.c:587 nscd/nscd.c:526 nss/getent.c:101 nss/makedb.c:392
 #: posix/getconf.c:538
 #, c-format
 msgid "Written by %s.\n"
@@ -327,43 +327,43 @@ msgstr "ugyldig tilstand"
 msgid "invalid mode parameter"
 msgstr "ugyldig tilstandsparameter"
 
-#: elf/cache.c:296 elf/ldconfig.c:1238
+#: elf/cache.c:357 elf/ldconfig.c:1116
 #, c-format
 msgid "Can't open cache file %s\n"
 msgstr "Kan ikke åbne hurtigbufferfil %s\n"
 
-#: elf/cache.c:310
+#: elf/cache.c:371
 #, c-format
 msgid "mmap of cache file failed.\n"
 msgstr "mmap af bufferfil fejlede\n"
 
-#: elf/cache.c:314 elf/cache.c:328 elf/cache.c:339
+#: elf/cache.c:375 elf/cache.c:389 elf/cache.c:400
 #, c-format
 msgid "File is not a cache file.\n"
 msgstr "Fil er ikke en bufferfil.\n"
 
-#: elf/cache.c:368 elf/cache.c:383
+#: elf/cache.c:429 elf/cache.c:444
 #, c-format
 msgid "%d libs found in cache `%s'\n"
 msgstr "%d libs fundet i hurtigbuffer '%s'\n"
 
-#: elf/cache.c:685
+#: elf/cache.c:783
 #, c-format
 msgid "Can't create temporary cache file %s"
 msgstr "Kan ikke oprette midlertidig hurtigbufferfil %s"
 
-#: elf/cache.c:693 elf/cache.c:703 elf/cache.c:707 elf/cache.c:712
-#: elf/cache.c:731
+#: elf/cache.c:791 elf/cache.c:801 elf/cache.c:805 elf/cache.c:810
+#: elf/cache.c:829
 #, c-format
 msgid "Writing of cache data failed"
 msgstr "Udskrivning af bufferdata fejlede"
 
-#: elf/cache.c:726
+#: elf/cache.c:824
 #, c-format
 msgid "Changing access rights of %s to %#o failed"
 msgstr "Ændring af adgangsrettigheder for %s til %#o fejlede"
 
-#: elf/cache.c:735
+#: elf/cache.c:833
 #, c-format
 msgid "Renaming of %s to %s failed"
 msgstr "Omdøbning af %s til %s fejlede"
@@ -376,34 +376,34 @@ msgstr "fejl ved indlæsning af delte biblioteker"
 msgid "DYNAMIC LINKER BUG!!!"
 msgstr "FEJL I DYNAMISK LÆNKER!!!"
 
-#: elf/dl-close.c:363 elf/dl-open.c:297
+#: elf/dl-close.c:368 elf/dl-open.c:297
 msgid "cannot create scope list"
 msgstr "kan ikke oprette omfangsliste"
 
-#: elf/dl-close.c:790
+#: elf/dl-close.c:795
 msgid "shared object not open"
 msgstr "delt objekt er ikke åbent"
 
-#: elf/dl-deps.c:96
+#: elf/dl-deps.c:103
 msgid "DST not allowed in SUID/SGID programs"
 msgstr "DST er ikke tilladt i SUIT/SGID-programmer"
 
-#: elf/dl-deps.c:109
-msgid "empty dynamic string token substitution"
-msgstr "tom dynamisk strengelement-erstatning"
-
-#: elf/dl-deps.c:115
+#: elf/dl-deps.c:224 elf/dl-deps.c:286
 #, c-format
 msgid "cannot load auxiliary `%s' because of empty dynamic string token substitution\n"
 msgstr ""
 "kan ikke indlæse ekstra \"%s\" på grund af at erstatning af\n"
 "\"dynamic string token\" er tom\n"
 
-#: elf/dl-deps.c:427
+#: elf/dl-deps.c:283
+msgid "empty dynamic string token substitution"
+msgstr "tom dynamisk strengelement-erstatning"
+
+#: elf/dl-deps.c:449
 msgid "cannot allocate dependency list"
 msgstr "kan ikke allokere afhængighedsliste"
 
-#: elf/dl-deps.c:467
+#: elf/dl-deps.c:489
 msgid "cannot allocate symbol search list"
 msgstr "kan ikke allokere symbolsøgningsliste"
 
@@ -411,127 +411,128 @@ msgstr "kan ikke allokere symbolsøgningsliste"
 msgid "cannot create capability list"
 msgstr "kan ikke oprette egenskabsliste"
 
-#: elf/dl-load.c:424
+#: elf/dl-load.c:408
 msgid "cannot allocate name record"
 msgstr "kan ikke allokere navnepost"
 
-#: elf/dl-load.c:510 elf/dl-load.c:623 elf/dl-load.c:717 elf/dl-load.c:814
-msgid "cannot create cache for search path"
-msgstr "Kan ikke oprette buffer for søgesti"
-
-#: elf/dl-load.c:606
+#: elf/dl-load.c:595
 msgid "cannot create RUNPATH/RPATH copy"
 msgstr "kan ikke oprette kopi af RUNPATH/RPATH"
 
-#: elf/dl-load.c:703
+#: elf/dl-load.c:612 elf/dl-load.c:621 elf/dl-load.c:712 elf/dl-load.c:810
+#: elf/dl-load.c:830
+msgid "cannot create cache for search path"
+msgstr "Kan ikke oprette buffer for søgesti"
+
+#: elf/dl-load.c:698
 msgid "cannot create search path array"
 msgstr "kan ikke oprette tabel over søgestier"
 
-#: elf/dl-load.c:978
-msgid "cannot stat shared object"
-msgstr "kan ikke tage status på delt objekt"
-
-#: elf/dl-load.c:1071 elf/dl-load.c:2160
-msgid "cannot create shared object descriptor"
-msgstr "kan ikke oprette delt objektbeskriver"
-
-#: elf/dl-load.c:1090 elf/dl-load.c:1594 elf/dl-load.c:1704
+#: elf/dl-load.c:1000 elf/dl-load.c:1354 elf/dl-load.c:1647
 msgid "cannot read file data"
 msgstr "kan ikke indlæse fildata"
 
-#: elf/dl-load.c:1224
+#: elf/dl-load.c:1151
+msgid "cannot stat shared object"
+msgstr "kan ikke tage status på delt objekt"
+
+#: elf/dl-load.c:1246 elf/dl-load.c:2203
+msgid "cannot create shared object descriptor"
+msgstr "kan ikke oprette delt objektbeskriver"
+
+#: elf/dl-load.c:1278
 msgid "object file has no loadable segments"
 msgstr "objektfil har ingen indlæsbare segmenter"
 
-#: elf/dl-load.c:1241
+#: elf/dl-load.c:1291
 msgid "cannot dynamically load executable"
 msgstr "kan ikke indlæse udførbare programmer dynamisk"
 
-#: elf/dl-load.c:1248
+#: elf/dl-load.c:1298
 msgid "object file has no dynamic section"
 msgstr "objektfil har ingen dynamisk sektion"
 
-#: elf/dl-load.c:1285
+#: elf/dl-load.c:1335
 msgid "shared object cannot be dlopen()ed"
 msgstr "delt objekt kan ikke åbnes med dlopen()"
 
-#: elf/dl-load.c:1298
+#: elf/dl-load.c:1347
 msgid "cannot allocate memory for program header"
 msgstr "kan ikke allokere hukommelse til programhoved"
 
-#: elf/dl-load.c:1323
+#: elf/dl-load.c:1377
 msgid "cannot enable executable stack as shared object requires"
 msgstr "kan ikke oprette udførbar stak som kræves af delt objekt"
 
-#: elf/dl-load.c:1351
+#: elf/dl-load.c:1401
 msgid "cannot close file descriptor"
 msgstr "kan ikke lukke filbeskriver"
 
-#: elf/dl-load.c:1594
+#: elf/dl-load.c:1647
 msgid "file too short"
 msgstr "for kort fil"
 
-#: elf/dl-load.c:1628
+#: elf/dl-load.c:1681
 msgid "invalid ELF header"
 msgstr "ugyldigt ELF-hoved"
 
-#: elf/dl-load.c:1645
+#: elf/dl-load.c:1698
 msgid "ELF file data encoding not big-endian"
 msgstr "Kodning for ELF-fildata er ikke \"big-endian\""
 
-#: elf/dl-load.c:1647
+#: elf/dl-load.c:1700
 msgid "ELF file data encoding not little-endian"
 msgstr "Kodning for ELF-fildata er ikke \"little-endian\""
 
-#: elf/dl-load.c:1651
+#: elf/dl-load.c:1704
 msgid "ELF file version ident does not match current one"
 msgstr "ELF-filens version-identitet passer ikke med den aktuelle"
 
-#: elf/dl-load.c:1655
+#: elf/dl-load.c:1708
 msgid "ELF file OS ABI invalid"
 msgstr "ELF-filens OS ABI er ugyldigt"
 
-#: elf/dl-load.c:1658
+#: elf/dl-load.c:1711
 msgid "ELF file ABI version invalid"
 msgstr "ELF-filens ABI-version er ugyldig"
 
-#: elf/dl-load.c:1664
+#: elf/dl-load.c:1717
 msgid "internal error"
 msgstr "intern fejl"
 
-#: elf/dl-load.c:1671
+#: elf/dl-load.c:1724
 msgid "ELF file version does not match current one"
 msgstr "ELF-filens version passer ikke med den aktuelle"
 
-#: elf/dl-load.c:1685
+#: elf/dl-load.c:1738
 msgid "only ET_DYN and ET_EXEC can be loaded"
 msgstr "kun ET_DYN og ET_EXEC kan indlæses"
 
-#: elf/dl-load.c:1690
+#: elf/dl-load.c:1743
 msgid "ELF file's phentsize not the expected size"
 msgstr "ELF-filens 'phentsize' er ikke den forventede størrelse"
 
-#: elf/dl-load.c:2179
+#: elf/dl-load.c:2222
 msgid "wrong ELF class: ELFCLASS64"
 msgstr "forkert ELF-klasse: ELFCLASS64"
 
-#: elf/dl-load.c:2180
+#: elf/dl-load.c:2223
 msgid "wrong ELF class: ELFCLASS32"
 msgstr "forkert ELF-klasse: ELFCLASS32"
 
-#: elf/dl-load.c:2183
+#: elf/dl-load.c:2226
 msgid "cannot open shared object file"
 msgstr "kan ikke åbne delt objektfil"
 
-#: elf/dl-load.h:126
+#: elf/dl-load.h:249
 msgid "failed to map segment from shared object"
 msgstr "kunne ikke afbilde segment fra delt objekt'"
 
-#: elf/dl-load.h:128
+#: elf/dl-load.h:251
 msgid "cannot change memory protections"
 msgstr "kan ikke ændre hukommelsesbeskyttelser"
 
-#: elf/dl-load.h:130
+#: elf/dl-load.h:253
 msgid "cannot map zero-fill pages"
 msgstr "kan ikke mappe nulstil-sider"
 
@@ -547,36 +548,36 @@ msgstr "kan ikke udvide globalt defineringområde"
 msgid "TLS generation counter wrapped!  Please report this."
 msgstr "Generationstæller for TLS tilbagestillet!  Vær sød at indsende fejlrapport."
 
-#: elf/dl-open.c:817
+#: elf/dl-open.c:816
 msgid "invalid mode for dlopen()"
 msgstr "ugyldig modus for dlopen()"
 
-#: elf/dl-open.c:834
+#: elf/dl-open.c:833
 msgid "no more namespaces available for dlmopen()"
 msgstr "ikke flere navnerum tilgængelige for dlmopen()"
 
-#: elf/dl-open.c:859
+#: elf/dl-open.c:858
 msgid "invalid target namespace in dlmopen()"
 msgstr "ugyldigt mål-navnerum for dlmopen()"
 
-#: elf/dl-reloc.c:140
+#: elf/dl-reloc.c:139
 msgid "cannot allocate memory in static TLS block"
 msgstr "Kan ikke tildele hukommelse i statisk TLS-blok"
 
-#: elf/dl-reloc.c:283
+#: elf/dl-reloc.c:261
 msgid "cannot make segment writable for relocation"
 msgstr "kan ikke gøre segment skrivbart for relokering"
 
-#: elf/dl-reloc.c:313
+#: elf/dl-reloc.c:311
 #, c-format
 msgid "%s: out of memory to store relocation results for %s\n"
 msgstr "%s: ikke mere hukommelse til at gemme relokeringsresultat for %s\n"
 
-#: elf/dl-reloc.c:328
+#: elf/dl-reloc.c:326
 msgid "cannot restore segment prot after reloc"
 msgstr "kan ikke genskabe segmentbeskyttelse efter flytning"
 
-#: elf/dl-reloc.c:366
+#: elf/dl-reloc.c:364
 msgid "cannot apply additional memory protection after relocation"
 msgstr "kan ikke udføre yderligere hukommelsesbeskyttelser efter flytning"
 
@@ -584,7 +585,7 @@ msgstr "kan ikke udføre yderligere hukommelsesbeskyttelser efter flytning"
 msgid "RTLD_NEXT used in code not dynamically loaded"
 msgstr "RTLD_NEXT brugt i kode er ikke dynamisk indlæst"
 
-#: elf/dl-tls.c:1217
+#: elf/dl-tls.c:1279
 msgid "cannot create TLS data structures"
 msgstr "kan ikke oprette datastrukturer for TLS"
 
@@ -592,173 +593,169 @@ msgstr "kan ikke oprette datastrukturer for TLS"
 msgid "cannot allocate version reference table"
 msgstr "kan ikke allokere versionsreferencetabel"
 
-#: elf/ldconfig.c:124
-msgid "Print cache"
-msgstr "Udskriftsbuffer"
-
-#: elf/ldconfig.c:125
-msgid "Generate verbose messages"
-msgstr "Skriv udførlige meddelelser"
-
-#: elf/ldconfig.c:126
-msgid "Don't build cache"
-msgstr "Byg ikke hurtigbuffer"
-
-#: elf/ldconfig.c:128
-msgid "Change to and use ROOT as root directory"
-msgstr "Skift til og brug ROOT som rod-katalog"
-
-#: elf/ldconfig.c:128
-msgid "ROOT"
-msgstr "ROOT"
-
-#: elf/ldconfig.c:129
-msgid "CACHE"
-msgstr "CACHE"
-
-#: elf/ldconfig.c:129
-msgid "Use CACHE as cache file"
-msgstr "Brug CACHE som bufferfil"
-
-#: elf/ldconfig.c:130
-msgid "CONF"
-msgstr "CONF"
-
-#: elf/ldconfig.c:130
-msgid "Use CONF as configuration file"
-msgstr "Brug CONF som konfigurationsfil"
-
-#: elf/ldconfig.c:131
-msgid "Only process directories specified on the command line.  Don't build cache."
-msgstr "Kun proces-kataloger angivet på kommandolinjen. Undlad at bygge buffer."
-
-#: elf/ldconfig.c:132
-msgid "Manually link individual libraries."
-msgstr "Lænk manuelt individuelle biblioteker"
-
-#: elf/ldconfig.c:133
-msgid "FORMAT"
-msgstr "FORMAT"
-
-#: elf/ldconfig.c:134
-msgid "Ignore auxiliary cache file"
-msgstr "Ignorér ekstern bufferfil"
-
-#: elf/ldconfig.c:142
-msgid "Configure Dynamic Linker Run Time Bindings."
-msgstr "Konfigurér kørselsværdier til Dynamisk Lænker"
-
-#: elf/ldconfig.c:276
-#, c-format
-msgid "Path `%s' given more than once"
-msgstr "Stien '%s' givet mere end én gang"
-
-#: elf/ldconfig.c:405
-#, c-format
-msgid "Can't stat %s"
-msgstr "Kan ikke stat() %s"
-
-#: elf/ldconfig.c:486
-#, c-format
-msgid "Can't stat %s\n"
-msgstr "Kan ikke stat() %s\n"
-
-#: elf/ldconfig.c:496
-#, c-format
-msgid "%s is not a symbolic link\n"
-msgstr "%s er ikke en symbolsk lænke\n"
-
-#: elf/ldconfig.c:515
-#, c-format
-msgid "Can't unlink %s"
-msgstr "Kan ikke aflænke %s"
-
-#: elf/ldconfig.c:521
-#, c-format
-msgid "Can't link %s to %s"
-msgstr "Kan ikke lænke %s til %s"
-
-#: elf/ldconfig.c:527
-msgid " (changed)\n"
-msgstr " (ændret)\n"
-
-#: elf/ldconfig.c:529
-msgid " (SKIPPED)\n"
-msgstr " (UDELADT)\n"
-
-#: elf/ldconfig.c:584
-#, c-format
-msgid "Can't find %s"
-msgstr "Kan ikke finde %s"
-
-#: elf/ldconfig.c:600 elf/ldconfig.c:759 elf/ldconfig.c:826
-#, c-format
-msgid "Cannot lstat %s"
-msgstr "Kan ikke lstat %s"
-
-#: elf/ldconfig.c:606
-#, c-format
-msgid "Ignored file %s since it is not a regular file."
-msgstr "Ignorerede filen %s da den ikke er en almindelig fil."
-
-#: elf/ldconfig.c:614
-#, c-format
-msgid "No link created since soname could not be found for %s"
-msgstr "Ingen lænke oprettet da .so-navn ikke kunne findes for %s"
-
-#: elf/ldconfig.c:715
-#, c-format
-msgid "Can't open directory %s"
-msgstr "Kan ikke åbne katalog %s"
-
-#: elf/ldconfig.c:776 elf/ldconfig.c:814 elf/readlib.c:81
-#, c-format
-msgid "Input file %s not found.\n"
-msgstr "Inddatafilen %s ikke fundet\n"
-
-#: elf/ldconfig.c:783
-#, c-format
-msgid "Cannot stat %s"
-msgstr "Kan ikke stat() %s"
-
-#: elf/ldconfig.c:902
-#, c-format
-msgid "libc6 library %s in wrong directory"
-msgstr "libc6-bibliotek %s i forkert katalog"
-
-#: elf/ldconfig.c:921
-#, c-format
-msgid "libraries %s and %s in directory %s have same soname but different type."
-msgstr "bibliotekerne %s og %s i kataloget %s har samme .so-navn, men forskellig type"
-
-#: elf/ldconfig.c:1117
+#: elf/ldconfig-parse.c:156
 #, c-format
 msgid "need absolute file name for configuration file when using -r"
 msgstr "behøver fuldt filnavn for konfigurationsfil når -r bruges"
 
-#: elf/ldconfig.c:1124 locale/programs/xasprintf.c:31
+#: elf/ldconfig-parse.c:163 locale/programs/xasprintf.c:31
 #: locale/programs/xmalloc.c:63 malloc/obstack.c:416 malloc/obstack.c:418
 #: posix/getconf.c:503 posix/getconf.c:745
 #, c-format
 msgid "memory exhausted"
 msgstr "hukommelsen opbrugt"
 
-#: elf/ldconfig.c:1157
+#: elf/ldconfig-parse.c:196
 #, c-format
 msgid "%s:%u: cannot read directory %s"
 msgstr "%s:%u: kan ikke læse katalog %s"
 
-#: elf/ldconfig.c:1195
+#: elf/ldconfig.c:132
+msgid "Print cache"
+msgstr "Udskriftsbuffer"
+
+#: elf/ldconfig.c:133
+msgid "Generate verbose messages"
+msgstr "Skriv udførlige meddelelser"
+
+#: elf/ldconfig.c:134
+msgid "Don't build cache"
+msgstr "Byg ikke hurtigbuffer"
+
+#: elf/ldconfig.c:136
+msgid "Change to and use ROOT as root directory"
+msgstr "Skift til og brug ROOT som rod-katalog"
+
+#: elf/ldconfig.c:136
+msgid "ROOT"
+msgstr "ROOT"
+
+#: elf/ldconfig.c:137
+msgid "CACHE"
+msgstr "CACHE"
+
+#: elf/ldconfig.c:137
+msgid "Use CACHE as cache file"
+msgstr "Brug CACHE som bufferfil"
+
+#: elf/ldconfig.c:138
+msgid "CONF"
+msgstr "CONF"
+
+#: elf/ldconfig.c:140
+msgid "Only process directories specified on the command line.  Don't build cache."
+msgstr "Kun proces-kataloger angivet på kommandolinjen. Undlad at bygge buffer."
+
+#: elf/ldconfig.c:141
+msgid "Manually link individual libraries."
+msgstr "Lænk manuelt individuelle biblioteker"
+
+#: elf/ldconfig.c:142
+msgid "FORMAT"
+msgstr "FORMAT"
+
+#: elf/ldconfig.c:143
+msgid "Ignore auxiliary cache file"
+msgstr "Ignorér ekstern bufferfil"
+
+#: elf/ldconfig.c:151
+msgid "Configure Dynamic Linker Run Time Bindings."
+msgstr "Konfigurér kørselsværdier til Dynamisk Lænker"
+
+#: elf/ldconfig.c:288
+#, c-format
+msgid "Path `%s' given more than once"
+msgstr "Stien '%s' givet mere end én gang"
+
+#: elf/ldconfig.c:417
+#, c-format
+msgid "Can't stat %s"
+msgstr "Kan ikke stat() %s"
+
+#: elf/ldconfig.c:511
+#, c-format
+msgid "Can't stat %s\n"
+msgstr "Kan ikke stat() %s\n"
+
+#: elf/ldconfig.c:521
+#, c-format
+msgid "%s is not a symbolic link\n"
+msgstr "%s er ikke en symbolsk lænke\n"
+
+#: elf/ldconfig.c:540
+#, c-format
+msgid "Can't unlink %s"
+msgstr "Kan ikke aflænke %s"
+
+#: elf/ldconfig.c:546
+#, c-format
+msgid "Can't link %s to %s"
+msgstr "Kan ikke lænke %s til %s"
+
+#: elf/ldconfig.c:552
+msgid " (changed)\n"
+msgstr " (ændret)\n"
+
+#: elf/ldconfig.c:554
+msgid " (SKIPPED)\n"
+msgstr " (UDELADT)\n"
+
+#: elf/ldconfig.c:609
+#, c-format
+msgid "Can't find %s"
+msgstr "Kan ikke finde %s"
+
+#: elf/ldconfig.c:625 elf/ldconfig.c:784 elf/ldconfig.c:851
+#, c-format
+msgid "Cannot lstat %s"
+msgstr "Kan ikke lstat %s"
+
+#: elf/ldconfig.c:631
+#, c-format
+msgid "Ignored file %s since it is not a regular file."
+msgstr "Ignorerede filen %s da den ikke er en almindelig fil."
+
+#: elf/ldconfig.c:639
+#, c-format
+msgid "No link created since soname could not be found for %s"
+msgstr "Ingen lænke oprettet da .so-navn ikke kunne findes for %s"
+
+#: elf/ldconfig.c:740
+#, c-format
+msgid "Can't open directory %s"
+msgstr "Kan ikke åbne katalog %s"
+
+#: elf/ldconfig.c:801 elf/ldconfig.c:839 elf/readlib.c:81
+#, c-format
+msgid "Input file %s not found.\n"
+msgstr "Inddatafilen %s ikke fundet\n"
+
+#: elf/ldconfig.c:808
+#, c-format
+msgid "Cannot stat %s"
+msgstr "Kan ikke stat() %s"
+
+#: elf/ldconfig.c:927
+#, c-format
+msgid "libc6 library %s in wrong directory"
+msgstr "libc6-bibliotek %s i forkert katalog"
+
+#: elf/ldconfig.c:946
+#, c-format
+msgid "libraries %s and %s in directory %s have same soname but different type."
+msgstr "bibliotekerne %s og %s i kataloget %s har samme .so-navn, men forskellig type"
+
+#: elf/ldconfig.c:1070
 #, c-format
 msgid "relative path `%s' used to build cache"
 msgstr "relativ søgesti \"%s\" brugt til at bygge hurtigbuffer"
 
-#: elf/ldconfig.c:1217
+#: elf/ldconfig.c:1092
 #, c-format
 msgid "Can't chdir to /"
 msgstr "Kan ikke chdir til /"
 
-#: elf/ldconfig.c:1258
+#: elf/ldconfig.c:1136
 #, c-format
 msgid "Can't open cache file directory %s\n"
 msgstr "Kan ikke åbne hurtigbuffer-katalog %s\n"
@@ -3194,12 +3191,12 @@ msgstr "yp_update: kan ikke konvertere vært til netnavn\n"
 msgid "yp_update: cannot get server address\n"
 msgstr "yp_update: kan ikke hente serveradresse\n"
 
-#: nscd/aicache.c:68 nscd/hstcache.c:451
+#: nscd/aicache.c:77 nscd/hstcache.c:451
 #, c-format
 msgid "Haven't found \"%s\" in hosts cache!"
 msgstr "Har ikke fundet '%s' i værts-nærbuffer!"
 
-#: nscd/aicache.c:70 nscd/hstcache.c:453
+#: nscd/aicache.c:79 nscd/hstcache.c:453
 #, c-format
 msgid "Reloading \"%s\" in hosts cache!"
 msgstr "Genindlæser '%s' i værts-nærbuffer!"
@@ -3404,7 +3401,7 @@ msgstr "getgrouplist mislykkedes"
 msgid "setgroups failed"
 msgstr "setgroups mislykkedes"
 
-#: nscd/grpcache.c:384 nscd/hstcache.c:401 nscd/initgrcache.c:377
+#: nscd/grpcache.c:384 nscd/hstcache.c:402 nscd/initgrcache.c:377
 #: nscd/pwdcache.c:362 nscd/servicescache.c:309
 #, c-format
 msgid "short write in %s: %s"
@@ -3475,7 +3472,7 @@ msgstr "Brug separat buffer for hver bruger"
 msgid "Name Service Cache Daemon."
 msgstr "Dæmon for bufring af navnetjeneste"
 
-#: nscd/nscd.c:158 nss/getent.c:995 nss/makedb.c:208
+#: nscd/nscd.c:158 nss/getent.c:1014 nss/makedb.c:208
 #, c-format
 msgid "wrong number of arguments"
 msgstr "galt antal argumenter"
@@ -3798,25 +3795,25 @@ msgstr "database [nøgle ...]"
 msgid "Service configuration to be used"
 msgstr "Tjenestekonfiguration som skal bruges"
 
-#: nss/getent.c:67
+#: nss/getent.c:68
 msgid "Get entries from administrative database."
 msgstr "Hent poster fra administrativ database."
 
-#: nss/getent.c:154 nss/getent.c:466 nss/getent.c:513
+#: nss/getent.c:158 nss/getent.c:481 nss/getent.c:528
 #, c-format
 msgid "Enumeration not supported on %s\n"
 msgstr "Enumeration er ikke understøttet på %s\n"
 
-#: nss/getent.c:905
+#: nss/getent.c:920
 #, c-format
 msgid "Unknown database name"
 msgstr "Ukendt databasenavn"
 
-#: nss/getent.c:939
+#: nss/getent.c:958
 msgid "Supported databases:\n"
 msgstr "Understøttede databaser:\n"
 
-#: nss/getent.c:1005
+#: nss/getent.c:1024
 #, c-format
 msgid "Unknown database: %s\n"
 msgstr "Ukendt database: %s\n"
@@ -3979,7 +3976,7 @@ msgstr "Ubalanceret ) eller \\)"
 msgid "No previous regular expression"
 msgstr "Intet foregående regulært udtryk"
 
-#: posix/wordexp.c:1794
+#: posix/wordexp.c:1806
 msgid "parameter null or not set"
 msgstr "parameter er nul eller ikke sat"
 
@@ -5288,11 +5285,11 @@ msgstr "RPC-programmet er ikke tilgængeligt"
 msgid "cannot map pages for fdesc table"
 msgstr "kan ikke hukommelsesmappe sider for fdesc-tabel"
 
-#: sysdeps/hppa/dl-fptr.c:214
+#: sysdeps/hppa/dl-fptr.c:212
 msgid "cannot map pages for fptr table"
 msgstr "kan ikke hukommelsesmappe sider for fptr-tabel"
 
-#: sysdeps/hppa/dl-fptr.c:243
+#: sysdeps/hppa/dl-fptr.c:240
 msgid "internal error: symidx out of range of fptr table"
 msgstr "intern fejl: symidx er udenfor intervallet for fptr-tabellen"
 
@@ -5373,194 +5370,162 @@ msgstr "Parameterstreng fejlagtigt kodet"
 msgid "%s is for unknown machine %d.\n"
 msgstr "%s er til ukendt maskine %d.\n"
 
-#: timezone/zdump.c:411
+#: timezone/zdump.c:390
 #, c-format
 msgid "%s: warning: zone \"%s\" abbreviation \"%s\" %s\n"
 msgstr "%s: advarsel: zone \"%s\" forkortelse \"%s\": %s\n"
 
-#: timezone/zdump.c:543
+#: timezone/zdump.c:523
 #, c-format
 msgid "%s: wild -c argument %s\n"
 msgstr "%s: argument \"%s\" til flaget -c har forkert format\n"
 
-#: timezone/zic.c:463
+#: timezone/zic.c:559
 #, c-format
 msgid "%s: Memory exhausted: %s\n"
 msgstr "%s: Lageret opbrugt: %s\n"
 
-#: timezone/zic.c:588
+#: timezone/zic.c:687
 msgid "standard input"
 msgstr "standard inddata"
 
-#: timezone/zic.c:639
+#: timezone/zic.c:739
 #, c-format
 msgid "warning: "
 msgstr "advarsel: "
 
-#: timezone/zic.c:992
+#: timezone/zic.c:1249
 msgid "wild compilation-time specification of zic_t"
 msgstr "definitionen af zic_t ved kompilering er urimelig"
 
-#: timezone/zic.c:1025
-#, c-format
-msgid "%s: More than one -d option specified\n"
-msgstr "%s: Mere end et -d-flag specificeret\n"
-
-#: timezone/zic.c:1036
-#, c-format
-msgid "%s: More than one -l option specified\n"
-msgstr "%s: Mere end et -l-flag specificeret\n"
-
-#: timezone/zic.c:1047
-#, c-format
-msgid "%s: More than one -p option specified\n"
-msgstr "%s: Mere end et -p-flag specificeret\n"
-
-#: timezone/zic.c:1071
-#, c-format
-msgid "%s: More than one -L option specified\n"
-msgstr "%s: Mere end et -L-flag specificeret\n"
-
-#: timezone/zic.c:1608 timezone/zic.c:1610
+#: timezone/zic.c:1895 timezone/zic.c:1897
 msgid "same rule name in multiple files"
 msgstr "samme regelnavn i flere filer"
 
-#: timezone/zic.c:1656
+#: timezone/zic.c:1943
 #, c-format
 msgid "%s in ruleless zone"
 msgstr "%s i zone uden regel"
 
-#: timezone/zic.c:1688
+#: timezone/zic.c:1975
 msgid "line too long"
 msgstr "for lang linje"
 
-#: timezone/zic.c:1709
+#: timezone/zic.c:1996
 #, c-format
 msgid "%s: Can't open %s: %s\n"
 msgstr "%s: Kan ikke åbne %s: %s\n"
 
-#: timezone/zic.c:1734
+#: timezone/zic.c:2021
 msgid "input line of unknown type"
 msgstr "inddatalinje af ukendt type"
 
-#: timezone/zic.c:1761
+#: timezone/zic.c:2049
 msgid "expected continuation line not found"
 msgstr "forventet fortsættelseslinje ikke fundet"
 
-#: timezone/zic.c:1815 timezone/zic.c:3760
-msgid "time overflow"
-msgstr "for stor tidsværdi"
-
-#: timezone/zic.c:1821
+#: timezone/zic.c:2105
 msgid "values over 24 hours not handled by pre-2007 versions of zic"
 msgstr "værdier større end 24 timer håndteres ikke af zic-versioner før 2007"
 
-#: timezone/zic.c:1839
+#: timezone/zic.c:2123
 msgid "invalid saved time"
 msgstr "ugyldig lagret tid"
 
-#: timezone/zic.c:1850
+#: timezone/zic.c:2134
 msgid "wrong number of fields on Rule line"
 msgstr "galt antal felter på 'Rule'-linje"
 
-#: timezone/zic.c:1883
+#: timezone/zic.c:2167
 msgid "wrong number of fields on Zone line"
 msgstr "galt antal felter på 'Zone'-linje"
 
-#: timezone/zic.c:1887
+#: timezone/zic.c:2171
 #, c-format
 msgid "\"Zone %s\" line and -l option are mutually exclusive"
 msgstr "'Zone %s'-linje og flaget -l udelukker hinanden"
 
-#: timezone/zic.c:1892
+#: timezone/zic.c:2176
 #, c-format
 msgid "\"Zone %s\" line and -p option are mutually exclusive"
 msgstr "'Zone %s'-linje og flaget -p udelukker hinanden"
 
-#: timezone/zic.c:1913
+#: timezone/zic.c:2197
 msgid "wrong number of fields on Zone continuation line"
 msgstr "galt antal felter på 'Zone'-fortsættelseslinje"
 
-#: timezone/zic.c:1956
+#: timezone/zic.c:2241
 msgid "invalid abbreviation format"
 msgstr "ugyldig forkortelsesformat"
 
-#: timezone/zic.c:1986
+#: timezone/zic.c:2267
 msgid "Zone continuation line end time is not after end time of previous line"
 msgstr "Sluttiden på fortsætningslinjen til en zone kommer før sluttiden på foregående linje"
 
-#: timezone/zic.c:2027
+#: timezone/zic.c:2308
 msgid "invalid leaping year"
 msgstr "ugyldigt skudår"
 
-#: timezone/zic.c:2049 timezone/zic.c:2154
+#: timezone/zic.c:2330 timezone/zic.c:2427
 msgid "invalid month name"
 msgstr "ugyldigt månedsnavn"
 
-#: timezone/zic.c:2062 timezone/zic.c:2252 timezone/zic.c:2266
+#: timezone/zic.c:2343 timezone/zic.c:2529 timezone/zic.c:2543
 msgid "invalid day of month"
 msgstr "ugyldig dag i måneden"
 
-#: timezone/zic.c:2067
-msgid "time too small"
-msgstr "tid for lille"
-
-#: timezone/zic.c:2071
-msgid "time too large"
-msgstr "tid for stor"
-
-#: timezone/zic.c:2075 timezone/zic.c:2183
+#: timezone/zic.c:2348 timezone/zic.c:2456
 msgid "invalid time of day"
 msgstr "ugyldig tid på dagen"
 
-#: timezone/zic.c:2086
+#: timezone/zic.c:2359
 msgid "wrong number of fields on Leap line"
 msgstr "galt antal felter på 'Leap'-linje"
 
-#: timezone/zic.c:2125
+#: timezone/zic.c:2398
 msgid "wrong number of fields on Link line"
 msgstr "forkert antal felter på 'Link'-linje"
 
-#: timezone/zic.c:2199
+#: timezone/zic.c:2472
 msgid "invalid starting year"
 msgstr "ugyldigt startår"
 
-#: timezone/zic.c:2214
+#: timezone/zic.c:2487
 msgid "invalid ending year"
 msgstr "ugyldigt slutår"
 
-#: timezone/zic.c:2218
+#: timezone/zic.c:2491
 msgid "starting year greater than ending year"
 msgstr "startår er højere end slutår"
 
-#: timezone/zic.c:2257
+#: timezone/zic.c:2534
 msgid "invalid weekday name"
 msgstr "ugyldigt ugedagsnavn"
 
-#: timezone/zic.c:3388
+#: timezone/zic.c:3684
 msgid "can't determine time zone abbreviation to use just after until time"
 msgstr "kan ikke afgøre tidszoneforkortelse for brug lige efter 'until'-tid"
 
-#: timezone/zic.c:3512
+#: timezone/zic.c:3816
 msgid "too many local time types"
 msgstr "for mange lokale tidstyper"
 
-#: timezone/zic.c:3530
-msgid "too many leap seconds"
-msgstr "for mange skudsekunder"
-
-#: timezone/zic.c:3741
+#: timezone/zic.c:4043
 msgid "Odd number of quotation marks"
 msgstr "Ulige antal anførselstegn"
 
-#: timezone/zic.c:3838
+#: timezone/zic.c:4062
+msgid "time overflow"
+msgstr "for stor tidsværdi"
+
+#: timezone/zic.c:4154
 msgid "use of 2/29 in non leap-year"
 msgstr "bruger 29/2 i ikke-skudår"
 
-#: timezone/zic.c:3895
+#: timezone/zic.c:4205
 msgid "time zone abbreviation differs from POSIX standard"
 msgstr "tidszoneforkortelse afviger fra POSIX-standarden"
 
-#: timezone/zic.c:3901
+#: timezone/zic.c:4246
 msgid "too many, or too long, time zone abbreviations"
 msgstr "for mange eller for lange tidszoneforkortelser"
