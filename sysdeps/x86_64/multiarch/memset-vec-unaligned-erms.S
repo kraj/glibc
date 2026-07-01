@@ -42,14 +42,9 @@
 #ifndef VZEROUPPER
 # if VEC_SIZE > 16
 #  define VZEROUPPER			vzeroupper
-#  define VZEROUPPER_SHORT_RETURN	vzeroupper; ret
 # else
 #  define VZEROUPPER
 # endif
-#endif
-
-#ifndef VZEROUPPER_SHORT_RETURN
-# define VZEROUPPER_SHORT_RETURN	rep; ret
 #endif
 
 #ifndef MOVQ
