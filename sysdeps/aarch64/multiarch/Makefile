@@ -18,11 +18,5 @@ sysdep_routines += \
   memset_zva64 \
   strlen_asimd \
   strlen_generic \
-  # sysdep_routines
-endif # ifeq ($(subdir),string)
-
-ifeq ($(subdir),malloc)
-sysdep_routines += \
-  malloc-ifuncs \
-  # sysdep_routines
-endif # ifeq ($(subdir),malloc)
+# sysdep_routines
+endif
