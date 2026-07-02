@@ -24,7 +24,7 @@ test_program_prefix=$2
 objpfx=$3
 
 # Create the locale directories.
-mkdir -p ${objpfx}localedir/existing-locale/LC_MESSAGES
+mkdir -p ${objpfx}domaindir/existing-locale/LC_MESSAGES
 
 msgfmt -o ${objpfx}domaindir/existing-locale/LC_MESSAGES/translit.mo \
        translit.po
