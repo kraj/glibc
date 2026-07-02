@@ -50,8 +50,10 @@ tests += \
 tests-static += \
   tst-ifunc-isa-1-static \
 # tests-static
-test-xfail-tst-ifunc-isa-1 = $(with-lld)
-test-xfail-tst-ifunc-isa-1-static = $(with-lld)
+ifneq (no, $(with-lld))
+test-xfail-tst-ifunc-isa-1 = yes
+test-xfail-tst-ifunc-isa-1-static = yes
+endif
 tests += \
   tst-ifunc-isa-2 \
   tst-ifunc-isa-2-static \
@@ -59,8 +61,10 @@ tests += \
 tests-static += \
   tst-ifunc-isa-2-static \
 # tests-static
-test-xfail-tst-ifunc-isa-2 = $(with-lld)
-test-xfail-tst-ifunc-isa-2-static = $(with-lld)
+ifneq (no, $(with-lld))
+test-xfail-tst-ifunc-isa-2 = yes
+test-xfail-tst-ifunc-isa-2-static = yes
+endif
 endif
 endif
 ifeq (yes,$(enable-x86-isa-level))
