@@ -19,6 +19,9 @@ sysdep_routines += \
   memset \
   memset-generic \
   memset-vector \
+  stpncpy \
+  stpncpy-generic \
+  stpncpy-vector \
   strcat \
   strcat-generic \
   strcat-vector \
