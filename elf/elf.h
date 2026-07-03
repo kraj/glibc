@@ -847,6 +847,7 @@ typedef struct
 #define NT_RISCV_VECTOR	0x901		/* RISC-V vector registers */
 #define NT_RISCV_TAGGED_ADDR_CTRL	0x902	/* RISC-V tagged
 						   address control */
+#define NT_RISCV_USER_CFI	0x903		/* RISC-V shadow stack state */
 #define NT_LOONGARCH_CPUCFG	0xa00	/* LoongArch CPU config registers.  */
 #define NT_LOONGARCH_CSR	0xa01	/* LoongArch control and
 					   status registers.  */
