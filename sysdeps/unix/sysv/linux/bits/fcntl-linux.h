@@ -209,6 +209,8 @@
 # define F_SET_RW_HINT	1036
 # define F_GET_FILE_RW_HINT	1037
 # define F_SET_FILE_RW_HINT	1038
+# define F_GETDELEG	1039	/* Get delegation.  */
+# define F_SETDELEG	1040	/* Set delegation.  */
 #endif
 #ifdef __USE_XOPEN2K8
 # define F_DUPFD_CLOEXEC 1030	/* Duplicate file descriptor with
@@ -219,6 +221,7 @@
 #define FD_CLOEXEC	1	/* Actually anything with low bit set goes */
 #ifdef __USE_GNU
 # define FD_PIDFS_ROOT	-10002	/* Root of the pidfs filesystem */
+# define FD_NSFS_ROOT	-10003	/* Root of the nsfs filesystem */
 #endif
 
 #ifndef F_RDLCK
