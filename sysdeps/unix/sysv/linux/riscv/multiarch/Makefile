@@ -40,6 +40,9 @@ sysdep_routines += \
   strncmp \
   strncmp-generic \
   strncmp-vector \
+  strncpy \
+  strncpy-generic \
+  strncpy-vector \
   strrchr \
   strrchr-generic \
   strrchr-vector \

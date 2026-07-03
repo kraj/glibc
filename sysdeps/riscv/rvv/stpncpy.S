@@ -19,12 +19,20 @@
 #include <sysdep.h>
 #include <sys/asm.h>
 
-#ifndef STPNCPY
-# ifdef weak_alias
-#  define STPNCPY __stpncpy
+#ifndef USE_AS_STRNCPY
+# ifndef STPNCPY
+#  ifdef weak_alias
+#   define STPNCPY __stpncpy
 weak_alias (__stpncpy, stpncpy)
+#  else
+#   define STPNCPY stpncpy
+#  endif
+# endif
+#else
+# ifndef STRNCPY
+#  define STPNCPY strncpy
 # else
-#  define STPNCPY stpncpy
+#  define STPNCPY STRNCPY
 # endif
 #endif
 
@@ -62,7 +70,9 @@ L(stpcpy_loop):
     add dst_ptr, dst_ptr, cur_vl
     bgez active_elem_pos, L(fill_zero)
     bnez length, L(stpcpy_loop)
+#ifndef USE_AS_STRNCPY
     mv dst, dst_ptr
+#endif
     ret
 
     /* Fill the tail zero.  */
@@ -72,8 +82,10 @@ L(fill_zero):
        to get the correct remaining length for zero filling.  */
     sub temp, cur_vl, active_elem_pos
     addi temp, temp, -1
+#ifndef USE_AS_STRNCPY
     sub dst, dst_ptr, cur_vl
     add dst, dst, active_elem_pos
+#endif
     add length, length, temp
     /* Return early for the `strlen(src) + 1 == count` case.  */
     bnez length, L(do_fill_zero)
@@ -92,6 +104,11 @@ L(fill_zero_loop):
     ret
 .option pop
 END (STPNCPY)
-#ifdef weak_alias
+
+#ifndef USE_AS_STRNCPY
+# ifdef weak_alias
 libc_hidden_def (__stpncpy)
+# endif
+#else
+libc_hidden_builtin_def (strncpy)
 #endif
