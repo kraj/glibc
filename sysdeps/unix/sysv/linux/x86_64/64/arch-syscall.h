@@ -153,6 +153,7 @@
 #define __NR_linkat 265
 #define __NR_listen 50
 #define __NR_listmount 458
+#define __NR_listns 470
 #define __NR_listxattr 194
 #define __NR_listxattrat 465
 #define __NR_llistxattr 195
@@ -263,6 +264,7 @@
 #define __NR_restart_syscall 219
 #define __NR_rmdir 84
 #define __NR_rseq 334
+#define __NR_rseq_slice_yield 471
 #define __NR_rt_sigaction 13
 #define __NR_rt_sigpending 127
 #define __NR_rt_sigprocmask 14
@@ -366,6 +368,7 @@
 #define __NR_unlink 87
 #define __NR_unlinkat 263
 #define __NR_unshare 272
+#define __NR_uprobe 336
 #define __NR_uretprobe 335
 #define __NR_uselib 134
 #define __NR_userfaultfd 323

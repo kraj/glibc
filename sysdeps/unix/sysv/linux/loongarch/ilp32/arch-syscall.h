@@ -121,6 +121,7 @@
 #define __NR_linkat 37
 #define __NR_listen 201
 #define __NR_listmount 458
+#define __NR_listns 470
 #define __NR_listxattr 11
 #define __NR_listxattrat 465
 #define __NR_llistxattr 12
@@ -136,6 +137,7 @@
 #define __NR_mbind 235
 #define __NR_membarrier 283
 #define __NR_memfd_create 279
+#define __NR_memfd_secret 447
 #define __NR_migrate_pages 238
 #define __NR_mincore 232
 #define __NR_mkdirat 34
@@ -214,6 +216,7 @@
 #define __NR_request_key 218
 #define __NR_restart_syscall 128
 #define __NR_rseq 293
+#define __NR_rseq_slice_yield 471
 #define __NR_rt_sigaction 134
 #define __NR_rt_sigpending 136
 #define __NR_rt_sigprocmask 135

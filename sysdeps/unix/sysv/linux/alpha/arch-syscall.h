@@ -155,6 +155,7 @@
 #define __NR_linkat 458
 #define __NR_listen 106
 #define __NR_listmount 568
+#define __NR_listns 580
 #define __NR_listxattr 388
 #define __NR_listxattrat 575
 #define __NR_llistxattr 389
@@ -377,6 +378,7 @@
 #define __NR_restart_syscall 412
 #define __NR_rmdir 137
 #define __NR_rseq 527
+#define __NR_rseq_slice_yield 581
 #define __NR_rt_sigaction 352
 #define __NR_rt_sigpending 354
 #define __NR_rt_sigprocmask 353

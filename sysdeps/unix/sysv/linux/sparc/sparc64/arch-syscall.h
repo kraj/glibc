@@ -27,6 +27,7 @@
 #define __NR_clock_nanosleep 259
 #define __NR_clock_settime 256
 #define __NR_clone 217
+#define __NR_clone3 435
 #define __NR_close 6
 #define __NR_close_range 436
 #define __NR_connect 98
@@ -156,6 +157,7 @@
 #define __NR_linkat 292
 #define __NR_listen 354
 #define __NR_listmount 458
+#define __NR_listns 470
 #define __NR_listxattr 178
 #define __NR_listxattrat 465
 #define __NR_llistxattr 179
@@ -270,6 +272,7 @@
 #define __NR_restart_syscall 0
 #define __NR_rmdir 137
 #define __NR_rseq 365
+#define __NR_rseq_slice_yield 471
 #define __NR_rt_sigaction 102
 #define __NR_rt_sigpending 104
 #define __NR_rt_sigprocmask 103

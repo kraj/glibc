@@ -147,6 +147,7 @@
 #define __NR_linkat 1073742089
 #define __NR_listen 1073741874
 #define __NR_listmount 1073742282
+#define __NR_listns 1073742294
 #define __NR_listxattr 1073742018
 #define __NR_listxattrat 1073742289
 #define __NR_llistxattr 1073742019
@@ -255,6 +256,7 @@
 #define __NR_restart_syscall 1073742043
 #define __NR_rmdir 1073741908
 #define __NR_rseq 1073742158
+#define __NR_rseq_slice_yield 1073742295
 #define __NR_rt_sigaction 1073742336
 #define __NR_rt_sigpending 1073742346
 #define __NR_rt_sigprocmask 1073741838
@@ -358,6 +360,7 @@
 #define __NR_unlink 1073741911
 #define __NR_unlinkat 1073742087
 #define __NR_unshare 1073742096
+#define __NR_uprobe 1073742160
 #define __NR_uretprobe 1073742159
 #define __NR_userfaultfd 1073742147
 #define __NR_ustat 1073741960
