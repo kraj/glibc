@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # Run THP test under strace to verify control of the THP segment load.
 # Copyright (C) 2026 Free Software Foundation, Inc.
 # This file is part of the GNU C Library.
@@ -16,8 +16,6 @@
 # You should have received a copy of the GNU Lesser General Public
 # License along with the GNU C Library; if not, see
 # <https://www.gnu.org/licenses/>.
-
-set -e
 
 rtld="$1"
 test_wrapper_env="$2"
@@ -39,24 +37,24 @@ esac
 
 # Verify strace is not just present, but works in this environment.  If
 # not, skip the test.
-/bin/sh -c \
- "${test_wrapper_env} ${run_program_env} \
-  strace -X raw -e trace=none -- /bin/true" > /dev/null 2>&1 || exit 77
+${test_wrapper_env} ${run_program_env} \
+  strace -X raw -e trace=none -- /bin/true > /dev/null 2>&1 || exit 77
 
 # Finally the actual test inside the test environment, using the just
 # build ld.so and new libraries to run the THP test under strace.
-if /bin/sh -c \
-  "timeout -k 4 $((3*$TIMEOUTFACTOR)) ${cmd} --direct 2>&1 \
-   | grep -E \"madvise\(0x[0-9a-f]+, [0-9]+, 0xe)\""; then
+output=$(timeout -k 4 $((3*$TIMEOUTFACTOR)) ${cmd} --direct 2>&1)
+test $? = 77 && exit 77
+if printf "%s\n" "${output}" | grep -E "madvise\(0x[0-9a-f]+, [0-9]+, 0xe)"; then
   if test ${strace_expected} = yes; then
-    exit 0
+    status=0
   else
-    exit 1
+    status=1
   fi
 else
   if test ${strace_expected} = no; then
-    exit 0
+    status=0
   else
-    exit 1
+    status=1
   fi
 fi
+exit ${status}
