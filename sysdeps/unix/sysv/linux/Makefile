@@ -770,6 +770,9 @@ test-xfail-tst-thp-1-no-s-code-static = yes
 endif
 
 LDFLAGS-tst-thp-1 = -Wl,-z,separate-code $(THP-PAGE-SIZE-LDFLAGS)
+ifneq (yes,$(build-pie-default))
+LDFLAGS-tst-thp-1 += $(LOAD-THP-ADDRESS-LDFLAGS)
+endif
 LDFLAGS-tst-thp-1-pde = -Wl,-z,separate-code $(THP-PAGE-SIZE-LDFLAGS) \
 			$(LOAD-THP-ADDRESS-LDFLAGS)
 LDFLAGS-tst-thp-1-static = -Wl,-z,separate-code $(THP-PAGE-SIZE-LDFLAGS)
@@ -778,6 +781,9 @@ LDFLAGS-tst-thp-1-static += $(LOAD-THP-ADDRESS-LDFLAGS)
 endif
 LDFLAGS-tst-thp-1-no-s-code = -Wl,-z,noseparate-code \
 			      $(THP-PAGE-SIZE-LDFLAGS)
+ifneq (yes,$(build-pie-default))
+LDFLAGS-tst-thp-1-no-s-code += $(LOAD-THP-ADDRESS-LDFLAGS)
+endif
 LDFLAGS-tst-thp-1-no-s-code-pde = -Wl,-z,noseparate-code \
 				  $(THP-PAGE-SIZE-LDFLAGS) \
 				  $(LOAD-THP-ADDRESS-LDFLAGS)
