@@ -17,6 +17,8 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
+#include "dl-thp-madvise.h"
+
 static bool _dl_segment_thp_eligible (const struct loadcmd *, size_t);
 
 /* After L has been mapped in, call madvise with MADV_HUGEPAGE for THP
@@ -28,8 +30,8 @@ _dl_postprocess_loadcmd_extra (struct link_map *l, const struct loadcmd *c)
   if (GL(dl_thp_mode) == thp_mode_madvise
       && _dl_segment_thp_eligible (c, GL(dl_elf_thp_pagesize)))
     {
-      int ret = __madvise ((void *) (l->l_addr + c->mapstart),
-			   c->mapend - c->mapstart, MADV_HUGEPAGE);
+      int ret = _dl_thp_madvise ((void *) (l->l_addr + c->mapstart),
+				 c->mapend - c->mapstart);
       if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_FILES))
 	_dl_debug_printf ("\
   madvise (0x%0*lx, 0x%0*lx, MADV_HUGEPAGE) returns %d\n",

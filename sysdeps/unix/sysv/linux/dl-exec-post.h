@@ -17,6 +17,8 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
+#include "dl-thp-madvise.h"
+
 static inline void
 _dl_get_thp_config (void)
 {
@@ -116,8 +118,8 @@ _dl_executable_postprocess (struct link_map *main_map,
 	&& ((ph->p_vaddr | ph->p_offset) & (thp_pagesize - 1)) == 0
 	&& (ph->p_flags & (PF_W | PF_R)) == PF_R)
       {
-	int ret = __madvise ((void *) (main_map->l_addr + ph->p_vaddr),
-			     ph->p_memsz, MADV_HUGEPAGE);
+	void *addr = (void *) (main_map->l_addr + ph->p_vaddr);
+	int ret = _dl_thp_madvise (addr, ph->p_memsz);
 	if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_FILES))
 	  _dl_debug_printf ("\
 madvise (0x%0*lx, 0x%0*lx, MADV_HUGEPAGE) returns %d\n",
