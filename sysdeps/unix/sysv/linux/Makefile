@@ -887,7 +887,7 @@ $(objpfx)strace-tst-thp-1-static-disabled.out: \
 
 $(objpfx)strace-tst-thp-align-default.out: \
   $(..)sysdeps/unix/sysv/linux/strace-tst-thp.sh $(objpfx)ld.so \
-  $(objpfx)tst-thp-align
+  $(objpfx)tst-thp-align $(objpfx)tst-thp-size-mod.so
 	$(SHELL) $< '$(strace-test-via-rtld-prefix)' \
 		'$(test-wrapper-env)' '$(run-program-env)' \
 		$(objpfx)tst-thp-align > $@; \
@@ -895,7 +895,7 @@ $(objpfx)strace-tst-thp-align-default.out: \
 
 $(objpfx)strace-tst-thp-align-enabled.out: \
   $(..)sysdeps/unix/sysv/linux/strace-tst-thp.sh $(objpfx)ld.so \
-  $(objpfx)tst-thp-align
+  $(objpfx)tst-thp-align $(objpfx)tst-thp-size-mod.so
 	$(SHELL) $< '$(strace-test-via-rtld-prefix)' \
 		'$(test-wrapper-env)' \
 		'$(run-program-env) GLIBC_TUNABLES=glibc.elf.thp=1' \
@@ -904,7 +904,7 @@ $(objpfx)strace-tst-thp-align-enabled.out: \
 
 $(objpfx)strace-tst-thp-align-disabled.out: \
   $(..)sysdeps/unix/sysv/linux/strace-tst-thp.sh $(objpfx)ld.so \
-  $(objpfx)tst-thp-align
+  $(objpfx)tst-thp-align $(objpfx)tst-thp-size-mod.so
 	$(SHELL) $< '$(strace-test-via-rtld-prefix)' \
 		'$(test-wrapper-env)' \
 		'$(run-program-env) GLIBC_TUNABLES=glibc.elf.thp=0' \
