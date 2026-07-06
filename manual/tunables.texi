@@ -143,6 +143,22 @@ processes.
 
 @end table
 
+When none of the @code{onlysecure}, @code{nonsecure} or @code{anysecure}
+prefixes is given, a tunable behaves as if @code{nonsecure} had been
+specified: it applies only to processes that are not AT_SECURE.  Use
+@code{anysecure} or @code{onlysecure} to affect AT_SECURE (setuid,
+setgid, or capability-elevated) processes.
+
+The @code{GLIBC_TUNABLES} environment variable is ignored entirely for
+AT_SECURE processes, so the system-wide file is the only way to set a
+tunable for such a process.  A tunable applied this way is not subject to
+any per-tunable security screening, so @code{onlysecure} and
+@code{anysecure} must be used deliberately: they can enable
+security-sensitive tunables (for example @code{glibc.malloc.check}) in
+every setuid or setgid program.  The config file is therefore trusted to
+the same degree as @file{/etc/ld.so.cache} and must only be writable by
+the system administrator.
+
 Filters make the system-wide tunables only affect certain programs.
 This allows having a non-overridable default for most of the system
 but a different, overridable, value for certain programs that might
