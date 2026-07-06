@@ -614,8 +614,10 @@ ifeq (yes,$(build-shared))
 # builds them.  The explicit empty recipe (';') is required, a
 # prerequisite-only rule would send make on an implicitrule search and
 # have this level compile them itself with the wrong context.
+ifneq (,$(filter elf,$(subdirs)))
 $(elf-objpfx)ld.so $(elf-objpfx)sofini.os $(elf-objpfx)interp.os: \
   | elf/subdir_lib ;
+endif
 ifneq (,$(filter sunrpc,$(subdirs)))
 # Makerules explicit adds librpc_compat_pic.a as a dependency of
 # libc_pic.a.
