@@ -234,7 +234,7 @@ convert_hostent_to_gaih_addrtuple (const struct addrinfo *req, int family,
       array = array->next;
     }
 
-  array = realloc (res->at, (old + count) * sizeof (*array));
+  array = __libc_reallocarray (res->at, old + count, sizeof (*array));
 
   if (array == NULL)
     return false;
