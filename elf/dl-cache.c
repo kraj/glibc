@@ -642,6 +642,11 @@ _dl_load_cache_tunables (const char **data)
 
   thc = (struct tunable_header_cached *)
     ext.sections[cache_extension_tag_tunables].base;
+
+  /* Reject data produced by a different tunable cache format.  */
+  if (thc->signature != TUNCONF_SIGNATURE || thc->version != TUNCONF_VERSION)
+    return NULL;
+
   tec = thc->tunables;
   count = thc->num_tunables;
 
