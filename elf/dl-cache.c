@@ -17,6 +17,7 @@
    <https://www.gnu.org/licenses/>.  */
 
 #include <assert.h>
+#include <intprops.h>
 #include <unistd.h>
 #include <ldsodefs.h>
 #include <sys/mman.h>
@@ -649,9 +650,16 @@ _dl_load_cache_tunables (const char **data)
       != (void *) & tec[count])
     return NULL;
 
-  /* Validate each entry.  */
-  int s_start = (const char *) (&cache_new->libs[cache_new->nlibs]) - *data;
-  int s_end = s_start + cache_new->len_strings;
+  /* Validate each entry.  The string table lies between the file entries
+     and the end of the mapping; clamp its end to CACHESIZE so that a bogus
+     len_strings cannot make an offset point outside the mapped file.  */
+  size_t s_start = (const char *) (&cache_new->libs[cache_new->nlibs]) - *data;
+  size_t s_end;
+  if (s_start >= cachesize
+      || INT_ADD_WRAPV (s_start, cache_new->len_strings, &s_end))
+    return NULL;
+  if (s_end > cachesize)
+    s_end = cachesize;
   for (i = 0; i < count; i ++)
     {
       if (thc->tunables[i].name_offset < s_start
