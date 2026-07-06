@@ -572,7 +572,11 @@ On powerpc, the supported HWCAP and HWCAP2 features can be found in
 On loongarch, the supported HWCAP features can be found in
 @code{sysdeps/loongarch/cpu-tunables.c}.
 
-This tunable is specific to i386, x86-64, s390x, powerpc and loongarch.
+On AArch64, the supported HWCAP features can be found in
+@code{sysdeps/unix/sysv/linux/aarch64/cpu-features.c}.
+
+This tunable is specific to i386, x86-64, s390x, powerpc, loongarch and
+aarch64.
 @end deftp
 
 @deftp Tunable glibc.cpu.cached_memopt
@@ -583,16 +587,6 @@ of cacheable (non-device) memory only.  The default, @code{0},
 indicates that the process may use device memory.
 
 This tunable is specific to powerpc, powerpc64 and powerpc64le.
-@end deftp
-
-@deftp Tunable glibc.cpu.name
-The @code{glibc.cpu.name=xxx} tunable allows the user to tell @theglibc{} to
-assume that the CPU is @code{xxx} where xxx may have one of these values:
-@code{generic}, @code{thunderxt88}, @code{thunderx2t99},
-@code{thunderx2t99p1}, @code{ares}, @code{emag}, @code{kunpeng},
-@code{a64fx}.
-
-This tunable is specific to aarch64.
 @end deftp
 
 @deftp Tunable glibc.cpu.x86_data_cache_size

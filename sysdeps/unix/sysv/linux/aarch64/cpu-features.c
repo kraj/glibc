@@ -33,56 +33,39 @@
    to see when pointer have been correctly tagged.  */
 #define MTE_ALLOWED_TAGS (0xfffe << PR_MTE_TAG_SHIFT)
 
-static const char cpu_list_name[] = {
-  "kunpeng920\0"
-  "kunpeng950\0"
-  "a64fx\0"
-  "generic\0",
-};
-
-static const uint64_t cpu_list_midr[] = {
-  0x481FD010,
-  0x480FD060,
-  0x460F0010,
-  0x0,
-};
-
-static uint64_t
-get_midr_from_mcpu (const struct tunable_str_t *mcpu)
+static void
+TUNABLE_CALLBACK (set_hwcaps) (tunable_val_t *val)
 {
-  const char *name = cpu_list_name;
-  size_t offset = 0;
-  for (int i = 0; i < array_length (cpu_list_midr); i++)
+  struct cpu_features *cpu_features = &GLRO(dl_aarch64_cpu_features);
+  struct tunable_str_comma_state_t cs;
+  tunable_str_comma_init (&cs, val);
+
+  struct tunable_str_comma_t n;
+  while (tunable_str_comma_next (&cs, &n))
     {
-      size_t len = strlen (name);
-      if (tunable_strcmp (mcpu, cpu_list_name + offset, len))
-	return cpu_list_midr[i];
-      offset += len;
+      /* Support disabling of features to select more generic ifuncs.  */
+      if (!n.disable)
+	continue;
+      if (tunable_str_comma_strcmp_cte (&n, "midr"))
+	cpu_features->midr_el1 = 0;
+      else if (tunable_str_comma_strcmp_cte (&n, "zva"))
+	cpu_features->zva_size = 0;
+      else if (tunable_str_comma_strcmp_cte (&n, "sve"))
+	cpu_features->sve = false;
+      else if (tunable_str_comma_strcmp_cte (&n, "sve2"))
+	cpu_features->sve2 = false;
+      else if (tunable_str_comma_strcmp_cte (&n, "mops"))
+	cpu_features->mops = false;
     }
-  return UINT64_MAX;
 }
 
 static inline void
 init_cpu_features (struct cpu_features *cpu_features)
 {
-  register uint64_t midr = UINT64_MAX;
+  uint64_t midr = 0;
 
-  /* Get the tunable override.  */
-  const struct tunable_str_t *mcpu = TUNABLE_GET (glibc, cpu, name,
-						  struct tunable_str_t *,
-						  NULL);
-  if (mcpu != NULL)
-    midr = get_midr_from_mcpu (mcpu);
-
-  /* If there was no useful tunable override, query the MIDR if the kernel
-     allows it.  */
-  if (midr == UINT64_MAX)
-    {
-      if (GLRO (dl_hwcap) & HWCAP_CPUID)
-	asm volatile ("mrs %0, midr_el1" : "=r"(midr));
-      else
-	midr = 0;
-    }
+  if (GLRO (dl_hwcap) & HWCAP_CPUID)
+    asm volatile ("mrs %0, midr_el1" : "=r"(midr));
 
   cpu_features->midr_el1 = midr;
 
@@ -108,4 +91,8 @@ init_cpu_features (struct cpu_features *cpu_features)
   if (GLRO (dl_hwcap) & HWCAP_GCS)
     /* GCS status may be updated later by binary compatibility checks.  */
     GL (dl_aarch64_gcs) = TUNABLE_GET (glibc, cpu, aarch64_gcs, uint64_t, 0);
+
+  /* Allow override by glibc.cpu.hwcaps tunable after setting features.  */
+  TUNABLE_GET (glibc, cpu, hwcaps, tunable_val_t *,
+	       TUNABLE_CALLBACK (set_hwcaps));
 }

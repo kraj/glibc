@@ -17,7 +17,7 @@ tests += \
 tests-static += \
   tst-cpu-tunable-static-pie \
   # tests-static
-tst-cpu-tunable-static-pie-TUNABLES = glibc.cpu.name=generic
+tst-cpu-tunable-static-pie-TUNABLES = glibc.cpu.hwcaps=-midr,-sve,-mops
 endif
 endif
 
