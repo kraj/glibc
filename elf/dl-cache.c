@@ -433,16 +433,19 @@ _dl_check_ldsocache_needs_loading (void)
   if (rv < 0)
     return false;
 
-  /* Any file is better than no file (likely the first time
-     through).  */
-  if (cache == NULL)
-    return true;
-
-  /* Store the fields we check, in order they're likely to differ.  */
+  /* Store the fields we check, in order they're likely to differ.  We
+     must do this even for the first load (CACHE == NULL below), so that
+     the next call copies an accurate NEW_CACHE_FILE_TIME into
+     CACHE_FILE_TIME and does not spuriously reload the unchanged cache.  */
   new_cache_file_time.mtime = new_cache_file_stat.st_mtime;
   new_cache_file_time.ino = new_cache_file_stat.st_ino;
   new_cache_file_time.size = new_cache_file_stat.st_size;
   new_cache_file_time.dev = new_cache_file_stat.st_dev;
+
+  /* Any file is better than no file (likely the first time
+     through).  */
+  if (cache == NULL)
+    return true;
 
   /* At this point, NEW_CACHE_FILE_TIME is valid as well as
      CACHE_FILE_TIME, so we compare them.  */
