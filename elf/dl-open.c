@@ -898,11 +898,6 @@ no more namespaces available for dlmopen()"));
   struct dl_exception exception;
   int errcode = _dl_catch_exception (&exception, dl_open_worker, &args);
 
-#if defined USE_LDCONFIG && !defined MAP_COPY
-  /* We must unmap the cache file.  */
-  _dl_unload_cache ();
-#endif
-
   /* Do this for both the error and success cases.  The old value has
      only been determined if the namespace ID was assigned (i.e., it
      is not __LM_ID_CALLER).  In the success case, we actually may

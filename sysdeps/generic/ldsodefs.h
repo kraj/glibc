@@ -1151,12 +1151,6 @@ const struct r_strlenpair *_dl_important_hwcaps (const char *prepend,
    or null if none is found.  Caller must free returned string.  */
 extern char *_dl_load_cache_lookup (const char *name) attribute_hidden;
 
-/* If the system does not support MAP_COPY we cannot leave the file open
-   all the time since this would create problems when the file is replaced.
-   Therefore we provide this function to close the file and open it again
-   once needed.  */
-extern void _dl_unload_cache (void) attribute_hidden;
-
 /* System-dependent function to read a file's whole contents in the
    most convenient manner available.  *SIZEP gets the size of the
    file.  On error MAP_FAILED is returned.  */

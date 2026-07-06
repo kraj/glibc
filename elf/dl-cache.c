@@ -606,19 +606,6 @@ _dl_load_cache_lookup (const char *name)
   return result;
 }
 
-#ifndef MAP_COPY
-/* If the system does not support MAP_COPY we cannot leave the file open
-   all the time since this would create problems when the file is replaced.
-   Therefore we provide this function to close the file and open it again
-   once needed.  */
-void
-_dl_unload_cache (void)
-{
-  /* Functionality is no longer needed, but kept for internal ABI for
-     now.  */
-}
-#endif
-
 const struct tunable_header_cached *
 _dl_load_cache_tunables (const char **data)
 {

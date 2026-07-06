@@ -2371,11 +2371,6 @@ dl_main (const ElfW(Phdr) *phdr,
   /* Auditing checkpoint: we have added all objects.  */
   _dl_audit_activity_nsid (LM_ID_BASE, LA_ACT_CONSISTENT);
 
-#if defined USE_LDCONFIG && !defined MAP_COPY
-  /* We must munmap() the cache file.  */
-  _dl_unload_cache ();
-#endif
-
   /* Once we return, _dl_sysdep_start will invoke
      the DT_INIT functions and then *USER_ENTRY.  */
 }
