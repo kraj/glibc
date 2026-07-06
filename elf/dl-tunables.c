@@ -179,6 +179,14 @@ struct tunable_toset_t
 
 enum { tunables_list_size = array_length (tunable_list) };
 
+/* Records tunables that were set from GLIBC_TUNABLES during this call, so
+   that a legacy environment-variable alias does not override them (the
+   canonical GLIBC_TUNABLES form takes precedence over the aliases).
+   A tunable that was set only from the system-wide cache is deliberately not
+   recorded here, so an alias may still override an overridable cache default;
+   a nonoverridable one remains protected by tunable_t::locked.  */
+static bool tunable_set_by_env[tunables_list_size];
+
 /* Parse the tunable string VALSTRING and set TUNABLES with the found tunables
    and their respective values.  The VALSTRING is parsed in place, with the
    tunable start and size recorded in TUNABLES.
@@ -288,6 +296,10 @@ parse_tunables (const char *valstring)
       if (!tunable_initialize (tunables[i].t, tunables[i].value,
 			       tunables[i].len))
 	parse_tunable_print_error (&tunables[i]);
+      else
+	/* GLIBC_TUNABLES set this tunable; a legacy alias must not
+	   override it.  */
+	tunable_set_by_env[i] = true;
     }
 }
 
@@ -498,9 +510,13 @@ __tunables_init (char **envp, char **argv)
 
   for (int i = 0; i < tunable_num_env_alias; i++)
     {
-      /* Skip over tunables that have either been set or already initialized.  */
+      /* Skip aliases whose tunable was already set through GLIBC_TUNABLES,
+	 which takes precedence over the alias.  A value coming only from the
+	 system-wide cache does not block the alias here: an overridable cache
+	 default may still be overridden, while a nonoverridable one is
+	 protected by tunable_t::locked.  */
       if (tunables_env_alias[i].t == NULL
-	  || tunables_env_alias[i].t->initialized)
+	  || tunable_set_by_env[tunable_env_alias_list[i]])
 	continue;
 
       if (!tunable_initialize (tunables_env_alias[i].t,

@@ -16,6 +16,7 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
+#include <stdint.h>
 #include <stdio.h>
 #include <support/check.h>
 
@@ -49,6 +50,29 @@ do_test (void)
   printf("trim_threshold is %ld (should be 10001, from filter)\n",
 	 (long)trim_threshold);
   TEST_COMPARE ((long)trim_threshold, 10001);
+
+  /* Interaction with legacy environment-variable aliases (MALLOC_*).  */
+  int32_t mmap_max = TUNABLE_GET_FULL (glibc, malloc, mmap_max, int32_t, NULL);
+  size_t top_pad = TUNABLE_GET_FULL (glibc, malloc, top_pad, size_t, NULL);
+  size_t arena_max = TUNABLE_GET_FULL (glibc, malloc, arena_max, size_t, NULL);
+
+  /* Overridable cache default (100); the MALLOC_MMAP_MAX_ alias overrides
+     it, just like GLIBC_TUNABLES would.  */
+  printf("mmap_max is %d (should be 200, from MALLOC_MMAP_MAX_ alias)\n",
+	 mmap_max);
+  TEST_COMPARE (mmap_max, 200);
+
+  /* Nonoverridable cache default (100); the MALLOC_TOP_PAD_ alias must not
+     override it.  */
+  printf("top_pad is %ld (should be 100, from /etc nonoverridable)\n",
+	 (long)top_pad);
+  TEST_COMPARE ((long)top_pad, 100);
+
+  /* Set both by GLIBC_TUNABLES (300) and by the MALLOC_ARENA_MAX alias
+     (400); the canonical GLIBC_TUNABLES form wins.  */
+  printf("arena_max is %ld (should be 300, from GLIBC_TUNABLES)\n",
+	 (long)arena_max);
+  TEST_COMPARE ((long)arena_max, 300);
 
   return 0;
 }
