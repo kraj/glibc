@@ -194,34 +194,40 @@ add_tunable (char *line, const char *filename, int lineno)
   /* Parse modifiers.  */
   while (*line)
     {
-      if (strncmp (line, "overridable ", 13) == 0)
+      int prefix_len;
+
+#define TUN_PREFIX(s)				\
+      prefix_len = sizeof(s) - 1,			\
+	strncmp (line, s " ", prefix_len + 1) == 0
+
+      if (TUN_PREFIX("overridable"))
 	{
 	  top = TOP_ALLOW;
 	  /* The line++ below skips the space.  */
-	  line += 12;
+	  line += prefix_len;
 	}
-      else if (strncmp (line, "nonoverridable ", 16) == 0)
+      else if (TUN_PREFIX ("nonoverridable"))
 	{
 	  top = TOP_DENY;
-	  line += 15;
+	  line += prefix_len;
 	}
-      else if (strncmp (line, "onlysecure ", 11) == 0)
+      else if (TUN_PREFIX ("onlysecure"))
 	{
 	  exclude_nonsecure = 1;
 	  exclude_secure = 0;
-	  line += 10;
+	  line += prefix_len;
 	}
-      else if (strncmp (line, "nonsecure ", 10) == 0)
+      else if (TUN_PREFIX ("nonsecure"))
 	{
 	  exclude_secure = 1;
 	  exclude_nonsecure = 0;
-	  line += 9;
+	  line += prefix_len;
 	}
-      else if (strncmp (line, "anysecure ", 10) == 0)
+      else if (TUN_PREFIX ("anysecure"))
 	{
 	  exclude_secure = 0;
 	  exclude_nonsecure = 0;
-	  line += 9;
+	  line += prefix_len;
 	}
       else switch (*line)
 	{

@@ -65,6 +65,8 @@ struct _tunable
   tunable_val_t val;			/* The value.  */
   bool initialized;			/* Flag to indicate that the tunable is
 					   initialized.  */
+  bool locked;				/* If set, modifications are not
+					   allowed.  */
   /* Compatibility elements.  */
   const char env_alias[TUNABLE_ALIAS_MAX]; /* The compatibility environment
 					   variable name.  */

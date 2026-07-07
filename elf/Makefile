@@ -347,7 +347,11 @@ tests-static += \
   tst-tls9-static \
   # tests-static
 
-tst-tunconf1-TUNABLES-only = glibc.malloc.tcache_count=5
+tst-tunconf1-TUNABLES-only = \
+  glibc.malloc.tcache_count=5 \
+  glibc.malloc.perturb=41 \
+  glibc.malloc.mmap_threshold=10002 \
+  glibc.malloc.trim_threshold=10002
 
 static-dlopen-environment = \
   LD_LIBRARY_PATH=$(ld-library-path):$(common-objpfx)dlfcn

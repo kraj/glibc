@@ -72,6 +72,9 @@ do_tunable_update_val (tunable_t *cur, const tunable_val_t *valp,
 {
   tunable_num_t val, min, max;
 
+  if (cur->locked)
+    return;
+
   switch (cur->type.type_code)
     {
     case TUNABLE_TYPE_STRING:
@@ -409,6 +412,12 @@ __tunables_init (char **envp, char **argv)
 	    goto skip_due_to_filter;
 	  }
 
+	  /* If the tunable is set here, any previously set
+	     overridability flag is discarded.  We need to reset the
+	     overridability flag here so we can change the tunable,
+	     and may set it later if this tunable also locks it.  */
+	  tunable_list[tid].locked = false;
+
 	  /* See if the parsed type matches the desired type.  */
 	  if (tunable_list[tid].type.type_code == TUNABLE_TYPE_STRING)
 	    {
@@ -434,6 +443,12 @@ __tunables_init (char **envp, char **argv)
 				      value, strlen (value));
 		}
 	    }
+
+	  /* The overriability flag only applies to tunables
+	     which aren't filtered out.  */
+	  if ((tec->flags & TUNCONF_FLAG_OVERRIDABLE)
+	      == TUNCONF_OVERRIDE_DENY)
+	    tunable_list[tid].locked = true;
 
 	skip_due_to_filter:;
 	}
