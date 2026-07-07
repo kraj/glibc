@@ -409,9 +409,9 @@ $(addprefix $(objpfx)bench-,calloc-thread): $(libm-benchtests)
 # Rules to build and execute the benchmarks.  Do not put any benchmark
 # parameters beyond this point.
 
-# We don't want the benchmark programs to run in parallel since that could
-# affect their performance.
-.NOTPARALLEL:
+# Benchmark programs must not run concurrently, however building them is
+# safe in parallel.  So '.NOTPARALLEL:' is used only when benchmarks run
+# or when more than one group is going to run.
 
 bench-extra-objs = json-lib.o
 
@@ -627,3 +627,24 @@ $(objpfx)bench-%.c: %-inputs $(bench-deps)
 	fi; \
 	$(PYTHON) scripts/bench.py $(patsubst %-inputs,%,$<); } > $@-tmp
 	mv -f $@-tmp $@
+
+# Serialize the benchmark runs so their timing is not perturbed by a
+# concurrent workload, while still building every benchmark program in parallel.
+# Ordering is only needed when more than one benchmark group run: the combined
+# 'bench' goal runs all three groups, and the bench* goals can also be combined
+# on a single command line.  A lone group needs no ordering -- make builds its
+# programs in parallel and then runs its single recipe, which cannot overlap a
+# compile.
+ifneq (,$(filter bench,$(MAKECMDGOALS)))
+bench-run-active := bench-set bench-func bench-malloc
+else
+bench-run-active := $(filter bench-set bench-func bench-malloc,$(MAKECMDGOALS))
+endif
+
+ifneq (,$(word 2,$(bench-run-active)))
+# Hold every active run until all benchmark programs have been built.
+$(bench-run-active): | bench-build
+# And then run the active groups strictly one at a time.
+bench-func: | $(filter bench-set,$(bench-run-active))
+bench-malloc: | $(filter bench-set bench-func,$(bench-run-active))
+endif
