@@ -32,17 +32,25 @@ generate_locale ()
   out=$3
   flags=$4
   ret=0
+
+  # Use a staging area to avoid writing to locales concurrently.
+  # While this process is running, $$ is sufficiently unique.
+  stage="${common_objpfx}localedata/gen-locale.$$.tmp"
+  mkdir "$stage" 2>/dev/null || true
+
   ${localedef_before_env} ${run_program_env} I18NPATH=../localedata \
 	${localedef_after_env} $flags -f $charmap -i $input \
-	${common_objpfx}localedata/$out || ret=$?
-  if [ $ret -eq 0 ]; then
-    # The makefile checks the timestamp of the LC_CTYPE file,
-    # but localedef won't have touched it if it was able to
-    # hard-link it to an existing file.
-    touch ${common_objpfx}localedata/$out/LC_CTYPE
+	$stage/$out || ret=$?
+  if [ $ret -eq 0 ] ; then
+      # Ignore errors in case some other process has created the same locale.
+      # This rename operation should be atomic, and it should fail if the
+      # $out locale already exists (rename fails with ENOTEMPTY).
+      mv $stage/$out ${common_objpfx}localedata/. 2>/dev/null || true
+      rm -rf $stage
   else
+    rm -rf $stage
     echo "Charmap: \"${charmap}\" Inputfile: \"${input}\"" \
-	 "Outputdir: \"${out}\" failed"
+	 "Outputdir: \"${out}\" failed (exit status $ret)"
     exit 1
   fi
 }
