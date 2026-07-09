@@ -322,6 +322,7 @@ tests := \
   tst-getaddrinfo \
   tst-getaddrinfo2 \
   tst-getaddrinfo3 \
+  tst-getaddrinfo4 \
   tst-gethnm \
   tst-getpw \
   tst-gshadow \
@@ -343,7 +344,6 @@ tests := \
 
 xtests := \
   bug-erange \
-  tst-getaddrinfo4 \
   tst-getaddrinfo5 \
   # xtests
 
@@ -512,6 +512,9 @@ endif
 
 $(objpfx)tst-nss-files-alias-leak.out: $(objpfx)libnss_files.so
 $(objpfx)tst-nss-files-alias-truncated.out: $(objpfx)libnss_files.so
+
+$(objpfx)tst-getaddrinfo4: \
+  $(common-objpfx)resolv/libresolv.so $(shared-thread-library)
 
 $(objpfx)tst-default-domain: $(objpfx)nisdomain.os
 

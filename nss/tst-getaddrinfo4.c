@@ -16,52 +16,77 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#include <string.h>
 #include <stdio.h>
-#include <errno.h>
 #include <netdb.h>
+#include <string.h>
+#include <support/check.h>
+#include <support/resolv_test.h>
 
-static int
+static void
+response (const struct resolv_response_context *ctx,
+          struct resolv_response_builder *b,
+          const char *qname, uint16_t qclass, uint16_t qtype)
+{
+  resolv_response_init (b, (struct resolv_response_flags) { });
+  resolv_response_add_question (b, qname, qclass, qtype);
+  resolv_response_section (b, ns_s_an);
+  resolv_response_open_record (b, qname, qclass, qtype, 0);
+  switch (qtype)
+    {
+    case T_A:
+      resolv_response_add_data (b, "\xc0\x00\x02\x01", 4);
+      break;
+    case T_AAAA:
+      resolv_response_add_data
+        (b, "\x20\x01\x0d\xb8\0\0\0\0\0\0\0\0\0\0\0\x01", 16);
+      break;
+    }
+  resolv_response_close_record (b);
+}
+
+static void
 try (const char *service, int family, int flags)
 {
-  struct addrinfo hints, *h, *ai;
-  int res;
+  struct addrinfo hints, *ai;
 
   memset (&hints, 0, sizeof hints);
   hints.ai_family = family;
   hints.ai_flags = flags;
 
-  errno = 0;
-  h = (family || flags) ? &hints : NULL;
-  res = getaddrinfo ("example.net", service, h, &ai);
+  int res = getaddrinfo ("example.net", service,
+                         (family || flags) ? &hints : NULL, &ai);
   switch (res)
     {
     case 0:
+      freeaddrinfo (ai);
+      /* Fall through.  */
     case EAI_AGAIN:
     case EAI_NONAME:
       printf ("SUCCESS getaddrinfo(service=%s, family=%d, flags=%d): %s: %m\n",
               service ?: "NULL", family, flags, gai_strerror (res));
-      return 0;
+      return;
     }
-  printf ("FAIL getaddrinfo(service=%s, family=%d, flags=%d): %s: %m\n",
-          service ?: "NULL", family, flags, gai_strerror (res));
-  return 1;
+  FAIL ("getaddrinfo(service=%s, family=%d, flags=%d): %s",
+        service ?: "NULL", family, flags, gai_strerror (res));
 }
 
 static int
 do_test (void)
 {
-  int err = 0;
-  err |= try (NULL, 0, 0);
-  err |= try (NULL, AF_UNSPEC, AI_ADDRCONFIG);
-  err |= try (NULL, AF_INET, 0);
-  err |= try (NULL, AF_INET6, 0);
-  err |= try ("http", 0, 0);
-  err |= try ("http", AF_UNSPEC, AI_ADDRCONFIG);
-  err |= try ("http", AF_INET, 0);
-  err |= try ("http", AF_INET6, 0);
-  return err;
+  struct resolv_test *obj = resolv_test_start
+    ((struct resolv_redirect_config) { .response_callback = response });
+
+  try (NULL, 0, 0);
+  try (NULL, AF_UNSPEC, AI_ADDRCONFIG);
+  try (NULL, AF_INET, 0);
+  try (NULL, AF_INET6, 0);
+  try ("http", 0, 0);
+  try ("http", AF_UNSPEC, AI_ADDRCONFIG);
+  try ("http", AF_INET, 0);
+  try ("http", AF_INET6, 0);
+
+  resolv_test_end (obj);
+  return 0;
 }
 
-#define TEST_FUNCTION do_test ()
-#include "../test-skeleton.c"
+#include <support/test-driver.c>
