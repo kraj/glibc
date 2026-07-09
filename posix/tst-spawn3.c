@@ -30,6 +30,7 @@
 #include <intprops.h>
 
 #include <support/check.h>
+#include <support/support.h>
 #include <support/temp_file.h>
 #include <support/xunistd.h>
 #include <tst-spawn.h>
@@ -84,8 +85,12 @@ do_test (void)
   posix_spawn_file_actions_t a;
   TEST_COMPARE (posix_spawn_file_actions_init (&a), 0);
 
-  /* Executes a /bin/sh echo $$ 2>&1 > ${objpfx}tst-spawn3.pid .  */
-  const char pidfile[] = OBJPFX "tst-spawn3.pid";
+  /* Executes a /bin/sh echo $$ 2>&1 > ${objpfx}tst-spawn3-$$.pid .
+     Embed this PID into the path because the test is built multiple
+     times and can run in parallel.  */
+  char *pidfile = xasprintf ("%s/tst-spawn3-%d.pid",
+			     OBJPFX, (int) getpid ());
+  add_temp_file (pidfile);
   TEST_COMPARE (posix_spawn_file_actions_addopen (&a, STDOUT_FILENO, pidfile,
 						  O_WRONLY| O_CREAT | O_TRUNC,
 						  0644),
@@ -145,7 +150,7 @@ do_test (void)
   ssize_t n = read (pidfd, buf, sizeof (buf));
   TEST_VERIFY (n < sizeof buf && n >= 0);
 
-  xunlink (pidfile);
+  free (pidfile);
 
   /* We only expect to read the PID.  */
   char *endp;
