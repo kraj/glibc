@@ -19,7 +19,7 @@ LC_IDENTIFICATION
 title      "French locale for France with Euro"
 source     "Free Software Foundation, Inc."
 address    "https:////www.gnu.org//software//libc//"
-email      "bug-glibc-locales@gnu.org"
+email      "libc-alpha@sourceware.org"
 tel        ""
 fax        ""
 language   "French"

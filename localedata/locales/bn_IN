@@ -17,7 +17,7 @@ LC_IDENTIFICATION
 title       "Bangla language locale for India"
 source      "IBM Globalization Center of Competency, Yamato Software Laboratory"
 address     "1623-14, Shimotsuruma, Yamato-shi, Kanagawa-ken, 242-8502, Japan"
-email       "bug-glibc-locales@gnu.org"
+email       "libc-alpha@sourceware.org"
 tel         ""
 fax         ""
 language    "Bangla"

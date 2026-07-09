@@ -173,7 +173,7 @@ def output_head(i18n_file, unicode_version, head=''):
                         + 'DerivedCoreProperties.txt"\n')
         i18n_file.write('address   ""\n')
         i18n_file.write('contact   ""\n')
-        i18n_file.write('email     "bug-glibc-locales@gnu.org"\n')
+        i18n_file.write('email     "libc-alpha@sourceware.org"\n')
         i18n_file.write('tel       ""\n')
         i18n_file.write('fax       ""\n')
         i18n_file.write('language  ""\n')
