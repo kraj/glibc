@@ -26,3 +26,14 @@ endif
 
 # The assembler on SPARC needs the -fPIC flag even when it's assembler code.
 ASFLAGS-.os += -fPIC
+
+# When PIE is enabled by default, the regular (.o) objects are also built as
+# PIC, as $(pic-default) adds -DPIC to CPPFLAGS-.o.  That makes the SPARC
+# assembler sources use the PIC GOT setup sequence, which refers to
+# # _GLOBAL_OFFSET_TABLE_ through %hi/%lo.  The assembler only turns those into
+# the required PC-relative relocations (R_SPARC_PC22/PC10) when it is in PIC
+# mode; without -fPIC it emits absolute R_SPARC_HI22/LO10 instead, so the
+# run-time GOT register is computed incorrectly.
+ifeq (yes,$(build-pie-default))
+ASFLAGS-.o += -fPIC
+endif
