@@ -165,6 +165,15 @@ rtlddir = $(slibdir)
 endif
 inst_rtlddir = $(install_root)$(rtlddir)
 
+# Directory referenced by the libc.so linker script (AS_NEEDED entry) for
+# the dynamic linker at build time.  This points at the location where the
+# loader is actually installed so the linker can resolve it while building
+# against libc.  It defaults to rtlddir (where it differs, the loader is
+# installed in rtlddir-build but identified/loaded at runtime via rtlddir).
+ifndef rtlddir-build
+rtlddir-build = $(rtlddir)
+endif
+
 # Prefix to put on files installed in $(libdir).  For libraries `libNAME.a',
 # the prefix is spliced between `lib' and the name, so the linker switch
 # `-l$(libprefix)NAME' finds the library; for other files the prefix is
