@@ -56,7 +56,7 @@ ENTRY(STRNCPY_Z900)
 	jz    .L10
 	stg   %r0,0(%r2,%r3)	    # store all eight to dest.
 	la    %r3,8(%r3)
-	brct  %r4,.L0
+	brctg %r4,.L0
 .L1:	ltgr  %r1,%r1
 	jz    .Lexit
 .L2:	icm   %r0,1,0(%r3)
