@@ -305,6 +305,7 @@ BODY_PREFIX "_dl_start_user:\n"						\
 /* A reloc type used for ld.so cmdline arg lookups to reject PLT entries.  */
 #define ELF_MACHINE_JMP_SLOT	R_PPC64_JMP_SLOT
 #define ELF_MACHINE_IRELATIVE	R_PPC64_IRELATIVE
+#define ELF_MACHINE_IRELATIVE_PLT R_PPC64_JMP_IREL
 
 /* We define an initialization function to initialize HWCAP/HWCAP2 and
    platform data so it can be copied into the TCB later.  This is called

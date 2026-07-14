@@ -45,7 +45,13 @@ elf_dynamic_is_Rel_irelative (const ElfW(Rel) *reloc, const ElfW(Sym) *sym)
   return ((sym != NULL
 	   && ELFW(ST_TYPE) (sym->st_info) == STT_GNU_IFUNC
 	   && sym->st_shndx != SHN_UNDEF)
-	  || r_type == ELF_MACHINE_IRELATIVE);
+	  || r_type == ELF_MACHINE_IRELATIVE
+# ifdef ELF_MACHINE_IRELATIVE_PLT
+	  /* Some ports resolve an IFUNC PLT slot for a local resolver with a
+	     dedicated reloc that carries no symboli.  */
+	  || r_type == ELF_MACHINE_IRELATIVE_PLT
+# endif
+	  );
 #else
   return false;
 #endif
