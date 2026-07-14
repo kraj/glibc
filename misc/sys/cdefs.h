@@ -523,6 +523,15 @@
 # define __attribute_deprecated_msg__(msg) __attribute_deprecated__
 #endif
 
+/* Since version 6.1, gcc allows marking deprecated enumerators.  */
+#if __GNUC_PREREQ (6, 1) \
+    || __glibc_has_extension (__enumerator_attributes__)
+# define __attribute_deprecated_enum__(msg) \
+         __attribute__ ((__deprecated__ (msg)))
+#else
+# define __attribute_deprecated_enum__(msg) /* Ignore */
+#endif
+
 /* At some point during the gcc 2.8 development the `format_arg' attribute
    for functions was introduced.  We don't want to use it unconditionally
    (although this would be possible) since it generates warnings.

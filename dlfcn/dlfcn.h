@@ -145,8 +145,13 @@ enum
     RTLD_DI_SERINFOSIZE = 5,
 
     /* Treat ARG as `char *', and store there the directory name used to
-       expand $ORIGIN in this shared object's dependency file names.  */
-    RTLD_DI_ORIGIN = 6,
+       expand $ORIGIN in this shared object's dependency file names.
+       Deprecated due to potential for buffer overflows.  */
+    RTLD_DI_ORIGIN
+# ifdef __attribute_deprecated_enum__
+      __attribute_deprecated_enum__ ("Use RTLD_DI_ORIGIN_PATH instead")
+# endif
+      = 6,
 
     RTLD_DI_PROFILENAME = 7,	/* Unsupported, defined by Solaris.  */
     RTLD_DI_PROFILEOUT = 8,	/* Unsupported, defined by Solaris.  */

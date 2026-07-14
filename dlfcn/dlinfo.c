@@ -22,6 +22,7 @@
 #include <libintl.h>
 #include <dl-tls.h>
 #include <shlib-compat.h>
+#include <libc-diag.h>
 
 struct dlinfo_args
 {
@@ -63,9 +64,13 @@ dlinfo_doit (void *argsblock)
       _dl_rtld_di_serinfo (l, args->arg, true);
       break;
 
+    DIAG_PUSH_NEEDS_COMMENT;
+    DIAG_IGNORE_NEEDS_COMMENT (6.1, "-Wdeprecated-declarations");
+    /* Deprecated via compile-time warning due to buffer overflow risk.  */
     case RTLD_DI_ORIGIN:
       strcpy (args->arg, l->l_origin);
       break;
+    DIAG_POP_NEEDS_COMMENT;
 
     case RTLD_DI_ORIGIN_PATH:
       if (l->l_origin != (char *) -1)

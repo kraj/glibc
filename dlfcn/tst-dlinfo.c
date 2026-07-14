@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <error.h>
 #include <support/check.h>
+#include <libc-diag.h>
 
 #define TEST_FUNCTION do_test ()
 
@@ -51,11 +52,15 @@ do_test (void)
 	}
     }
 
+  DIAG_PUSH_NEEDS_COMMENT;
+  /* Ignore deprecation to be able to test deprecated request type.  */
+  DIAG_IGNORE_NEEDS_COMMENT (6.1, "-Wdeprecated-declarations");
   char origin[8192];		/* >= PATH_MAX, in theory */
   TRY (RTLD_DI_ORIGIN, origin)
     {
       printf ("origin: %s\n", origin);
     }
+  DIAG_POP_NEEDS_COMMENT;
 
   const char *origin_path;
   TRY (RTLD_DI_ORIGIN_PATH, &origin_path)
