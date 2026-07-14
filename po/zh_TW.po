@@ -16,7 +16,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: libc 2.39.9000\n"
-"POT-Creation-Date: 2026-07-01 10:52+0900\n"
+"POT-Creation-Date: 2026-07-07 10:38+0900\n"
 "PO-Revision-Date: 2024-12-02 09:47+0800\n"
 "Last-Translator: Yi-Jyun Pan <pan93412@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@lists.slat.org>\n"

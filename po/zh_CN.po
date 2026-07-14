@@ -14,9 +14,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: libc 2.42.9000\n"
-"POT-Creation-Date: 2026-07-01 10:52+0900\n"
-"PO-Revision-Date: 2026-01-20 01:14+0800\n"
+"Project-Id-Version: libc 2.43.9000\n"
+"POT-Creation-Date: 2026-07-07 10:38+0900\n"
+"PO-Revision-Date: 2026-07-08 12:22+0800\n"
 "Last-Translator: Wenbin Lv <wenbin816@gmail.com>\n"
 "Language-Team: Chinese (simplified) <i18n-zh@googlegroups.com>\n"
 "Language: zh_CN\n"
@@ -25,7 +25,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Bugs: Report translation errors to the Language-Team address.\n"
-"X-Generator: Poedit 3.8\n"
+"X-Generator: Poedit 3.9\n"
 
 #: argp/argp-help.c:229
 #, c-format
@@ -440,6 +440,11 @@ msgstr "格式错误的扩展数据存在于缓存文件 %s\n"
 msgid "Writing of cache extension data failed"
 msgstr "缓存扩展数据写入失败"
 
+#: elf/cache.c:606
+#, c-format
+msgid "Writing of cache tunable data failed"
+msgstr "缓存可调节数据写入失败"
+
 #: elf/cache.c:619
 #, c-format
 msgid "%s: ISA level is too high (%d > %d)"
@@ -544,6 +549,10 @@ msgstr "无法读入文件数据"
 #: elf/dl-load.c:1011 elf/dl-map-segments.h:120
 msgid "ELF load command address/offset not page-aligned"
 msgstr "ELF 载入命令的地址/偏移量没有对齐到页"
+
+#: elf/dl-load.c:1105
+msgid "ELF file incompatible with this system"
+msgstr "ELF 文件与此系统不兼容"
 
 #: elf/dl-load.c:1151
 msgid "cannot stat shared object"
@@ -707,6 +716,10 @@ msgstr "重定位后无法恢复段保护"
 msgid "cannot apply additional memory protection after relocation"
 msgstr "无法在重定位后应用额外的内存保护"
 
+#: elf/dl-scratch-buffer.c:51 elf/dl-scratch-buffer.c:63
+msgid "cannot allocate loader scratch buffer"
+msgstr "无法分配加载器草稿缓冲区"
+
 #: elf/dl-sym.c:138
 msgid "RTLD_NEXT used in code not dynamically loaded"
 msgstr "代码所使用的 RTLD_NEXT 没有动态加载"
@@ -784,6 +797,18 @@ msgstr "将 <缓存> 用作缓存文件"
 #: elf/ldconfig.c:138
 msgid "CONF"
 msgstr "配置"
+
+#: elf/ldconfig.c:138
+msgid "Use CONF as configuration file for libraries"
+msgstr "将 <配置> 用作库的配置文件"
+
+#: elf/ldconfig.c:139
+msgid "TUNCONF"
+msgstr "可调节配置"
+
+#: elf/ldconfig.c:139
+msgid "Use TUNCONF as configuration file for tunables"
+msgstr "将 <可调节配置> 用作可调节变量的配置文件"
 
 #: elf/ldconfig.c:140
 msgid "Only process directories specified on the command line.  Don't build cache."
@@ -1231,6 +1256,10 @@ msgstr "长选项的强制参数对于对应的短选项也是强制的。\\n"
 #: elf/sotruss.sh:55
 msgid "%s: option requires an argument -- '%s'\\n"
 msgstr "%s: 选项需要一个参数 -- \\\"%s\\\"\\n"
+
+#: elf/sotruss.sh:61
+msgid "%s: option '%s' is ambiguous; possibilities:"
+msgstr "%s: 选项 \"%s\" 有歧义；可能为："
 
 #: elf/sotruss.sh:80
 msgid "Written by %s.\\n"
@@ -4636,6 +4665,10 @@ msgstr "要使用的服务配置"
 msgid "disable IDN encoding"
 msgstr "停用 IDN 编码"
 
+#: nss/getent.c:61
+msgid "print getaddrinfo error details"
+msgstr "打印 getaddrinfo 错误详情"
+
 #: nss/getent.c:63
 msgid "do not filter out unsupported IPv4/IPv6 addresses (with ahosts*)"
 msgstr "不要过滤掉不受支持的 IPv4/IPv6 地址（使用 ahosts*）"
@@ -4648,6 +4681,11 @@ msgstr "从管理数据库取得条目。"
 #, c-format
 msgid "Enumeration not supported on %s\n"
 msgstr "%s 不支持枚举\n"
+
+#: nss/getent.c:372
+#, c-format
+msgid "Host %s failed: %s\n"
+msgstr "主机 %s 失败：%s\n"
 
 #: nss/getent.c:536 nss/getent.c:549
 #, c-format
@@ -6132,7 +6170,7 @@ msgstr "操作已取消"
 
 #: sysdeps/gnu/errlist.h:546
 msgid "Owner died"
-msgstr "拥有者已结束"
+msgstr "所有者已结束"
 
 #: sysdeps/gnu/errlist.h:549
 msgid "State not recoverable"
@@ -6720,6 +6758,57 @@ msgstr "（规则来自 \"%s\"，第 %<PRIdMAX> 行）"
 msgid "warning: "
 msgstr "警告："
 
+#: timezone/zic.c:808
+#, c-format
+msgid "%s: -m '%s': invalid mode\n"
+msgstr "%s: -m '%s': 无效的模式\n"
+
+#: timezone/zic.c:852
+#, c-format
+msgid "%s: More than one %s option specified\n"
+msgstr "%s: 指定了多个 %s 选项\n"
+
+#: timezone/zic.c:860
+#, c-format
+msgid ""
+"%s: usage is %s [ --version ] [ --help ] [ -v ] \\\n"
+"\t[ -b {slim|fat} ] [ -d directory ] [ -D ] \\\n"
+"\t[ -l localtime ] [ -L leapseconds ] [ -m mode ] \\\n"
+"\t[ -p posixrules ] [ -r '[@lo][/@hi]' ] [ -R @hi ] \\\n"
+"\t[ -t localtime-link ] [ -u 'owner[:group]' ] \\\n"
+"\t[ filename ... ]\n"
+"\n"
+"Report bugs to %s.\n"
+msgstr ""
+"%s: 用法为 %s [ --version ] [ --help ] [ -v ] \\\n"
+"\t[ -b {slim|fat} ] [ -d 目录 ] [ -D ]\\\n"
+"\t[ -l 本地时间 ] [ -L 闰秒 ] [ -m 模式 ]\\\n"
+"\t[ -p posix规则 ] [ -r '[@低][/@高]' ] [ -R @高 ] \\\n"
+"\t[ -t 本地时间链接 ] [ -u '所有者[:组]' ]\\\n"
+"\t[ 文件名 ... ]\n"
+"\n"
+"请向 %s 报告错误。\n"
+
+#: timezone/zic.c:878
+#, c-format
+msgid "multiple groups specified"
+msgstr "同时指定了多个组"
+
+#: timezone/zic.c:884
+#, c-format
+msgid "%s: invalid group: %s\n"
+msgstr "%s: 无效的组：%s\n"
+
+#: timezone/zic.c:894
+#, c-format
+msgid "multiple owners specified"
+msgstr "同时指定了多个所有者"
+
+#: timezone/zic.c:900
+#, c-format
+msgid "%s: invalid owner: %s\n"
+msgstr "%s: 无效的所有者：%s\n"
+
 #: timezone/zic.c:951
 #, c-format
 msgid "%s: Can't chdir to %s: %s\n"
@@ -6757,6 +6846,10 @@ msgstr "不兼容的 -b 选项"
 #, c-format
 msgid "invalid option: -b '%s'"
 msgstr "无效的选项：-b '%s'"
+
+#: timezone/zic.c:1303
+msgid "-p is obsolete and likely ineffective"
+msgstr "-p 已过时，且可能无效"
 
 #: timezone/zic.c:1323
 msgid "-y ignored"
@@ -6815,15 +6908,44 @@ msgstr "文件名 \"%s\" 包含字节 \"%c\""
 msgid "file name '%s' contains byte '\\%o'"
 msgstr "文件名 \"%s\" 包含字节 \"\\%o\""
 
+#: timezone/zic.c:1644
+#, c-format
+msgid "%s: Can't create %s%s%s: %s\n"
+msgstr "%s: 无法创建 %s%s%s：%s\n"
+
+#: timezone/zic.c:1662
+#, c-format
+msgid "%s: rename to %s%s%s: %s\n"
+msgstr "%s: 重命名为 %s%s%s：%s\n"
+
+#: timezone/zic.c:1744
+#, c-format
+msgid "%s: Can't remove %s%s%s: %s\n"
+msgstr "%s: 无法删除 %s%s%s：%s\n"
+
+#: timezone/zic.c:1789
+#, c-format
+msgid "%s: Can't link %s%s%s to %s%s%s: %s\n"
+msgstr "%s: 无法将 %s%s%s 链接到 %s%s%s：%s\n"
+
 #: timezone/zic.c:1821
 #, c-format
 msgid "symbolic link used because hard link failed: %s"
 msgstr "硬链接失败，已使用符号链接：%s"
 
+#: timezone/zic.c:1829
+#, c-format
+msgid "%s: Can't read %s%s%s: %s\n"
+msgstr "%s: 无法读取 %s%s%s：%s\n"
+
 #: timezone/zic.c:1839
 #, c-format
 msgid "copy used because hard link failed: %s"
 msgstr "硬链接失败，已复制文件：%s"
+
+#: timezone/zic.c:1842
+msgid "copy used because symbolic link not obvious"
+msgstr "符号链接不明确，已复制文件"
 
 #: timezone/zic.c:1844
 #, c-format
@@ -7012,6 +7134,11 @@ msgstr "参考客户端会错误处理超过 %d 次的变迁次数"
 msgid "pre-2014 clients may mishandle more than 1200 transition times"
 msgstr "2014 年之前的客户端可能会错误处理超过 1200 次的变迁次数"
 
+#: timezone/zic.c:2733
+#, c-format
+msgid "reference clients mishandle more than %d leap seconds"
+msgstr "参考客户端会错误处理超过 %d 次的闰秒"
+
 #: timezone/zic.c:2774
 #, c-format
 msgid "%s: pre-2021b clients may mishandle leap second expiry"
@@ -7025,6 +7152,11 @@ msgstr "%s: 2021b 之前的客户端可能会错误处理闰秒表的截断"
 #: timezone/zic.c:2831
 msgid "too many transition times"
 msgstr "过多的变迁次数"
+
+#: timezone/zic.c:2998
+#, c-format
+msgid "%s: pre-2026 reference clients mishandle more than 50 bytes of abbreviations"
+msgstr "%s: 2026 年之前的参考客户端会错误处理超过 50 字节的缩写"
 
 #: timezone/zic.c:3097
 #, c-format

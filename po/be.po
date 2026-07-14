@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: libc 2.40.9000\n"
-"POT-Creation-Date: 2026-07-01 10:52+0900\n"
+"POT-Creation-Date: 2026-07-07 10:38+0900\n"
 "PO-Revision-Date: 2025-01-08 11:17+0300\n"
 "Last-Translator: Viktar Siarhiejčyk <vics@eq.by>\n"
 "Language-Team: Belarusian <debian-l10n-belarusian@lists.debian.org>\n"

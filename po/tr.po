@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: libc 2.33.9000\n"
-"POT-Creation-Date: 2026-07-01 10:52+0900\n"
+"POT-Creation-Date: 2026-07-07 10:38+0900\n"
 "PO-Revision-Date: 2021-07-29 13:23+0300\n"
 "Last-Translator: Mehmet Kececi <mkececi@mehmetkececi.com>\n"
 "Language-Team: Turkish <gnome-turk@gnome.org>\n"

@@ -6,9 +6,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: GNU libc 2.42.9000\n"
-"POT-Creation-Date: 2026-07-01 10:52+0900\n"
-"PO-Revision-Date: 2026-01-20 13:21+0900\n"
+"Project-Id-Version: GNU libc 2.43.9000\n"
+"POT-Creation-Date: 2026-07-07 10:38+0900\n"
+"PO-Revision-Date: 2026-07-08 02:53+0900\n"
 "Last-Translator: Changwoo Ryu <cwryu@debian.org>\n"
 "Language-Team: Korean <translation-team-ko@googlegroups.com>\n"
 "Language: ko\n"
@@ -430,6 +430,11 @@ msgstr "캐시 파일 %s에 잘못된 형태의 확장 데이터\n"
 msgid "Writing of cache extension data failed"
 msgstr "캐시 확장 데이터 쓰기가 실패"
 
+#: elf/cache.c:606
+#, c-format
+msgid "Writing of cache tunable data failed"
+msgstr "캐시 조정 가능한 데이터 쓰기가 실패"
+
 #: elf/cache.c:619
 #, c-format
 msgid "%s: ISA level is too high (%d > %d)"
@@ -540,6 +545,10 @@ msgstr "파일 데이터를 읽을 수 없습니다"
 #: elf/dl-load.c:1011 elf/dl-map-segments.h:120
 msgid "ELF load command address/offset not page-aligned"
 msgstr "ELF 로드 명령의 주소/오프셋이 align되어 있지 않습니다"
+
+#: elf/dl-load.c:1105
+msgid "ELF file incompatible with this system"
+msgstr "이 시스템과 호환되지 않는 ELF 파일"
 
 #: elf/dl-load.c:1151
 msgid "cannot stat shared object"
@@ -702,6 +711,10 @@ msgstr "리로케이션 뒤에 prot 세그먼트를 복구할 수 없습니다"
 msgid "cannot apply additional memory protection after relocation"
 msgstr "리로케이션 뒤에 추가로 메모리 보호를 적용할 수 없습니다"
 
+#: elf/dl-scratch-buffer.c:51 elf/dl-scratch-buffer.c:63
+msgid "cannot allocate loader scratch buffer"
+msgstr "로더 스크래치 버퍼를 할당할 수 없습니다"
+
 #: elf/dl-sym.c:138
 msgid "RTLD_NEXT used in code not dynamically loaded"
 msgstr "동적으로 적재하지 않은 코드에 RTLD_NEXT를 사용함"
@@ -780,9 +793,21 @@ msgstr "캐시 파일로 <캐시>를 사용합니다"
 msgid "CONF"
 msgstr "<설정>"
 
+#: elf/ldconfig.c:138
+msgid "Use CONF as configuration file for libraries"
+msgstr "라이브러리에 대한 설정 파일로 <설정>을 사용합니다"
+
+#: elf/ldconfig.c:139
+msgid "TUNCONF"
+msgstr "<조정설정>"
+
+#: elf/ldconfig.c:139
+msgid "Use TUNCONF as configuration file for tunables"
+msgstr "조정 가능 설정 파일로 <조정설정>을 사용합니다"
+
 #: elf/ldconfig.c:140
 msgid "Only process directories specified on the command line.  Don't build cache."
-msgstr "명령행에 지정한 디렉터리만 처리합니다.  캐시를 만들지 않습니다."
+msgstr "명령행에 지정한 디렉터리만 처리합니다. 캐시를 만들지 않습니다."
 
 #: elf/ldconfig.c:141
 msgid "Manually link individual libraries."
@@ -1226,6 +1251,10 @@ msgstr "긴 옵션에서 대해 꼭 필요한 인자는 그 긴 옵션에 해당
 msgid "%s: option requires an argument -- '%s'\\n"
 msgstr "%s: 이 옵션은 인수가 필요합니다 -- '%s'\\n"
 
+#: elf/sotruss.sh:61
+msgid "%s: option '%s' is ambiguous; possibilities:"
+msgstr "%s: '%s' 옵션은 모호한 옵션입니다. 가능한 옵션은:"
+
 #: elf/sotruss.sh:80
 msgid "Written by %s.\\n"
 msgstr "만든 사람: %s.\\n"
@@ -1537,9 +1566,9 @@ msgid ""
 "\n"
 "  "
 msgstr ""
-"다음 리스트에 알려진 모든 문자셋 코드가 들어 있습니다.  그렇다고 해서\n"
+"다음 리스트에 알려진 모든 문자셋 코드가 들어 있습니다. 그렇다고 해서\n"
 "명령행 인자의 FROM과 TO 인수에 여기의 모든 문자셋 이름의 조합을 사용할 수 \n"
-"있는 것은 아닙니다.  한개의 문자셋 코드는 몇가지 다른 이름(별명)과 함께 \n"
+"있는 것은 아닙니다. 한개의 문자셋 코드는 몇가지 다른 이름(별명)과 함께 \n"
 "열거했을 수도 있습니다.\n"
 "\n"
 "  "
@@ -4646,6 +4675,10 @@ msgstr "사용할 서비스 설정"
 msgid "disable IDN encoding"
 msgstr "IDN 인코딩 사용하지 않기"
 
+#: nss/getent.c:61
+msgid "print getaddrinfo error details"
+msgstr "getaddrinfo 오류 상세 정보를 표시합니다"
+
 #: nss/getent.c:63
 msgid "do not filter out unsupported IPv4/IPv6 addresses (with ahosts*)"
 msgstr "지원하지 않는 IPv4/IPv6 주소를 (ahosts 포함) 필터로 제외할 수 없습니다"
@@ -4658,6 +4691,11 @@ msgstr "관리자 데이터베이스에서 항목을 읽습니다."
 #, c-format
 msgid "Enumeration not supported on %s\n"
 msgstr "%s에 이뉴머레이션을 지원하지 않습니다\n"
+
+#: nss/getent.c:372
+#, c-format
+msgid "Host %s failed: %s\n"
+msgstr "호스트 %s 실패: %s\n"
 
 #: nss/getent.c:536 nss/getent.c:549
 #, c-format
@@ -6698,6 +6736,57 @@ msgstr " (\"%s\"에 있는 규칙, 행 %<PRIdMAX>)"
 msgid "warning: "
 msgstr "경고: "
 
+#: timezone/zic.c:808
+#, c-format
+msgid "%s: -m '%s': invalid mode\n"
+msgstr "%s: -m '%s': 모드가 잘못되었습니다\n"
+
+#: timezone/zic.c:852
+#, c-format
+msgid "%s: More than one %s option specified\n"
+msgstr "%s: 여러개의 %s 옵션을 지정했습니다\n"
+
+#: timezone/zic.c:860
+#, c-format
+msgid ""
+"%s: usage is %s [ --version ] [ --help ] [ -v ] \\\n"
+"\t[ -b {slim|fat} ] [ -d directory ] [ -D ] \\\n"
+"\t[ -l localtime ] [ -L leapseconds ] [ -m mode ] \\\n"
+"\t[ -p posixrules ] [ -r '[@lo][/@hi]' ] [ -R @hi ] \\\n"
+"\t[ -t localtime-link ] [ -u 'owner[:group]' ] \\\n"
+"\t[ filename ... ]\n"
+"\n"
+"Report bugs to %s.\n"
+msgstr ""
+"%s: 사용법은 %s [ --version ] [ --help ] [ -v ] \\\n"
+"\t[ -b {slim|fat} ] [ -d <디렉터리> ] [ -D ] \\\n"
+"\t[ -l <지역시각> ] [ -L <윤초> ] [ -m <모드> ] \\\n"
+"\t[ -p <POSIX규칙> ] [ -r '[@lo][/@hi]' ] [ -R '@hi' ] \\\n"
+"\t[ -t <지역시각-링크> ] [ -u <소유자>[:<그룹>]' ] \\\n"
+"\t[ <파일이름> ... ]\n"
+"\n"
+"문제점은 %s 주소로 알려 주십시오.\n"
+
+#: timezone/zic.c:878
+#, c-format
+msgid "multiple groups specified"
+msgstr "여러 그룹을 지정했습니다"
+
+#: timezone/zic.c:884
+#, c-format
+msgid "%s: invalid group: %s\n"
+msgstr "%s: 그룹이 잘못되었습니다: %s\n"
+
+#: timezone/zic.c:894
+#, c-format
+msgid "multiple owners specified"
+msgstr "여러 소유자를 지정했습니다"
+
+#: timezone/zic.c:900
+#, c-format
+msgid "%s: invalid owner: %s\n"
+msgstr "%s: 소유자가 잘못되었습니다: %s\n"
+
 #: timezone/zic.c:951
 #, c-format
 msgid "%s: Can't chdir to %s: %s\n"
@@ -6735,6 +6824,10 @@ msgstr "호환되지 않는 -b 옵션"
 #, c-format
 msgid "invalid option: -b '%s'"
 msgstr "부적절한 옵션: -b '%s'"
+
+#: timezone/zic.c:1303
+msgid "-p is obsolete and likely ineffective"
+msgstr "-p 옵션은 이제 사용되지 않으므로 효과가 없을 것입니다"
 
 #: timezone/zic.c:1323
 msgid "-y ignored"
@@ -6794,15 +6887,44 @@ msgstr "'%s' 파일 이름에 '%c' 바이트가 들어 있습니다"
 msgid "file name '%s' contains byte '\\%o'"
 msgstr "'%s' 파일 이름에 '\\%o' 바이트가 들어 있습니다"
 
+#: timezone/zic.c:1644
+#, c-format
+msgid "%s: Can't create %s%s%s: %s\n"
+msgstr "%s: %s%s%s을(를) 만들 수 없습니다: %s\n"
+
+#: timezone/zic.c:1662
+#, c-format
+msgid "%s: rename to %s%s%s: %s\n"
+msgstr "%s: %s%s%s(으)로 이름 바꿈: %s\n"
+
+#: timezone/zic.c:1744
+#, c-format
+msgid "%s: Can't remove %s%s%s: %s\n"
+msgstr "%s: %s%s%s을(를) 제거할 수 없습니다: %s\n"
+
+#: timezone/zic.c:1789
+#, c-format
+msgid "%s: Can't link %s%s%s to %s%s%s: %s\n"
+msgstr "%s: %s%s%s에서 %s%s%s(으)로 링크를 만들 수 없습니다: %s\n"
+
 #: timezone/zic.c:1821
 #, c-format
 msgid "symbolic link used because hard link failed: %s"
 msgstr "하드 링크가 실패해서 심볼릭 링크를 사용합니다: %s"
 
+#: timezone/zic.c:1829
+#, c-format
+msgid "%s: Can't read %s%s%s: %s\n"
+msgstr "%s: %s%s%s을(를) 읽을 수 없습니다: %s\n"
+
 #: timezone/zic.c:1839
 #, c-format
 msgid "copy used because hard link failed: %s"
 msgstr "하드 링크가 실패해서 복사를 사용합니다: %s"
+
+#: timezone/zic.c:1842
+msgid "copy used because symbolic link not obvious"
+msgstr "심볼릭 링크가 확실하지 않아 복사를 사용합니다: %s"
 
 #: timezone/zic.c:1844
 #, c-format
@@ -6991,6 +7113,11 @@ msgstr "레퍼런스 클라이언트는 이행 과정을 %d번 넘게 잘못 처
 msgid "pre-2014 clients may mishandle more than 1200 transition times"
 msgstr "2014년보다 전의 클라이언트는 이행 과정을 1200번 이상 잘못 처리할 수도 있습니다"
 
+#: timezone/zic.c:2733
+#, c-format
+msgid "reference clients mishandle more than %d leap seconds"
+msgstr "레퍼런스 클라이언트는 윤초를 %d초 넘게 잘못 처리합니다"
+
 #: timezone/zic.c:2774
 #, c-format
 msgid "%s: pre-2021b clients may mishandle leap second expiry"
@@ -7004,6 +7131,11 @@ msgstr "%s: 2021b 버전보다 전의 클라이언트는 윤초 테이블 자르
 #: timezone/zic.c:2831
 msgid "too many transition times"
 msgstr "시각 이행이 너무 많습니다"
+
+#: timezone/zic.c:2998
+#, c-format
+msgid "%s: pre-2026 reference clients mishandle more than 50 bytes of abbreviations"
+msgstr "%s: 2026년보다 전의 레퍼런스 클라이언트는 약어를 50바이트 넘게 잘못 처리합니다"
 
 #: timezone/zic.c:3097
 #, c-format

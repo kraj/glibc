@@ -15,19 +15,20 @@
 # perror("message") => "message: error_message"
 #
 # Notes:
-# host, name, hostname - jméno, název, jméno počítače
 # Untranslated: netid (RFC 1833: Network Identifier), nettype 
-# Translations of "socket" => "soket",
 # byte => bajt
-# out of memory => nedostatek paměti
 # collation => řazení
 # ellipsis (range) => výpustkový (rozsah)
+# host, name, hostname => jméno, název, jméno počítače
+# out of memory => nedostatek paměti
+# socket => soket
+# tunable (noun) => laditelnost
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: libc 2.42.9000\n"
-"POT-Creation-Date: 2026-07-01 10:52+0900\n"
-"PO-Revision-Date: 2026-01-19 20:18+01:00\n"
+"Project-Id-Version: libc 2.43.9000\n"
+"POT-Creation-Date: 2026-07-07 10:38+0900\n"
+"PO-Revision-Date: 2026-07-07 19:52+02:00\n"
 "Last-Translator: Petr Pisar <petr.pisar@atlas.cz>\n"
 "Language-Team: Czech <translation-team-cs@lists.sourceforge.net>\n"
 "Language: cs\n"
@@ -457,6 +458,11 @@ msgstr "Údaje o rozšířeních v souboru keše %s jsou poškozená\n"
 msgid "Writing of cache extension data failed"
 msgstr "Zápis kešovaných údajů o rozšířeních selhal"
 
+#: elf/cache.c:606
+#, c-format
+msgid "Writing of cache tunable data failed"
+msgstr "Zápis kešovaných laditelných dat selhal"
+
 #: elf/cache.c:619
 #, c-format
 msgid "%s: ISA level is too high (%d > %d)"
@@ -560,7 +566,11 @@ msgstr "data ze souboru nelze načíst"
 
 #: elf/dl-load.c:1011 elf/dl-map-segments.h:120
 msgid "ELF load command address/offset not page-aligned"
-msgstr "Adresa/pozice kódu zavaděče formátu ELF není zarovnána na hranici stránky"
+msgstr "adresa/pozice kódu zavaděče formátu ELF není zarovnána na hranici stránky"
+
+#: elf/dl-load.c:1105
+msgid "ELF file incompatible with this system"
+msgstr "soubor ELF není s tímto systémem slučitelný"
 
 #: elf/dl-load.c:1151
 msgid "cannot stat shared object"
@@ -723,6 +733,10 @@ msgstr "segment prot nelze po reloc obnovit"
 msgid "cannot apply additional memory protection after relocation"
 msgstr "po přemístění nelze nelze uplatnit dodatečnou ochranu paměti"
 
+#: elf/dl-scratch-buffer.c:51 elf/dl-scratch-buffer.c:63
+msgid "cannot allocate loader scratch buffer"
+msgstr "dočasnou paměť pro zavaděč nelze alokovat"
+
 #: elf/dl-sym.c:138
 msgid "RTLD_NEXT used in code not dynamically loaded"
 msgstr "RTLD_NEXT je použito pro kód, který není dynamicky zaveden"
@@ -800,6 +814,18 @@ msgstr "Použije KEŠ jako soubor s keší"
 #: elf/ldconfig.c:138
 msgid "CONF"
 msgstr "KONFIG"
+
+#: elf/ldconfig.c:138
+msgid "Use CONF as configuration file for libraries"
+msgstr "Použije KONFIG jako konfigurační soubor pro knihovny"
+
+#: elf/ldconfig.c:139
+msgid "TUNCONF"
+msgstr "LAD_KONFIG"
+
+#: elf/ldconfig.c:139
+msgid "Use TUNCONF as configuration file for tunables"
+msgstr "Použije LAD_KONFIG jako konfigurační soubor pro laditelnosti"
 
 #: elf/ldconfig.c:140
 msgid "Only process directories specified on the command line.  Don't build cache."
@@ -1248,6 +1274,10 @@ msgstr "Argumenty požadované dlouhými přepínači jsou také požadovány je
 #: elf/sotruss.sh:55
 msgid "%s: option requires an argument -- '%s'\\n"
 msgstr "%s: přepínač vyžaduje argument – „%s“\\n"
+
+#: elf/sotruss.sh:61
+msgid "%s: option '%s' is ambiguous; possibilities:"
+msgstr "%s: přepínač „%s“ není jednoznačný: možnosti:"
 
 #: elf/sotruss.sh:80
 msgid "Written by %s.\\n"
@@ -4667,6 +4697,10 @@ msgstr "Konfigurace služby, která má být použita"
 msgid "disable IDN encoding"
 msgstr "zakáže kódování IDN"
 
+#: nss/getent.c:61
+msgid "print getaddrinfo error details"
+msgstr "vypíše podrobnosti o chybě funkce getaddrinfo"
+
 #: nss/getent.c:63
 msgid "do not filter out unsupported IPv4/IPv6 addresses (with ahosts*)"
 msgstr "nefiltruje nepodporované IPv4/IPv6 adresy (s ahosts*)"
@@ -4679,6 +4713,11 @@ msgstr "Získá záznamy ze správní databáze."
 #, c-format
 msgid "Enumeration not supported on %s\n"
 msgstr "Výčet není podporován na %s\n"
+
+#: nss/getent.c:372
+#, c-format
+msgid "Host %s failed: %s\n"
+msgstr "Jméno %s selhalo: %s\n"
 
 #: nss/getent.c:536 nss/getent.c:549
 #, c-format
@@ -6732,6 +6771,57 @@ msgstr " (pravidlo z „%s“, řádek %<PRIdMAX>)"
 msgid "warning: "
 msgstr "varování: "
 
+#: timezone/zic.c:808
+#, c-format
+msgid "%s: -m '%s': invalid mode\n"
+msgstr "%s: -m '%s': neplatný režim\n"
+
+#: timezone/zic.c:852
+#, c-format
+msgid "%s: More than one %s option specified\n"
+msgstr "%s: Přepínač %s zadán více než jednou\n"
+
+#: timezone/zic.c:860
+#, c-format
+msgid ""
+"%s: usage is %s [ --version ] [ --help ] [ -v ] \\\n"
+"\t[ -b {slim|fat} ] [ -d directory ] [ -D ] \\\n"
+"\t[ -l localtime ] [ -L leapseconds ] [ -m mode ] \\\n"
+"\t[ -p posixrules ] [ -r '[@lo][/@hi]' ] [ -R @hi ] \\\n"
+"\t[ -t localtime-link ] [ -u 'owner[:group]' ] \\\n"
+"\t[ filename ... ]\n"
+"\n"
+"Report bugs to %s.\n"
+msgstr ""
+"%s: použití je %s [--version] [--help] [-v] \\\n"
+"\t[-b {slim|fat} [-d ADRESÁŘ]  [-D] \\\n"
+"\t[-l MÍSTNÍ_ČAS] [-L PŘESTUPNÝCH_SEKUND] [-m REŽIM] \\\n"
+"\t[-p POSIXOVÁ_PRAVIDLA] [-r '[@DOLNÍ][/@HORNÍ]'] [-R '@HORNÍ'] \\\n"
+"\t[-t ODKAZ_NA_MÍSTNÍ_ČAS] [-u 'vlastník[:skupina]'] \\\n"
+"\t[SOUBOR…]\n"
+"\n"
+"Chyby hlaste anglicky na %s.\n"
+
+#: timezone/zic.c:878
+#, c-format
+msgid "multiple groups specified"
+msgstr "zadáno více skupin"
+
+#: timezone/zic.c:884
+#, c-format
+msgid "%s: invalid group: %s\n"
+msgstr "%s: neplatná skupina: %s\n"
+
+#: timezone/zic.c:894
+#, c-format
+msgid "multiple owners specified"
+msgstr "zadáno více vlastníků"
+
+#: timezone/zic.c:900
+#, c-format
+msgid "%s: invalid owner: %s\n"
+msgstr "%s: neplatný vlastník: %s\n"
+
 #: timezone/zic.c:951
 #, c-format
 msgid "%s: Can't chdir to %s: %s\n"
@@ -6769,6 +6859,10 @@ msgstr "neslučitelný přepínač -b"
 #, c-format
 msgid "invalid option: -b '%s'"
 msgstr "neplatný přepínač: -b „%s“"
+
+#: timezone/zic.c:1303
+msgid "-p is obsolete and likely ineffective"
+msgstr "-p je zastaralý a pravděpodobně neúčinný"
 
 #: timezone/zic.c:1323
 msgid "-y ignored"
@@ -6827,15 +6921,44 @@ msgstr "název souboru „%s“ obsahuje bajt „%c“"
 msgid "file name '%s' contains byte '\\%o'"
 msgstr "název souboru „%s“ obsahuje bajt „\\%o“"
 
+#: timezone/zic.c:1644
+#, c-format
+msgid "%s: Can't create %s%s%s: %s\n"
+msgstr "%s: %s%s%s nelze vytvořit: %s\n"
+
+#: timezone/zic.c:1662
+#, c-format
+msgid "%s: rename to %s%s%s: %s\n"
+msgstr "%s: přejmenování na %s%s%s: %s\n"
+
+#: timezone/zic.c:1744
+#, c-format
+msgid "%s: Can't remove %s%s%s: %s\n"
+msgstr "%s: %s%s%s nelze smazat: %s\n"
+
+#: timezone/zic.c:1789
+#, c-format
+msgid "%s: Can't link %s%s%s to %s%s%s: %s\n"
+msgstr "%s: Nelze vytvořit odkaz %s%s%s na %s%s%s: %s\n"
+
 #: timezone/zic.c:1821
 #, c-format
 msgid "symbolic link used because hard link failed: %s"
 msgstr "použit symbolický odkaz, protože pevný odkaz selhal: %s"
 
+#: timezone/zic.c:1829
+#, c-format
+msgid "%s: Can't read %s%s%s: %s\n"
+msgstr "%s: %s%s%s nelze číst: %s\n"
+
 #: timezone/zic.c:1839
 #, c-format
 msgid "copy used because hard link failed: %s"
 msgstr "použita kopie, protože pevný odkaz selhal: %s"
+
+#: timezone/zic.c:1842
+msgid "copy used because symbolic link not obvious"
+msgstr "použita kopie, protože symbolický odkaz není zřejmý"
 
 #: timezone/zic.c:1844
 #, c-format
@@ -7026,6 +7149,11 @@ msgstr "vzorové klienty chybně zpracovávají více než %d přechodových č
 msgid "pre-2014 clients may mishandle more than 1200 transition times"
 msgstr "klienty starší roku 2014 mohou chybně pracovat s více než 1200 přechodovými časy"
 
+#: timezone/zic.c:2733
+#, c-format
+msgid "reference clients mishandle more than %d leap seconds"
+msgstr "vzorové klienty chybně zpracovávají více než %d přestupných sekund"
+
 #: timezone/zic.c:2774
 #, c-format
 msgid "%s: pre-2021b clients may mishandle leap second expiry"
@@ -7039,6 +7167,11 @@ msgstr "%s: klienty před verzi 2021b mohou chybně zpracovávat zkrácení tabu
 #: timezone/zic.c:2831
 msgid "too many transition times"
 msgstr "příliš mnoho přechodových časů"
+
+#: timezone/zic.c:2998
+#, c-format
+msgid "%s: pre-2026 reference clients mishandle more than 50 bytes of abbreviations"
+msgstr "%s: vzorové klienty z doby před rokem 2026 chybně zpracovávají více než 50 bajtů zkratek"
 
 #: timezone/zic.c:3097
 #, c-format

@@ -11,10 +11,10 @@
 # Benno Schulenberg <benno@vertaalt.nl>, 2020, 2021, 2022, 2023, 2025, 2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: libc-2.42.9000\n"
+"Project-Id-Version: libc-2.43.9000\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-01 10:52+0900\n"
-"PO-Revision-Date: 2026-01-25 13:21+0100\n"
+"POT-Creation-Date: 2026-07-07 10:38+0900\n"
+"PO-Revision-Date: 2026-07-08 11:02+0200\n"
 "Last-Translator: Benno Schulenberg <vertaling@coevern.nl>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
 "Language: nl\n"
@@ -444,6 +444,11 @@ msgstr "Ongeldige uitbreidingsgegevens in cache-bestand %s\n"
 msgid "Writing of cache extension data failed"
 msgstr "Schrijven van cache-uitbreidingsgegevens is mislukt"
 
+#: elf/cache.c:606
+#, c-format
+msgid "Writing of cache tunable data failed"
+msgstr "Schrijven van cache-tunable-gegevens is mislukt"
+
 #: elf/cache.c:619
 #, c-format
 msgid "%s: ISA level is too high (%d > %d)"
@@ -548,6 +553,10 @@ msgstr "kan bestandsgegevens niet lezen"
 #: elf/dl-load.c:1011 elf/dl-map-segments.h:120
 msgid "ELF load command address/offset not page-aligned"
 msgstr "adres/positie in ELF-laadopdracht is niet pagina-uitgelijnd"
+
+#: elf/dl-load.c:1105
+msgid "ELF file incompatible with this system"
+msgstr "ELF-bestand is incompatibel met dit systeem"
 
 #: elf/dl-load.c:1151
 msgid "cannot stat shared object"
@@ -712,6 +721,10 @@ msgstr "kan segmentbescherming niet herstellen na verplaatsing"
 msgid "cannot apply additional memory protection after relocation"
 msgstr "kan extra geheugenbescherming niet toepassen na verplaatsing"
 
+#: elf/dl-scratch-buffer.c:51 elf/dl-scratch-buffer.c:63
+msgid "cannot allocate loader scratch buffer"
+msgstr "kan geen geheugen reserveren voor kladbuffer voor lader"
+
 #: elf/dl-sym.c:138
 msgid "RTLD_NEXT used in code not dynamically loaded"
 msgstr "RTLD_NEXT is gebruikt in code die niet dynamisch geladen is"
@@ -789,6 +802,18 @@ msgstr "dit cachebestand gebruiken"
 #: elf/ldconfig.c:138
 msgid "CONF"
 msgstr "CONFIG-BESTAND"
+
+#: elf/ldconfig.c:138
+msgid "Use CONF as configuration file for libraries"
+msgstr "dit configuratiebestand voor bibliotheken gebruiken"
+
+#: elf/ldconfig.c:139
+msgid "TUNCONF"
+msgstr "TUNECONF"
+
+#: elf/ldconfig.c:139
+msgid "Use TUNCONF as configuration file for tunables"
+msgstr "dit configuratiebestand voor 'tunables' gebruiken"
 
 #: elf/ldconfig.c:140
 msgid "Only process directories specified on the command line.  Don't build cache."
@@ -1244,6 +1269,10 @@ msgstr "Een argument dat verplicht of optioneel is voor een lange optie, is dat\
 #: elf/sotruss.sh:55
 msgid "%s: option requires an argument -- '%s'\\n"
 msgstr "%s: optie vereist een argument -- '%s'\\n"
+
+#: elf/sotruss.sh:61
+msgid "%s: option '%s' is ambiguous; possibilities:"
+msgstr "%s: optie '%s' is niet eenduidig; mogelijkheden zijn:"
 
 #: elf/sotruss.sh:80
 msgid "Written by %s.\\n"
@@ -4671,6 +4700,10 @@ msgstr "te gebruiken configuratie"
 msgid "disable IDN encoding"
 msgstr "IDN-codering uitschakelen"
 
+#: nss/getent.c:61
+msgid "print getaddrinfo error details"
+msgstr "foutdetails van getaddrinfo() weergeven"
+
 #: nss/getent.c:63
 msgid "do not filter out unsupported IPv4/IPv6 addresses (with ahosts*)"
 msgstr "niet-ondersteunde IPv4/IPv6-adressen (met ahosts*) niet uitfilteren"
@@ -4683,6 +4716,11 @@ msgstr "Haalt items op uit een administratieve gegevensbank."
 #, c-format
 msgid "Enumeration not supported on %s\n"
 msgstr "Opsomming wordt niet ondersteund op %s\n"
+
+#: nss/getent.c:372
+#, c-format
+msgid "Host %s failed: %s\n"
+msgstr "Host %s faalde: %s\n"
 
 #: nss/getent.c:536 nss/getent.c:549
 #, c-format
@@ -6735,6 +6773,57 @@ msgstr " (voorschrift uit \"%s\", regel %<PRIdMAX>)"
 msgid "warning: "
 msgstr "waarschuwing: "
 
+#: timezone/zic.c:808
+#, c-format
+msgid "%s: -m '%s': invalid mode\n"
+msgstr "%s: -m '%s': ongeldige modus\n"
+
+#: timezone/zic.c:852
+#, c-format
+msgid "%s: More than one %s option specified\n"
+msgstr "%s: Optie %s is meermaals gegeven\n"
+
+#: timezone/zic.c:860
+#, c-format
+msgid ""
+"%s: usage is %s [ --version ] [ --help ] [ -v ] \\\n"
+"\t[ -b {slim|fat} ] [ -d directory ] [ -D ] \\\n"
+"\t[ -l localtime ] [ -L leapseconds ] [ -m mode ] \\\n"
+"\t[ -p posixrules ] [ -r '[@lo][/@hi]' ] [ -R @hi ] \\\n"
+"\t[ -t localtime-link ] [ -u 'owner[:group]' ] \\\n"
+"\t[ filename ... ]\n"
+"\n"
+"Report bugs to %s.\n"
+msgstr ""
+"Gebruik:  %s [-v] [-b {slim|fat}] [-d map] [-D] [-l lokaletijdzone]\n"
+"                [-L schrikkelsecondenbestand] [-m modus]\n"
+"                [-p posixvoorschriftenzone] [-r '[@lo][/@hi]'] [-R @hi]\n"
+"                [-t lokaletijdlink]  [-u 'eigenaar[:groep]'] [bestand...]\n"
+"     of:  %s [--version] [--help]\n"
+"\n"
+"Rapporteer gebreken in het programma aan %s;\n"
+"meld fouten in de vertaling aan <vertaling@vrijschrift.nl>.\n"
+
+#: timezone/zic.c:878
+#, c-format
+msgid "multiple groups specified"
+msgstr "meerdere groepen gegeven"
+
+#: timezone/zic.c:884
+#, c-format
+msgid "%s: invalid group: %s\n"
+msgstr "%s: ongeldige groep: %s\n"
+
+#: timezone/zic.c:894
+#, c-format
+msgid "multiple owners specified"
+msgstr "meerdere eigenaren gegeven"
+
+#: timezone/zic.c:900
+#, c-format
+msgid "%s: invalid owner: %s\n"
+msgstr "%s: ongeldige eigenaar: %s\n"
+
 #: timezone/zic.c:951
 #, c-format
 msgid "%s: Can't chdir to %s: %s\n"
@@ -6772,6 +6861,10 @@ msgstr "niet-samengaande opties -b"
 #, c-format
 msgid "invalid option: -b '%s'"
 msgstr "ongeldige optie -b '%s'"
+
+#: timezone/zic.c:1303
+msgid "-p is obsolete and likely ineffective"
+msgstr "optie '-p' is verouderd en waarschijnlijk ineffectief"
 
 #: timezone/zic.c:1323
 msgid "-y ignored"
@@ -6830,15 +6923,44 @@ msgstr "bestandsnaam '%s' bevat byte '%c'"
 msgid "file name '%s' contains byte '\\%o'"
 msgstr "bestandsnaam '%s' bevat byte '\\%o'"
 
+#: timezone/zic.c:1644
+#, c-format
+msgid "%s: Can't create %s%s%s: %s\n"
+msgstr "%s: Kan %s%s%s niet aanmaken: %s\n"
+
+#: timezone/zic.c:1662
+#, c-format
+msgid "%s: rename to %s%s%s: %s\n"
+msgstr "%s: hernoemen naar %s%s%s: %s\n"
+
+#: timezone/zic.c:1744
+#, c-format
+msgid "%s: Can't remove %s%s%s: %s\n"
+msgstr "%s: Kan %s%s%s niet verwijderen: %s\n"
+
+#: timezone/zic.c:1789
+#, c-format
+msgid "%s: Can't link %s%s%s to %s%s%s: %s\n"
+msgstr "%s: Kan %s%s%s niet koppelen aan %s%s%s: %s\n"
+
 #: timezone/zic.c:1821
 #, c-format
 msgid "symbolic link used because hard link failed: %s"
 msgstr "symbolische koppeling gemaakt omdat harde koppeling mislukte: %s"
 
+#: timezone/zic.c:1829
+#, c-format
+msgid "%s: Can't read %s%s%s: %s\n"
+msgstr "%s: Kan %s%s%s niet lezen: %s\n"
+
 #: timezone/zic.c:1839
 #, c-format
 msgid "copy used because hard link failed: %s"
 msgstr "kopie gemaakt omdat harde koppeling mislukte: %s"
+
+#: timezone/zic.c:1842
+msgid "copy used because symbolic link not obvious"
+msgstr "kopie gemaakt omdat symbolische koppeling niet voor de hand ligt"
 
 #: timezone/zic.c:1844
 #, c-format
@@ -7027,6 +7149,11 @@ msgstr "meer dan %d overgangstijden worden door referentie-cliënten onjuist beh
 msgid "pre-2014 clients may mishandle more than 1200 transition times"
 msgstr "cliënten van voor 2014 zouden meer dan 1200 overgangstijden onjuist kunnen behandelen"
 
+#: timezone/zic.c:2733
+#, c-format
+msgid "reference clients mishandle more than %d leap seconds"
+msgstr "meer dan %d schrikkelseconden worden door referentie-cliënten onjuist behandeld"
+
 #: timezone/zic.c:2774
 #, c-format
 msgid "%s: pre-2021b clients may mishandle leap second expiry"
@@ -7040,6 +7167,11 @@ msgstr "%s: cliënten van voor 2021b zouden afkapping van de schrikkelsecondetab
 #: timezone/zic.c:2831
 msgid "too many transition times"
 msgstr "te veel overgangstijden"
+
+#: timezone/zic.c:2998
+#, c-format
+msgid "%s: pre-2026 reference clients mishandle more than 50 bytes of abbreviations"
+msgstr "%s: meer dan 50 bytes aan afkortingen worden door referentie-cliënten van voor 2026 onjuist behandeld"
 
 #: timezone/zic.c:3097
 #, c-format

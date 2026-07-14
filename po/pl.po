@@ -6,9 +6,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: libc 2.42.9000\n"
-"POT-Creation-Date: 2026-07-01 10:52+0900\n"
-"PO-Revision-Date: 2026-01-19 17:45+0100\n"
+"Project-Id-Version: libc 2.43.9000\n"
+"POT-Creation-Date: 2026-07-07 10:38+0900\n"
+"PO-Revision-Date: 2026-07-08 17:46+0200\n"
 "Last-Translator: Jakub Bogusz <qboosh@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
 "Language: pl\n"
@@ -434,6 +434,11 @@ msgstr "Błędnie zapisane dane rozszerzone w pliku pamięci podręcznej %s\n"
 msgid "Writing of cache extension data failed"
 msgstr "Zapis danych rozszerzonych pamięci podręcznej nie powiódł się"
 
+#: elf/cache.c:606
+#, c-format
+msgid "Writing of cache tunable data failed"
+msgstr "Zapis danych strojenia pamięci podręcznej nie powiódł się"
+
 #: elf/cache.c:619
 #, c-format
 msgid "%s: ISA level is too high (%d > %d)"
@@ -538,6 +543,10 @@ msgstr "nie można odczytać danych z pliku"
 #: elf/dl-load.c:1011 elf/dl-map-segments.h:120
 msgid "ELF load command address/offset not page-aligned"
 msgstr "adres/przesunięcie polecenia wczytania ELF niewyrównane do strony"
+
+#: elf/dl-load.c:1105
+msgid "ELF file incompatible with this system"
+msgstr "plik ELF niezgodny z tym systemem"
 
 #: elf/dl-load.c:1151
 msgid "cannot stat shared object"
@@ -700,6 +709,10 @@ msgstr "nie można odtworzyć ochrony segmentu po relokacji"
 msgid "cannot apply additional memory protection after relocation"
 msgstr "nie można nałożyć dodatkowej ochrony pamięci po relokacji"
 
+#: elf/dl-scratch-buffer.c:51 elf/dl-scratch-buffer.c:63
+msgid "cannot allocate loader scratch buffer"
+msgstr "nie można przydzielić bufora zależności programu ładującego"
+
 #: elf/dl-sym.c:138
 msgid "RTLD_NEXT used in code not dynamically loaded"
 msgstr "RTLD_NEXT wystąpiło w kodzie nieładowanym dynamicznie"
@@ -777,6 +790,18 @@ msgstr "Użycie BUFORA jako pliku pamięci podręcznej"
 #: elf/ldconfig.c:138
 msgid "CONF"
 msgstr "KONF"
+
+#: elf/ldconfig.c:138
+msgid "Use CONF as configuration file for libraries"
+msgstr "Użycie KONF jako pliku konfiguracyjnego dla bibliotek"
+
+#: elf/ldconfig.c:139
+msgid "TUNCONF"
+msgstr "KONFSTR"
+
+#: elf/ldconfig.c:139
+msgid "Use TUNCONF as configuration file for tunables"
+msgstr "Użycie KONFSTR jako pliku konfiguracyjnego strojenia"
 
 #: elf/ldconfig.c:140
 msgid "Only process directories specified on the command line.  Don't build cache."
@@ -1223,6 +1248,10 @@ msgstr "Argumenty obowiązkowe dla opcji długich są również obowiązkowe dla
 #: elf/sotruss.sh:55
 msgid "%s: option requires an argument -- '%s'\\n"
 msgstr "%s: opcja musi mieć argument -- '%s'\\n"
+
+#: elf/sotruss.sh:61
+msgid "%s: option '%s' is ambiguous; possibilities:"
+msgstr "%s: opcja '%s' jest niejednoznaczna; możliwości:"
 
 # w %s wchodzi nazwisko autora danego programu/procedury -PK
 #: elf/sotruss.sh:80
@@ -4637,6 +4666,10 @@ msgstr "Użycie tej konfiguracji usługi rozwiązywania nazw"
 msgid "disable IDN encoding"
 msgstr "wyłączenie kodowania IDN"
 
+#: nss/getent.c:61
+msgid "print getaddrinfo error details"
+msgstr "wypisywanie szczegółów błędów getaddrinfo"
+
 #: nss/getent.c:63
 msgid "do not filter out unsupported IPv4/IPv6 addresses (with ahosts*)"
 msgstr "bez odfiltrowania nieobsługiwanych adresów IPv4/IPv6 (z ahosts*)"
@@ -4649,6 +4682,11 @@ msgstr "Odczyt wpisów z bazy administracyjnej."
 #, c-format
 msgid "Enumeration not supported on %s\n"
 msgstr "Wyliczanie nieobsługiwane dla %s\n"
+
+#: nss/getent.c:372
+#, c-format
+msgid "Host %s failed: %s\n"
+msgstr "Host %s zawiódł: %s\n"
 
 #: nss/getent.c:536 nss/getent.c:549
 #, c-format
@@ -6695,6 +6733,57 @@ msgstr " (reguła z \"%s\", linia %<PRIdMAX>)"
 msgid "warning: "
 msgstr "uwaga: "
 
+#: timezone/zic.c:808
+#, c-format
+msgid "%s: -m '%s': invalid mode\n"
+msgstr "%s: -m '%s': błędne uprawnienia\n"
+
+#: timezone/zic.c:852
+#, c-format
+msgid "%s: More than one %s option specified\n"
+msgstr "%s: Podano więcej niż jedną opcję %s\n"
+
+#: timezone/zic.c:860
+#, c-format
+msgid ""
+"%s: usage is %s [ --version ] [ --help ] [ -v ] \\\n"
+"\t[ -b {slim|fat} ] [ -d directory ] [ -D ] \\\n"
+"\t[ -l localtime ] [ -L leapseconds ] [ -m mode ] \\\n"
+"\t[ -p posixrules ] [ -r '[@lo][/@hi]' ] [ -R @hi ] \\\n"
+"\t[ -t localtime-link ] [ -u 'owner[:group]' ] \\\n"
+"\t[ filename ... ]\n"
+"\n"
+"Report bugs to %s.\n"
+msgstr ""
+"%s: składnia: %s [ --version ] [ --help ] [ -v ] \\\n"
+"\t[ -b {slim|fat} ] [ -d katalog ] [ -D ] \\\n"
+"\t[ -l czas_lokalny ] [ -L sek_przestępne ] [ -m uprawnienia ] \\\n"
+"\t[ -p reguły_POSIX ] [ -r '[@lo][/@hi]' ] [ -R '@hi' ] \\\n"
+"\t[ -t dowiązanie_czasu_lokalnego ] [ -u 'właściciel[:grupa]' ] \\\n"
+"\t[ plik ... ]\n"
+"\n"
+"Błędy prosimy zgłaszać na adres %s.\n"
+
+#: timezone/zic.c:878
+#, c-format
+msgid "multiple groups specified"
+msgstr "podano wiele grup"
+
+#: timezone/zic.c:884
+#, c-format
+msgid "%s: invalid group: %s\n"
+msgstr "%s: błędna grupa: %s\n"
+
+#: timezone/zic.c:894
+#, c-format
+msgid "multiple owners specified"
+msgstr "podano wielu właścicieli"
+
+#: timezone/zic.c:900
+#, c-format
+msgid "%s: invalid owner: %s\n"
+msgstr "%s: błędny właściciel: %s\n"
+
 #: timezone/zic.c:951
 #, c-format
 msgid "%s: Can't chdir to %s: %s\n"
@@ -6732,6 +6821,10 @@ msgstr "niezgodne opcje -b"
 #, c-format
 msgid "invalid option: -b '%s'"
 msgstr "błędna opcja: -b '%s'"
+
+#: timezone/zic.c:1303
+msgid "-p is obsolete and likely ineffective"
+msgstr "-p jest przestarzałe i prawdopodobnie nic daje efektu"
 
 #: timezone/zic.c:1323
 msgid "-y ignored"
@@ -6790,15 +6883,44 @@ msgstr "nazwa pliku '%s' zawiera bajt '%c'"
 msgid "file name '%s' contains byte '\\%o'"
 msgstr "nazwa pliku '%s' zawiera bajt '\\%o'"
 
+#: timezone/zic.c:1644
+#, c-format
+msgid "%s: Can't create %s%s%s: %s\n"
+msgstr "%s: Nie można utworzyć %s%s%s: %s\n"
+
+#: timezone/zic.c:1662
+#, c-format
+msgid "%s: rename to %s%s%s: %s\n"
+msgstr "%s: zmiana nazwy na %s%s%s: %s\n"
+
+#: timezone/zic.c:1744
+#, c-format
+msgid "%s: Can't remove %s%s%s: %s\n"
+msgstr "%s: Nie można usunąć %s%s%s: %s\n"
+
+#: timezone/zic.c:1789
+#, c-format
+msgid "%s: Can't link %s%s%s to %s%s%s: %s\n"
+msgstr "%s: Nie można dowiązać %s%s%s do %s%s%s: %s\n"
+
 #: timezone/zic.c:1821
 #, c-format
 msgid "symbolic link used because hard link failed: %s"
 msgstr "użyto dowiązania symbolicznego, ponieważ zwykłe nie powiodło się: %s"
 
+#: timezone/zic.c:1829
+#, c-format
+msgid "%s: Can't read %s%s%s: %s\n"
+msgstr "%s: Nie można odczytać %s%s%s: %s\n"
+
 #: timezone/zic.c:1839
 #, c-format
 msgid "copy used because hard link failed: %s"
 msgstr "użyto kopii, ponieważ dowiązanie zwykłe nie powiodło się: %s"
+
+#: timezone/zic.c:1842
+msgid "copy used because symbolic link not obvious"
+msgstr "użyto kopii, ponieważ dowiązanie symboliczne nie jest oczywiste"
 
 #: timezone/zic.c:1844
 #, c-format
@@ -6987,6 +7109,11 @@ msgstr "klienci referencyjni mogą źle obsługiwać więcej niż %d zmian czasu
 msgid "pre-2014 clients may mishandle more than 1200 transition times"
 msgstr "klienci sprzed 2014 roku mogą źle obsługiwać więcej niż 1200 zmian czasu"
 
+#: timezone/zic.c:2733
+#, c-format
+msgid "reference clients mishandle more than %d leap seconds"
+msgstr "klienci referencyjni mogą źle obsługiwać więcej niż %d sekund przestępnych"
+
 #: timezone/zic.c:2774
 #, c-format
 msgid "%s: pre-2021b clients may mishandle leap second expiry"
@@ -7000,6 +7127,11 @@ msgstr "%s: klienci sprzed wersji 2021b roku mogą źle obsługiwać ucięcie ta
 #: timezone/zic.c:2831
 msgid "too many transition times"
 msgstr "za dużo zmian czasu"
+
+#: timezone/zic.c:2998
+#, c-format
+msgid "%s: pre-2026 reference clients mishandle more than 50 bytes of abbreviations"
+msgstr "%s: klienci referencyjni sprzed 2026 roku mogą źle obsługiwać więcej niż 50 bajtów skrótów"
 
 #: timezone/zic.c:3097
 #, c-format

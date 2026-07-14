@@ -14,13 +14,14 @@
 # Actualizare a traducerii pentru versiunea 2.40.9000, făcută de R-GC, ian-2025.
 # Actualizare a traducerii pentru versiunea 2.41.9000, făcută de R-GC, iul-2025.
 # Actualizare a traducerii pentru versiunea 2.42.9000, făcută de R-GC, ian-2026.
+# Actualizare a traducerii pentru versiunea 2.43.9000, făcută de R-GC, iul-2026.
 # Actualizare a traducerii pentru versiunea Y, făcută de X, Z(luna-anul).
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: libc 2.42.9000\n"
-"POT-Creation-Date: 2026-07-01 10:52+0900\n"
-"PO-Revision-Date: 2026-01-19 19:08+0100\n"
+"Project-Id-Version: libc 2.43.9000\n"
+"POT-Creation-Date: 2026-07-07 10:38+0900\n"
+"PO-Revision-Date: 2026-07-09 09:21+0200\n"
 "Last-Translator: Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>\n"
 "Language-Team: Romanian <translation-team-ro@lists.sourceforge.net>\n"
 "Language: ro\n"
@@ -29,7 +30,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < 20)) ? 1 : 2);\n"
 "X-Bugs: Report translation errors to the Language-Team address.\n"
-"X-Generator: Poedit 3.6\n"
+"X-Generator: Poedit 3.8\n"
 
 #: argp/argp-help.c:229
 #, c-format
@@ -452,6 +453,11 @@ msgstr "Date de extensie incorecte în fișierul spațiului de prestocare(cache)
 msgid "Writing of cache extension data failed"
 msgstr "Scrierea datelor de extensie a spațiului de prestocare(cache) a eșuat"
 
+#: elf/cache.c:606
+#, c-format
+msgid "Writing of cache tunable data failed"
+msgstr "Scrierea datelor parametrilor reglabili în memoria cache a eșuat"
+
 #: elf/cache.c:619
 #, c-format
 msgid "%s: ISA level is too high (%d > %d)"
@@ -558,6 +564,10 @@ msgstr "nu se pot citi datele fișierului"
 #: elf/dl-load.c:1011 elf/dl-map-segments.h:120
 msgid "ELF load command address/offset not page-aligned"
 msgstr "Adresa/poziția comenzii de încărcare ELF nu este aliniată în pagină"
+
+#: elf/dl-load.c:1105
+msgid "ELF file incompatible with this system"
+msgstr "Fișier ELF incompatibil cu acest sistem"
 
 #: elf/dl-load.c:1151
 msgid "cannot stat shared object"
@@ -720,6 +730,10 @@ msgstr "nu se poate restabili segmentul de protecție după realocare"
 msgid "cannot apply additional memory protection after relocation"
 msgstr "nu se poate aplica protecția suplimentară de memorie după realocare"
 
+#: elf/dl-scratch-buffer.c:51 elf/dl-scratch-buffer.c:63
+msgid "cannot allocate loader scratch buffer"
+msgstr "nu se poate aloca memorie tampon preliminară încărcătorului"
+
 #: elf/dl-sym.c:138
 msgid "RTLD_NEXT used in code not dynamically loaded"
 msgstr "RTLD_NEXT utilizat în cod nu s-a încărcat dinamic"
@@ -797,6 +811,18 @@ msgstr "Utilizează CACHE ca fișier de zonă de prestocare(cache)"
 #: elf/ldconfig.c:138
 msgid "CONF"
 msgstr "CONF"
+
+#: elf/ldconfig.c:138
+msgid "Use CONF as configuration file for libraries"
+msgstr "Utilizează CONF ca fișier de configurare pentru biblioteci"
+
+#: elf/ldconfig.c:139
+msgid "TUNCONF"
+msgstr "TUNCONF"
+
+#: elf/ldconfig.c:139
+msgid "Use TUNCONF as configuration file for tunables"
+msgstr "Utilizează TUNCONF ca fișier de configurare pentru parametrii reglabili"
 
 #: elf/ldconfig.c:140
 msgid "Only process directories specified on the command line.  Don't build cache."
@@ -1244,6 +1270,10 @@ msgstr "Argumentele obligatorii pentru opțiunile lungi sunt, de asemenea, oblig
 #: elf/sotruss.sh:55
 msgid "%s: option requires an argument -- '%s'\\n"
 msgstr "%s: opțiunea necesită un argument -- „%s”\\n"
+
+#: elf/sotruss.sh:61
+msgid "%s: option '%s' is ambiguous; possibilities:"
+msgstr "%s: opțiunea „%s” este ambiguă; posibilități:"
 
 #: elf/sotruss.sh:80
 msgid "Written by %s.\\n"
@@ -4653,6 +4683,10 @@ msgstr "Configurația serviciului care urmează să fie utilizată"
 msgid "disable IDN encoding"
 msgstr "dezactivează codificarea IDN"
 
+#: nss/getent.c:61
+msgid "print getaddrinfo error details"
+msgstr "afișează detaliile erorii getaddrinfo"
+
 #: nss/getent.c:63
 msgid "do not filter out unsupported IPv4/IPv6 addresses (with ahosts*)"
 msgstr "nu filtrează adresele IPv4/IPv6 neacceptate (cu ahosts*)"
@@ -4665,6 +4699,11 @@ msgstr "Obține intrări din baza de date administrativă."
 #, c-format
 msgid "Enumeration not supported on %s\n"
 msgstr "Enumerarea nu este acceptată pentru %s\n"
+
+#: nss/getent.c:372
+#, c-format
+msgid "Host %s failed: %s\n"
+msgstr "Gazda %s a eșuat: %s\n"
 
 #: nss/getent.c:536 nss/getent.c:549
 #, c-format
@@ -6723,6 +6762,57 @@ msgstr " (regula de la „%s”, linia %<PRIdMAX>)"
 msgid "warning: "
 msgstr "avertisment: "
 
+#: timezone/zic.c:808
+#, c-format
+msgid "%s: -m '%s': invalid mode\n"
+msgstr "%s: -m „%s”: mod nevalid\n"
+
+#: timezone/zic.c:852
+#, c-format
+msgid "%s: More than one %s option specified\n"
+msgstr "%s: Mai mult de o opțiune „-%s” specificată\n"
+
+#: timezone/zic.c:860
+#, c-format
+msgid ""
+"%s: usage is %s [ --version ] [ --help ] [ -v ] \\\n"
+"\t[ -b {slim|fat} ] [ -d directory ] [ -D ] \\\n"
+"\t[ -l localtime ] [ -L leapseconds ] [ -m mode ] \\\n"
+"\t[ -p posixrules ] [ -r '[@lo][/@hi]' ] [ -R @hi ] \\\n"
+"\t[ -t localtime-link ] [ -u 'owner[:group]' ] \\\n"
+"\t[ filename ... ]\n"
+"\n"
+"Report bugs to %s.\n"
+msgstr ""
+"%s: sintaxa este %s [ --version ] [ --help ] [ -v ] \\\n"
+"\t[ -b {slim|fat} ] [ -d director ] [ -D ] \\\n"
+"\t[ -l ora_locală ] [ -L secunde_an-bisect ] [ -m mod ] \\\n"
+"\t[ -p reguli_posix ] [ -r '[@lo][/@hi]' ] [ -R '@hi' ] \\\n"
+"    [ -t legătură-ora_locală ] [ -u 'proprietr[:grup]' ] \\\n"
+"\t[ nume_fișier ... ]\n"
+"\n"
+"Raportați erorile la %s.\n"
+
+#: timezone/zic.c:878
+#, c-format
+msgid "multiple groups specified"
+msgstr "au fost specificate mai multe grupuri"
+
+#: timezone/zic.c:884
+#, c-format
+msgid "%s: invalid group: %s\n"
+msgstr "%s: grup nevalid: %s\n"
+
+#: timezone/zic.c:894
+#, c-format
+msgid "multiple owners specified"
+msgstr "au fost specificați mai mulți proprietari"
+
+#: timezone/zic.c:900
+#, c-format
+msgid "%s: invalid owner: %s\n"
+msgstr "%s: proprietar nevalid: %s\n"
+
 #: timezone/zic.c:951
 #, c-format
 msgid "%s: Can't chdir to %s: %s\n"
@@ -6760,6 +6850,10 @@ msgstr "opțiuni incompatibile „-b”"
 #, c-format
 msgid "invalid option: -b '%s'"
 msgstr "opțiune nevalidă: „-b %s”"
+
+#: timezone/zic.c:1303
+msgid "-p is obsolete and likely ineffective"
+msgstr "opținea „-p” este obsoletă și, probabil, ineficientă"
 
 #: timezone/zic.c:1323
 msgid "-y ignored"
@@ -6818,15 +6912,44 @@ msgstr "numele fișierului „%s” conține octetul „%c”"
 msgid "file name '%s' contains byte '\\%o'"
 msgstr "numele fișierului „%s” conține octetul „%o”"
 
+#: timezone/zic.c:1644
+#, c-format
+msgid "%s: Can't create %s%s%s: %s\n"
+msgstr "%s: Nu se poate crea %s%s%s: %s\n"
+
+#: timezone/zic.c:1662
+#, c-format
+msgid "%s: rename to %s%s%s: %s\n"
+msgstr "%s: redenumește în %s%s%s: %s\n"
+
+#: timezone/zic.c:1744
+#, c-format
+msgid "%s: Can't remove %s%s%s: %s\n"
+msgstr "%s: Nu se poate elimina %s%s%s: %s\n"
+
+#: timezone/zic.c:1789
+#, c-format
+msgid "%s: Can't link %s%s%s to %s%s%s: %s\n"
+msgstr "%s: Nu se poate lega %s%s%s la %s%s%s: %s\n"
+
 #: timezone/zic.c:1821
 #, c-format
 msgid "symbolic link used because hard link failed: %s"
 msgstr "legătura simbolică este utilizată deoarece legătura dură a eșuat: %s"
 
+#: timezone/zic.c:1829
+#, c-format
+msgid "%s: Can't read %s%s%s: %s\n"
+msgstr "%s: Nu se poate citi %s%s%s: %s\\\n"
+
 #: timezone/zic.c:1839
 #, c-format
 msgid "copy used because hard link failed: %s"
 msgstr "copia este utilizată deoarece legătura dură a eșuat: %s"
+
+#: timezone/zic.c:1842
+msgid "copy used because symbolic link not obvious"
+msgstr "s-a folosit o copie deoarece legătura simbolică nu era evidentă"
 
 #: timezone/zic.c:1844
 #, c-format
@@ -7015,6 +7138,11 @@ msgstr "clienții de referință gestionează greșit mai mult de %d timpi de tr
 msgid "pre-2014 clients may mishandle more than 1200 transition times"
 msgstr "clienții dinainte de anul 2014 pot gestiona greșit peste 1200 de timpi de tranziție"
 
+#: timezone/zic.c:2733
+#, c-format
+msgid "reference clients mishandle more than %d leap seconds"
+msgstr "clienții de referință gestionează incorect mai mult de %d secunde intercalate(de an bisect)"
+
 #: timezone/zic.c:2774
 #, c-format
 msgid "%s: pre-2021b clients may mishandle leap second expiry"
@@ -7028,6 +7156,11 @@ msgstr "%s: clienții de dinainte de 2021b pot gestiona greșit trunchierea tabe
 #: timezone/zic.c:2831
 msgid "too many transition times"
 msgstr "prea multe perioade de tranziție"
+
+#: timezone/zic.c:2998
+#, c-format
+msgid "%s: pre-2026 reference clients mishandle more than 50 bytes of abbreviations"
+msgstr "%s: clienții de referință din perioada anterioară anului 2026 gestionează incorect abrevierile mai mari de 50 de octeți"
 
 #: timezone/zic.c:3097
 #, c-format

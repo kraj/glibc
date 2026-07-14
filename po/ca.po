@@ -48,7 +48,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: libc 2.37.9000\n"
-"POT-Creation-Date: 2026-07-01 10:52+0900\n"
+"POT-Creation-Date: 2026-07-07 10:38+0900\n"
 "PO-Revision-Date: 2023-08-21 18:12+0200\n"
 "Last-Translator: Ivan Vilata i Balaguer <ivan@selidor.net>\n"
 "Language-Team: Catalan <ca@dodds.net>\n"

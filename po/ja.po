@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: libc 2.36.9000\n"
-"POT-Creation-Date: 2026-07-01 10:52+0900\n"
+"POT-Creation-Date: 2026-07-07 10:38+0900\n"
 "PO-Revision-Date: 2023-05-09 08:02+0900\n"
 "Last-Translator: Takeshi Hamasaki <hmatrjp@users.sourceforge.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"

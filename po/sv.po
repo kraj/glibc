@@ -5,12 +5,12 @@
 # Jan Djärv <jan.h.d@swipnet.se>, 1996, 1998, 2001, 2002, 2003, 2006, 2007, 2008, 2009, 2011, 2012, 2013, 2014, 2015.
 # Göran Uddeborg <goeran@uddeborg.se>, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026.
 #
-# $Revision: 1.49 $
+# $Revision: 1.51 $
 msgid ""
 msgstr ""
-"Project-Id-Version: libc 2.42.9000\n"
-"POT-Creation-Date: 2026-07-01 10:52+0900\n"
-"PO-Revision-Date: 2026-01-20 11:13+0100\n"
+"Project-Id-Version: libc 2.43.9000\n"
+"POT-Creation-Date: 2026-07-07 10:38+0900\n"
+"PO-Revision-Date: 2026-07-09 13:04+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "Language: sv\n"
@@ -436,6 +436,11 @@ msgstr "Felformad utökningsdata i cache-filen %s\n"
 msgid "Writing of cache extension data failed"
 msgstr "Att skriva cache-utökningsdata misslyckades"
 
+#: elf/cache.c:606
+#, c-format
+msgid "Writing of cache tunable data failed"
+msgstr "Skrivning av trimningsbar cache-data misslyckades"
+
 #: elf/cache.c:619
 #, c-format
 msgid "%s: ISA level is too high (%d > %d)"
@@ -542,6 +547,10 @@ msgstr "kan inte läsa fildata"
 #: elf/dl-load.c:1011 elf/dl-map-segments.h:120
 msgid "ELF load command address/offset not page-aligned"
 msgstr "Adress/position för ELF-laddkommando är inte sidjusterad"
+
+#: elf/dl-load.c:1105
+msgid "ELF file incompatible with this system"
+msgstr "ELF-filen är inkompatibel med detta system"
 
 #: elf/dl-load.c:1151
 msgid "cannot stat shared object"
@@ -704,6 +713,10 @@ msgstr "kan inte återställa segmenträttigheter efter relokering"
 msgid "cannot apply additional memory protection after relocation"
 msgstr "kan inte applicera extra minnesskydd efter relokering"
 
+#: elf/dl-scratch-buffer.c:51 elf/dl-scratch-buffer.c:63
+msgid "cannot allocate loader scratch buffer"
+msgstr "kan inte allokera laddarbetsbuffert"
+
 #: elf/dl-sym.c:138
 msgid "RTLD_NEXT used in code not dynamically loaded"
 msgstr "RTLD_NEXT används i kod som inte är dynamiskt laddad"
@@ -781,6 +794,18 @@ msgstr "Använd CACHE som cache-fil"
 #: elf/ldconfig.c:138
 msgid "CONF"
 msgstr "CONF"
+
+#: elf/ldconfig.c:138
+msgid "Use CONF as configuration file for libraries"
+msgstr "Använd CONF som konfigurationsfil för bibliotek"
+
+#: elf/ldconfig.c:139
+msgid "TUNCONF"
+msgstr "TUNCONF"
+
+#: elf/ldconfig.c:139
+msgid "Use TUNCONF as configuration file for tunables"
+msgstr "Använd TUNCONF som konfigurationsfil för trimningar"
 
 #: elf/ldconfig.c:140
 msgid "Only process directories specified on the command line.  Don't build cache."
@@ -1228,6 +1253,10 @@ msgstr "Obligatoriska respektive valfria argument för långa flaggor är obliga
 #: elf/sotruss.sh:55
 msgid "%s: option requires an argument -- '%s'\\n"
 msgstr "%s: flaggan kräver ett argument — ”%s”\\n"
+
+#: elf/sotruss.sh:61
+msgid "%s: option '%s' is ambiguous; possibilities:"
+msgstr "%s: flaggan ”%s” är tvetydig; alternativ:"
 
 #: elf/sotruss.sh:80
 msgid "Written by %s.\\n"
@@ -4634,6 +4663,10 @@ msgstr "Tjänstekonfiguration som ska användas"
 msgid "disable IDN encoding"
 msgstr "inaktivera DIN-kodning"
 
+#: nss/getent.c:61
+msgid "print getaddrinfo error details"
+msgstr "skriv ut feldetaljer från getaddrinfo"
+
 #: nss/getent.c:63
 msgid "do not filter out unsupported IPv4/IPv6 addresses (with ahosts*)"
 msgstr "filtrera inte bort IPv4/IPv6-adresser som inte stödjs (med ahosts*)"
@@ -4646,6 +4679,11 @@ msgstr "Hämta poster från den administrativa databasen."
 #, c-format
 msgid "Enumeration not supported on %s\n"
 msgstr "Uppräkning stödjs ej på %s\n"
+
+#: nss/getent.c:372
+#, c-format
+msgid "Host %s failed: %s\n"
+msgstr "Värden %s misslyckades: %s\n"
 
 #: nss/getent.c:536 nss/getent.c:549
 #, c-format
@@ -6687,6 +6725,58 @@ msgstr " (regel från ”%s”, rad %<PRIdMAX>)"
 msgid "warning: "
 msgstr "varning: "
 
+#: timezone/zic.c:808
+#, c-format
+msgid "%s: -m '%s': invalid mode\n"
+msgstr "%s: -m '%s': felaktiga rättigheter\n"
+
+#: timezone/zic.c:852
+#, c-format
+msgid "%s: More than one %s option specified\n"
+msgstr "%s: Flaggan %s given mer än en gång\n"
+
+#: timezone/zic.c:860
+#, c-format
+msgid ""
+"%s: usage is %s [ --version ] [ --help ] [ -v ] \\\n"
+"\t[ -b {slim|fat} ] [ -d directory ] [ -D ] \\\n"
+"\t[ -l localtime ] [ -L leapseconds ] [ -m mode ] \\\n"
+"\t[ -p posixrules ] [ -r '[@lo][/@hi]' ] [ -R @hi ] \\\n"
+"\t[ -t localtime-link ] [ -u 'owner[:group]' ] \\\n"
+"\t[ filename ... ]\n"
+"\n"
+"Report bugs to %s.\n"
+msgstr ""
+"%s: användning är %s [ --version ] [ --help ] [ -v ] \\\n"
+"\t[ -b {slim|fat} ] [ -d katalog ] [ -D ] \\\n"
+"        [ -l lokaltid ] [ -L skottsekunder ] [ -m rättigheter ] \\\n"
+"\t[ -p posixregler ] [ -r '[@lo][/@hi]' ] [ -R '@hi' ] \\\n"
+"\t[ -t lokaltidslänk ] [ -u 'ägare[:grupp]' ] \\\n"
+"\t[ filnamn … ]\n"
+"\n"
+"Rapportera fel till %s.\n"
+"Rapportera fel eller synpunkter på översättningen till <tp-sv@listor.tp-sv.se>.\n"
+
+#: timezone/zic.c:878
+#, c-format
+msgid "multiple groups specified"
+msgstr "flera grupper angivna"
+
+#: timezone/zic.c:884
+#, c-format
+msgid "%s: invalid group: %s\n"
+msgstr "%s: felaktig grupp: %s\n"
+
+#: timezone/zic.c:894
+#, c-format
+msgid "multiple owners specified"
+msgstr "flera ägare angivna"
+
+#: timezone/zic.c:900
+#, c-format
+msgid "%s: invalid owner: %s\n"
+msgstr "%s: felaktig ägare: %s\n"
+
 #: timezone/zic.c:951
 #, c-format
 msgid "%s: Can't chdir to %s: %s\n"
@@ -6724,6 +6814,10 @@ msgstr "inkompatibla -b-flaggor"
 #, c-format
 msgid "invalid option: -b '%s'"
 msgstr "felaktig flagga: -b '%s'"
+
+#: timezone/zic.c:1303
+msgid "-p is obsolete and likely ineffective"
+msgstr "-p är föråldrat och saknar sannolikt effekt"
 
 #: timezone/zic.c:1323
 msgid "-y ignored"
@@ -6782,15 +6876,44 @@ msgstr "filnamnet ”%s” innehåller en byte ”%c”"
 msgid "file name '%s' contains byte '\\%o'"
 msgstr "filnamnet ”%s” innehåller en byte ”\\%o”"
 
+#: timezone/zic.c:1644
+#, c-format
+msgid "%s: Can't create %s%s%s: %s\n"
+msgstr "%s: Kan inte skapa %s%s%s: %s\n"
+
+#: timezone/zic.c:1662
+#, c-format
+msgid "%s: rename to %s%s%s: %s\n"
+msgstr "%s: byt namn till %s%s%s: %s\n"
+
+#: timezone/zic.c:1744
+#, c-format
+msgid "%s: Can't remove %s%s%s: %s\n"
+msgstr "%s: Kan inte ta bort %s%s%s: %s\n"
+
+#: timezone/zic.c:1789
+#, c-format
+msgid "%s: Can't link %s%s%s to %s%s%s: %s\n"
+msgstr "%s: Kan inte länka %s%s%s till %s%s%s: %s\n"
+
 #: timezone/zic.c:1821
 #, c-format
 msgid "symbolic link used because hard link failed: %s"
 msgstr "symbolisk länk använd eftersom en hård länk misslyckades: %s"
 
+#: timezone/zic.c:1829
+#, c-format
+msgid "%s: Can't read %s%s%s: %s\n"
+msgstr "%s: Kan inte läsa %s%s%s: %s\n"
+
 #: timezone/zic.c:1839
 #, c-format
 msgid "copy used because hard link failed: %s"
 msgstr "kopiering använd eftersom en hård länk misslyckades: %s"
+
+#: timezone/zic.c:1842
+msgid "copy used because symbolic link not obvious"
+msgstr "kopiering använd eftersom en symbolisk länk inte är uppenbar"
 
 #: timezone/zic.c:1844
 #, c-format
@@ -6979,6 +7102,11 @@ msgstr "referensklienter hanterar fler än %d övergångstider felaktigt"
 msgid "pre-2014 clients may mishandle more than 1200 transition times"
 msgstr "klienter från före 2014 kan hantera fler än 1200 övergångstider felaktigt"
 
+#: timezone/zic.c:2733
+#, c-format
+msgid "reference clients mishandle more than %d leap seconds"
+msgstr "referensklienter hanterar fler än %d skottsekunder felaktigt"
+
 #: timezone/zic.c:2774
 #, c-format
 msgid "%s: pre-2021b clients may mishandle leap second expiry"
@@ -6992,6 +7120,11 @@ msgstr "%s: klienter före 2021b kan hantera trunkering av skottsekundstabellen 
 #: timezone/zic.c:2831
 msgid "too many transition times"
 msgstr "för många övergångstider"
+
+#: timezone/zic.c:2998
+#, c-format
+msgid "%s: pre-2026 reference clients mishandle more than 50 bytes of abbreviations"
+msgstr "%s referensklienter före 2026 hanterar fler än 50 byte med förkortningar felaktigt"
 
 #: timezone/zic.c:3097
 #, c-format
