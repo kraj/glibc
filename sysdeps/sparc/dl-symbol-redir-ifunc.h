@@ -1,4 +1,4 @@
-/* Symbol rediretion for loader/static initialization code.
+/* Symbol redirection for loader/static initialization code.  SPARC version.
    Copyright (C) 2022-2026 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -19,6 +19,17 @@
 #ifndef _DL_IFUNC_GENERIC_H
 #define _DL_IFUNC_GENERIC_H
 
+/* The mem* IFUNCs only exist on a multi-arch sparcv9/sparc64 build.  */
+#if defined (__sparc_v9__) && defined (USE_MULTIARCH)
+
 asm ("memset = __memset_ultra1");
+# ifndef SHARED
+asm ("memcpy = __memcpy_ultra1");
+asm ("memmove = __memmove_ultra1");
+asm ("mempcpy = __mempcpy_ultra1");
+asm ("__mempcpy = __mempcpy_ultra1");
+# endif
+
+#endif
 
 #endif
