@@ -23,9 +23,6 @@ rtld="$1"
 test_wrapper_env="$2"
 run_program_env="$3"
 test_prog="$4"
-output=${test_prog}.$$
-
-trap "rm -f ${output}" EXIT
 
 cmd="${test_wrapper_env} ${run_program_env} strace -X raw ${rtld} ${test_prog}"
 
@@ -48,19 +45,18 @@ esac
 
 # Finally the actual test inside the test environment, using the just
 # build ld.so and new libraries to run the THP test under strace.
-/bin/sh -c \
-  "timeout -k 4 $((3*$TIMEOUTFACTOR)) ${cmd} --direct 2>&1" > "${output}"
-if grep -E "madvise\(0x[0-9a-f]+, [0-9]+, 0xe)" "${output}"; then
+if /bin/sh -c \
+  "timeout -k 4 $((3*$TIMEOUTFACTOR)) ${cmd} --direct 2>&1 \
+   | grep -E \"madvise\(0x[0-9a-f]+, [0-9]+, 0xe)\""; then
   if test ${strace_expected} = yes; then
-    status=0
+    exit 0
   else
-    status=1
+    exit 1
   fi
 else
   if test ${strace_expected} = no; then
-    status=0
+    exit 0
   else
-    status=1
+    exit 1
   fi
 fi
-exit ${status}
