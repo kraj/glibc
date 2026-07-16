@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <support/check.h>
 #include <support/xunistd.h>
+#include <support/test-driver.h>
 
 static int
 do_test (void)
@@ -29,13 +30,13 @@ do_test (void)
 #ifdef FE_INVALID
   pid_t pid;
 
-  if (!EXCEPTION_ENABLE_SUPPORTED (FE_INVALID))
-    FAIL_UNSUPPORTED ("feenableexcept (FE_INVALID) not supported");
-
   pid = xfork ();
   if (pid == 0)
     {
       int r = feenableexcept (FE_INVALID);
+
+      if (!EXCEPTION_ENABLE_SUPPORTED (FE_INVALID) && r == -1)
+        FAIL_UNSUPPORTED ("feenableexcept (FE_INVALID) not supported");
 
       TEST_COMPARE (r, 0);
       fdiv (0.0, 0.0);
@@ -45,6 +46,9 @@ do_test (void)
     {
       int status;
       xwaitpid (pid, &status, 0);
+
+      if (WIFEXITED (status) && WEXITSTATUS (status) == EXIT_UNSUPPORTED)
+        FAIL_UNSUPPORTED ("feenableexcept (FE_INVALID) not supported");
 
       TEST_VERIFY (WIFSIGNALED (status));
       TEST_COMPARE (WTERMSIG (status), SIGFPE);
