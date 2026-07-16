@@ -23,7 +23,7 @@
 /* FUNCTIONS: usin                                                          */
 /*            ucos                                                          */
 /* FILES NEEDED: dla.h endian.h mpa.h mydefs.h  usncs.h                     */
-/*		 branred.c sincos.tbl					    */
+/*		 e_rem_pio2.c sincos.tbl				    */
 /*                                                                          */
 /* An ultimate sin and cos routine. Given an IEEE double machine number x   */
 /* it computes sin(x) or cos(x) with ~0.55 ULP.				    */
@@ -89,8 +89,6 @@ static const double
   cs2 = 4.99999999999999999999950396842453E-01,
   cs4 = -4.16666666666664434524222570944589E-02,
   cs6 = 1.38888874007937613028114285595617E-03;
-
-int __branred (double x, double *a, double *aa);
 
 /* Given a number partitioned into X and DX, this function computes the cosine
    of the number by combining the sin and cos of X (as computed by a variation
@@ -239,8 +237,9 @@ __sin (double x)
 /* --------------------105414350 <|x| <2^1024------------------------------*/
   else if (k < 0x7ff00000)
     {
-      n = __branred (x, &a, &da);
-      retval = do_sincos (a, da, n);
+      double y[2];
+      n = __ieee754_rem_pio2 (x, y);
+      retval = do_sincos (y[0], y[1], n);
     }
 /*--------------------- |x| > 2^1024 ----------------------------------*/
   else
@@ -304,8 +303,9 @@ __cos (double x)
   /* 105414350 <|x| <2^1024 */
   else if (k < 0x7ff00000)
     {
-      n = __branred (x, &a, &da);
-      retval = do_sincos (a, da, n + 1);
+      double y[2];
+      n = __ieee754_rem_pio2 (x, y);
+      retval = do_sincos (y[0], y[1], n + 1);
     }
 
   else

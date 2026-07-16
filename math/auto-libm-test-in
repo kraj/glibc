@@ -5061,6 +5061,12 @@ cos -1.57079697
 cos 0x2.3c6ef4p-12
 # the next value generates larger error bounds on x86_64 (binary128)
 cos 0xe.6672d458b05edf50af4fab1a42p+40
+# Large arguments close to a multiple of pi/2, stressing the range reducer
+# (bug 34376).
+cos 0x1.69eab0985179bp+246
+cos 0x1.8577cec54ab8p+47
+cos 0x1.dbd58768f97p+45
+cos 0x1.0e826ceb0c5cp+46
 
 cospi 0
 cospi -0
@@ -9491,6 +9497,12 @@ sin 0x1.d12ed2p-12
 sin -0x6.e2368c006c018228p+16
 # the next value generates larger error bounds on x86_64 (binary128)
 sin 0x5.6a5005df4363833413fa44f74ae8p+64
+# Large arguments close to a multiple of pi/2, stressing the range reducer
+# (bug 34376).
+sin 0x1.4c96c11134d36p+578
+sin 0x1.69eab0985179bp+246
+sin 0x1.2419db13f80ap+50
+sin 0x1.0e826ceb0c5cp+47
 sin max
 sin -max
 sin min
@@ -10007,6 +10019,11 @@ tan 0x1p-60
 tan 0x1p-100
 tan 0x1p-600
 tan 0x1p-10000
+# Large arguments close to a multiple of pi/2, stressing the range reducer
+# (bug 34376).
+tan 0x1.69eab0985179bp+246
+tan 0x1.8577cec54ab8p+47
+tan 0x1.dbd58768f97p+45
 tan max
 tan -max
 tan min

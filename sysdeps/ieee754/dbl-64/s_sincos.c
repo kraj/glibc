@@ -78,7 +78,15 @@ __sincos (double x, double *sinx, double *cosx)
       unsigned int n;
 
       /* If |x| < 105414350 use simple range reduction.  */
-      n = k < 0x419921FB ? reduce_sincos (x, &a, &da) : __branred (x, &a, &da);
+      if (k < 0x419921FB)
+	n = reduce_sincos (x, &a, &da);
+      else
+	{
+	  double y[2];
+	  n = __ieee754_rem_pio2 (x, y);
+	  a = y[0];
+	  da = y[1];
+	}
       n = n & 3;
 
       if (n == 1 || n == 2)

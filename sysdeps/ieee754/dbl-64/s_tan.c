@@ -22,7 +22,7 @@
 /*  FUNCTIONS: utan                                                  */
 /*                                                                   */
 /*  FILES NEEDED:dla.h endian.h mydefs.h utan.h                      */
-/*               branred.c                                           */
+/*               e_rem_pio2.c                                        */
 /*               utan.tbl                                            */
 /*                                                                   */
 /*********************************************************************/
@@ -58,8 +58,6 @@ __tan (double x)
   mynumber num, v;
 
   double retval;
-
-  int __branred (double, double *, double *);
 
   SET_RESTORE_ROUND_53BIT (FE_TONEAREST);
 
@@ -293,8 +291,11 @@ __tan (double x)
 
   /* (---) The case 1e8 < abs(x) < 2**1024 */
   /* Range reduction by algorithm iii */
-  n = (__branred (x, &a, &da)) & 0x00000001;
-  EADD (a, da, t1, t2);
+  {
+    double y[2];
+    n = __ieee754_rem_pio2 (x, y) & 0x00000001;
+    EADD (y[0], y[1], t1, t2);
+  }
   a = t1;
   da = t2;
   if (a < 0.0)

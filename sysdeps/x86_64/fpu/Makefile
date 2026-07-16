@@ -67,18 +67,6 @@ CFLAGS-test-double-vlen4-avx2-wrappers.c = $(double-vlen4-arch-ext2-cflags)
 CFLAGS-test-float-vlen8-avx2-wrappers.c = $(float-vlen8-arch-ext2-cflags)
 endif
 
-ifeq ($(subdir)$(config-cflags-mprefer-vector-width),mathyes)
-# When compiled with -O3 -march=skylake, GCC 8 and 9 optimize some loops
-# in branred.c with 256-bit vector instructions, which leads to store
-# forward stall:
-#
-# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=90579
-#
-# Limit vector width to 128 bits to work around this issue.  It improves
-# performance of sin and cos by more than 40% on Skylake.
-CFLAGS-branred.c = -mprefer-vector-width=128
-endif
-
 ifeq ($(subdir)$(build-mathvec),benchtestsyes)
 double-vlen4-arch-ext-cflags = -mavx
 double-vlen4-arch-ext2-cflags = -mavx2
