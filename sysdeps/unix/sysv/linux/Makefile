@@ -725,6 +725,7 @@ tests += \
   tst-rseq-tls-range \
   tst-rseq-tls-range-4096 \
   tst-rtld-execfd \
+  tst-rtld-program-fd \
 # tests
 tests-static += \
   tst-rseq-tls-range-4096-static \
@@ -732,8 +733,10 @@ tests-static += \
 # tests-static
 test-srcs += \
   tst-rtld-execfd-prog \
+  tst-rtld-program-fd-prog \
 # test-srcs
 $(objpfx)tst-rtld-execfd.out: $(objpfx)tst-rtld-execfd-prog
+$(objpfx)tst-rtld-program-fd.out: $(objpfx)tst-rtld-program-fd-prog
 modules-names += \
   tst-rseq-tls-range-mod \
 # modules-names
