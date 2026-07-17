@@ -161,33 +161,37 @@ value, and @var{$arg2} is the previous value of this @code{malloc}
 parameter.
 @end deftp
 
-@deftp Probe memory_mallopt_trim_threshold (int @var{$arg1}, int @var{$arg2})
+@deftp Probe memory_mallopt_trim_threshold (int @var{$arg1}, int @var{$arg2}, int @var{$arg3})
 This probe is triggered shortly after the @code{memory_mallopt} probe,
 when the parameter to be changed is @code{M_TRIM_THRESHOLD}.  Argument
 @var{$arg1} is the requested value, @var{$arg2} is the previous value of
-this @code{malloc} parameter.
+this @code{malloc} parameter, and @var{$arg3} is nonzero if dynamic
+threshold adjustment was already disabled.
 @end deftp
 
-@deftp Probe memory_mallopt_top_pad (int @var{$arg1}, int @var{$arg2})
+@deftp Probe memory_mallopt_top_pad (int @var{$arg1}, int @var{$arg2}, int @var{$arg3})
 This probe is triggered shortly after the @code{memory_mallopt} probe,
 when the parameter to be changed is @code{M_TOP_PAD}.  Argument
 @var{$arg1} is the requested value, @var{$arg2} is the previous value of
-this @code{malloc} parameter.
+this @code{malloc} parameter, and @var{$arg3} is nonzero if dynamic
+threshold adjustment was already disabled.
 @end deftp
 
-@deftp Probe memory_mallopt_mmap_threshold (int @var{$arg1}, int @var{$arg2})
+@deftp Probe memory_mallopt_mmap_threshold (int @var{$arg1}, int @var{$arg2}, int @var{$arg3})
 This probe is triggered shortly after the @code{memory_mallopt} probe,
 when the parameter to be changed is @code{M_MMAP_THRESHOLD}, and the
 requested value is in an acceptable range.  Argument @var{$arg1} is the
 requested value, @var{$arg2} is the previous value of this @code{malloc}
-parameter.
+parameter, and @var{$arg3} is nonzero if dynamic threshold adjustment
+was already disabled.
 @end deftp
 
-@deftp Probe memory_mallopt_mmap_max (int @var{$arg1}, int @var{$arg2})
+@deftp Probe memory_mallopt_mmap_max (int @var{$arg1}, int @var{$arg2}, int @var{$arg3})
 This probe is triggered shortly after the @code{memory_mallopt} probe,
 when the parameter to be changed is @code{M_MMAP_MAX}.  Argument
 @var{$arg1} is the requested value, @var{$arg2} is the previous value of
-this @code{malloc} parameter.
+this @code{malloc} parameter, and @var{$arg3} is nonzero if dynamic
+threshold adjustment was already disabled.
 @end deftp
 
 @deftp Probe memory_mallopt_perturb (int @var{$arg1}, int @var{$arg2})
@@ -211,6 +215,12 @@ when the parameter to be changed is @code{M_ARENA_MAX}, and the
 requested value is in an acceptable range.  Argument @var{$arg1} is the
 requested value, and @var{$arg2} is the previous value of this
 @code{malloc} parameter.
+@end deftp
+
+@deftp Probe memory_mallopt_free_dyn_thresholds (int @var{$arg1}, int @var{$arg2})
+This probe is triggered when function @code{free} decides to adjust the
+dynamic brk/mmap thresholds.  Argument @var{$arg1} and @var{$arg2} are
+the adjusted mmap and trim thresholds, respectively.
 @end deftp
 
 @deftp Probe memory_tunable_tcache_max_bytes (int @var{$arg1}, int @var{$arg2})
