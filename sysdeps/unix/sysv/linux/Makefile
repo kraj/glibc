@@ -724,11 +724,16 @@ $(objpfx)pldd: $(objpfx)xmalloc.o
 tests += \
   tst-rseq-tls-range \
   tst-rseq-tls-range-4096 \
+  tst-rtld-execfd \
 # tests
 tests-static += \
   tst-rseq-tls-range-4096-static \
   tst-rseq-tls-range-static \
 # tests-static
+test-srcs += \
+  tst-rtld-execfd-prog \
+# test-srcs
+$(objpfx)tst-rtld-execfd.out: $(objpfx)tst-rtld-execfd-prog
 modules-names += \
   tst-rseq-tls-range-mod \
 # modules-names

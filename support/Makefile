@@ -51,6 +51,7 @@ libsupport-routines = \
   resolv_test \
   set_fortify_handler \
   support-open-dev-null-range \
+  support_become_ns_root \
   support_become_root \
   support_can_chroot \
   support_capture_subprocess \

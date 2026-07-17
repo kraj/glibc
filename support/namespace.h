@@ -35,6 +35,18 @@ __BEGIN_DECLS
    single-threaded processes.  */
 bool support_become_root (void);
 
+/* Attempts to become root (UID and GID 0) in a new user namespace,
+   with a new mount namespace in which mount operations do not affect
+   the host (/ is marked private).  Unlike support_become_root, which
+   identity-maps the original UID, the namespace's UID 0 is mapped to
+   the original UID: kernel objects created in the namespace are owned
+   by its UID 0, and an unmapped owner cannot pass permission checks
+   on them.  Return true if the namespace's root user could be
+   attained.  Print diagnostics to standard output.  The note on
+   multi-threaded processes for support_become_root applies here as
+   well.  */
+bool support_become_ns_root (void);
+
 /* Return true if this process can perform a chroot operation.  In
    general, this is only possible if support_become_root has been
    called.  Note that the actual test is performed in a subprocess,
