@@ -2210,6 +2210,57 @@ _dl_map_object (struct link_map *loader, const char *name,
   return _dl_map_new_object (loader, name, type, trace_mode, mode, nsid);
 }
 
+/* Map in the main executable, already opened on FD.  The descriptor
+   comes from the kernel (AT_EXECFD, from a binfmt interpreter dispatch
+   that kept the executed binary open) or from an explicit loader
+   invocation.  NAME is the name the program is known by and is only
+   used for diagnostics; the canonical name used for $ORIGIN is derived
+   from the descriptor itself (__RTLD_OPENEXEC).  There may be no path
+   the program could be opened by: the descriptor is readable even for
+   an execute-only binary, and it refers to the very file the kernel
+   access-checked, so no path re-open takes its place.  */
+struct link_map *
+_dl_map_object_execfd (int fd, const char *name)
+{
+  struct filebuf fb;
+  bool found_other_class = false;
+
+  /* The kernel installs the AT_EXECFD descriptor on a new open file
+     description, so it is open and at the start of the file.  */
+  fd = open_verify (name, fd, &fb, NULL, 0, __RTLD_OPENEXEC,
+		    &found_other_class, false);
+  if (__glibc_unlikely (fd == -1))
+    {
+      if (found_other_class)
+	_dl_signal_error (0, name, NULL,
+			  ELFW(CLASS) == ELFCLASS32
+			  ? N_("wrong ELF class: ELFCLASS64")
+			  : N_("wrong ELF class: ELFCLASS32"));
+      else if (errno == ENOENT)
+	/* No file name is looked up for a descriptor, so ENOENT here
+	   is open_verify's report of an incompatible ELF machine, not a
+	   missing file.  */
+	_dl_signal_error (0, name, NULL,
+			  N_("cannot load main program from descriptor:"
+			     " incompatible ELF machine"));
+      else
+	_dl_signal_error (errno, name, NULL,
+			  N_("cannot load main program from descriptor"));
+    }
+
+  char *realname = __strdup (name);
+  if (realname == NULL)
+    {
+      __close_nocancel (fd);
+      _dl_signal_error (ENOMEM, name, NULL,
+			N_("cannot allocate name record"));
+    }
+
+  return _dl_map_object_from_fd (name, NULL, fd, &fb, realname, NULL,
+				 lt_executable, __RTLD_OPENEXEC,
+				 __libc_stack_end, LM_ID_BASE);
+}
+
 
 struct add_path_state
 {

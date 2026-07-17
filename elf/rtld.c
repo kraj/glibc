@@ -54,6 +54,7 @@
 #include <dl-audit-check.h>
 #include <dl-call_tls_init_tp.h>
 #include <dl-exec-post.h>
+#include <dl-standard-fds.h>
 
 #include <assert.h>
 
@@ -1044,10 +1045,11 @@ load_audit_modules (struct link_map *main_map, struct audit_list *audit_list)
     }
 }
 
-/* Check if the executable is not actually dynamically linked, and
-   invoke it directly in that case.  */
-static void
-rtld_chain_load (struct link_map *main_map, char *argv0)
+/* Diagnose the dynamic loader run against itself (fatal), and return
+   whether the main executable is dynamically linked: it has DT_NEEDED
+   dependencies or a program interpreter.  */
+static bool
+rtld_main_map_is_dynamic (struct link_map *main_map)
 {
   /* The dynamic loader run against itself.  */
   const char *rtld_soname = l_soname (&_dl_rtld_map);
@@ -1058,14 +1060,26 @@ rtld_chain_load (struct link_map *main_map, char *argv0)
   /* With DT_NEEDED dependencies, the executable is dynamically
      linked.  */
   if (__glibc_unlikely (main_map->l_info[DT_NEEDED] != NULL))
-    return;
+    return true;
 
   /* If the executable has program interpreter, it is dynamically
      linked.  */
   for (size_t i = 0; i < main_map->l_phnum; ++i)
     if (main_map->l_phdr[i].p_type == PT_INTERP)
-      return;
+      return true;
 
+  return false;
+}
+
+/* Check if the executable is not actually dynamically linked, and
+   invoke it directly in that case.  */
+static void
+rtld_chain_load (struct link_map *main_map, char *argv0)
+{
+  if (rtld_main_map_is_dynamic (main_map))
+    return;
+
+  const char *rtld_soname = l_soname (&_dl_rtld_map);
   const char *pathname = _dl_argv[0];
   if (argv0 != NULL)
     _dl_argv[0] = argv0;
@@ -1077,6 +1091,20 @@ rtld_chain_load (struct link_map *main_map, char *argv0)
   else
     _dl_fatal_printf("%s: cannot execute %s: %d\n",
 		     rtld_soname, pathname, errcode);
+}
+
+/* The main executable was loaded from a descriptor and cannot be
+   chain-loaded through execve: there may be no path it can be executed
+   by, and re-executing it would run the process through the binfmt
+   handler that chose this dynamic linker in the first place, again.
+   Refuse the cases rtld_chain_load would have chained instead of
+   crashing on them later (bug 28648).  */
+static void
+rtld_execfd_check (struct link_map *main_map)
+{
+  if (!rtld_main_map_is_dynamic (main_map))
+    _dl_fatal_printf ("%s: cannot execute a statically linked binary"
+		      " from a descriptor\n", l_soname (&_dl_rtld_map));
 }
 
 /* Called to complete the initialization of the link map for the main
@@ -1382,16 +1410,50 @@ dl_main (const ElfW(Phdr) *phdr,
 	 like that.  We just load it and use its entry point; we don't
 	 pay attention to its PT_INTERP command (we are the interpreter
 	 ourselves).  This is an easy way to test a new ld.so before
-	 installing it.  */
+	 installing it.
+
+	 This also happens when the kernel executes us on behalf of a
+	 binfmt interpreter dispatch (binfmt_misc): the handler splices
+	 our path and the program's path into the argument vector, so
+	 the arguments are processed just the same.  If the handler
+	 also kept the program open ('O' and 'C' entries), AT_EXECFD
+	 carries the descriptor and the program is loaded from it
+	 instead of re-opening the path (see below).  */
       rtld_is_main = true;
 
       char *argv0 = NULL;
       char **orig_argv = _dl_argv;
+      int execfd = -1;
+      /* True if the kernel dispatched us as a binfmt interpreter
+	 (AT_EXECFD is present).  */
+      bool from_execfd = false;
 
       /* Note the place where the dynamic linker actually came from.  */
       _dl_rtld_map.l_name = rtld_progname;
 
-      while (_dl_argc > 1)
+#ifdef HAVE_AUX_VECTOR
+      /* A binfmt interpreter dispatch that keeps the executed binary
+	 open passes the descriptor in AT_EXECFD.  Load the program
+	 from it: the path spliced into the argument vector may not be
+	 openable again (execute-only binaries), and the descriptor
+	 refers to the very file the kernel access-checked, so no
+	 re-open races against it.  The raw vector must be scanned
+	 because a valid descriptor 0 and an absent entry cannot be
+	 told apart in the parsed values.  */
+      for (ElfW(auxv_t) *av = auxv; av->a_type != AT_NULL; av++)
+	if (av->a_type == AT_EXECFD)
+	  {
+	    execfd = av->a_un.a_val;
+	    from_execfd = true;
+	    break;
+	  }
+#endif
+
+      /* When the kernel dispatches us as a binfmt interpreter, argv[1]
+	 is the spliced program path, not a loader option.  It is
+	 attacker-controlled and may begin with "--" (e.g. a program
+	 named "--preload"), so do not parse it as an option.  */
+      while (!from_execfd && _dl_argc > 1)
 	if (! strcmp (_dl_argv[1], "--list"))
 	  {
 	    if (state.mode != rtld_mode_help)
@@ -1507,6 +1569,17 @@ dl_main (const ElfW(Phdr) *phdr,
 	else
 	  break;
 
+      /* A descriptor on a standard slot is consumed and closed while
+	 the program is mapped below, and a secure process must not run
+	 with a silently closed standard descriptor: the startup check
+	 ran while the descriptor still occupied the slot.  Re-run it
+	 once the program is mapped and the slot is free.  Moving the
+	 descriptor out of the standard range instead would only change
+	 which descriptor number ends up closed.  */
+      bool recheck_standard_fds
+	= (execfd >= 0 && execfd <= STDERR_FILENO
+	   && __glibc_unlikely (__libc_enable_secure));
+
       if (__glibc_unlikely (state.mode == rtld_mode_list_tunables))
 	{
 	  __tunables_print ();
@@ -1581,16 +1654,29 @@ dl_main (const ElfW(Phdr) *phdr,
 #ifdef HAVE_THP
 	  _dl_get_thp_config ();
 #endif
-	  _dl_map_object (NULL, rtld_progname, lt_executable, 0,
-			  __RTLD_OPENEXEC, LM_ID_BASE);
+	  if (execfd != -1)
+	    _dl_map_object_execfd (execfd, rtld_progname);
+	  else
+	    _dl_map_object (NULL, rtld_progname, lt_executable, 0,
+			    __RTLD_OPENEXEC, LM_ID_BASE);
 	  rtld_timer_stop (&load_time, start);
 	}
+
+      /* Fill the standard slot freed by closing the program
+	 descriptor (see recheck_standard_fds above).  */
+      if (__glibc_unlikely (recheck_standard_fds))
+	_dl_recheck_standard_fds ();
 
       /* Now the map for the main executable is available.  */
       main_map = GL(dl_ns)[LM_ID_BASE]._ns_loaded;
 
       if (__glibc_likely (state.mode == rtld_mode_normal))
-	rtld_chain_load (main_map, argv0);
+	{
+	  if (execfd != -1)
+	    rtld_execfd_check (main_map);
+	  else
+	    rtld_chain_load (main_map, argv0);
+	}
 
       phdr = main_map->l_phdr;
       phnum = main_map->l_phnum;
@@ -1622,6 +1708,13 @@ dl_main (const ElfW(Phdr) *phdr,
 	  case AT_EXECFN:
 	    av->a_un.a_val = (uintptr_t) _dl_argv[0];
 	    break;
+	  case AT_EXECFD:
+	    /* An AT_EXECFD entry is present only when the kernel
+	       dispatched us, and the program is then always loaded and
+	       closed from the descriptor, so do not leave a dangling
+	       number behind.  */
+	    av->a_type = AT_IGNORE;
+	    break;
 	  }
 #endif
 
@@ -1650,8 +1743,14 @@ dl_main (const ElfW(Phdr) *phdr,
 
       /* At this point we are in a bit of trouble.  We would have to
 	 fill in the values for l_dev and l_ino.  But in general we
-	 do not know where the file is.  We also do not handle AT_EXECFD
-	 even if it would be passed up.
+	 do not know where the file is.  AT_EXECFD is deliberately not
+	 consumed here: it carries the file the kernel did *not* load
+	 and is addressed to the main program the kernel *did* load -
+	 the registered binfmt interpreter (e.g. a dynamically linked
+	 qemu-user), whose PT_INTERP we merely are.  Only when the
+	 registered interpreter is ld.so itself is ld.so that main
+	 program, and then the descriptor is consumed in the
+	 rtld-as-command branch above.
 
 	 We leave the values here defined to 0.  This is normally no
 	 problem as the program code itself is normally no shared

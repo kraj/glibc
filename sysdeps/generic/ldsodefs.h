@@ -933,6 +933,13 @@ struct link_map *_dl_map_new_object (struct link_map *loader,
 				     int type, int trace_mode, int mode,
 					     Lmid_t nsid) attribute_hidden;
 
+/* Map in the main executable from the already-open descriptor FD
+   (AT_EXECFD or an explicit loader invocation).  NAME is the name the
+   program is known by; the canonical name used for $ORIGIN is derived
+   from FD.  FD must be open, and is consumed.  */
+extern struct link_map *_dl_map_object_execfd (int fd, const char *name)
+     attribute_hidden;
+
 
 /* Call _dl_map_object on the dependencies of MAP, and set up
    MAP->l_searchlist.  PRELOADS points to a vector of NPRELOADS previously

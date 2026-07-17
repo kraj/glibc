@@ -12,6 +12,15 @@ Major new features:
 * Additional optimized and correctly rounded mathematical functions have
   been imported from the CORE-MATH project, in particular cbrt.
 
+* When the dynamic linker is executed as a binfmt interpreter (for
+  example through a Linux binfmt_misc entry registered with the 'O'
+  flag) and the kernel passes the executed program as an open
+  descriptor in the AT_EXECFD auxiliary vector entry, the dynamic
+  linker now loads the program from that descriptor instead of
+  re-opening it by path.  Execute-only (--x) binaries work under such
+  handlers, and the descriptor refers to the file the kernel actually
+  access-checked, eliminating the re-open race.
+
 Deprecated and removed features, and other changes affecting compatibility:
 
 * The posix_spawn_file_actions_addchdir and posix_spawn_file_actions_addfchdir
