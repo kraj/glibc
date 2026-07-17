@@ -21,6 +21,11 @@ Major new features:
   handlers, and the descriptor refers to the file the kernel actually
   access-checked, eliminating the re-open race.
 
+* On Linux, the dynamic linker accepts a new option --program-fd NUMBER
+  when invoked as a command, loading the executable from the inherited
+  descriptor NUMBER; the program name argument then only names the
+  program.  This is the explicit-invocation counterpart of AT_EXECFD.
+
 Deprecated and removed features, and other changes affecting compatibility:
 
 * The posix_spawn_file_actions_addchdir and posix_spawn_file_actions_addfchdir

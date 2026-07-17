@@ -209,8 +209,8 @@ elf_machine_reject_phdr_p (const struct dl_machine_phdr_info *info,
       if (ph->p_filesz < size)
 	REJECT ("   contains malformed PT_MIPS_ABIFLAGS\n");
 
-      __lseek (fd, ph->p_offset, SEEK_SET);
-      if (__libc_read (fd, (void *) &mips_abiflags, size) != size)
+      if (__pread64_nocancel (fd, (void *) &mips_abiflags, size,
+			      ph->p_offset) != size)
 	REJECT ("   unable to read PT_MIPS_ABIFLAGS\n");
 
       if (__glibc_unlikely (mips_abiflags.flags2 != 0))

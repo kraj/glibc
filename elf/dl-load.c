@@ -1594,11 +1594,14 @@ open_verify (const char *name, int fd,
       __set_errno (0);
       fbp->len = 0;
       assert (sizeof (fbp->buf) > sizeof (ElfW(Ehdr)));
-      /* Read in the header.  */
+      /* Read the header with pread: an executable descriptor handed to
+	 the loader may be shared, so its file position must be neither
+	 relied upon nor disturbed.  */
       do
 	{
-	  ssize_t retlen = __read_nocancel (fd, fbp->buf + fbp->len,
-					    sizeof (fbp->buf) - fbp->len);
+	  ssize_t retlen = __pread64_nocancel (fd, fbp->buf + fbp->len,
+					       sizeof (fbp->buf) - fbp->len,
+					       fbp->len);
 	  if (retlen <= 0)
 	    break;
 	  fbp->len += retlen;
@@ -2215,7 +2218,9 @@ _dl_map_object (struct link_map *loader, const char *name,
    that kept the executed binary open) or from an explicit loader
    invocation.  NAME is the name the program is known by and is only
    used for diagnostics; the canonical name used for $ORIGIN is derived
-   from the descriptor itself (__RTLD_OPENEXEC).  There may be no path
+   from the descriptor itself (__RTLD_OPENEXEC).  For a descriptor
+   without a usable path - a sealed memfd, say - the origin degrades
+   to "/", just as it does for fexecve.  There may be no path
    the program could be opened by: the descriptor is readable even for
    an execute-only binary, and it refers to the very file the kernel
    access-checked, so no path re-open takes its place.  */
@@ -2225,8 +2230,8 @@ _dl_map_object_execfd (int fd, const char *name)
   struct filebuf fb;
   bool found_other_class = false;
 
-  /* The kernel installs the AT_EXECFD descriptor on a new open file
-     description, so it is open and at the start of the file.  */
+  /* The caller guarantees that FD is open.  open_verify reads with
+     pread, so the file position does not matter.  */
   fd = open_verify (name, fd, &fb, NULL, 0, __RTLD_OPENEXEC,
 		    &found_other_class, false);
   if (__glibc_unlikely (fd == -1))

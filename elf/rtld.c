@@ -55,6 +55,7 @@
 #include <dl-call_tls_init_tp.h>
 #include <dl-exec-post.h>
 #include <dl-standard-fds.h>
+#include <dl-program-fd.h>
 
 #include <assert.h>
 
@@ -603,6 +604,9 @@ struct map_args
   const char *str;
   struct link_map *loader;
   int mode;
+  /* If not -1, map the main executable from this descriptor instead
+     of opening STR (requires __RTLD_OPENEXEC in MODE).  */
+  int execfd;
   /* Return value of map_doit.  */
   struct link_map *map;
 };
@@ -640,8 +644,11 @@ map_doit (void *a)
 {
   struct map_args *args = (struct map_args *) a;
   int type = (args->mode == __RTLD_OPENEXEC) ? lt_executable : lt_library;
-  args->map = _dl_map_object (args->loader, args->str, type, 0,
-			      args->mode, LM_ID_BASE);
+  if (args->mode == __RTLD_OPENEXEC && args->execfd != -1)
+    args->map = _dl_map_object_execfd (args->execfd, args->str);
+  else
+    args->map = _dl_map_object (args->loader, args->str, type, 0,
+				args->mode, LM_ID_BASE);
 }
 
 static void
@@ -792,6 +799,7 @@ do_preload (const char *fname, struct link_map *main_map, const char *where)
   args.str = fname;
   args.loader = main_map;
   args.mode = __RTLD_SECURE;
+  args.execfd = -1;
 
   unsigned int old_nloaded = GL(dl_ns)[LM_ID_BASE]._ns_nloaded;
 
@@ -1517,6 +1525,12 @@ dl_main (const ElfW(Phdr) *phdr,
 	    _dl_argc -= 2;
 	    _dl_argv += 2;
 	  }
+	else if (_dl_program_fd_option (ld_so_name, _dl_argc, _dl_argv,
+					&execfd))
+	  {
+	    _dl_argc -= 2;
+	    _dl_argv += 2;
+	  }
 	else if (strcmp (_dl_argv[1], "--glibc-hwcaps-prepend") == 0
 		 && _dl_argc > 2)
 	  {
@@ -1633,6 +1647,7 @@ dl_main (const ElfW(Phdr) *phdr,
 	  args.str = rtld_progname;
 	  args.loader = NULL;
 	  args.mode = __RTLD_OPENEXEC;
+	  args.execfd = execfd;
 	  (void) _dl_catch_error (&objname, &err_str, &malloced, map_doit,
 				  &args);
 	  if (__glibc_unlikely (err_str != NULL))
