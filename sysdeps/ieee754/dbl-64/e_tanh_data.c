@@ -1,6 +1,6 @@
 /* Data definitions used by tanh implementation.
 
-Copyright (c) 2023-2026 Alexei Sibidanov.
+Copyright (c) 2023-2026 Alexei Sibidanov, Cyprien Peignier, Paul Zimmermann.
 
 This file is part of the CORE-MATH project
 (https://core-math.gitlabpages.inria.fr/).
@@ -26,24 +26,23 @@ SOFTWARE.
 
 #include "e_tanh_data.h"
 
-const double __tanh_data_ch[][2] =
+const double __tanh_data_ch[9][2] =
   {
-    { -0x1.5555555555555p-2, -0x1.5555555555555p-56 },
-    { 0x1.1111111111111p-3, 0x1.1111111110916p-59 },
-    { -0x1.ba1ba1ba1ba1cp-5, 0x1.7917917a46f2cp-59 },
-    { 0x1.664f4882c10fap-6, -0x1.9a52a06f1e599p-63 },
-    { -0x1.226e355e6c23dp-7, 0x1.c297394c24e38p-61 },
-    { 0x1.d6d3d0e157dep-9, -0x1.311087e5b1526p-63 },
-    { -0x1.7da36452b75e1p-10, -0x1.2868cde54ea0cp-65 },
-    { 0x1.355824803667bp-11, 0x1.2cd8fc406c3f7p-66 },
-    { -0x1.f57d7734c821dp-13, 0x1.da22861b4ca8p-70 },
-    { 0x1.967e18ad3facfp-14, -0x1.0831108273a74p-68 }
+    { -0x1.5555555555555p-2, -0x1.5555555554cc4p-56 },
+    { 0x1.1111111111111p-3, 0x1.111110f8c0178p-59 },
+    { -0x1.ba1ba1ba1ba1cp-5, 0x1.7917c1d676ff5p-59 },
+    { 0x1.664f4882c10fap-6, -0x1.9d5cb27c0af28p-63 },
+    { -0x1.226e355e6c23cp-7, -0x1.c9674586913f3p-61 },
+    { 0x1.d6d3d0e157db3p-9, -0x1.71376fa06ce94p-65 },
+    { -0x1.7da36452b5e46p-10, -0x1.aba8d51bd9cp-65 },
+    { 0x1.3558247faa32dp-11, -0x1.e0cfb423aedfdp-65 },
+    { -0x1.f57d76ea30928p-13, -0x1.c30601213cae9p-67 }
   };
 
-const double __tanh_data_cl[] =
+const double __tanh_data_cl[5] =
   {
-    -0x1.497d8e6462927p-15, 0x1.0b1318c243bd7p-16,  -0x1.b0f2935e9a12p-18,
-    0x1.5e9444536e654p-19,  -0x1.174ff2a31908cp-20, 0x1.749698c8d338dp-22
+    0x1.967e0a63ca836p-14,  -0x1.497b99d2a77d1p-15, 0x1.0ae346258cbdep-16,
+    -0x1.aade68fb2f076p-18, 0x1.22e609bf8671fp-19
   };
 
 const double __tanh_data_db[12][3] =

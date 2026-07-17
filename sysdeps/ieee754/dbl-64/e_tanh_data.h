@@ -1,6 +1,6 @@
 /* Correctly rounded hyperbolic tangent function for binary64 values.
 
-Copyright (c) 2023-2026 Alexei Sibidanov.
+Copyright (c) 2023-2026 Alexei Sibidanov, Cyprien Peignier, Paul Zimmermann.
 
 This file is part of the CORE-MATH project
 (https://core-math.gitlabpages.inria.fr/).
@@ -27,9 +27,9 @@ SOFTWARE.
 #ifndef _E_TANH_DATA_H
 #define _E_TANH_DATA_H
 
-extern const double __tanh_data_ch[][2] attribute_hidden;
+extern const double __tanh_data_ch[9][2] attribute_hidden;
 #define CH __tanh_data_ch
-extern const double __tanh_data_cl[] attribute_hidden;
+extern const double __tanh_data_cl[5] attribute_hidden;
 #define CL __tanh_data_cl
 
 extern const double __tanh_data_db[12][3] attribute_hidden;

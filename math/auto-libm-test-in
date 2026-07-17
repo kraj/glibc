@@ -10109,6 +10109,8 @@ tanh 0x1p-10000
 tanh 0x0.fffffffffffffp-1022
 # the next value generates larger error bounds on x86_64 (ldbl-96)
 tanh 0x3.b9979a543d0fbfa8p-4
+tanh 0x1.a0112a16e9318p+1
+tanh -0x1.a0112a16e9318p+1
 tanh max
 tanh -max
 tanh min

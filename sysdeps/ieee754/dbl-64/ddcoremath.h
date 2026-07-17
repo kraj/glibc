@@ -176,6 +176,16 @@ mulddd (double xh, double xl, double ch, double *l)
   return ch;
 }
 
+/* Same as mulddd, except the final normalization uses the fasttwosum
+   variant discussed in the muldd_acc2 comment above.  */
+static inline double
+mulddd_acc (double xh, double xl, double ch, double *l)
+{
+  double ahlh = ch * xl, ahhh = ch * xh, ahhl = fma (ch, xh, -ahhh);
+  ahhl += ahlh;
+  return fasttwosum (ahhh, ahhl, l);
+}
+
 static inline double
 mulddd2 (double x, double ch, double cl, double *l)
 {

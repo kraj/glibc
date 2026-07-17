@@ -280,7 +280,7 @@ core-math:
   sysdeps/ieee754/dbl-64/s_erf.c
   # src/binary64/erfc/erfc.c, revision 55e9869e
   sysdeps/ieee754/dbl-64/s_erfc.c
-  # src/binary64/tanh/tanh.c, revision 8ea8ea35
+  # src/binary64/tanh/tanh.c, revision cf237fa0
   sysdeps/ieee754/dbl-64/s_tanh.c
   # src/binary32/acos/acosf.c, revision 56dd347
   sysdeps/ieee754/flt-32/e_acosf.c
