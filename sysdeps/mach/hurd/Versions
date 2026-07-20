@@ -62,6 +62,6 @@ ld {
     __read_nocancel; __pread64_nocancel;
     __write_nocancel;
     __getcwd;
-    __stat64; __fstat64;
+    __stat64; __fstat64; __fstatat64;
   }
 }

@@ -542,6 +542,17 @@ __stat64 (const char *file, struct stat64 *buf)
 }
 libc_hidden_def (__stat64)
 
+check_no_hidden(__fstatat64);
+int weak_function
+__fstatat64 (int dirfd, const char *pathname, struct stat64 *buf, int flags)
+{
+  assert (dirfd == AT_FDCWD);
+  assert (flags == 0);
+
+  return __stat64 (pathname, buf);
+}
+libc_hidden_def (__fstatat64)
+
 /* This function is called by the dynamic linker (rtld.c) to check for
    existence of /etc/ld.so.preload.  This stub will always fail, which
    means that /etc/ld.so.preload is unsupported.  */
