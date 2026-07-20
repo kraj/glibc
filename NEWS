@@ -27,10 +27,15 @@ Major new features:
   been imported from the CORE-MATH project, in particular cosh, sinh, and
   tanh.
 
-* The SVID handling for cosh and sinh were moved to compat symbols, allowing
-  improvements in performance.
+* Many additional improvements to existing functions have been synchronized
+  from the CORE-MATH project.
 
-* New locale added: hrx_BR (Hunsrik language spoken in Brazil).
+* For C++26, the assert macro is now variadic, allowing more complex
+  arguments containing commas (which however still must evaluate to a single
+  value).
+
+* The SVID error handling for cosh and sinh was moved to compatibility
+  symbols, allowing improvements in performance.
 
 * Static PIE is now supported for arm-*-linux-gnueabi.  It requires toolchain
   support to correctly set the expected linker options.
@@ -42,7 +47,21 @@ Major new features:
   status via the prctl syscall.  This prevents disabling or corrupting the
   GCS shadow stack during runtime.
 
+* On AArch64 targets, log, exp, sin, cas, sinh, cosh, asinh, acosh, atanh
+  single and double precision special cases have been vectorized for SVE and
+  AdvSIMD, and vector variants of powr have been added.
+
+* On RISC-V targets, vector extension optimized variants of memcmp, memccpy,
+  memchr, memcpy, memmove, stpncpy, strcmp, strchr, strcpy, strncmp, strncpy,
+  strlen, and strrchr have been added.
+
+* On PowerPC, memchr optimized for Power10 has been re-added.
+
+* Support for LoongArch32 has been added.
+
 * Pre-built ld.so.cache files can be installed with ldconfig.
+
+* A new locale has been added: hrx_BR (Hunsrik language spoken in Brazil).
 
 Deprecated and removed features, and other changes affecting compatibility:
 
