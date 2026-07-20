@@ -15,6 +15,9 @@ order.
 Osama Abdelkader for various contributions.
 
 @item
+Shamil Abdulaev for various fixes.
+
+@item
 Nick Alcock for contributing fixes to allow @theglibc{} to be built with the
 stack smashing protector enabled.
 
@@ -157,8 +160,8 @@ Joana Cruz for contributions to the AArch64 port.
 Palmer Dabbelt for contributing the port to Linux/RISC-V.
 
 @item
-DJ Delorie for maintenance of Linux/RISC-V, numerous fixes, and handbook
-contributions.
+DJ Delorie for maintenance of Linux/RISC-V, work on the tunables system,
+numerous fixes, and handbook contributions.
 
 @item
 Jianbo Deng for the work on the Loongson port.
@@ -202,12 +205,15 @@ and wide-character support functions (@file{wctype.h}, @file{wchar.h}, etc.).
 @end itemize
 
 @item
+Cosmina Dunca for contributions to the AArch64 port.
+
+@item
 Richard Earnshaw for continued support and fixes to the various ARM
 machine files.
 
 @item
 Paul Eggert for the @code{mktime} function, for his direction as
-part of @theglibc{} steering committee, and numerous fixes.
+part of @theglibc{} steering committee, and numerous fixes and contributions.
 
 @item
 Roy Eldar for various fixes.
@@ -228,7 +234,10 @@ Olaf Flebbe and Ralf B@"achle for contributing
 @file{sysdeps/mips/fpu_control.h}.
 
 @item
-Dylan Fleming for work on the AArch64 port.
+Dylan Fleming for various contributions to the AArch64 port.
+
+@item
+Michael Ford for various fixes.
 
 @item
 Alistair Francis for Y2038 related fixes.
@@ -243,6 +252,9 @@ Collin Funk for many fixes and manual improvements.
 @item
 Martin Galvan for contributing gdb pretty printer support to glibc and adding
 an initial set of pretty printers for structures in the POSIX Threads library.
+
+@item
+Xiang Gao for fixes to the libio subsystem.
 
 @item
 Romain Geissler for various fixes.
@@ -355,6 +367,9 @@ Ultrix 4 (@code{mips-dec-ultrix4}) and the port to the DEC Alpha
 running OSF/1 (@code{alpha-dec-osf1}).
 
 @item
+Mike Kelly for contributions to the hurd port.
+
+@item
 Mark Kettenis for implementing the @code{utmpx} interface and a utmp
 daemon, and for a Hesiod NSS module.
 
@@ -389,6 +404,9 @@ for NSS (@file{nscd}).
 
 @item
 Akhilesh Kumar for various fixes to locales.
+
+@item
+Avinal Kumar for various internationalization fixes.
 
 @item
 Luna Lamb for various contributions to the AArch64 port.
@@ -433,6 +451,9 @@ names, and for various fixes to locales.
 Maxim Kuvyrkov for various fixes.
 
 @item
+Rocket Ma for various fixes.
+
+@item
 Luis Machado for optimized functions on PowerPC.
 
 @item
@@ -461,7 +482,7 @@ fixes and reviewing of contributions.
 Allan McRae for various fixes.
 
 @item
-Meng Qinggang for contributions to the LoongArch port.
+Meng Qinggang for many contributions to the LoongArch port.
 
 @item
 Aaron Merey for contributed tests.
@@ -539,6 +560,9 @@ Will Newton for contributing some optimized string functions and pointer
 encryption support for ARM and various fixes.
 
 @item
+Diego Nieto Cid for contributions to the hurd port.
+
+@item
 Carlos O'Donell for his maintainership of the HPPA architecture, for
 maintaining @theglibc{} web pages and wiki, for his direction as FSF
 Project Steward for @theglibc{} and numerous bug fixes.
@@ -571,7 +595,7 @@ Yat Long Poon for contributions to the Aarch64 port.
 @item
 Siddhesh Poyarekar for various fixes, an implementation of a framework for
 performance benchmarking of functions, implementing the tunables
-infrastructure, and handbook improvements.
+infrastructure, handling of security issues, and handbook improvements.
 
 @item
 Tom Quinn for contributing the startup code to support SunOS shared
@@ -688,16 +712,22 @@ Hurd port.
 Pino Toscano for various fixes.
 
 @item
-Matt Turner for various fixes to the Alpha port.
+Matt Turner for various fixes, in particular to the Alpha port.
 
 @item
 Valery Ushakov for locale fixes.
+
+@item
+Jonathan Wakely for work on C++26 support.
 
 @item
 Feifei Wang for Hygon-related contributions.
 
 @item
 Hsiangkai Wang for various fixes.
+
+@item
+Rui Wang for contributions to the THP support.
 
 @item
 Tim Waugh for the implementation of the POSIX.2 @code{wordexp}
@@ -708,8 +738,11 @@ Ulrich Weigand for various fixes to the PowerPC64 and Arm ports.
 
 @item
 Florian Weimer for his maintainership of the network and dynamic-link
-components, for handling of security issues, and for numerous fixes and
-contributions.
+components, for handling of security issues, many contributions to the
+test framework, and for numerous further fixes and contributions.
+
+@item
+Richard Wild for contributions to the AArch64 port.
 
 @item
 Zack Weinberg for the @code{explicit_bzero} implementation and for various
@@ -719,7 +752,10 @@ fixes.
 Mark Wielaard for various fixes.
 
 @item
-Xi Ruoyao for various fixes and work on the loongarch port.
+xiejiamei for Hygon-related contributions.
+
+@item
+Xi Ruoyao for many fixes and for work on the loongarch port.
 
 @item
 Qixing ksyx Xue for various fixes.
