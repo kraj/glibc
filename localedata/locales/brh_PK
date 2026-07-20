@@ -1,0 +1,235 @@
+comment_char %
+escape_char /
+
+% This file is part of the GNU C Library and contains locale data.
+% The Free Software Foundation does not claim any copyright interest
+% in the locale data contained in this file.  The foregoing does not
+% affect the license of the GNU C Library as a whole.  It does not
+% exempt you from the conditions of the license if your use would
+% otherwise be governed by that license.
+
+% Brahui Language Locale for Pakistan
+% Source: Unicode CLDR (locale brh)
+% Contact: Hammad Mengal
+% Email: hammadalo99@gmail.com
+% Language: brh
+% Territory: PK
+% Revision: 0.4
+% Date: 2026-07-19
+% Users: general
+
+LC_IDENTIFICATION
+title      "Brahui Language Locale for Pakistan"
+source     "Unicode CLDR"
+address    ""
+contact    "Hammad Mengal"
+email      "hammadalo99@gmail.com"
+tel        ""
+fax        ""
+language   "Brahui"
+territory  "Pakistan"
+revision   "0.4"
+date       "2026-07-19"
+
+category "i18n:2012";LC_IDENTIFICATION
+category "i18n:2012";LC_CTYPE
+category "i18n:2012";LC_COLLATE
+category "i18n:2012";LC_TIME
+category "i18n:2012";LC_NUMERIC
+category "i18n:2012";LC_MONETARY
+category "i18n:2012";LC_MESSAGES
+category "i18n:2012";LC_PAPER
+category "i18n:2012";LC_NAME
+category "i18n:2012";LC_ADDRESS
+category "i18n:2012";LC_TELEPHONE
+category "i18n:2012";LC_MEASUREMENT
+END LC_IDENTIFICATION
+
+LC_CTYPE
+copy "i18n"
+translit_start
+include "translit_combining";""
+
+
+% Maddah above -> Alef with madda above
+<U0653> "<U0622>"
+% Farsi yeh -> yeh
+<U06CC> "<U064A>"
+% Heh goal -> heh
+<U06C1> "<U0647>"
+% Lam with three dots above -> lam
+<U06B7> "<U0644>"
+
+translit_end
+END LC_CTYPE
+
+LC_COLLATE
+% Brahui uses the Arabic-Urdu based Nastaliq script with one additional
+% letter not found in standard Urdu: ڷ (Lam with Three Dots Above),
+% representing a retroflex lateral.The tailoring below states the
+% Brahui rule explicitly rather than relying on that default.
+copy "iso14651_t1"
+
+reorder-after <S0644> % Lam
+<S06B7> % ڷ Lam with Three Dots Above - Brahui retroflex lateral
+
+reorder-end
+
+END LC_COLLATE
+
+LC_MONETARY
+int_curr_symbol      "PKR "
+currency_symbol      "Rs"
+mon_decimal_point    "."
+mon_thousands_sep    ","
+mon_grouping         3
+positive_sign        ""
+negative_sign        "-"
+int_frac_digits      2
+frac_digits          2
+p_cs_precedes        1
+p_sep_by_space       1
+n_cs_precedes        1
+n_sep_by_space       1
+p_sign_posn          2
+n_sign_posn          1
+END LC_MONETARY
+
+LC_NUMERIC
+% Brahui uses Western (Latin) digits, not Eastern Arabic-Indic digits.
+decimal_point        "."
+thousands_sep        ","
+grouping             3
+END LC_NUMERIC
+
+
+LC_TIME
+% Brahui day names follow the Persian/Dari ordinal convention
+% (yak-shanbeh, do-shanbeh, ...).
+% The two elements are written with a space, matching CLDR brh.
+% Brahui has no distinct abday names, so abday repeats the
+% full forms. ur_PK, pa_PK and fa_IR do the same.
+abday	"یک شنبہ";/
+	"دو شنبہ";/
+	"سہ شنبہ";/
+	"چار شنبہ";/
+	"پنچ شنبہ";/
+	"جمعہ";/
+	"شنبہ"
+day	"یک شنبہ";/
+	"دو شنبہ";/
+	"سہ شنبہ";/
+	"چار شنبہ";/
+	"پنچ شنبہ";/
+	"جمعہ";/
+	"شنبہ"
+abmon	"جنوری";/
+	"فروری";/
+	"مارچ";/
+	"اپریل";/
+	"مئی";/
+	"جون";/
+	"جولائی";/
+	"اگست";/
+	"ستمبر";/
+	"اکتوبر";/
+	"نومبر";/
+	"دسمبر"
+mon	"جنوری";/
+	"فروری";/
+	"مارچ";/
+	"اپریل";/
+	"مئی";/
+	"جون";/
+	"جولائی";/
+	"اگست";/
+	"ستمبر";/
+	"اکتوبر";/
+	"نومبر";/
+	"دسمبر"
+
+% Date and time format.  The date precedes the time, matching the CLDR
+% brh date-time combination pattern, and runs weekday, day, month,
+% year, as in the CLDR brh full date pattern.  The separator before the
+% time is U+060C ARABIC COMMA, which is the comma in the CLDR brh
+% punctuation exemplar set.  Same shape as sd_PK.
+d_t_fmt "%A %d %B %Y<U060C> %H:%M:%S"
+
+% Date and time format for date(1)
+date_fmt "%A %d %B %Y<U060C> %H:%M:%S %Z"
+
+% date Format. standard in Pakistan
+d_fmt "%d//%m//%Y"
+
+% time format 24 hour
+t_fmt "%H:%M:%S"
+
+am_pm "AM";"PM"
+
+% time format 12 hour
+t_fmt_ampm "%I:%M:%S %p"
+
+% Calender rtl
+cal_direction	3
+first_weekday	1
+first_workday	2
+week 7;19971130;1
+END LC_TIME
+
+LC_MESSAGES
+% Brahui yes/no expressions
+% ہ = ہان (Brahui: yes) - U+06C1 Heh Goal
+% آ = آخہ (Brahui: no)
+% yesexpr also accepts:
+%   ه U+0647 ARABIC LETTER HEH, since both spellings of the initial
+%     letter of ہان are in use
+%   ب U+0628, the initial of بلکل (bilkul, "absolutely"), a common
+%     affirmative
+% yesexpr matches: +  1  y  Y  ج(U+062C)  ہ(U+06C1)  ه(U+0647)  ب(U+0628)
+% noexpr matches:  -  0  n  N  آ(U+0622)  ا(U+0627)  ن(U+0646)
+yesexpr "^[+1yYجہهب]"
+noexpr  "^[-0nNآان]"
+yesstr  "ہان"
+nostr   "آخہ"
+END LC_MESSAGES
+
+
+LC_PAPER
+copy "i18n"
+END LC_PAPER
+
+LC_MEASUREMENT
+copy "i18n"
+END LC_MEASUREMENT
+
+LC_NAME
+% Brahui name formatting
+% Western order: salutation, given name, middle name, family name
+name_fmt    "%d%t%g%t%m%t%f"
+name_gen    "جواننگا"
+name_mr     "خواجہ"
+name_mrs    "گودی"
+name_miss   "بی بی"
+name_ms     "بی بی"
+END LC_NAME
+
+LC_ADDRESS
+% Brahui address format for Pakistan
+postal_fmt    "%a%N%f%N%d%N%b%N%h %s %e %r%N%T %z%N%c%N"
+country_name  "پاکستان"
+country_ab2   "PK"
+country_ab3   "PAK"
+country_num   586
+country_car   "PK"
+% Brahui has no ISO 639-1 (two-letter) code, so lang_ab is omitted,
+% following the ckb_IQ precedent.  brh is an ISO 639-3 code.
+lang_name     "براہوئی"
+lang_term     "brh"
+lang_lib      "brh"
+END LC_ADDRESS
+
+LC_TELEPHONE
+tel_int_fmt "+%c %a %l"
+int_prefix "92"
+int_select "00"
+END LC_TELEPHONE
