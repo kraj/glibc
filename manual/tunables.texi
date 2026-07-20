@@ -92,7 +92,13 @@ In addition to setting the @code{GLIBC_TUNABLES} environment variable,
 tunables may be provided globally via the file
 @file{/etc/tunables.conf}, which gets stored in glibc's dynamic
 library cache @file{/etc/ld.so.cache} and read by every program at
-startup.  @file{/etc/tunables.conf} contains one tunable per line:
+startup.
+
+@strong{Portability Note:} Specific tunable settings and the
+@file{/etc/tunables.conf} file format and path are not part of the
+stable library interfaces and may change between releases.
+
+The file @file{/etc/tunables.conf} contains one tunable per line:
 
 @example
 glibc.malloc.trim_threshold=128

@@ -9,6 +9,11 @@ Version 2.44
 
 Major new features:
 
+* System-wide tunables can be applied using /etc/tunables.conf and
+  running ldconfig.  Specific tunable settings and the
+  /etc/tunables.conf file format and path are not part of the stable
+  library interfaces and may change between releases.
+
 * A new tunable, glibc.elf.thp, is added to map read-only segments with
   Transparent Huge Pages (THP) if THP is not disabled in the kernel.  When
   glibc.elf.thp is set to 1, malloc uses the actual kernel THP mode
