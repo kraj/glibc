@@ -10,13 +10,13 @@ Version 2.44
 Major new features:
 
 * A new tunable, glibc.elf.thp, is added to map read-only segments with
-  Transparent Huge Pages (THP) if THP isn't disable in kernel.  When
+  Transparent Huge Pages (THP) if THP is not disabled in the kernel.  When
   glibc.elf.thp is set to 1, malloc uses the actual kernel THP mode
   instead of defaulting to madvise mode and madvise_thp will stop issuing
   MADV_HUGEPAGE if kernel THP mode is always.
 
-* THP page size in malloc is capped to MAX_THP_PAGESIZE.  If THP page
-  size is above MAX_THP_PAGESIZE, THP in malloc is disabled.
+* The THP page size in malloc is capped to MAX_THP_PAGESIZE.  If the THP
+  page size is above MAX_THP_PAGESIZE, THP in malloc is disabled.
 
 * Additional optimized and correctly rounded mathematical functions have
   been imported from the CORE-MATH project, in particular cosh, sinh, and
@@ -30,12 +30,12 @@ Major new features:
 * Static PIE is now supported for arm-*-linux-gnueabi.  It requires toolchain
   support to correctly set the expected linker options.
 
-* On AArch64 targets that support Guarded Control Stack extension all GCS
+* On AArch64 targets that support the Guarded Control Stack extension all GCS
   operations (including status, write on shadow stack, and push to shadow
   stack) are locked after enabling GCS with ENFORCED or OVERRIDE GCS policy.
   When a GCS operation is locked, a program cannot change this operation
-  status via prctl syscall.  This prevents disabling or corrupting GCS
-  shadow stack during runtime.
+  status via the prctl syscall.  This prevents disabling or corrupting the
+  GCS shadow stack during runtime.
 
 * Pre-built ld.so.cache files can be installed with ldconfig.
 
@@ -44,11 +44,11 @@ Deprecated and removed features, and other changes affecting compatibility:
 * Although malloc and related functions currently return pointers
   aligned to alignof (max_align_t), the documentation now says future
   versions of glibc may relax alignment requirements for small allocations.
-  For example, a future malloc (1) might return a pointer with odd
+  For example, a future malloc(1) might return a pointer with odd
   alignment, because no object of size 1 can have a fundamental
   alignment greater than 1.
 
- * The s390-linux-gnu (31bit) configuration is no longer supported.
+* The s390-linux-gnu (31bit) configuration is no longer supported.
 
 * The --enable-memory-tagging configure option has been removed.
   The corresponding AArch64-specific functionality that was previously
