@@ -20,3 +20,9 @@ sysdep_routines += \
   strlen_generic \
   # sysdep_routines
 endif # ifeq ($(subdir),string)
+
+ifeq ($(subdir),malloc)
+sysdep_routines += \
+  malloc-ifuncs \
+  # sysdep_routines
+endif # ifeq ($(subdir),malloc)

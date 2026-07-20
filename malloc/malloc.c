@@ -5168,6 +5168,9 @@ __malloc_info (int options, FILE *fp)
 }
 
 #if IS_IN (libc)
+
+/* See sysdeps/generic/malloc-ifuncs.h for details.  */
+# if !USE_MULTIARCH_MALLOC
 strong_alias (__libc_malloc, malloc)
 strong_alias (__libc_realloc, realloc)
 strong_alias (__libc_free, free)
@@ -5180,6 +5183,7 @@ weak_alias (__malloc_usable_size, malloc_usable_size)
 weak_alias (__aligned_alloc, aligned_alloc)
 weak_alias (__free_sized, free_sized)
 weak_alias (__free_aligned_sized, free_aligned_sized)
+#endif /* !USE_MULTIARCH_MALLOC */
 
 weak_alias (__malloc_info, malloc_info)
 weak_alias (__libc_mallinfo, mallinfo)
@@ -5187,11 +5191,14 @@ weak_alias (__libc_mallinfo2, mallinfo2)
 weak_alias (__libc_mallopt, mallopt)
 weak_alias (__malloc_stats, malloc_stats)
 weak_alias (__malloc_trim, malloc_trim)
+
 #endif /* IS_IN (libc) */
 
-#if SHLIB_COMPAT (libc, GLIBC_2_0, GLIBC_2_26)
+#if !USE_MULTIARCH_MALLOC
+# if SHLIB_COMPAT (libc, GLIBC_2_0, GLIBC_2_26)
 compat_symbol (libc, __libc_free, cfree, GLIBC_2_0);
-#endif
+# endif
+#endif /* !USE_MULTIARCH_MALLOC */
 
 /* ------------------------------------------------------------
    History:
