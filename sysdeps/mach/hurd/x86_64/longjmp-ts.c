@@ -19,6 +19,7 @@
 #include <hurd/signal.h>
 #include <setjmp.h>
 #include <jmpbuf-offsets.h>
+#include <pointer_guard.h>
 #include <mach/thread_status.h>
 
 
@@ -38,4 +39,8 @@ _hurd_longjmp_thread_state (void *state, jmp_buf env, int val)
   ts->ursp = env[0].__jmpbuf[JB_RSP];
   ts->rip = env[0].__jmpbuf[JB_PC];
   ts->rax = val ?: 1;
+
+  PTR_DEMANGLE (ts->rbp);
+  PTR_DEMANGLE (ts->ursp);
+  PTR_DEMANGLE (ts->rip);
 }
