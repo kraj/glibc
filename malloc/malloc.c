@@ -455,104 +455,10 @@ static int extra_mmap_prot = 0;
   other numbers that might be of interest.
 */
 
-
-/* ---------- description of public routines ------------ */
-
 #if IS_IN (libc)
-/*
-  malloc(size_t n)
-  Returns a pointer to a newly allocated chunk of at least n bytes, or null
-  if no space is available. Additionally, on failure, errno is
-  set to ENOMEM on ANSI C systems.
-
-  If n is zero, malloc returns a minimum-sized chunk. (The minimum
-  size is 16 bytes on most 32bit systems, and 24 or 32 bytes on 64bit
-  systems.)  On most systems, size_t is an unsigned type, so calls
-  with negative arguments are interpreted as requests for huge amounts
-  of space, which will often fail. The maximum supported value of n
-  differs across systems, but is in all cases less than the maximum
-  representable value of a size_t.
-*/
-void *__libc_malloc (size_t);
-libc_hidden_proto (__libc_malloc)
 
 static void *__libc_calloc2 (size_t);
 static void *__libc_malloc2 (size_t);
-
-/*
-  free(void* p)
-  Releases the chunk of memory pointed to by p, that had been previously
-  allocated using malloc or a related routine such as realloc.
-  It has no effect if p is null. It can have arbitrary (i.e., bad!)
-  effects if p has already been freed.
-
-  Unless disabled (using mallopt), freeing very large spaces will
-  when possible, automatically trigger operations that give
-  back unused memory to the system, thus reducing program footprint.
-*/
-void     __libc_free(void*);
-libc_hidden_proto (__libc_free)
-
-/*
-  calloc(size_t n_elements, size_t element_size);
-  Returns a pointer to n_elements * element_size bytes, with all locations
-  set to zero.
-*/
-void*  __libc_calloc(size_t, size_t);
-
-/*
-  realloc(void* p, size_t n)
-  Returns a pointer to a chunk of size n that contains the same data
-  as does chunk p up to the minimum of (n, p's size) bytes, or null
-  if no space is available.
-
-  The returned pointer may or may not be the same as p. The algorithm
-  prefers extending p when possible, otherwise it employs the
-  equivalent of a malloc-copy-free sequence.
-
-  If p is null, realloc is equivalent to malloc.
-
-  If space is not available, realloc returns null, errno is set (if on
-  ANSI) and p is NOT freed.
-
-  if n is for fewer bytes than already held by p, the newly unused
-  space is lopped off and freed if possible.  Unless the #define
-  REALLOC_ZERO_BYTES_FREES is set, realloc with a size argument of
-  zero (re)allocates a minimum-sized chunk.
-
-  Large chunks that were internally obtained via mmap will always be
-  grown using malloc-copy-free sequences unless the system supports
-  MREMAP (currently only linux).
-
-  The old unix realloc convention of allowing the last-free'd chunk
-  to be used as an argument to realloc is not supported.
-*/
-void*  __libc_realloc(void*, size_t);
-libc_hidden_proto (__libc_realloc)
-
-/*
-  memalign(size_t alignment, size_t n);
-  Returns a pointer to a newly allocated chunk of n bytes, aligned
-  in accord with the alignment argument.
-
-  The alignment argument should be a power of two. If the argument is
-  not a power of two, the nearest greater power is used.
-  8-byte alignment is guaranteed by normal malloc calls, so don't
-  bother calling memalign with an argument of 8 or less.
-
-  Overreliance on memalign is a sure way to fragment space.
-*/
-void*  __libc_memalign(size_t, size_t);
-libc_hidden_proto (__libc_memalign)
-
-/*
-  valloc(size_t n);
-  Equivalent to memalign(pagesize, n), where pagesize is the page
-  size of the system. If the pagesize is unknown, 4096 is used.
-*/
-void*  __libc_valloc(size_t);
-
-
 
 /*
   mallinfo()
@@ -577,14 +483,6 @@ struct mallinfo2 __libc_mallinfo2(void);
 libc_hidden_proto (__libc_mallinfo2)
 
 struct mallinfo __libc_mallinfo(void);
-
-
-/*
-  pvalloc(size_t n);
-  Equivalent to valloc(minimum-page-that-holds(n)), that is,
-  round up n to nearest pagesize.
- */
-void*  __libc_pvalloc(size_t);
 
 /*
   malloc_trim(size_t pad);
@@ -613,23 +511,6 @@ void*  __libc_pvalloc(size_t);
 int      __malloc_trim(size_t);
 
 /*
-  malloc_usable_size(void* p);
-
-  Returns the number of bytes you can actually use in
-  an allocated chunk, which may be more than you requested (although
-  often not) due to alignment and minimum size constraints.
-  You can use this many bytes without worrying about
-  overwriting other allocated objects. This is not a particularly great
-  programming practice. malloc_usable_size can be more useful in
-  debugging and assertions, for example:
-
-  p = malloc(n);
-  assert(malloc_usable_size(p) >= 256);
-
-*/
-size_t   __malloc_usable_size(void*);
-
-/*
   malloc_stats();
   Prints on stderr the amount of space obtained from the system (both
   via sbrk and mmap), the maximum amount (which may be more than
@@ -651,12 +532,6 @@ size_t   __malloc_usable_size(void*);
 */
 void     __malloc_stats(void);
 
-/*
-  posix_memalign(void **memptr, size_t alignment, size_t size);
-
-  POSIX wrapper like memalign(), checking for validity of size.
-*/
-int      __posix_memalign(void **, size_t, size_t);
 #endif /* IS_IN (libc) */
 
 /*
@@ -3316,10 +3191,8 @@ __libc_memalign (size_t alignment, size_t bytes)
 }
 libc_hidden_def (__libc_memalign)
 
-/* For ISO C17.  */
 void *
-weak_function
-aligned_alloc (size_t alignment, size_t bytes)
+__aligned_alloc (size_t alignment, size_t bytes)
 {
 /* Starting with ISO C17 the standard requires an error for alignments
    that are not supported.  Only integral powers of 2 are valid.  */
@@ -3331,11 +3204,10 @@ aligned_alloc (size_t alignment, size_t bytes)
 
   return _mid_memalign (alignment, bytes);
 }
+libc_hidden_def (__aligned_alloc)
 
-/* For ISO C23.  */
 void
-weak_function
-free_sized (void *ptr, __attribute_maybe_unused__ size_t size)
+__free_sized (void *ptr, __attribute_maybe_unused__ size_t size)
 {
   /* We do not perform validation that size is the same as the original
      requested size at this time. We leave that to the sanitizers.  We
@@ -3344,11 +3216,10 @@ free_sized (void *ptr, __attribute_maybe_unused__ size_t size)
 
   free (ptr);
 }
+libc_hidden_def (__free_sized)
 
-/* For ISO C23.  */
 void
-weak_function
-free_aligned_sized (void *ptr, __attribute_maybe_unused__ size_t alignment,
+__free_aligned_sized (void *ptr, __attribute_maybe_unused__ size_t alignment,
                     __attribute_maybe_unused__ size_t size)
 {
   /* We do not perform validation that size and alignment is the same as
@@ -3358,6 +3229,7 @@ free_aligned_sized (void *ptr, __attribute_maybe_unused__ size_t alignment,
 
   free (ptr);
 }
+libc_hidden_def (__free_aligned_sized)
 
 static void *
 _mid_memalign (size_t alignment, size_t bytes)
@@ -3406,6 +3278,7 @@ __libc_valloc (size_t bytes)
 {
   return _mid_memalign (GLRO (dl_pagesize), bytes);
 }
+libc_hidden_def (__libc_valloc)
 
 void *
 __libc_pvalloc (size_t bytes)
@@ -3423,6 +3296,7 @@ __libc_pvalloc (size_t bytes)
 
   return _mid_memalign (pagesize, rounded_bytes & -pagesize);
 }
+libc_hidden_def (__libc_pvalloc)
 
 static void * __attribute_noinline__
 __libc_calloc2 (size_t sz)
@@ -3544,6 +3418,7 @@ __libc_calloc (size_t n, size_t elem_size)
 #endif
   return __libc_calloc2 (bytes);
 }
+libc_hidden_def (__libc_calloc)
 #endif /* IS_IN (libc) */
 
 /*
@@ -4548,6 +4423,7 @@ __malloc_usable_size (void *m)
     return 0;
   return musable (m);
 }
+libc_hidden_def (__malloc_usable_size)
 #endif /* IS_IN (libc) */
 
 /*
@@ -5129,6 +5005,7 @@ __posix_memalign (void **memptr, size_t alignment, size_t size)
   *memptr = mem;
   return 0;
 }
+libc_hidden_def (__posix_memalign)
 #endif /* IS_IN (libc) */
 
 
@@ -5300,6 +5177,9 @@ weak_alias (__posix_memalign, posix_memalign)
 weak_alias (__libc_valloc, valloc)
 weak_alias (__libc_pvalloc, pvalloc)
 weak_alias (__malloc_usable_size, malloc_usable_size)
+weak_alias (__aligned_alloc, aligned_alloc)
+weak_alias (__free_sized, free_sized)
+weak_alias (__free_aligned_sized, free_aligned_sized)
 
 weak_alias (__malloc_info, malloc_info)
 weak_alias (__libc_mallinfo, mallinfo)

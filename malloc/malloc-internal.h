@@ -24,6 +24,7 @@
 #include <malloc-size.h>
 #include <hugepages.h>
 #include <calloc-clear-memory.h>
+#include <malloc-api.h>
 
 /* Called in the parent process before a fork.  */
 void __malloc_fork_lock_parent (void) attribute_hidden;
