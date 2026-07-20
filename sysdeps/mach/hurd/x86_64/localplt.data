@@ -31,6 +31,7 @@ ld.so: __getpid
 ld.so: __getcwd
 ld.so: _exit ?
 ld.so: abort
+ld.so: readlink
 ld.so: _hurd_intr_rpc_mach_msg
 ld.so: __errno_location
 ld.so: _dl_init_first

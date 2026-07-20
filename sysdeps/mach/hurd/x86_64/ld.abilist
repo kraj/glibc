@@ -15,3 +15,4 @@ GLIBC_2.38 _dl_mcount F
 GLIBC_2.38 _hurd_intr_rpc_mach_msg F
 GLIBC_2.38 _r_debug D 0x28
 GLIBC_2.38 abort F
+GLIBC_2.38 readlink F

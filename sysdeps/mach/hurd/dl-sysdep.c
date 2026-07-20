@@ -377,6 +377,48 @@ __read (int fd, void *buf, size_t nbytes)
 libc_hidden_weak (__read)
 weak_alias (__read, __read_nocancel)
 
+check_no_hidden(__readlink);
+__ssize_t weak_function
+__readlink (const char *path, char *buf, size_t len)
+{
+  mach_port_t port;
+  error_t err;
+  struct stat64 st;
+  char *rbuf = buf;
+  mach_msg_type_number_t nread = len;
+
+  err = open_file (path, O_READ | O_NOLINK, &port, 0);
+  if (err)
+    return __hurd_fail (err);
+
+  err = __io_stat (port, &st);
+  if (err)
+    goto out;
+
+  if (!S_ISLNK (st.st_mode))
+    {
+      err = EINVAL;
+      goto out;
+    }
+
+  err = __io_read (port, &rbuf, &nread, 0, len);
+  if (err)
+    goto out;
+
+  len = nread;
+  if (rbuf != buf)
+    {
+      memcpy (buf, rbuf, len);
+      __vm_deallocate (__mach_task_self (), (vm_address_t) rbuf, nread);
+    }
+
+out:
+  __mach_port_deallocate (__mach_task_self (), port);
+  return err ? __hurd_fail (err) : len;
+}
+libc_hidden_weak (__readlink)
+weak_alias (__readlink, readlink)
+
 check_no_hidden(__write);
 check_no_hidden(__write_nocancel);
 __ssize_t weak_function

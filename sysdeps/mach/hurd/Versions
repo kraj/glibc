@@ -37,6 +37,7 @@ ld {
     __close; __getpid;
     __mmap; __open; __read; __sbrk; __strtoul_internal;
     __write; __writev;
+    readlink;
     _exit; _hurd_intr_rpc_mach_msg;
     abort;
   }
@@ -57,6 +58,7 @@ ld {
 
     # functions that must be shared with libc
     __access; __libc_read; __libc_write; __libc_lseek64;
+    __readlink;
     __close_nocancel;
     __open_nocancel;
     __read_nocancel; __pread64_nocancel;
