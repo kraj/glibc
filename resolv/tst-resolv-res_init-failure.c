@@ -66,7 +66,22 @@ static int
 do_test (void)
 {
   struct resolv_test *aux = resolv_test_start
-    ((struct resolv_redirect_config) { .response_callback = response });
+    ((struct resolv_redirect_config)
+     {
+       .response_callback = response,
+       /* Disable TCP servers to prevent test failures due to a race
+	  condition: If the initial setrlimit call below executes
+	  before the kernel has allocated the client FD in the accept
+	  system call on the TCP DNS server threads, the system call
+	  fails even if no client connections arrive.  (The FD is
+	  pre-allocated.)  */
+       .servers =
+	 {
+	   { .disable_tcp = true, },
+	   { .disable_tcp = true, },
+	   { .disable_tcp = true, },
+	 },
+     });
 
   /* Initial lookup.  This drives __res_context_send through its init
      block, which allocates _u._ext.nsaddrs[] and sets
