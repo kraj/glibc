@@ -252,6 +252,10 @@ test-xfail-tst-mallocfork2-mcheck = yes
 test-xfail-tst-mallocfork2-malloc-check = yes
 test-xfail-tst-mallocfork2-malloc-hugetlb1 = yes
 test-xfail-tst-mallocfork2-malloc-hugetlb2 = yes
+test-xfail-tst-mallocfork2-malloc-largetcache = yes
+test-xfail-tst-pututxline-cache = yes
+test-xfail-tst-pututxline-lockfail = yes
+test-xfail-tst-arc4random-fork = yes
 endif
 ifeq ($(subdir),htl)
 test-xfail-tst-mutex4 = yes
