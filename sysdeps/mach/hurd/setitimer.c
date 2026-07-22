@@ -271,7 +271,10 @@ setitimer_locked (const struct itimerval *new, struct itimerval *old)
     }
 
   /* Load the new itimer value.  */
-  _hurd_itimerval = newval;
+  if ((newval.it_value.tv_sec | newval.it_value.tv_usec) != 0)
+    _hurd_itimerval = newval;
+  else
+    _hurd_itimerval = (struct itimerval) { };
 
   if ((newval.it_value.tv_sec | newval.it_value.tv_usec) == 0)
     {
