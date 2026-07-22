@@ -31,6 +31,9 @@
 #define ftw __rename_ftw
 #define nftw __rename_nftw
 
+#include <sys/types.h>
+
+#include <kernel_stat.h>
 #include <shlib-compat.h>
 #include "ftw-common.c"
 
@@ -44,7 +47,7 @@ versioned_symbol (libc, __new_nftw64, nftw64, GLIBC_2_3_3);
 compat_symbol (libc, __old_nftw64, nftw64, GLIBC_2_1);
 #endif
 
-#ifdef __OFF_T_MATCHES_OFF64_T
+#if XSTAT_IS_XSTAT64
 weak_alias (__ftw64, ftw)
 versioned_symbol (libc, __new_nftw64, nftw, GLIBC_2_3_3);
 # if SHLIB_COMPAT(libc, GLIBC_2_1, GLIBC_2_3_3)
