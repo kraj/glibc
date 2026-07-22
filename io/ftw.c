@@ -18,7 +18,9 @@
 
 #include <sys/types.h>
 
-#ifndef __OFF_T_MATCHES_OFF64_T
+#include <kernel_stat.h>
+
+#if !XSTAT_IS_XSTAT64
 # include "ftw-common.c"
 
 versioned_symbol (libc, __new_nftw, nftw, GLIBC_2_3_3);
