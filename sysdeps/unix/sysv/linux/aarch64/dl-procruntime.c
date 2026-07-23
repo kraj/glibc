@@ -35,3 +35,35 @@ PROCINFO_CLASS unsigned long _dl_aarch64_gcs
 ,
 # endif
 #endif
+
+#if !IS_IN (ldconfig)
+# if !defined PROCINFO_DECL && defined SHARED
+  ._dl_aarch64_mte_mode
+# else
+PROCINFO_CLASS unsigned int _dl_aarch64_mte_mode
+# endif
+# ifndef PROCINFO_DECL
+= MTE_MODE_DISABLED
+# endif
+# if !defined SHARED || defined PROCINFO_DECL
+;
+# else
+,
+# endif
+#endif
+
+#if !IS_IN (ldconfig)
+# if !defined PROCINFO_DECL && defined SHARED
+  ._dl_aarch64_mte_scope
+# else
+PROCINFO_CLASS unsigned int _dl_aarch64_mte_scope
+# endif
+# ifndef PROCINFO_DECL
+= MTE_SCOPE_NONE
+# endif
+# if !defined SHARED || defined PROCINFO_DECL
+;
+# else
+,
+# endif
+#endif

@@ -33,9 +33,9 @@ ENTRY (_start)
 	mov	x21, x0
 
 	/* Use GL(dl_aarch64_gcs) to set the shadow stack status.  */
-	adrp	x16, _rtld_local
-	add	x16, x16, :lo12:_rtld_local
-	ldr	x22, [x16, GL_DL_AARCH64_GCS_OFFSET]
+	adrp	x23, _rtld_local
+	add	x23, x23, :lo12:_rtld_local
+	ldr	x22, [x23, GL_DL_AARCH64_GCS_OFFSET]
 	cbz	x22, L(skip_gcs_enable)
 
 	/* Enable GCS before user code runs.  Note that IFUNC resolvers and
@@ -66,6 +66,8 @@ ENTRY (_start)
 	cbnz	w0, L(failed_gcs_lock)
 L(skip_gcs_enable):
 
+	bl	HIDDEN_JUMPTARGET(__mte_init)
+
 .globl _dl_start_user
 .type _dl_start_user, %function
 _dl_start_user:
@@ -77,7 +79,7 @@ _dl_start_user:
 	add	x3, x2, x1, lsl 3
 	add	x3, x3, 8
 	/* Run the init functions of the loaded modules.  */
-	ldr	x0, [x16]
+	ldr	x0, [x23]
 	bl	_dl_init
 	/* Load the finalizer function.  */
 	adrp	x0, _dl_fini

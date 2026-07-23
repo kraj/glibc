@@ -4,6 +4,7 @@ ifeq ($(subdir),elf)
 sysdep-dl-routines += \
   dl-bti \
   dl-gcs \
+  dl-mte \
   # sysdep-dl-routines
 
 tests += \

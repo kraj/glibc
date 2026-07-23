@@ -59,6 +59,21 @@ TUNABLE_CALLBACK (set_hwcaps) (tunable_val_t *val)
     }
 }
 
+static void
+TUNABLE_CALLBACK (set_aarch64_mte_mode) (tunable_val_t *val)
+{
+  if (tunable_strcmp_cte (val, "enabled"))
+    GL (dl_aarch64_mte_mode) = MTE_MODE_ENABLED;
+  else if (tunable_strcmp_cte (val, "sync"))
+    GL (dl_aarch64_mte_mode) = MTE_MODE_SYNC;
+  else if (tunable_strcmp_cte (val, "async"))
+    GL (dl_aarch64_mte_mode) = MTE_MODE_ASYNC;
+  else if (tunable_strcmp_cte (val, "disabled"))
+    GL (dl_aarch64_mte_mode) = MTE_MODE_DISABLED;
+  else
+    GL (dl_aarch64_mte_mode) = MTE_MODE_ENABLED;
+}
+
 static inline void
 init_cpu_features (struct cpu_features *cpu_features)
 {
@@ -80,6 +95,11 @@ init_cpu_features (struct cpu_features *cpu_features)
   cpu_features->bti = GLRO (dl_hwcap2) & HWCAP2_BTI;
   if (cpu_features->bti)
     GLRO (dl_aarch64_bti) = TUNABLE_GET (glibc, cpu, aarch64_bti, uint64_t, 0);
+
+  /* Check if MTE is supported.  */
+  if (GLRO (dl_hwcap2) & HWCAP2_MTE)
+    TUNABLE_GET (glibc, cpu, mtemode, tunable_val_t *,
+		 TUNABLE_CALLBACK (set_aarch64_mte_mode));
 
   /* Check if SVE is supported.  */
   cpu_features->sve = GLRO (dl_hwcap) & HWCAP_SVE;

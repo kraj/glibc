@@ -760,6 +760,33 @@ locked.  GCS markings will not be checked for any binaries.
 
 @end deftp
 
+@deftp Tunable glibc.cpu.mtemode
+On AArch64 Linux systems that support Memory Tagging Extension (MTE) this
+tunable allows to select the fault mode for memory tag checking (MTE mode).
+
+Supported values are:
+
+@itemize @bullet
+@item @code{disabled}: (the default), memory tagging is not enabled and the
+CPU and the kernel ignore tag checking faults.
+@item @code{enabled}: Use system-preferred tag checking mode. This value is
+intended for general purpose use cases.
+@item @code{sync}: Select synchronous tag checking fault mode: when tag check
+fault occurs, a @code{SIGSEGV} is raised synchronously and memory access is not
+performed. This value is useful for debugging.
+@item @code{async}: Use asynchronous tag checking fault mode: a @code{SIGSEGV}
+is raised asynchronously following one or multiple tag check faults.
+@end itemize
+
+Any incorrect value or an empty value of this tunable will result in
+the @code{enabled} value being used. When tunable is not provided, the
+default value @code{disabled} is used.
+
+The system-preferred MTE mode can be configured via sysfs as described in
+@url{https://www.kernel.org/doc/html/latest/arch/arm64/memory-tagging-extension.html}.
+
+@end deftp
+
 @node Memory Related Tunables
 @section Memory Related Tunables
 @cindex memory related tunables

@@ -19,6 +19,11 @@ tests-static += \
   # tests-static
 tst-cpu-tunable-static-pie-TUNABLES = glibc.cpu.hwcaps=-midr,-sve,-mops
 endif
+
+tests-internal += \
+  tst-mtemode-tunable \
+  # tests-internal
+
 endif
 
 ifeq ($(subdir),misc)
