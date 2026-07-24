@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: libc 2.10.1\n"
-"POT-Creation-Date: 2026-07-07 10:38+0900\n"
+"POT-Creation-Date: 2026-07-24 21:11+0900\n"
 "PO-Revision-Date: 2009-06-23 12:30+0700\n"
 "Last-Translator: Arif E. Nugroho <arif_endro@yahoo.com>\n"
 "Language-Team: Indonesian <translation-team-id@lists.sourceforge.net>\n"
@@ -126,7 +126,7 @@ msgstr ""
 "[BERKAS-KELUARAN [BERKAS-MASUKAN]...]"
 
 #: catgets/gencat.c:247 debug/pcprofiledump.c:235 debug/xtrace.sh:63
-#: elf/ldconfig.c:244 elf/ldd.bash.in:39 elf/pldd.c:262 elf/sotruss.sh:76
+#: elf/ldconfig.c:251 elf/ldd.bash.in:39 elf/pldd.c:262 elf/sotruss.sh:76
 #: elf/sprof.c:389 iconv/iconv_prog.c:391 iconv/iconvconfig.c:397
 #: locale/programs/locale.c:292 locale/programs/localedef.c:459
 #: login/programs/pt_chown.c:62 malloc/memusage.sh:70 malloc/memusagestat.c:582
@@ -142,7 +142,7 @@ msgstr ""
 "garansi; bahkan untuk PERDAGANGAN atau KECOCOKAN UNTUK SEBUAH TUJUAN TERTENTU.\n"
 
 #: catgets/gencat.c:252 debug/pcprofiledump.c:240 debug/xtrace.sh:67
-#: elf/ldconfig.c:249 elf/pldd.c:267 elf/sprof.c:395 iconv/iconv_prog.c:396
+#: elf/ldconfig.c:256 elf/pldd.c:267 elf/sprof.c:395 iconv/iconv_prog.c:396
 #: iconv/iconvconfig.c:402 locale/programs/locale.c:297
 #: locale/programs/localedef.c:464 malloc/memusage.sh:74
 #: malloc/memusagestat.c:587 nscd/nscd.c:526 nss/getent.c:101 nss/makedb.c:392
@@ -326,7 +326,7 @@ msgstr "mode tidak valid"
 msgid "invalid mode parameter"
 msgstr "mode parameter tidak valid"
 
-#: elf/cache.c:357 elf/ldconfig.c:1116
+#: elf/cache.c:357 elf/ldconfig.c:1272
 #, c-format
 msgid "Can't open cache file %s\n"
 msgstr "Tidak dapat membuka berkas cache %s\n"
@@ -357,7 +357,7 @@ msgstr "Tidak dapat membuat berkas cache %s sementara"
 msgid "Writing of cache data failed"
 msgstr "Penulisan dari cache data gagal"
 
-#: elf/cache.c:824
+#: elf/cache.c:824 elf/ldconfig.c:1175
 #, c-format
 msgid "Changing access rights of %s to %#o failed"
 msgstr "Mengubah ijin akses dari %s ke %#o gagal"
@@ -607,152 +607,152 @@ msgstr "kehabisan memori"
 msgid "%s:%u: cannot read directory %s"
 msgstr "%s:%u: tidak dapat membaca direktori %s"
 
-#: elf/ldconfig.c:132
+#: elf/ldconfig.c:135
 msgid "Print cache"
 msgstr "Menampilkan cache"
 
-#: elf/ldconfig.c:133
+#: elf/ldconfig.c:136
 msgid "Generate verbose messages"
 msgstr "Menghasilkan pesan verbose"
 
-#: elf/ldconfig.c:134
+#: elf/ldconfig.c:137
 msgid "Don't build cache"
 msgstr "Jangan membuat cache"
 
-#: elf/ldconfig.c:136
+#: elf/ldconfig.c:139
 msgid "Change to and use ROOT as root directory"
 msgstr "Ubah ke dan gunakan ROOT sebagai direktori root"
 
-#: elf/ldconfig.c:136
+#: elf/ldconfig.c:139
 msgid "ROOT"
 msgstr "ROOT"
 
-#: elf/ldconfig.c:137
+#: elf/ldconfig.c:140
 msgid "CACHE"
 msgstr "CACHE"
 
-#: elf/ldconfig.c:137
+#: elf/ldconfig.c:140
 msgid "Use CACHE as cache file"
 msgstr "Gunakan CACHE sebagai berkas cache"
 
-#: elf/ldconfig.c:138
+#: elf/ldconfig.c:141
 msgid "CONF"
 msgstr "CONF"
 
-#: elf/ldconfig.c:140
+#: elf/ldconfig.c:143
 msgid "Only process directories specified on the command line.  Don't build cache."
 msgstr "Hanya proses direktori yang dispesifikasikan dalam baris perintah. Jangan buat cache."
 
-#: elf/ldconfig.c:141
+#: elf/ldconfig.c:144
 msgid "Manually link individual libraries."
 msgstr "Secara manual hubungkan perpustakaan individu."
 
-#: elf/ldconfig.c:142
+#: elf/ldconfig.c:145
 msgid "FORMAT"
 msgstr "FORMAT"
 
-#: elf/ldconfig.c:143
+#: elf/ldconfig.c:146
 msgid "Ignore auxiliary cache file"
 msgstr "Abaikan berkas cache tambahan"
 
-#: elf/ldconfig.c:151
+#: elf/ldconfig.c:155
 msgid "Configure Dynamic Linker Run Time Bindings."
 msgstr "Konfigurasi Linker Dinamis Ikatan Waktu Jalan."
 
-#: elf/ldconfig.c:288
+#: elf/ldconfig.c:295
 #, c-format
 msgid "Path `%s' given more than once"
 msgstr "Jalur `%s' diberikan lebih dari sekali"
 
-#: elf/ldconfig.c:417
+#: elf/ldconfig.c:424 elf/ldconfig.c:1078
 #, c-format
 msgid "Can't stat %s"
 msgstr "Tidak dapat memperoleh statistik %s"
 
-#: elf/ldconfig.c:511
+#: elf/ldconfig.c:518
 #, c-format
 msgid "Can't stat %s\n"
 msgstr "Tidak dapat memperoleh statistik %s\n"
 
-#: elf/ldconfig.c:521
+#: elf/ldconfig.c:528
 #, c-format
 msgid "%s is not a symbolic link\n"
 msgstr "%s bukan sebuah link simbolis\n"
 
-#: elf/ldconfig.c:540
+#: elf/ldconfig.c:547
 #, c-format
 msgid "Can't unlink %s"
 msgstr "Tidak dapat memutuskan %s"
 
-#: elf/ldconfig.c:546
+#: elf/ldconfig.c:553
 #, c-format
 msgid "Can't link %s to %s"
 msgstr "Tidak dapat menghubungkan %s ke %s"
 
-#: elf/ldconfig.c:552
+#: elf/ldconfig.c:559
 msgid " (changed)\n"
 msgstr " (berubah)\n"
 
-#: elf/ldconfig.c:554
+#: elf/ldconfig.c:561
 msgid " (SKIPPED)\n"
 msgstr " (DILEWATI)\n"
 
-#: elf/ldconfig.c:609
+#: elf/ldconfig.c:616 elf/ldconfig.c:1063
 #, c-format
 msgid "Can't find %s"
 msgstr "Tidak dapat menemukan %s"
 
-#: elf/ldconfig.c:625 elf/ldconfig.c:784 elf/ldconfig.c:851
+#: elf/ldconfig.c:632 elf/ldconfig.c:791 elf/ldconfig.c:858
 #, c-format
 msgid "Cannot lstat %s"
 msgstr "Tidak dapat lstat %s"
 
-#: elf/ldconfig.c:631
+#: elf/ldconfig.c:638
 #, c-format
 msgid "Ignored file %s since it is not a regular file."
 msgstr "Mengabaikan berkas %s karena itu bukan sebuah berkas umum."
 
-#: elf/ldconfig.c:639
+#: elf/ldconfig.c:646
 #, c-format
 msgid "No link created since soname could not be found for %s"
 msgstr "Tidak ada hubungan yang dibuat karena soname tidak dapaat ditemukan untuk %s"
 
-#: elf/ldconfig.c:740
+#: elf/ldconfig.c:747
 #, c-format
 msgid "Can't open directory %s"
 msgstr "Tidak dapat membuka direktori %s"
 
-#: elf/ldconfig.c:801 elf/ldconfig.c:839 elf/readlib.c:81
+#: elf/ldconfig.c:808 elf/ldconfig.c:846 elf/readlib.c:81
 #, c-format
 msgid "Input file %s not found.\n"
 msgstr "Berkas masukan %s tidak ditemukan.\n"
 
-#: elf/ldconfig.c:808
+#: elf/ldconfig.c:815
 #, c-format
 msgid "Cannot stat %s"
 msgstr "Tidak dapat memperoleh statistik %s"
 
-#: elf/ldconfig.c:927
+#: elf/ldconfig.c:934
 #, c-format
 msgid "libc6 library %s in wrong directory"
 msgstr "perpustakaan libc6 %s berada dalam direktori salah"
 
-#: elf/ldconfig.c:946
+#: elf/ldconfig.c:953
 #, c-format
 msgid "libraries %s and %s in directory %s have same soname but different type."
 msgstr "perpustakaan %s dan %s berada dalam direktori %s memiliki soname sama tetapi memiliki tipe berbeda."
 
-#: elf/ldconfig.c:1070
+#: elf/ldconfig.c:1226
 #, c-format
 msgid "relative path `%s' used to build cache"
 msgstr "jalur relatif `%s' digunakan untuk membuat cache"
 
-#: elf/ldconfig.c:1092
+#: elf/ldconfig.c:1248
 #, c-format
 msgid "Can't chdir to /"
 msgstr "Tidak dapat chdir ke /"
 
-#: elf/ldconfig.c:1136
+#: elf/ldconfig.c:1292
 #, c-format
 msgid "Can't open cache file directory %s\n"
 msgstr "Tidak dapat membuat berkas cache direktori %s\n"
@@ -3971,7 +3971,7 @@ msgstr "Tidak cocok ) atau \\)"
 msgid "No previous regular expression"
 msgstr "Tidak ada ekspresi regular sebelumnya"
 
-#: posix/wordexp.c:1806
+#: posix/wordexp.c:1807
 msgid "parameter null or not set"
 msgstr "parameter kosong atau tidak diset"
 
