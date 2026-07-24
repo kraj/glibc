@@ -83,10 +83,6 @@ Deprecated and removed features, and other changes affecting compatibility:
   remaining behavior was to suppress the link-time warnings on the NSS
   interface functions in libc.a, which are now emitted unconditionally.
 
-Changes to build and runtime requirements:
-
-  [Add changes to build and runtime requirements here]
-
 Security related changes:
 
 The following CVEs were fixed in this release, details of which can be
