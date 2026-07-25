@@ -85,7 +85,10 @@ corrupt (void)
 static void
 ldconfig (void)
 {
-  xsystem ("/sbin/ldconfig -X");
+  char *cmd = xasprintf("%s/ldconfig -X", support_install_rootsbindir);
+  xsystem (cmd);
+
+  free(cmd);
 }
 
 /* Change ld.so.conf to refer to the new directory, and generate a new
