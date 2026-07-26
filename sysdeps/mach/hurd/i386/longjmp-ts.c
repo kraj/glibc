@@ -38,7 +38,6 @@ _hurd_longjmp_thread_state (void *state, jmp_buf env, int val)
   ts->eip = env[0].__jmpbuf[JB_PC];
   ts->eax = val ?: 1;
 
-  PTR_DEMANGLE (ts->ebp);
   PTR_DEMANGLE (ts->uesp);
   PTR_DEMANGLE (ts->eip);
 }
