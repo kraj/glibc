@@ -12,18 +12,12 @@ else case e in #(
 CFLAGS="$CFLAGS -mlong-double-128"
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-#include <float.h>
-int
-main (void)
-{
 
+#include <float.h>
 #if LDBL_MANT_DIG != 106
 # error "compiler doesn't implement IBM extended format of long double"
 #endif
 long double foobar (long double x) { return x; }
-  ;
-  return 0;
-}
 _ACEOF
 if ac_fn_c_try_compile "$LINENO"
 then :

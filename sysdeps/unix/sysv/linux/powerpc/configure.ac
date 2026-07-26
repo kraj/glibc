@@ -6,7 +6,8 @@ AC_CACHE_CHECK(whether $CC $CFLAGS -mlong-double-128 uses IBM extended format,
 	       libc_cv_mlong_double_128ibm, [dnl
 save_CFLAGS="$CFLAGS"
 CFLAGS="$CFLAGS -mlong-double-128"
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <float.h>]], [[
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+#include <float.h>
 #if LDBL_MANT_DIG != 106
 # error "compiler doesn't implement IBM extended format of long double"
 #endif
