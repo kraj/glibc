@@ -13,17 +13,10 @@ CFLAGS="$CFLAGS -mlong-double-128"
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
-int
-main (void)
-{
-
 #ifndef __LONG_DOUBLE_128__
 # error "compiler did not predefine __LONG_DOUBLE_128__ as expected"
 #endif
 long double foobar (long double x) { return x; }
-  ;
-  return 0;
-}
 _ACEOF
 if ac_fn_c_try_compile "$LINENO"
 then :
