@@ -6,7 +6,7 @@ AC_CACHE_CHECK(whether $CC $CFLAGS supports -mlong-double-128,
 	       libc_cv_mlong_double_128, [dnl
 save_CFLAGS="$CFLAGS"
 CFLAGS="$CFLAGS -mlong-double-128"
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
 #ifndef __LONG_DOUBLE_128__
 # error "compiler did not predefine __LONG_DOUBLE_128__ as expected"
 #endif
