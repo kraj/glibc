@@ -35,12 +35,13 @@ const double __sinh_data_ch[][2] =
     { 0x1.ae64567f54482p-26, -0x1.defcf17a6ab79p-81 }
   };
 
-const double __sinh_data_db[49][3] =
+const double __sinh_data_db[51][3] =
   {
     { 0x1.364303e1ad8f6p-2, 0x1.3b07e0c779ddap-2, -0x1.bcp-106 },
     { 0x1.4169f234f23b9p-2, 0x1.46b7b3b358f99p-2, -0x1p-56 },
     { 0x1.616cc75d49226p-2, 0x1.687bd068c1c1ep-2, 0x1.ap-111 },
     { 0x1.ae3773250e7d2p-2, 0x1.bafc3479fc9ccp-2, -0x1p-105 },
+    { 0x1.b7efa91915c95p-2, 0x1.c59869f17b483p-2, -0x1p-104 },
     { 0x1.d68039861ab53p-2, 0x1.e73b46abb01e1p-2, -0x1.2p-109 },
     { 0x1.e90f16eb88c09p-2, 0x1.fbdd4a37760b7p-2, -0x1.f8p-108 },
     { 0x1.a3fc7e4dd47d1p-1, 0x1.d4b21ebf542fp-1, 0x1.ep-107 },
@@ -62,6 +63,7 @@ const double __sinh_data_db[49][3] =
     { 0x1.43a81752eabe7p+3, 0x1.81d364845ecfap+13, -0x1p-90 },
     { 0x1.16369cd53bb69p+4, 0x1.0fbc6c02b1c9p+24, -0x1.9p-81 },
     { 0x1.20e29ea8b51e2p+4, 0x1.08b8abba28abcp+25, 0x1.9bp-79 },
+    { 0x1.92a5c27afbe82p+4, 0x1.3c81f9a247253p+35, 0x1p-67 },
     { 0x1.a1e4f11b513d7p+4, 0x1.9a65b6c2e2185p+36, -0x1.bcp-70 },
     { 0x1.c089fcf166171p+4, 0x1.5c452e0e37569p+39, 0x1.4p-69 },
     { 0x1.e42a98b3a0be5p+4, 0x1.938768ca4f8aap+42, 0x1.6dp-62 },

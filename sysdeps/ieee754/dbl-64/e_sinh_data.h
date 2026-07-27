@@ -29,7 +29,7 @@ SOFTWARE.
 
 extern const double __sinh_data_ch[][2] attribute_hidden;
 #define CH __sinh_data_ch
-extern const double __sinh_data_db[49][3] attribute_hidden;
+extern const double __sinh_data_db[51][3] attribute_hidden;
 #define DB __sinh_data_db
 
 #endif
