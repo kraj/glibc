@@ -213,7 +213,7 @@ __sinh (double x)
 		  ml = (ul + 8) & MANTISSA_MASK;
 	  th += tl;
 	  th *= 2;
-	  th *= asuint64 (sp);
+	  th *= sp;
 	  if (ml <= 16 || eh - el > 103)
 	    return as_sinh_database (x, th);
 	  return th;
