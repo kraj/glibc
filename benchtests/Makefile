@@ -622,6 +622,7 @@ $(bench-link-targets): %: %.o $(objpfx)json-lib.o \
 $(bench-link-targets): LDFLAGS += $(link-bench-bind-now)
 
 $(objpfx)bench-%.c: %-inputs $(bench-deps)
+	$(make-target-directory)
 	{ if [ -n "$($*-INCLUDE)" ]; then \
 	  cat $($*-INCLUDE); \
 	fi; \
