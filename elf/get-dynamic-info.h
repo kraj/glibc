@@ -26,8 +26,7 @@
 #include <libc-diag.h>
 
 static inline void __attribute__ ((unused, always_inline))
-elf_get_dynamic_info (struct link_map *l, bool bootstrap,
-		      bool static_pie_bootstrap)
+elf_get_dynamic_info (struct link_map *l, bool bootstrap)
 {
 #if __ELF_NATIVE_CLASS == 32
   typedef Elf32_Word d_tag_utype;
@@ -35,10 +34,8 @@ elf_get_dynamic_info (struct link_map *l, bool bootstrap,
   typedef Elf64_Xword d_tag_utype;
 #endif
 
-#ifndef STATIC_PIE_BOOTSTRAP
   if (!bootstrap && l->l_ld == NULL)
     return;
-#endif
 
   ElfW(Dyn) **info = l->l_info;
 
@@ -128,7 +125,7 @@ elf_get_dynamic_info (struct link_map *l, bool bootstrap,
 #endif
   if (info[DT_RELR] != NULL)
     assert (info[DT_RELRENT]->d_un.d_val == sizeof (ElfW(Relr)));
-  if (bootstrap || static_pie_bootstrap)
+  if (bootstrap)
     {
       assert (info[DT_RUNPATH] == NULL);
       assert (info[DT_RPATH] == NULL);

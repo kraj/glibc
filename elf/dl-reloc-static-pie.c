@@ -72,7 +72,7 @@ _dl_relocate_static_pie (void)
   /* Read our own dynamic section and fill in the info array.  */
   main_map->l_ld = ((void *) l_addr + elf_machine_dynamic ());
 
-  elf_get_dynamic_info (main_map, false, true);
+  elf_get_dynamic_info (main_map, false);
 
 # ifdef ELF_MACHINE_BEFORE_RTLD_RELOC
   ELF_MACHINE_BEFORE_RTLD_RELOC (main_map, main_map->l_info);

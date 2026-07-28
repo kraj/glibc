@@ -1265,6 +1265,17 @@ LDFLAGS-tst-pie-address-static += \
   $(load-address-ldflag)=$(pde-load-address)
 endif
 endif
+ifeq (yes,$(enable-static-pie))
+tests-static += \
+  tst-pie-rpath-static \
+  # tests-static
+tests-container += \
+  tst-pie-rpath-static \
+  # tests-container
+modules-names += \
+  tst-pie-rpath-mod \
+  # modules-names
+endif
 ifeq (yes,$(have-protected-data))
 tests += vismain
 tests-pie += vismain
@@ -3790,3 +3801,6 @@ $(objpfx)tst-assert-startup-static.out: $(objpfx)tst-assert-startup-static
 	grep -q 'Fatal glibc error: tst-assert-startup-static' $@ \
 	  && grep -q '^status: 134$$' $@; \
 	  $(evaluate-test)
+
+LDFLAGS-tst-pie-rpath-static += -Wl,-rpath,\$$ORIGIN/tst-pie-rpath-static-subdir
+$(objpfx)tst-pie-rpath-static.out: $(objpfx)tst-pie-rpath-mod.so

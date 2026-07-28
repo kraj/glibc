@@ -1,0 +1,2 @@
+mkdirp 0755 $B/elf/tst-pie-rpath-static-subdir
+cp $B/elf/tst-pie-rpath-mod.so $B/elf/tst-pie-rpath-static-subdir/tst-pie-rpath-mod.so
