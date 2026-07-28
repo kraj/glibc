@@ -19,19 +19,15 @@
 #include <sys/uio.h>
 #include <sysdep.h>
 
-/* This is used from only one place: dl-misc.c:_dl_debug_vdprintf.
-   Hence it's in a header with the expectation it will be inlined.
-
-   This is writev, but with a constraint added and others loosened:
+/* This is writev, but with a constraint added and others loosened:
 
    1. Under RTLD_PRIVATE_ERRNO, it must not clobber the private errno
       when another thread holds the dl_load_lock.
-   2. It is not obliged to detect and report errors at all.
-   3. It's not really obliged to deliver a single atomic write
+   2. It's not really obliged to deliver a single atomic write
       (though it may be preferable).  */
 
-static inline void
+static inline ssize_t
 _dl_writev (int fd, const struct iovec *iov, size_t niov)
 {
-  INTERNAL_SYSCALL_CALL (writev, fd, iov, niov);
+  return INTERNAL_SYSCALL_CALL (writev, fd, iov, niov);
 }

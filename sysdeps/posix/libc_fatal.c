@@ -16,6 +16,7 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
+#include <dl-writev.h>
 #include <assert.h>
 #include <ldsodefs.h>
 #include <setvmaname.h>
@@ -28,14 +29,14 @@
 #include FATAL_PREPARE_INCLUDE
 #endif
 
-#ifndef WRITEV_FOR_FATAL
-# define WRITEV_FOR_FATAL	writev_for_fatal
-static bool
-writev_for_fatal (int fd, const struct iovec *iov, size_t niov, size_t total)
+static void
+writev_for_fatal (int fd, const struct iovec *iov, size_t niov)
 {
-  return TEMP_FAILURE_RETRY (__writev (fd, iov, niov)) == total;
+  ssize_t cnt;
+  do
+    cnt = _dl_writev (fd, iov, niov);
+  while (cnt == -EINTR);
 }
-#endif
 
 /* At most a substring before each conversion specification and the
    trailing substring (the plus one).  */
@@ -108,7 +109,7 @@ __libc_message_impl (const char *vma_name, const char *fmt, ...)
 
   if (iovcnt > 0)
     {
-      WRITEV_FOR_FATAL (fd, iov, iovcnt, total);
+      writev_for_fatal (fd, iov, iovcnt);
 
       total = ALIGN_UP (total + sizeof (struct abort_msg_s) + 1,
 			GLRO(dl_pagesize));
