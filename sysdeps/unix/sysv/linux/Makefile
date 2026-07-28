@@ -455,6 +455,10 @@ tests += \
 endif
 
 ifeq ($(subdir),signal)
+sysdep_routines += \
+  raise_direct \
+  # sysdep_routines
+
 tests-special += \
   $(objpfx)tst-signal-numbers.out \
   # tests-special

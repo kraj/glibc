@@ -1,4 +1,5 @@
-/* Copyright (C) 1991-2026 Free Software Foundation, Inc.
+/* Internal function to send a signal to itself.  Linux version.
+   Copyright (C) 2026 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -15,21 +16,16 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#include <signal.h>
-#include <errno.h>
+#include <sysdep.h>
 #include <pthread.h>
+#include <unistd.h>
 
-/* Raise the signal SIG.  */
 int
-raise (int sig)
+__raise_direct (int signo)
 {
-  int ret = __raise_direct (sig);
-  if (ret != 0)
-    {
-      __set_errno (ret);
-      ret = -1;
-    }
-  return ret;
+  /* Make direct syscalls and avoid reuse cached values.  */
+  pid_t pid = INTERNAL_SYSCALL_CALL (getpid);
+  pid_t tid = INTERNAL_SYSCALL_CALL (gettid);
+  int ret = INTERNAL_SYSCALL_CALL (tgkill, pid, tid, signo);
+  return INTERNAL_SYSCALL_ERROR_P (ret) ? INTERNAL_SYSCALL_ERRNO (ret) : 0;
 }
-libc_hidden_def (raise)
-weak_alias (raise, gsignal)

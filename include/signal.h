@@ -65,6 +65,9 @@ extern int __xpg_sigpause (int sig);
 /* Allocate real-time signal with highest/lowest available priority.  */
 extern int __libc_allocate_rtsig (int __high);
 
+/* Similar to raise, but does not set errno.  */
+extern int __raise_direct (int signo) attribute_hidden;
+
 #  if IS_IN (rtld)
 extern __typeof (__sigaction) __sigaction attribute_hidden;
 extern __typeof (__libc_sigaction) __libc_sigaction attribute_hidden;
