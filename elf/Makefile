@@ -1617,6 +1617,7 @@ endif
 # These symbols might be emitted by the compiler when fortify is enabled
 # (through builtins).
 rtld-stubbed-symbols += \
+  __GI___chk_fail \
   __GI___vfprintf_chk \
   __GI___vsprintf_chk \
   __GI___vsyslog_chk \

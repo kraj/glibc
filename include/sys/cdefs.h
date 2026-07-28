@@ -18,7 +18,6 @@
 
 extern void __chk_fail (void) __attribute__ ((__noreturn__));
 libc_hidden_proto (__chk_fail)
-rtld_hidden_proto (__chk_fail)
 
 /* If we are using redirects internally to support long double,
    we need to tweak some macros to ensure the PLT bypass tricks

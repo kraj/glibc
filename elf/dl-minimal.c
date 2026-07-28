@@ -163,14 +163,6 @@ __libc_fatal (const char *message)
 }
 rtld_hidden_def (__libc_fatal)
 
-void
-__attribute__ ((noreturn))
-__chk_fail (void)
-{
-  _exit (127);
-}
-rtld_hidden_def (__chk_fail)
-
 #ifndef NDEBUG
 /* Define (weakly) our own assert failure function which doesn't use stdio.
    If we are linked into the user program (-ldl), the normal __assert_fail
