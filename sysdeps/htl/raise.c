@@ -54,3 +54,5 @@ raise (int signo)
 
 libc_hidden_def (raise)
 weak_alias (raise, gsignal)
+
+strong_alias (raise, __raise_direct)

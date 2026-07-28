@@ -11,4 +11,9 @@ sysdep_routines += memcpy-power7 memcpy-a2 memcpy-power6 memcpy-cell \
 		   strchr-power7 strchr-ppc32 \
 		   wordcopy-power7 wordcopy-ppc32 \
 		   memmove-power7 memmove-ppc
+
+# Called during static library initialization, so turn stack-protection
+# off for non-shared builds.
+CFLAGS-strchrnul-ppc32.o = $(no-stack-protector)
+CFLAGS-strchrnul-ppc32.op = $(no-stack-protector)
 endif

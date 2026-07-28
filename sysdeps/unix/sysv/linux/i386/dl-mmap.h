@@ -1,5 +1,5 @@
-/* Symbol rediretion for loader/static initialization code.
-   Copyright (C) 2022-2026 Free Software Foundation, Inc.
+/* mmap wrapper for early static startup.  Linux/i386 version.
+   Copyright (C) 2026 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -16,11 +16,12 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#ifndef _DL_IFUNC_GENERIC_H
-#define _DL_IFUNC_GENERIC_H
+#ifndef _DL_MMAP_H
+#define _DL_MMAP_H
 
-asm ("memset = __memset_power8");
-asm ("__mempcpy = __mempcpy_power7");
-asm ("__strchrnul = __strchrnul_power8");
+/* i386 requires out-of-line implementation because it sets
+   I386_USE_SYSENTER to 0 to avoid use the vDSO.  */
+void * _dl_mmap (void *addr, size_t len, int prot, int flags)
+  attribute_hidden;
 
 #endif

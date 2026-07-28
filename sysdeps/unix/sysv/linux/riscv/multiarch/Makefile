@@ -48,8 +48,14 @@ sysdep_routines += \
   strrchr-vector \
   # sysdep_routines
 
+# Called during static library initialization, so turn stack-protection
+# off for non-shared builds.
+CFLAGS-memset-generic.o = $(no-stack-protector)
+CFLAGS-memset-generic.op = $(no-stack-protector)
+CFLAGS-memcpy-generic.o = $(no-stack-protector)
+CFLAGS-memcpy-generic.op = $(no-stack-protector)
+CFLAGS-strlen-generic.o = $(no-stack-protector)
+CFLAGS-strlen-generic.op = $(no-stack-protector)
+
 CFLAGS-memcpy_noalignment.c += -mno-strict-align
-# Called during static initialization
-CFLAGS-memset-generic.c += $(no-stack-protector)
-CFLAGS-memcpy-generic.c += $(no-stack-protector)
 endif

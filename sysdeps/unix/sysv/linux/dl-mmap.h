@@ -1,5 +1,5 @@
-/* Symbol rediretion for loader/static initialization code.
-   Copyright (C) 2022-2026 Free Software Foundation, Inc.
+/* mmap wrapper for early static startup.  Linux version.
+   Copyright (C) 2026 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -16,11 +16,25 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#ifndef _DL_IFUNC_GENERIC_H
-#define _DL_IFUNC_GENERIC_H
+#ifndef _DL_MMAP_H
+#define _DL_MMAP_H
 
-asm ("memset = __memset_power8");
-asm ("__mempcpy = __mempcpy_power7");
-asm ("__strchrnul = __strchrnul_power8");
+#include <sys/mman.h>
+#include <sysdep.h>
+#include <mmap_call.h>
+
+static inline void *
+_dl_mmap (void *addr, size_t len, int prot, int flags)
+{
+  long int ret;
+#ifdef __NR_mmap2
+  ret = MMAP_CALL_INTERNAL (mmap2, addr, len, prot, flags, -1, 0);
+#else
+  ret = MMAP_CALL_INTERNAL (mmap, addr, len, prot, flags, -1, 0);
+#endif
+  if (INTERNAL_SYSCALL_ERROR_P (ret))
+    return MAP_FAILED;
+  return (void *) ret;
+}
 
 #endif

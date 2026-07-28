@@ -115,6 +115,11 @@ sysdep_routines += \
   xstat64 \
   # sysdep_routines
 
+# Called during static library initialization, so turn stack-protection
+# off for non-shared builds.
+CFLAGS-setvmaname.o = $(no-stack-protector)
+CFLAGS-setvmaname.op = $(no-stack-protector)
+
 CFLAGS-gethostid.c = -fexceptions
 CFLAGS-tee.c = -fexceptions -fasynchronous-unwind-tables
 CFLAGS-vmsplice.c = -fexceptions -fasynchronous-unwind-tables
@@ -458,6 +463,13 @@ ifeq ($(subdir),signal)
 sysdep_routines += \
   raise_direct \
   # sysdep_routines
+
+# Called during static library initialization, so turn stack-protection
+# off for non-shared builds.
+CFLAGS-raise.o = $(no-stack-protector)
+CFLAGS-raise.op = $(no-stack-protector)
+CFLAGS-raise_direct.o = $(no-stack-protector)
+CFLAGS-raise_direct.op = $(no-stack-protector)
 
 tests-special += \
   $(objpfx)tst-signal-numbers.out \

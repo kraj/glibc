@@ -195,6 +195,11 @@ endif
 
 CPPFLAGS += $(libio-mtsafe)
 
+# Called during static library initialization, so turn stack-protection
+# off for non-shared builds.
+CFLAGS-libc_fatal.o = $(no-stack-protector)
+CFLAGS-libc_fatal.op = $(no-stack-protector)
+
 # Support for exception handling.
 CFLAGS-fileops.c += -fexceptions
 CFLAGS-fputc.c += -fexceptions

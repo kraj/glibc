@@ -1,5 +1,5 @@
-/* Symbol rediretion for loader/static initialization code.
-   Copyright (C) 2022-2026 Free Software Foundation, Inc.
+/* mmap wrapper for early static startup.  Linux/i386 version.
+   Copyright (C) 2026 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -16,11 +16,23 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#ifndef _DL_IFUNC_GENERIC_H
-#define _DL_IFUNC_GENERIC_H
-
-asm ("memset = __memset_power8");
-asm ("__mempcpy = __mempcpy_power7");
-asm ("__strchrnul = __strchrnul_power8");
-
+/* This mmap call is used to allocate some memory to backup assert() messages
+   before TLS setup is done, so it cannot use "call *%gs:SYSINFO_OFFSET"
+   during startup in static PIE.  */
+#if BUILD_PIE_DEFAULT
+# define I386_USE_SYSENTER 0
 #endif
+
+#include <sys/mman.h>
+#include <dl-mmap.h>
+#include <sysdep.h>
+#include <mmap_call.h>
+
+void *
+_dl_mmap (void *addr, size_t len, int prot, int flags)
+{
+  long int ret = MMAP_CALL_INTERNAL (mmap2, addr, len, prot, flags, -1, 0);
+  if (INTERNAL_SYSCALL_ERROR_P (ret))
+    return MAP_FAILED;
+  return (void *) ret;
+}

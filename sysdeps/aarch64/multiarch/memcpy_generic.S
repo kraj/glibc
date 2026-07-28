@@ -42,3 +42,7 @@
 #endif
 
 #include "../memcpy.S"
+
+#if IS_IN (rtld)
+strong_alias (memcpy, __memcpy_generic)
+#endif

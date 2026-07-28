@@ -16,9 +16,14 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#if BUILD_PIE_DEFAULT
-/* Can't use "call *%gs:SYSINFO_OFFSET" during startup in static PIE.  */
-# define I386_USE_SYSENTER 0
-#endif
+#ifndef _DL_WRITEV_H
+#define _DL_WRITEV_H
 
-#include <sysdeps/unix/sysv/linux/dl-writev.h>
+#include <sys/uio.h>
+
+/* i386 requires out-of-line implementation because it sets
+   I386_USE_SYSENTER to 0 to avoid use the vDSO.  */
+ssize_t _dl_writev (int fd, const struct iovec *iov, size_t niov)
+  attribute_hidden;
+
+#endif

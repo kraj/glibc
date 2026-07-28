@@ -531,6 +531,11 @@ generated += \
   tst-putenvmod.so \
   # generated
 
+# Called during static library initialization, so turn stack-protection
+# off for non-shared builds.
+CFLAGS-abort.o = $(no-stack-protector)
+CFLAGS-abort.op = $(no-stack-protector)
+
 CFLAGS-bsearch.c += $(uses-callbacks)
 CFLAGS-qsort.c += $(uses-callbacks)
 CFLAGS-system.c += -fexceptions

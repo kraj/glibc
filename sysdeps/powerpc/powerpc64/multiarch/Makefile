@@ -39,4 +39,7 @@ endif
 endif
 
 # Called during static initialization
-CFLAGS-strncmp-ppc64.c += $(no-stack-protector)
+CFLAGS-strncmp-ppc64.o = $(no-stack-protector)
+CFLAGS-strncmp-ppc64.op = $(no-stack-protector)
+CFLAGS-strchrnul-ppc64.o = $(no-stack-protector)
+CFLAGS-strchrnul-ppc64.op = $(no-stack-protector)

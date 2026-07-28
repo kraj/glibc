@@ -33,6 +33,11 @@ routines := \
   assert-perr \
   # routines
 
+# Called during static library initialization, so turn stack-protection
+# off for non-shared builds.
+CFLAGS-__libc_assert_fail.o = $(no-stack-protector)
+CFLAGS-__libc_assert_fail.op = $(no-stack-protector)
+
 tests := \
   test-assert \
   test-assert-2 \

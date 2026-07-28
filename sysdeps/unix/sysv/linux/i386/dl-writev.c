@@ -1,5 +1,5 @@
-/* Symbol rediretion for loader/static initialization code.
-   Copyright (C) 2022-2026 Free Software Foundation, Inc.
+/* writev wrapper for the dynamic linker.  Linux/i386 version.
+   Copyright (C) 2026 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -16,11 +16,17 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#ifndef _DL_IFUNC_GENERIC_H
-#define _DL_IFUNC_GENERIC_H
-
-asm ("memset = __memset_power8");
-asm ("__mempcpy = __mempcpy_power7");
-asm ("__strchrnul = __strchrnul_power8");
-
+/* This writev call is used to assert() before TLS setup is done, so it can
+   not use "call *%gs:SYSINFO_OFFSET" during startup in static PIE.  */
+#if BUILD_PIE_DEFAULT
+# define I386_USE_SYSENTER 0
 #endif
+
+#include <dl-writev.h>
+#include <sysdep.h>
+
+ssize_t
+_dl_writev (int fd, const struct iovec *iov, size_t niov)
+{
+  return INTERNAL_SYSCALL_CALL (writev, fd, iov, niov);
+}

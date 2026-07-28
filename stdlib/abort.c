@@ -74,7 +74,7 @@ __abort_lock_unlock (const internal_sigset_t *set)
 _Noreturn void
 abort (void)
 {
-  raise (SIGABRT);
+  __raise_direct (SIGABRT);
 
   /* There is a SIGABRT handle installed and it returned, or SIGABRT was
      blocked or ignored.  In this case use a AS-safe lock to prevent sigaction

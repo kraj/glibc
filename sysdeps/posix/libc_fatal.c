@@ -16,7 +16,12 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
+/* Mark symbols hidden in static PIE for early self relocation to work.  */
+#if BUILD_PIE_DEFAULT
+# pragma GCC visibility push(hidden)
+#endif
 #include <dl-writev.h>
+#include <dl-mmap.h>
 #include <assert.h>
 #include <ldsodefs.h>
 #include <setvmaname.h>
@@ -24,6 +29,7 @@
 #include <stdio.h>
 #include <sys/uio.h>
 #include <unistd.h>
+#include <dl-symbol-redir-ifunc.h>
 
 #ifdef FATAL_PREPARE_INCLUDE
 #include FATAL_PREPARE_INCLUDE
@@ -113,9 +119,9 @@ __libc_message_impl (const char *vma_name, const char *fmt, ...)
 
       total = ALIGN_UP (total + sizeof (struct abort_msg_s) + 1,
 			GLRO(dl_pagesize));
-      struct abort_msg_s *buf = __mmap (NULL, total,
-					PROT_READ | PROT_WRITE,
-					MAP_ANON | MAP_PRIVATE, -1, 0);
+      struct abort_msg_s *buf = _dl_mmap (NULL, total,
+					  PROT_READ | PROT_WRITE,
+					  MAP_ANON | MAP_PRIVATE);
       if (__glibc_likely (buf != MAP_FAILED))
 	{
 	  buf->size = total;

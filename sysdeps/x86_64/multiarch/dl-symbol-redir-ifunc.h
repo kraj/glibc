@@ -45,14 +45,14 @@ asm ("memset = " HAVE_MEMSET_IFUNC_GENERIC);
 asm ("memcmp = " HAVE_MEMCMP_IFUNC_GENERIC);
 
 #if MINIMUM_X86_ISA_LEVEL >= 4
-# define HAVE_STRCMP_IFUNC_GENERIC "__strlen_evex"
+# define HAVE_STRLEN_IFUNC_GENERIC "__strlen_evex"
 #elif MINIMUM_X86_ISA_LEVEL == 3
-# define HAVE_STRCMP_IFUNC_GENERIC "__strlen_avx2"
+# define HAVE_STRLEN_IFUNC_GENERIC "__strlen_avx2"
 #else
-# define HAVE_STRCMP_IFUNC_GENERIC "__strlen_sse2"
+# define HAVE_STRLEN_IFUNC_GENERIC "__strlen_sse2"
 #endif
 
-asm ("strlen = " HAVE_STRCMP_IFUNC_GENERIC);
+asm ("strlen = " HAVE_STRLEN_IFUNC_GENERIC);
 
 #if MINIMUM_X86_ISA_LEVEL >= 4
 # define HAVE_MEMCPY_IFUNC_GENERIC  "__memcpy_evex_unaligned"
@@ -72,6 +72,16 @@ asm ("memcpy  = " HAVE_MEMCPY_IFUNC_GENERIC);
 asm ("memmove = " HAVE_MEMMOVE_IFUNC_GENERIC);
 asm ("mempcpy = " HAVE_MEMPCPY_IFUNC_GENERIC);
 asm ("__mempcpy = " HAVE_MEMPCPY_IFUNC_GENERIC);
+
+#if MINIMUM_X86_ISA_LEVEL >= 4
+# define HAVE_STRCHRNUL_IFUNC_GENERIC "__strchrnul_evex"
+#elif MINIMUM_X86_ISA_LEVEL == 3
+# define HAVE_STRCHRNUL_IFUNC_GENERIC "__strchrnul_avx2"
+#else
+# define HAVE_STRCHRNUL_IFUNC_GENERIC "__strchrnul_sse2"
+#endif
+
+asm ("__strchrnul = " HAVE_STRCHRNUL_IFUNC_GENERIC);
 
 #endif /* SHARED */
 

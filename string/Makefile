@@ -286,13 +286,21 @@ CFLAGS-test-endian-sign-conversion.c += -Werror -Wsign-conversion
 LDFLAGS-tst-xbzero-opt = -z now
 LDFLAGS-tst-xmemset-opt = -z now
 
-# Called during TLS initialization.
-CFLAGS-memcpy.c += $(no-stack-protector)
-CFLAGS-wordcopy.c += $(no-stack-protector)
-# Called during static initialization
-CFLAGS-strncmp.c += $(no-stack-protector)
-CFLAGS-memset.c += $(no-stack-protector)
-CFLAGS-strlen.c += $(no-stack-protector)
+# Called during TLS initialization, and during static library initialization.
+CFLAGS-memcpy.o = $(no-stack-protector)
+CFLAGS-memcpy.op = $(no-stack-protector)
+CFLAGS-wordcopy.o = $(no-stack-protector)
+CFLAGS-wordcopy.op = $(no-stack-protector)
+CFLAGS-strncmp.o = $(no-stack-protector)
+CFLAGS-strncmp.op = $(no-stack-protector)
+CFLAGS-memset.o = $(no-stack-protector)
+CFLAGS-memset.op = $(no-stack-protector)
+CFLAGS-strlen.o = $(no-stack-protector)
+CFLAGS-strlen.op = $(no-stack-protector)
+CFLAGS-strchrnul.o = $(no-stack-protector)
+CFLAGS-strchrnul.op = $(no-stack-protector)
+CFLAGS-mempcpy.o = $(no-stack-protector)
+CFLAGS-mempcpy.op = $(no-stack-protector)
 
 ifeq ($(run-built-tests),yes)
 $(objpfx)tst-svc-cmp.out: tst-svc.expect $(objpfx)tst-svc.out

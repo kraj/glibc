@@ -28,3 +28,17 @@ ifeq ($(subdir),rt)
 librt-routines += sysdep
 librt-shared-only-routines += sysdep
 endif
+
+ifeq ($(subdir),elf)
+sysdep_routines += \
+  dl-mmap \
+  dl-writev \
+  # sysdep-routines
+
+# Called during static library initialization, so turn stack-protection
+# off for non-shared builds.
+CFLAGS-dl-mmap.o = $(no-stack-protector)
+CFLAGS-dl-mmap.op = $(no-stack-protector)
+CFLAGS-dl-writev.o = $(no-stack-protector)
+CFLAGS-dl-writev.op = $(no-stack-protector)
+endif

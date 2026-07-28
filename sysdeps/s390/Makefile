@@ -259,6 +259,11 @@ routines_no_fortify += \
   strcat-c \
   strncat-c \
   # routines_no_fortify
+
+# Called during static library initialization, so turn stack-protection
+# off for non-shared builds.
+CFLAGS-strchrnul-c.o = $(no-stack-protector)
+CFLAGS-strchrnul-c.op = $(no-stack-protector)
 endif
 
 ifeq ($(subdir),wcsmbs)
