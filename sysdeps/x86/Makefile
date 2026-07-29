@@ -111,6 +111,9 @@ tst-ifunc-isa-2-ENV = GLIBC_TUNABLES=glibc.cpu.hwcaps=-SSE4_2,-AVX,-AVX2,-AVX512
 tst-ifunc-isa-2-static-ENV = $(tst-ifunc-isa-2-ENV)
 tst-hwcap-tunables-ARGS = -- $(host-test-program-cmd)
 
+CFLAGS-tst-tunables-seal.c += -DTST_SEAL_TUNABLE_NAME=hwcaps
+tst-tunables-seal-TUNABLES += glibc.cpu.hwcaps=-AVX2
+
 CFLAGS-tst-gnu2-tls2.c += -msse2
 CFLAGS-tst-gnu2-tls2mod0.c += -msse2 -mtune=haswell
 CFLAGS-tst-gnu2-tls2mod1.c += -msse2 -mtune=haswell

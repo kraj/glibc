@@ -50,6 +50,9 @@ tests-internal += \
   tst-ifunc-arg-4 \
   # tests-internal
 
+CFLAGS-tst-tunables-seal.c += -DTST_SEAL_TUNABLE_NAME=hwcaps
+tst-tunables-seal-TUNABLES += glibc.cpu.hwcaps=-midr
+
 tests += \
   tst-vpcs \
   # tests

@@ -132,6 +132,22 @@ The tunable list is set as read-only after the dynamic linker relocates itself,
 so setting tunable values must be limited only to tunables within the dynamic
 linker, that too before relocation.
 
+STRING TUNABLES ARE STARTUP-ONLY
+--------------------------------
+
+The value of a STRING tunable usually points into the GLIBC_TUNABLES (or
+alias) environment variable, which lives in the environment block the kernel
+places on the initial stack.  That memory is owned by the application, which
+may overwrite it (e.g. setproctitle), so the value is only valid while no
+code outside of startup has run.
+
+The values are therefore sealed by __tunable_seal_strings, called from
+dl_main for dynamically linked programs and from __libc_start_main for
+static ones.  Both calls happen after init_cpu_features, the only consumer
+of string tunables, and before audit modules, IFUNC resolvers or
+constructors can run.  Reading or setting a string tunable after that point
+is a glibc internal error and terminates the process.
+
 FUTURE WORK
 -----------
 

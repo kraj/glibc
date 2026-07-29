@@ -1671,6 +1671,12 @@ dl_main (const ElfW(Phdr) *phdr,
 
   _dl_handle_execstack_tunable ();
 
+  /* Every string tunable has been consumed by now (init_cpu_features runs
+     from DL_PLATFORM_INIT, before dl_main).  It precedes any code outside
+     the dynamic loader (the audit modules and IFUNC resolvers), and
+     RELRO.  */
+  __tunable_seal_strings ();
+
   /* If the current libname is different from the SONAME, add the
      latter as well.  */
   {

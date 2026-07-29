@@ -17,6 +17,9 @@ $(objpfx)tst-tlsopt-powerpc: $(objpfx)mod-tlsopt-powerpc.so
 tests-static += tst-cache-ppc-static
 tests-internal += tst-cache-ppc-static
 
+CFLAGS-tst-tunables-seal.c += -DTST_SEAL_TUNABLE_NAME=hwcaps
+tst-tunables-seal-TUNABLES += glibc.cpu.hwcaps=-arch_3_1
+
 ifeq (yes,$(build-shared))
 modules-names += mod-cache-ppc
 tests += tst-cache-ppc tst-cache-ppc-static-dlopen

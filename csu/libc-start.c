@@ -268,6 +268,10 @@ LIBC_START_MAIN (int (*main) (int, char **, char ** MAIN_AUXVEC_DECL),
 
   ARCH_INIT_CPU_FEATURES ();
 
+  /* Every string tunable has been consumed by ARCH_INIT_CPU_FEATURES, before
+     any code outside of libc startup runs.  */
+  __tunable_seal_strings ();
+
   /* Do static-pie self relocation for the non-IRELATIVE part after tunables
      and cpu features are set up.  IFUNC entries are deferred until after the
      TCB and the stack-protector canary are usable, so that an instrumented

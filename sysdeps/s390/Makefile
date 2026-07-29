@@ -165,6 +165,9 @@ tst-dl-runtime-resolve-audit-ENV = $(env-audit)
 tst-dl-runtime-profile-noaudit-ENV = $(env-profile)
 tst-dl-runtime-profile-audit-ENV = $(env-profile) $(env-audit)
 endif
+
+CFLAGS-tst-tunables-seal.c += -DTST_SEAL_TUNABLE_NAME=hwcaps
+tst-tunables-seal-TUNABLES += glibc.cpu.hwcaps=z13
 endif
 
 ifeq ($(subdir),string)

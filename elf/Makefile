@@ -290,6 +290,7 @@ tests-static-internal := \
   tst-tls1-static-non-pie \
   tst-tunables \
   tst-tunables-enable_secure \
+  tst-tunables-seal-static \
   # tests-static-internal
 
 ifeq (yesyes,$(have-gcc-ifunc)$(have-ssp))
@@ -579,6 +580,7 @@ tests-internal += \
   tst-tls6 \
   tst-tls7 \
   tst-tls8 \
+  tst-tunables-seal \
   unload \
   unload2 \
   # tests-internal
@@ -3175,6 +3177,9 @@ $(objpfx)tst-glibc-hwcaps-cache.out: $(objpfx)tst-glibc-hwcaps
 
 tst-tunables-ARGS = -- $(host-test-program-cmd)
 tst-tunables-enable_secure-ARGS = -- $(host-test-program-cmd)
+
+CFLAGS-tst-tunables-seal-static.c += $(CFLAGS-tst-tunables-seal.c)
+tst-tunables-seal-static-TUNABLES += $(tst-tunables-seal-TUNABLES)
 
 $(objpfx)list-tunables.out: tst-rtld-list-tunables.sh $(objpfx)ld.so
 	$(SHELL) $< $(objpfx)ld.so '$(test-wrapper-env)' \

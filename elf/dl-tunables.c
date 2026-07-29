@@ -65,6 +65,17 @@ get_next_env (char **envp, char **name, char **val, char ***prev_envp)
   return NULL;
 }
 
+/* Set by __tunable_seal_strings once the values of the string tunables are
+   no longer valid.  */
+static bool tunables_strings_sealed attribute_relro;
+
+static void __attribute__ ((noreturn))
+tunable_sealed_error (const tunable_t *cur, const char *action)
+{
+  _dl_fatal_printf ("Fatal glibc error: %s: string tunable %s after "
+		    "process initialization\n", cur->name, action);
+}
+
 static void
 do_tunable_update_val (tunable_t *cur, const tunable_val_t *valp,
 		       const tunable_num_t *minp,
@@ -78,6 +89,8 @@ do_tunable_update_val (tunable_t *cur, const tunable_val_t *valp,
   switch (cur->type.type_code)
     {
     case TUNABLE_TYPE_STRING:
+      if (__glibc_unlikely (tunables_strings_sealed))
+	tunable_sealed_error (cur, "set");
       cur->val.strval = valp->strval;
       cur->initialized = true;
       return;
@@ -629,6 +642,10 @@ __tunable_get_val (tunable_id_t id, void *valp, tunable_callback_t callback)
 	}
     case TUNABLE_TYPE_STRING:
 	{
+	  /* String tunable values are only valid during early startup; once
+	     sealed they must not be read.  */
+	  if (__glibc_unlikely (tunables_strings_sealed))
+	    tunable_sealed_error (cur, "read");
 	  *((const struct tunable_str_t **) valp) = &cur->val.strval;
 	  break;
 	}
@@ -641,3 +658,29 @@ __tunable_get_val (tunable_id_t id, void *valp, tunable_callback_t callback)
 }
 
 rtld_hidden_def (__tunable_get_val)
+
+/* A string tunable value usually references the GLIBC_TUNABLES (or alias)
+   environment string, which lives in the environment block the kernel places
+   on the initial stack.  That memory is owned by the application, which may
+   overwrite it (e.g. setproctitle), so the reference is only safe while no
+   application code has run.
+   A value coming from the system-wide cache is a private copy instead, but
+   it is sealed as well so that the lifetime rule does not depend on where
+   the value came from.
+   Drop the references so that a later access triggers a fatal error.  */
+void
+__tunable_seal_strings (void)
+{
+  for (int i = 0; i < tunables_list_size; i++)
+    {
+      tunable_t *cur = &tunable_list[i];
+
+      if (cur->type.type_code != TUNABLE_TYPE_STRING)
+	continue;
+
+      cur->val.strval = (struct tunable_str_t) { NULL, 0 };
+    }
+
+  tunables_strings_sealed = true;
+}
+rtld_hidden_def (__tunable_seal_strings)

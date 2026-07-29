@@ -19,6 +19,9 @@ sysdep-dl-routines += \
 gen-as-const-headers += \
   dl-link.sym \
   # gen-as-const-headers
+
+CFLAGS-tst-tunables-seal.c += -DTST_SEAL_TUNABLE_NAME=hwcaps
+tst-tunables-seal-TUNABLES += glibc.cpu.hwcaps=-LASX
 endif
 
 ifeq ($(subdir),csu)
