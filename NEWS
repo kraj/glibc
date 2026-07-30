@@ -11,6 +11,7 @@ The following bugs are resolved with this release:
 
   [34441] math: math: sinh() returns wrong results for some inputs with
     |x| > 36.736801
+  [34465] math: math: x86_64 tanh ifunc selection wrong
 
 Version 2.44
 

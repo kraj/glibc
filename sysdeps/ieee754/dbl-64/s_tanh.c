@@ -283,4 +283,6 @@ __tanh (double x)
     return as_tanh_database (x, res);
   return res;
 }
+#ifndef __tanh
 libm_alias_double (__tanh, tanh)
+#endif
