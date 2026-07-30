@@ -340,10 +340,6 @@ struct link_map
        lock.  See also: CONCURRENCY NOTES in cxa_thread_atexit_impl.c.  */
     size_t l_tls_dtor_count;
 
-    /* Information used to change permission after the relocations are
-       done.  */
-    ElfW(Addr) l_relro_addr;
-    size_t l_relro_size;
 
     unsigned long long int l_serial;
   };

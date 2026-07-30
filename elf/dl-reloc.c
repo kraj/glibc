@@ -406,23 +406,19 @@ _dl_relocate_object (struct link_map *l, struct r_scope_elem *scope[],
 void
 _dl_protect_relro (struct link_map *l)
 {
-  if (l->l_relro_size == 0)
-    return;
-
-  ElfW(Addr) start = ALIGN_DOWN((l->l_addr
-				 + l->l_relro_addr),
-				GLRO(dl_pagesize));
-  ElfW(Addr) end = ALIGN_DOWN((l->l_addr
-			       + l->l_relro_addr
-			       + l->l_relro_size),
-			      GLRO(dl_pagesize));
-  if (start != end
-      && __mprotect ((void *) start, end - start, PROT_READ) < 0)
-    {
-      static const char errstring[] = N_("\
+  for (const ElfW(Phdr) *ph = l->l_phdr; ph < &l->l_phdr[l->l_phnum]; ++ph)
+    if (ph->p_type == PT_GNU_RELRO)
+      {
+	struct dl_relro_range range = _dl_relro_range (l, ph);
+	if (range.start != range.end
+	    && __mprotect ((void *) range.start, range.end - range.start,
+			   PROT_READ) < 0)
+	  {
+	    static const char errstring[] = N_("\
 cannot apply additional memory protection after relocation");
-      _dl_signal_error (errno, l->l_name, NULL, errstring);
-    }
+	    _dl_signal_error (errno, l->l_name, NULL, errstring);
+	  }
+      }
 }
 
 void

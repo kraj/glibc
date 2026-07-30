@@ -47,7 +47,11 @@ ET_EXEC=2
 ET_DYN=3
 
 PT_LOAD=1
+PT_NOTE=4
 PT_TLS=7
+PT_GNU_RELRO=0x6474e552
+
+PF_W=2
 
 def elf_types_fmts(e_ident):
     endian = '<' if e_ident[EI_DATA] == ELFDATA2LSB else '>'
@@ -156,6 +160,34 @@ def elf_edit_maximize_tls_size(phdr, elfclass):
     else:
         phdr.p_memsz = 1 << 63
 
+def elf_edit_note_to_relro(f, e_ident, ehdr, expected):
+    phdrs = []
+    for i in range(0, ehdr.e_phnum):
+        phdr = Elf_Phdr(e_ident)
+        f.seek(ehdr.e_phoff + i * phdr.len)
+        phdr.read(f)
+        phdrs.append(phdr)
+
+    wr_loads = [(p.p_vaddr, p.p_vaddr + p.p_memsz) for p in phdrs
+                if p.p_type == PT_LOAD and (p.p_flags & PF_W) != 0]
+
+    converted = 0
+    for i, phdr in enumerate(phdrs):
+        if phdr.p_type != PT_NOTE:
+            continue
+        if not any(lo <= phdr.p_vaddr < hi for lo, hi in wr_loads):
+            continue
+        phdr.p_type = PT_GNU_RELRO
+        # Match the alignment the linker uses for PT_GNU_RELRO.
+        phdr.p_align = 1
+        f.seek(ehdr.e_phoff + i * phdr.len)
+        phdr.write(f)
+        converted += 1
+
+    if converted != expected:
+        error('{}: converted {} PT_NOTE segment(s), expected {}'.format(
+            f.name, converted, expected))
+
 def elf_edit(f, opts):
     ei_nident_fmt = 'c' * EI_NIDENT
     ei_nident_len = struct.calcsize(ei_nident_fmt)
@@ -184,6 +216,10 @@ def elf_edit(f, opts):
     if ehdr.e_type not in (ET_EXEC, ET_DYN):
        error('{}: not an executable or shared library'.format(f.name))
 
+    if opts.note_to_relro is not None:
+        elf_edit_note_to_relro(f, e_ident, ehdr, opts.note_to_relro)
+        return
+
     phdr = Elf_Phdr(e_ident)
     maximize_tls_size_done = False
     for i in range(0, ehdr.e_phnum):
@@ -210,6 +246,9 @@ def get_parser():
                         help='How to set the LOAD alignment')
     parser.add_argument('--maximize-tls-size', action='store_true',
                         help='Set maximum PT_TLS size')
+    parser.add_argument('--note-to-relro', type=int, metavar='COUNT',
+                        help='Convert COUNT PT_NOTE segments in writable '
+                        'PT_LOAD segments to PT_GNU_RELRO')
     parser.add_argument('output',
                         help='ELF file to edit')
     return parser

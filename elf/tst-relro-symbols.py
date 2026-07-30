@@ -32,25 +32,31 @@ sys.path.append(os.path.join(
 
 import glibcelf
 
-def find_relro(path: str, img: glibcelf.Image) -> (int, int):
-    """Discover the address range of the PT_GNU_RELRO segment."""
+def find_relro(path: str, img: glibcelf.Image) -> list:
+    """Discover the address ranges of the PT_GNU_RELRO segments."""
+    regions = []
     for phdr in img.phdrs():
         if phdr.p_type == glibcelf.Pt.PT_GNU_RELRO:
             # The computation is not entirely accurate because
             # _dl_protect_relro in elf/dl-reloc.c rounds both the
             # start end and downwards using the run-time page size.
-            return phdr.p_vaddr, phdr.p_vaddr + phdr.p_memsz
-    sys.stdout.write('{}: error: no PT_GNU_RELRO segment\n'.format(path))
-    sys.exit(1)
+            regions.append((phdr.p_vaddr, phdr.p_vaddr + phdr.p_memsz))
+    if not regions:
+        sys.stdout.write('{}: error: no PT_GNU_RELRO segment\n'.format(path))
+        sys.exit(1)
+    return regions
 
-def check_in_relro(kind, relro_begin, relro_end, name, start, size, error):
-    """Check if a section or symbol falls within in the RELRO segment."""
+def check_in_relro(kind, relro_regions, name, start, size, error):
+    """Check if a section or symbol falls within in any RELRO segment."""
     end = start + size - 1
-    if not (relro_begin <= start < end < relro_end):
-        error(
-            '{} {!r} of size {} at 0x{:x} is not in RELRO range [0x{:x}, 0x{:x})'.format(
-                kind, name.decode('UTF-8'), start, size,
-                relro_begin, relro_end))
+    for relro_begin, relro_end in relro_regions:
+        if relro_begin <= start <= end < relro_end:
+            return
+    error(
+        '{} {!r} of size {} at 0x{:x} is not in any RELRO range: {}'.format(
+            kind, name.decode('UTF-8'), size, start,
+            ', '.join('[0x{:x}, 0x{:x})'.format(*region)
+                      for region in relro_regions)))
 
 def get_parser():
     """Return an argument parser for this script."""
@@ -78,7 +84,7 @@ def main(argv):
     symbols_found = set()
 
     # Discover the extent of the RELRO segment.
-    relro_begin, relro_end = find_relro(opts.object, img)
+    relro_regions = find_relro(opts.object, img)
     symbol_table_found = False
 
     errors = False
@@ -109,13 +115,13 @@ def main(argv):
                             sym.st_name.decode('UTF-8')))
                         continue
 
-                    check_in_relro('symbol', relro_begin, relro_end,
+                    check_in_relro('symbol', relro_regions,
                                    sym.st_name, sym.st_value, sym.st_size,
                                    error)
             continue # SHT_SYMTAB
         if shdr.sh_name == b'.data.rel.ro' \
            or shdr.sh_name.startswith(b'.data.rel.ro.'):
-            check_in_relro('section', relro_begin, relro_end,
+            check_in_relro('section', relro_regions,
                            shdr.sh_name, shdr.sh_addr, shdr.sh_size,
                            error)
             continue

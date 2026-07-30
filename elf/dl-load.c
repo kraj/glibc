@@ -1091,11 +1091,6 @@ _dl_map_object_scan_phdrs (struct dl_pt_load_iterator *it,
 	case PT_GNU_STACK:
 	  *stack_flagsp = pf_to_prot (ph->p_flags);
 	  break;
-
-	case PT_GNU_RELRO:
-	  l->l_relro_addr = ph->p_vaddr;
-	  l->l_relro_size = ph->p_memsz;
-	  break;
 	}
     }
 

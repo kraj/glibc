@@ -327,11 +327,6 @@ _dl_non_dynamic_init (void)
       case PT_GNU_STACK:
 	_dl_stack_prot_flags = pf_to_prot (ph->p_flags);
 	break;
-
-      case PT_GNU_RELRO:
-	_dl_main_map.l_relro_addr = ph->p_vaddr;
-	_dl_main_map.l_relro_size = ph->p_memsz;
-	break;
       }
 
   _dl_handle_execstack_tunable ();

@@ -1530,6 +1530,38 @@ tests-special += $(objpfx)tst-tls-debug-recursive.out
 tests-special += $(objpfx)tst-dl-debug-exclude.out
 endif
 
+test-srcs += tst-relro-multi
+tests-static += tst-relro-multi-static
+extra-test-objs += tst-relro-multi-notes.o
+LDFLAGS-tst-relro-multi = -Wl,-z,now -Wl,-T,$(..)elf/tst-relro-multi.lds
+LDFLAGS-tst-relro-multi-static = -Wl,-T,$(..)elf/tst-relro-multi.lds
+$(objpfx)tst-relro-multi: +nolink-deps += tst-relro-multi.lds
+$(objpfx)tst-relro-multi: $(objpfx)tst-relro-multi-notes.o tst-relro-multi.lds
+$(objpfx)tst-relro-multi-static: +nolink-deps += tst-relro-multi.lds
+$(objpfx)tst-relro-multi-static: $(objpfx)tst-relro-multi-notes.o \
+  tst-relro-multi.lds
+
+$(objpfx)tst-relro-multi-patched $(objpfx)tst-relro-multi-static-patched: \
+  %-patched: % $(..)scripts/tst-elf-edit.py
+	cp $< $@.tmp
+	$(PYTHON) $(..)scripts/tst-elf-edit.py --note-to-relro 2 $@.tmp
+	mv $@.tmp $@
+
+$(objpfx)tst-relro-multi-patched.out: $(objpfx)tst-relro-multi-patched \
+  $(objpfx)ld.so
+	$(run-program-prefix) $< > $@ 2>&1; \
+	$(evaluate-test)
+
+$(objpfx)tst-relro-multi-static-patched.out: \
+  $(objpfx)tst-relro-multi-static-patched
+	$(test-wrapper) $< > $@ 2>&1; \
+	$(evaluate-test)
+
+ifeq ($(run-built-tests),yes)
+tests-special += $(objpfx)tst-relro-multi-patched.out
+tests-special += $(objpfx)tst-relro-multi-static-patched.out
+endif
+
 # The test requires shared _and_ PIE because the executable
 # unit test driver must be able to link with the shared object
 # that is going to eventually go into an installed DSO.

@@ -32,6 +32,7 @@
 #include <dlfcn.h>
 #include <fpu_control.h>
 #include <sys/mman.h>
+#include <libc-pointer-arith.h>
 #include <link.h>
 #include <dl-lookupcfg.h>
 #include <dl-sysdep.h>
@@ -1036,6 +1037,24 @@ void _dl_relocate_object_no_relro (struct link_map *map,
 
 /* Protect PT_GNU_RELRO area.  */
 extern void _dl_protect_relro (struct link_map *map) attribute_hidden;
+
+struct dl_relro_range
+{
+  ElfW(Addr) start;
+  ElfW(Addr) end;
+};
+
+/* Compute the range for the PT_GNU_RELRO segment PH of map L.  */
+static inline struct dl_relro_range
+_dl_relro_range (const struct link_map *l, const ElfW(Phdr) *ph)
+{
+  return (struct dl_relro_range)
+    {
+      .start = ALIGN_DOWN (l->l_addr + ph->p_vaddr, GLRO(dl_pagesize)),
+      .end = ALIGN_DOWN (l->l_addr + ph->p_vaddr + ph->p_memsz,
+			 GLRO(dl_pagesize)),
+    };
+}
 
 /* Call _dl_signal_error with a message about an unhandled reloc type.
    TYPE is the result of ELFW(R_TYPE) (r_info), i.e. an R_<CPU>_* value.

@@ -1198,11 +1198,6 @@ rtld_setup_main_map (struct link_map *main_map)
       case PT_GNU_STACK:
 	GL(dl_stack_prot_flags) = pf_to_prot (ph->p_flags);
 	break;
-
-      case PT_GNU_RELRO:
-	main_map->l_relro_addr = ph->p_vaddr;
-	main_map->l_relro_size = ph->p_memsz;
-	break;
       }
 
   _dl_executable_postprocess (main_map, phdr, phnum);
@@ -1270,16 +1265,6 @@ rtld_setup_phdr (void)
 				   & ~(GLRO(dl_pagesize) - 1));
 	}
   }
-
-  /* PT_GNU_RELRO is usually the last phdr.  */
-  size_t cnt = rtld_ehdr->e_phnum;
-  while (cnt-- > 0)
-    if (rtld_phdr[cnt].p_type == PT_GNU_RELRO)
-      {
-	_dl_rtld_map.l_relro_addr = rtld_phdr[cnt].p_vaddr;
-	_dl_rtld_map.l_relro_size = rtld_phdr[cnt].p_memsz;
-	break;
-      }
 }
 
 /* Adjusts the contents of the stack and related globals for the user
