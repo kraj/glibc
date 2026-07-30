@@ -25,10 +25,9 @@ extern double __redirect_tanh (double);
 # define SYMBOL_NAME tanh
 # include "ifunc-fma.h"
 
-libc_ifunc_redirected (__redirect_tanh, tanh, IFUNC_SELECTOR ());
+libc_ifunc_redirected (__redirect_tanh, __tanh, IFUNC_SELECTOR ());
+libm_alias_double (__tanh, tanh)
 
 # define __tanh __tanh_sse2
-# undef libm_alias_double
-# define libm_alias_double(a, b)
 #endif
 #include <sysdeps/ieee754/dbl-64/s_tanh.c>
