@@ -485,15 +485,10 @@ __glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
           size_t rest_len;
           char *onealt;
           size_t pattern_len = strlen (pattern) - 1;
-          int alloca_onealt = glob_use_alloca (alloca_used, pattern_len);
-          if (alloca_onealt)
-            onealt = alloca_account (pattern_len, alloca_used);
-          else
-            {
-              onealt = malloc (pattern_len);
-              if (onealt == NULL)
-                return GLOB_NOSPACE;
-            }
+
+          onealt = malloc (pattern_len);
+          if (onealt == NULL)
+            return GLOB_NOSPACE;
 
           /* We know the prefix for all sub-patterns.  */
           alt_start = mempcpy (onealt, pattern, begin - pattern);
@@ -505,8 +500,7 @@ __glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
             {
               /* It is an invalid expression.  */
             illegal_brace:
-              if (__glibc_unlikely (!alloca_onealt))
-                free (onealt);
+              free (onealt);
               flags &= ~GLOB_BRACE;
               goto no_brace;
             }
@@ -547,8 +541,7 @@ __glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
               /* If we got an error, return it.  */
               if (result && result != GLOB_NOMATCH)
                 {
-                  if (__glibc_unlikely (!alloca_onealt))
-                    free (onealt);
+                  free (onealt);
                   if (!(flags & GLOB_APPEND))
                     {
                       globfree (pglob);
@@ -566,8 +559,7 @@ __glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
               assert (next != NULL);
             }
 
-          if (__glibc_unlikely (!alloca_onealt))
-            free (onealt);
+          free (onealt);
 
           if (pglob->gl_pathc != firstc)
             /* We found some entries.  */
