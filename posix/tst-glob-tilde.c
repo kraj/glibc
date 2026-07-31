@@ -135,6 +135,25 @@ do_test (void)
 	      one_test ("*/~", user_name, "/a/b");
 	    }
 
+  /* Exercise the current-user expansion (getlogin_r followed by getpwnam_r)
+     rather than the ~user lookup, with HOME unset and empty.  */
+  do_onlydir = 0;
+  do_mark = 0;
+  do_noescape = 0;
+  unsetenv ("HOME");
+  for (do_nocheck = 0; do_nocheck < 2; ++do_nocheck)
+    {
+      one_test ("~", "", "");
+      one_test ("~", "", "/");
+      one_test ("~", "", "/a/b");
+    }
+  setenv ("HOME", "", 1);
+  for (do_nocheck = 0; do_nocheck < 2; ++do_nocheck)
+    {
+      one_test ("~", "", "");
+      one_test ("~", "", "/a/b");
+    }
+
   free (repeat);
 
   return 0;

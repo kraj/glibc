@@ -285,6 +285,101 @@ next_brace_sub (const char *cp, int flags)
   return *cp != '\0' ? cp : NULL;
 }
 
+#ifndef WINDOWS32
+static char *
+glob_dup_pw_dir (const struct passwd *p, bool *nospace)
+{
+  char *result = NULL;
+
+  if (p != NULL)
+    {
+      result = strdup (p->pw_dir);
+      if (result == NULL)
+        *nospace = true;
+    }
+  return result;
+}
+
+/* Return the home directory of the current user as a malloc'ed string, or
+   NULL if it cannot be determined.  Set *NOSPACE if the failure was caused
+   by an allocation failure.  */
+static char *
+glob_current_home_dir (bool *nospace)
+{
+  struct passwd *p;
+# if defined HAVE_GETPWNAM_R || defined _LIBC
+  struct passwd pwbuf;
+# endif
+  int err;
+
+  *nospace = false;
+
+  struct scratch_buffer s;
+  scratch_buffer_init (&s);
+  while (true)
+    {
+      p = NULL;
+      err = __getlogin_r (s.data, s.length);
+      if (err == 0)
+        {
+# if defined HAVE_GETPWNAM_R || defined _LIBC
+          size_t ssize = strlen (s.data) + 1;
+          char *sdata = s.data;
+          err = getpwnam_r (sdata, &pwbuf, sdata + ssize, s.length - ssize,
+                            &p);
+# else
+          p = getpwnam (s.data);
+          if (p == NULL)
+            err = errno;
+# endif
+        }
+      if (err != ERANGE)
+        break;
+      if (!scratch_buffer_grow (&s))
+        {
+          /* scratch_buffer_grow has already released the buffer.  */
+          *nospace = true;
+          return NULL;
+        }
+    }
+
+  char *result = err == 0 ? glob_dup_pw_dir (p, nospace) : NULL;
+  scratch_buffer_free (&s);
+  return result;
+}
+
+/* Likewise, for the home directory of the user named USER_NAME.  */
+static char *
+glob_user_home_dir (const char *user_name, bool *nospace)
+{
+  struct passwd *p;
+  struct scratch_buffer pwtmpbuf;
+  char *result;
+
+  *nospace = false;
+  scratch_buffer_init (&pwtmpbuf);
+
+# if defined HAVE_GETPWNAM_R || defined _LIBC
+  struct passwd pwbuf;
+
+  while (getpwnam_r (user_name, &pwbuf, pwtmpbuf.data, pwtmpbuf.length, &p)
+         == ERANGE)
+    if (!scratch_buffer_grow (&pwtmpbuf))
+      {
+        /* scratch_buffer_grow has already released the buffer.  */
+        *nospace = true;
+        return NULL;
+      }
+# else
+  p = getpwnam (user_name);
+# endif
+
+  result = glob_dup_pw_dir (p, nospace);
+  scratch_buffer_free (&pwtmpbuf);
+  return result;
+}
+#endif /* !WINDOWS32 */
+
 #ifndef GLOB_ATTRIBUTE
 # define GLOB_ATTRIBUTE
 #endif
@@ -642,43 +737,12 @@ __glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
               else
                 home_dir = "c:/users/default"; /* poor default */
 #else
-              int err;
-              struct passwd *p;
-              struct passwd pwbuf;
-              struct scratch_buffer s;
-              scratch_buffer_init (&s);
-              while (true)
-                {
-                  p = NULL;
-                  err = __getlogin_r (s.data, s.length);
-                  if (err == 0)
-                    {
-# if defined HAVE_GETPWNAM_R || defined _LIBC
-                      size_t ssize = strlen (s.data) + 1;
-                      char *sdata = s.data;
-                      err = getpwnam_r (sdata, &pwbuf, sdata + ssize,
-                                        s.length - ssize, &p);
-# else
-                      p = getpwnam (s.data);
-                      if (p == NULL)
-                        err = errno;
-# endif
-                    }
-                  if (err != ERANGE)
-                    break;
-                  if (!scratch_buffer_grow (&s))
-                    {
-                      retval = GLOB_NOSPACE;
-                      goto out;
-                    }
-                }
-              if (err == 0)
-                {
-                  home_dir = strdup (p->pw_dir);
-                  malloc_home_dir = 1;
-                }
-              scratch_buffer_free (&s);
-              if (err == 0 && home_dir == NULL)
+              bool nospace;
+
+              home_dir = glob_current_home_dir (&nospace);
+              if (home_dir != NULL)
+                malloc_home_dir = 1;
+              else if (nospace)
                 {
                   retval = GLOB_NOSPACE;
                   goto out;
@@ -809,34 +873,22 @@ __glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
 
           /* Look up specific user's home directory.  */
           {
-            struct passwd *p;
-            struct scratch_buffer pwtmpbuf;
-            scratch_buffer_init (&pwtmpbuf);
-
-#  if defined HAVE_GETPWNAM_R || defined _LIBC
-            struct passwd pwbuf;
-
-            while (getpwnam_r (user_name, &pwbuf,
-                               pwtmpbuf.data, pwtmpbuf.length, &p)
-                   == ERANGE)
-              {
-                if (!scratch_buffer_grow (&pwtmpbuf))
-                  {
-                    retval = GLOB_NOSPACE;
-                    goto out;
-                  }
-              }
-#  else
-            p = getpwnam (user_name);
-#  endif
+            bool nospace;
+            char *home_dir = glob_user_home_dir (user_name, &nospace);
 
             if (__glibc_unlikely (malloc_user_name))
               free (user_name);
 
-            /* If we found a home directory use this.  */
-            if (p != NULL)
+            if (__glibc_unlikely (nospace))
               {
-                size_t home_len = strlen (p->pw_dir);
+                retval = GLOB_NOSPACE;
+                goto out;
+              }
+
+            /* If we found a home directory use this.  */
+            if (home_dir != NULL)
+              {
+                size_t home_len = strlen (home_dir);
                 size_t rest_len = end_name == NULL ? 0 : strlen (end_name);
                 /* dirname contains end_name; we can't free it now.  */
                 char *prev_dirname =
@@ -849,17 +901,18 @@ __glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
                 if (dirname == NULL)
                   {
                     free (prev_dirname);
-                    scratch_buffer_free (&pwtmpbuf);
+                    free (home_dir);
                     retval = GLOB_NOSPACE;
                     goto out;
                   }
                 malloc_dirname = 1;
-                d = mempcpy (dirname, p->pw_dir, home_len);
+                d = mempcpy (dirname, home_dir, home_len);
                 if (end_name != NULL)
                   d = mempcpy (d, end_name, rest_len);
                 *d = '\0';
 
                 free (prev_dirname);
+                free (home_dir);
 
                 dirlen = home_len + rest_len;
                 dirname_modified = 1;
@@ -870,12 +923,10 @@ __glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
                   {
                     /* We have to regard it as an error if we cannot find the
                        home directory.  */
-                    scratch_buffer_free (&pwtmpbuf);
                     retval = GLOB_NOMATCH;
                     goto out;
                   }
               }
-            scratch_buffer_free (&pwtmpbuf);
           }
 #else /* WINDOWS32 */
           /* On native Windows, access to a user's home directory
