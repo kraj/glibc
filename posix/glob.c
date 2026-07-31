@@ -828,19 +828,13 @@ __glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
             user_name = dirname + 1;
           else
             {
-              char *newp;
-              if (glob_use_alloca (alloca_used, end_name - dirname))
-                newp = alloca_account (end_name - dirname, alloca_used);
-              else
+              char *newp = malloc (end_name - dirname);
+              if (newp == NULL)
                 {
-                  newp = malloc (end_name - dirname);
-                  if (newp == NULL)
-                    {
-                      retval = GLOB_NOSPACE;
-                      goto out;
-                    }
-                  malloc_user_name = 1;
+                  retval = GLOB_NOSPACE;
+                  goto out;
                 }
+              malloc_user_name = 1;
               if (unescape != NULL)
                 {
                   char *p = mempcpy (newp, dirname + 1,
