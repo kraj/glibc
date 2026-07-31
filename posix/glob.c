@@ -557,15 +557,10 @@ __glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
         }
 #endif
 
-      if (glob_use_alloca (alloca_used, dirlen + 1))
-        newp = alloca_account (dirlen + 1, alloca_used);
-      else
-        {
-          newp = malloc (dirlen + 1);
-          if (newp == NULL)
-            return GLOB_NOSPACE;
-          malloc_dirname = 1;
-        }
+      newp = malloc (dirlen + 1);
+      if (newp == NULL)
+        return GLOB_NOSPACE;
+      malloc_dirname = 1;
       *((char *) mempcpy (newp, pattern, dirlen)) = '\0';
       dirname = newp;
       ++filename;
@@ -719,19 +714,14 @@ __glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
             {
               char *newp;
               size_t home_len = strlen (home_dir);
-              int use_alloca = glob_use_alloca (alloca_used, home_len + dirlen);
-              if (use_alloca)
-                newp = alloca_account (home_len + dirlen, alloca_used);
-              else
+
+              newp = malloc (home_len + dirlen);
+              if (newp == NULL)
                 {
-                  newp = malloc (home_len + dirlen);
-                  if (newp == NULL)
-                    {
-                      if (__glibc_unlikely (malloc_home_dir))
-                        free (home_dir);
-                      retval = GLOB_NOSPACE;
-                      goto out;
-                    }
+                  if (__glibc_unlikely (malloc_home_dir))
+                    free (home_dir);
+                  retval = GLOB_NOSPACE;
+                  goto out;
                 }
 
               mempcpy (mempcpy (newp, home_dir, home_len),
@@ -742,7 +732,7 @@ __glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
 
               dirname = newp;
               dirlen += home_len - 1;
-              malloc_dirname = !use_alloca;
+              malloc_dirname = 1;
 
               if (__glibc_unlikely (malloc_home_dir))
                 free (home_dir);
@@ -855,21 +845,15 @@ __glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
 
                 malloc_dirname = 0;
 
-                if (glob_use_alloca (alloca_used, home_len + rest_len + 1))
-                  dirname = alloca_account (home_len + rest_len + 1,
-                                            alloca_used);
-                else
+                dirname = malloc (home_len + rest_len + 1);
+                if (dirname == NULL)
                   {
-                    dirname = malloc (home_len + rest_len + 1);
-                    if (dirname == NULL)
-                      {
-                        free (prev_dirname);
-                        scratch_buffer_free (&pwtmpbuf);
-                        retval = GLOB_NOSPACE;
-                        goto out;
-                      }
-                    malloc_dirname = 1;
+                    free (prev_dirname);
+                    scratch_buffer_free (&pwtmpbuf);
+                    retval = GLOB_NOSPACE;
+                    goto out;
                   }
+                malloc_dirname = 1;
                 d = mempcpy (dirname, p->pw_dir, home_len);
                 if (end_name != NULL)
                   d = mempcpy (d, end_name, rest_len);
