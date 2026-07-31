@@ -61,6 +61,7 @@
 # define readdir(str) __readdir64 (str)
 # define getpwnam_r(name, bufp, buf, len, res) \
     __getpwnam_r (name, bufp, buf, len, res)
+# define reallocarray(p, n, s) __libc_reallocarray (p, n, s)
 # define FLEXIBLE_ARRAY_MEMBER
 # ifndef struct_stat
 #  define struct_stat           struct stat
@@ -371,6 +372,10 @@ glob_user_home_dir (const char *user_name, bool *nospace)
 # define GLOB_ATTRIBUTE
 #endif
 
+static int glob_internal (const char *pattern, int flags,
+			  int (*errfunc) (const char *, int), glob_t *pglob)
+     GLOB_ATTRIBUTE;
+
 /* Do glob searching for PATTERN, placing results in PGLOB.
    The bits defined above may be set in FLAGS.
    If a directory cannot be opened or read and ERRFUNC is not nil,
@@ -383,6 +388,531 @@ int
 GLOB_ATTRIBUTE
 __glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
         glob_t *pglob)
+{
+  return glob_internal (pattern, flags, errfunc, pglob);
+}
+
+/* Remove one unquoted trailing backslash from P, which is LEN bytes
+   long, and return the new length.  */
+static size_t
+glob_strip_backslash (char *p, size_t len)
+{
+  char *q = &p[len - 1];
+
+  while (q > p && q[-1] == '\\')
+    --q;
+  /* Check if the number of '\' is odd.  */
+  if ((&p[len] - q) & 1)
+    p[--len] = '\0';
+  return len;
+}
+
+/* Remove the quoting backslashes from P, which is LEN bytes long and
+   contains at least one backslash.  Return the new length.  */
+static size_t
+glob_unescape (char *p, size_t len)
+{
+  char *s = memchr (p, '\\', len);
+  char *d = s;
+
+  do
+    {
+      if (*s == '\\')
+        {
+          *d = *++s;
+          --len;
+        }
+      else
+        *d = *s;
+      ++d;
+    }
+  while (*s++ != '\0');
+  return len;
+}
+
+/* Append a slash to every name in PGLOB from OLDCOUNT on that names a
+   directory (used by GLOB_MARK).  */
+static bool
+glob_mark_dirs (glob_t *pglob, size_t oldcount, int flags)
+{
+  for (size_t i = oldcount; i < pglob->gl_pathc + pglob->gl_offs; ++i)
+    if (is_dir (pglob->gl_pathv[i], flags, pglob))
+      {
+        size_t len = strlen (pglob->gl_pathv[i]);
+        char *new = realloc (pglob->gl_pathv[i], len + 2);
+        if (new == NULL)
+          return false;
+        new[len] = '/';
+        new[len + 1] = '\0';
+        pglob->gl_pathv[i] = new;
+      }
+  return true;
+}
+
+static glob_t
+glob_copy_dirfuncs (const glob_t *from, int flags)
+{
+  glob_t to = { 0 };
+
+  if (__glibc_unlikely ((flags & GLOB_ALTDIRFUNC) != 0))
+    {
+      to.gl_opendir = from->gl_opendir;
+      to.gl_readdir = from->gl_readdir;
+      to.gl_closedir = from->gl_closedir;
+      to.gl_stat = from->gl_stat;
+      to.gl_lstat = from->gl_lstat;
+    }
+  return to;
+}
+
+/* One component of a directory pattern, and what has to happen to the
+   directories it matches.  */
+struct glob_dir_step
+{
+  /* Component to match in every directory found so far.  */
+  const char *pattern;
+  /* Append a slash to the directories this step leaves behind.  */
+  bool mark;
+};
+
+static size_t
+glob_count (const char *s, char c)
+{
+  size_t n = 0;
+  const char *p = strchr (s, c);
+
+  while (p != NULL)
+    {
+      ++n;
+      p = strchr (p + 1, c);
+    }
+  return n;
+}
+
+/* Expand DIRPATTERN, the directory part of a pattern, into PGLOB.  FLAGS
+   holds GLOB_ERR, GLOB_NOESCAPE and GLOB_ALTDIRFUNC as inherited from the
+   caller, plus GLOB_NOSORT and GLOB_ONLYDIR.
+
+   DIRPATTERN is split at its slashes into components, each recorded in a
+   heap-allocated array along with what it has to do with the directories
+   it matches.  The components are then matched from left to right,
+   starting at the longest leading part that has no metacharacter.  Stack
+   usage does not depend on how many components there are, and a component
+   that matches nothing ends the expansion at once.  */
+static int
+glob_dir_pattern (const char *dirpattern, int flags,
+                  int (*errfunc) (const char *, int), glob_t *pglob)
+{
+  bool quote = !(flags & GLOB_NOESCAPE);
+  struct glob_dir_step *steps = NULL;
+  size_t nsteps = 0;
+  size_t maxsteps;
+  char *work;
+  char *p;
+  const char *base;
+  const char *base_pattern;
+  size_t baselen;
+  /* Whether the level being scanned appends slashes to its result.  A
+     component followed by a slash passes this down instead of matching
+     anything itself, exactly as GLOB_MARK is passed down by glob.  */
+  bool mark = false;
+  glob_t cur;
+  int retval;
+
+  /* The pattern is split in place, so work on a copy.  */
+  work = strdup (dirpattern);
+  if (work == NULL)
+    return GLOB_NOSPACE;
+  p = work;
+
+  /* Every step splits the pattern at a slash, so there is never more than one
+     step per slash.  */
+  maxsteps = glob_count (dirpattern, '/');
+  if (maxsteps != 0)
+    {
+      steps = reallocarray (NULL, maxsteps, sizeof *steps);
+      if (steps == NULL)
+        {
+          free (work);
+          return GLOB_NOSPACE;
+        }
+    }
+
+  pglob->gl_pathc = 0;
+  pglob->gl_pathv = NULL;
+  pglob->gl_offs = 0;
+
+  cur = glob_copy_dirfuncs (pglob, flags);
+
+  /* Split off the trailing components until what is left has no
+     metacharacter; that is the directory the expansion starts from.  */
+  for (;;)
+    {
+      char *filename = strrchr (p, '/');
+      size_t dirlen;
+      int meta;
+
+      if (filename == NULL)
+        {
+          if (__glibc_unlikely (p[0] == '\0'))
+            {
+              retval = GLOB_NOMATCH;
+              goto out;
+            }
+          base = ".";
+          baselen = 0;
+          base_pattern = p;
+          break;
+        }
+
+      if (filename == p || (quote && filename == p + 1 && p[0] == '\\'))
+        {
+          /* "/pattern" or "\\/pattern".  */
+          base = "/";
+          baselen = 1;
+          base_pattern = filename + 1;
+          break;
+        }
+
+      dirlen = filename - p;
+      *filename++ = '\0';
+
+      if (filename[0] == '\0' && dirlen > 1)
+        {
+          /* "pattern/".  Expand "pattern", appending slashes.  */
+          if (quote && p[dirlen - 1] == '\\')
+            dirlen = glob_strip_backslash (p, dirlen);
+          /* Collapse a run of trailing slashes so that the number of
+	     components does not grow with the number of slashes.  */
+          for (char *q = &p[dirlen - 1];
+               q > p && q[0] == '/' && q[-1] == '/'; --q)
+            q[0] = '\0';
+          mark = true;
+          continue;
+        }
+
+      meta = __glob_pattern_type (p, quote);
+      if (meta & (GLOBPAT_SPECIAL | GLOBPAT_BRACKET))
+        {
+          if (quote && dirlen > 0 && p[dirlen - 1] == '\\')
+            dirlen = glob_strip_backslash (p, dirlen);
+          assert (nsteps < maxsteps);
+          steps[nsteps].pattern = filename;
+          steps[nsteps].mark = mark;
+          ++nsteps;
+          /* glob drops GLOB_MARK when it recurses on the directory
+             part, so this level's marking does not carry further
+             down.  */
+          mark = false;
+          continue;
+        }
+
+      if (meta & GLOBPAT_BACKSLASH)
+        dirlen = glob_unescape (p, dirlen);
+      base = p;
+      baselen = dirlen;
+      base_pattern = filename;
+      break;
+    }
+
+  /* Now match the components, left to right.  */
+  retval = glob_in_dir (base_pattern, base, flags, errfunc, &cur);
+  if (retval != 0)
+    goto out;
+  if (baselen > 0 && prefix_array (base, cur.gl_pathv, cur.gl_pathc))
+    {
+      retval = GLOB_NOSPACE;
+      goto out;
+    }
+  if (mark && !glob_mark_dirs (&cur, 0, flags))
+    {
+      retval = GLOB_NOSPACE;
+      goto out;
+    }
+
+  for (size_t i = nsteps; i-- > 0; )
+    {
+      glob_t next = glob_copy_dirfuncs (pglob, flags);
+
+      for (size_t j = 0; j < cur.gl_pathc; ++j)
+        {
+          size_t old = next.gl_pathc;
+          int status = glob_in_dir (steps[i].pattern, cur.gl_pathv[j],
+                                    flags | GLOB_APPEND, errfunc, &next);
+          if (status == GLOB_NOMATCH)
+            /* No matches in this directory.  Try the next.  */
+            continue;
+          if (status != 0)
+            {
+              globfree (&next);
+              retval = status;
+              goto out;
+            }
+
+          /* Stick the directory on the front of each name.  */
+          if (prefix_array (cur.gl_pathv[j], &next.gl_pathv[old],
+                            next.gl_pathc - old))
+            {
+              globfree (&next);
+              retval = GLOB_NOSPACE;
+              goto out;
+            }
+        }
+
+      globfree (&cur);
+      cur = next;
+
+      if (cur.gl_pathc == 0)
+        {
+          retval = GLOB_NOMATCH;
+          goto out;
+        }
+
+      if (steps[i].mark && !glob_mark_dirs (&cur, 0, flags))
+        {
+          retval = GLOB_NOSPACE;
+          goto out;
+        }
+    }
+
+  pglob->gl_pathc = cur.gl_pathc;
+  pglob->gl_pathv = cur.gl_pathv;
+  cur.gl_pathv = NULL;
+  retval = 0;
+
+ out:
+  globfree (&cur);
+  free (steps);
+  free (work);
+  return retval;
+}
+
+/* Return the first '{' in PATTERN that is not quoted, or NULL.  */
+static const char *
+glob_find_brace (const char *pattern, int flags)
+{
+  const char *p;
+
+  if (flags & GLOB_NOESCAPE)
+    return strchr (pattern, '{');
+
+  for (p = pattern; *p != '\0'; ++p)
+    {
+      if (*p == '\\' && p[1] != '\0')
+        ++p;
+      else if (*p == '{')
+        return p;
+    }
+  return NULL;
+}
+
+/* BEGIN points at the '{' of a brace expression.  Set *NEXT to the terminator
+   of its first alternative and *REST to the text following the matching '}'.
+   Return false if the expression is malformed.  */
+static bool
+glob_parse_brace (const char *begin, int flags, const char **next,
+                  const char **rest)
+{
+  const char *n = next_brace_sub (begin + 1, flags);
+  const char *r;
+
+  if (n == NULL)
+    return false;
+
+  /* Find the end of the whole brace expression.  */
+  for (r = n; *r != '}'; )
+    {
+      r = next_brace_sub (r + 1, flags);
+      if (r == NULL)
+        return false;
+    }
+
+  *next = n;
+  *rest = r + 1;
+  return true;
+}
+
+/* One brace expression being expanded.  P, NEXT and REST point into the
+   string this level was created from, which is the enclosing level's BUF, or
+   the pattern itself for the outermost level.  */
+struct glob_brace_level
+{
+  char *buf;             /* This level's expansion.  */
+  char *alt_start;       /* Where the alternative goes in BUF.  */
+  const char *p;         /* Start of the current alternative.  */
+  const char *next;      /* Its terminating ',' or '}'.  */
+  const char *rest;      /* Text following the closing '}'.  */
+  size_t rest_len;       /* strlen (rest) + 1.  */
+  bool last;             /* The current alternative is the last one.  */
+};
+
+/* Start expanding the brace expression at BEGIN in S, pushing a level onto
+   STACK.  Return false if the expression is malformed, which is not an error
+   (the caller globs S as it stands).  Set *NOSPACE and return false if memory
+   could not be allocated.  */
+static bool
+glob_brace_push (struct glob_brace_level *stack, size_t *depth,
+                 const char *s, const char *begin, int flags, bool *nospace)
+{
+  struct glob_brace_level *level;
+  const char *next;
+  const char *rest;
+  char *buf;
+
+  *nospace = false;
+
+  if (!glob_parse_brace (begin, flags, &next, &rest))
+    return false;
+
+  /* An expansion is at least the opening and closing brace shorter than the
+     string it comes from.  */
+  buf = malloc (strlen (s) - 1);
+  if (buf == NULL)
+    {
+      *nospace = true;
+      return false;
+    }
+
+  level = &stack[*depth];
+  level->buf = buf;
+  /* The prefix is the same for every alternative.  */
+  level->alt_start = mempcpy (buf, s, begin - s);
+  level->p = begin + 1;
+  level->next = next;
+  level->rest = rest;
+  level->rest_len = strlen (rest) + 1;
+  level->last = false;
+  ++*depth;
+  return true;
+}
+
+enum
+{
+  GLOB_BRACE_MATCHED,
+  GLOB_BRACE_UNMATCHED,
+  GLOB_BRACE_MALFORMED
+};
+
+/* Expand the brace expression at BEGIN in PATTERN, and any brace expression
+   an expansion of it contains, and glob each result into PGLOB with
+   GLOB_APPEND.  Store into *ACTION what the caller still has to do, the
+   return value is meaningful only for GLOB_BRACE_MATCHED.
+
+   The expansions are enumerated with an explicit, heap-allocated stack.  */
+static int
+glob_brace (const char *pattern, const char *begin, int flags,
+            int (*errfunc) (const char *, int), glob_t *pglob, int *action)
+{
+  struct glob_brace_level *stack;
+  size_t depth = 0;
+  /* Every level consumes the leftmost brace of the string it expands, so the
+     nesting can never exceed the number of braces in PATTERN, and the stack
+     can be sized up front.  */
+  size_t maxdepth = glob_count (pattern, '{');
+  size_t firstc = pglob->gl_pathc;
+  int subflags = (flags & ~(GLOB_NOCHECK | GLOB_NOMAGIC)) | GLOB_APPEND;
+  int retval = 0;
+  int status;
+  bool nospace;
+
+  *action = GLOB_BRACE_MATCHED;
+
+  stack = reallocarray (NULL, maxdepth, sizeof *stack);
+  if (stack == NULL)
+    return GLOB_NOSPACE;
+
+  if (!glob_brace_push (stack, &depth, pattern, begin, flags, &nospace))
+    {
+      free (stack);
+      if (nospace)
+        return GLOB_NOSPACE;
+      *action = GLOB_BRACE_MALFORMED;
+      return 0;
+    }
+
+  while (depth > 0)
+    {
+      struct glob_brace_level *level = &stack[depth - 1];
+      const char *nested;
+      char *expansion;
+
+      if (level->last)
+        {
+          /* Every alternative of this expression has been produced.  */
+          free (level->buf);
+          --depth;
+          continue;
+        }
+
+      /* Construct the expansion for the current alternative.  */
+      mempcpy (mempcpy (level->alt_start, level->p, level->next - level->p),
+               level->rest, level->rest_len);
+
+      /* Step to the next alternative for when this level comes up again.  */
+      if (*level->next == '}')
+        level->last = true;
+      else
+        {
+          level->p = level->next + 1;
+          level->next = next_brace_sub (level->p, flags);
+          assert (level->next != NULL);
+        }
+
+      /* If the expansion still holds a brace expression, expand that one
+	 before globbing.  */
+      expansion = level->buf;
+      nested = glob_find_brace (expansion, flags);
+      if (nested != NULL)
+        {
+          assert (depth < maxdepth);
+          if (glob_brace_push (stack, &depth, expansion, nested, flags,
+                               &nospace))
+            continue;
+          if (nospace)
+            {
+              retval = GLOB_NOSPACE;
+              goto out;
+            }
+          /* Malformed: glob the expansion as it stands.  */
+        }
+
+      status = glob_internal (expansion, subflags, errfunc, pglob);
+      if (status != 0 && status != GLOB_NOMATCH)
+        {
+          retval = status;
+          goto out;
+        }
+    }
+
+ out:
+  while (depth > 0)
+    free (stack[--depth].buf);
+  free (stack);
+
+  if (retval != 0)
+    {
+      if (!(flags & GLOB_APPEND))
+        {
+          globfree (pglob);
+          pglob->gl_pathc = 0;
+        }
+      return retval;
+    }
+
+  if (pglob->gl_pathc != firstc)
+    return 0;
+  if (!(flags & (GLOB_NOCHECK | GLOB_NOMAGIC)))
+    return GLOB_NOMATCH;
+
+  *action = GLOB_BRACE_UNMATCHED;
+  return 0;
+}
+
+/* Worker for __glob.  */
+static int
+GLOB_ATTRIBUTE
+glob_internal (const char *pattern, int flags,
+               int (*errfunc) (const char *, int), glob_t *pglob)
 {
   const char *filename;
   char *dirname = NULL;
@@ -435,127 +965,23 @@ __glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
 
   if (flags & GLOB_BRACE)
     {
-      const char *begin;
-
-      if (flags & GLOB_NOESCAPE)
-        begin = strchr (pattern, '{');
-      else
-        {
-          begin = pattern;
-          while (1)
-            {
-              if (*begin == '\0')
-                {
-                  begin = NULL;
-                  break;
-                }
-
-              if (*begin == '\\' && begin[1] != '\0')
-                ++begin;
-              else if (*begin == '{')
-                break;
-
-              ++begin;
-            }
-        }
+      const char *begin = glob_find_brace (pattern, flags);
 
       if (begin != NULL)
         {
-          /* Allocate working buffer large enough for our work.  Note that
-             we have at least an opening and closing brace.  */
-          size_t firstc;
-          char *alt_start;
-          const char *p;
-          const char *next;
-          const char *rest;
-          size_t rest_len;
-          char *onealt;
-          size_t pattern_len = strlen (pattern) - 1;
+          int action;
+          int result = glob_brace (pattern, begin, flags, errfunc, pglob,
+                                   &action);
 
-          onealt = malloc (pattern_len);
-          if (onealt == NULL)
-            return GLOB_NOSPACE;
-
-          /* We know the prefix for all sub-patterns.  */
-          alt_start = mempcpy (onealt, pattern, begin - pattern);
-
-          /* Find the first sub-pattern and at the same time find the
-             rest after the closing brace.  */
-          next = next_brace_sub (begin + 1, flags);
-          if (next == NULL)
-            {
-              /* It is an invalid expression.  */
-            illegal_brace:
-              free (onealt);
-              flags &= ~GLOB_BRACE;
-              goto no_brace;
-            }
-
-          /* Now find the end of the whole brace expression.  */
-          rest = next;
-          while (*rest != '}')
-            {
-              rest = next_brace_sub (rest + 1, flags);
-              if (rest == NULL)
-                /* It is an illegal expression.  */
-                goto illegal_brace;
-            }
-          /* Please note that we now can be sure the brace expression
-             is well-formed.  */
-          rest_len = strlen (++rest) + 1;
-
-          /* We have a brace expression.  BEGIN points to the opening {,
-             NEXT points past the terminator of the first element, and END
-             points past the final }.  We will accumulate result names from
-             recursive runs for each brace alternative in the buffer using
-             GLOB_APPEND.  */
-          firstc = pglob->gl_pathc;
-
-          p = begin + 1;
-          while (1)
-            {
-              int result;
-
-              /* Construct the new glob expression.  */
-              mempcpy (mempcpy (alt_start, p, next - p), rest, rest_len);
-
-              result = __glob (onealt,
-                               ((flags & ~(GLOB_NOCHECK | GLOB_NOMAGIC))
-                                | GLOB_APPEND),
-                               errfunc, pglob);
-
-              /* If we got an error, return it.  */
-              if (result && result != GLOB_NOMATCH)
-                {
-                  free (onealt);
-                  if (!(flags & GLOB_APPEND))
-                    {
-                      globfree (pglob);
-                      pglob->gl_pathc = 0;
-                    }
-                  return result;
-                }
-
-              if (*next == '}')
-                /* We saw the last entry.  */
-                break;
-
-              p = next + 1;
-              next = next_brace_sub (p, flags);
-              assert (next != NULL);
-            }
-
-          free (onealt);
-
-          if (pglob->gl_pathc != firstc)
-            /* We found some entries.  */
-            return 0;
-          else if (!(flags & (GLOB_NOCHECK|GLOB_NOMAGIC)))
-            return GLOB_NOMATCH;
+          if (action == GLOB_BRACE_MATCHED)
+            return result;
+          if (action == GLOB_BRACE_MALFORMED)
+            flags &= ~GLOB_BRACE;
+          /* Otherwise the expansion matched nothing and GLOB_NOCHECK or
+             GLOB_NOMAGIC asks for the pattern itself to be globbed.  */
         }
     }
 
- no_brace:
   oldcount = pglob->gl_pathc + pglob->gl_offs;
 
   /* Find the filename.  */
@@ -668,7 +1094,8 @@ __glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
           for (char *p = &dirname[dirlen - 1];
                p > dirname && p[0] == '/' && p[-1] == '/'; --p)
             p[0] = '\0';
-          int val = __glob (dirname, flags | GLOB_MARK, errfunc, pglob);
+          int val = glob_internal (dirname, flags | GLOB_MARK, errfunc,
+                                   pglob);
           if (val == 0)
             pglob->gl_flags = ((pglob->gl_flags & ~GLOB_MARK)
                                | (flags & GLOB_MARK));
@@ -996,21 +1423,13 @@ __glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
             *(char *) &dirname[--dirlen] = '\0';
         }
 
-      if (__glibc_unlikely ((flags & GLOB_ALTDIRFUNC) != 0))
-        {
-          /* Use the alternative access functions also in the recursive
-             call.  */
-          dirs.gl_opendir = pglob->gl_opendir;
-          dirs.gl_readdir = pglob->gl_readdir;
-          dirs.gl_closedir = pglob->gl_closedir;
-          dirs.gl_stat = pglob->gl_stat;
-          dirs.gl_lstat = pglob->gl_lstat;
-        }
+      dirs = glob_copy_dirfuncs (pglob, flags);
 
-      status = __glob (dirname,
-                       ((flags & (GLOB_ERR | GLOB_NOESCAPE | GLOB_ALTDIRFUNC))
-                        | GLOB_NOSORT | GLOB_ONLYDIR),
-                       errfunc, &dirs);
+      status = glob_dir_pattern (dirname,
+                                 ((flags & (GLOB_ERR | GLOB_NOESCAPE
+                                            | GLOB_ALTDIRFUNC))
+                                  | GLOB_NOSORT | GLOB_ONLYDIR),
+                                 errfunc, &dirs);
       if (status != 0)
         {
           if ((flags & GLOB_NOCHECK) == 0 || status != GLOB_NOMATCH)
@@ -1120,23 +1539,10 @@ __glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
 
       if (meta & GLOBPAT_BACKSLASH)
         {
-          char *p = strchr (dirname, '\\'), *q;
           /* We need to unescape the dirname string.  It is certainly
-             allocated by alloca, as otherwise filename would be NULL
-             or dirname wouldn't contain backslashes.  */
-          q = p;
-          do
-            {
-              if (*p == '\\')
-                {
-                  *q = *++p;
-                  --dirlen;
-                }
-              else
-                *q = *p;
-              ++q;
-            }
-          while (*p++ != '\0');
+             our own copy, as otherwise filename would be NULL or
+             dirname wouldn't contain backslashes.  */
+          dirlen = glob_unescape (dirname, dirlen);
           dirname_modified = 1;
         }
       if (dirname_modified)
@@ -1171,26 +1577,12 @@ __glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
         }
     }
 
-  if (flags & GLOB_MARK)
+  if ((flags & GLOB_MARK) && !glob_mark_dirs (pglob, oldcount, flags))
     {
-      /* Append slashes to directory names.  */
-      size_t i;
-
-      for (i = oldcount; i < pglob->gl_pathc + pglob->gl_offs; ++i)
-        if (is_dir (pglob->gl_pathv[i], flags, pglob))
-          {
-            size_t len = strlen (pglob->gl_pathv[i]) + 2;
-            char *new = realloc (pglob->gl_pathv[i], len);
-            if (new == NULL)
-              {
-                globfree (pglob);
-                pglob->gl_pathc = 0;
-                retval = GLOB_NOSPACE;
-                goto out;
-              }
-            strcpy (&new[len - 2], "/");
-            pglob->gl_pathv[i] = new;
-          }
+      globfree (pglob);
+      pglob->gl_pathc = 0;
+      retval = GLOB_NOSPACE;
+      goto out;
     }
 
   if (!(flags & GLOB_NOSORT))
