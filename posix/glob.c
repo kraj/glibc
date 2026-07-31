@@ -49,7 +49,6 @@
 #include <dirent.h>
 #include <stdlib.h>
 #include <string.h>
-#include <alloca.h>
 
 #ifdef _LIBC
 # undef strdup
@@ -183,6 +182,8 @@ convert_dirent64 (const struct dirent64 *source)
 #endif
 
 #ifndef _LIBC
+# include <alloca.h>
+
 /* The results of opendir() in this file are not used with dirfd and fchdir,
    and we do not leak fds to any single-threaded code that could use stdio,
    therefore save some unnecessary recursion in fchdir.c and opendir_safer.c.
@@ -194,12 +195,6 @@ convert_dirent64 (const struct dirent64 *source)
 # ifdef GNULIB_defined_closedir
 #  undef closedir
 # endif
-
-/* Just use malloc.  */
-# define __libc_use_alloca(n) false
-# define alloca_account(len, avar) ((void) (len), (void) (avar), (void *) 0)
-# define extend_alloca_account(buf, len, newlen, avar) \
-    ((void) (buf), (void) (len), (void) (newlen), (void) (avar), (void *) 0)
 #endif
 
 static int
@@ -233,17 +228,9 @@ size_add_wrapv (size_t a, size_t b, size_t *r)
 #endif
 }
 
-static bool
-glob_use_alloca (size_t alloca_used, size_t len)
-{
-  size_t size;
-  return (!size_add_wrapv (alloca_used, len, &size)
-          && __libc_use_alloca (size));
-}
-
 static int glob_in_dir (const char *pattern, const char *directory,
                         int flags, int (*errfunc) (const char *, int),
-                        glob_t *pglob, size_t alloca_used);
+                        glob_t *pglob);
 static int prefix_array (const char *prefix, char **array, size_t n) __THROWNL;
 static int collated_compare (const void *, const void *) __THROWNL;
 
@@ -407,7 +394,6 @@ __glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
   int malloc_dirname = 0;
   glob_t dirs;
   int retval = 0;
-  size_t alloca_used = 0;
 
   if (pattern == NULL || pglob == NULL || (flags & ~__GLOB_FLAGS) != 0)
     {
@@ -1046,7 +1032,7 @@ __glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
           status = glob_in_dir (filename, dirs.gl_pathv[i],
                                 ((flags | GLOB_APPEND)
                                  & ~(GLOB_NOCHECK | GLOB_NOMAGIC)),
-                                errfunc, pglob, alloca_used);
+                                errfunc, pglob);
           if (status == GLOB_NOMATCH)
             /* No matches in this directory.  Try the next.  */
             continue;
@@ -1155,8 +1141,7 @@ __glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
         }
       if (dirname_modified)
         flags &= ~(GLOB_NOCHECK | GLOB_NOMAGIC);
-      status = glob_in_dir (filename, dirname, flags, errfunc, pglob,
-                            alloca_used);
+      status = glob_in_dir (filename, dirname, flags, errfunc, pglob);
       if (status != 0)
         {
           if (status == GLOB_NOMATCH && flags != orig_flags
@@ -1305,8 +1290,7 @@ prefix_array (const char *dirname, char **array, size_t n)
    The GLOB_APPEND flag is assumed to be set (always appends).  */
 static int
 glob_in_dir (const char *pattern, const char *directory, int flags,
-             int (*errfunc) (const char *, int),
-             glob_t *pglob, size_t alloca_used)
+             int (*errfunc) (const char *, int), glob_t *pglob)
 {
   size_t dirlen = strlen (directory);
   void *stream = NULL;
@@ -1318,14 +1302,11 @@ glob_in_dir (const char *pattern, const char *directory, int flags,
   struct { GLOBNAMES_MEMBERS (64) } init_names_buf;
   struct globnames *init_names = (struct globnames *) &init_names_buf;
   struct globnames *names = init_names;
-  struct globnames *names_alloca = init_names;
   size_t nfound = 0;
   size_t cur = 0;
   int meta;
   int save;
   int result;
-
-  alloca_used += sizeof init_names_buf;
 
   init_names->next = NULL;
   init_names->count = ((sizeof init_names_buf
@@ -1344,18 +1325,13 @@ glob_in_dir (const char *pattern, const char *directory, int flags,
     {
       size_t patlen = strlen (pattern);
       size_t fullsize;
-      bool alloca_fullname
-        = (! size_add_wrapv (dirlen + 1, patlen + 1, &fullsize)
-           && glob_use_alloca (alloca_used, fullsize));
       char *fullname;
-      if (alloca_fullname)
-        fullname = alloca_account (fullsize, alloca_used);
-      else
-        {
-          fullname = malloc (fullsize);
-          if (fullname == NULL)
-            return GLOB_NOSPACE;
-        }
+
+      if (size_add_wrapv (dirlen + 1, patlen + 1, &fullsize))
+        return GLOB_NOSPACE;
+      fullname = malloc (fullsize);
+      if (fullname == NULL)
+        return GLOB_NOSPACE;
 
       mempcpy (mempcpy (mempcpy (fullname, directory, dirlen),
                         "/", 1),
@@ -1366,8 +1342,7 @@ glob_in_dir (const char *pattern, const char *directory, int flags,
            of the function to copy this name into the result.  */
         flags |= GLOB_NOCHECK;
 
-      if (__glibc_unlikely (!alloca_fullname))
-        free (fullname);
+      free (fullname);
     }
   else
     {
@@ -1451,11 +1426,8 @@ glob_in_dir (const char *pattern, const char *directory, int flags,
                       if ((SIZE_MAX - nameoff) / 2 / sizeof (char *)
                           < names->count)
                         goto memory_error;
-                      if (glob_use_alloca (alloca_used, size))
-                        newnames = names_alloca
-                          = alloca_account (size, alloca_used);
-                      else if ((newnames = malloc (size))
-                               == NULL)
+                      newnames = malloc (size);
+                      if (newnames == NULL)
                         goto memory_error;
                       newnames->count = count;
                       newnames->next = names;
@@ -1518,10 +1490,7 @@ glob_in_dir (const char *pattern, const char *directory, int flags,
                   break;
                 }
               cur = names->count;
-              if (old == names_alloca)
-                names_alloca = names;
-              else
-                free (old);
+              free (old);
             }
           result = GLOB_NOSPACE;
         }
@@ -1544,10 +1513,7 @@ glob_in_dir (const char *pattern, const char *directory, int flags,
                   break;
                 }
               cur = names->count;
-              if (old == names_alloca)
-                names_alloca = names;
-              else
-                free (old);
+              free (old);
             }
 
           pglob->gl_pathv = new_gl_pathv;
