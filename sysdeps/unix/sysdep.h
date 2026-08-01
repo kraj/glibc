@@ -199,8 +199,8 @@ long int __syscall_cancel (__syscall_arg_t arg1, __syscall_arg_t arg2,
 #define __SYSCALL_CANCEL_DISP(b,...) \
   __SYSCALL_CANCEL_CONCAT (b,__SYSCALL_CANCEL_NARGS(__VA_ARGS__))(__VA_ARGS__)
 
-/* Issue a cancellable syscall defined first argument plus any other argument
-   required.  If and error occurs its value, the macro returns -1 and sets
+/* Issue a cancellable syscall defined by the first argument plus any other
+   argument required.  If an error occurs, the macro returns -1 and sets
    errno accordingly.  */
 #define __SYSCALL_CANCEL_CALL(...) \
   __SYSCALL_CANCEL_DISP (__SYSCALL_CANCEL, __VA_ARGS__)
@@ -235,7 +235,7 @@ long int __syscall_cancel (__syscall_arg_t arg1, __syscall_arg_t arg2,
 			     __SSC (a7), __NR_##name)
 
 /* Issue a cancellable syscall defined by syscall number NAME plus any other
-   argument required.  If an error occurs its value is returned as an negative
+   argument required.  If an error occurs its value is returned as a negative
    number unmodified and errno is not set.  */
 #define __INTERNAL_SYSCALL_CANCEL_CALL(...) \
   __SYSCALL_CANCEL_DISP (__INTERNAL_SYSCALL_CANCEL, __VA_ARGS__)
