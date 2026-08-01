@@ -17,4 +17,6 @@
    <https://www.gnu.org/licenses/>.  */
 
 	.text
-	.space 2 * THP_PAGE_SIZE
+	/* 64 MiB, twice of MAX_THP_PAGESIZE in dl-map-segment-align.h and
+	   tst-thp-align.c */
+	.space 0x4000000
