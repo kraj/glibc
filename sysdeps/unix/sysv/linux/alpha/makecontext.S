@@ -38,6 +38,9 @@ ENTRY(__makecontext)
 	s8addq	$1, 0, $2
 	subq	$8, $2, $8
 
+	/* The Alpha ABI requires a 16-byte-aligned stack pointer.  */
+	bic	$8, 15, $8
+
 	/* Copy all parameters.  Switch statement header here.  */
 	ldah	$3, $jumptable($29)	!gprelhigh
 	cmple	$18, 6, $1
