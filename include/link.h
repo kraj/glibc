@@ -194,9 +194,6 @@ struct link_map
 				      the l_libname list.  */
     unsigned int l_faked:1;	/* Nonzero if this is a faked descriptor
 				   without associated file.  */
-    unsigned int l_need_tls_init:1; /* Nonzero if GL(dl_init_static_tls)
-				       should be called on this link map
-				       when relocation finishes.  */
     unsigned int l_auditing:1;	/* Nonzero if the DSO is used in auditing.  */
     unsigned int l_audit_any_plt:1; /* Nonzero if at least one audit module
 				       is interested in the PLT interception.*/
