@@ -278,7 +278,8 @@ _dl_relocate_object_no_relro (struct link_map *l, struct r_scope_elem *scope[],
        IFUNC resolvers.  Without this, a resolver would see the unrelocated
        initialiser bytes that were placed into the slot by the early
        _dl_allocate_tls_init.  */
-    ELF_DYNAMIC_RELOCATE_NOIFUNC (l, scope, lazy, consider_profiling);
+    ELF_DYNAMIC_RELOCATE_PASS (DL_RELOC_NORMAL, l, scope, lazy,
+			       consider_profiling, skip_ifunc);
 
 #ifdef SHARED
     /* Re-initialise the static TLS slot with the .tdata so the IRELATIVE
@@ -291,7 +292,8 @@ _dl_relocate_object_no_relro (struct link_map *l, struct r_scope_elem *scope[],
       _dl_init_static_tls (l);
 #endif
 
-    ELF_DYNAMIC_RELOCATE_IFUNC (l, scope, lazy, skip_ifunc);
+    ELF_DYNAMIC_RELOCATE_PASS (DL_RELOC_IRELATIVE, l, scope, lazy,
+			       0, skip_ifunc);
 
     if ((consider_profiling || consider_symbind)
 	&& l->l_info[DT_PLTRELSZ] != NULL)

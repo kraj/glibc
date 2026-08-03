@@ -79,17 +79,23 @@ elf_dynamic_Rel_audit_symbind (struct link_map *map,
 /* Perform the relocations in MAP on the running program image as specified
    by RELTAG, SZTAG.  If LAZY is nonzero, this is the first pass on PLT
    relocations; they should be set up to call _dl_runtime_resolve, rather
-   than fully resolved now.
+   than fully resolved now.  If SKIP_IFUNC is nonzero no IFUNC resolver is
+   called; this is required for the trace modes (ldd -u / ldd -r), which
+   relocate objects.
 
-   IRELATIVE entries are always skipped (non-bootstrap); they are handled
+   IRELATIVE entries and relocations against an STT_GNU_IFUNC symbol defined
+   in MAP itself are always skipped (non-bootstrap); they are handled
    separately by elf_dynamic_do_Rel_irelative after all other relocations
-   for both .rel.dyn and .rel.plt have been processed.  */
+   for both .rel.dyn and .rel.plt have been processed.  Relocations against
+   an IFUNC symbol defined in *another* object are not deferred, since the
+   IFUNC symbol is only known after symbol resolution, and the defining object
+   has already been relocated at this point.  */
 
 static inline void __attribute__ ((always_inline))
 elf_dynamic_do_Rel (struct link_map *map, struct r_scope_elem *scope[],
 		    ElfW(Addr) reladdr, ElfW(Addr) relsize,
 		    __typeof (((ElfW(Dyn) *) 0)->d_un.d_val) nrelative,
-		    int lazy)
+		    int lazy, int skip_ifunc)
 {
   const ElfW(Rel) *relative = (const void *) reladdr;
   const ElfW(Rel) *r = relative + nrelative;
@@ -111,7 +117,7 @@ elf_dynamic_do_Rel (struct link_map *map, struct r_scope_elem *scope[],
       void *const r_addr_arg = (void *) (l_addr + r->r_offset);
       const struct r_found_version *rversion = &map->l_versions[ndx];
 
-      elf_machine_rel (map, scope, r, sym, rversion, r_addr_arg, 0);
+      elf_machine_rel (map, scope, r, sym, rversion, r_addr_arg, skip_ifunc);
     }
 #else /* !RTLD_BOOTSTRAP */
 #if !defined DO_RELA || !defined ELF_MACHINE_PLT_REL
@@ -126,7 +132,7 @@ elf_dynamic_do_Rel (struct link_map *map, struct r_scope_elem *scope[],
 	  const ElfW (Sym) *sym = &symtab[ELFW (R_SYM) (r->r_info)];
 	  if (elf_dynamic_is_Rel_irelative (r, sym))
 	    continue;
-	  elf_machine_lazy_rel (map, scope, l_addr, r, 0);
+	  elf_machine_lazy_rel (map, scope, l_addr, r, skip_ifunc);
 	}
     }
   else
@@ -158,7 +164,8 @@ elf_dynamic_do_Rel (struct link_map *map, struct r_scope_elem *scope[],
 
 	      if (elf_dynamic_is_Rel_irelative (r, sym))
 		continue;
-	      elf_machine_rel (map, scope, r, sym, rversion, r_addr_arg, 0);
+	      elf_machine_rel (map, scope, r, sym, rversion, r_addr_arg,
+			       skip_ifunc);
 	      elf_dynamic_Rel_audit_symbind (map, scope, r, sym, rversion,
 					     r_addr_arg);
 	    }
@@ -172,7 +179,8 @@ elf_dynamic_do_Rel (struct link_map *map, struct r_scope_elem *scope[],
 
 	      if (elf_dynamic_is_Rel_irelative (r, sym))
 		continue;
-	      elf_machine_rel (map, scope, r, sym, NULL, r_addr_arg, 0);
+	      elf_machine_rel (map, scope, r, sym, NULL, r_addr_arg,
+			       skip_ifunc);
 	      elf_dynamic_Rel_audit_symbind (map, scope, r, sym, NULL,
 					     r_addr_arg);
 	    }
