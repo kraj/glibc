@@ -53,6 +53,20 @@ CFLAGS-s_lrint.c += -mieee-with-inexact
 CFLAGS-test-misc.c += -mieee-with-inexact
 # Avoid "conflicting types for built-in function" warnings
 CFLAGS-s_isnan.c += -fno-builtin-isnanf
+
+# _Float32x and _Float64 are both binary64 on Alpha, so this narrowing
+# divide is a plain divide and the hardware alone decides whether to
+# signal underflow.  IEEE 754 determines tininess after rounding from the
+# result rounded as if the exponent range were unbounded, but Alpha
+# determines it from the delivered result.  For a quotient that is tiny
+# but rounds up to the smallest normal -- DBL_MIN / (1 + 2^-52) under a
+# rounding mode that rounds away from zero -- the unbounded rounding
+# stays below DBL_MIN, because that binade has a finer spacing than the
+# subnormals, while the delivered result is DBL_MIN and looks normal.
+# Alpha raises no underflow for it.  No trap is taken, so the kernel
+# emulation cannot correct this, and the operation has no wider
+# intermediate for libm to examine.
+test-xfail-test-float32x-float64-div = yes
 endif
 
 # Build everything with full IEEE math support, and with dynamic rounding;
