@@ -1396,6 +1396,13 @@ modules-names += \
   tst-ifunc-tls-write-lib \
   tst-tls-tdata-reloc-lib \
   # modules-names
+ifeq (yes,$(have-gcc-ifunc))
+tests += \
+  tst-ifunc-fault-dep-bindnow \
+  tst-ifunc-fault-dep-lazy \
+  # tests
+modules-names += tst-ifunc-fault-mod
+endif
 ifneq (no,$(have-test-mtls-descriptor))
 tests += tst-ifunc-tls-init-tlsdesc
 modules-names += tst-ifunc-tls-init-tlsdesc-lib
@@ -2546,6 +2553,27 @@ $(objpfx)tst-ifunc-fault-lazy.out: $(objpfx)tst-ifunc-fault-lazy $(objpfx)ld.so
 $(objpfx)tst-ifunc-fault-bindnow.out: $(objpfx)tst-ifunc-fault-bindnow \
    $(objpfx)ld.so
 	$(tst-ifunc-fault-script)
+
+LDFLAGS-tst-ifunc-fault-dep-lazy = -Wl,-z,lazy
+LDFLAGS-tst-ifunc-fault-dep-bindnow = -Wl,-z,now
+define tst-ifunc-fault-dep-script
+( $(test-wrapper) $(rtld-prefix) --verify $< \
+  && $(test-wrapper-env) LD_TRACE_LOADED_OBJECTS=1 $(rtld-prefix) $< \
+  && $(test-wrapper-env) LD_TRACE_LOADED_OBJECTS=1 LD_DEBUG=unused \
+			 $(rtld-prefix) $< \
+  && $(test-wrapper-env) LD_TRACE_LOADED_OBJECTS=1 LD_WARN=yes LD_BIND_NOW=1 \
+			 $(rtld-prefix) $< \
+) > $@; $(evaluate-test)
+endef
+$(objpfx)tst-ifunc-fault-dep-lazy: $(objpfx)tst-ifunc-fault-mod.so
+$(objpfx)tst-ifunc-fault-dep-bindnow: $(objpfx)tst-ifunc-fault-mod.so
+$(objpfx)tst-ifunc-fault-dep-lazy.out: $(objpfx)tst-ifunc-fault-dep-lazy \
+   $(objpfx)tst-ifunc-fault-mod.so $(objpfx)ld.so
+	$(tst-ifunc-fault-dep-script)
+$(objpfx)tst-ifunc-fault-dep-bindnow.out: \
+   $(objpfx)tst-ifunc-fault-dep-bindnow \
+   $(objpfx)tst-ifunc-fault-mod.so $(objpfx)ld.so
+	$(tst-ifunc-fault-dep-script)
 
 LDFLAGS-tst-ifunc-plt-lib.so = -Wl,-z,lazy
 
