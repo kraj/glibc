@@ -121,7 +121,7 @@ typedef unsigned long int fenv_t;
 
 #ifdef __USE_GNU
 /* Floating-point environment where none of the exceptions are masked.  */
-# define FE_NOMASK_ENV	((const fenv_t *) 0x880000000000003eUL)
+# define FE_NOMASK_ENV	((const fenv_t *) 0x880000000000007eUL)
 
 /* Floating-point environment with (processor-dependent) non-IEEE floating
    point.  In this case, mapping denormals to zero.  */
