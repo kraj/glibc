@@ -235,29 +235,39 @@ enum elf_dynamic_reloc_pass
    processed.  It is orthogonal to SKIP_IFUNC, which suppresses running IFUNC
    resolvers in whichever pass is selected.
 
-   Unless PASS is DL_RELOC_IRELATIVE, this also performs the machine-specific
-   PLT/GOT setup, the DT_RELR relocations, and the ELF_DYNAMIC_AFTER_RELOC
-   hook.  */
+   Unless PASS is DL_RELOC_IRELATIVE, this also performs the
+   machine-specific PLT/GOT setup, the DT_RELR relocations, and the
+   ELF_DYNAMIC_AFTER_RELOC hook.
+
+   LAZY must be an int lvalue.  elf_machine_runtime_setup may downgrade the
+   requested mode (currently only hppa, when it cannot install the lazy
+   trampoline) and it has side effects, so it must run exactly once (the
+   effective mode is stored back into LAZY).  A later DL_RELOC_IRELATIVE
+   call must be handed that same lvalue, so that both passes partition the
+   relocation ranges identically.  */
 # define ELF_DYNAMIC_RELOCATE_PASS(pass, map, scope, lazy, consider_profile,  \
 				   skip_ifunc)				      \
   do {									      \
-    int edr_lazy = (lazy);						      \
     if ((pass) != DL_RELOC_IRELATIVE)					      \
       {									      \
-	edr_lazy = elf_machine_runtime_setup ((map), (scope), (lazy),	      \
-					      (consider_profile));	      \
+	(lazy) = elf_machine_runtime_setup ((map), (scope), (lazy),	      \
+					    (consider_profile));	      \
 	if (!is_rtld_link_map (map) || DO_RTLD_BOOTSTRAP)		      \
 	  ELF_DYNAMIC_DO_RELR (map);					      \
       }									      \
-    ELF_DYNAMIC_DO_REL ((map), (scope), edr_lazy, skip_ifunc, (pass));	      \
-    ELF_DYNAMIC_DO_RELA ((map), (scope), edr_lazy, skip_ifunc, (pass));	      \
+    ELF_DYNAMIC_DO_REL ((map), (scope), (lazy), skip_ifunc, (pass));	      \
+    ELF_DYNAMIC_DO_RELA ((map), (scope), (lazy), skip_ifunc, (pass));	      \
     if ((pass) != DL_RELOC_IRELATIVE)					      \
-      ELF_DYNAMIC_AFTER_RELOC ((map), edr_lazy);			      \
+      ELF_DYNAMIC_AFTER_RELOC ((map), (lazy));				      \
   } while (0)
 
-/* Run both passes back to back, for callers with nothing to interleave.  */
+/* Run both passes back to back, for callers with nothing to interleave.
+   Unlike ELF_DYNAMIC_RELOCATE_PASS, LAZY need not be an lvalue.  */
 # define ELF_DYNAMIC_RELOCATE(map, scope, lazy, consider_profile, skip_ifunc) \
-  ELF_DYNAMIC_RELOCATE_PASS (DL_RELOC_ALL, (map), (scope), (lazy),	      \
-			     (consider_profile), skip_ifunc)
+  do {									      \
+    int edr_lazy = (lazy);						      \
+    ELF_DYNAMIC_RELOCATE_PASS (DL_RELOC_ALL, (map), (scope), edr_lazy,	      \
+			       (consider_profile), skip_ifunc);		      \
+  } while (0)
 
 #endif

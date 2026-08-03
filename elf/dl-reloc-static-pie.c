@@ -79,8 +79,12 @@ _dl_relocate_static_pie (void)
 # endif
 
   /* Relocate ourselves so we can do normal function calls and data access
-     using the global offset table.  IRELATIVE entries are deferred.  */
-  ELF_DYNAMIC_RELOCATE_PASS (DL_RELOC_NORMAL, main_map, NULL, 0, 0, 0);
+     using the global offset table.  IRELATIVE entries are deferred.
+     Lazy binding is never used here, so edr_lazy comes back as 0 and the
+     deferred pass can hardcode the same value.  */
+  int edr_lazy = 0;
+  ELF_DYNAMIC_RELOCATE_PASS (DL_RELOC_NORMAL, main_map, NULL, edr_lazy,
+			     0, 0);
 
   /* Initialize _r_debug_extended.  */
   struct r_debug *r = _dl_debug_initialize (0, LM_ID_BASE);
@@ -98,7 +102,9 @@ void
 _dl_relocate_static_pie_ifunc (void)
 {
   struct link_map *main_map = _dl_get_dl_main_map ();
-  ELF_DYNAMIC_RELOCATE_PASS (DL_RELOC_IRELATIVE, main_map, NULL, 0, 0, 0);
+  int edr_lazy = 0;
+  ELF_DYNAMIC_RELOCATE_PASS (DL_RELOC_IRELATIVE, main_map, NULL, edr_lazy,
+			     0, 0);
   main_map->l_relocated = 1;
 }
 #endif
