@@ -32,6 +32,9 @@ BEGIN {
   # non-bignum mode unless a sign has been explicitly given.  Keep
   # original 'val' for reporting.
   value = gensub(/^(INF|NAN|inf|nan)/, "+\\1", 1, val)
+  # Neither changes between the conversions applied to this value.
+  value_infnan = value ~ /(INF|NAN|inf|nan)/
+  value_zero = value == 0
   next
 }
 
@@ -52,7 +55,7 @@ BEGIN {
   # Discard the '#' flag with the octal conversion if output starts with
   # 0 in the absence of this flag.  In that case no extra 0 is supposed
   # to be produced, but gawk prepends it anyway.
-  if (format ~ /#.*o/)
+  if (index(format, "#") && format ~ /#.*o/)
     {
       tmpfmt = gensub(/#/, "", "g", format)
       tmpout = sprintf(tmpfmt, value)
@@ -62,7 +65,7 @@ BEGIN {
   # Likewise with the hexadecimal conversion where zero value with the
   # precision of zero is supposed to produce no characters, but gawk
   # outputs 0 instead.
-  else if (format ~ /#.*[Xx]/)
+  else if (index(format, "#") && format ~ /#.*[Xx]/)
     {
       tmpfmt = gensub(/#/, "", "g", format)
       tmpout = sprintf(tmpfmt, value)
@@ -78,7 +81,7 @@ BEGIN {
   # values and reprint the output produced using the string conversion,
   # with the field width carried over and the relevant flags handled by
   # hand.
-  if (format ~ /[EFGefg]/ && value ~ /(INF|NAN|inf|nan)/)
+  if (value_infnan && format ~ /[EFGefg]/)
     {
       minus = format ~ /-/ ? "-" : ""
       sign = value ~ /-/ ? "-" : format ~ /\+/ ? "+" : format ~ / / ? " " : ""
@@ -94,7 +97,7 @@ BEGIN {
   # In that case "+" is always supposed to be produced, but with the
   # precision of zero gawk in the non-bignum mode produces any padding
   # requested only.
-  else if (format ~ /\+.*[di]/ && value == 0)
+  else if (value_zero && format ~ /\+.*[di]/)
     {
       output = gensub(/^( *) $/, format ~ /-/ ? "+\\1" : "\\1+", 1, output)
       output = gensub(/^$/, "+", 1, output)
@@ -103,7 +106,7 @@ BEGIN {
   # conversion for zero value.  In that case at least one " " is
   # supposed to be produced, but with the precision of zero gawk in the
   # non-bignum mode produces nothing.
-  else if (format ~ / .*[di]/ && value == 0)
+  else if (value_zero && format ~ / .*[di]/)
     {
       output = gensub(/^$/, " ", 1, output)
     }
