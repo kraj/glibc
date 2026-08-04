@@ -23,7 +23,7 @@ xprintf=$1; shift
 common_objpfx=$1; shift
 test_program_prefix=$1; shift
 
-AWK=${AWK:-awk}
+AWK="env LC_ALL=C ${AWK:-awk}"
 
 status=0
 

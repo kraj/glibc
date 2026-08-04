@@ -29,7 +29,7 @@ test_program_prefix=$1; shift
 # internally to process the conversion requested, so any bug in our code
 # would then be verified against itself, defeating the objective of doing
 # the verification against an independent implementation.
-AWK="${AWK:-awk} -M"
+AWK="env LC_ALL=C ${AWK:-awk} -M"
 
 status=77
 
