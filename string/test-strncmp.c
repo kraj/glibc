@@ -190,6 +190,9 @@ do_test_n (size_t align1, size_t align2, size_t len, size_t n, int n_in_bounds,
 {
   size_t i, buf_bound;
   CHAR *s1, *s2, *s1_end, *s2_end;
+  size_t value = 0;
+  size_t pattern_len;
+  size_t step = (23U << ((CHARBYTES - 1) * 8)) % (size_t) max_char;
 
   align1 &= ~(CHARBYTES - 1);
   align2 &= ~(CHARBYTES - 1);
@@ -216,8 +219,29 @@ do_test_n (size_t align1, size_t align2, size_t len, size_t n, int n_in_bounds,
       s2[n] = 23;
     }
 
-  for (i = 0; i < buf_bound; i++)
-    s1[i] = s2[i] = 1 + (23 << ((CHARBYTES - 1) * 8)) * i % max_char;
+  /* The generated sequence repeats after at most max_char elements.  */
+  pattern_len
+    = buf_bound < (size_t) max_char
+      ? buf_bound : (size_t) max_char;
+
+  for (i = 0; i < pattern_len; i++)
+    {
+      s1[i] = 1 + value;
+
+      value += step;
+      if (value >= (size_t) max_char)
+        value -= max_char;
+    }
+
+  while (i < buf_bound)
+    {
+      size_t copy = i < buf_bound - i ? i : buf_bound - i;
+
+      MEMCPY (s1 + i, s1, copy);
+      i += copy;
+    }
+
+  MEMCPY (s2, s1, buf_bound);
 
   s1[len] = 0;
   s2[len] = 0;

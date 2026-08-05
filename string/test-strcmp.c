@@ -156,6 +156,10 @@ do_test (size_t align1, size_t align2, size_t len, int max_char,
          int exp_result)
 {
   size_t i;
+  size_t value = 0;
+  size_t pattern_len;
+  size_t step
+    = (23U << ((CHARBYTES - 1) * 8)) % (size_t) max_char;
 
   CHAR *s1, *s2;
 
@@ -179,8 +183,28 @@ do_test (size_t align1, size_t align2, size_t len, int max_char,
   i = align2 + CHARBYTES * (len + 2);
   s2 = (CHAR *)(buf2 + ((page_size - i) / 16 * 16) + align2);
 
-  for (i = 0; i < len; i++)
-    s1[i] = s2[i] = 1 + (23 << ((CHARBYTES - 1) * 8)) * i % max_char;
+  /* The generated sequence repeats after at most max_char elements.  */
+  pattern_len
+    = len < (size_t) max_char ? len : (size_t) max_char;
+
+  for (i = 0; i < pattern_len; i++)
+    {
+      s1[i] = 1 + value;
+
+      value += step;
+      if (value >= (size_t) max_char)
+        value -= max_char;
+    }
+
+  while (i < len)
+    {
+      size_t copy = i < len - i ? i : len - i;
+
+      MEMCPY (s1 + i, s1, copy);
+      i += copy;
+    }
+
+  MEMCPY (s2, s1, len);
 
   s1[len] = s2[len] = 0;
   s1[len + 1] = 23;
