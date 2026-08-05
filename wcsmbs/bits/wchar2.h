@@ -134,7 +134,7 @@ __NTH (wcsncat (__fortify_clang_overload_arg (wchar_t *, __restrict, __dest),
   return __wcsncat_alias (__dest, __src, __n);
 }
 
-#ifdef __USE_MISC
+#if defined __USE_MISC || defined __USE_XOPEN2K24
 __fortify_function __attribute_overloadable__ size_t
 __NTH (wcslcpy (__fortify_clang_overload_arg (wchar_t *, __restrict, __dest),
 		const wchar_t *__restrict __src, size_t __n))
@@ -163,7 +163,7 @@ __NTH (wcslcat (__fortify_clang_overload_arg (wchar_t *, __restrict, __dest),
 			  __glibc_objsize (__dest) / sizeof (wchar_t));
   return __wcslcat_alias (__dest, __src, __n);
 }
-#endif /* __USE_MISC */
+#endif /* __USE_MISC || __USE_XOPEN2K24 */
 
 #ifdef __va_arg_pack
 __fortify_function int

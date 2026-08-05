@@ -279,7 +279,7 @@ extern size_t __REDIRECT_NTH (__wcsnrtombs_chk_warn,
 
 #endif
 
-#ifdef __USE_MISC
+#if defined __USE_MISC || defined __USE_XOPEN2K24
 extern size_t __wcslcpy_chk (wchar_t *__dest, const wchar_t *__src, size_t __n,
 			     size_t __destlen) __THROW;
 extern size_t __REDIRECT_NTH (__wcslcpy_alias,
@@ -291,6 +291,6 @@ extern size_t __wcslcat_chk (wchar_t *__dest, const wchar_t *__src, size_t __n,
 extern size_t __REDIRECT_NTH (__wcslcat_alias,
 			      (wchar_t *__dest, const wchar_t *__src,
 			       size_t __n), wcslcat);
-#endif /* __USE_MISC */
+#endif /* __USE_MISC || __USE_XOPEN2K24 */
 
 #endif /* bits/wchar2-decl.h.  */

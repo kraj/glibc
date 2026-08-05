@@ -179,6 +179,9 @@ tests := \
   tst-mbsrtowcs \
   tst-mbstowcs \
   tst-wchar-h \
+  tst-wchar-posix2024 \
+  tst-wchar-posix2024-fortify \
+  tst-wchar-xopen2024 \
   tst-wcpncpy \
   tst-wcrtomb \
   tst-wcslcat \
@@ -270,6 +273,8 @@ CFLAGS-wcstold_l.c += $(strtox-CFLAGS)
 CFLAGS-wcstof128_l.c += $(strtox-CFLAGS)
 CFLAGS-wcstof_l.c += $(strtox-CFLAGS)
 CPPFLAGS-tst-wchar-h.c += $(no-fortify-source) -D_FORTIFY_SOURCE=2
+CPPFLAGS-tst-wchar-posix2024-fortify.c += \
+  $(no-fortify-source) -D_FORTIFY_SOURCE=2
 
 CFLAGS-isoc99_wscanf.c += -fexceptions
 CFLAGS-isoc99_fwscanf.c += -fexceptions

@@ -203,6 +203,9 @@ tests := \
   tst-memmove-overflow \
   tst-strerror-fail \
   tst-strfry \
+  tst-string-posix2024 \
+  tst-string-posix2024-fortify \
+  tst-string-xopen2024 \
   tst-strlcat \
   tst-strlcat2 \
   tst-strlcpy \
@@ -217,6 +220,9 @@ tests := \
   tst-xbzero-opt \
   tst-xmemset-opt \
 # tests
+
+CPPFLAGS-tst-string-posix2024-fortify.c += \
+  $(no-fortify-source) -D_FORTIFY_SOURCE=2
 
 tests-static-internal := \
   test-memswap \

@@ -414,7 +414,7 @@ extern char *strcasestr (const char *__haystack, const char *__needle)
 # endif
 #endif
 
-#ifdef __USE_MISC
+#if defined __USE_MISC || defined __USE_XOPEN2K24
 /* Find the first occurrence of NEEDLE in HAYSTACK.
    NEEDLE is NEEDLELEN bytes long;
    HAYSTACK is HAYSTACKLEN bytes long.  */
@@ -423,7 +423,9 @@ extern void *memmem (const void *__haystack, size_t __haystacklen,
      __THROW __attribute_pure__ __nonnull ((1, 3))
     __attr_access ((__read_only__, 1, 2))
     __attr_access ((__read_only__, 3, 4));
+#endif
 
+#ifdef __USE_MISC
 /* Copy N bytes of SRC to DEST, return pointer to bytes after the
    last written byte.  */
 extern void *__mempcpy (void *__restrict __dest,
@@ -533,7 +535,7 @@ extern char *stpncpy (char *__restrict __dest,
      __THROW __nonnull ((1, 2));
 #endif
 
-#ifdef __USE_MISC
+#if defined __USE_MISC || defined __USE_XOPEN2K24
 /* Copy at most N - 1 characters from SRC to DEST.  */
 extern size_t strlcpy (char *__restrict __dest,
 		       const char *__restrict __src, size_t __n)

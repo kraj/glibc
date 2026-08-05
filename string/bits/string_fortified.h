@@ -162,7 +162,7 @@ __NTH (strncat (__fortify_clang_overload_arg (char *, __restrict, __dest),
 				  __glibc_objsize (__dest));
 }
 
-#ifdef __USE_MISC
+#if defined __USE_MISC || defined __USE_XOPEN2K24
 extern size_t __strlcpy_chk (char *__dest, const char *__src, size_t __n,
 			     size_t __destlen) __THROW;
 extern size_t __REDIRECT_NTH (__strlcpy_alias,
@@ -197,6 +197,6 @@ __NTH (strlcat (__fortify_clang_overload_arg (char *, __restrict, __dest),
     return __strlcat_chk (__dest, __src, __n, __glibc_objsize (__dest));
   return __strlcat_alias (__dest, __src, __n);
 }
-#endif /* __USE_MISC */
+#endif /* __USE_MISC || __USE_XOPEN2K24 */
 
 #endif /* bits/string_fortified.h */

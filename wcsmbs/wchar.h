@@ -108,7 +108,7 @@ extern wchar_t *wcsncpy (wchar_t *__restrict __dest,
 			 const wchar_t *__restrict __src, size_t __n)
      __THROW __nonnull ((1, 2));
 
-#ifdef __USE_MISC
+#if defined __USE_MISC || defined __USE_XOPEN2K24
 /* Copy at most N - 1 characters from SRC to DEST.  */
 extern size_t wcslcpy (wchar_t *__restrict __dest,
 		       const wchar_t *__restrict __src, size_t __n)
