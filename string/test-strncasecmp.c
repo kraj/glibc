@@ -83,6 +83,9 @@ do_test (size_t align1, size_t align2, size_t n, size_t len, int max_char,
 	 int exp_result)
 {
   size_t i;
+  size_t value = 0;
+  size_t step = 23U % (size_t) max_char;
+  size_t pattern_len;
   char *s1, *s2;
 
   if (len == 0)
@@ -100,10 +103,26 @@ do_test (size_t align1, size_t align2, size_t n, size_t len, int max_char,
   s1 = (char *) (buf1 + align1);
   s2 = (char *) (buf2 + align2);
 
-  for (i = 0; i < len; i++)
+  pattern_len
+    = len < (size_t) max_char ? len : (size_t) max_char;
+
+  for (i = 0; i < pattern_len; i++)
     {
-      s1[i] = toupper (1 + 23 * i % max_char);
+      s1[i] = toupper (1 + value);
       s2[i] = tolower (s1[i]);
+
+      value += step;
+      if (value >= (size_t) max_char)
+        value -= max_char;
+    }
+
+  while (i < len)
+    {
+      size_t copy = i < len - i ? i : len - i;
+
+      memcpy (s1 + i, s1, copy);
+      memcpy (s2 + i, s2, copy);
+      i += copy;
     }
 
   s1[len] = s2[len] = 0;
