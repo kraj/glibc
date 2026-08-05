@@ -41,6 +41,22 @@
   int __##name##_pad __attribute__((__aligned__ (__alignof__ (type64)))); type name
 #endif
 
+/* The pre-POSIX.1-2008 timestamp fields must match the layout of the
+   'struct timespec' members used in the POSIX.1-2008 case, including the
+   padding required when the seconds field is wider than the word size.  */
+#if __WORDSIZE == 64 \
+  || (defined __SYSCALL_WORDSIZE && __SYSCALL_WORDSIZE == 64) \
+  || (__TIMESIZE == 32 && !defined __USE_TIME64_REDIRECTS)
+# define __fieldts(name) \
+  __time_t name; unsigned long int name ## nsec
+#elif __BYTE_ORDER == __BIG_ENDIAN
+# define __fieldts(name) \
+  __time_t name; int: 32; unsigned long int name ## nsec
+#else
+# define __fieldts(name) \
+  __time_t name; unsigned long int name ## nsec; int: 32
+#endif
+
 struct stat
   {
     __dev_t st_dev;		/* Device.  */
@@ -69,12 +85,9 @@ struct stat
 # define st_mtime st_mtim.tv_sec
 # define st_ctime st_ctim.tv_sec
 #else
-    __time_t st_atime;			/* Time of last access.  */
-    unsigned long int st_atimensec;	/* Nscecs of last access.  */
-    __time_t st_mtime;			/* Time of last modification.  */
-    unsigned long int st_mtimensec;	/* Nsecs of last modification.  */
-    __time_t st_ctime;			/* Time of last status change.  */
-    unsigned long int st_ctimensec;	/* Nsecs of last status change.  */
+    __fieldts (st_atime);		/* Time of last access.  */
+    __fieldts (st_mtime);		/* Time of last modification.  */
+    __fieldts (st_ctime);		/* Time of last status change.  */
 #endif
     int __glibc_reserved[2];
   };
@@ -107,16 +120,15 @@ struct stat64
     struct timespec st_mtim;		/* Time of last modification.  */
     struct timespec st_ctim;		/* Time of last status change.  */
 #else
-    __time_t st_atime;			/* Time of last access.  */
-    unsigned long int st_atimensec;	/* Nscecs of last access.  */
-    __time_t st_mtime;			/* Time of last modification.  */
-    unsigned long int st_mtimensec;	/* Nsecs of last modification.  */
-    __time_t st_ctime;			/* Time of last status change.  */
-    unsigned long int st_ctimensec;	/* Nsecs of last status change.  */
+    __fieldts (st_atime);		/* Time of last access.  */
+    __fieldts (st_mtime);		/* Time of last modification.  */
+    __fieldts (st_ctime);		/* Time of last status change.  */
 #endif
     int __glibc_reserved[2];
   };
 #endif
+
+#undef __fieldts
 
 /* Tell code we have these members.  */
 #define	_STATBUF_ST_BLKSIZE

@@ -16,6 +16,8 @@
    License along with the GNU C Library.  If not, see
    <https://www.gnu.org/licenses/>.  */
 
+#include <bits/endian.h>
+
   /* Content of internal __stat64_t64 struct.  */
   __dev_t st_dev;		/* Device.  */
   __ino64_t st_ino;		/* file serial number.	*/
@@ -58,9 +60,6 @@
   __fieldts64 (st_atime);
   __fieldts64 (st_mtime);
   __fieldts64 (st_ctime);
-
-  unsigned long int __glibc_reserved4;
-  unsigned long int __glibc_reserved5;
 
 # undef __fieldts64
 #endif

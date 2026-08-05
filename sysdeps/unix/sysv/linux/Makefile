@@ -413,6 +413,17 @@ $(objpfx)tst-sched-consts.out: ../sysdeps/unix/sysv/linux/tst-sched-consts.py
 	  < /dev/null > $@ 2>&1; $(evaluate-test)
 $(objpfx)tst-sched-consts.out: $(sysdeps-linux-python-deps)
 
+tests-special += \
+  $(objpfx)tst-stat-layout-time64.out \
+  # tests-special
+$(objpfx)tst-stat-layout-time64.out: \
+  ../sysdeps/unix/sysv/linux/tst-stat-layout-time64.py
+	$(sysdeps-linux-python) \
+	  ../sysdeps/unix/sysv/linux/tst-stat-layout-time64.py \
+	    $(sysdeps-linux-python-cc) \
+	  < /dev/null > $@ 2>&1; $(evaluate-test)
+$(objpfx)tst-stat-layout-time64.out: $(sysdeps-linux-python-deps)
+
 tst-rseq-disable-TUNABLES += glibc.pthread.rseq=0
 tst-rseq-disable-static-TUNABLES += glibc.pthread.rseq=0
 
