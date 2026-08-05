@@ -40,8 +40,8 @@
   xor  dst, src, guard; \
   rotri.d  dst, dst, 47;
 # define PTR_DEMANGLE2(dst, src, guard) \
-  rotri.d  dst, src, 17; \
-  xor  dst, dst, guard;
+  rotri.d  src, src, 17; \
+  xor  dst, src, guard;
 #endif
 
 #endif /* POINTER_GUARD_ASM_H */
