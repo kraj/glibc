@@ -1211,6 +1211,13 @@ ALL_BUILD_CFLAGS = $(BUILD_CFLAGS) $(BUILD_CPPFLAGS) -D_GNU_SOURCE \
 # therefore builds the test programs (run-built-tests=no, recursion fully
 # parallel) and then runs them (run-built-tests=yes).  'make tests' and a
 # subdirectory's own 'check' stay single-pass.
+# The first pass still runs the static checks ($(tests-special): abi,
+# conformtest, installed headers, ...), so tests-summary=no makes it skip
+# the results merge and summary: an unexpected FAIL there would otherwise
+# abort 'check' before the second pass runs any built test, and even a
+# clean run would print a misleading partial summary.  The .test-result
+# files persist, so the second pass folds those results into the one
+# complete summary at the end.
 check-twopass :=
 ifndef subdir
 ifeq (yes,$(run-built-tests))
@@ -1219,10 +1226,10 @@ endif
 endif
 ifeq (yes,$(check-twopass))
 check:
-	$(MAKE) run-built-tests=no  tests
+	$(MAKE) run-built-tests=no  tests-summary=no tests
 	$(MAKE) run-built-tests=yes tests
 xcheck:
-	$(MAKE) run-built-tests=no  xtests
+	$(MAKE) run-built-tests=no  tests-summary=no xtests
 	$(MAKE) run-built-tests=yes xtests
 else
 check: tests
