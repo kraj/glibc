@@ -259,7 +259,17 @@ endif  # gen-py-const-headers
 ifdef gen-as-const-headers
 # Generating headers for assembly constants.
 # We need this defined early to get into before-compile before
-# it's used in sysd-rules, below.
+# it's used in sysd-rules, below.  The gen-as-const-headers is evaluated
+# per subdirectory, so the before-compile dependency below only orders
+# the generated header before the compiles of the subdirectory whose
+# Makefile adds the .sym directive.
+# The parallel subdirectory recursion does not order sibling subdirectories,
+# so a .sym must be added in the subdirectory that compiles its consumers,
+# or in csu (which runs before the parallel) when it has consumers in
+# several subdirectories.
+# It must not add the same .sym in several subdirectories though: their
+# concurrent sub-makes would race generating the header through the fixed
+# temporary files below.
 # Define GEN_AS_CONST_HEADERS to avoid circular dependency [BZ #22792].
 # NB: <tcb-offsets.h> is generated from tcb-offsets.sym to define
 # offsets and sizes of types in <tls.h> and maybe <pthread.h> which

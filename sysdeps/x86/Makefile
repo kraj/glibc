@@ -1,5 +1,12 @@
 ifeq ($(subdir),csu)
-gen-as-const-headers += cpu-features-offsets.sym features-offsets.sym
+# <jmp_buf-ssp.h> is used by the setjmp/longjmp implementations in the
+# setjmp subdirectory and also by ____longjmp_chk.S in the debug
+# subdirectory.
+gen-as-const-headers += \
+  cpu-features-offsets.sym \
+  features-offsets.sym \
+  jmp_buf-ssp.sym \
+  # gen-as-const-headers
 endif
 
 ifeq ($(subdir),elf)
@@ -171,7 +178,6 @@ tests += \
 endif # $(subdir) == math
 
 ifeq ($(subdir),setjmp)
-gen-as-const-headers += jmp_buf-ssp.sym
 sysdep_routines += __longjmp_cancel
 endif
 
