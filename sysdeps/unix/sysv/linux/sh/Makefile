@@ -6,7 +6,9 @@ ifeq ($(subdir),stdlib)
 gen-as-const-headers += ucontext_i.sym
 endif
 
-ifeq ($(subdir),misc)
+# <sigaltstack-offsets.h> is only used by ____longjmp_chk.S, which is
+# built in the debug subdirectory.
+ifeq ($(subdir),debug)
 gen-as-const-headers += sigaltstack-offsets.sym
 endif
 
