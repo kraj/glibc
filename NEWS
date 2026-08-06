@@ -13,6 +13,8 @@ The following bugs are resolved with this release:
     because they tail-call __syscall_cancel
   [34438] build: non reproducible build failure: sigaltstack-offsets.h:
     No such file or directory
+  [34439] build: parallel make install fails on multi-ABI targets: no
+    rule to make $(inst_includedir)/gnu/lib-names-$(abi).h in csu
   [34441] math: math: sinh() returns wrong results for some inputs with
     |x| > 36.736801
   [34465] math: math: x86_64 tanh ifunc selection wrong

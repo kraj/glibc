@@ -312,7 +312,12 @@ lib-names-h-abi = gnu/lib-names-$(default-abi).h
 lib-names-stmp-abi = gnu/lib-names-$(default-abi).stmp
 before-compile += $(common-objpfx)$(lib-names-h-abi)
 common-generated += gnu/lib-names.h
+# The $(inst_includedir)/%.h install rules are defined only where $(headers)
+# is non-empty, and with parallel subdir recursion a subdir without headers
+# (e.g. csu) may run before the top level has installed the header.
+ifndef subdir
 install-others-nosubdir: $(inst_includedir)/$(lib-names-h-abi)
+endif
 $(common-objpfx)gnu/lib-names.h:
 	$(make-target-directory)
 	{ \
