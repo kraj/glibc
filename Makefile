@@ -869,7 +869,11 @@ endif
 	touch $(objpfx)testroot.pristine/install.stamp
 
 tests-special-notdir = $(patsubst $(objpfx)%, %, $(tests-special))
+# The build-only first pass of the two-pass 'make check' (see Makerules)
+# passes tests-summary=no: the merge and summary are left to the second
+# pass, which folds in this pass's $(tests-special) results.
 tests: $(tests-special)
+ifneq ($(tests-summary),no)
 	$(..)scripts/merge-test-results.sh -s $(objpfx) "" \
 	  $(sort $(tests-special-notdir:.out=)) \
 	  > $(objpfx)subdir-tests.sum
@@ -877,11 +881,14 @@ tests: $(tests-special)
 	  $(sort $(subdirs) .) \
 	  > $(objpfx)tests.sum
 	$(call summarize-tests,tests.sum)
+endif
 xtests:
+ifneq ($(tests-summary),no)
 	$(..)scripts/merge-test-results.sh -t $(objpfx) subdir-xtests.sum \
 	  $(sort $(subdirs)) \
 	  > $(objpfx)xtests.sum
 	$(call summarize-tests,xtests.sum, for extra tests)
+endif
 
 # The realclean target is just like distclean for the parent, but we want
 # the subdirs to know the difference in case they care.
