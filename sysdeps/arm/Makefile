@@ -10,6 +10,11 @@ shared-only-routines += aeabi_unwind_cpp_pr1
 $(objpfx)libgcc-stubs.a: $(objpfx)aeabi_unwind_cpp_pr1.os
 	$(build-extra-lib)
 
+# The rtld link recipes in elf/Makefile use $(gnulib), which here
+# includes libgcc-stubs.a, but they cannot name it as a prerequisite:
+# gnulib-arch is only defined once this file is included from Makerules.
+$(objpfx)librtld.map $(objpfx)librtld.os: | $(objpfx)libgcc-stubs.a
+
 lib-noranlib: $(objpfx)libgcc-stubs.a
 
 ifeq ($(build-shared),yes)
