@@ -758,10 +758,20 @@ all-dt-files := $(foreach o,$(object-suffixes-for-libc),$(+depfiles:.d=$o.dt))
 	     $(wildcard $(all-dt-files:.dt=.d))
 
 # This is a funny rule in that it removes its input file.
+#
+# More than one make can convert the .dt files of a single object
+# directory: the elf rtld-Rules recursion runs a sub-make over every
+# $(rtld-subdirs) directory, concurrently with that directory's own
+# sub-make under the parallel subdir recursion.  Add the PID of the
+# shell to the temporary name and claim the input with a rename: only
+# the run that wins converts and installs the target.
 %.d: %.dt
-	@sed $(sed-remove-objpfx) $< > $(@:.d=.T) && \
-	 mv -f $(@:.d=.T) $@ && \
-	 rm -f $<
+	@dt=$(@:.d=.T)$$$$; \
+	 if mv -f $< $$dt 2>/dev/null; then \
+	   sed $(sed-remove-objpfx) $$dt > $$dt.new && \
+	   mv -f $$dt.new $@ && \
+	   rm -f $$dt; \
+	 fi
 
 # Avoid the .h.d files for any .sym files whose .h files don't exist yet.
 # They will be generated when they're needed, and trying too early won't work.
@@ -1433,7 +1443,7 @@ endef
 # Also remove the dependencies and generated source files.
 common-clean: common-mostlyclean
 	-rm -f $(addprefix $(objpfx),$(generated))
-	-rm -f $(objpfx)*.d $(objpfx)*.dt
+	-rm -f $(objpfx)*.d $(objpfx)*.dt $(objpfx)*.T[0-9]*
 	-rm -fr $(addprefix $(objpfx),$(generated-dirs))
 	-rm -f $(addprefix $(common-objpfx),$(common-generated))
 	-rm -f $(gen-as-const-headers:%.sym=$(common-objpfx)%.h)
