@@ -575,6 +575,14 @@ $(foreach t,$(+elf_last_subdir_targets),$(eval \
   elf/$(t): $(addsuffix /$(t),$(filter-out elf,$(subdirs)))))
 endif
 
+# The archive rules in Makerules list every stamp file as a
+# prerequisite of libc_pic.a, which the elf sub-make evaluates for the
+# librtld.map link, but a sub-make can only create its own directory's
+# stamps.  Create the top-level ones before the fan-out.
+$(foreach t,$(+elf_last_subdir_targets),$(eval \
+  $(addsuffix /$(t),$(subdirs)): \
+    $(foreach o,$(object-suffixes-for-libc),$(common-objpfx)stamp$(o))))
+
 # Pass barriers: a subdirectory 'others' build links programs against
 # the libraries, so the 'lib' pass (including the top-level libc.so
 # link) must have completed.
