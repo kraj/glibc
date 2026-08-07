@@ -123,10 +123,9 @@ _dl_tlsdesc_undefweak:
 	   {
 	     struct tlsdesc_dynamic_arg *td = tdp->arg;
 	     dtv_t *dtv = *(dtv_t **)((char *)__thread_pointer() + TCBHEAD_DTV);
-	     if (__builtin_expect (td->gen_count <= dtv[0].counter
+	     if (__glibc_likely (td->gen_count <= dtv[0].counter
 		&& (dtv[td->tlsinfo.ti_module].pointer.val
-		    != TLS_DTV_UNALLOCATED),
-		1))
+		    != TLS_DTV_UNALLOCATED)))
 	       return dtv[td->tlsinfo.ti_module].pointer.val
 		+ td->tlsinfo.ti_offset
 		- __thread_pointer();
