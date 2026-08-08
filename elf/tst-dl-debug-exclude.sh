@@ -79,7 +79,7 @@ if [ $fail -ne 0 ]; then
   echo "Test FAILED"
   cat "${debug_output}".*
   rm -f "${debug_output}".*
-  exit 1
+  exit $fail
 fi
 
 echo "Test PASSED"

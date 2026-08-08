@@ -43,7 +43,7 @@ rc=$?
 if test $rc -eq 77; then
   echo "Test is not supported"
   rm -f "${output}".*
-  exit 77
+  exit $rc
 fi
 
 output=$(ls "${output}".*)
