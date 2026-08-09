@@ -18,6 +18,7 @@
 
 #include <sys/types.h>
 
-#ifndef __OFF_T_MATCHES_OFF64_T
+#if !defined __OFF_T_MATCHES_OFF64_T \
+    || !defined __INO_T_MATCHES_INO64_T
 # include "io/fts-common.c"
 #endif

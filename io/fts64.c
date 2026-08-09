@@ -50,7 +50,8 @@ weak_alias (__fts64_read, fts64_read)
 weak_alias (__fts64_set, fts64_set)
 weak_alias (__fts64_children, fts64_children)
 
-#ifdef __OFF_T_MATCHES_OFF64_T
+#if defined __OFF_T_MATCHES_OFF64_T \
+    && defined __INO_T_MATCHES_INO64_T
 weak_alias (__fts64_open, fts_open)
 weak_alias (__fts64_close, fts_close)
 weak_alias (__fts64_read, fts_read)
