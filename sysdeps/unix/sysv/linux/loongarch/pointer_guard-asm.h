@@ -24,24 +24,40 @@
       || (!defined SHARED && (IS_IN (libc) \
       || IS_IN (libpthread))))
 #  define PTR_MANGLE_LOAD(guard) \
-  LOAD_LOCAL (guard, __pointer_chk_guard_local);
+	LOAD_LOCAL (guard, __pointer_chk_guard_local);
 # else
 #  define PTR_MANGLE_LOAD(guard) \
-  LOAD_GLOBAL (guard, __pointer_chk_guard);
+	LOAD_GLOBAL (guard, __pointer_chk_guard);
 # endif
-# define PTR_MANGLE(dst, src, guard) \
-  PTR_MANGLE_LOAD (guard); \
-  PTR_MANGLE2 (dst, src, guard);
-# define PTR_DEMANGLE(dst, src, guard) \
-  PTR_MANGLE_LOAD (guard); \
-  PTR_DEMANGLE2 (dst, src, guard);
+
+# define PTR_MANGLE(dst, src, guard, tmp) \
+	PTR_MANGLE_LOAD (guard); \
+	PTR_MANGLE2 (dst, src, guard, tmp);
+# define PTR_DEMANGLE(dst, src, guard, tmp) \
+	PTR_MANGLE_LOAD (guard); \
+	PTR_DEMANGLE2 (dst, src, guard, tmp);
+
+# if __loongarch_grlen == 64
 /* Use PTR_MANGLE2 for efficiency if guard is already loaded.  */
-# define PTR_MANGLE2(dst, src, guard) \
-  xor  dst, src, guard; \
-  rotri.d  dst, dst, 47;
-# define PTR_DEMANGLE2(dst, src, guard) \
-  rotri.d  src, src, 17; \
-  xor  dst, src, guard;
+#  define PTR_MANGLE2(dst, src, guard, tmp) \
+	xor	  tmp, src, guard; \
+	rotri.d	  dst, tmp, 47;
+#  define PTR_DEMANGLE2(dst, src, guard, tmp) \
+	rotri.d	  tmp, src, 17; \
+	xor	  dst, tmp, guard;
+# elif __loongarch_grlen == 32 /* __loongarch_grlen == 64 */
+#  define PTR_MANGLE2(dst, src, guard, tmp) \
+	xor	  tmp, src, guard; \
+	slli.w	  dst, tmp, 9; \
+	srli.w	  tmp, tmp, 23; \
+	or	  dst, dst, tmp;
+#  define PTR_DEMANGLE2(dst, src, guard, tmp) \
+	srli.w	  tmp, src, 9; \
+	slli.w	  src, src, 23; \
+	or	  tmp, tmp, src; \
+	xor	  dst, tmp, guard;
+# endif /* __loongarch_grlen == 64 */
+
 #endif
 
 #endif /* POINTER_GUARD_ASM_H */
