@@ -27,9 +27,11 @@
 #include <time.h>
 #include <sys/types.h>
 #include <atomic.h>
-#include <nscd-types.h>
 #include <sys/uio.h>
 
+
+/* Type for the size of a record in the data part of a database.  */
+typedef int32_t nscd_ssize_t;
 
 /* Version number of the daemon interface */
 #define NSCD_VERSION 2
