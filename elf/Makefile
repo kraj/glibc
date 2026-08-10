@@ -292,7 +292,7 @@ tests-static-internal := \
   tst-tunables-enable_secure \
   # tests-static-internal
 
-ifeq (yes,$(have-gcc-ifunc))
+ifeq (yesyes,$(have-gcc-ifunc)$(have-ssp))
 tests-static-internal += \
   tst-ifunc-resolver-protector-static \
   tst-ifunc-resolver-protector-static-non-pie \
@@ -777,7 +777,7 @@ test-extras += \
   tst-tlsmod18a \
   # test-extras
 
-ifeq (yes,$(have-gcc-ifunc))
+ifeq (yesyes,$(have-gcc-ifunc)$(have-ssp))
 # The resolver helper needs <tls.h> for the TCB-canary STACK_CHK_GUARD
 # macro, so it must be compiled with MODULE_NAME=testsuite_internal.
 extra-test-objs += \
@@ -1318,7 +1318,6 @@ tests += \
   tst-ifunc-plt-bindnow \
   tst-ifunc-plt-dlopen \
   tst-ifunc-plt-dlopen-bindnow \
-  tst-ifunc-resolver-protector \
   tst-ifunc-tls-init \
   tst-ifunc-tls-init-gd-ld \
   tst-ifunc-tls-write \
@@ -1387,7 +1386,6 @@ modules-names += \
   ifuncmod6 \
   tst-ifunc-plt-dep \
   tst-ifunc-plt-lib \
-  tst-ifunc-resolver-protector-mod \
   tst-ifunc-tls-init-gd-global-lib \
   tst-ifunc-tls-init-gd-lib \
   tst-ifunc-tls-init-ld-lib \
@@ -1411,6 +1409,10 @@ CFLAGS-tst-ifunc-tls-init-tlsdesc-lib.c += \
 endif
 ifeq (no,$(with-lld))
 modules-names += ifuncmod5
+endif
+ifeq ($(have-ssp),yes)
+tests += tst-ifunc-resolver-protector
+modules-names += tst-ifunc-resolver-protector-mod
 endif
 endif
 endif
