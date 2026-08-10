@@ -1335,7 +1335,7 @@ printf_positional (struct Xprintf_buffer * buf, const CHAR_T *format,
 	}
 
       /* Process format specifiers.  */
-      do
+      while (1)
 	{
 # ifdef COMPILE_WPRINTF
 #  define CHECK_SPEC(spec) ((spec) <= UCHAR_MAX)
@@ -1415,7 +1415,6 @@ printf_positional (struct Xprintf_buffer * buf, const CHAR_T *format,
 	  }
 	  break;
 	}
-      while (Xprintf_buffer_has_failed (buf));
 
       /* Write the following constant string.  */
       Xprintf_buffer_write (buf,
