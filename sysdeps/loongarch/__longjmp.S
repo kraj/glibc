@@ -23,9 +23,9 @@
 ENTRY (__longjmp)
 #ifdef PTR_MANGLE
 	REG_L t0, a0, 0*SZREG
-	PTR_DEMANGLE (ra, t0, t1)
+	PTR_DEMANGLE (ra, t0, t1, t2)
 	REG_L t0, a0, 1*SZREG
-	PTR_DEMANGLE2 (sp, t0, t1)
+	PTR_DEMANGLE2 (sp, t0, t1, t2)
 #else
 	REG_L ra, a0, 0*SZREG
 	REG_L sp, a0, 1*SZREG
