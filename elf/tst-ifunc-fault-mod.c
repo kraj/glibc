@@ -17,6 +17,7 @@
    <https://www.gnu.org/licenses/>.  */
 
 #include <stddef.h>
+#include <sys/cdefs.h>
 
 static void
 implementation (void)
@@ -27,6 +28,7 @@ implementation (void)
 }
 
 static __typeof__ (implementation) *
+__attribute_used__
 resolver (void)
 {
   /* Produce a crash, without depending on any relocations.  */
