@@ -35,7 +35,9 @@
 static struct cache_file *cache;
 static struct cache_file_new *cache_new;
 static size_t cachesize;
+#ifdef SHARED
 static struct cache_extension_all_loaded ext;
+#endif
 
 static struct {
   typeof ((*(struct __stat64_t64 *)0).st_mtime) mtime;
@@ -540,7 +542,9 @@ _dl_maybe_load_ldsocache (void)
   cache = tmp_cache;
   cache_new = tmp_cache_new;
   cachesize = tmp_cachesize;
+#ifdef SHARED
   ext = tmp_ext;
+#endif
 
   assert (cache != NULL);
 }
