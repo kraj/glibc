@@ -66,8 +66,8 @@ struct tunable_entry_int {
   bool exclude_secure:1;
   bool exclude_nonsecure:1;
   int tunable_id;
-  int value_is_negative:1;
-  int value_was_parsed:1;
+  unsigned int value_is_negative:1;
+  unsigned int value_was_parsed:1;
   unsigned long long value_ull;
   signed long long value_sll;
   long filter_flags;
