@@ -60,7 +60,7 @@ extern int inet_pton (int __af, const char *__restrict __cp,
 
 /* Convert a Internet address in binary network format for interface
    type AF in buffer starting at CP to presentation form and place
-   result in buffer of length LEN astarting at BUF.  */
+   result in buffer of length LEN starting at BUF.  */
 extern const char *inet_ntop (int __af, const void *__restrict __cp,
 			      char *__restrict __buf, socklen_t __len)
      __THROW;
