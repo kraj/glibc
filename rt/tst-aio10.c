@@ -8,7 +8,6 @@
 
 static pthread_barrier_t b;
 static pthread_t main_thread;
-static int flag;
 
 
 static void *
@@ -38,7 +37,6 @@ tf (void *arg)
 static void
 sh (int sig)
 {
-  flag = 1;
 }
 
 
