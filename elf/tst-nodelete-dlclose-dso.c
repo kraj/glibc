@@ -29,8 +29,6 @@
 
 /* Plugin to load.  */
 static void *plugin_lib = NULL;
-/* Plugin function.  */
-static void (*plugin_func) (void);
 #define LIB_PLUGIN "tst-nodelete-dlclose-plugin.so"
 
 /* This function is never called but the plugin references it.
@@ -55,7 +53,7 @@ primary (void)
     }
   dlerror ();
 
-  plugin_func = (void (*) (void)) dlsym (plugin_lib, "plugin_func");
+  dlsym (plugin_lib, "plugin_func");
   error = dlerror ();
   if (error != NULL)
     {
