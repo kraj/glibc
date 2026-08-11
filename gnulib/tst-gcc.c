@@ -17,6 +17,7 @@
    <https://www.gnu.org/licenses/>.  */
 
 #include <stdio.h>
+#include <libc-diag.h>
 
 #define __no_type_class		-1
 #define __void_type_class	 0
@@ -61,12 +62,17 @@ do_test (void)
   struct { int a; } __record_type;
   union { int a; int b; } __union_type;
 
+  /* clang warns that the variables are uninitializedd, but the builtin
+     only inspects the type of its operand and never evaluates it.  */
+  DIAG_PUSH_NEEDS_COMMENT_CLANG;
+  DIAG_IGNORE_NEEDS_COMMENT_CLANG (23, "-Wuninitialized");
   result |= TEST (integer);
   result |= TEST (pointer);
   result |= TEST (real);
   result |= TEST (complex);
   result |= TEST (record);
   result |= TEST (union);
+  DIAG_POP_NEEDS_COMMENT_CLANG;
 
   return result;
 }
