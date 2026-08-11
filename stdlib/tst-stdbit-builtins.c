@@ -19,6 +19,7 @@
 #include <stdbit.h>
 #include <limits.h>
 #include <support/check.h>
+#include <libc-diag.h>
 
 #if __glibc_has_builtin (__builtin_stdc_leading_zeros) \
     && __glibc_has_builtin (__builtin_stdc_leading_ones) \
@@ -512,6 +513,10 @@ do_test (void)
   TEST_COMPARE (b, 14);
 # ifdef BITINT_MAXWIDTH
 #  if BITINT_MAXWIDTH >= 64
+  /* clang with -std=gnu11 warns that '_BitInt' suffix for literals is a C23
+     extension.  */
+  DIAG_PUSH_NEEDS_COMMENT_CLANG;
+  DIAG_IGNORE_NEEDS_COMMENT_CLANG (23, "-Wc23-extensions");
   TEST_COMPARE (stdc_leading_zeros (0uwb), 1);
   TEST_COMPARE (expr_has_type (stdc_leading_zeros (0uwb), ui), 1);
   TEST_COMPARE (stdc_leading_zeros (1uwb), 0);
@@ -568,6 +573,10 @@ do_test (void)
   TEST_COMPARE (expr_has_type (stdc_bit_ceil (0uwb), unsigned _BitInt(1)), 1);
   TEST_COMPARE (stdc_bit_ceil (1uwb), 1);
   TEST_COMPARE (expr_has_type (stdc_bit_ceil (1uwb), unsigned _BitInt(1)), 1);
+  DIAG_POP_NEEDS_COMMENT_CLANG;
+  /* clang-23 triggers an ICE with __builtin_stdc_bit_ceil with a non-constant
+     unsigned _BitInt(1).  */
+#   ifdef __clang__
   unsigned _BitInt(1) c = 0;
   TEST_COMPARE (stdc_bit_floor (c++), 0);
   TEST_COMPARE (c, 1);
@@ -577,6 +586,7 @@ do_test (void)
   TEST_COMPARE (c, 1);
   TEST_COMPARE (stdc_bit_ceil (c++), 1);
   TEST_COMPARE (c, 0);
+#   endif
 #  endif
 #  if BITINT_MAXWIDTH >= 512
   TEST_COMPARE (stdc_leading_zeros ((unsigned _BitInt(512)) 0), 512);
