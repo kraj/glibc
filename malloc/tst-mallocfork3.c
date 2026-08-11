@@ -128,7 +128,6 @@ signal_sender (void *args)
 }
 
 static pthread_t sigusr1_sender[5];
-static pthread_t sigusr2_sender;
 
 static int
 do_test (void)
@@ -139,7 +138,7 @@ do_test (void)
   pthread_t self = pthread_self ();
 
   struct signal_send_args sigusr2_args = { self, SIGUSR2, true };
-  sigusr2_sender = xpthread_create (NULL, signal_sender, &sigusr2_args);
+  xpthread_create (NULL, signal_sender, &sigusr2_args);
 
   /* Send SIGUSR1 signals from several threads.  Hopefully, one
      signal will hit one of the critical functions.  Use a barrier to
