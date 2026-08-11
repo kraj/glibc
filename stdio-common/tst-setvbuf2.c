@@ -94,11 +94,6 @@ dumpfp (FILE *fp)
 # define dumpfp(FP)
 #endif
 
-#ifndef INDEPENDENT_PART
-/* st_blksize value for that file, or BUFSIZ if out of range.  */
-static int blksize = BUFSIZ;
-#endif
-
 /* Our test buffer.  */
 #define TEST_BUFSIZE 42
 static int bufsize = TEST_BUFSIZE < BUFSIZ ? TEST_BUFSIZE : BUFSIZ;
@@ -210,10 +205,6 @@ prepare_test_data (void)
       debug;
       int fd = create_temp_file ("tst-setvbuf2", &test_file_name);
       TEST_VERIFY_EXIT (fd != -1);
-      struct stat64 st;
-      xfstat64 (fd, &st);
-      if (st.st_blksize > 0 && st.st_blksize < BUFSIZ)
-	blksize = st.st_blksize;
       xclose (fd);
     }
 #endif
