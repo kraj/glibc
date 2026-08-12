@@ -34,7 +34,7 @@ __fmodf (float x, float y)
 			&& !is_nan (hx)))
     return __math_invalidf (x);
 
-  return __m81_u(fmodf)(x, y);
+  return __m81_u(__ieee754_fmodf)(x, y);
 }
 strong_alias (__fmodf, __ieee754_fmodf)
 versioned_symbol (libm, __fmodf, fmodf, GLIBC_2_43);
