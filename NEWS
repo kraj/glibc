@@ -14,6 +14,8 @@ The following bugs are resolved with this release:
  [33848] build: Build fails at openat2.h, redefinition of 'struct
     open_how'
  [33904] build: error: '__vasprintf_chk' undeclared here
+ [34509] libc: [m68k] Regression: Perl locks up after upgrading glibc
+   to 2.43
 
 Version 2.43
 
