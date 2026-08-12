@@ -19,6 +19,7 @@
 #include <array_length.h>
 #include <arpa/inet.h>
 #include <errno.h>
+#include <libc-pointer-arith.h>
 #include <string.h>
 #include <stdio.h>
 #include <support/check.h>
@@ -65,7 +66,15 @@ do_recvmsg_slack_ancillary (bool use_multi_call, int s, void *cmsg,
       .iov_len = sizeof (payload)
     };
   size_t msg_controllen = CMSG_SPACE (tsize) + slack;
-  char *msg_control = cmsg - msg_controllen;
+  /* The buffer has to be suitably aligned for struct cmsghdr, since both
+     recvmsg and the CMSG_* macros below read cmsg_len from its start, so
+     round the start down.  The caller reserves the extra bytes this may
+     consume.  A slack that is not a multiple of the alignment then leaves
+     the buffer ending just short of the guard page rather than against it,
+     which still catches the overruns this is looking for: they are a whole
+     timestamp, not a few bytes.  */
+  char *msg_control = PTR_ALIGN_DOWN ((char *) cmsg - msg_controllen,
+				      __alignof__ (struct cmsghdr));
   memset (msg_control, 0x55, msg_controllen);
   struct mmsghdr mmhdr =
     {
@@ -142,10 +151,13 @@ static void
 do_test_slack_space (void)
 {
   /* Setup the ancillary data buffer with an extra page with PROT_NONE to
-     check the possible timestamp conversion on some systems.  */
+     check the possible timestamp conversion on some systems.  Request
+     __alignof__ (struct cmsghdr) - 1 extra bytes to cover the rounding down
+     of the buffer start in do_recvmsg_slack_ancillary.  */
   struct support_next_to_fault nf =
-    support_next_to_fault_allocate (slack_max_size);
-  void *msgbuf = nf.buffer + slack_max_size;
+    support_next_to_fault_allocate (slack_max_size
+				    + __alignof__ (struct cmsghdr) - 1);
+  void *msgbuf = nf.buffer + nf.length;
 
   /* Enable the timestamp using struct timeval precision.  */
   {
