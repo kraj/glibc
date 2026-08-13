@@ -35,7 +35,6 @@
 #include <scratch_buffer.h>
 #include <_itoa.h>
 #include <assert.h>
-#include <intprops.h>
 
 /*
  * This is a recursive-descent-style word expansion routine.
@@ -2269,16 +2268,14 @@ wordexp (const char *words, wordexp_t *pwordexp, int flags)
     {
       /* WRDE_APPEND with an existing word list: duplicate the array so that
 	 realloc during parsing does not invalidate the caller's pointer.  The
-	 strings themselves are shared.  */
-      size_t num_p;
-      char **dup;
-      if (INT_ADD_WRAPV (pwordexp->we_offs, pwordexp->we_wordc, &num_p)
-	  || INT_ADD_WRAPV (num_p, 1, &num_p))
-	return WRDE_NOSPACE;
-      dup = __libc_reallocarray (NULL, num_p, sizeof *dup);
+	 strings themselves are shared an the array already holds
+	 'we_offs + we_wordc + 1 pointers' (so the size computation cannot
+	 overflow).  */
+      size_t num_p = pwordexp->we_offs + pwordexp->we_wordc + 1;
+      char **dup = malloc (num_p * sizeof (char *));
       if (dup == NULL)
 	return WRDE_NOSPACE;
-      memcpy (dup, pwordexp->we_wordv, num_p * sizeof *dup);
+      memcpy (dup, pwordexp->we_wordv, num_p * sizeof (char *));
       saved_wordv = pwordexp->we_wordv;
       pwordexp->we_wordv = dup;
     }
