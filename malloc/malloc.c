@@ -5114,10 +5114,26 @@ do_set_mxfast (size_t value)
 static __always_inline int
 do_set_hugetlb (size_t value)
 {
+  /* Enable THP if DEFAULT_THP_PAGESIZE is non-zero.  */
+  if (DEFAULT_THP_PAGESIZE > 0)
+    {
+      mp_.thp_mode = malloc_thp_mode_madvise;
+      mp_.thp_pagesize = DEFAULT_THP_PAGESIZE;
+    }
+
   if (value == 0)
-    mp_.thp_mode = malloc_thp_mode_never;
+    {
+      /* Turn off THP support completely.  */
+      mp_.thp_mode = malloc_thp_mode_never;
+      mp_.thp_pagesize = 0;
+    }
   else if (value == 1)
     {
+      /* Avoid querying the THP page size/mode since accessing /sys/kernel/mm
+        is relatively slow and might not be accessible in containers.  */
+      if (DEFAULT_THP_PAGESIZE > 0)
+       return 0;
+
       mp_.thp_mode = __malloc_thp_mode ();
       if (mp_.thp_mode == malloc_thp_mode_madvise
           || mp_.thp_mode == malloc_thp_mode_always)

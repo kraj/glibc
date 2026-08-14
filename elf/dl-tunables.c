@@ -33,6 +33,7 @@
 #include <array_length.h>
 #include <dl-minimal-malloc.h>
 #include <dl-symbol-redir-ifunc.h>
+#include <malloc-hugepages.h>
 
 #define TUNABLES_INTERNAL 1
 #include "dl-tunables.h"
@@ -295,6 +296,10 @@ __tunables_init (char **envp)
   char *envname = NULL;
   char *envval = NULL;
   char **prev_envp = envp;
+
+  /* Default to glibc.malloc.hugetlb=1 if DEFAULT_THP_PAGESIZE is non-zero.  */
+  if (DEFAULT_THP_PAGESIZE > 0)
+    TUNABLE_SET (glibc, malloc, hugetlb, 1);
 
   /* Ignore tunables for AT_SECURE programs.  */
   if (__libc_enable_secure)
