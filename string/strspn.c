@@ -18,6 +18,9 @@
 #include <string.h>
 #include <stdint.h>
 #include <libc-pointer-arith.h>
+#include <string-fza.h>
+#include <string-fzi.h>
+#include <string-shift.h>
 
 #undef strspn
 #ifndef STRSPN
@@ -33,9 +36,26 @@ STRSPN (const char *str, const char *accept)
     return 0;
   if (__glibc_unlikely (accept[1] == '\0'))
     {
-      const char *a = str;
-      for (; *str == *accept; str++);
-      return str - a;
+      /* Skip the bytes equal to ACCEPT[0] a word at a time.  ACCEPT[0] is
+	 not NUL here, so a NUL byte differs from it and the search for
+	 inequality also stops at the end of the string.  */
+      const uintptr_t s_int = (uintptr_t) str;
+      const op_t *word_ptr = (const op_t *) PTR_ALIGN_DOWN (str, sizeof (op_t));
+      const op_t repeated_c = repeat_bytes (accept[0]);
+
+      op_t word = *word_ptr;
+      find_t mask = shift_find (find_ne_all (word, repeated_c), s_int);
+      if (mask != 0)
+	return index_first (mask);
+
+      /* Comparing the whole word is cheaper than building the mask on
+	 targets where find_ne_all () is more than an exclusive or.  */
+      do
+	word = *++word_ptr;
+      while (word == repeated_c);
+
+      return (const char *) word_ptr - str
+	     + index_first (find_ne_all (word, repeated_c));
     }
 
   /* Use multiple small memsets to enable inlining on most targets.  */
