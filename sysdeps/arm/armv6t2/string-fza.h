@@ -54,9 +54,9 @@ find_zero_eq_all (op_t x1, op_t x2)
 static __always_inline find_t
 find_zero_ne_all (op_t x1, op_t x2)
 {
-  /* Make use of the fact that we'll already have ONES in a register.  */
-  op_t ones = repeat_bytes (0x01);
-  return find_zero_all (x1) | (find_zero_all (x1 ^ x2) ^ ones);
+  /* As in find_ne_all; find_zero_all () sets only 0x01 in a byte that was
+     zero, so each term of the or marks only its own bytes.  */
+  return (x1 ^ x2) | find_zero_all (x1);
 }
 
 /* Identify bytes that are not equal between X1 and X2.  */

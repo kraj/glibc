@@ -89,11 +89,18 @@ find_zero_eq_all (op_t x1, op_t x2)
 static __always_inline find_t
 find_zero_ne_all (op_t x1, op_t x2)
 {
+#if HAVE_BITOPTS_WORKING
+  /* As in find_ne_all, the difference does not have to be reduced to one
+     bit per byte.  find_zero_all () sets only 0x80 in a byte that was
+     zero, so each term marks only its own bytes.  */
+  return (x1 ^ x2) | find_zero_all (x1);
+#else
   op_t m = repeat_bytes (0x7f);
   op_t eq = x1 ^ x2;
   op_t nz1 = ((x1 & m) + m) | x1;
   op_t ne2 = ((eq & m) + m) | eq;
   return (ne2 | ~nz1) & ~m;
+#endif
 }
 
 /* With similar caveats, identify bytes that are not equal between X1
