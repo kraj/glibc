@@ -52,6 +52,13 @@ find_zero_ne_all (op_t x1, op_t x2)
   return find_zero_all (x1) | (find_zero_all (x1 ^ x2) ^ 0xff);
 }
 
+/* Identify bytes that are not equal between X1 and X2.  */
+static __always_inline find_t
+find_ne_all (op_t x1, op_t x2)
+{
+  return find_zero_all (x1 ^ x2) ^ 0xff;
+}
+
 /* Define the "inexact" versions in terms of the exact versions.  */
 #define find_zero_low		find_zero_all
 #define find_eq_low		find_eq_all

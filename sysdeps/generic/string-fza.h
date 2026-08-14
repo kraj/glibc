@@ -19,6 +19,7 @@
 #ifndef _STRING_FZA_H
 #define _STRING_FZA_H 1
 
+#include <string-bitops.h>
 #include <string-misc.h>
 #include <string-optype.h>
 
@@ -93,6 +94,24 @@ find_zero_ne_all (op_t x1, op_t x2)
   op_t nz1 = ((x1 & m) + m) | x1;
   op_t ne2 = ((eq & m) + m) | eq;
   return (ne2 | ~nz1) & ~m;
+}
+
+/* With similar caveats, identify bytes that are not equal between X1
+   and X2.  */
+static __always_inline find_t
+find_ne_all (op_t x1, op_t x2)
+{
+#if HAVE_BITOPTS_WORKING
+  /* index_first and index_last only need to know which byte holds the first
+     or the last set bit, so the difference does not have to be reduced to
+     one bit per byte.  The fallback ctzb and clzb do require the reduced
+     form, since they isolate a single bit and expect it at 0x80.  */
+  return x1 ^ x2;
+#else
+  op_t m = repeat_bytes (0x7f);
+  op_t ne = x1 ^ x2;
+  return (((ne & m) + m) | ne) & ~m;
+#endif
 }
 
 #endif /* _STRING_FZA_H */
