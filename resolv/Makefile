@@ -123,6 +123,7 @@ tests += \
   tst-resolv-noaaaa \
   tst-resolv-noaaaa-vc \
   tst-resolv-nondecimal \
+  tst-resolv-querymatch-short \
   tst-resolv-res_init-failure \
   tst-resolv-res_init-multi \
   tst-resolv-search \
@@ -326,6 +327,8 @@ $(objpfx)tst-resolv-no-search: $(objpfx)libresolv.so $(shared-thread-library)
 $(objpfx)tst-resolv-noaaaa: $(objpfx)libresolv.so $(shared-thread-library)
 $(objpfx)tst-resolv-noaaaa-vc: $(objpfx)libresolv.so $(shared-thread-library)
 $(objpfx)tst-resolv-nondecimal: $(objpfx)libresolv.so $(shared-thread-library)
+$(objpfx)tst-resolv-querymatch-short: $(objpfx)libresolv.so \
+  $(shared-thread-library)
 $(objpfx)tst-resolv-qtypes: $(objpfx)libresolv.so $(shared-thread-library)
 $(objpfx)tst-resolv-rotate: $(objpfx)libresolv.so $(shared-thread-library)
 $(objpfx)tst-resolv-search: $(objpfx)libresolv.so $(shared-thread-library)

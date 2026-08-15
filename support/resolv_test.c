@@ -441,8 +441,14 @@ resolv_response_set_buffer (struct resolv_response_builder *b,
   if (length > max_response_length)
     FAIL_EXIT1 ("resolv_response_set_buffer: length %zu exceeds maximum %d",
                 length, max_response_length);
+  if (b->current_rdata_offset != 0)
+    FAIL_EXIT1 ("resolv_response_set_buffer: called with pending RDATA");
   memmove (b->buffer, data, length);
   b->offset = length;
+
+  /* The cached compression offsets are likely invalid now.  */
+  tdestroy (b->compression_offsets, free);
+  b->compression_offsets = NULL;
 }
 
 struct resolv_response_builder *
