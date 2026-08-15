@@ -206,6 +206,21 @@ void resolv_response_close (struct resolv_response_builder *);
 /* The size of the response packet built so far.  */
 size_t resolv_response_length (const struct resolv_response_builder *);
 
+/* Return a pointer to the internal response buffer.  The pointer is
+   only valid until the next call that modifies the builder.  The
+   length of the byte array can be obtained using
+   resolv_response_length.  */
+unsigned char *resolv_response_buffer (struct resolv_response_builder *)
+  __attribute_nonnull__ ((1));
+
+/* Replace the contents of the response buffer contents with a copy of
+   LENGTH bytes starting at DATA.  Passing the pointer returned by
+   resolv_response_buffer is valid.  If LENGTH is larger than the
+   maximum support packet size, fail the process.  */
+void resolv_response_set_buffer (struct resolv_response_builder *,
+                                 const unsigned char *data, size_t length)
+  __attribute_nonnull__ ((1, 2));
+
 /* Allocates a response builder tied to a specific query packet,
    starting at QUERY_BUFFER, containing QUERY_LENGTH bytes.  */
 struct resolv_response_builder *

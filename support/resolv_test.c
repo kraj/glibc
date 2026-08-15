@@ -429,11 +429,20 @@ resolv_response_length (const struct resolv_response_builder *b)
 }
 
 unsigned char *
-resolv_response_buffer (const struct resolv_response_builder *b)
+resolv_response_buffer (struct resolv_response_builder *b)
 {
-  unsigned char *result = xmalloc (b->offset);
-  memcpy (result, b->buffer, b->offset);
-  return result;
+  return b->buffer;
+}
+
+void
+resolv_response_set_buffer (struct resolv_response_builder *b,
+                            const unsigned char *data, size_t length)
+{
+  if (length > max_response_length)
+    FAIL_EXIT1 ("resolv_response_set_buffer: length %zu exceeds maximum %d",
+                length, max_response_length);
+  memmove (b->buffer, data, length);
+  b->offset = length;
 }
 
 struct resolv_response_builder *
