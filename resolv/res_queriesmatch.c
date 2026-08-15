@@ -122,7 +122,8 @@ __libc_res_queriesmatch (const unsigned char *buf1, const unsigned char *eom1,
         return -1;
       NS_GET16 (ttype, cp);
       NS_GET16 (tclass, cp);
-      if (!__libc_res_nameinquery (tname, ttype, tclass, buf2, eom2))
+      if (__libc_res_nameinquery (tname, ttype, tclass, buf2, eom2) <= 0)
+        /* Parse error or mismatch.  */
         return 0;
     }
   return 1;
