@@ -1215,14 +1215,14 @@ send_dg(res_state statp,
 		    && (skip_query_match
 			|| __libc_res_queriesmatch (buf, buf + buflen,
 						    *thisansp,
-						    *thisansp + *thisanssizp)))
+						    *thisansp + *thisresplenp)))
 		  matching_query = 1;
 		if (!recvresp2
 		    && anhp->id == hp2->id
 		    && (skip_query_match
 			|| __libc_res_queriesmatch (buf2, buf2 + buflen2,
 						    *thisansp,
-						    *thisansp + *thisanssizp)))
+						    *thisansp + *thisresplenp)))
 		  matching_query = 2;
 		if (matching_query == 0)
 		  /* Spurious UDP packet.  Drop it and continue
