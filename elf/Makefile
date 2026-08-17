@@ -532,6 +532,7 @@ tests += \
   tst-tlsalign \
   tst-tlsalign-extern \
   tst-tlsgap \
+  tst-trace-tls \
   tst-unique1 \
   tst-unique2 \
   tst-unwind-ctor \
@@ -1117,6 +1118,7 @@ modules-names += \
   tst-tlsmod7 \
   tst-tlsmod8 \
   tst-tlsmod9 \
+  tst-trace-tls-mod \
   tst-unique1mod1 \
   tst-unique1mod2 \
   tst-unique2mod1 \
@@ -3575,6 +3577,9 @@ $(objpfx)tst-nodeps2-mod.so: $(common-objpfx)libc.so \
 	$(link-test-modules-rpath-link)
 $(objpfx)tst-nodeps2.out: \
   $(objpfx)tst-nodeps1-mod.so $(objpfx)tst-nodeps2-mod.so
+
+$(objpfx)tst-trace-tls.out: $(objpfx)tst-trace-tls-mod.so $(objpfx)ld.so
+tst-trace-tls-mod.so-no-z-defs = yes
 
 $(objpfx)tst-tlsgap: $(shared-thread-library)
 $(objpfx)tst-tlsgap.out: \

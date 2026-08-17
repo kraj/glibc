@@ -197,16 +197,22 @@ elf_machine_rela (struct link_map *map, struct r_scope_elem *scope[],
 
 #ifndef RTLD_BOOTSTRAP
     case __WORDSIZE == 64 ? R_LARCH_TLS_DTPMOD64 : R_LARCH_TLS_DTPMOD32:
-      *addr_field = sym_map->l_tls_modid;
+      /* The sym_map may be NULL in trace mode (LD_TRACE_LOADED_OBJECTS).  */
+      if (sym_map != NULL)
+	*addr_field = sym_map->l_tls_modid;
       break;
 
     case __WORDSIZE == 64 ? R_LARCH_TLS_DTPREL64 : R_LARCH_TLS_DTPREL32:
-      *addr_field = TLS_DTPREL_VALUE (sym) + reloc->r_addend;
+      if (sym != NULL)
+	*addr_field = TLS_DTPREL_VALUE (sym) + reloc->r_addend;
       break;
 
     case __WORDSIZE == 64 ? R_LARCH_TLS_TPREL64 : R_LARCH_TLS_TPREL32:
-      CHECK_STATIC_TLS (map, sym_map, sym);
-      *addr_field = TLS_TPREL_VALUE (sym_map, sym) + reloc->r_addend;
+      if (sym != NULL)
+	{
+	  CHECK_STATIC_TLS (map, sym_map, sym);
+	  *addr_field = TLS_TPREL_VALUE (sym_map, sym) + reloc->r_addend;
+	}
       break;
 
     case __WORDSIZE == 64 ? R_LARCH_TLS_DESC64 : R_LARCH_TLS_DESC32:
