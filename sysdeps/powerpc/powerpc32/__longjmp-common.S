@@ -30,11 +30,12 @@ ENTRY (__longjmp_symbol)
 
 #if defined PTR_DEMANGLE || defined CHECK_SP
 	lwz r24,(JB_GPR1*4)(r3)
+# ifdef PTR_DEMANGLE
+	PTR_DEMANGLE (r24, r25)
+# endif
 # ifdef CHECK_SP
-#  ifdef PTR_DEMANGLE
-	PTR_DEMANGLE3 (r24, r24, r25)
-#  endif
 	CHECK_SP (r24)
+# endif
 	mr r1,r24
 # endif
 #else
@@ -49,9 +50,6 @@ ENTRY (__longjmp_symbol)
 	lwz r19,((JB_GPRS+19-14)*4)(r3)
 	lwz r20,((JB_GPRS+20-14)*4)(r3)
 #ifdef PTR_DEMANGLE
-# ifndef CHECK_SP
-	PTR_DEMANGLE3 (r1, r24, r25)
-# endif
 	PTR_DEMANGLE2 (r0, r25)
 #endif
 	/* longjmp/longjmp_target probe expects longjmp first argument (4@3),

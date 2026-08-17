@@ -115,19 +115,15 @@ L(no_vmx):
 #endif
 #if defined PTR_DEMANGLE || defined CHECK_SP
 	ld r22,(JB_GPR1*8)(r3)
+# ifdef PTR_DEMANGLE
+	PTR_DEMANGLE (r22, r25)
+# endif
+# ifdef CHECK_SP
+	CHECK_SP (r22)
+# endif
+	mr r1,r22
 #else
 	ld r1,(JB_GPR1*8)(r3)
-#endif
-#ifdef PTR_DEMANGLE
-# ifdef CHECK_SP
-	PTR_DEMANGLE3 (r22, r22, r25)
-# else
-	PTR_DEMANGLE3 (r1, r22, r25)
-# endif
-#endif
-#ifdef CHECK_SP
-	CHECK_SP (r22)
-	mr r1,r22
 #endif
 	ld r2,(JB_GPR2*8)(r3)
 	ld r0,(JB_LR*8)(r3)
