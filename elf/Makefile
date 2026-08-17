@@ -568,6 +568,7 @@ tests-internal += \
   tst-audit19a \
   tst-create_format1 \
   tst-dl-hwcaps_split \
+  tst-dl-path-normalize \
   tst-dl_find_object \
   tst-dl_find_object-threads \
   tst-dlmopen2 \
@@ -594,6 +595,7 @@ tests-container += \
   tst-dlopen-self-container \
   tst-dlopen-tlsmodid-container \
   tst-ldconfig-cache \
+  tst-origin-secure \
   tst-pldd \
   tst-preload-pthread-libc \
   tst-ptrguard-static-dlopen \
@@ -602,6 +604,7 @@ tests-container += \
   # tests-container
 
 test-srcs = \
+  tst-origin-secure-victim \
   tst-pathopt \
   tst-sprof-basic \
   # tests-srcs
@@ -842,6 +845,7 @@ modules-names += \
   libtracemod3-1 \
   libtracemod4-1 \
   libtracemod5-1 \
+  libtst-origin-secure-mod \
   ltglobmod1 \
   ltglobmod2 \
   neededobj1 \
@@ -1037,6 +1041,7 @@ modules-names += \
   tst-nodeps2-mod \
   tst-non-directory-mod \
   tst-null-argv-lib \
+  tst-origin-secure-evilmod \
   tst-p_alignmod-base \
   tst-p_alignmod3 \
   tst-ptrguard-static-dlopen-mod \
@@ -3805,3 +3810,16 @@ $(objpfx)tst-assert-startup-static.out: $(objpfx)tst-assert-startup-static
 
 LDFLAGS-tst-pie-rpath-static += -Wl,-rpath,\$$ORIGIN/tst-pie-rpath-static-subdir
 $(objpfx)tst-pie-rpath-static.out: $(objpfx)tst-pie-rpath-mod.so
+
+LDFLAGS-libtst-origin-secure-mod.so += -Wl,-soname,libtst-origin-secure-mod.so
+LDFLAGS-tst-origin-secure-evilmod.so += -Wl,-soname,libtst-origin-secure-mod.so
+$(objpfx)tst-origin-secure-victim: $(objpfx)libtst-origin-secure-mod.so
+# The number of "../" here must match the layout invariants described in
+# tst-origin-secure.c.
+LDFLAGS-tst-origin-secure-victim += \
+  -Wl,--no-as-needed \
+  -Wl,-rpath,\$$ORIGIN/sub/../../../../..$(slibdir)/tst-origin-secure \
+  -Wl,--disable-new-dtags
+$(objpfx)tst-origin-secure.out: $(objpfx)tst-origin-secure-victim \
+			       $(objpfx)libtst-origin-secure-mod.so \
+			       $(objpfx)tst-origin-secure-evilmod.so
