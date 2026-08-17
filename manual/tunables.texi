@@ -186,9 +186,9 @@ path, or the basename of such a path.  The process name is read from
 AT_SECURE is in effect).  Example:
 
 @example
--glibc.cpu.x86_shstk=1
+-glibc.cpu.x86_shstk=on
 [proc:/usr/bin/program_that_crashes_with_shstk]
-+glibc.cpu.x86_shstk=0
++glibc.cpu.x86_shstk=off
 @end example
 
 @end table
