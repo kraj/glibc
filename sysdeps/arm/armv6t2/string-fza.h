@@ -21,6 +21,7 @@
 
 #include <string-misc.h>
 #include <string-optype.h>
+#include <arm_acle.h>
 
 /* The functions return a byte mask.  */
 typedef op_t find_t;
@@ -32,10 +33,7 @@ find_zero_all (op_t x)
 {
   /* Use unsigned saturated subtraction from 1 in each byte.
      That leaves 1 for every byte that was zero.  */
-  op_t ones = repeat_bytes (0x01);
-  op_t ret;
-  asm ("uqsub8 %0,%1,%2" : "=r"(ret) : "r"(ones), "r"(x));
-  return ret;
+  return __uqsub8 (repeat_bytes (0x01), x);
 }
 
 /* Identify bytes that are equal between X1 and X2.  */
