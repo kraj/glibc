@@ -34,6 +34,7 @@
 #include <gnu/lib-names.h>
 #include <dl-tunables.h>
 #include <dl-scratch-buffer.h>
+#include <dl-path-normalize.h>
 
 #include "dynamic-link.h"
 #include "get-dynamic-info.h"
@@ -91,67 +92,30 @@ static const size_t system_dirs_len[] =
 };
 #define nsystem_dirs_len array_length (system_dirs_len)
 
+/* Return true if the normalized path NPATH of length NLEN is rooted in one of
+   the trusted system directories.  The system_dirs entries carry a trailing
+   '/'; NPATH matches an entry when it shares the entry's leading component
+   sequence and then either ends or continues with '/'.  For instance,
+   "/lib64" and "/lib64/x" match "/lib64/" but "/lib64x" does not.  */
 static bool
-is_trusted_path_normalize (const char *path, size_t len)
+path_is_trusted (const char *npath, size_t nlen)
 {
-  if (len == 0)
-    return false;
-
-  struct dl_scratch_buffer scratch = dl_scratch_buffer_init ();
-  dl_scratch_buffer_allocate (&scratch, len + 2, 0);
-  char *npath = scratch.data;
-  char *wnp = npath;
-  while (*path != '\0')
-    {
-      if (path[0] == '/')
-	{
-	  if (path[1] == '.')
-	    {
-	      if (path[2] == '.' && (path[3] == '/' || path[3] == '\0'))
-		{
-		  while (wnp > npath && *--wnp != '/')
-		    ;
-		  path += 3;
-		  continue;
-		}
-	      else if (path[2] == '/' || path[2] == '\0')
-		{
-		  path += 2;
-		  continue;
-		}
-	    }
-
-	  if (wnp > npath && wnp[-1] == '/')
-	    {
-	      ++path;
-	      continue;
-	    }
-	}
-
-      *wnp++ = *path++;
-    }
-
-  if (wnp == npath || wnp[-1] != '/')
-    *wnp++ = '/';
-
-  bool result = false;
   const char *trun = system_dirs;
 
   for (size_t idx = 0; idx < nsystem_dirs_len; ++idx)
     {
-      if (wnp - npath >= system_dirs_len[idx]
-	  && memcmp (trun, npath, system_dirs_len[idx]) == 0)
-	{
-	  /* Found it.  */
-	  result = true;
-	  break;
-	}
+      /* Compare against the entry without its trailing '/'.  */
+      size_t dirlen = system_dirs_len[idx] - 1;
+
+      if (nlen >= dirlen
+	  && memcmp (trun, npath, dirlen) == 0
+	  && (npath[dirlen] == '/' || npath[dirlen] == '\0'))
+	return true;
 
       trun += system_dirs_len[idx] + 1;
     }
 
-  dl_scratch_buffer_free (&scratch);
-  return result;
+  return false;
 }
 
 /* Given a substring starting at INPUT, just after the DST '$' start
@@ -335,15 +299,20 @@ _dl_dst_substitute (struct link_map *l, const char *input, char *result)
      checked for trust, the authors of the binaries themselves are
      trusted to have designed this correctly.  Only $ORIGIN is tested in
      this way because it may be manipulated in some ways with hard
-     links.  */
-  if (__glibc_unlikely (check_for_trusted)
-      && !is_trusted_path_normalize (result, wp - result))
-    {
-      *result = '\0';
-      return result;
-    }
+     links.
+
+     _dl_normalize_path replaces the expansion with its normalized form
+     in place, so that the path that is opened is exactly the path that
+     was validated.  */
 
   *wp = '\0';
+
+  if (__glibc_unlikely (check_for_trusted))
+    {
+      size_t nlen = _dl_normalize_path (result);
+      if (!path_is_trusted (result, nlen))
+	*result = '\0';
+    }
 
   return result;
 }
