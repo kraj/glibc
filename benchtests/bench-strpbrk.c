@@ -48,7 +48,7 @@ do_one_test (json_ctx_t *json_ctx, impl_t *impl, const CHAR *s,
              const CHAR *rej, RES_TYPE exp_res)
 {
   RES_TYPE res = CALL (impl, s, rej);
-  size_t i, iters = INNER_LOOP_ITERS8 / CHARBYTES;
+  size_t i, iters = CHARBYTES > 1 ? INNER_LOOP_ITERS : INNER_LOOP_ITERS_LARGE;
   timing_t start, stop, cur;
 
   if (res != exp_res)

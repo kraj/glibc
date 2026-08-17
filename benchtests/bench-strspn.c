@@ -41,7 +41,8 @@ static void
 do_one_test (json_ctx_t *json_ctx, impl_t *impl, const CHAR *s,
              const CHAR *acc, size_t exp_res)
 {
-  size_t res = CALL (impl, s, acc), i, iters = INNER_LOOP_ITERS8 / CHARBYTES;
+  size_t res = CALL (impl, s, acc), i;
+  size_t iters = CHARBYTES > 1 ? INNER_LOOP_ITERS : INNER_LOOP_ITERS_LARGE;
   timing_t start, stop, cur;
 
   if (res != exp_res)
