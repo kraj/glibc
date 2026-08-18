@@ -65,10 +65,6 @@
 # define PTR_MANGLE2(reg, tmpreg) \
 	xor	reg,tmpreg,reg; \
 	PTR_ROT_MANGLE (reg, reg)
-# define PTR_MANGLE3(destreg, reg, tmpreg) \
-	PTR_GUARD_LOAD (tmpreg); \
-	xor	destreg,tmpreg,reg; \
-	PTR_ROT_MANGLE (destreg, destreg)
 # define PTR_DEMANGLE(reg, tmpreg) \
 	PTR_GUARD_LOAD (tmpreg); \
 	PTR_ROT_DEMANGLE (reg, reg); \
@@ -76,10 +72,6 @@
 # define PTR_DEMANGLE2(reg, tmpreg) \
 	PTR_ROT_DEMANGLE (reg, reg); \
 	xor	reg,tmpreg,reg
-# define PTR_DEMANGLE3(destreg, reg, tmpreg) \
-	PTR_GUARD_LOAD (tmpreg); \
-	PTR_ROT_DEMANGLE (destreg, reg); \
-	xor	destreg,tmpreg,destreg
 #endif
 
 #endif /* POINTER_GUARD_ASM_H */
