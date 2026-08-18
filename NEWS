@@ -9,7 +9,10 @@ Version 2.45
 
 Major new features:
 
-  [Add new features here]
+* On Linux, the functions futex_wait, futex_timedwait, futex_wake, and
+  futex_requeue have been added.  They are wrappers around a subset of
+  the futex system call and provide the blocking building block for
+  implementing custom synchronization primitives.
 
 Deprecated and removed features, and other changes affecting compatibility:
 

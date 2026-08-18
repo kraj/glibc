@@ -179,31 +179,20 @@ __futex_abstimed_supported_clockid (clockid_t clockid)
      }
      return res;
 
-   Note that we need to support futex_wake calls to past futexes whose memory
+   Returns the number of woken processes, or a negated error code.  Note
+   that we need to support futex_wake calls to past futexes whose memory
    has potentially been reused due to POSIX' requirements on synchronization
-   object destruction (see above); therefore, we must not report or abort
-   on most errors.  */
-static __always_inline void
-__futex_wake_internal (unsigned int* futex_word, int processes_to_wake, int private)
+   object destruction (see above); therefore -EFAULT (memory reuse) and
+   -EINVAL (either incorrect alignment or memory reused for a PI futex)
+   can occur in correct executions, and internal callers simply ignore
+   the return value.  */
+static __always_inline int
+__futex_wake_internal (unsigned int *futex_word, int processes_to_wake,
+		       int private)
 {
-  int res = lll_futex_wake (futex_word, processes_to_wake, private);
-  /* No error.  Ignore the number of woken processes.  */
-  if (res >= 0)
-    return;
-  switch (res)
-    {
-    case -EFAULT: /* Could have happened due to memory reuse.  */
-    case -EINVAL: /* Could be either due to incorrect alignment (a bug in
-		     glibc or in the application) or due to memory being
-		     reused for a PI futex.  We cannot distinguish between the
-		     two causes, and one of them is correct use, so we do not
-		     act in this case.  */
-      return;
-    case -ENOSYS: /* Must have been caused by a glibc bug.  */
-    /* No other errors are documented at this time.  */
-    default:
-      __futex_fatal_error ();
-    }
+  return lll_futex_syscall_ret (4, futex_word,
+				__lll_private_flag (FUTEX_WAKE, private),
+				processes_to_wake, 0);
 }
 
 /* The operation checks the value of the futex, if the value is 0, then
@@ -292,6 +281,29 @@ __futex_abstimed_wait64 (unsigned int* futex_word, unsigned int expected,
                          int private);
 libc_hidden_proto (__futex_abstimed_wait64);
 
+
+/* The following wrappers are used to implement the public futex interfaces.
+   Unlike the wrappers above, they do not abort on any error, and the value
+   returned by a successful futex operation is preserved.  */
+
+/* Like __futex_abstimed_wait64, but return 0 on success or -1 with errno
+   set on failure.  */
+int
+__futex_abstimed_wait64_errno (unsigned int *futex_word,
+			       unsigned int expected, clockid_t clockid,
+			       const struct __timespec64 *abstime,
+			       unsigned int flags);
+libc_hidden_proto (__futex_abstimed_wait64_errno)
+
+/* If *FUTEX_WORD == EXPECTED, wake up to NR_WAKE waiters on FUTEX_WORD and
+   requeue up to NR_REQUEUE of the remaining waiters to TARGET_WORD.  Returns
+   the total number of woken and requeued waiters, or -1 with  errno set on
+   failure.  */
+int
+__futex_cmp_requeue_errno (unsigned int *futex_word, unsigned int expected,
+			   int nr_wake, unsigned int *target_word,
+			   int nr_requeue, unsigned int flags);
+libc_hidden_proto (__futex_cmp_requeue_errno)
 
 static __always_inline int
 __futex_clocklock64 (int *futex, clockid_t clockid,

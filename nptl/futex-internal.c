@@ -142,6 +142,38 @@ __futex_abstimed_wait_cancelable64 (unsigned int* futex_word,
 libc_hidden_def (__futex_abstimed_wait_cancelable64)
 
 int
+__futex_abstimed_wait64_errno (unsigned int* futex_word,
+                               unsigned int expected, clockid_t clockid,
+                               const struct __timespec64* abstime,
+                               unsigned int flags)
+{
+  int err = __futex_abstimed_wait_common (futex_word, expected, clockid,
+                                          abstime,
+                                          flags ^ FUTEX_PRIVATE_FLAG, false);
+  if (__glibc_likely (err == 0))
+    return 0;
+  __set_errno (err);
+  return -1;
+}
+libc_hidden_def (__futex_abstimed_wait64_errno)
+
+int
+__futex_cmp_requeue_errno (unsigned int *futex_word, unsigned int expected,
+                           int nr_wake, unsigned int *target_word,
+                           int nr_requeue, unsigned int flags)
+{
+  int r = lll_futex_syscall_ret (6, futex_word, FUTEX_CMP_REQUEUE | flags,
+                                 nr_wake, nr_requeue, target_word, expected);
+  if (__glibc_unlikely (r < 0))
+    {
+      __set_errno (-r);
+      return -1;
+    }
+  return r;
+}
+libc_hidden_def (__futex_cmp_requeue_errno)
+
+int
 __futex_lock_pi64 (int *futex_word, clockid_t clockid,
 		   const struct __timespec64 *abstime, int private)
 {

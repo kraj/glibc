@@ -2938,6 +2938,11 @@ GLIBC_2.43 memset_explicit F
 GLIBC_2.43 mseal F
 GLIBC_2.43 openat2 F
 GLIBC_2.43 umaxabs F
+GLIBC_2.45 __futex_timedwait_time64 F
+GLIBC_2.45 futex_requeue F
+GLIBC_2.45 futex_timedwait F
+GLIBC_2.45 futex_wait F
+GLIBC_2.45 futex_wake F
 GLIBC_2.5 __readlinkat_chk F
 GLIBC_2.5 inet6_opt_append F
 GLIBC_2.5 inet6_opt_find F

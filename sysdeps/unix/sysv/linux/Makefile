@@ -74,6 +74,10 @@ sysdep_routines += \
   eventfd_read \
   eventfd_write \
   fanotify_mark \
+  futex_requeue \
+  futex_timedwait \
+  futex_wait \
+  futex_wake \
   fxstat \
   fxstat64 \
   fxstatat \
@@ -169,6 +173,7 @@ sysdep_headers += \
   sys/eventfd.h \
   sys/fanotify.h \
   sys/fsuid.h \
+  sys/futex.h \
   sys/inotify.h \
   sys/kd.h \
   sys/klog.h \
@@ -199,6 +204,7 @@ tests += \
   tst-epoll-ioctls \
   tst-fanotify \
   tst-fdopendir-o_path \
+  tst-futex \
   tst-getauxval \
   tst-gettid \
   tst-gettid-kill \
@@ -275,6 +281,7 @@ tests-time64 += \
   tst-adjtimex-time64 \
   tst-clock_adjtime-time64 \
   tst-epoll-time64 \
+  tst-futex-time64 \
   tst-ntp_adjtime-time64 \
   tst-ntp_gettime-time64 \
   tst-ntp_gettimex-time64 \

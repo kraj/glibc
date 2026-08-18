@@ -1151,6 +1151,8 @@ the standard.
 * Single-Threaded::                       Detecting single-threaded execution.
 * Restartable Sequences::                 Linux-specific restartable sequences
                                           integration.
+* Futexes::                               Linux-specific fast userspace
+                                          locking primitives.
 @end menu
 
 @node Default Thread Attributes
@@ -1546,6 +1548,132 @@ expected to be present in the code before each restartable sequences
 abort handler.  Failure to provide the expected signature may terminate
 the process with a segmentation fault.
 @end deftypevr
+
+@node Futexes
+@subsubsection Futexes
+@cindex futex
+
+This section describes the futex functions, which are wrappers around
+the Linux @code{futex} system call.  This functionality is only
+available on Linux.
+
+A futex consists of a 32-bit @dfn{futex word} value in memory, and
+kernel state associated with the address of the futex word.  The
+@code{futex} functions allow a thread to block until the futex word
+changes and to wake threads blocked on a futex word.  Along with atomic
+operations on the futex (done in userland), they provide the blocking
+building block for arbitrary synchronization primitives such as mutexes,
+condition variables, and event counts.
+
+These functions do not provide a lock or condition variable abstraction on
+their own, and their correct use requires some care.  On failure, they
+return @minus{}1 and set @code{errno} (as for calling futex through
+@code{syscall}); they are not a cancellation entrypoint, and they are
+async-signal-safe.
+
+A wait on a futex may return spuriously, reporting a wake-up even though no
+matching wake operation was issued.  Callers must re-check the futex word
+after a wait returns and, if necessary, wait again.
+
+Each function has a @var{flags} argument which may be zero or
+@code{FUTEX_FLAG_PRIVATE}.  @code{FUTEX_FLAG_PRIVATE} declares that the
+futex word is only used by threads of the calling process, which allows
+the kernel to use faster process-local bookkeeping.  Without it, the
+futex word may be accessed by multiple processes through a shared
+memory mapping (@code{MAP_SHARED}).  Waiters and wakers of one futex
+word must agree on this flag.  The value follows the kernel
+@code{FUTEX_PRIVATE_FLAG}.
+
+@deftypefun int futex_wait (uint32_t *@var{futexp}, uint32_t @var{expected}, unsigned int @var{flags})
+@standards{Linux, sys/futex.h}
+@safety{@prelim{}@mtsafe{}@assafe{}@acsafe{}}
+If the @code{futexp} word content is equal to the value @var{expected},
+block until the calling thread is woken by @code{futex_wake} (or spuriously).
+The check of the futex word and the blocking are performed atomically with
+respect to concurrent futex operations on @var{futexp}.  This guarantees
+that no wake-up which is issued after the check can be missed.
+
+The return value is zero if the thread was woken, or @minus{}1 with
+@code{errno} set to one of the following error codes:
+
+@table @code
+@item EAGAIN
+The futex value did not contain @var{expected} at the time of the call.
+
+@item EINTR
+The wait was interrupted by a signal handler.
+
+@item EINVAL
+@var{futexp} is not aligned to four bytes, or @var{flags} is invalid.
+@end table
+@end deftypefun
+
+@deftypefun int futex_timedwait (uint32_t *@var{futexp}, uint32_t @var{expected}, clockid_t @var{clockid}, const struct timespec *@var{abstime}, unsigned int @var{flags})
+@standards{Linux, sys/futex.h}
+@safety{@prelim{}@mtsafe{}@assafe{}@acsafe{}}
+Like @code{futex_wait}, but block at most until the absolute time @var{abstime},
+measured against the clock @var{clockid}.  The @var{clockid} must be either
+@code{CLOCK_REALTIME} or @code{CLOCK_MONOTONIC}.  If @var{abstime} is @code{NULL},
+block without a timeout.
+
+In addition to the @code{futex_wait} error codes, the following error
+codes can be set:
+
+@table @code
+@item ETIMEDOUT
+The absolute time @var{abstime} passed before the thread was woken.
+An @var{abstime} that already expired is reported as @code{ETIMEDOUT}.
+
+@item EOVERFLOW
+@var{abstime} cannot be represented in the time type used by the
+kernel interface.
+@end table
+@end deftypefun
+
+@deftypefun int futex_wake (uint32_t *@var{futexp}, int @var{count}, unsigned int @var{flags})
+@standards{Linux, sys/futex.h}
+@safety{@prelim{}@mtsafe{}@assafe{}@acsafe{}}
+Wake up to @var{count} threads blocked on the @code{futexp} word.
+Using @code{INT_MAX} wake all threads waiting of the futex.
+
+The return value is the number of threads actually woken, which is
+zero if no thread was blocked, or @minus{}1 with @code{errno} set to
+@code{EINVAL} if @var{futexp} is not aligned to four bytes,
+@var{count} is negative, or @var{flags} is not valid.
+@end deftypefun
+
+@deftypefun int futex_requeue (uint32_t *@var{futexp}, uint32_t @var{expected}, int @var{nwake}, uint32_t *@var{targetp}, int @var{nrequeue}, unsigned int @var{flags})
+@standards{Linux, sys/futex.h}
+@safety{@prelim{}@mtsafe{}@assafe{}@acsafe{}}
+If the @code{futexp} word  still contains the value @var{expected}, wake upto
+@var{nwake} threads blocked on @var{futexp} and transfer up to @var{nrequeue}
+of the remaining blocked threads to the waitqueue of the futex word
+@var{targetp}, without waking them.
+
+Requeueing avoids the ``thundering herd'' effect of waking all threads, only
+for most of them to immediately block on another futex again.   For example,
+a condition variable broadcast can wake one thread and requeue the others to
+the futex that implements the associated mutex.  The value check makes the
+operation race-free, as with @code{futex_wait}.  Both futex words must use
+the same @var{flags}.
+
+The return value is the total number of woken and requeued threads, or
+@minus{}1 with @code{errno} set to one of the following error codes:
+
+@table @code
+@item EAGAIN
+The futex word did not contain the value @var{expected} at the time of
+the call.
+
+@item EFAULT
+@var{futexp} or @var{targetp} do not point to accessible memory.
+
+@item EINVAL
+@var{futexp} or @var{targetp} are not aligned to four bytes or are the
+same address, @var{nwake} or @var{nrequeue} are negative, or
+@var{flags} is not valid.
+@end table
+@end deftypefun
 
 @c FIXME these are undocumented:
 @c pthread_atfork

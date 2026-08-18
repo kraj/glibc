@@ -2287,3 +2287,7 @@ GLIBC_2.44 wprintf F
 GLIBC_2.44 write F
 GLIBC_2.44 writev F
 GLIBC_2.44 wscanf F
+GLIBC_2.45 futex_requeue F
+GLIBC_2.45 futex_timedwait F
+GLIBC_2.45 futex_wait F
+GLIBC_2.45 futex_wake F

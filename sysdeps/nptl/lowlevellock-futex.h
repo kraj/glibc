@@ -61,6 +61,18 @@
      ? -INTERNAL_SYSCALL_ERRNO (__ret) : 0);                     	\
   })
 
+/* Like lll_futex_syscall, but preserve the value returned by a
+   successful futex operation (for instance the number of woken or
+   requeued waiters for FUTEX_WAKE and FUTEX_CMP_REQUEUE): the result
+   is either a non-negative success value or a negated errno code.  */
+# define lll_futex_syscall_ret(nargs, futexp, op, ...)                  \
+  ({                                                                    \
+    long int __ret = INTERNAL_SYSCALL (futex, nargs, futexp, op, 	\
+				       __VA_ARGS__);                    \
+    (__glibc_unlikely (INTERNAL_SYSCALL_ERROR_P (__ret))         	\
+     ? -INTERNAL_SYSCALL_ERRNO (__ret) : __ret);                        \
+  })
+
 /* For most of these macros, the return value is never really used.
    Nevertheless, the protocol is that each one returns a negated errno
    code for failure or zero for success.  (Note that the corresponding
