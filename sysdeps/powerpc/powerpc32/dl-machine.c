@@ -23,7 +23,6 @@
 #include <ldsodefs.h>
 #include <elf/dynamic-link.h>
 #include <dl-machine.h>
-#include <_itoa.h>
 
 /* Stuff for the PLT.  */
 #define PLT_INITIAL_ENTRY_WORDS 18
@@ -375,30 +374,6 @@ __elf_machine_fixup_plt (struct link_map *map,
     }
   MODIFIED_CODE (reloc_addr);
   return finaladdr;
-}
-
-void
-_dl_reloc_overflow (struct link_map *map,
-		    const char *name,
-		    Elf32_Addr *const reloc_addr,
-		    const Elf32_Sym *refsym)
-{
-  char buffer[128];
-  char *t;
-  t = stpcpy (buffer, name);
-  t = stpcpy (t, " relocation at 0x00000000");
-  _itoa_word ((unsigned) reloc_addr, t, 16, 0);
-  if (refsym)
-    {
-      const char *strtab;
-
-      strtab = (const void *) D_PTR (map, l_info[DT_STRTAB]);
-      t = stpcpy (t, " for symbol `");
-      t = stpcpy (t, strtab + refsym->st_name);
-      t = stpcpy (t, "'");
-    }
-  t = stpcpy (t, " out of range");
-  _dl_signal_error (0, map->l_name, NULL, buffer);
 }
 
 void
