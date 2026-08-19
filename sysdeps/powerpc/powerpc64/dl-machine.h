@@ -448,7 +448,8 @@ elf_machine_runtime_setup (struct link_map *map, struct r_scope_elem *scope[],
 
 #if _CALL_ELF == 2
 extern void attribute_hidden _dl_error_localentry (struct link_map *map,
-						   const Elf64_Sym *refsym);
+						   const Elf64_Sym *refsym)
+     __attribute__ ((__noreturn__));
 
 /* If the PLT entry resolves to a function in the same object, return
    the target function's local entry point offset if usable.  */
@@ -619,11 +620,6 @@ elf_machine_plt_value (struct link_map *map, const Elf64_Rela *reloc,
   ((var) = ((var) & ~(Elf64_Addr) (mask)) | ((val) & (mask)))
 
 #define dont_expect(X) __builtin_expect ((X), 0)
-
-extern void attribute_hidden _dl_reloc_overflow (struct link_map *map,
-						 const char *name,
-						 Elf64_Addr *const reloc_addr,
-						 const Elf64_Sym *refsym);
 
 static inline void __attribute__ ((always_inline))
 elf_machine_rela_relative (Elf64_Addr l_addr, const Elf64_Rela *reloc,
