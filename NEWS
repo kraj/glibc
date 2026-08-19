@@ -46,6 +46,7 @@ The following bugs are resolved with this release:
     (CVE-2026-19499)
   [34530] libc: Regression in POWER fortified longjmp with pointer guard
     rotation
+  [34541] libc: Stack buffer overflow in _dl_reloc_overflow on POWER
   [34556] locale: SHIFT_JISX0213 converter hang in shift_jisx0213.c
     (CVE-2026-77117)
   [34568] locale: EUC_JISX0213 converter hang in euc-jisx0213.c
