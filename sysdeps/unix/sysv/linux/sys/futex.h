@@ -29,6 +29,42 @@
 # define FUTEX_PRIVATE_FLAG	128
 #endif
 
+/* Maximum number of entries in the array passed to futex_waitv.  */
+#define FUTEX_WAITV_MAX		128
+
+/* Per-waiter flags for futex_waitv, following the kernel definitions
+   from <linux/futex.h>.  FUTEX2_PRIVATE equals FUTEX_PRIVATE_FLAG, so
+   the same value is used by all futex_* operations.  */
+#ifndef FUTEX2_SIZE_U32
+# define FUTEX2_SIZE_U32	0x02
+#endif
+#ifndef FUTEX2_PRIVATE
+# define FUTEX2_PRIVATE		FUTEX_PRIVATE_FLAG
+#endif
+/* With FUTEX2_NUMA the futex word is followed by a second 32-bit word
+   holding the NUMA node id of the kernel state associated with the
+   futex; FUTEX_NO_NODE there lets the kernel choose the node.
+   FUTEX2_MPOL applies the memory policy of the futex word address.  */
+#ifndef FUTEX2_NUMA
+# define FUTEX2_NUMA		0x04
+#endif
+#ifndef FUTEX2_MPOL
+# define FUTEX2_MPOL		0x08
+#endif
+#ifndef FUTEX_NO_NODE
+# define FUTEX_NO_NODE		(-1)
+#endif
+
+/* One futex to wait on in a futex_waitv call, with the same layout as
+   the kernel struct futex_waitv.  */
+struct futex_waiter
+{
+  uint64_t val;			/* Expected value of the futex word.  */
+  uint64_t uaddr;		/* Address of the futex word.  */
+  uint32_t flags;		/* FUTEX2_* flags for this futex word.  */
+  uint32_t __reserved;		/* Must be zero.  */
+};
+
 __BEGIN_DECLS
 
 /* If *FUTEXP == EXPECTED block until woken by futex_wake (or spuriously).
@@ -79,6 +115,20 @@ extern int futex_requeue (uint32_t *__futexp, uint32_t __expected,
 			  int __nwake, uint32_t *__targetp, int __nrequeue,
 			  unsigned int __flags)
      __THROW __nonnull ((1, 4));
+
+/* Block on all of the NWAITERS futex words described by WAITERS (at most
+   FUTEX_WAITV_MAX entries) until woken on any of them or until the absolute
+   timeout ABSTIME measured against CLOCKID (which must be CLOCK_REALTIME or
+   CLOCK_MONOTONIC) passes.  If ABSTIME is null, block without a timeout.
+   Each entry checks its own expected value and carries its own FUTEX2_*
+   flags (FUTEX2_SIZE_U32, optionally with FUTEX2_PRIVATE).  */
+#ifdef __USE_TIME_BITS64
+extern int futex_waitv (const struct futex_waiter *__waiters,
+			unsigned int __nwaiters, unsigned int __flags,
+			const struct timespec *__abstime,
+			clockid_t __clockid)
+     __THROW __nonnull ((1));
+#endif
 
 __END_DECLS
 

@@ -1582,7 +1582,8 @@ the kernel to use faster process-local bookkeeping.  Without it, the
 futex word may be accessed by multiple processes through a shared
 memory mapping (@code{MAP_SHARED}).  Waiters and wakers of one futex
 word must agree on this flag.  The value follows the kernel
-@code{FUTEX_PRIVATE_FLAG}.
+@code{FUTEX_PRIVATE_FLAG}, so the same value is used by the
+@code{futex_waitv} per-waiter flags.
 
 @deftypefun int futex_wait (uint32_t *@var{futexp}, uint32_t @var{expected}, unsigned int @var{flags})
 @standards{Linux, sys/futex.h}
@@ -1673,6 +1674,88 @@ the call.
 same address, @var{nwake} or @var{nrequeue} are negative, or
 @var{flags} is not valid.
 @end table
+@end deftypefun
+
+@deftp {Data Type} {struct futex_waiter}
+@standards{Linux, sys/futex.h}
+Describes one futex to wait on in a call to @code{futex_waitv}.  It
+has the same layout as the kernel @code{struct futex_waitv} and the
+following members:
+
+@table @code
+@item uint64_t val
+The value the futex word is expected to contain, as for
+@code{futex_wait}.
+
+@item uint64_t uaddr
+The address of the futex word.
+
+@item uint32_t flags
+The kernel @code{FUTEX2_*} flags for this futex word:
+@code{FUTEX2_SIZE_U32}, optionally combined with @code{FUTEX2_PRIVATE}
+(equal to @code{FUTEX_PRIVATE_FLAG}) if the futex word is only used by
+threads of the calling process, @code{FUTEX2_NUMA} if the futex word
+is followed by a second 32-bit word holding the NUMA node id of the
+kernel state (with @code{FUTEX_NO_NODE} letting the kernel choose the
+node), and @code{FUTEX2_MPOL}.
+
+@item uint32_t __reserved
+Reserved for future use; must be zero.
+@end table
+@end deftp
+
+@deftypevr Macro int FUTEX_WAITV_MAX
+@standards{Linux, sys/futex.h}
+The maximum number of elements of the array passed to @code{futex_waitv},
+ currently 128.
+@end deftypevr
+
+@deftypefun int futex_waitv (const struct futex_waiter *@var{waiters}, unsigned int @var{nwaiters}, unsigned int @var{flags}, const struct timespec *@var{abstime}, clockid_t @var{clockid})
+@standards{Linux, sys/futex.h}
+@safety{@prelim{}@mtsafe{}@assafe{}@acsafe{}}
+Wait on all of the @var{nwaiters} futex words described by the array
+@var{waiters}, blocking until any one of them is woken (or until a
+spurious wake-up).  Each futex word is checked against the expected
+value recorded in its array entry, atomically with respect to
+concurrent futex operations, as for @code{futex_wait}.
+
+The wait is bounded by the absolute time @var{abstime} measured
+against the clock @var{clockid}, which must be @code{CLOCK_REALTIME}
+or @code{CLOCK_MONOTONIC}.  If @var{abstime} is a null pointer, the
+call blocks without a timeout.
+
+The @var{flags} argument is the flags argument of the underlying
+system call and is passed to the kernel unchanged; the system call
+currently supports no flags, so it must be zero.
+
+The return value is the array index of one of the woken futex words,
+or @minus{}1 with @code{errno} set to one of the following error
+codes.
+
+@table @code
+@item EAGAIN
+A futex word did not contain the value expected by its array entry at
+the time of the call.
+
+@item EINTR
+The wait was interrupted by a signal handler.
+
+@item ETIMEDOUT
+The absolute time @var{abstime} passed before any futex word was
+woken.
+
+@item EINVAL
+@var{nwaiters} is zero or greater than @code{FUTEX_WAITV_MAX}, a futex
+word is not aligned to four bytes, a @code{flags} member is not valid,
+or @var{clockid} is not a supported clock.
+
+@item ENOSYS
+The kernel does not support the @code{futex_waitv} system call, which
+was added in Linux 5.16.
+@end table
+
+This function only operates on 64-bit @code{time_t} and is only declared
+when @code{time_t} is a 64-bit type.
 @end deftypefun
 
 @c FIXME these are undocumented:

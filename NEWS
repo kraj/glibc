@@ -14,6 +14,10 @@ Major new features:
   the futex system call and provide the blocking building block for
   implementing custom synchronization primitives.
 
+* On Linux, the futex_waitv function has been added.  It allows waiting
+  on multiple futexes at the same time, reporting the index of the woken
+  one.
+
 Deprecated and removed features, and other changes affecting compatibility:
 
   [Add deprecations, removals and changes affecting compatibility here]

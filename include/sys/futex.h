@@ -21,6 +21,11 @@ extern int __futex_timedwait_time64 (uint32_t *futexp, uint32_t expected,
 				     unsigned int flags)
      __nonnull ((1));
 libc_hidden_proto (__futex_timedwait_time64)
+extern int futex_waitv (const struct futex_waiter *waiters,
+			unsigned int nwaiters, unsigned int flags,
+			const struct __timespec64 *abstime,
+			clockid_t clockid)
+     __nonnull ((1));
 # endif
 
 # endif /* !_ISOMAC */

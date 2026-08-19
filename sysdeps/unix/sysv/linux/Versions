@@ -350,6 +350,7 @@ libc {
 %endif
     futex_timedwait;
     futex_wait;
+    futex_waitv;
     futex_wake;
   }
   GLIBC_PRIVATE {
