@@ -50,7 +50,7 @@ __pthread_cond_destroy (pthread_cond_t *cond)
   int private = __condvar_get_private (wrefs);
   while (wrefs >> 3 != 0)
     {
-      futex_wait_simple (&cond->__data.__wrefs, wrefs, private);
+      __futex_wait_simple (&cond->__data.__wrefs, wrefs, private);
       /* See above.  */
       wrefs = atomic_load_acquire (&cond->__data.__wrefs);
     }

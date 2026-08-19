@@ -137,7 +137,7 @@ __condvar_acquire_lock (pthread_cond_t *cond, int private)
 	    }
 	  /* TODO Back off.  */
 	}
-      futex_wait_simple (&cond->__data.__g1_orig_size,
+      __futex_wait_simple (&cond->__data.__g1_orig_size,
 	  (s & ~(unsigned int) 3) | 2, private);
       /* Reload so we see a recent value.  */
       s = atomic_load_relaxed (&cond->__data.__g1_orig_size);
@@ -151,7 +151,7 @@ __condvar_release_lock (pthread_cond_t *cond, int private)
   if ((atomic_fetch_and_release (&cond->__data.__g1_orig_size,
 				 ~(unsigned int) 3) & 3)
       == 2)
-    futex_wake (&cond->__data.__g1_orig_size, 1, private);
+    __futex_wake_internal (&cond->__data.__g1_orig_size, 1, private);
 }
 
 /* Only use this when having acquired the lock.  */

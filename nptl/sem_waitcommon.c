@@ -352,7 +352,7 @@ __sem_wait_32_finish (struct new_sem *sem)
          due to us having set the nwaiters bit again.  */
       v >>= SEM_VALUE_SHIFT;
       if (v > 0)
-	futex_wake (&sem->value, v, sem->private);
+	__futex_wake_internal (&sem->value, v, sem->private);
     }
 }
 #endif

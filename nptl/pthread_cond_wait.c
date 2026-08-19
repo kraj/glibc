@@ -51,7 +51,7 @@ __condvar_confirm_wakeup (pthread_cond_t *cond, int private)
      threads waiting in pthread_cond_destroy.  Release MO to synchronize with
      these threads.  Don't bother clearing the wake-up request flag.  */
   if ((atomic_fetch_add_release (&cond->__data.__wrefs, -8) >> 2) == 3)
-    futex_wake (&cond->__data.__wrefs, INT_MAX, private);
+    __futex_wake_internal (&cond->__data.__wrefs, INT_MAX, private);
 }
 
 
@@ -161,7 +161,7 @@ __condvar_cleanup_waiting (void *arg)
      causing another waiter in the same group to not wake up.  To work around
      this issue until we have fixed cancellation, just add a futex wake-up
      conservatively.  */
-  futex_wake (cond->__data.__g_signals + g, 1, cbuffer->private);
+  __futex_wake_internal (cond->__data.__g_signals + g, 1, cbuffer->private);
 
   __condvar_confirm_wakeup (cond, cbuffer->private);
 
@@ -511,7 +511,7 @@ ___pthread_cond_clockwait64 (pthread_cond_t *cond, pthread_mutex_t *mutex,
   if (! valid_nanoseconds (abstime->tv_nsec))
     return EINVAL;
 
-  if (!futex_abstimed_supported_clockid (clockid))
+  if (!__futex_abstimed_supported_clockid (clockid))
     return EINVAL;
 
   return __pthread_cond_wait_common (cond, mutex, clockid, abstime);

@@ -107,7 +107,7 @@ ___pthread_rwlock_tryrdlock (pthread_rwlock_t *rwlock)
 	  & PTHREAD_RWLOCK_FUTEX_USED) != 0)
 	{
 	  int private = __pthread_rwlock_get_private (rwlock);
-	  futex_wake (&rwlock->__data.__wrphase_futex, INT_MAX, private);
+	  __futex_wake_internal (&rwlock->__data.__wrphase_futex, INT_MAX, private);
 	}
     }
 

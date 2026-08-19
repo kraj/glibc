@@ -47,7 +47,7 @@ __pthread_barrier_destroy (pthread_barrier_t *barrier)
 	 thread will perform a reset.  Wait until that has happened.  */
       while (in != 0)
 	{
-	  futex_wait_simple (&bar->in, in, bar->shared);
+	  __futex_wait_simple (&bar->in, in, bar->shared);
 	  in = atomic_load_relaxed (&bar->in);
 	}
     }

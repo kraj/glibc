@@ -407,7 +407,7 @@ __pthread_mutex_clocklock_common (pthread_mutex_t *mutex,
 	    /* This mutex is now not recoverable.  */
 	    mutex->__data.__count = 0;
 
-	    futex_unlock_pi ((unsigned int *) &mutex->__data.__lock,
+	    __futex_unlock_pi ((unsigned int *) &mutex->__data.__lock,
 			     PTHREAD_ROBUST_MUTEX_PSHARED (mutex));
 
 	    /* To the kernel, this will be visible after the kernel has
@@ -553,7 +553,7 @@ ___pthread_mutex_clocklock64 (pthread_mutex_t *mutex,
 			      clockid_t clockid,
 			      const struct __timespec64 *abstime)
 {
-  if (__glibc_unlikely (!futex_abstimed_supported_clockid (clockid)))
+  if (__glibc_unlikely (!__futex_abstimed_supported_clockid (clockid)))
     return EINVAL;
 
   LIBC_PROBE (mutex_clocklock_entry, 3, mutex, clockid, abstime);

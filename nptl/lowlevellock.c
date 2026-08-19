@@ -31,7 +31,7 @@ __lll_lock_wait_private (int *futex)
     {
     futex:
       LIBC_PROBE (lll_lock_wait_private, 1, futex);
-      futex_wait ((unsigned int *) futex, 2, LLL_PRIVATE); /* Wait if *futex == 2.  */
+      __futex_wait_internal ((unsigned int *) futex, 2, LLL_PRIVATE); /* Wait if *futex == 2.  */
     }
 }
 libc_hidden_def (__lll_lock_wait_private)
@@ -46,7 +46,7 @@ __lll_lock_wait (int *futex, int private)
     {
     futex:
       LIBC_PROBE (lll_lock_wait, 1, futex);
-      futex_wait ((unsigned int *) futex, 2, private); /* Wait if *futex == 2.  */
+      __futex_wait_internal ((unsigned int *) futex, 2, private); /* Wait if *futex == 2.  */
     }
 }
 libc_hidden_def (__lll_lock_wait)

@@ -263,11 +263,11 @@ __pthread_rwlock_rdunlock (pthread_rwlock_t *rwlock)
       atomic_thread_fence_acquire ();
       if ((atomic_exchange_relaxed (&rwlock->__data.__wrphase_futex, 1)
 	   & PTHREAD_RWLOCK_FUTEX_USED) != 0)
-	futex_wake (&rwlock->__data.__wrphase_futex, INT_MAX, private);
+	__futex_wake_internal (&rwlock->__data.__wrphase_futex, INT_MAX, private);
     }
   /* Also wake up waiting readers if we did reset the RWAITING flag.  */
   if ((r & PTHREAD_RWLOCK_RWAITING) != (rnew & PTHREAD_RWLOCK_RWAITING))
-    futex_wake (&rwlock->__data.__readers, INT_MAX, private);
+    __futex_wake_internal (&rwlock->__data.__readers, INT_MAX, private);
 }
 
 
@@ -283,7 +283,7 @@ __pthread_rwlock_rdlock_full64 (pthread_rwlock_t *rwlock, clockid_t clockid,
      requires that "the validity of the abstime parameter need not be checked
      if the lock can be immediately acquired" (i.e., we need not but may check
      it).  */
-  if (abstime && __glibc_unlikely (!futex_abstimed_supported_clockid (clockid)
+  if (abstime && __glibc_unlikely (!__futex_abstimed_supported_clockid (clockid)
       || ! valid_nanoseconds (abstime->tv_nsec)))
     return EINVAL;
 
@@ -408,7 +408,7 @@ __pthread_rwlock_rdlock_full64 (pthread_rwlock_t *rwlock, clockid_t clockid,
 	       & PTHREAD_RWLOCK_FUTEX_USED) != 0)
 	    {
 	      int private = __pthread_rwlock_get_private (rwlock);
-	      futex_wake (&rwlock->__data.__wrphase_futex, INT_MAX, private);
+	      __futex_wake_internal (&rwlock->__data.__wrphase_futex, INT_MAX, private);
 	    }
 	  return 0;
 	}
@@ -568,13 +568,13 @@ __pthread_rwlock_wrunlock (pthread_rwlock_t *rwlock)
 	 established through __readers.  */
       if ((atomic_exchange_relaxed (&rwlock->__data.__wrphase_futex, 0)
 	   & PTHREAD_RWLOCK_FUTEX_USED) != 0)
-	futex_wake (&rwlock->__data.__wrphase_futex, INT_MAX, private);
+	__futex_wake_internal (&rwlock->__data.__wrphase_futex, INT_MAX, private);
     }
 
  done:
   /* We released WRLOCKED in some way, so wake a writer.  */
   if (wake_writers)
-    futex_wake (&rwlock->__data.__writers_futex, 1, private);
+    __futex_wake_internal (&rwlock->__data.__writers_futex, 1, private);
 }
 
 
@@ -588,7 +588,7 @@ __pthread_rwlock_wrlock_full64 (pthread_rwlock_t *rwlock, clockid_t clockid,
      requires that "the validity of the abstime parameter need not be checked
      if the lock can be immediately acquired" (i.e., we need not but may check
      it).  */
-  if (abstime && __glibc_unlikely (!futex_abstimed_supported_clockid (clockid)
+  if (abstime && __glibc_unlikely (!__futex_abstimed_supported_clockid (clockid)
       || ! valid_nanoseconds (abstime->tv_nsec)))
     return EINVAL;
 
@@ -853,7 +853,7 @@ __pthread_rwlock_wrlock_full64 (pthread_rwlock_t *rwlock, clockid_t clockid,
 			    {
 			      /* Wake other writers.  */
 			      if ((wf & PTHREAD_RWLOCK_FUTEX_USED) != 0)
-				futex_wake (&rwlock->__data.__writers_futex,
+				__futex_wake_internal (&rwlock->__data.__writers_futex,
 					    1, private);
 			      return err;
 			    }
@@ -895,11 +895,11 @@ __pthread_rwlock_wrlock_full64 (pthread_rwlock_t *rwlock, clockid_t clockid,
 			{
 			  /* Wake other writers.  */
 			  if ((wf & PTHREAD_RWLOCK_FUTEX_USED) != 0)
-			    futex_wake (&rwlock->__data.__writers_futex,
+			    __futex_wake_internal (&rwlock->__data.__writers_futex,
 					1, private);
 			  /* Wake waiting readers.  */
 			  if ((r & PTHREAD_RWLOCK_RWAITING) != 0)
-			    futex_wake (&rwlock->__data.__readers,
+			    __futex_wake_internal (&rwlock->__data.__readers,
 					INT_MAX, private);
 			  return ETIMEDOUT;
 			}

@@ -53,7 +53,7 @@ __new_sem_post (sem_t *sem)
 
   /* If there is any potentially blocked waiter, wake one of them.  */
   if ((d >> SEM_NWAITERS_SHIFT) > 0)
-    futex_wake (((unsigned int *) &isem->data) + SEM_VALUE_OFFSET, 1, private);
+    __futex_wake_internal (((unsigned int *) &isem->data) + SEM_VALUE_OFFSET, 1, private);
 #else
   /* Add a token to the semaphore.  Similar to 64b version.  */
   unsigned int v = atomic_load_relaxed (&isem->value);
@@ -70,7 +70,7 @@ __new_sem_post (sem_t *sem)
 
   /* If there is any potentially blocked waiter, wake one of them.  */
   if ((v & SEM_NWAITERS_MASK) != 0)
-    futex_wake (&isem->value, 1, private);
+    __futex_wake_internal (&isem->value, 1, private);
 #endif
 
   return 0;
@@ -93,7 +93,7 @@ __old_sem_post (sem_t *sem)
   atomic_write_barrier ();
   atomic_fetch_add_release (futex, 1);
   /* We always have to assume it is a shared semaphore.  */
-  futex_wake (futex, 1, LLL_SHARED);
+  __futex_wake_internal (futex, 1, LLL_SHARED);
   return 0;
 }
 compat_symbol (libpthread, __old_sem_post, sem_post, GLIBC_2_0);

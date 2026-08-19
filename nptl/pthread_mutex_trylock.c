@@ -330,7 +330,7 @@ ___pthread_mutex_trylock (pthread_mutex_t *mutex)
 	    /* This mutex is now not recoverable.  */
 	    mutex->__data.__count = 0;
 
-	    futex_unlock_pi ((unsigned int *) &mutex->__data.__lock,
+	    __futex_unlock_pi ((unsigned int *) &mutex->__data.__lock,
 			     PTHREAD_ROBUST_MUTEX_PSHARED (mutex));
 
 	    /* To the kernel, this will be visible after the kernel has

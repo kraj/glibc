@@ -98,7 +98,7 @@
    ...
    563       if ((atomic_exchange_relaxed (&rwlock->__data.__wrphase_futex, 0)
    564            & PTHREAD_RWLOCK_FUTEX_USED) != 0)
-   565         futex_wake (&rwlock->__data.__wrphase_futex, INT_MAX, private);
+   565         __futex_wake_internal (&rwlock->__data.__wrphase_futex, INT_MAX, private);
    566     }
 
    We note that PTHREAD_RWLOCK_FUTEX_USED is non-zero

@@ -35,7 +35,7 @@ __pthread_clockjoin_ex (pthread_t threadid, void **thread_return,
 
   /* Make sure the clock and time specified are valid.  */
   if (abstime
-      && __glibc_unlikely (!futex_abstimed_supported_clockid (clockid)
+      && __glibc_unlikely (!__futex_abstimed_supported_clockid (clockid)
 			   || ! valid_nanoseconds (abstime->tv_nsec)))
     return EINVAL;
 

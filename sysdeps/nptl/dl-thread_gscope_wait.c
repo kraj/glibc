@@ -48,7 +48,7 @@ __thread_gscope_wait (void)
         continue;
 
       do
-        futex_wait_simple ((unsigned int *) gscope_flagp,
+        __futex_wait_simple ((unsigned int *) gscope_flagp,
                            THREAD_GSCOPE_FLAG_WAIT, FUTEX_PRIVATE);
       while (*gscope_flagp == THREAD_GSCOPE_FLAG_WAIT);
     }
@@ -71,7 +71,7 @@ __thread_gscope_wait (void)
         continue;
 
       do
-        futex_wait_simple ((unsigned int *) gscope_flagp,
+        __futex_wait_simple ((unsigned int *) gscope_flagp,
                            THREAD_GSCOPE_FLAG_WAIT, FUTEX_PRIVATE);
       while (*gscope_flagp == THREAD_GSCOPE_FLAG_WAIT);
     }

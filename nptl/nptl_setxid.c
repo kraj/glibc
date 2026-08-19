@@ -86,10 +86,10 @@ __nptl_setxid_sighandler (int sig, siginfo_t *si, void *ctx)
 
   /* And release the futex.  */
   self->setxid_futex = 1;
-  futex_wake (&self->setxid_futex, 1, FUTEX_PRIVATE);
+  __futex_wake_internal (&self->setxid_futex, 1, FUTEX_PRIVATE);
 
   if (atomic_fetch_add_relaxed (&xidcmd->cntr, -1) == 1)
-    futex_wake ((unsigned int *) &xidcmd->cntr, 1, FUTEX_PRIVATE);
+    __futex_wake_internal ((unsigned int *) &xidcmd->cntr, 1, FUTEX_PRIVATE);
 }
 libc_hidden_def (__nptl_setxid_sighandler)
 
@@ -102,7 +102,7 @@ setxid_mark_thread (struct xid_command *cmdp, struct pthread *t)
   if (t->setxid_futex == -1
       && ! atomic_compare_and_exchange_bool_acq (&t->setxid_futex, -2, -1))
     do
-      futex_wait_simple (&t->setxid_futex, -2, FUTEX_PRIVATE);
+      __futex_wait_simple (&t->setxid_futex, -2, FUTEX_PRIVATE);
     while (t->setxid_futex == -2);
 
   /* Don't let the thread exit before the setxid handler runs.  */
@@ -120,7 +120,7 @@ setxid_mark_thread (struct xid_command *cmdp, struct pthread *t)
           if ((ch & SETXID_BITMASK) == 0)
             {
               t->setxid_futex = 1;
-              futex_wake (&t->setxid_futex, 1, FUTEX_PRIVATE);
+              __futex_wake_internal (&t->setxid_futex, 1, FUTEX_PRIVATE);
             }
           return;
         }
@@ -146,7 +146,7 @@ setxid_unmark_thread (struct xid_command *cmdp, struct pthread *t)
 
   /* Release the futex just in case.  */
   t->setxid_futex = 1;
-  futex_wake (&t->setxid_futex, 1, FUTEX_PRIVATE);
+  __futex_wake_internal (&t->setxid_futex, 1, FUTEX_PRIVATE);
 }
 
 
@@ -233,7 +233,7 @@ __nptl_setxid (struct xid_command *cmdp)
       int cur = cmdp->cntr;
       while (cur != 0)
         {
-          futex_wait_simple ((unsigned int *) &cmdp->cntr, cur,
+          __futex_wait_simple ((unsigned int *) &cmdp->cntr, cur,
                              FUTEX_PRIVATE);
           cur = cmdp->cntr;
         }

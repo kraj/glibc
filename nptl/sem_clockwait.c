@@ -28,7 +28,7 @@ ___sem_clockwait64 (sem_t *sem, clockid_t clockid,
 {
   /* Check that supplied clockid is one we support, even if we don't end up
      waiting.  */
-  if (!futex_abstimed_supported_clockid (clockid))
+  if (!__futex_abstimed_supported_clockid (clockid))
     {
       __set_errno (EINVAL);
       return -1;

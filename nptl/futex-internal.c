@@ -116,7 +116,7 @@ __futex_abstimed_wait_common (unsigned int* futex_word,
     case -ENOSYS: /* Must have been caused by a glibc bug.  */
     /* No other errors are documented at this time.  */
     default:
-      futex_fatal_error ();
+      __futex_fatal_error ();
     }
 }
 
@@ -200,6 +200,6 @@ __futex_lock_pi64 (int *futex_word, clockid_t clockid,
     case -ENOSYS: /* Must have been caused by a glibc bug.  */
     /* No other errors are documented at this time.  */
     default:
-      futex_fatal_error ();
+      __futex_fatal_error ();
     }
 }

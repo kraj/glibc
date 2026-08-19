@@ -64,7 +64,7 @@ ___pthread_cond_broadcast (pthread_cond_t *cond)
       /* TODO Only set it if there are indeed futex waiters.  We could
 	 also try to move this out of the critical section in cases when
 	 G2 is empty (and we don't need to quiesce).  */
-      futex_wake (cond->__data.__g_signals + g1, INT_MAX, private);
+      __futex_wake_internal (cond->__data.__g_signals + g1, INT_MAX, private);
     }
 
   /* G1 is complete.  Step (2) is next unless there are no waiters in G2, in
@@ -82,7 +82,7 @@ ___pthread_cond_broadcast (pthread_cond_t *cond)
   __condvar_release_lock (cond, private);
 
   if (do_futex_wake)
-    futex_wake (cond->__data.__g_signals + g1, INT_MAX, private);
+    __futex_wake_internal (cond->__data.__g_signals + g1, INT_MAX, private);
 
   return 0;
 }

@@ -163,7 +163,7 @@ __pthread_mutex_unlock_full (pthread_mutex_t *mutex, int decr)
       private = PTHREAD_ROBUST_MUTEX_PSHARED (mutex);
       if (__glibc_unlikely ((atomic_exchange_release (&mutex->__data.__lock, 0)
 			     & FUTEX_WAITERS) != 0))
-	futex_wake ((unsigned int *) &mutex->__data.__lock, 1, private);
+	__futex_wake_internal ((unsigned int *) &mutex->__data.__lock, 1, private);
 
       /* We must clear op_pending after we release the mutex.
 	 FIXME However, this violates the mutex destruction requirements
@@ -279,7 +279,7 @@ __pthread_mutex_unlock_full (pthread_mutex_t *mutex, int decr)
 	  if (((l & FUTEX_WAITERS) != 0)
 	      || (l != THREAD_GETMEM (THREAD_SELF, tid)))
 	    {
-	      futex_unlock_pi ((unsigned int *) &mutex->__data.__lock,
+	      __futex_unlock_pi ((unsigned int *) &mutex->__data.__lock,
 			       private);
 	      break;
 	    }
@@ -333,7 +333,7 @@ __pthread_mutex_unlock_full (pthread_mutex_t *mutex, int decr)
 						    &oldval, newval));
 
       if ((oldval & ~PTHREAD_MUTEX_PRIO_CEILING_MASK) > 1)
-	futex_wake ((unsigned int *)&mutex->__data.__lock, 1,
+	__futex_wake_internal ((unsigned int *)&mutex->__data.__lock, 1,
 		    PTHREAD_MUTEX_PSHARED (mutex));
 
       int oldprio = newval >> PTHREAD_MUTEX_PRIO_CEILING_SHIFT;

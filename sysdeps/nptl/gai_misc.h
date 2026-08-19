@@ -30,7 +30,7 @@
 #define GAI_MISC_NOTIFY(waitlist) \
   do {									      \
     if (*waitlist->counterp > 0 && --*waitlist->counterp == 0)		      \
-      futex_wake ((unsigned int *) waitlist->counterp, 1, FUTEX_PRIVATE);     \
+      __futex_wake_internal ((unsigned int *) waitlist->counterp, 1, FUTEX_PRIVATE);     \
   } while (0)
 
 #define GAI_MISC_WAIT(result, futex, timeout, cancel) \

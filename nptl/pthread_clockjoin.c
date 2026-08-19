@@ -26,7 +26,7 @@ ___pthread_clockjoin_np64 (pthread_t threadid, void **thread_return,
 			   clockid_t clockid,
 			   const struct __timespec64 *abstime)
 {
-  if (!futex_abstimed_supported_clockid (clockid))
+  if (!__futex_abstimed_supported_clockid (clockid))
     return EINVAL;
 
   return __pthread_clockjoin_ex (threadid, thread_return,

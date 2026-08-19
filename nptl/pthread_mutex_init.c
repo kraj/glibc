@@ -41,7 +41,7 @@ prio_inherit_missing (void)
   static int tpi_supported;
   if (__glibc_unlikely (atomic_load_relaxed (&tpi_supported) == 0))
     {
-      int e = futex_unlock_pi (&(unsigned int){0}, 0);
+      int e = __futex_unlock_pi (&(unsigned int){0}, 0);
       atomic_store_relaxed (&tpi_supported, e == ENOSYS ? -1 : 1);
     }
   return __glibc_unlikely (tpi_supported < 0);

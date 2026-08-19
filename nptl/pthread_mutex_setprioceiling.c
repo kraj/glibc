@@ -84,7 +84,7 @@ __pthread_mutex_setprioceiling (pthread_mutex_t *mutex, int prioceiling,
 	      break;
 
 	    if (oldval != ceilval)
-	      futex_wait ((unsigned int *) &mutex->__data.__lock, ceilval | 2,
+	      __futex_wait_internal ((unsigned int *) &mutex->__data.__lock, ceilval | 2,
 			  PTHREAD_MUTEX_PSHARED (mutex));
 	  }
 	while (atomic_compare_and_exchange_val_acq (&mutex->__data.__lock,
@@ -115,7 +115,7 @@ __pthread_mutex_setprioceiling (pthread_mutex_t *mutex, int prioceiling,
 			 | (prioceiling << PTHREAD_MUTEX_PRIO_CEILING_SHIFT);
   atomic_full_barrier ();
 
-  futex_wake ((unsigned int *)&mutex->__data.__lock, INT_MAX,
+  __futex_wake_internal ((unsigned int *)&mutex->__data.__lock, INT_MAX,
 	      PTHREAD_MUTEX_PSHARED (mutex));
 
   return 0;

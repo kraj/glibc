@@ -308,7 +308,7 @@ __pthread_mutex_lock_full (pthread_mutex_t *mutex)
 	  assume_other_futex_waiters |= FUTEX_WAITERS;
 
 	  /* Block using the futex and reload current lock value.  */
-	  futex_wait ((unsigned int *) &mutex->__data.__lock, oldval,
+	  __futex_wait_internal ((unsigned int *) &mutex->__data.__lock, oldval,
 		      PTHREAD_ROBUST_MUTEX_PSHARED (mutex));
 	  oldval = mutex->__data.__lock;
 	}
@@ -472,7 +472,7 @@ __pthread_mutex_lock_full (pthread_mutex_t *mutex)
 	    /* This mutex is now not recoverable.  */
 	    mutex->__data.__count = 0;
 
-	    futex_unlock_pi ((unsigned int *) &mutex->__data.__lock,
+	    __futex_unlock_pi ((unsigned int *) &mutex->__data.__lock,
 			     PTHREAD_ROBUST_MUTEX_PSHARED (mutex));
 
 	    /* To the kernel, this will be visible after the kernel has
@@ -570,7 +570,7 @@ __pthread_mutex_lock_full (pthread_mutex_t *mutex)
 		  break;
 
 		if (oldval != ceilval)
-		  futex_wait ((unsigned int * ) &mutex->__data.__lock,
+		  __futex_wait_internal ((unsigned int * ) &mutex->__data.__lock,
 			      ceilval | 2,
 			      PTHREAD_MUTEX_PSHARED (mutex));
 	      }

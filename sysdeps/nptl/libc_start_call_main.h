@@ -72,7 +72,7 @@ __libc_start_call_main (int (*main) (int, char **, char ** MAIN_AUXVEC_DECL),
       internal_signal_block_all (&set);
       struct pthread *self = THREAD_SELF;
       atomic_store_release (&self->joinstate, THREAD_STATE_EXITED);
-      futex_wake (&self->joinstate, 1, FUTEX_SHARED);
+      __futex_wake_internal (&self->joinstate, 1, FUTEX_SHARED);
 
       if (atomic_fetch_add_relaxed (&__nptl_nthreads, -1) != 1)
         /* Not much left to do but to exit the thread, not the process.  */

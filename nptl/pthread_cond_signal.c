@@ -89,7 +89,7 @@ ___pthread_cond_signal (pthread_cond_t *cond)
   __condvar_release_lock (cond, private);
 
   if (do_futex_wake)
-    futex_wake (cond->__data.__g_signals + g1, 1, private);
+    __futex_wake_internal (cond->__data.__g_signals + g1, 1, private);
 
   return 0;
 }

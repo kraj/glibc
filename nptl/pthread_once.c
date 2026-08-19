@@ -35,7 +35,7 @@ clear_once_control (void *arg)
      get interrupted (see __pthread_once), so all we need to relay to other
      threads is the state being reset again.  */
   atomic_store_relaxed (once_control, 0);
-  futex_wake ((unsigned int *) once_control, INT_MAX, FUTEX_PRIVATE);
+  __futex_wake_internal ((unsigned int *) once_control, INT_MAX, FUTEX_PRIVATE);
 }
 
 
@@ -102,7 +102,7 @@ __pthread_once_slow (pthread_once_t *once_control, void (*init_routine) (void))
 	    {
 	      /* Same generation, some other thread was faster.  Wait and
 		 retry.  */
-	      futex_wait_simple ((unsigned int *) once_control,
+	      __futex_wait_simple ((unsigned int *) once_control,
 				 (unsigned int) newval, FUTEX_PRIVATE);
 	      continue;
 	    }
@@ -124,7 +124,7 @@ __pthread_once_slow (pthread_once_t *once_control, void (*init_routine) (void))
       atomic_store_release (once_control, __PTHREAD_ONCE_DONE);
 
       /* Wake up all other threads.  */
-      futex_wake ((unsigned int *) once_control, INT_MAX, FUTEX_PRIVATE);
+      __futex_wake_internal ((unsigned int *) once_control, INT_MAX, FUTEX_PRIVATE);
       break;
     }
 

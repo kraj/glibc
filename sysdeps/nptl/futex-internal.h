@@ -76,7 +76,7 @@
 /* Calls __libc_fatal with an error message.  Convenience function for
    concrete implementations of the futex interface.  */
 static __always_inline __attribute__ ((__noreturn__)) void
-futex_fatal_error (void)
+__futex_fatal_error (void)
 {
   __libc_fatal ("The futex facility returned an unexpected error code.\n");
 }
@@ -121,7 +121,7 @@ futex_fatal_error (void)
    a futex_wait call when synchronizing similar to Dekker synchronization.
    However, we make no such guarantee here.  */
 static __always_inline int
-futex_wait (unsigned int *futex_word, unsigned int expected, int private)
+__futex_wait_internal (unsigned int *futex_word, unsigned int expected, int private)
 {
   int err = lll_futex_timed_wait (futex_word, expected, NULL, private);
   switch (err)
@@ -139,7 +139,7 @@ futex_wait (unsigned int *futex_word, unsigned int expected, int private)
     case -ENOSYS: /* Must have been caused by a glibc bug.  */
     /* No other errors are documented at this time.  */
     default:
-      futex_fatal_error ();
+      __futex_fatal_error ();
     }
 }
 
@@ -148,19 +148,19 @@ futex_wait (unsigned int *futex_word, unsigned int expected, int private)
    determine whether you need to continue waiting, and you cannot detect
    whether the waiting was interrupted by a signal.  Example use:
      while (atomic_load_relaxed (&futex_word) == 23)
-       futex_wait_simple (&futex_word, 23, FUTEX_PRIVATE);
+       __futex_wait_simple (&futex_word, 23, FUTEX_PRIVATE);
    This is common enough to make providing this wrapper worthwhile.  */
 static __always_inline void
-futex_wait_simple (unsigned int *futex_word, unsigned int expected,
+__futex_wait_simple (unsigned int *futex_word, unsigned int expected,
 		   int private)
 {
-  ignore_value (futex_wait (futex_word, expected, private));
+  ignore_value (__futex_wait_internal (futex_word, expected, private));
 }
 
 /* Check whether the specified clockid is supported by
    futex_abstimed_wait and futex_abstimed_wait_cancelable.  */
 static __always_inline int
-futex_abstimed_supported_clockid (clockid_t clockid)
+__futex_abstimed_supported_clockid (clockid_t clockid)
 {
   return lll_futex_supported_clockid (clockid);
 }
@@ -174,7 +174,7 @@ futex_abstimed_supported_clockid (clockid_t clockid)
      for (res = 0; PROCESSES_TO_WAKE > 0; PROCESSES_TO_WAKE--, res++) {
        if (<no process blocked on futex>) break;
        wf = <get wait_flag of a process blocked on futex> (FUTEX_WORD);
-       // No happens-before guarantee with woken futex_wait (see above)
+       // No happens-before guarantee with woken __futex_wait_internal (see above)
        atomic_store_relaxed (wf, 0);
      }
      return res;
@@ -184,7 +184,7 @@ futex_abstimed_supported_clockid (clockid_t clockid)
    object destruction (see above); therefore, we must not report or abort
    on most errors.  */
 static __always_inline void
-futex_wake (unsigned int* futex_word, int processes_to_wake, int private)
+__futex_wake_internal (unsigned int* futex_word, int processes_to_wake, int private)
 {
   int res = lll_futex_wake (futex_word, processes_to_wake, private);
   /* No error.  Ignore the number of woken processes.  */
@@ -202,7 +202,7 @@ futex_wake (unsigned int* futex_word, int processes_to_wake, int private)
     case -ENOSYS: /* Must have been caused by a glibc bug.  */
     /* No other errors are documented at this time.  */
     default:
-      futex_fatal_error ();
+      __futex_fatal_error ();
     }
 }
 
@@ -240,7 +240,7 @@ int __futex_lock_pi64 (int *futex_word, clockid_t clockid,
    additionally, returns EPERM when the caller is not allowed to attach
    itself to the futex.  */
 static __always_inline int
-futex_unlock_pi (unsigned int *futex_word, int private)
+__futex_unlock_pi (unsigned int *futex_word, int private)
 {
   int err = lll_futex_timed_unlock_pi (futex_word, private);
   switch (err)
@@ -263,7 +263,7 @@ futex_unlock_pi (unsigned int *futex_word, int private)
     case -EFAULT: /* Must have been caused by a glibc or application bug.  */
     /* No other errors are documented at this time.  */
     default:
-      futex_fatal_error ();
+      __futex_fatal_error ();
     }
 }
 

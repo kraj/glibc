@@ -123,7 +123,7 @@ ___pthread_barrier_wait (pthread_barrier_t *barrier)
 	 concurrently with a reset.  */
       while (i > max_in_before_reset)
 	{
-	  futex_wait_simple (&bar->in, i, bar->shared);
+	  __futex_wait_simple (&bar->in, i, bar->shared);
 	  /* Relaxed MO is fine here because we just need an indication for
 	     when we should retry to enter (which will use acquire MO, see
 	     above).  */
@@ -164,7 +164,7 @@ ___pthread_barrier_wait (pthread_barrier_t *barrier)
 	     use of barriers.
 	     Note that we can still access SHARED because we haven't yet
 	     confirmed to have left the barrier.  */
-	  futex_wake (&bar->current_round, INT_MAX, bar->shared);
+	  __futex_wake_internal (&bar->current_round, INT_MAX, bar->shared);
 	  /* We did as much as we could based on our position.  If we advanced
 	     the current round to a round sufficient for us, do not wait for
 	     that to happen and skip the acquire fence (we already
@@ -181,7 +181,7 @@ ___pthread_barrier_wait (pthread_barrier_t *barrier)
   while (i > cr)
     {
       /* Wait for the current round to finish.  */
-      futex_wait_simple (&bar->current_round, cr, bar->shared);
+      __futex_wait_simple (&bar->current_round, cr, bar->shared);
       /* See the fence below.  */
       cr = atomic_load_relaxed (&bar->current_round);
     }
@@ -213,7 +213,7 @@ ___pthread_barrier_wait (pthread_barrier_t *barrier)
 	 destroyed.  */
       int shared = bar->shared;
       atomic_store_release (&bar->in, 0);
-      futex_wake (&bar->in, INT_MAX, shared);
+      __futex_wake_internal (&bar->in, INT_MAX, shared);
 
     }
 
