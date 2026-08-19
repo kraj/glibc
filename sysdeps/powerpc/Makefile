@@ -4,7 +4,7 @@ endif
 
 ifeq ($(subdir),elf)
 # extra shared linker files to link into dl-allobjs.so and libc
-sysdep-dl-routines += dl-machine hwcapinfo
+sysdep-dl-routines += dl-machine dl-reloc_overflow hwcapinfo
 sysdep_routines += dl-machine hwcapinfo
 # extra shared linker files to link only into dl-allobjs.so
 sysdep-rtld-routines += dl-machine hwcapinfo
@@ -13,6 +13,11 @@ modules-names += mod-tlsopt-powerpc
 mod-tlsopt-powerpc.so-no-z-defs = yes
 tests += tst-tlsopt-powerpc
 $(objpfx)tst-tlsopt-powerpc: $(objpfx)mod-tlsopt-powerpc.so
+
+tests += tst-reloc-overflow
+modules-names += tst-reloc-overflow-mod tst-reloc-overflow-lib
+$(objpfx)tst-reloc-overflow.out: $(objpfx)tst-reloc-overflow-mod.so
+$(objpfx)tst-reloc-overflow-mod.so: $(objpfx)tst-reloc-overflow-lib.so
 
 tests-static += tst-cache-ppc-static
 tests-internal += tst-cache-ppc-static
