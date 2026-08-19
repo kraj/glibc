@@ -237,4 +237,20 @@ ifeq (no,$(build-hardcoded-path-in-tests))
 tests-container += tst-glibc-hwcaps-cache
 endif
 
+tests += tst-localentry
+modules-names += tst-localentry-mod tst-localentry-callee \
+		 tst-localentry-callee-v0
+
+# Both callees share a soname, so the module records a DT_NEEDED on
+# tst-localentry-callee.so while being linked against the v0 definition.
+LDFLAGS-tst-localentry-callee-v0.so += -Wl,-soname,tst-localentry-callee.so
+LDFLAGS-tst-localentry-mod.so += -Wl,--plt-localentry
+# ld only applies the localentry:0 optimization to TOC-based calls, so
+# PC-relative code (the default for power10) would not exercise the check.
+CFLAGS-tst-localentry-mod.c += -mno-pcrel
+
+$(objpfx)tst-localentry.out: $(objpfx)tst-localentry-mod.so \
+			     $(objpfx)tst-localentry-callee.so
+$(objpfx)tst-localentry-mod.so: $(objpfx)tst-localentry-callee-v0.so
+
 endif # $(subdir) == elf
