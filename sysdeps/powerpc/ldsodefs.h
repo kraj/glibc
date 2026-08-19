@@ -66,4 +66,12 @@ struct La_ppc64v2_retval;
 
 #include_next <ldsodefs.h>
 
+/* Signal an error for the relocation NAME at RELOC_ADDR in MAP, whose
+   resolved value does not fit the relocated field.  REFSYM is the
+   referenced symbol, or NULL.  */
+extern void _dl_reloc_overflow (struct link_map *map, const char *name,
+				ElfW(Addr) *const reloc_addr,
+				const ElfW(Sym) *refsym)
+     attribute_hidden __attribute__ ((__noreturn__));
+
 #endif

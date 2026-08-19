@@ -62,6 +62,7 @@ The following bugs are resolved with this release:
     to 2.43
   [34510] locale: Buffer overflow in strfmon right-justification padding
     (CVE-2026-19499)
+  [34541] libc: Stack buffer overflow in _dl_reloc_overflow on POWER
   [34556] locale: SHIFT_JISX0213 converter hang in shift_jisx0213.c
     (CVE-2026-77117)
   [34559] libc: [m68k] Regression: unresolvable R_68K_32 relocation
