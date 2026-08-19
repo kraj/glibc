@@ -198,7 +198,7 @@ static const CHAR_T zeroes[16] = /* "0000000000000000" */
 
 # define memset_space(P, Len) \
   do {									      \
-    int _len = (Len);							      \
+    size_t _len = (Len);						      \
 									      \
     do									      \
       {									      \
@@ -206,12 +206,12 @@ static const CHAR_T zeroes[16] = /* "0000000000000000" */
 	(P) = MEMPCPY ((P), spaces, _this * sizeof (CHAR_T));		      \
 	_len -= _this;							      \
       }									      \
-    while (_len > 0);							      \
+    while (_len != 0);							      \
   } while (0)
 
 # define memset_zero(P, Len) \
   do {									      \
-    int _len = (Len);							      \
+    size_t _len = (Len);						      \
 									      \
     do									      \
       {									      \
@@ -219,7 +219,7 @@ static const CHAR_T zeroes[16] = /* "0000000000000000" */
 	(P) = MEMPCPY ((P), zeroes, _this * sizeof (CHAR_T));		      \
 	_len -= _this;							      \
       }									      \
-    while (_len > 0);							      \
+    while (_len != 0);							      \
   } while (0)
 #else
 # ifdef COMPILE_WIDE
@@ -234,14 +234,14 @@ static const CHAR_T zeroes[16] = /* "0000000000000000" */
 #define add(n, f)							      \
   do									      \
     {									      \
-      int _n = (n);							      \
-      int _delta = width - _n;						      \
-      int _incr = _n + (_delta > 0 ? _delta : 0);			      \
-      if ((size_t) _incr >= maxsize - i)				      \
+      size_t _n = (n);							      \
+      size_t _delta = (width < 0 || (size_t) width < _n) ? 0 : width - _n;    \
+      size_t _incr = _n + _delta;					      \
+      if (_incr >= maxsize - i)						      \
 	return 0;							      \
       if (p)								      \
 	{								      \
-	  if (_delta > 0)						      \
+	  if (_delta != 0)						      \
 	    {								      \
 	      if (pad == L_('0'))					      \
 		memset_zero (p, _delta);				      \

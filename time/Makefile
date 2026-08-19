@@ -75,6 +75,7 @@ tests := \
   tst-strftime2 \
   tst-strftime3 \
   tst-strftime4 \
+  tst-strftime5 \
   tst-strptime \
   tst-strptime-whitespace \
   tst-strptime2 \
