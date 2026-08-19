@@ -25,6 +25,7 @@ The following bugs were resolved with this release:
     uninitialized memory
   [34507] nptl: Pretty-printer tests FAIL instead of UNSUPPORTED when
     cross-testing without python3 on target
+  [34541] libc: Stack buffer overflow in _dl_reloc_overflow on POWER
   [34752] libc: <sys/pidfd.h> not protected for C++
   [34774] locale: ISO-2022-CN-EXT iconv decoder: SO byte without a
     designation advances the input pointer out of bounds
