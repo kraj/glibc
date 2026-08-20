@@ -944,14 +944,15 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
 		      size_t newsize
 			= strsize + (strsize >= width ? width : strsize);
 		      /* Enlarge the buffer.  */
-		      wstr = (wchar_t *) realloc (*strptr,
-						  newsize * sizeof (wchar_t));
+		      wstr = (wchar_t *)
+			__libc_reallocarray (*strptr, newsize,
+					     sizeof (wchar_t));
 		      if (wstr == NULL)
 			{
 			  /* Can't allocate that much.  Last-ditch effort.  */
-			  wstr = (wchar_t *) realloc (*strptr,
-						      (strsize + 1)
-						      * sizeof (wchar_t));
+			  wstr = (wchar_t *)
+			    __libc_reallocarray (*strptr, strsize + 1,
+						 sizeof (wchar_t));
 			  if (wstr == NULL)
 			    {
 			      /* C or lc can't have `a' flag, only `m'
@@ -999,14 +1000,14 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
 		    size_t newsize
 		      = strsize + (strsize >= width ? width : strsize);
 		    /* Enlarge the buffer.  */
-		    wstr = (wchar_t *) realloc (*strptr,
-						newsize * sizeof (wchar_t));
+		    wstr = (wchar_t *) __libc_reallocarray (*strptr, newsize,
+							    sizeof (wchar_t));
 		    if (wstr == NULL)
 		      {
 			/* Can't allocate that much.  Last-ditch effort.  */
-			wstr = (wchar_t *) realloc (*strptr,
-						    ((strsize + 1)
-						     * sizeof (wchar_t)));
+			wstr = (wchar_t *)
+			  __libc_reallocarray (*strptr, strsize + 1,
+					       sizeof (wchar_t));
 			if (wstr == NULL)
 			  {
 			    /* C or lc can't have `a' flag, only `m' flag.  */
@@ -1066,10 +1067,9 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
 	    {
 	      if ((flags & MALLOC) && wstr - (wchar_t *) *strptr != strsize)
 		{
-		  wchar_t *cp = (wchar_t *) realloc (*strptr,
-						     ((wstr
-						       - (wchar_t *) *strptr)
-						      * sizeof (wchar_t)));
+		  wchar_t *cp = (wchar_t *)
+		    __libc_reallocarray (*strptr, wstr - (wchar_t *) *strptr,
+					 sizeof (wchar_t));
 		  if (cp != NULL)
 		    *strptr = (char *) cp;
 		}
@@ -1305,15 +1305,15 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
 			/* Enlarge the buffer.  */
 			size_t newsize = grow_to_fit (strsize, width);
 
-			wstr = (wchar_t *) realloc (
-			    *strptr, newsize * sizeof (wchar_t));
+			wstr = (wchar_t *) __libc_reallocarray
+			  (*strptr, newsize, sizeof (wchar_t));
 			if (wstr == NULL)
 			  {
 			    /* Can't allocate that much.  Last-ditch
 			       effort.  */
-			    wstr = (wchar_t *) realloc (*strptr,
-							(strsize + 1)
-							* sizeof (wchar_t));
+			    wstr = (wchar_t *)
+			      __libc_reallocarray (*strptr, strsize + 1,
+						   sizeof (wchar_t));
 			    if (wstr == NULL)
 			      {
 				if (flags & POSIX_MALLOC)
@@ -1382,14 +1382,15 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
 		      /* Enlarge the buffer.  */
 		      size_t newsize = grow_to_fit (strsize, width);
 
-		      wstr = (wchar_t *) realloc (*strptr,
-						  newsize * sizeof (wchar_t));
+		      wstr = (wchar_t *)
+			__libc_reallocarray (*strptr, newsize,
+					     sizeof (wchar_t));
 		      if (wstr == NULL)
 			{
 			  /* Can't allocate that much.  Last-ditch effort.  */
-			  wstr = (wchar_t *) realloc (*strptr,
-						      ((strsize + 1)
-						       * sizeof (wchar_t)));
+			  wstr = (wchar_t *)
+			    __libc_reallocarray (*strptr, strsize + 1,
+						 sizeof (wchar_t));
 			  if (wstr == NULL)
 			    {
 			      if (flags & POSIX_MALLOC)
@@ -1430,10 +1431,9 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
 
 		if ((flags & MALLOC) && wstr - (wchar_t *) *strptr != strsize)
 		  {
-		    wchar_t *cp = (wchar_t *) realloc (*strptr,
-						       ((wstr
-							 - (wchar_t *) *strptr)
-							* sizeof (wchar_t)));
+		    wchar_t *cp = (wchar_t *)
+		      __libc_reallocarray (*strptr, wstr - (wchar_t *) *strptr,
+					   sizeof (wchar_t));
 		    if (cp != NULL)
 		      *strptr = (char *) cp;
 		  }
@@ -2800,15 +2800,15 @@ digits_extended_fail:
 			  /* Enlarge the buffer.  */
 			  size_t newsize = grow_to_fit (strsize, width);
 
-			  wstr = (wchar_t *) realloc (
-			      *strptr, newsize * sizeof (wchar_t));
+			  wstr = (wchar_t *) __libc_reallocarray
+			    (*strptr, newsize, sizeof (wchar_t));
 			  if (wstr == NULL)
 			    {
 			      /* Can't allocate that much.  Last-ditch
 				 effort.  */
 			      wstr = (wchar_t *)
-				realloc (*strptr, (strsize + 1)
-						  * sizeof (wchar_t));
+				__libc_reallocarray (*strptr, strsize + 1,
+						     sizeof (wchar_t));
 			      if (wstr == NULL)
 				{
 				  if (flags & POSIX_MALLOC)
@@ -2886,15 +2886,15 @@ digits_extended_fail:
 			  /* Enlarge the buffer.  */
 			  size_t newsize = grow_to_fit (strsize, width);
 
-			  wstr = (wchar_t *) realloc (
-			      *strptr, newsize * sizeof (wchar_t));
+			  wstr = (wchar_t *) __libc_reallocarray
+			    (*strptr, newsize, sizeof (wchar_t));
 			  if (wstr == NULL)
 			    {
 			      /* Can't allocate that much.  Last-ditch
 				 effort.  */
 			      wstr = (wchar_t *)
-				realloc (*strptr, ((strsize + 1)
-						   * sizeof (wchar_t)));
+				__libc_reallocarray (*strptr, strsize + 1,
+						     sizeof (wchar_t));
 			      if (wstr == NULL)
 				{
 				  if (flags & POSIX_MALLOC)
@@ -2949,8 +2949,9 @@ digits_extended_fail:
 		      && wstr - (wchar_t *) *strptr != strsize)
 		    {
 		      wchar_t *cp = (wchar_t *)
-			realloc (*strptr, ((wstr - (wchar_t *) *strptr)
-					   * sizeof (wchar_t)));
+			__libc_reallocarray (*strptr,
+					     wstr - (wchar_t *) *strptr,
+					     sizeof (wchar_t));
 		      if (cp != NULL)
 			*strptr = (char *) cp;
 		    }
