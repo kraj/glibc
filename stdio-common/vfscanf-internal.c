@@ -825,21 +825,9 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
 		      newstr = (char *) realloc (*strptr, strsize * 2);
 		      if (newstr == NULL)
 			{
-			  /* Can't allocate that much.  Last-ditch effort.  */
-			  newstr = (char *) realloc (*strptr,
-						     strleng + MB_LEN_MAX);
-			  if (newstr == NULL)
-			    {
-			      /* c can't have `a' flag, only `m'.  */
-			      done = EOF;
-			      goto errout;
-			    }
-			  else
-			    {
-			      *strptr = newstr;
-			      str = newstr + strleng;
-			      strsize = strleng + MB_LEN_MAX;
-			    }
+			  /* c can't have `a' flag, only `m'.  */
+			  done = EOF;
+			  goto errout;
 			}
 		      else
 			{
@@ -874,21 +862,9 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
 			  str = (char *) realloc (*strptr, newsize);
 			  if (str == NULL)
 			    {
-			      /* Can't allocate that much.  Last-ditch
-				 effort.  */
-			      str = (char *) realloc (*strptr, strsize + 1);
-			      if (str == NULL)
-				{
-				  /* c can't have `a' flag, only `m'.  */
-				  done = EOF;
-				  goto errout;
-				}
-			      else
-				{
-				  *strptr = (char *) str;
-				  str += strsize;
-				  ++strsize;
-				}
+			      /* c can't have `a' flag, only `m'.  */
+			      done = EOF;
+			      goto errout;
 			    }
 			  else
 			    {
@@ -949,23 +925,9 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
 					     sizeof (wchar_t));
 		      if (wstr == NULL)
 			{
-			  /* Can't allocate that much.  Last-ditch effort.  */
-			  wstr = (wchar_t *)
-			    __libc_reallocarray (*strptr, strsize + 1,
-						 sizeof (wchar_t));
-			  if (wstr == NULL)
-			    {
-			      /* C or lc can't have `a' flag, only `m'
-				 flag.  */
-			      done = EOF;
-			      goto errout;
-			    }
-			  else
-			    {
-			      *strptr = (char *) wstr;
-			      wstr += strsize;
-			      ++strsize;
-			    }
+			  /* C or lc can't have `a' flag, only `m' flag.  */
+			  done = EOF;
+			  goto errout;
 			}
 		      else
 			{
@@ -1004,22 +966,9 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
 							    sizeof (wchar_t));
 		    if (wstr == NULL)
 		      {
-			/* Can't allocate that much.  Last-ditch effort.  */
-			wstr = (wchar_t *)
-			  __libc_reallocarray (*strptr, strsize + 1,
-					       sizeof (wchar_t));
-			if (wstr == NULL)
-			  {
-			    /* C or lc can't have `a' flag, only `m' flag.  */
-			    done = EOF;
-			    goto errout;
-			  }
-			else
-			  {
-			    *strptr = (char *) wstr;
-			    wstr += strsize;
-			    ++strsize;
-			  }
+			/* C or lc can't have `a' flag, only `m' flag.  */
+			done = EOF;
+			goto errout;
 		      }
 		    else
 		      {
@@ -1120,31 +1069,18 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
 			newstr = (char *) realloc (*strptr, strsize * 2);
 			if (newstr == NULL)
 			  {
-			    /* Can't allocate that much.  Last-ditch
-			       effort.  */
-			    newstr = (char *) realloc (*strptr,
-						       strleng + MB_LEN_MAX);
-			    if (newstr == NULL)
+			    if (flags & POSIX_MALLOC)
 			      {
-				if (flags & POSIX_MALLOC)
-				  {
-				    done = EOF;
-				    goto errout;
-				  }
-				/* We lose.  Oh well.  Terminate the
-				   string and stop converting,
-				   so at least we don't skip any input.  */
-				((char *) (*strptr))[strleng] = '\0';
-				strptr = NULL;
-				++done;
-				conv_error ();
+				done = EOF;
+				goto errout;
 			      }
-			    else
-			      {
-				*strptr = newstr;
-				str = newstr + strleng;
-				strsize = strleng + MB_LEN_MAX;
-			      }
+			    /* We lose.  Oh well.  Terminate the
+			       string and stop converting,
+			       so at least we don't skip any input.  */
+			    ((char *) (*strptr))[strleng] = '\0';
+			    strptr = NULL;
+			    ++done;
+			    conv_error ();
 			  }
 			else
 			  {
@@ -1176,30 +1112,18 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
 			  str = (char *) realloc (*strptr, newsize);
 			  if (str == NULL)
 			    {
-			      /* Can't allocate that much.  Last-ditch
-				 effort.  */
-			      str = (char *) realloc (*strptr, strsize + 1);
-			      if (str == NULL)
+			      if (flags & POSIX_MALLOC)
 				{
-				  if (flags & POSIX_MALLOC)
-				    {
-				      done = EOF;
-				      goto errout;
-				    }
-				  /* We lose.  Oh well.  Terminate the
-				     string and stop converting,
-				     so at least we don't skip any input.  */
-				  ((char *) (*strptr))[strsize - 1] = '\0';
-				  strptr = NULL;
-				  ++done;
-				  conv_error ();
+				  done = EOF;
+				  goto errout;
 				}
-			      else
-				{
-				  *strptr = (char *) str;
-				  str += strsize;
-				  ++strsize;
-				}
+			      /* We lose.  Oh well.  Terminate the
+				 string and stop converting,
+				 so at least we don't skip any input.  */
+			      ((char *) (*strptr))[strsize - 1] = '\0';
+			      strptr = NULL;
+			      ++done;
+			      conv_error ();
 			    }
 			  else
 			    {
@@ -1309,32 +1233,18 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
 			  (*strptr, newsize, sizeof (wchar_t));
 			if (wstr == NULL)
 			  {
-			    /* Can't allocate that much.  Last-ditch
-			       effort.  */
-			    wstr = (wchar_t *)
-			      __libc_reallocarray (*strptr, strsize + 1,
-						   sizeof (wchar_t));
-			    if (wstr == NULL)
+			    if (flags & POSIX_MALLOC)
 			      {
-				if (flags & POSIX_MALLOC)
-				  {
-				    done = EOF;
-				    goto errout;
-				  }
-				/* We lose.  Oh well.  Terminate the string
-				   and stop converting, so at least we don't
-				   skip any input.  */
-				((wchar_t *) (*strptr))[strsize - 1] = L'\0';
-				strptr = NULL;
-				++done;
-				conv_error ();
+				done = EOF;
+				goto errout;
 			      }
-			    else
-			      {
-				*strptr = (char *) wstr;
-				wstr += strsize;
-				++strsize;
-			      }
+			    /* We lose.  Oh well.  Terminate the string
+			       and stop converting, so at least we don't
+			       skip any input.  */
+			    ((wchar_t *) (*strptr))[strsize - 1] = L'\0';
+			    strptr = NULL;
+			    ++done;
+			    conv_error ();
 			  }
 			else
 			  {
@@ -1387,31 +1297,18 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
 					     sizeof (wchar_t));
 		      if (wstr == NULL)
 			{
-			  /* Can't allocate that much.  Last-ditch effort.  */
-			  wstr = (wchar_t *)
-			    __libc_reallocarray (*strptr, strsize + 1,
-						 sizeof (wchar_t));
-			  if (wstr == NULL)
+			  if (flags & POSIX_MALLOC)
 			    {
-			      if (flags & POSIX_MALLOC)
-				{
-				  done = EOF;
-				  goto errout;
-				}
-			      /* We lose.  Oh well.  Terminate the
-				 string and stop converting, so at
-				 least we don't skip any input.  */
-			      ((wchar_t *) (*strptr))[strsize - 1] = L'\0';
-			      strptr = NULL;
-			      ++done;
-			      conv_error ();
+			      done = EOF;
+			      goto errout;
 			    }
-			  else
-			    {
-			      *strptr = (char *) wstr;
-			      wstr += strsize;
-			      ++strsize;
-			    }
+			  /* We lose.  Oh well.  Terminate the
+			     string and stop converting, so at
+			     least we don't skip any input.  */
+			  ((wchar_t *) (*strptr))[strsize - 1] = L'\0';
+			  strptr = NULL;
+			  ++done;
+			  conv_error ();
 			}
 		      else
 			{
@@ -2804,32 +2701,18 @@ digits_extended_fail:
 			    (*strptr, newsize, sizeof (wchar_t));
 			  if (wstr == NULL)
 			    {
-			      /* Can't allocate that much.  Last-ditch
-				 effort.  */
-			      wstr = (wchar_t *)
-				__libc_reallocarray (*strptr, strsize + 1,
-						     sizeof (wchar_t));
-			      if (wstr == NULL)
+			      if (flags & POSIX_MALLOC)
 				{
-				  if (flags & POSIX_MALLOC)
-				    {
-				      done = EOF;
-				      goto errout;
-				    }
-				  /* We lose.  Oh well.  Terminate the string
-				     and stop converting, so at least we don't
-				     skip any input.  */
-				  ((wchar_t *) (*strptr))[strsize - 1] = L'\0';
-				  strptr = NULL;
-				  ++done;
-				  conv_error ();
+				  done = EOF;
+				  goto errout;
 				}
-			      else
-				{
-				  *strptr = (char *) wstr;
-				  wstr += strsize;
-				  ++strsize;
-				}
+			      /* We lose.  Oh well.  Terminate the string
+				 and stop converting, so at least we don't
+				 skip any input.  */
+			      ((wchar_t *) (*strptr))[strsize - 1] = L'\0';
+			      strptr = NULL;
+			      ++done;
+			      conv_error ();
 			    }
 			  else
 			    {
@@ -2890,32 +2773,18 @@ digits_extended_fail:
 			    (*strptr, newsize, sizeof (wchar_t));
 			  if (wstr == NULL)
 			    {
-			      /* Can't allocate that much.  Last-ditch
-				 effort.  */
-			      wstr = (wchar_t *)
-				__libc_reallocarray (*strptr, strsize + 1,
-						     sizeof (wchar_t));
-			      if (wstr == NULL)
+			      if (flags & POSIX_MALLOC)
 				{
-				  if (flags & POSIX_MALLOC)
-				    {
-				      done = EOF;
-				      goto errout;
-				    }
-				  /* We lose.  Oh well.  Terminate the
-				     string and stop converting,
-				     so at least we don't skip any input.  */
-				  ((wchar_t *) (*strptr))[strsize - 1] = L'\0';
-				  strptr = NULL;
-				  ++done;
-				  conv_error ();
+				  done = EOF;
+				  goto errout;
 				}
-			      else
-				{
-				  *strptr = (char *) wstr;
-				  wstr += strsize;
-				  ++strsize;
-				}
+			      /* We lose.  Oh well.  Terminate the
+				 string and stop converting,
+				 so at least we don't skip any input.  */
+			      ((wchar_t *) (*strptr))[strsize - 1] = L'\0';
+			      strptr = NULL;
+			      ++done;
+			      conv_error ();
 			    }
 			  else
 			    {
@@ -3039,31 +2908,18 @@ digits_extended_fail:
 			  newstr = (char *) realloc (*strptr, 2 * strsize);
 			  if (newstr == NULL)
 			    {
-			      /* Can't allocate that much.  Last-ditch
-				 effort.  */
-			      newstr = (char *) realloc (*strptr,
-							 strleng + MB_LEN_MAX);
-			      if (newstr == NULL)
+			      if (flags & POSIX_MALLOC)
 				{
-				  if (flags & POSIX_MALLOC)
-				    {
-				      done = EOF;
-				      goto errout;
-				    }
-				  /* We lose.  Oh well.  Terminate the string
-				     and stop converting, so at least we don't
-				     skip any input.  */
-				  ((char *) (*strptr))[strleng] = '\0';
-				  strptr = NULL;
-				  ++done;
-				  conv_error ();
+				  done = EOF;
+				  goto errout;
 				}
-			      else
-				{
-				  *strptr = newstr;
-				  str = newstr + strleng;
-				  strsize = strleng + MB_LEN_MAX;
-				}
+			      /* We lose.  Oh well.  Terminate the string
+				 and stop converting, so at least we don't
+				 skip any input.  */
+			      ((char *) (*strptr))[strleng] = '\0';
+			      strptr = NULL;
+			      ++done;
+			      conv_error ();
 			    }
 			  else
 			    {
@@ -3102,17 +2958,9 @@ digits_extended_fail:
 			  /* Enlarge the buffer.  */
 			  size_t newsize = grow_to_fit (strsize, width);
 
-			allocagain:
 			  str = (char *) realloc (*strptr, newsize);
 			  if (str == NULL)
 			    {
-			      /* Can't allocate that much.  Last-ditch
-				 effort.  */
-			      if (newsize > strsize + 1)
-				{
-				  newsize = strsize + 1;
-				  goto allocagain;
-				}
 			      if (flags & POSIX_MALLOC)
 				{
 				  done = EOF;
