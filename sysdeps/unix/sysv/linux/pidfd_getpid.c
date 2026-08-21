@@ -33,6 +33,8 @@
 #define FDINFO_FILENAME_LEN \
   (sizeof (FDINFO_TO_FILENAME_PREFIX) + INT_STRLEN_BOUND (int))
 
+#define FDINFO_MAX_LINE_LEN 256
+
 struct parse_fdinfo_t
 {
   bool found;
@@ -41,12 +43,12 @@ struct parse_fdinfo_t
 
 /* Parse the PID field in the fdinfo entry, if existent.  Avoid strtol or
    similar to not be locale dependent.  */
-static int
+static bool
 parse_fdinfo (const char *l, void *arg)
 {
   enum { fieldlen = sizeof ("Pid:") - 1 };
   if (strncmp (l, "Pid:", fieldlen) != 0)
-    return 0;
+    return false;
 
   l += fieldlen;
 
@@ -62,36 +64,36 @@ parse_fdinfo (const char *l, void *arg)
       l++;
       break;
     case '+':
-      return -1;
+      return true;
     }
 
   if (*l == '\0')
-    return 0;
+    return false;
 
   int n = 0;
   while (*l != '\0')
     {
       /* Check if '*l' is a digit.  */
       if ('0' > *l || *l > '9')
-        return -1;
+        return true;
 
       /* Ignore invalid large values.  */
       if (INT_MULTIPLY_WRAPV (10, n, &n)
           || INT_ADD_WRAPV (n, *l - '0', &n))
-        return -1;
+        return true;
 
       l++;
     }
 
   /* -1 indicates that the process is terminated.  */
   if (neg && n != 1)
-    return -1;
+    return true;
 
   struct parse_fdinfo_t *fdinfo = arg;
   fdinfo->pid = neg ? -n : n;
   fdinfo->found = true;
 
-  return 1;
+  return true;
 }
 
 static pid_t
@@ -104,7 +106,10 @@ getpid_fdinfo (int fd)
   *_fitoa_word (fd, p, 10, 0) = '\0';
 
   struct parse_fdinfo_t fdinfo = { .found = false, .pid = -1 };
-  if (!__libc_procutils_read_file (fdinfoname, parse_fdinfo, &fdinfo))
+  char buffer[FDINFO_MAX_LINE_LEN];
+  if (__libc_procutils_read_file (fdinfoname, buffer, sizeof buffer,
+				  parse_fdinfo, &fdinfo)
+      == procutils_read_error)
     /* The fdinfo contains an invalid 'Pid:' value.  */
     return INLINE_SYSCALL_ERROR_RETURN_VALUE (EBADF);
 
