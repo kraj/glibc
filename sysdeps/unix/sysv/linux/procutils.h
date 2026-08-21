@@ -20,25 +20,37 @@
 #define _PROCUTILS_H
 
 #include <stdbool.h>
+#include <stddef.h>
 
 typedef int (*procutils_closure_t) (const char *line, void *arg);
 
-#define PROCUTILS_MAX_LINE_LEN 256
+enum procutils_read_result_t
+{
+  procutils_read_stop,
+  procutils_read_eof,
+  procutils_read_error
+};
 
 /* Open and read the path FILENAME, line per line, and call CLOSURE with
-   argument ARG on each line.  The read is done with a static buffer,
-   with non-cancellable calls, and the line is null terminated.
+   argument ARG on each line.  The read is done with non-cancellable
+   calls using BUFFER of BUFFER_SIZE bytes as scratch area, and the line
+   is null terminated (the '\n' is not included).
 
-   The CLOSURE should return 0 if the read should continue, otherwise the
-   the function should stop and return early.
+   A line longer than BUFFER_SIZE - 1 characters is passed to CLOSURE
+   truncated to BUFFER_SIZE - 1 characters, and the rest of the line up
+   to the next '\n' is discarded.
 
-   The '\n' is not included in the CLOSURE input argument and lines longer
-   than PROCUTILS_MAX_LINE_LEN characteres are ignored.
+   The CLOSURE should return 0 if the read should continue, otherwise
+   the function stops reading and returns early.
 
-   It returns true in case the file is fully read or false if CLOSURE
-   returns a value diferent than 0.  */
-bool __libc_procutils_read_file (const char *filename,
-				 procutils_closure_t closure,
-				 void *arg) attribute_hidden;
+   It returns procutils_read_stop if CLOSURE returned a value different
+   than 0, procutils_read_eof if the file was fully read, or
+   procutils_read_error if the file could not be opened or a read error
+   occurred (with errno set).  */
+enum procutils_read_result_t
+__libc_procutils_read_file (const char *filename,
+			    char *buffer, size_t buffer_size,
+			    procutils_closure_t closure,
+			    void *arg) attribute_hidden;
 
 #endif

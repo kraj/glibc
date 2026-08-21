@@ -303,6 +303,15 @@ tests-static += \
   $(tests-clone-internal) \
   # tests-static
 
+# The test uses the hidden __libc_procutils_read_file, so it requires
+# static linking.
+tests-internal += \
+  tst-procutils \
+  # tests-internal
+tests-static += \
+  tst-procutils \
+  # tests-static
+
 CFLAGS-tst-sigcontext-get_pc.c = -fasynchronous-unwind-tables
 
 # Generate the list of SYS_* macros for the system calls (__NR_*

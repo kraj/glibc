@@ -33,6 +33,8 @@
 #define FDINFO_FILENAME_LEN \
   (sizeof (FDINFO_TO_FILENAME_PREFIX) + INT_STRLEN_BOUND (int))
 
+#define FDINFO_MAX_LINE_LEN 256
+
 struct parse_fdinfo_t
 {
   bool found;
@@ -104,11 +106,15 @@ getpid_fdinfo (int fd)
   *_fitoa_word (fd, p, 10, 0) = '\0';
 
   struct parse_fdinfo_t fdinfo = { .found = false, .pid = -1 };
-  if (!__libc_procutils_read_file (fdinfoname, parse_fdinfo, &fdinfo))
-    /* The fdinfo contains an invalid 'Pid:' value.  */
+  char buffer[FDINFO_MAX_LINE_LEN];
+  if (__libc_procutils_read_file (fdinfoname, buffer, sizeof buffer,
+				  parse_fdinfo, &fdinfo)
+      == procutils_read_error)
+    /* The fdinfo file could not be read.  */
     return INLINE_SYSCALL_ERROR_RETURN_VALUE (EBADF);
 
-  /* The FD does not have a 'Pid:' entry associated.  */
+  /* The FD does not have a 'Pid:' entry associated or it contains an
+     invalid 'Pid:' value.  */
   if (!fdinfo.found)
     return INLINE_SYSCALL_ERROR_RETURN_VALUE (EBADF);
 
