@@ -259,20 +259,33 @@ update_active (struct cpu_features *cpu_features)
 	    }
 	}
 
-      if (CPU_FEATURES_CPU_P (cpu_features, AVX10)
-	  && cpu_features->basic.max_cpuid >= 0x24)
+      if (cpu_features->basic.max_cpuid >= 0x24)
 	{
-	  __cpuid_count (
-	      0x24, 0, cpu_features->features[CPUID_INDEX_24_ECX_0].cpuid.eax,
-	      cpu_features->features[CPUID_INDEX_24_ECX_0].cpuid.ebx,
-	      cpu_features->features[CPUID_INDEX_24_ECX_0].cpuid.ecx,
-	      cpu_features->features[CPUID_INDEX_24_ECX_0].cpuid.edx);
-	  if (os_vector_size & os_xmm)
-	    CPU_FEATURE_SET_ACTIVE (cpu_features, AVX10_XMM);
-	  if (os_vector_size & os_ymm)
-	    CPU_FEATURE_SET_ACTIVE (cpu_features, AVX10_YMM);
-	  if (os_vector_size & os_zmm)
-	    CPU_FEATURE_SET_ACTIVE (cpu_features, AVX10_ZMM);
+	  __cpuid_count
+	    (0x24, 0,
+	     cpu_features->features[CPUID_INDEX_24_ECX_0].cpuid.eax,
+	     cpu_features->features[CPUID_INDEX_24_ECX_0].cpuid.ebx,
+	     cpu_features->features[CPUID_INDEX_24_ECX_0].cpuid.ecx,
+	     cpu_features->features[CPUID_INDEX_24_ECX_0].cpuid.edx);
+
+	  if (cpu_features->features[CPUID_INDEX_24_ECX_0].cpuid.eax != 0)
+	    __cpuid_count
+	      (0x24, 1,
+	       cpu_features->features[CPUID_INDEX_24_ECX_1].cpuid.eax,
+	       cpu_features->features[CPUID_INDEX_24_ECX_1].cpuid.ebx,
+	       cpu_features->features[CPUID_INDEX_24_ECX_1].cpuid.ecx,
+	       cpu_features->features[CPUID_INDEX_24_ECX_1].cpuid.edx);
+
+	  if (CPU_FEATURES_CPU_P (cpu_features, AVX10))
+	    {
+	      CPU_FEATURE_SET_ACTIVE (cpu_features, AVX10_VERSION);
+	      if (os_vector_size & os_xmm)
+		CPU_FEATURE_SET_ACTIVE (cpu_features, AVX10_XMM);
+	      if (os_vector_size & os_ymm)
+		CPU_FEATURE_SET_ACTIVE (cpu_features, AVX10_YMM);
+	      if (os_vector_size & os_zmm)
+		CPU_FEATURE_SET_ACTIVE (cpu_features, AVX10_ZMM);
+	    }
 	}
 
       /* Are XTILECFG and XTILEDATA states usable?  */

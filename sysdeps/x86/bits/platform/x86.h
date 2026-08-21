@@ -31,7 +31,8 @@ enum
   CPUID_INDEX_7_ECX_1,
   CPUID_INDEX_19,
   CPUID_INDEX_14_ECX_0,
-  CPUID_INDEX_24_ECX_0
+  CPUID_INDEX_24_ECX_0,
+  CPUID_INDEX_24_ECX_1
 };
 
 struct cpuid_feature
@@ -333,7 +334,15 @@ enum
     = (CPUID_INDEX_24_ECX_0 * 8 * 4 * sizeof (unsigned int)
        + cpuid_register_index_ebx * 8 * sizeof (unsigned int)),
 
-  x86_cpu_AVX10_XMM = x86_cpu_index_24_ecx_0_ebx + 16,
-  x86_cpu_AVX10_YMM = x86_cpu_index_24_ecx_0_ebx + 17,
-  x86_cpu_AVX10_ZMM = x86_cpu_index_24_ecx_0_ebx + 18,
+  x86_cpu_AVX10_VERSION		= x86_cpu_index_24_ecx_0_ebx,
+  x86_cpu_AVX10_XMM		= x86_cpu_index_24_ecx_0_ebx + 16,
+  x86_cpu_AVX10_YMM		= x86_cpu_index_24_ecx_0_ebx + 17,
+  x86_cpu_AVX10_ZMM		= x86_cpu_index_24_ecx_0_ebx + 18,
+
+  x86_cpu_index_24_ecx_1_ecx
+    = (CPUID_INDEX_24_ECX_1 * 8 * 4 * sizeof (unsigned int)
+       + cpuid_register_index_ecx * 8 * sizeof (unsigned int)),
+
+  x86_cpu_AVX10_V1_AUX		= x86_cpu_index_24_ecx_1_ecx + 2,
+  x86_cpu_AVX10_V2_AUX		= x86_cpu_index_24_ecx_1_ecx + 3,
 };

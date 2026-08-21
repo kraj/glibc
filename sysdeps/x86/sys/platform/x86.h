@@ -59,6 +59,25 @@ x86_cpu_active (unsigned int __index)
   return __ptr->active_array[__reg] & (1 << __bit);
 }
 
+static __inline__ unsigned int
+x86_get_avx10_version (void)
+{
+  if (x86_cpu_active (x86_cpu_AVX10))
+    {
+      unsigned int __index = x86_cpu_AVX10_VERSION;
+      const struct cpuid_feature *__ptr = __x86_get_cpuid_feature_leaf
+	(__index / (8 * sizeof (unsigned int) * 4));
+      unsigned int __reg = __index & (8 * sizeof (unsigned int) * 4 - 1);
+      __reg /= 8 * sizeof (unsigned int);
+
+      /* Bits 0-7 are AVX10_VERSION.  */
+      return __ptr->active_array[__reg] & 0xff;
+    }
+
+  /* Return 0 to indicate that AVX10 isn't available.  */
+  return 0;
+}
+
 /* CPU_FEATURE_PRESENT evaluates to true if CPU supports the feature.  */
 #define CPU_FEATURE_PRESENT(name) x86_cpu_present (x86_cpu_##name)
 /* CPU_FEATURE_ACTIVE evaluates to true if the feature is active.  */

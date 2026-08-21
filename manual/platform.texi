@@ -148,6 +148,11 @@ Return a pointer to x86 CPU feature structure used by query macros for x86
 CPU feature @var{leaf}.
 @end deftypefun
 
+@deftypefun {unsigned int} x86_get_avx10_version (void)
+@safety{@prelim{}@mtsafe{}@assafe{}@acsafe{}}
+Return AVX10 version.  Return 0 if AVX10 isn't available.
+@end deftypefun
+
 @deftypefn Macro int CPU_FEATURE_PRESENT (@var{name})
 This macro returns a nonzero value (true) if the processor has the feature
 @var{name}.
@@ -226,13 +231,11 @@ Leaf (EAX = 23H).
 @code{AVX10} -- The AVX10 instruction extensions.
 
 @item
-@code{AVX10_XMM} -- Whether AVX10 includes xmm registers.
+@code{AVX10_V1_AUX} -- AVX10.2 convert instruction extensions.
 
 @item
-@code{AVX10_YMM} -- Whether AVX10 includes ymm registers.
-
-@item
-@code{AVX10_ZMM} -- Whether AVX10 includes zmm registers.
+@code{AVX10_V2_AUX} -- AVX10.2 integer and FP16 VNNI, Media instruction
+extensions.
 
 @item
 @code{AVX2} -- The AVX2 instruction extensions.

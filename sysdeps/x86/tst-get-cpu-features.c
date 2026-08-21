@@ -398,8 +398,17 @@ do_test (void)
   CHECK_CPU_FEATURE_ACTIVE (WIDE_KL);
   CHECK_CPU_FEATURE_ACTIVE (PTWRITE);
 
+  unsigned int version = x86_get_avx10_version ();
+  printf ("AVX10 version: %d\n", version);
+
   if (CPU_FEATURE_ACTIVE (AVX10))
     {
+      CHECK_CPU_FEATURE_ACTIVE (AVX10_V1_AUX);
+      CHECK_CPU_FEATURE_ACTIVE (AVX10_V2_AUX);
+
+      /* NB: These were from the earlier version of AVX10 specification.
+	 All processors supporting Intel® AVX10 will include support for
+	 all vector lengths.  */
       CHECK_CPU_FEATURE_ACTIVE (AVX10_XMM);
       CHECK_CPU_FEATURE_ACTIVE (AVX10_YMM);
       CHECK_CPU_FEATURE_ACTIVE (AVX10_ZMM);
