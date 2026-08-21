@@ -28,7 +28,7 @@ extern FILE _IO_stderr_;
 compat_symbol_reference (libc, _IO_stderr_, _IO_stderr_, GLIBC_2_0);
 compat_symbol_reference (libc, fclose, fclose, GLIBC_2_0);
 
-__attribute__ ((weak, noclone, noinline))
+__attribute__ ((weak)) __attribute_optimization_barrier__
 void
 do_fclose (FILE *fp)
 {

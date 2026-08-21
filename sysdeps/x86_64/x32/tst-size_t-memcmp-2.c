@@ -41,7 +41,7 @@ IMPL (MEMCMP, 1)
 typedef int (*proto_t) (const CHAR *, const CHAR *, size_t);
 
 static int
-__attribute__ ((noinline, noclone))
+__attribute_optimization_barrier__
 do_memcmp (parameter_t a, parameter_t b)
 {
   return CALL (&b, a.p, b.p, a.len);

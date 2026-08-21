@@ -38,7 +38,7 @@ IMPL (STRNLEN, 1)
 typedef size_t (*proto_t) (const CHAR *, size_t);
 
 static size_t
-__attribute__ ((noinline, noclone))
+__attribute_optimization_barrier__
 do_strnlen (parameter_t a, parameter_t b)
 {
   return CALL (&a, a.p, b.len);

@@ -38,7 +38,7 @@ IMPL (MEMSET, 1)
 typedef CHAR *(*proto_t) (CHAR *, int, size_t);
 
 static void *
-__attribute__ ((noinline, noclone))
+__attribute_optimization_barrier__
 do_memset (parameter_t a, parameter_t b)
 {
   return CALL (&b, a.p, (uintptr_t) b.p, a.len);

@@ -24,7 +24,7 @@ IMPL (memcpy, 1)
 typedef void *(*proto_t) (void *, const void *, size_t);
 
 static void *
-__attribute__ ((noinline, noclone))
+__attribute_optimization_barrier__
 do_memcpy (parameter_t a, parameter_t b)
 {
   return CALL (&b, a.p, b.p, a.len);

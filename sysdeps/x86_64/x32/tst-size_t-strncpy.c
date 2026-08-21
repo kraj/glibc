@@ -24,7 +24,7 @@ IMPL (strncpy, 1)
 typedef char *(*proto_t) (char *, const char*, size_t);
 
 static void *
-__attribute__ ((noinline, noclone))
+__attribute_optimization_barrier__
 do_strncpy (parameter_t a, parameter_t b)
 {
   return CALL (&b, a.p, b.p, a.len);
