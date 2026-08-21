@@ -89,8 +89,10 @@ day         "রবিবার";"সোমবার";/
 
 %
 % Abbreviated month names (%b)
-abmon       "জানু";/
-            "ফেব";/
+% Bangla has no established convention for abbreviating month names,
+% so the abbreviated (%b) and full (%B) forms are the same.
+abmon       "জানুয়ারী";/
+            "ফেব্রুয়ারী";/
             "মার্চ";"এপ্রিল";/
             "মে";"জুন";/
             "জুলাই";"আগস্ট";/
