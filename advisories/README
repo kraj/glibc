@@ -60,7 +60,7 @@ An advisory for a CVE needs to be added on the master branch in two steps:
    backports.  Ask for the GLIBC-SA advisory number from the security
    team.
 
-2. Finish all backports on release branches and then back on the msater
+2. Finish all backports on release branches and then back on the master
    branch, add all commit refs to the advisory using the Fix-Commit
    tags.  Don't bother adding the release-version subscript since the
    next step will overwrite it.
