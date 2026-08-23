@@ -40,6 +40,7 @@ __pthread_timedblock (struct __pthread *thread,
   mach_msg_timeout_t timeout;
   struct timespec now;
 
+retry:
   /* We have an absolute time and now we have to convert it to a
      relative time.  Arg.  */
 
@@ -58,13 +59,19 @@ __pthread_timedblock (struct __pthread *thread,
     /* Need to do a carry.  */
     timeout -= (now.tv_nsec - abstime->tv_nsec + 999999) / 1000000;
 
-  err = __mach_msg (&msg, MACH_RCV_MSG | MACH_RCV_TIMEOUT | MSG_OPTIONS, 0,
+  err = __mach_msg (&msg, MACH_RCV_MSG | MACH_RCV_TIMEOUT | MSG_OPTIONS | MACH_RCV_INTERRUPT, 0,
 		    sizeof msg, thread->wakeupmsg.msgh_remote_port,
 		    timeout, MACH_PORT_NULL);
   if (err == EMACH_RCV_TIMED_OUT)
     return ETIMEDOUT;
-  if ((MSG_OPTIONS & MACH_RCV_INTERRUPT) != 0 && err == MACH_RCV_INTERRUPTED)
-    return EINTR;
+  if (err == MACH_RCV_INTERRUPTED)
+    {
+      if ((MSG_OPTIONS & MACH_RCV_INTERRUPT) != 0)
+	return EINTR;
+      else
+	/* Re-convert absolute time to relative time.  */
+	goto retry;
+    }
 
   assert_perror (err);
   return 0;
