@@ -286,18 +286,26 @@ def render_f(fr, prec, alt, strip):
     return whole
 
 
-def to_significand(fr, mant_bits):
-    """Split the positive Fraction FR into an integer significand of exactly
-    MANT_BITS bits and a power of two, returned as (significand, exponent).
+def to_significand(fr, mant_bits, min_exp):
+    """Split the positive Fraction FR into an integer significand and a
+    power of two, returned as (significand, exponent).
 
-    FR comes from a value of that many significand bits, so the split is
-    exact.  Subnormals are not among the values the generator uses and are
-    not handled here."""
+    The significand has exactly MANT_BITS bits for a normal value.  Below
+    the smallest normal the exponent cannot go any lower, so it stops at
+    MIN_EXP and the significand loses bits from the top instead, which is
+    what makes the leading hexadecimal digit of a subnormal come out zero.
+    MIN_EXP is None where the format has no subnormals.  FR comes from a
+    value of this format, so the split is exact either way."""
     num, den, exp = normalize(fr.numerator, fr.denominator, mant_bits)
+    if min_exp is not None and exp < min_exp:
+        # Subnormal: scale back up to the smallest exponent the format has,
+        # which drops the significand below its full width.
+        den <<= min_exp - exp
+        exp = min_exp
     return num // den, exp
 
 
-def render_a(fr, mant_bits, prec, alt, upper):
+def render_a(fr, mant_bits, min_exp, prec, alt, upper):
     """Render the non-negative Fraction FR in the style of 'a'.
 
     The number of bits the leading hexadecimal digit holds is whatever is
@@ -305,14 +313,15 @@ def render_a(fr, mant_bits, prec, alt, upper):
     digits, which is how the significand ends up written out without any
     shifting.  For a 53 bit significand that leaves one bit, so the leading
     digit is 1; for a 64 bit one it leaves four, so the leading digit runs
-    from 8 to f."""
+    from 8 to f.  A subnormal has no bit to put there and so leads with a
+    zero, its exponent being the smallest the format provides."""
     lead_bits = ((mant_bits - 1) % 4) + 1
     nfrac = (mant_bits - lead_bits) // 4
     if fr == 0:
         digits, exp = "0" * (1 + nfrac), 0
     else:
-        mant, exp = to_significand(fr, mant_bits)
-        digits = "%x" % mant
+        mant, exp = to_significand(fr, mant_bits, min_exp)
+        digits = ("%x" % mant).zfill(1 + nfrac)
         exp += 4 * nfrac
 
     if prec is None:
@@ -351,7 +360,7 @@ def render_e(fr, prec, alt, upper, strip):
                            "-" if exp < 0 else "+", abs(exp))
 
 
-def convert_float(value, spec, mant_bits, cache):
+def convert_float(value, spec, mant_bits, min_exp, cache):
     """Convert VALUE, an exact Fraction.  CACHE memoizes rendered digits for
     the value currently being converted."""
     conv = spec.conv
@@ -369,7 +378,8 @@ def convert_float(value, spec, mant_bits, cache):
     body = cache.get(key)
     if body is None:
         if conv in "aA":
-            body = render_a(fr, mant_bits, spec.prec, spec.alt, upper)
+            body = render_a(fr, mant_bits, min_exp, spec.prec, spec.alt,
+                            upper)
         elif conv in "gG":
             sig = 1 if prec == 0 else prec
             _, exp = decimal_digits(fr, sig) if fr != 0 else ("", 0)
@@ -395,11 +405,13 @@ class Block:
     """The state a run of records shares: the C type they exercise and the
     single value they all convert."""
 
-    __slots__ = ("mant_bits", "val_text", "value", "special",
-                 "neg_zero", "cache")
+    __slots__ = ("mant_bits", "type_min_exp", "min_exp", "val_text",
+                 "value", "special", "neg_zero", "cache")
 
     def __init__(self):
         self.mant_bits = 0
+        self.type_min_exp = None
+        self.min_exp = None
         self.set_value("")
 
     def set_value(self, text):
@@ -413,6 +425,12 @@ class Block:
     def interpret(self, conv):
         """Interpret the value text as the C type conversion CONV takes."""
         if conv in FLOAT_CONVS:
+            # *_MIN_EXP is the exponent of the smallest normal value with
+            # the radix point before the significand; shift it to sit after
+            # the significand, as to_significand expects.  Where it was not
+            # reported the type has no subnormals.
+            self.min_exp = (None if self.type_min_exp is None
+                            else self.type_min_exp - self.mant_bits)
             lowered = self.val_text.lower()
             if "inf" in lowered or "nan" in lowered:
                 self.special = "nan" if "nan" in lowered else "inf"
@@ -437,7 +455,7 @@ class Block:
             if self.special is not None:
                 return convert_special(self.special, self.neg_zero, spec)
             return convert_float(self.value, spec, self.mant_bits,
-                                 self.cache)
+                                 self.min_exp, self.cache)
         if conv in INT_CONVS:
             return convert_int(self.value, spec)
         if conv == "c":
@@ -484,6 +502,8 @@ def main():
 
         if raw.startswith("prec:"):
             block.mant_bits = int(raw[5:])
+        elif raw.startswith("minexp:"):
+            block.type_min_exp = int(raw[7:])
         elif raw.startswith("val:"):
             block.set_value(raw[4:])
         elif raw.startswith("%"):

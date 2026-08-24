@@ -38,6 +38,9 @@
 		the argument type handled; usually for floating-point
 		conversions only, but it may be required for 128-bit or
 		wider integer data types as well.
+   MINEXP	[optional] Minimum exponent integer constant.  Set to the
+		*_MIN_EXP value for the argument type handled, so that
+		subnormal values can be told apart from normal ones.
 
    Typedefs:
    type_t	Variadic function argument type.  Define to the promoted
@@ -78,6 +81,11 @@
    required for floating-point calculations.  */
 #ifndef PREC
 # define PREC 0
+#endif
+/* Set to the minimum exponent for the type handled; zero where there is
+   no such thing, in which case no value can be subnormal.  */
+#ifndef MINEXP
+# define MINEXP 0
 #endif
 
 /* The list of conversions permitted for the '#' flag, the '0' flag,
@@ -294,8 +302,13 @@ do_printf_flags (char *fmt, size_t idx, const char *l, char c, type_t val)
 
    prec:<PREC>
 
-   is produced at the beginning.  Then for each VAL from VALS a block
-   of records is produced starting with:
+   is produced at the beginning, followed by this one if MINEXP is
+   nonzero:
+
+   minexp:<MINEXP>
+
+   Then for each VAL from VALS a block of records is produced starting
+   with:
 
    val:<VAL>
 
@@ -323,6 +336,12 @@ do_test (int argc, char *argv[])
   mtrace ();
 
   if (PREC != 0 && printf ("prec:%i\n", PREC) < 0)
+    {
+      perror ("printf");
+      return EXIT_FAILURE;
+    }
+
+  if (MINEXP != 0 && printf ("minexp:%i\n", MINEXP) < 0)
     {
       perror ("printf");
       return EXIT_FAILURE;

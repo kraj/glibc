@@ -26,10 +26,11 @@
 #define REF_FMT ".35e"
 #define REF_VAL(v) (v)
 #define PREC DBL_MANT_DIG
+#define MINEXP DBL_MIN_EXP
 typedef double type_t;
 static const type_t vals[] =
-  { -HUGE_VAL, -DBL_MAX, -DBL_MIN, -0.0, -NAN, NAN, 0, DBL_MIN,
-    99.9, DBL_MAX, HUGE_VAL };
+  { -HUGE_VAL, -DBL_MAX, -DBL_MIN, -0.0, -NAN, NAN, 0, DBL_TRUE_MIN,
+    DBL_MIN, 99.9, DBL_MAX, HUGE_VAL };
 static const char length[] = "";
 
 #include "tst-printf-format-skeleton.c"
