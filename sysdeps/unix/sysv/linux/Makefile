@@ -845,7 +845,7 @@ $(objpfx)strace-tst-thp-1-enabled.out: \
   $(objpfx)tst-thp-1
 	$(SHELL) $< '$(strace-test-via-rtld-prefix)' \
 		'$(test-wrapper-env)' \
-		'$(run-program-env) GLIBC_TUNABLES=glibc.elf.thp=1' \
+		'$(run-program-env) GLIBC_TUNABLES=glibc.elf.thp=1:glibc.malloc.hugetlb=0' \
 		$(objpfx)tst-thp-1 > $@; \
 	  $(evaluate-test)
 
@@ -854,7 +854,7 @@ $(objpfx)strace-tst-thp-1-disabled.out: \
   $(objpfx)tst-thp-1
 	$(SHELL) $< '$(strace-test-via-rtld-prefix)' \
 		'$(test-wrapper-env)' \
-		'$(run-program-env) GLIBC_TUNABLES=glibc.elf.thp=0' \
+		'$(run-program-env) GLIBC_TUNABLES=glibc.elf.thp=0:glibc.malloc.hugetlb=0' \
 		$(objpfx)tst-thp-1 > $@; \
 	  $(evaluate-test)
 
@@ -863,7 +863,7 @@ $(objpfx)strace-tst-thp-1-pde-enabled.out: \
   $(objpfx)tst-thp-1-pde
 	$(SHELL) $< '$(strace-test-via-rtld-prefix)' \
 		'$(test-wrapper-env)' \
-		'$(run-program-env) GLIBC_TUNABLES=glibc.elf.thp=1' \
+		'$(run-program-env) GLIBC_TUNABLES=glibc.elf.thp=1:glibc.malloc.hugetlb=0' \
 		$(objpfx)tst-thp-1-pde > $@; \
 	  $(evaluate-test)
 
@@ -872,7 +872,7 @@ $(objpfx)strace-tst-thp-1-pde-disabled.out: \
   $(objpfx)tst-thp-1-pde
 	$(SHELL) $< '$(strace-test-via-rtld-prefix)' \
 		'$(test-wrapper-env)' \
-		'$(run-program-env) GLIBC_TUNABLES=glibc.elf.thp=0' \
+		'$(run-program-env) GLIBC_TUNABLES=glibc.elf.thp=0:glibc.malloc.hugetlb=0' \
 		$(objpfx)tst-thp-1-pde > $@; \
 	  $(evaluate-test)
 
@@ -880,7 +880,7 @@ $(objpfx)strace-tst-thp-1-static-enabled.out: \
   $(..)sysdeps/unix/sysv/linux/strace-tst-thp.sh \
   $(objpfx)tst-thp-1-static
 	$(SHELL) $< '' '$(test-wrapper-env)' \
-		'$(run-program-env) GLIBC_TUNABLES=glibc.elf.thp=1' \
+		'$(run-program-env) GLIBC_TUNABLES=glibc.elf.thp=1:glibc.malloc.hugetlb=0' \
 		$(objpfx)tst-thp-1-static > $@; \
 	  $(evaluate-test)
 
@@ -888,7 +888,7 @@ $(objpfx)strace-tst-thp-1-static-disabled.out: \
   $(..)sysdeps/unix/sysv/linux/strace-tst-thp.sh \
   $(objpfx)tst-thp-1-static
 	$(SHELL) $< '' '$(test-wrapper-env)' \
-		'$(run-program-env) GLIBC_TUNABLES=glibc.elf.thp=0' \
+		'$(run-program-env) GLIBC_TUNABLES=glibc.elf.thp=0:glibc.malloc.hugetlb=0' \
 		$(objpfx)tst-thp-1-static > $@; \
 	  $(evaluate-test)
 
@@ -896,7 +896,8 @@ $(objpfx)strace-tst-thp-align-default.out: \
   $(..)sysdeps/unix/sysv/linux/strace-tst-thp.sh $(objpfx)ld.so \
   $(objpfx)tst-thp-align $(objpfx)tst-thp-size-mod.so
 	$(SHELL) $< '$(strace-test-via-rtld-prefix)' \
-		'$(test-wrapper-env)' '$(run-program-env)' \
+		'$(test-wrapper-env)' \
+		'$(run-program-env) GLIBC_TUNABLES=glibc.malloc.hugetlb=0' \
 		$(objpfx)tst-thp-align > $@; \
 	  $(evaluate-test)
 
@@ -905,7 +906,7 @@ $(objpfx)strace-tst-thp-align-enabled.out: \
   $(objpfx)tst-thp-align $(objpfx)tst-thp-size-mod.so
 	$(SHELL) $< '$(strace-test-via-rtld-prefix)' \
 		'$(test-wrapper-env)' \
-		'$(run-program-env) GLIBC_TUNABLES=glibc.elf.thp=1' \
+		'$(run-program-env) GLIBC_TUNABLES=glibc.elf.thp=1:glibc.malloc.hugetlb=0' \
 		$(objpfx)tst-thp-align > $@; \
 	  $(evaluate-test)
 
@@ -914,7 +915,7 @@ $(objpfx)strace-tst-thp-align-disabled.out: \
   $(objpfx)tst-thp-align $(objpfx)tst-thp-size-mod.so
 	$(SHELL) $< '$(strace-test-via-rtld-prefix)' \
 		'$(test-wrapper-env)' \
-		'$(run-program-env) GLIBC_TUNABLES=glibc.elf.thp=0' \
+		'$(run-program-env) GLIBC_TUNABLES=glibc.elf.thp=0:glibc.malloc.hugetlb=0' \
 		$(objpfx)tst-thp-align > $@; \
 	  $(evaluate-test)
 endif # [madvise]
