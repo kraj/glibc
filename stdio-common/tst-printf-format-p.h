@@ -18,6 +18,10 @@
 
 #include <stdio.h>
 
+/* Conversions are verified at the full width and precision through this
+   function; see the comment on WPHUGE in tst-printf-format-skeleton.c.  */
+#define TST_PRINTF_HUGE 1
+
 #define printf_under_test(...)						\
 ({									\
   int result;								\

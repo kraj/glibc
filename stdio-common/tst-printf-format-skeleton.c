@@ -102,6 +102,23 @@ static struct
 #define STR(v) #v
 #define WPINIT(v) {0, STR (v)}, {v, NULL}, {-v, NULL}
 
+/* HUGE_WIDTH is chosen so that nothing is truncated, which for the wider
+   floating-point types means thousands of digits in every record it takes
+   part in.  Those records dominate the run time of this whole family of
+   tests.  The digits they check are produced by the same conversion code
+   regardless of which of the printf family of functions is used; only the
+   sink the result is written to differs, and that is covered at the
+   smaller widths already.  So iterate over HUGE_WIDTH for one function
+   only, chosen as 'printf' by having tst-printf-format-p.h define
+   TST_PRINTF_HUGE, and let the remaining functions stop at MID_WIDTH.
+   Types whose full-precision output is short keep it unconditionally, as
+   it costs nothing there.  */
+#if defined TST_PRINTF_WIDE_TYPE && !defined TST_PRINTF_HUGE
+# define WPHUGE
+#else
+# define WPHUGE , WPINIT (HUGE_WIDTH)
+#endif
+
 /* Width and precision settings to iterate over; zero is initialized
    directly as it has no corresponding negated value and other values
    use the helper above.  */
@@ -113,7 +130,7 @@ static struct wp
   const char *s;
 } const wp[] =
   { {0, "0"}, {0, NULL}, WPINIT (1), WPINIT (2),
-    WPINIT (MID_WIDTH), WPINIT (HUGE_WIDTH) };
+    WPINIT (MID_WIDTH) WPHUGE };
 
 /* Produce a record according to '%' and zero or more output format flags
    already provided in FMT at indices 0..IDX-1, width W if non-NULL, '.'

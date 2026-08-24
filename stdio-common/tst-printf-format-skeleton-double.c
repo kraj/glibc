@@ -21,6 +21,8 @@
 
 #define MID_WIDTH 20
 #define HUGE_WIDTH 320
+/* Full-precision output runs to hundreds of digits here.  */
+#define TST_PRINTF_WIDE_TYPE 1
 #define REF_FMT ".35e"
 #define REF_VAL(v) (v)
 #define PREC DBL_MANT_DIG
