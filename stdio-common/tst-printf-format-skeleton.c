@@ -82,9 +82,9 @@
 
 /* The list of conversions permitted for the '#' flag, the '0' flag,
    and precision respectively.  */
-#define HASH_FORMATS "boxXaAeEfFgG"
-#define ZERO_FORMATS "bdiouxXaAeEfFgG"
-#define PREC_FORMATS "bdiouxXaAeEfFgGs"
+#define HASH_FORMATS "bBoxXaAeEfFgG"
+#define ZERO_FORMATS "bBdiouxXaAeEfFgG"
+#define PREC_FORMATS "bBdiouxXaAeEfFgGs"
 
 /* Output format conversion flags.  */
 static struct

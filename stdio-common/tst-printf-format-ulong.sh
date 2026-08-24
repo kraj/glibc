@@ -25,7 +25,7 @@ test_program_prefix=$1; shift
 
 status=0
 
-for f in o u x X; do
+for f in B b o u x X; do
   echo Verifying $f
   (set -o pipefail
    ${test_program_prefix} \

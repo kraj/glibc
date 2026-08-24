@@ -40,10 +40,10 @@ from fractions import Fraction
 
 # Conversions grouped by the C type of the corresponding argument.
 FLOAT_CONVS = frozenset("eEfFgG")
-INT_CONVS = frozenset("diouxX")
+INT_CONVS = frozenset("bBdiouxX")
 
 # The conversion specifier selects the base an integer is written in.
-INT_FORMATS = {"o": "%o", "u": "%d", "x": "%x", "X": "%X"}
+INT_FORMATS = {"b": "b", "B": "b", "o": "o", "u": "d", "x": "x", "X": "X"}
 
 # Flags and length modifiers accepted in a conversion specification.
 FLAG_CHARS = "-+ #0"
@@ -223,7 +223,7 @@ def convert_int(value, spec):
         digits = str(-value if neg else value)
         sign = spec.sign_of(neg)
     else:
-        digits = INT_FORMATS[conv] % value
+        digits = format(value, INT_FORMATS[conv])
         sign = ""
     if spec.prec is not None:
         # A zero value converted with a precision of zero produces no
@@ -234,10 +234,10 @@ def convert_int(value, spec):
     if spec.alt:
         if conv == "o" and not digits.startswith("0"):
             digits = "0" + digits
-        elif conv in "xX" and value != 0:
+        elif conv in "bBxX" and value != 0:
             # The base prefix precedes any '0' flag padding, so it pads
             # along with the sign rather than with the digits.
-            sign = "0x" if conv == "x" else "0X"
+            sign = "0" + conv
     # An explicit precision defeats the '0' flag.
     return spec.pad(digits, zero_ok=spec.prec is None, sign=sign)
 
