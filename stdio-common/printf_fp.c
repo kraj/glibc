@@ -896,6 +896,11 @@ __printf_fp_buffer_1 (struct __printf_buffer *buf, locale_t loc,
 		    fracdig_no += intdig_no;
 		    intdig_no = 1;
 		    fracdig_max = intdig_max - intdig_no;
+		    if (info->alt)
+		      /* The alternative form retains trailing zeros, and
+			 the number of fractional digits it has to retain
+			 has just changed along with FRACDIG_MAX.  */
+		      fracdig_min = fracdig_max;
 		    ++p.exponent;
 		    /* Now we must print the p.exponent.	*/
 		    p.type = isupper (info->spec) ? 'E' : 'e';
