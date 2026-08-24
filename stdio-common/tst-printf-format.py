@@ -39,8 +39,11 @@ import sys
 from fractions import Fraction
 
 # Conversions grouped by the C type of the corresponding argument.
-FLOAT_CONVS = frozenset("eEfFgG")
+FLOAT_CONVS = frozenset("aAeEfFgG")
 INT_CONVS = frozenset("bBdiouxX")
+
+# Conversions whose output is in upper case.
+UPPER_CONVS = frozenset("AEFG")
 
 # The conversion specifier selects the base an integer is written in.
 INT_FORMATS = {"b": "b", "B": "b", "o": "o", "u": "d", "x": "x", "X": "X"}
@@ -80,18 +83,11 @@ def scale_ratio(num, den, power):
     return num, den * 10 ** -power
 
 
-def decimal_to_binary(text, mant_bits):
-    """Convert the decimal string TEXT to the nearest value having MANT_BITS
-    of significand, returned as an exact Fraction.
+def normalize(num, den, mant_bits):
+    """Scale the positive ratio NUM/DEN into [2**(mant_bits-1), 2**mant_bits).
 
-    The generator prints reference values with enough digits to reproduce
-    the original, so this recovers the exact value converted."""
-    fr = Fraction(text)
-    if fr == 0:
-        return fr
-    neg = fr < 0
-    num, den = (-fr.numerator if neg else fr.numerator), fr.denominator
-    # Scale so that 2**(mant_bits-1) <= num/den < 2**mant_bits.
+    Return the scaled pair along with the exponent EXP that was taken out,
+    so that the original value is num/den * 2**exp."""
     exp = num.bit_length() - den.bit_length() - mant_bits
     if exp >= 0:
         den <<= exp
@@ -103,6 +99,21 @@ def decimal_to_binary(text, mant_bits):
     while num < den << (mant_bits - 1):
         num <<= 1
         exp -= 1
+    return num, den, exp
+
+
+def decimal_to_binary(text, mant_bits):
+    """Convert the decimal string TEXT to the nearest value having MANT_BITS
+    of significand, returned as an exact Fraction.
+
+    The generator prints reference values with enough digits to reproduce
+    the original, so this recovers the exact value converted."""
+    fr = Fraction(text)
+    if fr == 0:
+        return fr
+    neg = fr < 0
+    num, den = (-fr.numerator if neg else fr.numerator), fr.denominator
+    num, den, exp = normalize(num, den, mant_bits)
     mant = round_ratio(num, den)
     if mant >> mant_bits:
         mant >>= 1
@@ -256,7 +267,7 @@ def convert_special(kind, neg, spec):
     """Convert an infinity or a NaN.  The field is padded with spaces
     whether or not the '0' flag was given, and the alternative form has no
     effect."""
-    body = kind.upper() if spec.conv in "EFG" else kind
+    body = kind.upper() if spec.conv in UPPER_CONVS else kind
     return spec.pad(body, zero_ok=False, sign=spec.sign_of(neg))
 
 
@@ -275,6 +286,57 @@ def render_f(fr, prec, alt, strip):
     return whole
 
 
+def to_significand(fr, mant_bits):
+    """Split the positive Fraction FR into an integer significand of exactly
+    MANT_BITS bits and a power of two, returned as (significand, exponent).
+
+    FR comes from a value of that many significand bits, so the split is
+    exact.  Subnormals are not among the values the generator uses and are
+    not handled here."""
+    num, den, exp = normalize(fr.numerator, fr.denominator, mant_bits)
+    return num // den, exp
+
+
+def render_a(fr, mant_bits, prec, alt, upper):
+    """Render the non-negative Fraction FR in the style of 'a'.
+
+    The number of bits the leading hexadecimal digit holds is whatever is
+    left over once the remaining significand bits are grouped into whole
+    digits, which is how the significand ends up written out without any
+    shifting.  For a 53 bit significand that leaves one bit, so the leading
+    digit is 1; for a 64 bit one it leaves four, so the leading digit runs
+    from 8 to f."""
+    lead_bits = ((mant_bits - 1) % 4) + 1
+    nfrac = (mant_bits - lead_bits) // 4
+    if fr == 0:
+        digits, exp = "0" * (1 + nfrac), 0
+    else:
+        mant, exp = to_significand(fr, mant_bits)
+        digits = "%x" % mant
+        exp += 4 * nfrac
+
+    if prec is None:
+        whole, frac = digits[0], digits[1:].rstrip("0")
+    elif prec < nfrac:
+        value = round_ratio(int(digits, 16), 16 ** (nfrac - prec))
+        if value >= 16 ** (1 + prec):
+            # Rounding carried out of the leading digit; re-express with
+            # one digit fewer rather than widening the integer part.
+            value //= 16
+            exp += 4
+        text = ("%x" % value).zfill(1 + prec)
+        whole, frac = text[0], text[1:]
+    else:
+        whole, frac = digits[0], digits[1:].ljust(prec, "0")
+
+    # The "0x" prefix is not included: like the one the '#' flag produces
+    # for the integer hexadecimal conversions it precedes any '0' flag
+    # padding, so the caller pads it along with the sign.
+    body = whole + "." + frac if frac or alt else whole
+    text = "%sp%s%d" % (body, "-" if exp < 0 else "+", abs(exp))
+    return text.upper() if upper else text
+
+
 def render_e(fr, prec, alt, upper, strip):
     """Render the non-negative Fraction FR in the style of 'e'."""
     if fr == 0:
@@ -289,24 +351,26 @@ def render_e(fr, prec, alt, upper, strip):
                            "-" if exp < 0 else "+", abs(exp))
 
 
-def convert_float(value, spec, cache):
+def convert_float(value, spec, mant_bits, cache):
     """Convert VALUE, an exact Fraction.  CACHE memoizes rendered digits for
     the value currently being converted."""
     conv = spec.conv
     neg = value < 0 or (value == 0 and spec.neg_zero)
     fr = -value if value < 0 else value
     prec = 6 if spec.prec is None else spec.prec
-    upper = conv in "EFG"
+    upper = conv in UPPER_CONVS
 
     # The generator iterates a large number of flag and field width
     # combinations over each value, so the same digits are called for over
     # and over.  They depend only on the magnitude, the precision and the
     # alternative form, which is what keeps the wider types inexpensive
     # despite the arithmetic being exact.
-    key = (conv, prec, spec.alt)
+    key = (conv, spec.prec, spec.alt)
     body = cache.get(key)
     if body is None:
-        if conv in "gG":
+        if conv in "aA":
+            body = render_a(fr, mant_bits, spec.prec, spec.alt, upper)
+        elif conv in "gG":
             sig = 1 if prec == 0 else prec
             _, exp = decimal_digits(fr, sig) if fr != 0 else ("", 0)
             if -4 <= exp < sig:
@@ -321,7 +385,10 @@ def convert_float(value, spec, cache):
             body = render_f(fr, prec, spec.alt, strip=False)
         cache[key] = body
 
-    return spec.pad(body, zero_ok=True, sign=spec.sign_of(neg))
+    sign = spec.sign_of(neg)
+    if conv in "aA":
+        sign += "0X" if upper else "0x"
+    return spec.pad(body, zero_ok=True, sign=sign)
 
 
 class Block:
@@ -369,7 +436,8 @@ class Block:
         if conv in FLOAT_CONVS:
             if self.special is not None:
                 return convert_special(self.special, self.neg_zero, spec)
-            return convert_float(self.value, spec, self.cache)
+            return convert_float(self.value, spec, self.mant_bits,
+                                 self.cache)
         if conv in INT_CONVS:
             return convert_int(self.value, spec)
         if conv == "c":

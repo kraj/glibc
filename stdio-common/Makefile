@@ -28,7 +28,7 @@ xprintf-funcs := p as d f s sn v vas vd vf vs vsn
 
 # List of data types and formats for individual per-conversion printf tests.
 fmt-convs := double ldouble
-fmts := E e F f G g
+fmts := A a E e F f G g
 
 # List of data types grouping all conversions in single printf tests.
 nonfmt-convs := c char int llong long s short
