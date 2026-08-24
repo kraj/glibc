@@ -33,6 +33,8 @@
    LoongArch, libraries can be found in paths ending in:
      - /lib64
      - /lib64/sf
+     - /lib32
+     - /lib32/sf
    so this will add all of those paths.  */
 
 #define add_system_dir(dir) 						\
@@ -41,6 +43,8 @@
       static const char* lib_dirs[] = {					\
 	"/lib64",							\
 	"/lib64/sf",							\
+	"/lib32",							\
+	"/lib32/sf",							\
 	NULL,								\
       };								\
       const size_t lib_len = sizeof ("/lib") - 1;			\
