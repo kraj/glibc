@@ -41,6 +41,10 @@
    MINEXP	[optional] Minimum exponent integer constant.  Set to the
 		*_MIN_EXP value for the argument type handled, so that
 		subnormal values can be told apart from normal ones.
+   UNSUPPORTED_CONVS
+		[optional] String of conversions the verification cannot
+		model for the argument type handled.  Asking for one of
+		these produces no records and an unsupported status.
 
    Typedefs:
    type_t	Variadic function argument type.  Define to the promoted
@@ -67,6 +71,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <support/test-driver.h>
 
 /* Set to nonzero to select all possible tuples with repetitions of 1..n
    elements from the set of flags as defined in FLAGS array below; n is
@@ -86,6 +91,11 @@
    no such thing, in which case no value can be subnormal.  */
 #ifndef MINEXP
 # define MINEXP 0
+#endif
+/* Set to the conversions that cannot be verified for the type handled;
+   empty where they all can be, which is the usual case.  */
+#ifndef UNSUPPORTED_CONVS
+# define UNSUPPORTED_CONVS ""
 #endif
 
 /* The list of conversions permitted for the '#' flag, the '0' flag,
@@ -333,6 +343,10 @@ do_test (int argc, char *argv[])
       return EXIT_FAILURE;
     }
 
+  c = *argv[1];
+  if (strchr (UNSUPPORTED_CONVS, c) != NULL)
+    return EXIT_UNSUPPORTED;
+
   mtrace ();
 
   if (PREC != 0 && printf ("prec:%i\n", PREC) < 0)
@@ -347,7 +361,6 @@ do_test (int argc, char *argv[])
       return EXIT_FAILURE;
     }
 
-  c = *argv[1];
   for (v = 0; v < array_length (vals); v++)
     {
       if (printf ("val:%" REF_FMT "\n", REF_VAL (vals[v])) < 0)

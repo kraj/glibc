@@ -26,13 +26,22 @@ test_program_prefix=$1; shift
 
 status=0
 
-echo Verifying $format
+rc=0
 (set -o pipefail
  ${test_program_prefix} \
   ${common_objpfx}stdio-common/tst-printf-format-${xprintf}-ldouble $format |
    ${PYTHON:-python3} tst-printf-format.py 2>&1 |
    head -n 1 |
    sed "s/^/Conversion $format output error, first line:\n/") 2>&1 ||
-  status=1
+  rc=$?
+
+# The generator produces no records and reports an unsupported status for
+# a conversion the verification cannot model for the long double format in
+# use; see UNSUPPORTED_CONVS in tst-printf-format-skeleton-ldouble.c.
+case $rc in
+0)  echo Verifying $format ;;
+77) echo Unsupported $format; status=77 ;;
+*)  echo Verifying $format; status=1 ;;
+esac
 
 exit $status

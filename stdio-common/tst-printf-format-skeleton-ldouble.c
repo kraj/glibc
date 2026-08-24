@@ -28,6 +28,15 @@
 #define REF_VAL(v) (v)
 #define PREC LDBL_MANT_DIG
 #define MINEXP LDBL_MIN_EXP
+#if LDBL_MANT_DIG == 106
+/* The IBM extended format is a pair of doubles rather than a significand
+   of a single fixed width, so what the a and A conversions produce for it
+   does not follow from PREC and MINEXP the way the verification assumes.
+   Leave them out where the type has that format; the one target concerned
+   builds everything with the IEEE format instead, so this only comes up
+   where that has been turned off.  */
+# define UNSUPPORTED_CONVS "aA"
+#endif
 typedef long double type_t;
 static const type_t vals[] =
   { -HUGE_VAL, -LDBL_MAX, -LDBL_MIN, -0.0, -NAN, NAN, 0, LDBL_TRUE_MIN,
