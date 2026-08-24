@@ -37,7 +37,6 @@ ENTRY (__longjmp_symbol)
 	CHECK_SP (r24)
 # endif
 	mr r1,r24
-# endif
 #else
 	lwz r1,(JB_GPR1*4)(r3)
 #endif
