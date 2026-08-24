@@ -730,17 +730,21 @@ tests-special += \
   # tests-special
 endif
 
+ifndef THP-PAGE-SIZE
 # Align PT_LOAD segments in THP tests to THP page size so that kernel will
-# map PIE to the address aligned to THP page size.  The maximum THP size we
-# support to align the load segments (and we skip the tests with even
-# larger THP) is 32 MiB.
-THP-PAGE-SIZE-LDFLAGS = -Wl,-z,max-page-size=0x2000000
+# map PIE to the address aligned to THP page size.  Default THP page size
+# to 2MB which can be overridden in Makefile in subdirectories.
+THP-PAGE-SIZE = 0x200000
+endif
 
-# -Wl,-z,max-page-size=0x2000000 alone doesn't work for PDE when
+THP-PAGE-SIZE-CFLAGS = -DTHP_PAGE_SIZE=$(THP-PAGE-SIZE)
+THP-PAGE-SIZE-LDFLAGS = -Wl,-z,max-page-size=$(THP-PAGE-SIZE)
+
+# -Wl,-z,max-page-size=$(THP-PAGE-SIZE) alone doesn't work for PDE when
 # text-segment address is lower than the maximum page size:
 # https://sourceware.org/bugzilla/show_bug.cgi?id=34184
 ifneq (,$(load-address-ldflag))
-LOAD-THP-ADDRESS-LDFLAGS = $(load-address-ldflag)=0x2000000
+LOAD-THP-ADDRESS-LDFLAGS = $(load-address-ldflag)=$(THP-PAGE-SIZE)
 endif
 
 LDFLAGS-tst-thp-size-mod.so = -Wl,-z,noseparate-code \

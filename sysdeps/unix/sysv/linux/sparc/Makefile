@@ -14,3 +14,8 @@ endif
 ifeq ($(subdir),signal)
 sysdep_routines += sigreturn_stub
 endif
+
+ifeq ($(subdir),elf)
+# The sparc64 uses an 8KB base page and 8MB PMD transparent huge page
+THP-PAGE-SIZE = 0x800000
+endif
