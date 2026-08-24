@@ -74,9 +74,9 @@ support_readdir_function (enum support_readdir_op op)
       case SUPPORT_READDIR64_R:
         return "readdir64_r";
       case SUPPORT_READDIR64_COMPAT:
-        return "readdir64@GBLIC_2.1";
+        return "readdir64@GLIBC_2.1";
       case SUPPORT_READDIR64_R_COMPAT:
-        return "readdir64_r@GBLIC_2.1";
+        return "readdir64_r@GLIBC_2.1";
     }
   FAIL_EXIT1 ("invalid support_readdir_op constant: %d", op);
 }
