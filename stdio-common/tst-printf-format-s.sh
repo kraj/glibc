@@ -23,12 +23,10 @@ xprintf=$1; shift
 common_objpfx=$1; shift
 test_program_prefix=$1; shift
 
-AWK="env LC_ALL=C ${AWK:-awk}"
-
 echo Verifying s
 (set -o pipefail
  ${test_program_prefix} \
   ${common_objpfx}stdio-common/tst-printf-format-${xprintf}-s s |
-   $AWK -f tst-printf-format.awk 2>&1 |
+   ${PYTHON:-python3} tst-printf-format.py 2>&1 |
    head -n 1 | sed "s/^/Conversion s output error, first line:\n/") 2>&1 ||
   exit 1

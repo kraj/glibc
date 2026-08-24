@@ -633,7 +633,7 @@ $(objpfx)tst-printf.out: tst-printf.sh $(objpfx)tst-printf
 
 # We can't split a quoted recipe line, so do it via an auxiliary variable.
 make-tst-printf-format-out = \
-  AWK='$(AWK)' BASH='$(BASH)' \
+  PYTHON='$(PYTHON)' BASH='$(BASH)' \
     $(BASH) $< $@ $(common-objpfx) \
     '$(run-program-prefix-before-env) \
      $(run-program-env) \
@@ -642,7 +642,7 @@ make-tst-printf-format-out = \
      $(run-program-prefix-after-env)'
 $(objpfx)tst-printf-format-%.out: \
   tst-printf-format.sh $(foreach c,$(convs),tst-printf-format-$(c).sh) \
-  $(foreach f,$(xprintf-srcs),$(objpfx)$(f)) tst-printf-format.awk
+  $(foreach f,$(xprintf-srcs),$(objpfx)$(f)) tst-printf-format.py
 	$(make-tst-printf-format-out) > $@; \
 	$(evaluate-test)
 

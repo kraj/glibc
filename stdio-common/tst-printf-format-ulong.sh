@@ -23,29 +23,14 @@ xprintf=$1; shift
 common_objpfx=$1; shift
 test_program_prefix=$1; shift
 
-AWK="env LC_ALL=C ${AWK:-awk}"
-
-status=77
-
-# Verify that AWK can handle the range required.  It also catches:
-# "gawk: warning: -M ignored: MPFR/GMP support not compiled in"
-# message produced where bignum support is not there, which is the
-# only indication as the use of '-M' does not affect the exit status
-# in this case.
-ref="18446744073709551615"
-for AWK in "$AWK -M" "$AWK"; do
-  val=$(echo "$ref" | $AWK '{ printf "%d\n", $1 }' 2>&1) || continue
-  test "$val" = "$ref" && status=0 && break
-done
-
-test $status -eq 0 || { echo "No working AWK found" && exit $status; }
+status=0
 
 for f in o u x X; do
   echo Verifying $f
   (set -o pipefail
    ${test_program_prefix} \
     ${common_objpfx}stdio-common/tst-printf-format-${xprintf}-ulong $f |
-     $AWK -f tst-printf-format.awk 2>&1 |
+     ${PYTHON:-python3} tst-printf-format.py 2>&1 |
      head -n 1 | sed "s/^/Conversion $f output error, first line:\n/") 2>&1 ||
     status=1
 done
