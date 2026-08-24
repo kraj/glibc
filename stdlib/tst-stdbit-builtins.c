@@ -576,7 +576,7 @@ do_test (void)
   DIAG_POP_NEEDS_COMMENT_CLANG;
   /* clang-23 triggers an ICE with __builtin_stdc_bit_ceil with a non-constant
      unsigned _BitInt(1).  */
-#   ifdef __clang__
+#   ifndef __clang__
   unsigned _BitInt(1) c = 0;
   TEST_COMPARE (stdc_bit_floor (c++), 0);
   TEST_COMPARE (c, 1);
