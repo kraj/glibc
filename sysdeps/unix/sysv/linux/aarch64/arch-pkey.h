@@ -47,7 +47,7 @@ pkey_read (void)
 static __always_inline void
 pkey_write (unsigned long value)
 {
-  __asm__ volatile ("msr s3_3_c10_c2_4, %0; isb" : : "r" (value));
+  __asm__ volatile ("msr s3_3_c10_c2_4, %0; isb" : : "r" (value) : "memory");
 }
 
 #endif /* _ARCH_PKEY_H */
