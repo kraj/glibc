@@ -366,21 +366,23 @@ extern imaxdiv_t imaxdiv (intmax_t __numer, intmax_t __denom)
 
 /* Like `strtol' but convert to `intmax_t'.  */
 extern intmax_t strtoimax (const char *__restrict __nptr,
-			   char **__restrict __endptr, int __base) __THROW;
+			   char **__restrict __endptr, int __base)
+     __THROW __nonnull ((1));
 
 /* Like `strtoul' but convert to `uintmax_t'.  */
 extern uintmax_t strtoumax (const char *__restrict __nptr,
-			    char ** __restrict __endptr, int __base) __THROW;
+			    char ** __restrict __endptr, int __base)
+     __THROW __nonnull ((1));
 
 /* Like `wcstol' but convert to `intmax_t'.  */
 extern intmax_t wcstoimax (const __gwchar_t *__restrict __nptr,
 			   __gwchar_t **__restrict __endptr, int __base)
-     __THROW;
+     __THROW __nonnull ((1));
 
 /* Like `wcstoul' but convert to `uintmax_t'.  */
 extern uintmax_t wcstoumax (const __gwchar_t *__restrict __nptr,
 			    __gwchar_t ** __restrict __endptr, int __base)
-     __THROW;
+     __THROW __nonnull ((1));
 
 /* Versions of the above functions that handle '0b' and '0B' prefixes
    in base 0 or 2.  */
@@ -388,33 +390,37 @@ extern uintmax_t wcstoumax (const __gwchar_t *__restrict __nptr,
 # ifdef __REDIRECT
 extern intmax_t __REDIRECT_NTH (strtoimax, (const char *__restrict __nptr,
 					    char **__restrict __endptr,
-					    int __base), __isoc23_strtoimax);
+					    int __base), __isoc23_strtoimax)
+     __nonnull ((1));
 extern uintmax_t __REDIRECT_NTH (strtoumax, (const char *__restrict __nptr,
 					     char **__restrict __endptr,
-					     int __base), __isoc23_strtoumax);
+					     int __base), __isoc23_strtoumax)
+     __nonnull ((1));
 extern intmax_t __REDIRECT_NTH (wcstoimax,
 				(const __gwchar_t *__restrict __nptr,
 				 __gwchar_t **__restrict __endptr, int __base),
-				__isoc23_wcstoimax);
+				__isoc23_wcstoimax)
+     __nonnull ((1));
 extern uintmax_t __REDIRECT_NTH (wcstoumax,
 				 (const __gwchar_t *__restrict __nptr,
 				  __gwchar_t **__restrict __endptr, int __base),
-				 __isoc23_wcstoumax);
+				 __isoc23_wcstoumax)
+     __nonnull ((1));
 # else
 extern intmax_t __isoc23_strtoimax (const char *__restrict __nptr,
 				    char **__restrict __endptr, int __base)
-     __THROW;
+     __THROW __nonnull ((1));
 extern uintmax_t __isoc23_strtoumax (const char *__restrict __nptr,
 				     char ** __restrict __endptr, int __base)
-     __THROW;
+     __THROW __nonnull ((1));
 extern intmax_t __isoc23_wcstoimax (const __gwchar_t *__restrict __nptr,
 				    __gwchar_t **__restrict __endptr,
 				    int __base)
-     __THROW;
+     __THROW __nonnull ((1));
 extern uintmax_t __isoc23_wcstoumax (const __gwchar_t *__restrict __nptr,
 				     __gwchar_t ** __restrict __endptr,
 				     int __base)
-     __THROW;
+     __THROW __nonnull ((1));
 # define strtoimax __isoc23_strtoimax
 # define strtoumax __isoc23_strtoumax
 # define wcstoimax __isoc23_wcstoimax

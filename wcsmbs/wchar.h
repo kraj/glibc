@@ -425,14 +425,17 @@ extern int wcswidth (const wchar_t *__s, size_t __n) __THROW;
 /* Convert initial portion of the wide string NPTR to `double'
    representation.  */
 extern double wcstod (const wchar_t *__restrict __nptr,
-		      wchar_t **__restrict __endptr) __THROW;
+		      wchar_t **__restrict __endptr)
+     __THROW __nonnull ((1));
 
 #ifdef __USE_ISOC99
 /* Likewise for `float' and `long double' sizes of floating-point numbers.  */
 extern float wcstof (const wchar_t *__restrict __nptr,
-		     wchar_t **__restrict __endptr) __THROW;
+		     wchar_t **__restrict __endptr)
+     __THROW __nonnull ((1));
 extern long double wcstold (const wchar_t *__restrict __nptr,
-			    wchar_t **__restrict __endptr) __THROW;
+			    wchar_t **__restrict __endptr)
+     __THROW __nonnull ((1));
 #endif /* C99 */
 
 #if __GLIBC_USE (IEC_60559_TYPES_EXT) && __GLIBC_USE (ISOC23)
@@ -440,37 +443,44 @@ extern long double wcstold (const wchar_t *__restrict __nptr,
 
 # if __HAVE_FLOAT16
 extern _Float16 wcstof16 (const wchar_t *__restrict __nptr,
-			  wchar_t **__restrict __endptr) __THROW;
+			  wchar_t **__restrict __endptr)
+     __THROW __nonnull ((1));
 # endif
 
 # if __HAVE_FLOAT32
 extern _Float32 wcstof32 (const wchar_t *__restrict __nptr,
-			  wchar_t **__restrict __endptr) __THROW;
+			  wchar_t **__restrict __endptr)
+     __THROW __nonnull ((1));
 # endif
 
 # if __HAVE_FLOAT64
 extern _Float64 wcstof64 (const wchar_t *__restrict __nptr,
-			  wchar_t **__restrict __endptr) __THROW;
+			  wchar_t **__restrict __endptr)
+     __THROW __nonnull ((1));
 # endif
 
 # if __HAVE_FLOAT128
 extern _Float128 wcstof128 (const wchar_t *__restrict __nptr,
-			    wchar_t **__restrict __endptr) __THROW;
+			    wchar_t **__restrict __endptr)
+     __THROW __nonnull ((1));
 # endif
 
 # if __HAVE_FLOAT32X
 extern _Float32x wcstof32x (const wchar_t *__restrict __nptr,
-			    wchar_t **__restrict __endptr) __THROW;
+			    wchar_t **__restrict __endptr)
+     __THROW __nonnull ((1));
 # endif
 
 # if __HAVE_FLOAT64X
 extern _Float64x wcstof64x (const wchar_t *__restrict __nptr,
-			    wchar_t **__restrict __endptr) __THROW;
+			    wchar_t **__restrict __endptr)
+     __THROW __nonnull ((1));
 # endif
 
 # if __HAVE_FLOAT128X
 extern _Float128x wcstof128x (const wchar_t *__restrict __nptr,
-			      wchar_t **__restrict __endptr) __THROW;
+			      wchar_t **__restrict __endptr)
+     __THROW __nonnull ((1));
 # endif
 #endif /* __GLIBC_USE (IEC_60559_TYPES_EXT) && __GLIBC_USE (ISOC23) */
 
@@ -478,13 +488,14 @@ extern _Float128x wcstof128x (const wchar_t *__restrict __nptr,
 /* Convert initial portion of wide string NPTR to `long int'
    representation.  */
 extern long int wcstol (const wchar_t *__restrict __nptr,
-			wchar_t **__restrict __endptr, int __base) __THROW;
+			wchar_t **__restrict __endptr, int __base)
+     __THROW __nonnull ((1));
 
 /* Convert initial portion of wide string NPTR to `unsigned long int'
    representation.  */
 extern unsigned long int wcstoul (const wchar_t *__restrict __nptr,
 				  wchar_t **__restrict __endptr, int __base)
-     __THROW;
+     __THROW __nonnull ((1));
 
 #ifdef __USE_ISOC99
 /* Convert initial portion of wide string NPTR to `long long int'
@@ -492,14 +503,15 @@ extern unsigned long int wcstoul (const wchar_t *__restrict __nptr,
 __extension__
 extern long long int wcstoll (const wchar_t *__restrict __nptr,
 			      wchar_t **__restrict __endptr, int __base)
-     __THROW;
+     __THROW __nonnull ((1));
 
 /* Convert initial portion of wide string NPTR to `unsigned long long int'
    representation.  */
 __extension__
 extern unsigned long long int wcstoull (const wchar_t *__restrict __nptr,
 					wchar_t **__restrict __endptr,
-					int __base) __THROW;
+					int __base)
+     __THROW __nonnull ((1));
 #endif /* ISO C99.  */
 
 #ifdef __USE_GNU
@@ -508,14 +520,15 @@ extern unsigned long long int wcstoull (const wchar_t *__restrict __nptr,
 __extension__
 extern long long int wcstoq (const wchar_t *__restrict __nptr,
 			     wchar_t **__restrict __endptr, int __base)
-     __THROW;
+     __THROW __nonnull ((1));
 
 /* Convert initial portion of wide string NPTR to `unsigned long long int'
    representation.  */
 __extension__
 extern unsigned long long int wcstouq (const wchar_t *__restrict __nptr,
 				       wchar_t **__restrict __endptr,
-				       int __base) __THROW;
+				       int __base)
+     __THROW __nonnull ((1));
 #endif /* Use GNU.  */
 
 /* Versions of the above functions that handle '0b' and '0B' prefixes
@@ -524,50 +537,56 @@ extern unsigned long long int wcstouq (const wchar_t *__restrict __nptr,
 # ifdef __REDIRECT
 extern long int __REDIRECT_NTH (wcstol, (const wchar_t *__restrict __nptr,
 					 wchar_t **__restrict __endptr,
-					 int __base), __isoc23_wcstol);
+					 int __base), __isoc23_wcstol)
+     __nonnull ((1));
 extern unsigned long int __REDIRECT_NTH (wcstoul,
 					 (const wchar_t *__restrict __nptr,
 					  wchar_t **__restrict __endptr,
-					  int __base), __isoc23_wcstoul);
+					  int __base), __isoc23_wcstoul)
+     __nonnull ((1));
 __extension__
 extern long long int __REDIRECT_NTH (wcstoll,
 				     (const wchar_t *__restrict __nptr,
 				      wchar_t **__restrict __endptr,
-				      int __base), __isoc23_wcstoll);
+				      int __base), __isoc23_wcstoll)
+     __nonnull ((1));
 __extension__
 extern unsigned long long int __REDIRECT_NTH (wcstoull,
 					      (const wchar_t *__restrict __nptr,
 					       wchar_t **__restrict __endptr,
-					       int __base), __isoc23_wcstoull);
+					       int __base), __isoc23_wcstoull)
+     __nonnull ((1));
 #  ifdef __USE_GNU
 __extension__
 extern long long int __REDIRECT_NTH (wcstoq, (const wchar_t *__restrict __nptr,
 					      wchar_t **__restrict __endptr,
-					      int __base), __isoc23_wcstoll);
+					      int __base), __isoc23_wcstoll)
+     __nonnull ((1));
 __extension__
 extern unsigned long long int __REDIRECT_NTH (wcstouq,
 					      (const wchar_t *__restrict __nptr,
 					       wchar_t **__restrict __endptr,
-					       int __base), __isoc23_wcstoull);
+					       int __base), __isoc23_wcstoull)
+     __nonnull ((1));
 #  endif
 # else
 extern long int __isoc23_wcstol (const wchar_t *__restrict __nptr,
 				 wchar_t **__restrict __endptr, int __base)
-     __THROW;
+     __THROW __nonnull ((1));
 extern unsigned long int __isoc23_wcstoul (const wchar_t *__restrict __nptr,
 					   wchar_t **__restrict __endptr,
 					   int __base)
-     __THROW;
+     __THROW __nonnull ((1));
 __extension__
 extern long long int __isoc23_wcstoll (const wchar_t *__restrict __nptr,
 				       wchar_t **__restrict __endptr,
 				       int __base)
-     __THROW;
+     __THROW __nonnull ((1));
 __extension__
 extern unsigned long long int __isoc23_wcstoull (const wchar_t *__restrict __nptr,
 						 wchar_t **__restrict __endptr,
 						 int __base)
-     __THROW;
+     __THROW __nonnull ((1));
 #  define wcstol __isoc23_wcstol
 #  define wcstoul __isoc23_wcstoul
 #  define wcstoll __isoc23_wcstoll
@@ -585,22 +604,25 @@ extern unsigned long long int __isoc23_wcstoull (const wchar_t *__restrict __npt
    by the POSIX.1-2008 extended locale API.  */
 extern long int wcstol_l (const wchar_t *__restrict __nptr,
 			  wchar_t **__restrict __endptr, int __base,
-			  locale_t __loc) __THROW;
+			  locale_t __loc)
+     __THROW __nonnull ((1, 4));
 
 extern unsigned long int wcstoul_l (const wchar_t *__restrict __nptr,
 				    wchar_t **__restrict __endptr,
-				    int __base, locale_t __loc) __THROW;
+				    int __base, locale_t __loc)
+     __THROW __nonnull ((1, 4));
 
 __extension__
 extern long long int wcstoll_l (const wchar_t *__restrict __nptr,
 				wchar_t **__restrict __endptr,
-				int __base, locale_t __loc) __THROW;
+				int __base, locale_t __loc)
+     __THROW __nonnull ((1, 4));
 
 __extension__
 extern unsigned long long int wcstoull_l (const wchar_t *__restrict __nptr,
 					  wchar_t **__restrict __endptr,
 					  int __base, locale_t __loc)
-     __THROW;
+     __THROW __nonnull ((1, 4));
 
 /* Versions of the above functions that handle '0b' and '0B' prefixes
    in base 0 or 2.  */
@@ -609,42 +631,47 @@ extern unsigned long long int wcstoull_l (const wchar_t *__restrict __nptr,
 extern long int __REDIRECT_NTH (wcstol_l, (const wchar_t *__restrict __nptr,
 					   wchar_t **__restrict __endptr,
 					   int __base, locale_t __loc),
-				__isoc23_wcstol_l);
+				__isoc23_wcstol_l)
+     __nonnull ((1, 4));
 extern unsigned long int __REDIRECT_NTH (wcstoul_l,
 					 (const wchar_t *__restrict __nptr,
 					  wchar_t **__restrict __endptr,
 					  int __base, locale_t __loc),
-					 __isoc23_wcstoul_l);
+					 __isoc23_wcstoul_l)
+     __nonnull ((1, 4));
 __extension__
 extern long long int __REDIRECT_NTH (wcstoll_l,
 				     (const wchar_t *__restrict __nptr,
 				      wchar_t **__restrict __endptr,
 				      int __base, locale_t __loc),
-				     __isoc23_wcstoll_l);
+				     __isoc23_wcstoll_l)
+     __nonnull ((1, 4));
 __extension__
 extern unsigned long long int __REDIRECT_NTH (wcstoull_l,
 					      (const wchar_t *__restrict __nptr,
 					       wchar_t **__restrict __endptr,
 					       int __base, locale_t __loc),
-					      __isoc23_wcstoull_l);
+					      __isoc23_wcstoull_l)
+     __nonnull ((1, 4));
 #  else
 extern long int __isoc23_wcstol_l (const wchar_t *__restrict __nptr,
 				   wchar_t **__restrict __endptr, int __base,
-				   locale_t __loc) __THROW;
+				   locale_t __loc)
+     __THROW __nonnull ((1, 4));
 extern unsigned long int __isoc23_wcstoul_l (const wchar_t *__restrict __nptr,
 					     wchar_t **__restrict __endptr,
 					     int __base, locale_t __loc)
-     __THROW;
+     __THROW __nonnull ((1, 4));
 __extension__
 extern long long int __isoc23_wcstoll_l (const wchar_t *__restrict __nptr,
 					 wchar_t **__restrict __endptr,
 					 int __base, locale_t __loc)
-     __THROW;
+     __THROW __nonnull ((1, 4));
 __extension__
 extern unsigned long long int __isoc23_wcstoull_l (const wchar_t *__restrict __nptr,
 						   wchar_t **__restrict __endptr,
 						   int __base, locale_t __loc)
-     __THROW;
+     __THROW __nonnull ((1, 4));
 #   define wcstol_l __isoc23_wcstol_l
 #   define wcstoul_l __isoc23_wcstoul_l
 #   define wcstoll_l __isoc23_wcstoll_l
@@ -654,56 +681,64 @@ extern unsigned long long int __isoc23_wcstoull_l (const wchar_t *__restrict __n
 
 extern double wcstod_l (const wchar_t *__restrict __nptr,
 			wchar_t **__restrict __endptr, locale_t __loc)
-     __THROW;
+     __THROW __nonnull ((1, 3));
 
 extern float wcstof_l (const wchar_t *__restrict __nptr,
 		       wchar_t **__restrict __endptr, locale_t __loc)
-     __THROW;
+     __THROW __nonnull ((1, 3));
 
 extern long double wcstold_l (const wchar_t *__restrict __nptr,
 			      wchar_t **__restrict __endptr,
-			      locale_t __loc) __THROW;
+			      locale_t __loc)
+     __THROW __nonnull ((1, 3));
 
 # if __HAVE_FLOAT16
 extern _Float16 wcstof16_l (const wchar_t *__restrict __nptr,
 			    wchar_t **__restrict __endptr,
-			    locale_t __loc) __THROW;
+			    locale_t __loc)
+     __THROW __nonnull ((1, 3));
 # endif
 
 # if __HAVE_FLOAT32
 extern _Float32 wcstof32_l (const wchar_t *__restrict __nptr,
 			    wchar_t **__restrict __endptr,
-			    locale_t __loc) __THROW;
+			    locale_t __loc)
+     __THROW __nonnull ((1, 3));
 # endif
 
 # if __HAVE_FLOAT64
 extern _Float64 wcstof64_l (const wchar_t *__restrict __nptr,
 			    wchar_t **__restrict __endptr,
-			    locale_t __loc) __THROW;
+			    locale_t __loc)
+     __THROW __nonnull ((1, 3));
 # endif
 
 # if __HAVE_FLOAT128
 extern _Float128 wcstof128_l (const wchar_t *__restrict __nptr,
 			      wchar_t **__restrict __endptr,
-			      locale_t __loc) __THROW;
+			      locale_t __loc)
+     __THROW __nonnull ((1, 3));
 # endif
 
 # if __HAVE_FLOAT32X
 extern _Float32x wcstof32x_l (const wchar_t *__restrict __nptr,
 			      wchar_t **__restrict __endptr,
-			      locale_t __loc) __THROW;
+			      locale_t __loc)
+     __THROW __nonnull ((1, 3));
 # endif
 
 # if __HAVE_FLOAT64X
 extern _Float64x wcstof64x_l (const wchar_t *__restrict __nptr,
 			      wchar_t **__restrict __endptr,
-			      locale_t __loc) __THROW;
+			      locale_t __loc)
+     __THROW __nonnull ((1, 3));
 # endif
 
 # if __HAVE_FLOAT128X
 extern _Float128x wcstof128x_l (const wchar_t *__restrict __nptr,
 				wchar_t **__restrict __endptr,
-				locale_t __loc) __THROW;
+				locale_t __loc)
+     __THROW __nonnull ((1, 3));
 # endif
 #endif	/* use GNU */
 
