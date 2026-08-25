@@ -10119,6 +10119,12 @@ tanh 0x0.fffffffffffffp-1022
 tanh 0x3.b9979a543d0fbfa8p-4
 tanh 0x1.a0112a16e9318p+1
 tanh -0x1.a0112a16e9318p+1
+tanh 0x1.a0bd10af4ac2bp+1
+tanh -0x1.a0bd10af4ac2bp+1
+tanh 0x1.a0bd1178ea346p+1
+tanh -0x1.a0bd1178ea346p+1
+tanh 0x1.a0bd144ac78ap+1
+tanh -0x1.a0bd144ac78ap+1
 tanh max
 tanh -max
 tanh min
