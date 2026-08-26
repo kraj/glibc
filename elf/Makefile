@@ -1436,6 +1436,7 @@ tests-special += \
   $(objpfx)check-execstack.out \
   $(objpfx)check-initfini.out \
   $(objpfx)check-localplt.out \
+  $(objpfx)check-symbol-version.out \
   $(objpfx)check-textrel.out \
   $(objpfx)check-wx-segment.out \
   # tests-special
@@ -2380,6 +2381,12 @@ $(objpfx)check-initfini.out: $(..)scripts/check-initfini.awk \
 	LC_ALL=C $(AWK) -f $^ > $@; \
 	$(evaluate-test)
 generated += check-initfini.out
+
+$(objpfx)check-symbol-version.out: $(..)scripts/check-symbol-version.awk \
+			    $(all-built-dso:=.dynsym)
+	LC_ALL=C $(AWK) -f $^ > $@; \
+	$(evaluate-test)
+generated += check-symbol-version.out
 
 $(objpfx)tst-dlopenrpath: $(objpfx)tst-dlopenrpathmod.so
 CFLAGS-tst-dlopenrpath.c += -DPFX=\"$(objpfx)\"
