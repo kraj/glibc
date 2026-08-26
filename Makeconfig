@@ -959,8 +959,9 @@ endif
 installed-modules = nonlib nscd ldconfig locale_programs \
 		    iconvprogs libnss_files libnss_compat libnss_db libnss_hesiod \
 		    libutil libpcprofile libnsl
++time64-flags = -D_TIME_BITS=64
 +extra-time-flags = $(if $(filter $(installed-modules),\
-                           $(in-module)),-D_TIME_BITS=64 -D_FILE_OFFSET_BITS=64)
+                           $(in-module)),$(+time64-flags) -D_FILE_OFFSET_BITS=64)
 
 # We might want to compile with some stack-protection flag.
 ifneq ($(stack-protector),)

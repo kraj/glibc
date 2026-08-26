@@ -1267,7 +1267,7 @@ vpath %.input $(sysdirs)
 include $(o-iterator)
 define o-iterator-doit
 $(foreach f,$(tests-time64) $(xtests-time64),\
-	    $(objpfx)$(f)$(o)): CFLAGS += -D_TIME_BITS=64 -D_FILE_OFFSET_BITS=64
+	    $(objpfx)$(f)$(o)): CFLAGS += $(+time64-flags) -D_FILE_OFFSET_BITS=64
 endef
 object-suffixes-left := $(all-object-suffixes)
 include $(o-iterator)

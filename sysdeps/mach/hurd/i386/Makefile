@@ -1,3 +1,6 @@
+# hurd-i386 does not support 64b time_t
++time64-flags = -D_TIME_BITS=32
+
 ifeq ($(subdir),csu)
 ifeq (yes,$(build-shared))
 sysdep_routines += divdi3

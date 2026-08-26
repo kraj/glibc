@@ -309,7 +309,7 @@ tst-statvfs-ARGS = $(objpfx)tst-statvfs tst-statvfs.c /tmp
 
 tst-open-tmpfile-ARGS = --test-dir=$(objpfx)
 
-CFLAGS-ftwtest-time64.c += -D_TIME_BITS=64 -D_FILE_OFFSET_BITS=64
+CFLAGS-ftwtest-time64.c += $(+time64-flags) -D_FILE_OFFSET_BITS=64
 
 ifeq ($(run-built-tests),yes)
 $(objpfx)ftwtest.out: ftwtest-sh $(objpfx)ftwtest

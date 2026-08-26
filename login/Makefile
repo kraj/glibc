@@ -89,8 +89,8 @@ tests := \
   tst-utmpx \
   # tests
 
-CFLAGS-tst-utmp-size-64.c += -D_FILE_OFFSET_BITS=64 -D_TIME_BITS=64
-CFLAGS-tst-utmp-unsigned-64.c += -D_FILE_OFFSET_BITS=64 -D_TIME_BITS=64
+CFLAGS-tst-utmp-size-64.c += -D_FILE_OFFSET_BITS=64 $(+time64-flags)
+CFLAGS-tst-utmp-unsigned-64.c += -D_FILE_OFFSET_BITS=64 $(+time64-flags)
 
 # Empty compatibility library for old binaries.
 extra-libs      := libutil
