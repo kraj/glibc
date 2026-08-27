@@ -45,6 +45,9 @@ Reported-By:
 The entity that reported this issue. There could be multiple entries, one for
 each reporter.
 
+CVSS:
+CVSS score for the issue.
+
 Adding an Advisory
 ------------------
 
