@@ -549,7 +549,8 @@ __vstrfmon_l_buffer (struct __printf_buffer *buf, locale_t loc,
       /* Now test whether the output width is filled.  */
       if (buf->write_ptr - startp < width)
 	{
-	  size_t pad_width = width - (buf->write_ptr - startp);
+	  size_t written_width = buf->write_ptr - startp;
+	  size_t pad_width = width - written_width;
 	  __printf_buffer_pad (buf, ' ', pad_width);
 	  if (__printf_buffer_has_failed (buf))
 	    /* Implies length check.  */
@@ -558,7 +559,7 @@ __vstrfmon_l_buffer (struct __printf_buffer *buf, locale_t loc,
 	     Otherwise move the field contents in place.  */
 	  if (!left)
 	    {
-	      memmove (startp + pad_width, startp, buf->write_ptr - startp);
+	      memmove (startp + pad_width, startp, written_width);
 	      memset (startp, ' ', pad_width);
 	    }
 	}
