@@ -338,6 +338,7 @@ tests := \
   tst-stdc_leading_zeros \
   tst-stdc_trailing_ones \
   tst-stdc_trailing_zeros \
+  tst-strfmon-bug34510 \
   tst-strfmon_l \
   tst-strfrom \
   tst-strfrom-locale \
