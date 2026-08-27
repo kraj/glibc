@@ -35,7 +35,7 @@ do_test (void)
     {
       /* The syscall argument might be filtered by kernel, so the
         test can not check for the bug issue.  */
-      if (errno == EPERM)
+      if (errno == EPERM || errno == 0xdefaced)
        FAIL_UNSUPPORTED ("personality syscall argument are filtered");
       FAIL_EXIT1 ("personality (%#x) failed: %m", test_persona);
     }
