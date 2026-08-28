@@ -21,6 +21,7 @@
 #include <time.h>
 #include <unistd.h>
 
+#include <support/check.h>
 #include <support/test-driver.h>
 
 #if defined _POSIX_CLOCK_SELECTION && _POSIX_CLOCK_SELECTION >= 0
@@ -162,7 +163,7 @@ do_test (void)
 #  if _POSIX_MONOTONIC_CLOCK == 0
   int e = sysconf (_SC_MONOTONIC_CLOCK);
   if (e < 0)
-    puts ("CLOCK_MONOTONIC not supported");
+    FAIL_UNSUPPORTED ("CLOCK_MONOTONIC not supported");
   else if (e == 0)
     {
       puts ("sysconf (_SC_MONOTONIC_CLOCK) must not return 0");

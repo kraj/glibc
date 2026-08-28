@@ -37,6 +37,7 @@ do_test ()
 #include <errno.h>
 #include <pthread.h>
 
+#include <support/check.h>
 #include <support/xunistd.h>
 
 static pthread_barrier_t barrier;
@@ -156,8 +157,7 @@ do_test (void)
   if (timer_create (my_thread_clock, NULL, &t) != 0)
     {
       printf ("timer_create: %m\n");
-      puts ("No support for CPU clocks with good semantics, skipping test");
-      return 0;
+      FAIL_UNSUPPORTED ("No support for CPU clocks with good semantics");
     }
   timer_delete (t);
 

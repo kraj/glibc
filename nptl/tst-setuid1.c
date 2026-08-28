@@ -23,6 +23,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#include <support/check.h>
 
 static pthread_barrier_t b3, b4;
 static uid_t prev_ruid, prev_euid, prev_suid, nobody_uid;
@@ -1049,15 +1050,13 @@ do_test (void)
   if (prev_ruid == nobody_uid || prev_euid == nobody_uid
       || prev_suid == nobody_uid)
     {
-      puts ("already running as user nobody, skipping tests");
-      exit (0);
+      FAIL_UNSUPPORTED ("already running as user nobody");
     }
 
   if (prev_rgid == nobody_gid || prev_egid == nobody_gid
       || prev_sgid == nobody_gid)
     {
-      puts ("already running as group nobody, skipping tests");
-      exit (0);
+      FAIL_UNSUPPORTED ("already running as group nobody");
     }
 
   if (pthread_barrier_init (&b3, NULL, 3) != 0)

@@ -30,7 +30,7 @@ do_test (void)
     /* Permissions on /dev/null (the opened descriptor) cannot be changed.  */
     int fd = xopen ("/dev/null", O_RDWR, 0);
     if (getuid () == 0)
-      puts ("info: /dev/null fchmod test skipped because of root privileges");
+      FAIL_UNSUPPORTED ("/dev/null fchmod test skipped because of root privileges");
     else
       {
         errno = 0;
