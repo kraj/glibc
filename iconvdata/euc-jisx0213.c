@@ -224,6 +224,9 @@
 	    STANDARD_FROM_LOOP_ERR_HANDLER (1);				      \
 	  }								      \
       }									      \
+    else 								      \
+      /* There was a pending character.  Clear it.  */			      \
+      *statep = 0;							      \
 									      \
     put32 (outptr, ch);							      \
     outptr += 4;							      \
