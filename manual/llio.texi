@@ -1503,7 +1503,7 @@ This flag allows an offset to be honored, even if the file was opened with
 
 @item RWF_ATOMIC
 Indicate that the write is to be issued with torn-write prevention.  The
-input buffer should follow some contraints: the total length should be
+input buffer should follow some constraints: the total length should be
 power-of-2 in size and also sizes between @code{atomic_write_unit_min}
 and @code{atomic_write_unit_max}, the @code{struct iovec} count should be
 up to @code{atomic_write_segments_max}, and the offset should be
@@ -1886,7 +1886,7 @@ length by available RAM, but with very few mapped pages.  Note that
 writes to such a mapping may cause a @code{SIGSEGV} if the system is
 unable to map a page due to lack of resources.
 
-On Linux, this flag's behavior may be overwridden by
+On Linux, this flag's behavior may be overridden by
 @file{/proc/sys/vm/overcommit_memory} as documented in the proc(5) man
 page.
 
@@ -1967,7 +1967,7 @@ The file is on a filesystem that doesn't support mapping.
 @code{PROT_EXEC} was requested but the file is on a filesystem that
 was mounted with execution denied, a file seal prevented the mapping,
 or the caller set MAP_HUDETLB but does not have the required
-priviledges.
+privileges.
 
 @item EOVERFLOW
 
