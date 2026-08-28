@@ -15,8 +15,27 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
+#ifdef GNULIB_TEST_STDBIT
+# include <config.h>
+#endif
+
+/* Specification.  */
 #include <stdbit.h>
-#include <support/check.h>
+
+#include <limits.h>
+
+#ifdef GNULIB_TEST_STDBIT
+# include "macros.h"
+# define MAIN_STATIC
+# define MAIN main
+# define TEST_COMPARE(a, b) ASSERT ((a) == (b))
+# define TEST_EXIT_STATUS test_exit_status
+#else
+# include <support/check.h>
+# define MAIN_STATIC static
+# define MAIN do_test
+# define TEST_EXIT_STATUS 0
+#endif
 
 #define TEST_CASE(type, function, value, shift, expect)         \
   do                                                            \
@@ -431,10 +450,11 @@ test_stdc_rotate_right_ui (void)
 static void
 test_stdc_rotate_right_ul (void)
 {
-  if (sizeof 0ul < sizeof 0ull)
-    TEST_CASES_32 (unsigned long int, stdc_rotate_right_ul);
-  else
-    TEST_CASES_64 (unsigned long long int, stdc_rotate_right_ul);
+#if ULONG_MAX >> 31 == 1
+  TEST_CASES_32 (unsigned long int, stdc_rotate_right_ul);
+#else
+  TEST_CASES_64 (unsigned long int, stdc_rotate_right_ul);
+#endif
 }
 
 static void
@@ -443,15 +463,17 @@ test_stdc_rotate_right_ull (void)
   TEST_CASES_64 (unsigned long long int, stdc_rotate_right_ull);
 }
 
-static int
-do_test (void)
+MAIN_STATIC int
+MAIN (void)
 {
   test_stdc_rotate_right_uc ();
   test_stdc_rotate_right_us ();
   test_stdc_rotate_right_ui ();
   test_stdc_rotate_right_ul ();
   test_stdc_rotate_right_ull ();
-  return 0;
+  return TEST_EXIT_STATUS;
 }
 
-#include <support/test-driver.c>
+#ifndef GNULIB_TEST_STDBIT
+# include <support/test-driver.c>
+#endif

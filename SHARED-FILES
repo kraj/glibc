@@ -113,6 +113,7 @@ gnulib:
   stdlib/setenv.c
   stdlib/strtoll.c
   stdlib/strtoul.c
+  # Merged from gnulib 2026-08-27, (gnulib commit ec224ee81b)
   stdlib/tst-stdc_rotate_left.c
   stdlib/tst-stdc_rotate_right.c
   # Merged from gnulib 2014-6-26, needs merge back
