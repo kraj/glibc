@@ -1887,8 +1887,8 @@ writes to such a mapping may cause a @code{SIGSEGV} if the system is
 unable to map a page due to lack of resources.
 
 On Linux, this flag's behavior may be overridden by
-@file{/proc/sys/vm/overcommit_memory} as documented in the proc(5) man
-page.
+@file{/proc/sys/vm/overcommit_memory} as documented in the
+proc_sys_vm(5) man page.
 
 @item MAP_STACK
 Ensures that the resulting mapping is suitable for use as a program
