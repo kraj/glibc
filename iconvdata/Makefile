@@ -76,7 +76,8 @@ tests = bug-iconv1 bug-iconv2 tst-loading tst-e2big tst-iconv4 bug-iconv4 \
 	tst-iconv6 bug-iconv5 bug-iconv6 tst-iconv7 bug-iconv8 bug-iconv9 \
 	bug-iconv10 bug-iconv11 bug-iconv12 tst-iconv-big5-hkscs-to-2ucs4 \
 	bug-iconv13 bug-iconv14 bug-iconv15 \
-	tst-iconv-iso-2022-cn-ext tst-bug33980
+	tst-iconv-iso-2022-cn-ext tst-bug33980 \
+	tst-jisx0213-progress
 ifeq ($(have-thread-library),yes)
 tests += bug-iconv3
 endif
@@ -335,6 +336,8 @@ $(objpfx)tst-iconv-iso-2022-cn-ext.out: $(addprefix $(objpfx), $(gconv-modules))
 					$(addprefix $(objpfx),$(modules.so))
 $(objpfx)tst-bug33980.out: $(addprefix $(objpfx), $(gconv-modules)) \
 			   $(addprefix $(objpfx),$(modules.so))
+$(objpfx)tst-jisx0213-progress.out: \
+  $(addprefix $(objpfx), $(gconv-modules)) $(addprefix $(objpfx),$(modules.so))
 
 $(objpfx)iconv-test.out: run-iconv-test.sh \
 			 $(addprefix $(objpfx), $(gconv-modules)) \
