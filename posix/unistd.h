@@ -307,7 +307,7 @@ extern int execveat (int __fd, const char *__path, char *const __argv[],
    If AT_EACCESS is set in FLAG, then use effective IDs like `eaccess',
    otherwise use real IDs like `access'.  */
 extern int faccessat (int __fd, const char *__file, int __type, int __flag)
-     __THROW __nonnull ((2)) __wur;
+     __THROW __wur;
 #endif /* Use GNU.  */
 
 
@@ -510,7 +510,7 @@ extern int lchown (const char *__file, __uid_t __owner, __gid_t __group)
    on.  */
 extern int fchownat (int __fd, const char *__file, __uid_t __owner,
 		     __gid_t __group, int __flag)
-     __THROW __nonnull ((2)) __wur;
+     __THROW __wur;
 #endif /* Use GNU.  */
 
 /* Change the process's working directory to PATH.  */
