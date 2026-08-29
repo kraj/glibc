@@ -230,19 +230,17 @@ extern int open64 (const char *__file, int __oflag, ...) __nonnull ((1));
    This function is a cancellation point and therefore not marked with
    __THROW.  */
 # ifndef __USE_FILE_OFFSET64
-extern int openat (int __fd, const char *__file, int __oflag, ...)
-     __nonnull ((2));
+extern int openat (int __fd, const char *__file, int __oflag, ...);
 # else
 #  ifdef __REDIRECT
 extern int __REDIRECT (openat, (int __fd, const char *__file, int __oflag,
-				...), openat64) __nonnull ((2));
+				...), openat64);
 #  else
 #   define openat openat64
 #  endif
 # endif
 # ifdef __USE_LARGEFILE64
-extern int openat64 (int __fd, const char *__file, int __oflag, ...)
-     __nonnull ((2));
+extern int openat64 (int __fd, const char *__file, int __oflag, ...);
 # endif
 #endif
 

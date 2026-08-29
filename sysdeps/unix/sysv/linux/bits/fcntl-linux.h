@@ -485,7 +485,7 @@ extern int open_by_handle_at (int __mountdirfd, struct file_handle *__handle,
 extern int openat2 (int __dfd, const char * __filename,
 		    const struct open_how * __how,
 		    __SIZE_TYPE__ __usize)
-     __nonnull ((2, 3));
+     __nonnull ((3));
 
 #endif	/* use GNU */
 

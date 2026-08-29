@@ -25,7 +25,7 @@
 extern int __REDIRECT (__openat2_alias, (int __dfd, const char *__filename,
 					 const struct open_how *__how,
 					 size_t __usize), openat2)
-     __nonnull ((2, 3));
+     __nonnull ((3));
 
 #if !__fortify_use_clang
 __errordecl (__openat2_invalid_size,
