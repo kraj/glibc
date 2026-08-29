@@ -20,11 +20,9 @@ extern int __fcntl (int __fd, int __cmd, ...);
 libc_hidden_proto (__fcntl)
 extern int __fcntl64 (int __fd, int __cmd, ...) attribute_hidden;
 libc_hidden_proto (__fcntl64)
-extern int __openat (int __fd, const char *__file, int __oflag, ...)
-  __nonnull ((2));
+extern int __openat (int __fd, const char *__file, int __oflag, ...);
 libc_hidden_proto (__openat)
-extern int __openat64 (int __fd, const char *__file, int __oflag, ...)
-  __nonnull ((2));
+extern int __openat64 (int __fd, const char *__file, int __oflag, ...);
 libc_hidden_proto (__openat64)
 
 extern int __open_2 (const char *__path, int __oflag);

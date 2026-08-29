@@ -135,18 +135,14 @@ open64 (__fortify_clang_overload_arg (const char *, ,__path), int __oflag,
 
 #ifdef __USE_ATFILE
 # ifndef __USE_FILE_OFFSET64
-extern int __openat_2 (int __fd, const char *__path, int __oflag)
-     __nonnull ((2));
+extern int __openat_2 (int __fd, const char *__path, int __oflag);
 extern int __REDIRECT (__openat_alias, (int __fd, const char *__path,
-					int __oflag, ...), openat)
-     __nonnull ((2));
+					int __oflag, ...), openat);
 # else
 extern int __REDIRECT (__openat_2, (int __fd, const char *__path,
-				    int __oflag), __openat64_2)
-     __nonnull ((2));
+				    int __oflag), __openat64_2);
 extern int __REDIRECT (__openat_alias, (int __fd, const char *__path,
-					int __oflag, ...), openat64)
-     __nonnull ((2));
+					int __oflag, ...), openat64);
 # endif
 
 # ifdef __va_arg_pack_len
