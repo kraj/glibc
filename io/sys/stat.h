@@ -370,7 +370,7 @@ extern int fchmod (int __fd, __mode_t __mode) __THROW;
    the directory FD is open on.  */
 extern int fchmodat (int __fd, const char *__file, __mode_t __mode,
 		     int __flag)
-     __THROW __nonnull ((2)) __wur;
+     __THROW __wur;
 #endif /* Use ATFILE.  */
 
 
