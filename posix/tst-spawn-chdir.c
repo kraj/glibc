@@ -78,25 +78,12 @@ add_chdir (posix_spawn_file_actions_t *actions, const char *path,
     {
       TEST_COMPARE (posix_spawn_file_actions_addopen
                     (actions, tmpfd, path, O_DIRECTORY | O_RDONLY, 0), 0);
-
-#ifdef USE_POSIX_ALIASES
-      int ret = posix_spawn_file_actions_addfchdir (actions, tmpfd);
-#else
-      int ret = posix_spawn_file_actions_addfchdir_np (actions, tmpfd);
-#endif
-      TEST_COMPARE (ret, 0);
-
+      TEST_COMPARE (posix_spawn_file_actions_addfchdir_np
+                    (actions, tmpfd), 0);
       TEST_COMPARE (posix_spawn_file_actions_addclose (actions, tmpfd), 0);
     }
   else
-    {
-#ifdef USE_POSIX_ALIASES
-      int ret = posix_spawn_file_actions_addchdir (actions, path);
-#else
-      int ret = posix_spawn_file_actions_addchdir_np (actions, path);
-#endif
-      TEST_COMPARE (ret, 0);
-    }
+    TEST_COMPARE (posix_spawn_file_actions_addchdir_np (actions, path), 0);
 }
 
 static int
