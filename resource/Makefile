@@ -28,6 +28,7 @@ routines := getrlimit setrlimit getrlimit64 setrlimit64 getrusage ulimit      \
 tests := \
   bug-ulimit1 \
   tst-getrlimit \
+  tst-getrusage \
 # tests
 
 
