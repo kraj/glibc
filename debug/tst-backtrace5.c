@@ -79,7 +79,9 @@ handle_signal (int signum)
      (__syscall_cancel*) and require the read syscall wrapper to be
      present (but skip intermediates).  */
   for (i = 1; i < n; i++)
-    if (match (symbols[i], "read") && !match (symbols[i], "read_nocancel") && !match (symbols[i], "io_read"))
+    if (match (symbols[i], "read")
+	&& !match (symbols[i], "read_nocancel")
+	&& !match (symbols[i], "io_read"))
       break;
   if (i == n)
     {
