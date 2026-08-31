@@ -200,17 +200,31 @@ extern int posix_spawn_file_actions_adddup2 (posix_spawn_file_actions_t *
 					     int __fd, int __newfd)
      __THROW __nonnull ((1));
 
-#ifdef __USE_MISC
+#ifdef __USE_XOPEN2K24
 /* Add an action changing the directory to PATH during spawn.  This
    affects the subsequent file actions.  */
-extern int posix_spawn_file_actions_addchdir_np (posix_spawn_file_actions_t *
-						 __restrict __actions,
-						 const char *__restrict __path)
+extern int posix_spawn_file_actions_addchdir (posix_spawn_file_actions_t *
+					      __restrict __actions,
+					      const char *__restrict __path)
      __THROW __nonnull ((1, 2));
 
 /* Add an action changing the directory to FD during spawn.  This
    affects the subsequent file actions.  FD is not duplicated and must
    be open when the file action is executed.  */
+extern int posix_spawn_file_actions_addfchdir (posix_spawn_file_actions_t *,
+					       int __fd)
+     __THROW __nonnull ((1));
+
+#endif /* __USE_XOPEN2K24 */
+
+#ifdef __USE_MISC
+/* Same as posix_spawn_file_actions_addchdir.  */
+extern int posix_spawn_file_actions_addchdir_np (posix_spawn_file_actions_t *
+						 __restrict __actions,
+						 const char *__restrict __path)
+     __THROW __nonnull ((1, 2));
+
+/* Same as posix_spawn_file_actions_addfchdir.  */
 extern int posix_spawn_file_actions_addfchdir_np (posix_spawn_file_actions_t *,
 						  int __fd)
      __THROW __nonnull ((1));

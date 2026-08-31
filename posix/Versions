@@ -159,6 +159,10 @@ libc {
   GLIBC_2.35 {
     posix_spawn_file_actions_addtcsetpgrp_np;
   }
+  GLIBC_2.45 {
+    posix_spawn_file_actions_addchdir;
+    posix_spawn_file_actions_addfchdir;
+  }
   GLIBC_PRIVATE {
     __libc_fork; __libc_pread; __libc_pwrite;
     __nanosleep_nocancel; __pause_nocancel;

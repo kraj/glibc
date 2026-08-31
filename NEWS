@@ -14,7 +14,9 @@ Major new features:
 
 Deprecated and removed features, and other changes affecting compatibility:
 
-  [Add deprecations, removals and changes affecting compatibility here]
+* The posix_spawn_file_actions_addchdir and posix_spawn_file_actions_addfchdir
+  functions, added in glibc 2.44 as header redirects to the _np variants, are
+  now exported from libc.so under the GLIBC_2.45 symbol version.
 
 Changes to build and runtime requirements:
 

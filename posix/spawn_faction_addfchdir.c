@@ -23,8 +23,8 @@
 #include "spawn_int.h"
 
 int
-posix_spawn_file_actions_addfchdir_np (posix_spawn_file_actions_t *actions,
-                                       int fd)
+__posix_spawn_file_actions_addfchdir_np (posix_spawn_file_actions_t *actions,
+					 int fd)
 {
   struct __spawn_action *rec;
 
@@ -44,3 +44,7 @@ posix_spawn_file_actions_addfchdir_np (posix_spawn_file_actions_t *actions,
 
   return 0;
 }
+weak_alias (__posix_spawn_file_actions_addfchdir_np,
+	    posix_spawn_file_actions_addfchdir_np)
+weak_alias (__posix_spawn_file_actions_addfchdir_np,
+	    posix_spawn_file_actions_addfchdir)

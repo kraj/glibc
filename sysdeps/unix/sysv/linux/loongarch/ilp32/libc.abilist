@@ -2287,3 +2287,5 @@ GLIBC_2.44 wprintf F
 GLIBC_2.44 write F
 GLIBC_2.44 writev F
 GLIBC_2.44 wscanf F
+GLIBC_2.45 posix_spawn_file_actions_addchdir F
+GLIBC_2.45 posix_spawn_file_actions_addfchdir F
