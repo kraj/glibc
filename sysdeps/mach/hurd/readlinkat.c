@@ -65,7 +65,13 @@ __readlinkat (int fd, const char *file_name, char *buf, size_t len)
   if (err)
     goto out;
 
+  if (__glibc_unlikely (nread > len))	/* Sanity check for bogus server.	*/
+    {
+      err = EGRATUITOUS;
+      goto out;
+    }
   len = nread;
+
   if (rbuf != buf)
     {
       memcpy (buf, rbuf, len);
