@@ -42,6 +42,7 @@
 	{							\
 	  printf ("unexpected priority %d != %d\n",		\
 		  cep_sp.sched_priority, (normal));		\
+	  ret = 1;						\
 	}							\
       if (syscall (__NR_sched_getparam, tid, &cep_sp) == 0	\
 	  && cep_sp.sched_priority != (boosted))		\
