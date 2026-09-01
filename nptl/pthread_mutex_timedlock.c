@@ -28,6 +28,14 @@
 
 #include <stap-probe.h>
 
+/* Return the error code ERR after clearing the robust list head.  */
+static int
+__pthread_mutex_robust_error (int err)
+{
+  THREAD_SETMEM (THREAD_SELF, robust_head.list_op_pending, NULL);
+  return err;
+}
+
 int
 __pthread_mutex_clocklock_common (pthread_mutex_t *mutex,
 				  clockid_t clockid,
@@ -162,13 +170,12 @@ __pthread_mutex_clocklock_common (pthread_mutex_t *mutex,
 	      ENQUEUE_MUTEX (mutex);
 	      /* We need to clear op_pending after we enqueue the mutex.  */
 	      __asm ("" ::: "memory");
-	      THREAD_SETMEM (THREAD_SELF, robust_head.list_op_pending, NULL);
 
 	      /* Note that we deliberately exit here.  If we fall
 		 through to the end of the function __nusers would be
 		 incremented which is not correct because the old
 		 owner has to be discounted.  */
-	      return EOWNERDEAD;
+	      return __pthread_mutex_robust_error (EOWNERDEAD);
 	    }
 
 	  /* Check whether we already hold the mutex.  */
@@ -176,13 +183,9 @@ __pthread_mutex_clocklock_common (pthread_mutex_t *mutex,
 	    {
 	      int kind = PTHREAD_MUTEX_TYPE (mutex);
 	      if (kind == PTHREAD_MUTEX_ROBUST_ERRORCHECK_NP)
-		{
-		  /* We do not need to ensure ordering wrt another memory
-		     access.  Also see comments at ENQUEUE_MUTEX. */
-		  THREAD_SETMEM (THREAD_SELF, robust_head.list_op_pending,
-				 NULL);
-		  return EDEADLK;
-		}
+		/* We do not need to ensure ordering wrt another memory
+		   access.  Also see comments at ENQUEUE_MUTEX. */
+		return __pthread_mutex_robust_error (EDEADLK);
 
 	      if (kind == PTHREAD_MUTEX_ROBUST_RECURSIVE_NP)
 		{
@@ -206,11 +209,11 @@ __pthread_mutex_clocklock_common (pthread_mutex_t *mutex,
 
 	  /* We are about to block; check whether the timeout is invalid.  */
 	  if (! valid_nanoseconds (abstime->tv_nsec))
-	    return EINVAL;
+	    return __pthread_mutex_robust_error (EINVAL);
 	  /* Work around the fact that the kernel rejects negative timeout
 	     values despite them being valid.  */
 	  if (__glibc_unlikely (abstime->tv_sec < 0))
-	    return ETIMEDOUT;
+	    return __pthread_mutex_robust_error (ETIMEDOUT);
 
 	  /* We cannot acquire the mutex nor has its owner died.  Thus, try
 	     to block using futexes.  Set FUTEX_WAITERS if necessary so that
@@ -242,7 +245,7 @@ __pthread_mutex_clocklock_common (pthread_mutex_t *mutex,
 	      PTHREAD_ROBUST_MUTEX_PSHARED (mutex));
 	  /* The futex call timed out.  */
 	  if (err == ETIMEDOUT || err == EOVERFLOW)
-	    return err;
+	    return __pthread_mutex_robust_error (err);
 	  /* Reload current lock value.  */
 	  oldval = mutex->__data.__lock;
 	}
@@ -257,8 +260,7 @@ __pthread_mutex_clocklock_common (pthread_mutex_t *mutex,
 	  lll_unlock (mutex->__data.__lock, private);
 	  /* FIXME This violates the mutex destruction requirements.  See
 	     __pthread_mutex_unlock_full.  */
-	  THREAD_SETMEM (THREAD_SELF, robust_head.list_op_pending, NULL);
-	  return ENOTRECOVERABLE;
+	  return __pthread_mutex_robust_error (ENOTRECOVERABLE);
 	}
 
       mutex->__data.__count = 1;
@@ -310,12 +312,9 @@ __pthread_mutex_clocklock_common (pthread_mutex_t *mutex,
 	if (__glibc_unlikely ((oldval & FUTEX_TID_MASK) == id))
 	  {
 	    if (kind == PTHREAD_MUTEX_ERRORCHECK_NP)
-	      {
-		/* We do not need to ensure ordering wrt another memory
-		   access.  */
-		THREAD_SETMEM (THREAD_SELF, robust_head.list_op_pending, NULL);
-		return EDEADLK;
-	      }
+	      /* We do not need to ensure ordering wrt another memory
+		 access.  */
+	      return __pthread_mutex_robust_error (EDEADLK);
 
 	    if (kind == PTHREAD_MUTEX_RECURSIVE_NP)
 	      {
@@ -350,7 +349,7 @@ __pthread_mutex_clocklock_common (pthread_mutex_t *mutex,
 	    int e = __futex_lock_pi64 (&mutex->__data.__lock, clockid, abstime,
 				       private);
 	    if (e == ETIMEDOUT)
-	      return ETIMEDOUT;
+	      return __pthread_mutex_robust_error (ETIMEDOUT);
 	    else if (e == ESRCH || e == EDEADLK)
 	      {
 		assert (e != EDEADLK
@@ -366,10 +365,10 @@ __pthread_mutex_clocklock_common (pthread_mutex_t *mutex,
 		  e = __futex_abstimed_wait64 (&(unsigned int){0}, 0, clockid,
 					       abstime, private);
 		while (e != ETIMEDOUT);
-		return ETIMEDOUT;
+		return __pthread_mutex_robust_error (ETIMEDOUT);
 	      }
 	    else if (e != 0)
-	      return e;
+	      return __pthread_mutex_robust_error (e);
 
 	    oldval = mutex->__data.__lock;
 
@@ -391,13 +390,12 @@ __pthread_mutex_clocklock_common (pthread_mutex_t *mutex,
 	    ENQUEUE_MUTEX_PI (mutex);
 	    /* We need to clear op_pending after we enqueue the mutex.  */
 	    __asm ("" ::: "memory");
-	    THREAD_SETMEM (THREAD_SELF, robust_head.list_op_pending, NULL);
 
 	    /* Note that we deliberately exit here.  If we fall
 	       through to the end of the function __nusers would be
 	       incremented which is not correct because the old owner
 	       has to be discounted.  */
-	    return EOWNERDEAD;
+	    return __pthread_mutex_robust_error (EOWNERDEAD);
 	  }
 
 	if (robust
@@ -412,8 +410,7 @@ __pthread_mutex_clocklock_common (pthread_mutex_t *mutex,
 
 	    /* To the kernel, this will be visible after the kernel has
 	       acquired the mutex in the syscall.  */
-	    THREAD_SETMEM (THREAD_SELF, robust_head.list_op_pending, NULL);
-	    return ENOTRECOVERABLE;
+	    return __pthread_mutex_robust_error (ENOTRECOVERABLE);
 	  }
 
 	mutex->__data.__count = 1;
