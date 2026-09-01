@@ -145,6 +145,11 @@ int
 __futex_lock_pi64 (int *futex_word, clockid_t clockid,
 		   const struct __timespec64 *abstime, int private)
 {
+  /* Work around the fact that the kernel rejects negative timeout values
+     despite them being valid.  */
+  if (__glibc_unlikely ((abstime != NULL) && (abstime->tv_sec < 0)))
+    return ETIMEDOUT;
+
   int err;
 
   unsigned int clockbit = clockid == CLOCK_REALTIME
