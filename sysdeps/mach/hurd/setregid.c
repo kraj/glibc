@@ -38,8 +38,14 @@ retry:
       /* Make a new auth handle which has RGID as the real gid,
 	 and EGID as the first element in the list of effective gids.  */
 
-      gid_t *newgen, *newaux;
+      gid_t *newgen, *newaux, auxbuf[2];
       size_t ngen, naux;
+      gid_t old_rgid, new_egid;
+
+      if (_hurd_id.aux.ngids >= 1)
+	old_rgid = _hurd_id.aux.gids[0];
+      else
+	old_rgid = -1;
 
       newgen = _hurd_id.gen.gids;
       ngen = _hurd_id.gen.ngids;
@@ -70,6 +76,36 @@ retry:
 	  else
 	    {
 	      _hurd_id.aux.gids[0] = rgid;
+	      _hurd_id.valid = 0;
+	    }
+	}
+
+      if (egid != -1)
+	new_egid = egid;
+      else if (ngen >= 1)
+	new_egid = newgen[0];
+      else if (naux >= 1)
+	new_egid = newaux[0];
+      else
+	new_egid = -1;
+
+      if (rgid != -1 || (egid != -1 && new_egid != old_rgid))
+	/* Special-case, set saved ID to new effective ID.  */
+	{
+	  if (_hurd_id.aux.ngids < 2)
+	    {
+	      if (naux >= 1)
+		auxbuf[0] = newaux[0];
+	      else
+		auxbuf[0] = old_rgid;
+	      auxbuf[1] = new_egid;
+
+	      newaux = auxbuf;
+	      naux = 2;
+	    }
+	  else
+	    {
+	      _hurd_id.aux.gids[1] = new_egid;
 	      _hurd_id.valid = 0;
 	    }
 	}
