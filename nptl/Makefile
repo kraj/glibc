@@ -312,6 +312,7 @@ tests = \
   tst-mutexpi10 \
   tst-mutexpi11 \
   tst-mutexpi12 \
+  tst-mutexpp11 \
   tst-once5 \
   tst-pthread-affinity-inheritance \
   tst-pthread-attr-affinity \
