@@ -25,7 +25,9 @@
 #include <support/check.h>
 #include <support/support.h>
 #include <support/test-driver.h>
+#include <support/timespec.h>
 #include <support/xthread.h>
+#include <support/xtime.h>
 
 #define ASSUME_DEADLOCK_AFTER_SECONDS 3
 
@@ -34,12 +36,16 @@ struct which_mutex
   int type;
   bool prio_inherit;
   bool robust;
+  bool timed;
 };
 
 struct task_context
 {
   pthread_mutex_t *first, *second;
   pthread_barrier_t *barrier;
+  bool timed;
+  /* Relative timeout for the timed variant.  */
+  struct timespec timeout;
 };
 
 static bool
@@ -55,7 +61,17 @@ thread_function (void *const arg)
   intptr_t ret = 0;
   xpthread_mutex_lock (ctx->first);
   xpthread_barrier_wait (ctx->barrier);
-  ret = pthread_mutex_lock (ctx->second);
+  if (ctx->timed)
+    {
+      /* The timeout is not expected to be reached: the kernel either
+         reports the deadlock right away or grants the lock once the
+         other thread got EDEADLK and released it.  */
+      struct timespec t = timespec_add (xclock_now (CLOCK_REALTIME),
+                                        ctx->timeout);
+      ret = pthread_mutex_timedlock (ctx->second, &t);
+    }
+  else
+    ret = pthread_mutex_lock (ctx->second);
   xpthread_mutex_unlock (ctx->first);
   if (ret == 0)
     xpthread_mutex_unlock (ctx->second);
@@ -84,26 +100,41 @@ do_test_single (void *const ctx)
   pthread_barrier_t barrier;
   const struct which_mutex *const that = ctx;
   const bool graceful = should_detect_deadlock (that);
+  const struct timespec timeout = graceful
+      ? make_timespec (5, 0) : make_timespec (0, 200000000);
   struct task_context ctx1
-      = { .first = &m1, .second = &m2, .barrier = &barrier };
+      = { .first = &m1, .second = &m2, .barrier = &barrier,
+	  .timed = that->timed, .timeout = timeout };
   struct task_context ctx2
-      = { .first = &m2, .second = &m1, .barrier = &barrier };
+      = { .first = &m2, .second = &m1, .barrier = &barrier,
+	  .timed = that->timed, .timeout = timeout };
   xpthread_barrier_init (&barrier, NULL, 2);
   prepare_mutex (&m1, that);
   prepare_mutex (&m2, that);
   const pthread_t t1 = xpthread_create (NULL, thread_function, &ctx1);
   const pthread_t t2 = xpthread_create (NULL, thread_function, &ctx2);
-  if (!graceful)
+  if (!graceful && !that->timed)
     delayed_exit (ASSUME_DEADLOCK_AFTER_SECONDS);
   const int ret1 = (intptr_t) xpthread_join (t1);
   const int ret2 = (intptr_t) xpthread_join (t2);
   xpthread_mutex_destroy (&m1);
   xpthread_mutex_destroy (&m2);
   xpthread_barrier_destroy (&barrier);
-  TEST_VERIFY (graceful);
-  TEST_VERIFY (ret1 == 0 || ret1 == EDEADLK);
-  TEST_VERIFY (ret2 == 0 || ret2 == EDEADLK);
-  TEST_VERIFY (ret1 == EDEADLK || ret2 == EDEADLK);
+  if (that->timed && !graceful)
+    {
+      /* The deadlock is not detected: the lock attempts block until the
+	 timeout expires.  */
+      TEST_VERIFY (ret1 == 0 || ret1 == ETIMEDOUT);
+      TEST_VERIFY (ret2 == 0 || ret2 == ETIMEDOUT);
+      TEST_VERIFY (ret1 == ETIMEDOUT || ret2 == ETIMEDOUT);
+    }
+  else
+    {
+      TEST_VERIFY (graceful);
+      TEST_VERIFY (ret1 == 0 || ret1 == EDEADLK);
+      TEST_VERIFY (ret2 == 0 || ret2 == EDEADLK);
+      TEST_VERIFY (ret1 == EDEADLK || ret2 == EDEADLK);
+    }
 }
 
 static int
@@ -121,19 +152,38 @@ do_test (void)
         {
           for (int rb = 0; rb < 2; ++rb)
             {
-              struct which_mutex that = {
-                .type = mutex_types[i],
-                .prio_inherit = pi,
-                .robust = rb,
-              };
-              const char *const description
-                  = xasprintf ("type = %d, prio_inherit = %d, robust = %d",
-                               that.type, that.robust, that.prio_inherit);
-              struct support_capture_subprocess capture
-                  = support_capture_subprocess (do_test_single, &that);
-              support_capture_subprocess_check (&capture, description, 0,
-                                                sc_allow_none);
-              support_capture_subprocess_free (&capture);
+              for (int timed = 0; timed < 2; ++timed)
+                {
+                  struct which_mutex that = {
+                    .type = mutex_types[i],
+                    .prio_inherit = pi,
+                    .robust = rb,
+                    .timed = timed,
+                  };
+                  /* The timed variant covers all combinations: where the
+                     kernel does not detect the deadlock, expiring the
+                     timeout is the expected way out.  The plain
+                     pthread_mutex_lock variant genuinely deadlocks in
+                     those combinations and costs
+                     ASSUME_DEADLOCK_AFTER_SECONDS each, so run it only
+                     where the deadlock is detected, plus one
+                     representative deadlocking combination per PI
+                     setting.  */
+                  if (!timed && !should_detect_deadlock (&that)
+                      && !(that.type == PTHREAD_MUTEX_TIMED_NP
+                           && !that.robust))
+                    continue;
+                  const char *const description
+                      = xasprintf ("type = %d, prio_inherit = %d, "
+                                   "robust = %d, timed = %d",
+                                   that.type, that.prio_inherit, that.robust,
+                                   that.timed);
+                  struct support_capture_subprocess capture
+                      = support_capture_subprocess (do_test_single, &that);
+                  support_capture_subprocess_check (&capture, description, 0,
+                                                    sc_allow_none);
+                  support_capture_subprocess_free (&capture);
+                }
             }
         }
     }

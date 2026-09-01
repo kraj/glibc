@@ -28,14 +28,6 @@
 
 #include <stap-probe.h>
 
-/* Return the error code ERR after clearing the robust list head.  */
-static int
-__pthread_mutex_robust_error (int err)
-{
-  THREAD_SETMEM (THREAD_SELF, robust_head.list_op_pending, NULL);
-  return err;
-}
-
 int
 __pthread_mutex_clocklock_common (pthread_mutex_t *mutex,
 				  clockid_t clockid,
@@ -352,9 +344,9 @@ __pthread_mutex_clocklock_common (pthread_mutex_t *mutex,
 	      return __pthread_mutex_robust_error (ETIMEDOUT);
 	    else if (e == ESRCH || e == EDEADLK)
 	      {
-		assert (e != EDEADLK
-			|| (kind != PTHREAD_MUTEX_ERRORCHECK_NP
-			   && kind != PTHREAD_MUTEX_RECURSIVE_NP));
+		if (e == EDEADLK && kind == PTHREAD_MUTEX_ERRORCHECK_NP)
+		  return __pthread_mutex_robust_error (e);
+
 		/* ESRCH can happen only for non-robust PI mutexes where
 		   the owner of the lock died.  */
 		assert (e != ESRCH || !robust);

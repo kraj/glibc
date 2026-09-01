@@ -426,7 +426,7 @@ __pthread_mutex_lock_full (pthread_mutex_t *mutex)
 		       check above.  Pass this error through for error-checking
 		       mutexes; otherwise, intentionally deadlock for all other
 		       mutex types.  */
-		    return e;
+		    return __pthread_mutex_robust_error (e);
 		  }
 
 		/* ESRCH can happen only for non-robust PI mutexes where
