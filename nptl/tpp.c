@@ -152,6 +152,17 @@ __pthread_tpp_change_priority (int previous_prio, int new_prio)
 	}
     }
 
+  /* Roll back the TPP bookkeeping information if the scheduler
+     reconfiguration failed.  */
+  if (result != 0)
+    {
+      tpp->priomax = priomax;
+      if (new_prio != -1)
+	--tpp->priomap[new_prio - fifo_min_prio];
+      if (previous_prio != -1)
+	++tpp->priomap[previous_prio - fifo_min_prio];
+    }
+
   lll_unlock (self->lock, LLL_PRIVATE);
 
   return result;
@@ -196,3 +207,11 @@ __pthread_current_priority (void)
   return result;
 }
 libc_hidden_def (__pthread_current_priority)
+
+int
+__pthread_mutex_priority_error (int err, int oldprio)
+{
+  if (oldprio != -1)
+    __pthread_tpp_change_priority (oldprio, -1);
+  return err;
+}

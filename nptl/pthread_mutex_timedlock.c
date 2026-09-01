@@ -468,17 +468,13 @@ __pthread_mutex_clocklock_common (pthread_mutex_t *mutex,
 			  >> PTHREAD_MUTEX_PRIO_CEILING_SHIFT;
 
 	    if (__pthread_current_priority () > ceiling)
-	      {
-		result = EINVAL;
-	      failpp:
-		if (oldprio != -1)
-		  __pthread_tpp_change_priority (oldprio, -1);
-		return result;
-	      }
+	      return __pthread_mutex_priority_error (EINVAL, oldprio);
 
 	    result = __pthread_tpp_change_priority (oldprio, ceiling);
-	    if (result)
-	      return result;
+	    if (result != 0)
+	      /* Undo the adjustment from the previous loop iteration
+		 (if any, first iteration has -1 and skips adjustment).  */
+	      return __pthread_mutex_priority_error (result, oldprio);
 
 	    ceilval = ceiling << PTHREAD_MUTEX_PRIO_CEILING_SHIFT;
 	    oldprio = ceiling;
@@ -504,16 +500,13 @@ __pthread_mutex_clocklock_common (pthread_mutex_t *mutex,
 		  {
 		    /* Reject invalid timeouts.  */
 		    if (! valid_nanoseconds (abstime->tv_nsec))
-		      {
-			result = EINVAL;
-			goto failpp;
-		      }
+		      return __pthread_mutex_priority_error (EINVAL, oldprio);
 
 		    int e = __futex_abstimed_wait64 (
 		      (unsigned int *) &mutex->__data.__lock, ceilval | 2,
 		      clockid, abstime, PTHREAD_MUTEX_PSHARED (mutex));
 		    if (e == ETIMEDOUT || e == EOVERFLOW)
-		      return e;
+		      return __pthread_mutex_priority_error (e, oldprio);
 		  }
 	      }
 	    while (atomic_compare_and_exchange_val_acq (&mutex->__data.__lock,

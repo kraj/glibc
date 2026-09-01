@@ -541,15 +541,13 @@ __pthread_mutex_lock_full (pthread_mutex_t *mutex)
 			  >> PTHREAD_MUTEX_PRIO_CEILING_SHIFT;
 
 	    if (__pthread_current_priority () > ceiling)
-	      {
-		if (oldprio != -1)
-		  __pthread_tpp_change_priority (oldprio, -1);
-		return EINVAL;
-	      }
+	      return __pthread_mutex_priority_error (EINVAL, oldprio);
 
 	    int retval = __pthread_tpp_change_priority (oldprio, ceiling);
-	    if (retval)
-	      return retval;
+	    if (retval != 0)
+	      /* Undo the adjustment from the previous loop iteration
+		 (if any, first iteration has -1 and skips adjustment).  */
+	      return __pthread_mutex_priority_error (retval, oldprio);
 
 	    ceilval = ceiling << PTHREAD_MUTEX_PRIO_CEILING_SHIFT;
 	    oldprio = ceiling;

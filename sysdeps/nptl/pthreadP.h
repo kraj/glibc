@@ -211,6 +211,10 @@ libc_hidden_proto (__pthread_tpp_change_priority)
 extern int __pthread_current_priority (void);
 libc_hidden_proto (__pthread_current_priority)
 
+/* If OLDPRIO is not -1, undo its TPP priority change.  Return ERR.  */
+int __pthread_mutex_priority_error (int err, int oldprio) attribute_hidden;
+
+
 /* This will not catch all invalid descriptors but is better than
    nothing.  And if the test triggers the thread descriptor is
    guaranteed to be invalid.  */
