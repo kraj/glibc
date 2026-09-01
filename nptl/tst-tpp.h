@@ -24,6 +24,8 @@
 #include <unistd.h>
 #include <sys/syscall.h>
 
+#include <support/check.h>
+
 /* This test is Linux specific.  */
 #define CHECK_TPP_PRIORITY(normal, boosted) \
   do								\
@@ -61,33 +63,26 @@ init_tpp_test (void)
 {
   fifo_min = sched_get_priority_min (SCHED_FIFO);
   if (fifo_min < 0)
-    {
-      printf ("couldn't get min priority for SCHED_FIFO: %m\n");
-      exit (1);
-    }
+    FAIL_EXIT1 ("couldn't get min priority for SCHED_FIFO: %m");
 
   fifo_max = sched_get_priority_max (SCHED_FIFO);
   if (fifo_max < 0)
-    {
-      printf ("couldn't get max priority for SCHED_FIFO: %m\n");
-      exit (1);
-    }
+    FAIL_EXIT1 ("couldn't get max priority for SCHED_FIFO: %m");
 
   if (fifo_min > 4 || fifo_max < 10)
-    {
-      printf ("%d..%d SCHED_FIFO priority interval not suitable for this test\n",
-	      fifo_min, fifo_max);
-      exit (0);
-    }
+    FAIL_UNSUPPORTED ("%d..%d SCHED_FIFO priority interval"
+		      " not suitable for this test",
+		      fifo_min, fifo_max);
 
   struct sched_param sp;
   memset (&sp, 0, sizeof (sp));
   sp.sched_priority = 4;
   int e = pthread_setschedparam (pthread_self (), SCHED_FIFO, &sp);
+  if (e == EPERM)
+    FAIL_UNSUPPORTED ("cannot set SCHED_FIFO scheduling policy");
   if (e != 0)
     {
       errno = e;
-      printf ("cannot set scheduling params: %m\n");
-      exit (0);
+      FAIL_EXIT1 ("pthread_setschedparam: %m");
     }
 }
