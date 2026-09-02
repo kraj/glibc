@@ -102,7 +102,7 @@ __file_name_lookup_at (int fd, int at_flags,
       file_t dir = result;
 
       err = __dir_mkfile (dir, orig_flags & ~(O_TMPFILE | O_DIRECTORY),
-                          mode, &result);
+                          mode & ~_hurd_umask, &result);
       __mach_port_deallocate (__mach_task_self (), dir);
       if (err)
         {
