@@ -44,6 +44,14 @@ CFLAGS-rtld-strnlen.os = $(no-special-regs)
 ifeq ($(subdir),elf)
 # help gcc inline asm code from dl-machine.h
 +cflags += -finline-limit=2000
+
+tests += tst-ppc64-ifunc-bind-now
+modules-names += tst-ppc64-ifunc-bind-now-mod
+tst-ppc64-ifunc-bind-now-mod.so-no-z-defs = yes
+LDFLAGS-tst-ppc64-ifunc-bind-now-mod.so = -Wl,-z,now
+$(objpfx)tst-ppc64-ifunc-bind-now: $(objpfx)tst-ppc64-ifunc-bind-now-mod.so
+LDLIBS-tst-ppc64-ifunc-bind-now = -Wl,--no-as-needed -lm \
+  $(objpfx)tst-ppc64-ifunc-bind-now-mod.so
 endif
 
 ifeq ($(subdir),gmon)

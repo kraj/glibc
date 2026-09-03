@@ -36,9 +36,9 @@
 /* Get the hardware information post the tunables set, the macro checks
    it and fills the previous ones.  */
 #define INIT_ARCH() \
-  const struct cpu_features *features = &GLRO(dl_powerpc_cpu_features);	\
-  unsigned long int hwcap = features->hwcap;				\
-  unsigned long int __attribute__((unused)) hwcap2 = features->hwcap2; \
+  unsigned long int hwcap = __GLRO(dl_powerpc_cpu_features.hwcap);	\
+  unsigned long int __attribute__((unused)) hwcap2 =			\
+    __GLRO(dl_powerpc_cpu_features.hwcap2);				\
   bool __attribute__((unused)) use_cached_memopt =		\
     __GLRO(dl_powerpc_cpu_features.use_cached_memopt);		\
   if (hwcap & PPC_FEATURE_ARCH_2_06)				\
