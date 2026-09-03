@@ -110,6 +110,7 @@ tests = \
   tst-fgetwc \
   tst-fgetws \
   tst-file-init-race \
+  tst-fopen-ccs-empty \
   tst-fopenloc2 \
   tst-fputws \
   tst-freopen \
