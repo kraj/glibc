@@ -13,6 +13,7 @@ test-xfail-check-execstack = yes
 # trampoline used during lazy binding.
 test-xfail-check-wx-segment = *
 
+THP-PAGE-SIZE = 0
 endif # $(subdir) == elf
 
 ifeq ($(subdir),misc)

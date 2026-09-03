@@ -1,4 +1,7 @@
 ifeq ($(subdir),elf)
+# The segment (PMD) transparent huge page size is 1MB.
+THP-PAGE-SIZE = 0x100000
+
 ifeq (yes,$(build-shared))
 # This is needed to support g++ v2 and v3.
 sysdep_routines += \

@@ -34,3 +34,7 @@ ifeq ($(subdir),conform)
 # For bug 21260.
 conformtest-xfail-conds += alpha-linux
 endif
+
+ifeq ($(subdir),elf)
+THP-PAGE-SIZE = 0
+endif

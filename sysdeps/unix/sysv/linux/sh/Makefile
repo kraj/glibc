@@ -16,3 +16,7 @@ ifeq ($(subdir),math)
 # The libm.so link can't find __fpscr_values
 libm.so-no-z-defs = yes
 endif
+
+ifeq ($(subdir),elf)
+THP-PAGE-SIZE = 0
+endif

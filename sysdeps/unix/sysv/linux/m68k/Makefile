@@ -15,3 +15,7 @@ ifeq ($(subdir),misc)
 sysdep_routines += mremap
 sysdep_headers += sys/reg.h
 endif
+
+ifeq ($(subdir),elf)
+THP-PAGE-SIZE = 0
+endif

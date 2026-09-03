@@ -63,6 +63,14 @@ ifneq ($(mips-has-gnustack),yes)
 test-xfail-check-execstack = yes
 CFLAGS-tst-execstack.c += -DDEFAULT_RWX_STACK=1
 endif
+
+# The PMD transparent huge page size depends of the page size:
+# *  4KB ->   2MB
+# * 16KB ->  32MB
+# * 64KB -> 512MB
+# Use 32MB for now.  The 512MB is larger than MAX_THP_PAGESIZE, and
+# the THP tests are marked as unsupported at runtime.
+THP-PAGE-SIZE = 0x2000000
 endif
 
 ifeq ($(subdir),stdlib)

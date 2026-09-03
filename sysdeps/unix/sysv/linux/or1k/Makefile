@@ -5,3 +5,7 @@ endif
 ifeq ($(subdir),stdlib)
 gen-as-const-headers += ucontext_i.sym
 endif
+
+ifeq ($(subdir),elf)
+THP-PAGE-SIZE = 0
+endif

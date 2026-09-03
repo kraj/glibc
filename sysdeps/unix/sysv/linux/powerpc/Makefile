@@ -17,6 +17,11 @@ dl-routines += \
   dl-hwcap-info \
   # dl-routines
 
+# Only book3s64 supports transparent huge pages.  The radix MMU uses a 2MB
+# PMD huge page, while the hash MMU (with 64KB base pages) uses a 16MB
+# huge page.
+THP-PAGE-SIZE = 0x1000000
+
 # Otherwise tst-tls-dlinfo fails due to tst-tlsmod2.so using static tls.
 ifeq ($(have-tls-get-addr-optimize),yes)
 LDFLAGS-tst-tlsmod2.so += -Wl,--no-tls-get-addr-optimize

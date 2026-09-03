@@ -1,4 +1,12 @@
 ifeq ($(subdir),elf)
+# The PMD transparent huge page size depends of the page size:
+# *  4Kb ->   2MB
+# * 16Kb ->  32MB
+# * 64Kb -> 512MB
+# Use 32MB for now.  The 512MB is larger than MAX_THP_PAGESIZE, and
+# the THP tests are marked as unsupported at runtime.
+THP-PAGE-SIZE = 0x2000000
+
 tests += \
   tst-tlsdesc-pac \
   # tests

@@ -720,19 +720,13 @@ $(objpfx)pldd: $(objpfx)xmalloc.o
 tests += \
   tst-rseq-tls-range \
   tst-rseq-tls-range-4096 \
-  tst-thp-1 \
-  tst-thp-1-pde \
-  tst-thp-1-static \
-  tst-thp-align \
 # tests
 tests-static += \
   tst-rseq-tls-range-4096-static \
   tst-rseq-tls-range-static \
-  tst-thp-1-static \
 # tests-static
 modules-names += \
   tst-rseq-tls-range-mod \
-  tst-thp-size-mod \
 # modules-names
 CFLAGS-tst-rseq-tls-range.c += -DMAIN_TLS_ALIGN=4
 CFLAGS-tst-rseq-tls-range-4096.c += -DMAIN_TLS_ALIGN=4096
@@ -753,12 +747,29 @@ tests-special += \
   # tests-special
 endif
 
+# THP-PAGE-SIZE is the largest PMD transparent huge page size the ABI supports
+# that does not exceed MAX_THP_PAGESIZE.  Default to 2MB, the most common PMD
+# huge page size, and each ABIs with a different size can override it in their
+# sysdeps Makefile or set it to 0 to skip the THP tests.
 ifndef THP-PAGE-SIZE
 # Align PT_LOAD segments in THP tests to THP page size so that kernel will
 # map PIE to the address aligned to THP page size.  Default THP page size
 # to 2MB which can be overridden in Makefile in subdirectories.
 THP-PAGE-SIZE = 0x200000
 endif
+ifneq (0,$(THP-PAGE-SIZE))
+tests += \
+  tst-thp-1 \
+  tst-thp-1-pde \
+  tst-thp-1-static \
+  tst-thp-align \
+# tests
+tests-static += \
+  tst-thp-1-static \
+# tests-static
+modules-names += \
+  tst-thp-size-mod \
+# modules-names
 
 THP-PAGE-SIZE-CFLAGS = -DTHP_PAGE_SIZE=$(THP-PAGE-SIZE)
 THP-PAGE-SIZE-LDFLAGS = -Wl,-z,max-page-size=$(THP-PAGE-SIZE)
@@ -942,6 +953,7 @@ $(objpfx)strace-tst-thp-align-disabled.out: \
 	  $(evaluate-test)
 endif # [madvise]
 endif # $(cross-compiling)
+endif # $(THP-PAGE-SIZE)
 endif # $(subdir) == elf
 
 ifeq ($(subdir),rt)
