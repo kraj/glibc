@@ -105,6 +105,7 @@ tests = \
   tst-fgetc-after-eof \
   tst-fgetwc \
   tst-fgetws \
+  tst-fopen-ccs-empty \
   tst-fopenloc2 \
   tst-fputws \
   tst-freopen \
