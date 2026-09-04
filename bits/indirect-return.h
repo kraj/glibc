@@ -21,5 +21,10 @@
 #endif
 
 /* __INDIRECT_RETURN is used on swapcontext to indicate if it requires
-   special compiler treatment.  */
-#define __INDIRECT_RETURN
+   special compiler treatment.  swapcontext does not restore every
+   callee-saved register on all targets.  */
+#if __glibc_has_attribute (__returns_twice__)
+# define __INDIRECT_RETURN __attribute__ ((__returns_twice__))
+#else
+# define __INDIRECT_RETURN
+#endif
