@@ -339,12 +339,14 @@ _IO_new_file_fopen (FILE *fp, const char *filename, const char *mode,
 	  *((char *) __mempcpy (ccs, cs + 5, endp - (cs + 5))) = '\0';
 	  strip (ccs, ccs);
 
-	  if (__wcsmbs_named_conv (&fcts, ccs[2] == '\0'
-				   ? upstr (ccs, cs + 5) : ccs) != 0)
+	  /* After stripping, ccs[2] == '\0' means the charset name is empty.
+	     This is not a valid charset and would cause problems downstream.
+	     Reject it with EINVAL (BZ #34574, CVE-2026-18374).  */
+	  if (ccs[2] == '\0' || __wcsmbs_named_conv (&fcts, ccs) != 0)
 	    {
-	      /* Something went wrong, we cannot load the conversion modules.
-		 This means we cannot proceed since the user explicitly asked
-		 for these.  */
+	      /* Either the charset name is empty after strip(), or conversion
+		 modules cannot be loaded.  This means we cannot proceed since
+		 the user explicitly asked for character conversion.  */
 	      (void) _IO_file_close_it (fp);
 	      free (ccs);
 	      __set_errno (EINVAL);
