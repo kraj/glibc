@@ -12,5 +12,7 @@ distributions and applications that process user-supplied values for
 CVE-Id: CVE-2026-18374
 Public-Date: 2026-08-27
 Vulnerable-Commit: 129d706d77587e4d6627cc1ebef9be0f7cbc65f0
+Fix-Commit: 9765a538ebf8661a6e5578e01e35a3dd30db7eb4 (2.45)
+Fix-Commit: cca93e5d88d3d4ed073c03100467696f652269e7 (2.45)
 Reported-by: AISLE in partnership with Red Hat
 CVSS: CVSS:3.1/AV:L/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:L - 4.9
