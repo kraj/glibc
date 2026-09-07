@@ -129,6 +129,8 @@ am_pm	"上午";"下午"
 % t_fmt_ampm: "%p %I<h>%M<m>%S<s>"
 t_fmt_ampm  "%p %I時%M分%S秒"
 week 7;19971130;1
+first_weekday 1
+first_workday 2
 
 era "+:2:1913//01//01:+*:民國:%EC%Ey年";/
     "+:1:1912//01//01:1912//12//31:民國:%EC元年";/

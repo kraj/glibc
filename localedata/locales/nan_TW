@@ -105,6 +105,8 @@ am_pm         "頂晡";/
 t_fmt_ampm    "%p %I點%M分%S秒"
 date_fmt      "%Y年 %b %e日 %A %H:%M:%S %Z"
 week 7;19971130;1
+first_weekday 1
+first_workday 2
 
 era "+:2:1913//01//01:+*:民國:%EC%Ey年";/
     "+:1:1912//01//01:1912//12//31:民國:%EC元年";/

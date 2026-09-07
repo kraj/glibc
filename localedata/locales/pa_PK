@@ -141,6 +141,8 @@ t_fmt_ampm "%P %I:%M:%S"
 % display columns right to left ?
 cal_direction	3
 week 7;19971130;1
+first_weekday	1
+first_workday	2
 END LC_TIME
 
 LC_MESSAGES

@@ -237,6 +237,8 @@ era_d_t_fmt     "วัน%Aที่ %e %B %EC %Ey, %H.%M.%S น."
 % Appropriate date representation (date(1))
 date_fmt       "%a %e %b %Ey %H:%M:%S %Z"
 week 7;19971130;1
+first_weekday 1
+first_workday 2
 END LC_TIME
 
 LC_MESSAGES

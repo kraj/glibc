@@ -142,8 +142,9 @@ d_fmt     "%d.%m.%Y"
 t_fmt     "%T"
 am_pm     "ÖA";"ÖS"
 t_fmt_ampm "%I:%M:%S %p"
-week 7;19971130;1
+week 7;19971130;4
 first_weekday 2
+first_workday 2
 END LC_TIME
 
 LC_PAPER

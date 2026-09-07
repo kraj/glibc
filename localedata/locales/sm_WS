@@ -116,6 +116,9 @@ t_fmt	"%r"
 % am_pm and t_fmt_ampm - should be empty if using 24 hour time
 am_pm	"";""
 t_fmt_ampm    ""
+week 7;19971130;1
+first_weekday 1
+first_workday 2
 END LC_TIME
 %
 LC_NUMERIC

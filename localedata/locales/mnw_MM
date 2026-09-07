@@ -96,6 +96,8 @@ abday  "ဒိုတ်";/
        "သိုက်";/
        "သဝ်"
 week          7;19971130;1
+first_weekday 1
+first_workday 2
 d_t_fmt       "%OC%Oy %b %Od %A %OI:%OM:%OS %p"
 date_fmt      "%OC%Oy %b %Od %A %OI:%OM:%OS %p %Z"
 d_fmt         "%OC%Oy %b %Od %A"

@@ -201,4 +201,5 @@ date_fmt    "%A፥%B፡%e፡መዓልት፡%r፡%Z፡%Y፡ዓ//ም"
 %
 week 7;19971130;1
 first_weekday 2
+first_workday 2
 END LC_TIME

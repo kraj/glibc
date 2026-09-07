@@ -224,6 +224,7 @@ t_fmt_ampm  ""
 date_fmt    "%d %B, %Y йил, %A"
 week 7;19971130;1
 first_weekday 2
+first_workday 2
 END LC_TIME
 
 LC_MESSAGES

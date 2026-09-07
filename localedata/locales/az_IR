@@ -214,6 +214,7 @@ t_fmt_ampm ""
 % "<RLE>%A %Oe %B %Oy<ARABIC COMMA> <SEEN><ALEF><AIN><ALEF><TEH> %OH:%OM:%OS (%Z)<PDF>"
 date_fmt "‫%A %Oe %B %Oy، ساعات /
 %OH:%OM:%OS (%Z)‬"
+week 7;19971130;1
 first_weekday 7
 first_workday 7
 cal_direction 3

@@ -178,7 +178,7 @@ date_fmt	"%A %d %B %Y, %Z %I:%M:%S %p"
 
 week 7;19971130;1
 first_weekday 7
-first_workday	2
+first_workday	1
 cal_direction	3
 END LC_TIME
 

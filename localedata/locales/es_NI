@@ -115,6 +115,8 @@ t_fmt   "%T"
 t_fmt_ampm "%I:%M:%S %p"
 am_pm   "AM";"PM"
 week 7;19971130;1
+first_weekday 1
+first_workday 2
 END LC_TIME
 
 LC_PAPER

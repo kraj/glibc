@@ -1073,4 +1073,6 @@ d_t_fmt    "%A፣ %B %e ቀን %Y %r %Z"
 date_fmt    "%A፣ %B %e ቀን %r %Z %Y ዓ//ም"
 %
 week 7;19971130;1
+first_weekday 1
+first_workday 2
 END LC_TIME

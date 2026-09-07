@@ -231,7 +231,7 @@ t_fmt_ampm  ""
 % "%a %Y с. %B %e к. %T (%Z)"
 date_fmt "%a %Y с. %B %e к. %T (%Z)"
 
-week    7;19971130;1
+week    7;19971130;4
 first_weekday 2
 first_workday 2
 END LC_TIME

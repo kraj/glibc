@@ -56,7 +56,86 @@ copy "bo_CN"
 END LC_NUMERIC
 
 LC_TIME
-copy "bo_CN"
+% cannot copy from "bo_CN" because first_weekday differs
+abday   "ཉི་";/
+        "ཟླ་";/
+        "མིར་";/
+        "ལྷག་";/
+        "ཕུར་";/
+        "སངས་";/
+        "སྤེན་"
+
+day     "གཟའ་ཉི་མ་";/
+        "གཟའ་ཟླ་བ་";/
+        "གཟའ་མིག་དམར་";/
+        "གཟའ་ལྷག་པ་";/
+        "གཟའ་ཕུར་བུ་";/
+        "གཟའ་པ་སངས་";/
+        "གཟའ་སྤེན་པ་"
+
+abmon   "ཟླ་༡";/
+	"ཟླ་༢";/
+	"ཟླ་༣";/
+	"ཟླ་༤";/
+	"ཟླ་༥";/
+	"ཟླ་༦";/
+	"ཟླ་༧";/
+	"ཟླ་༨";/
+	"ཟླ་༩";/
+	"ཟླ་༡༠";/
+	"ཟླ་༡༡";/
+	"ཟླ་༡༢"
+
+mon      "ཟླ་བ་དང་པོ་";/
+         "ཟླ་བ་གཉིས་པ་";/
+         "ཟླ་བ་གསུམ་པ་";/
+         "ཟླ་བ་བཞི་པ་";/
+         "ཟླ་བ་ལྔ་པ་";/
+         "ཟླ་བ་དྲུག་པ་";/
+         "ཟླ་བ་བདུནཔ་";/
+    "ཟླ་བ་བརྒྱད་པ་";/
+         "ཟླ་བ་དགུ་པ་";/
+         "ཟླ་བ་བཅུ་པ་";/
+"ཟླ་བ་བཅུ་གཅིག་པ་";/
+"ཟླ་བ་བཅུ་གཉིས་པ་"
+
+
+
+
+% Appropriate date & time representation
+d_t_fmt      "སྤྱི་ལོ%y/
+ཟླ%mཚེས%d/
+ཆུ་ཚོད%H/
+སྐར་མ%M/
+སྐར་ཆ%S"
+
+% Appropriate date & time representation for date(1)
+date_fmt      "སྤྱི་ལོ%y/
+ཟླ%mཚེས%d/
+ཆུ་ཚོད%H/
+སྐར་མ%M/
+སྐར་ཆ%S"
+
+% Appropriate date representation
+d_fmt        "སྤྱི་ལོ%y/
+ཟླ%mཚེས%d"
+
+% Appropriate time representation  "%H:%M:%S"
+t_fmt        "ཆུ་ཚོད%H/
+སྐར་མ%M/
+སྐར་ཆ%S"
+
+% AM/PM signs
+am_pm   "སྔ་ཆ";"ཕྱི་ཆ"
+
+% Appropriate 12-hour clock representation  "%I:%M:%S %p"
+t_fmt_ampm        "ཆུ་ཚོད%I/
+སྐར་མ%M/
+སྐར་ཆ%S %p"
+
+week 7;19971130;1
+first_weekday 1
+first_workday 2
 END LC_TIME
 
 LC_MESSAGES

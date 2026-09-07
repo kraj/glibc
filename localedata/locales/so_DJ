@@ -211,4 +211,5 @@ date_fmt    "%a %b %e %r %Z %Y"
 %
 week 7;19971130;1
 first_weekday 7
+first_workday 2
 END LC_TIME

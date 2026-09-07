@@ -104,6 +104,7 @@ t_fmt_ampm ""
 date_fmt       "%a %e %b %Y %k:%M:%S %Z"
 week 7;19971130;1
 first_weekday 2
+first_workday 2
 END LC_TIME
 
 LC_MESSAGES

@@ -90,6 +90,8 @@ day	"Sunday";/
 	"Saturday"
 
 week 7;19971130;1
+first_weekday 1
+first_workday 2
 abmon	"Jan";"Feb";/
 	"Mar";"Apr";/
 	"May";"Jun";/

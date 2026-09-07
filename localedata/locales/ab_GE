@@ -90,6 +90,7 @@ abday         "Ам";/
 "Ас"
 week          7;19971130;1
 first_weekday 2
+first_workday 2
 d_t_fmt       "%Y ашықәс %d %B, %T"
 d_fmt         "%m//%d//%Y"
 t_fmt         "%T"

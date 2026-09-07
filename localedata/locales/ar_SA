@@ -344,6 +344,7 @@ abmon	"يناير";/
 am_pm	"";""
 era_d_fmt	""
 week 7;19971130;1
+first_weekday 1
 first_workday 1
 END LC_TIME
 

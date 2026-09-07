@@ -147,6 +147,7 @@ t_fmt       "%Z %I:%M:%S %p"
 t_fmt_ampm  "%Z %I:%M:%S %p"
 week 7;19971130;1
 first_weekday 2
+first_workday 2
 END LC_TIME
 
 

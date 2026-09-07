@@ -692,6 +692,8 @@ era_d_t_fmt     "ວັນ%Aທີ່ %e %B %EC %Ey, %H.%M.%S ນ."
 % Appropriate date representation (date(1))
 date_fmt       "%a %e %b %Ey %H:%M:%S %Z"
 week 7;19971130;1
+first_weekday 1
+first_workday 2
 END LC_TIME
 
 LC_MESSAGES

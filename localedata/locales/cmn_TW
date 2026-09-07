@@ -111,6 +111,9 @@ date_fmt      "%Y年 %b %-d號 %A %H:%M:%S %Z"
 era "+:2:1913//01//01:+*:民國:%EC%Ey年";/
     "+:1:1912//01//01:1912//12//31:民國:%EC元年";/
     "+:1:1911//12//31:-*:民前:%EC%Ey年"
+week 7;19971130;1
+first_weekday 1
+first_workday 2
 END LC_TIME
 
 LC_NUMERIC

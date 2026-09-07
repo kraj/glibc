@@ -135,6 +135,9 @@ t_fmt_ampm  "%I:%M:%S/
 date_fmt       "%a %b %e/
  %H:%M:%S /
 %Z %Y"
+week 7;19971130;1
+first_weekday 1
+first_workday 2
 END LC_TIME
 
 

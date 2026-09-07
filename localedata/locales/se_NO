@@ -297,6 +297,7 @@ date_fmt       "%A, %B %d. b. %Y %H:%M:%S %Z"
 % %a %b-%e %H:%M:%S %Z %Y søn jan-31 21:15:11 CET 2001
 week 7;19971130;4
 first_weekday 2
+first_workday 2
 END LC_TIME
 
 LC_MESSAGES

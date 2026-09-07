@@ -151,6 +151,7 @@ t_fmt_ampm "%P %I:%M:%S"
 cal_direction	3
 week 7;19971130;1
 first_weekday 6
+first_workday 2
 END LC_TIME
 
 LC_MESSAGES

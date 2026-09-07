@@ -216,6 +216,7 @@ t_fmt_ampm  "%I:%M %p"
 date_fmt  "%A, %d %B năm %Y %T %Z"
 week 7;19971130;1
 first_weekday 2
+first_workday 2
 END LC_TIME
 
 LC_MESSAGES

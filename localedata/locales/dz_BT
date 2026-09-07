@@ -2215,6 +2215,8 @@ t_fmt_ampm        "ཆུ་ཚོད%I/
 སྐར་ཆ%S %p"
 
 week 7;19971130;1
+first_weekday 1
+first_workday 2
 END LC_TIME
 
 LC_MESSAGES

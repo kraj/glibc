@@ -120,8 +120,9 @@ d_fmt   "%d//%m//%y"
 t_fmt   "%T"
 am_pm   "AM";"PM"
 t_fmt_ampm "%I:%M:%S %p"
-%  FIXME: found in CLDR
 week 7;19971130;1
+first_weekday 1
+first_workday 2
 END LC_TIME
 
 LC_PAPER

@@ -128,6 +128,8 @@ am_pm       "téng-po͘";"ē-po͘"
 t_fmt_ampm  "%I:%M:%S %p"
 date_fmt    "%Y %b %d (%a) %H:%M:%S %Z"
 week 7;19971130;1
+first_weekday 1
+first_workday 2
 END LC_TIME
 
 LC_MESSAGES

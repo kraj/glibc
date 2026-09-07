@@ -881,6 +881,7 @@ am_pm     "";""
 % Define the first day of the week to be displayed in a calendar.
 % This weekday is relative to the date defined in the <week> keyword.
 first_weekday 2
+first_workday 2
 
 % Example:
 %

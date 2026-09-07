@@ -134,6 +134,8 @@ t_fmt       "%H时%M分%S秒 %Z"
 t_fmt_ampm  ""
 %
 week 7;19971130;1
+first_weekday 1
+first_workday 2
 END LC_TIME
 
 

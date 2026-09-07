@@ -123,6 +123,8 @@ t_fmt       "%r"
 am_pm       "AM";"PM"
 t_fmt_ampm  "%I:%M:%S %p"
 week 7;19971130;1
+first_weekday 1
+first_workday 2
 END LC_TIME
 
 LC_MESSAGES

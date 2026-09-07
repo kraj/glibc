@@ -74,7 +74,42 @@ copy "en_GB"
 END LC_NUMERIC
 
 LC_TIME
-copy "en_GB"
+% cannot copy from "en_GB" because CLDR minDays differs
+abday       "Sun";"Mon";"Tue";"Wed";"Thu";"Fri";"Sat"
+day         "Sunday";/
+            "Monday";/
+            "Tuesday";/
+            "Wednesday";/
+            "Thursday";/
+            "Friday";/
+            "Saturday"
+abmon       "Jan";"Feb";/
+            "Mar";"Apr";/
+            "May";"Jun";/
+            "Jul";"Aug";/
+            "Sep";"Oct";/
+            "Nov";"Dec"
+mon         "January";/
+            "February";/
+            "March";/
+            "April";/
+            "May";/
+            "June";/
+            "July";/
+            "August";/
+            "September";/
+            "October";/
+            "November";/
+            "December"
+d_t_fmt     "%a %d %b %Y %T %Z"
+d_fmt       "%d//%m//%y"
+t_fmt       "%T"
+am_pm       "am";"pm"
+t_fmt_ampm  "%l:%M:%S %P %Z"
+date_fmt    "%a %e %b %H:%M:%S %Z %Y"
+week    7;19971130;1
+first_weekday 2
+first_workday 2
 END LC_TIME
 
 LC_MESSAGES

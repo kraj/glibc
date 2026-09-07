@@ -116,6 +116,8 @@ date_fmt "#%Y)#%m)#%d tenpo %T lon %z"
 d_fmt   "#%Y)#%m)#%d"
 t_fmt   "%H:%M:%S"
 week 7;19971130;1
+first_weekday 2
+first_workday 2
 END LC_TIME
 
 LC_MESSAGES
