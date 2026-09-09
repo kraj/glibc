@@ -36,14 +36,14 @@
 # define DEF_STDFILE(NAME, FD, CHAIN, FLAGS) \
   static _IO_lock_t _IO_stdfile_##FD##_lock = _IO_lock_initializer; \
   static struct _IO_wide_data _IO_wide_data_##FD \
-    = { ._wide_vtable = &_IO_wfile_jumps }; \
+    = { ._wide_vtable_index = IO_WFILE_JUMPS }; \
   struct _IO_FILE_plus NAME \
     = {FILEBUF_LITERAL(CHAIN, FLAGS, FD, &_IO_wide_data_##FD), \
        &_IO_file_jumps};
 #else
 # define DEF_STDFILE(NAME, FD, CHAIN, FLAGS) \
   static struct _IO_wide_data _IO_wide_data_##FD \
-    = { ._wide_vtable = &_IO_wfile_jumps }; \
+    = { ._wide_vtable_index = IO_WFILE_JUMPS }; \
   struct _IO_FILE_plus NAME \
     = {FILEBUF_LITERAL(CHAIN, FLAGS, FD, &_IO_wide_data_##FD), \
        &_IO_file_jumps};

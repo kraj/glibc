@@ -96,7 +96,8 @@ _IO_fwide (FILE *fp, int mode)
       }
 
       /* From now on use the wide character callback functions.  */
-      _IO_JUMPS_FILE_plus (fp) = fp->_wide_data->_wide_vtable;
+      _IO_JUMPS_FILE_plus (fp)
+	= IO_wide_validate_index (fp->_wide_data->_wide_vtable_index);
     }
 
   /* Set the mode now.  */

@@ -100,8 +100,10 @@
 #define _IO_JUMPS(THIS) (THIS)->vtable
 #define _IO_JUMPS_FILE_plus(THIS) \
   _IO_CAST_FIELD_ACCESS ((THIS), struct _IO_FILE_plus, vtable)
-#define _IO_WIDE_JUMPS(THIS) \
-  _IO_CAST_FIELD_ACCESS ((THIS), struct _IO_FILE, _wide_data)->_wide_vtable
+/* Raw accessor for the stored wide vtable index.  */
+#define _IO_WIDE_JUMPS_INDEX(THIS) \
+  (_IO_CAST_FIELD_ACCESS ((THIS), struct _IO_FILE, _wide_data) \
+   ->_wide_vtable_index)
 #define _IO_CHECK_WIDE(THIS) \
   (_IO_CAST_FIELD_ACCESS ((THIS), struct _IO_FILE, _wide_data) != NULL)
 
@@ -120,7 +122,13 @@
   (_IO_JUMPS_FILE_plus (THIS) = (VTABLE))
 # define _IO_vtable_offset(THIS) 0
 #endif
-#define _IO_WIDE_JUMPS_FUNC(THIS) _IO_WIDE_JUMPS(THIS)
+/* Look up the wide vtable by its stored index, bounds-checked.  */
+#define _IO_WIDE_JUMPS_FUNC(THIS) \
+  (IO_wide_validate_index (_IO_WIDE_JUMPS_INDEX (THIS)))
+/* Store the index of VTABLE (a pointer into __io_vtables) into the wide
+   vtable slot.  Replaces every direct "_wide_vtable = ..." assignment.  */
+#define _IO_WIDE_JUMPS_FUNC_UPDATE(THIS, VTABLE) \
+  (_IO_WIDE_JUMPS_INDEX (THIS) = IO_wide_vtable_to_index (VTABLE))
 #define JUMP_FIELD(TYPE, NAME) TYPE NAME
 #define JUMP0(FUNC, THIS) (_IO_JUMPS_FUNC(THIS)->FUNC) (THIS)
 #define JUMP1(FUNC, THIS, X1) (_IO_JUMPS_FUNC(THIS)->FUNC) (THIS, X1)
@@ -1049,6 +1057,41 @@ IO_validate_vtable (const struct _IO_jump_t *vtable)
     _IO_vtable_check ();
   return vtable;
 }
+
+#if IS_IN (libc)
+/* Wide vtable hardening.
+
+   The wide jump table reached through the WJUMP* macros is identified by
+   an index into __io_vtables (stored in _IO_wide_data._wide_vtable_index)
+   rather than by a raw pointer.  On use the index is bounds-checked and
+   resolved to &__io_vtables[index].  An attacker who overwrites the field
+   can only select a value that is either in range (a legitimate table) or
+   out of range (rejected).  This closes the House of Apple 2 / FSROP
+   primitive, where the wide vtable dispatch was previously unchecked.  */
+
+/* Resolve a stored wide vtable index to its jump table, bounds-checked.  */
+static inline const struct _IO_jump_t *
+IO_wide_validate_index (unsigned int index)
+{
+  if (__glibc_unlikely (index >= IO_VTABLES_NUM))
+    __libc_fatal ("Fatal error: glibc detected an invalid stdio handle\n");
+  return &__io_vtables[index];
+}
+
+/* Convert a wide vtable pointer (which must point at the start of a table
+   inside __io_vtables) to its index for storage.  */
+static inline unsigned int
+IO_wide_vtable_to_index (const struct _IO_jump_t *vtable)
+{
+  uintptr_t offset = (uintptr_t) vtable - (uintptr_t) &__io_vtables;
+  /* The pointer must be aligned to the start of a jump table and lie
+     within the section; otherwise the stored index would be bogus.  */
+  if (__glibc_unlikely (offset >= IO_VTABLES_LEN
+			|| offset % sizeof (struct _IO_jump_t) != 0))
+    __libc_fatal ("Fatal error: glibc detected an invalid stdio handle\n");
+  return offset / sizeof (struct _IO_jump_t);
+}
+#endif /* IS_IN (libc) */
 
 /* In case of an allocation failure, we resort to using the fixed buffer
    _SHORT_BACKUPBUF.  Free PTR unless it points to that buffer.  */

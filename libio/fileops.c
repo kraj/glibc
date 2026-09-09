@@ -398,7 +398,8 @@ _IO_new_file_fopen (FILE *fp, const char *filename, const char *mode,
 	  cc->__cd_out.step_data.__statep = &result->_wide_data->_IO_state;
 
 	  /* From now on use the wide character callback functions.  */
-	  _IO_JUMPS_FILE_plus (fp) = fp->_wide_data->_wide_vtable;
+	  _IO_JUMPS_FILE_plus (fp)
+	    = IO_wide_validate_index (fp->_wide_data->_wide_vtable_index);
 
 	  /* Set the mode now.  */
 	  result->_mode = 1;
@@ -451,7 +452,7 @@ _IO_file_setbuf_mmap (FILE *fp, char *p, ssize_t len)
 
   /* Change the function table.  */
   _IO_JUMPS_FILE_plus (fp) = &_IO_file_jumps;
-  fp->_wide_data->_wide_vtable = &_IO_wfile_jumps;
+  _IO_WIDE_JUMPS_FUNC_UPDATE (fp, &_IO_wfile_jumps);
 
   /* And perform the normal operation.  */
   result = _IO_new_file_setbuf (fp, p, len);
@@ -460,7 +461,7 @@ _IO_file_setbuf_mmap (FILE *fp, char *p, ssize_t len)
   if (result == NULL)
     {
       _IO_JUMPS_FILE_plus (fp) = &_IO_file_jumps_mmap;
-      fp->_wide_data->_wide_vtable = &_IO_wfile_jumps_mmap;
+      _IO_WIDE_JUMPS_FUNC_UPDATE (fp, &_IO_wfile_jumps_mmap);
     }
 
   return result;
@@ -683,7 +684,7 @@ mmap_remap_check (FILE *fp)
 	_IO_JUMPS_FILE_plus (fp) = &_IO_file_jumps;
       else
 	_IO_JUMPS_FILE_plus (fp) = &_IO_wfile_jumps;
-      fp->_wide_data->_wide_vtable = &_IO_wfile_jumps;
+      _IO_WIDE_JUMPS_FUNC_UPDATE (fp, &_IO_wfile_jumps);
 
       return 1;
     }
@@ -753,7 +754,7 @@ decide_maybe_mmap (FILE *fp)
 		_IO_JUMPS_FILE_plus (fp) = &_IO_file_jumps_mmap;
 	      else
 		_IO_JUMPS_FILE_plus (fp) = &_IO_wfile_jumps_mmap;
-	      fp->_wide_data->_wide_vtable = &_IO_wfile_jumps_mmap;
+	      _IO_WIDE_JUMPS_FUNC_UPDATE (fp, &_IO_wfile_jumps_mmap);
 
 	      return;
 	    }
@@ -766,7 +767,7 @@ decide_maybe_mmap (FILE *fp)
     _IO_JUMPS_FILE_plus (fp) = &_IO_file_jumps;
   else
     _IO_JUMPS_FILE_plus (fp) = &_IO_wfile_jumps;
-  fp->_wide_data->_wide_vtable = &_IO_wfile_jumps;
+  _IO_WIDE_JUMPS_FUNC_UPDATE (fp, &_IO_wfile_jumps);
 }
 
 int

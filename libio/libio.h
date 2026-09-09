@@ -145,7 +145,14 @@ struct _IO_wide_data
 
   wchar_t _shortbuf[1];
 
-  const struct _IO_jump_t *_wide_vtable;
+  /* Index into __io_vtables identifying the wide jump table, instead of
+     a raw pointer.  Storing an index and bounds-checking it on use (see
+     _IO_WIDE_JUMPS_FUNC in libioP.h) prevents an attacker who can
+     overwrite this field from redirecting wide I/O to an arbitrary
+     address (the "House of Apple 2" / FSROP primitive), since the wide
+     vtable dispatch was previously unchecked.  This field is internal
+     and not part of the ABI.  */
+  unsigned int _wide_vtable_index;
 };
 
 struct _IO_FILE_plus;

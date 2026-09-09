@@ -170,7 +170,7 @@ $(objpfx)tst-popen-fork: $(shared-thread-library)
 
 $(objpfx)tst-file-init-race: $(shared-thread-library)
 
-tests-internal = tst-vtables tst-vtables-interposed
+tests-internal = tst-vtables tst-vtables-interposed tst-wide-vtable-check
 
 ifeq (yes,$(build-shared))
 # Add test-fopenloc only if shared library is enabled since it depends on

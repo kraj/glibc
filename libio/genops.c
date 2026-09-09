@@ -604,7 +604,7 @@ _IO_no_init (FILE *fp, int flags, int orientation,
       fp->_wide_data->_IO_backup_base = NULL;
       fp->_wide_data->_IO_save_end = NULL;
 
-      fp->_wide_data->_wide_vtable = jmp;
+      _IO_WIDE_JUMPS_FUNC_UPDATE (fp, jmp);
     }
   else
     /* Cause predictable crash when a wide function is called on a byte

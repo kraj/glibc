@@ -45,7 +45,7 @@ __fopen_maybe_mmap (FILE *fp)
 	_IO_JUMPS_FILE_plus (fp) = &_IO_file_jumps_maybe_mmap;
       else
 	_IO_JUMPS_FILE_plus (fp) = &_IO_wfile_jumps_maybe_mmap;
-      fp->_wide_data->_wide_vtable = &_IO_wfile_jumps_maybe_mmap;
+      _IO_WIDE_JUMPS_FUNC_UPDATE (fp, &_IO_wfile_jumps_maybe_mmap);
     }
 #endif
   return fp;
