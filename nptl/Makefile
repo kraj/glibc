@@ -118,6 +118,7 @@ routines = \
   pthread_getname \
   pthread_getschedparam \
   pthread_getspecific \
+  pthread_getstack_np \
   pthread_gettid_np \
   pthread_join \
   pthread_join_common \
@@ -327,6 +328,7 @@ tests = \
   tst-pthread-timedlock-lockloop \
   tst-pthread_exit-nothreads \
   tst-pthread_exit-nothreads-static \
+  tst-pthread_getstack_np \
   tst-pthread_gettid_np \
   tst-robust-fork \
   tst-robust12 \

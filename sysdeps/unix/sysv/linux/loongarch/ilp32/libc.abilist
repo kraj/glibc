@@ -2287,3 +2287,4 @@ GLIBC_2.44 wprintf F
 GLIBC_2.44 write F
 GLIBC_2.44 writev F
 GLIBC_2.44 wscanf F
+GLIBC_2.45 pthread_getstack_np F

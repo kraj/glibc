@@ -16,6 +16,7 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
+#include <libc-lock.h>
 #include <not-cancel.h>
 #include <procutils.h>
 #include <stdbool.h>
@@ -109,6 +110,12 @@ next_line (struct line_reader *lr, char **r)
     }
 }
 
+static void
+close_handler (void *arg)
+{
+  __close_nocancel_nostatus (*(int *) arg);
+}
+
 enum procutils_read_result_t
 __libc_procutils_read_file (const char *filename, char *buffer,
 			    size_t buffer_size, procutils_closure_t closure,
@@ -127,13 +134,19 @@ __libc_procutils_read_file (const char *filename, char *buffer,
   if (lr.fd == -1)
     return procutils_read_error;
 
+  /* The cleanup handler is required to avoid leaking the descriptor if
+     the thread is asynchronously canceled.  */
   enum next_line_result_t r;
+  __libc_cleanup_push (close_handler, &lr.fd);
+
   char *line;
   while ((r = next_line (&lr, &line)) == next_line_ok)
     if (closure (line, arg) != 0)
       break;
 
   __close_nocancel_nostatus (lr.fd);
+
+  __libc_cleanup_pop (0);
 
   if (r == next_line_error)
     return procutils_read_error;

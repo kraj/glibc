@@ -563,6 +563,8 @@ sysdep_routines += \
   spawnattr_setcgroup_np \
   # sysdep_routines
 
+CFLAGS-procutils.c += -fexceptions -fasynchronous-unwind-tables
+
 tests += \
   tst-affinity \
   tst-affinity-pid \

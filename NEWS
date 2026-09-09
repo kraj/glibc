@@ -9,7 +9,9 @@ Version 2.45
 
 Major new features:
 
-  [Add new features here]
+* The function pthread_getstack_np has been added.  It returns the stack
+  bounds of a thread, like pthread_attr_getstack applied to the result of
+  pthread_getattr_np, in a async-signal-safe manner.
 
 Deprecated and removed features, and other changes affecting compatibility:
 

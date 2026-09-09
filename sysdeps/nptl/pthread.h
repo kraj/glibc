@@ -1320,6 +1320,12 @@ extern int pthread_getcpuclockid (pthread_t __thread_id,
 #ifdef __USE_GNU
 /* Return the Linux TID for THREAD_ID.  Returns -1 on failure.  */
 extern pid_t pthread_gettid_np (pthread_t __thread_id);
+
+/* Store the lowest usable address of the stack of THREAD_ID in *STACKADDR and
+   the number of usable bytes from that address in *STACKSIZE.  */
+extern int pthread_getstack_np (pthread_t __thread_id,
+				void **__stackaddr, size_t *__stacksize)
+     __THROW __nonnull ((2, 3));
 #endif
 
 

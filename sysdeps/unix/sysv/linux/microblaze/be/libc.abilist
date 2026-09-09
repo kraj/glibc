@@ -2861,3 +2861,4 @@ GLIBC_2.43 memset_explicit F
 GLIBC_2.43 mseal F
 GLIBC_2.43 openat2 F
 GLIBC_2.43 umaxabs F
+GLIBC_2.45 pthread_getstack_np F

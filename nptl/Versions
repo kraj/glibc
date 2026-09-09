@@ -383,6 +383,9 @@ libc {
   }
   GLIBC_2.43 {
   }
+  GLIBC_2.45 {
+    pthread_getstack_np;
+  }
   GLIBC_PRIVATE {
     __libc_alloca_cutoff;
     __lll_lock_wake_private;

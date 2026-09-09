@@ -1148,6 +1148,7 @@ the standard.
 * Thread CPU Affinity::			  Limiting which CPUs can run a thread.
 * Joining Threads::                       Wait for a thread to terminate.
 * Thread Names::			  Changing the name of a thread.
+* Thread Stack Bounds::			  Determining the stack of a thread.
 * Single-Threaded::                       Detecting single-threaded execution.
 * Restartable Sequences::                 Linux-specific restartable sequences
                                           integration.
@@ -1350,6 +1351,37 @@ NUL-terminated string of no more than 15 non-NUL characters.
 @deftypefun int pthread_getname_np (pthread_t @var{th}, char *@var{buf}, size_t @var{buflen})
 Retrieves the name of thread @var{th}.
 @manpagefunctionstub{pthread_getname_np, 3}
+@end deftypefun
+
+@node Thread Stack Bounds
+@subsubsection Thread Stack Bounds
+
+@deftypefun int pthread_getstack_np (pthread_t @var{th}, void **@var{stackaddr}, size_t *@var{stacksize})
+@standards{GNU, pthread.h}
+@safety{@prelim{}@mtsafe{}@assafe{}@acsafe{}}
+Store the lowest usable address of the stack of thread @var{th} in
+@code{*@var{stackaddr}} and the number of bytes usable from that
+address in @code{*@var{stacksize}}, following the same convention as
+@code{pthread_attr_getstack}.  The reported size does not include the
+guard area.
+
+For the initial thread the bounds are computed from the current
+@code{RLIMIT_STACK} resource limit and the process memory map, so the
+result may change if the limit is adjusted.  On failure an error code
+is returned, for instance @code{ENOENT} when the stack bounds cannot
+be determined.
+
+Unlike @code{pthread_getattr_np}, this function does not acquire any
+lock nor allocate memory, and it is async-signal-safe.
+
+The function reports the stack set up by the kernel or by
+@code{pthread_create}.  The alternate signal stack is not reflected in
+the result, and a handler running on it still gets the bounds of the
+thread stack. The alternate stack can be queried with @code{sigaltstack}
+(@pxref{Signal Stack}), which is also async-signal-safe.
+
+Stacks switched by user code, such as with @code{makecontext} or coroutine
+libraries, are not tracked by @theglibc{} and are not reported either.
 @end deftypefun
 
 @node Single-Threaded
