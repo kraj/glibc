@@ -18,11 +18,13 @@
 #include <assert.h>
 #include <errno.h>
 #include <ldsodefs.h>
+#include <libc-pointer-arith.h>
 #include <procmaps.h>
 #include <shlib-compat.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/auxv.h>
 #include <sys/resource.h>
 #include "pthreadP.h"
 #include <lowlevellock.h>
@@ -84,25 +86,56 @@ pthread_main_stack (void **stackaddr, size_t *stacksize)
       .stack_end = (uintptr_t) __libc_stack_end,
     };
 
+  uintptr_t to;
+#if _STACK_GROWS_DOWN
+  uintptr_t last_to = 0;
+  bool has_last_to = false;
+#endif
+
   if (__libc_procmaps_iterate (find_stack_vma, &args) == procutils_read_error)
-    return errno;
-  if (!args.found)
+    {
+      int saved_errno = errno;
+#if _STACK_GROWS_DOWN
+      /* The kernel copies the AT_EXECFN string at the top of the argument
+	 area. The clamp against the mapping below the stack is not possible
+	 in this case, so an unlimited RLIMIT_STACK can not be bounded.  */
+      const char *execfn = (const char *) __getauxval (AT_EXECFN);
+      if (rl.rlim_cur == RLIM_INFINITY || execfn == NULL)
+	return saved_errno;
+      to = ALIGN_UP ((uintptr_t) execfn + strlen (execfn) + 1,
+		     GLRO(dl_pagesize));
+      if (to < (uintptr_t) stack_end
+	  || (rlim_t) (to - (uintptr_t) stack_end) >= rl.rlim_cur)
+	return saved_errno;
+#else
+      return saved_errno;
+#endif
+    }
+  else if (!args.found)
     /* No entry was found (there should always be one).  */
     return ENOENT;
+  else
+    {
+      to = args.to;
+#if _STACK_GROWS_DOWN
+      last_to = args.last_to;
+      has_last_to = true;
+#endif
+    }
 
-  size_t size = rl.rlim_cur - (size_t) (args.to - (uintptr_t) stack_end);
+  size_t size = rl.rlim_cur - (size_t) (to - (uintptr_t) stack_end);
 
   /* Cut it down to align it to page size since otherwise we risk going beyond
      rlimit when the kernel rounds up the stack extension request.  */
   size &= -(uintptr_t) GLRO(dl_pagesize);
 #if _STACK_GROWS_DOWN
   /* The limit might be too high.  */
-  if (size > (uintptr_t) stack_end - args.last_to)
-    size = (uintptr_t) stack_end - args.last_to;
+  if (has_last_to && size > (uintptr_t) stack_end - last_to)
+    size = (uintptr_t) stack_end - last_to;
 #else
   /* The limit might be too low.  */
-  if (size < args.to - (uintptr_t) stack_end)
-    size = args.to - (uintptr_t) stack_end;
+  if (size < to - (uintptr_t) stack_end)
+    size = to - (uintptr_t) stack_end;
 #endif
 
   *stackaddr = stack_end;
