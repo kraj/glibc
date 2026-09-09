@@ -392,6 +392,12 @@ extern int __pthread_attr_getstack (const pthread_attr_t *__restrict __attr,
 				    size_t *__restrict __stacksize);
 extern int __pthread_attr_setstack (pthread_attr_t *__attr, void *__stackaddr,
 				    size_t __stacksize);
+/* Determine the stack bounds of the initial thread, with *STACKADDR
+   following the internal pthread_attr_t convention (the highest usable
+   address for _STACK_GROWS_DOWN).  Return 0 or an errno constant.  The
+   function is async-signal-safe.  */
+extern int __pthread_main_stack (void **stackaddr, size_t *stacksize)
+     attribute_hidden;
 int __pthread_attr_setaffinity_np (pthread_attr_t *, size_t, const cpu_set_t *);
 libc_hidden_proto (__pthread_attr_setaffinity_np)
 extern __typeof (pthread_getattr_default_np) __pthread_getattr_default_np;
