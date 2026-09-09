@@ -16,20 +16,57 @@
    <https://www.gnu.org/licenses/>.  */
 
 #include <errno.h>
+#include <procmaps.h>
 #include <stdint.h>
-#include <stdio.h>
-#include <stdio_ext.h>
 #include <stdlib.h>
-#include <string.h>
-#include "libio/libioP.h"
+
+struct readonly_area_args
+{
+  uintptr_t start;
+  uintptr_t end;
+  size_t size;
+};
+
+/* Remove the readable mappings that intersect [ARGS->start, ARGS->end)
+   from ARGS->size.  */
+static int
+check_mapping (uintptr_t start, uintptr_t end, const char *perm, void *arg)
+{
+  struct readonly_area_args *args = arg;
+
+  if (start < args->end && end > args->start)
+    {
+      /* Found an entry that at least partially covers the area.  */
+      if (perm[0] != 'r' || perm[1] != '-')
+	return -1;
+
+      if (start <= args->start && end >= args->end)
+	args->size = 0;
+      else if (start <= args->start)
+	args->size -= end - args->start;
+      else if (end >= args->end)
+	args->size -= args->end - start;
+      else
+	args->size -= end - start;
+
+      if (args->size == 0)
+	return 1;
+    }
+
+  return 0;
+}
 
 enum readonly_error_type
 __readonly_area_fallback (const void *ptr, size_t size)
 {
-  const void *ptr_end = ptr + size;
+  struct readonly_area_args args =
+    {
+      .start = (uintptr_t) ptr,
+      .end = (uintptr_t) ptr + size,
+      .size = size,
+    };
 
-  FILE *fp = fopen ("/proc/self/maps", "rce");
-  if (fp == NULL)
+  if (__libc_procmaps_iterate (check_mapping, &args) == procutils_read_error)
     {
       /* It is the system administrator's choice to not have /proc
 	 available to this process (e.g., because it runs in a chroot
@@ -46,54 +83,5 @@ __readonly_area_fallback (const void *ptr, size_t size)
       return readonly_procfs_open_fail;
     }
 
-  /* We need no locking.  */
-  __fsetlocking (fp, FSETLOCKING_BYCALLER);
-
-  char *line = NULL;
-  size_t linelen = 0;
-
-  while (! __feof_unlocked (fp))
-    {
-      if (__getdelim (&line, &linelen, '\n', fp) <= 0)
-	break;
-
-      char *p;
-      uintptr_t from = strtoul (line, &p, 16);
-
-      if (p == line || *p++ != '-')
-	break;
-
-      char *q;
-      uintptr_t to = strtoul (p, &q, 16);
-
-      if (q == p || *q++ != ' ')
-	break;
-
-      if (from < (uintptr_t) ptr_end && to > (uintptr_t) ptr)
-	{
-	  /* Found an entry that at least partially covers the area.  */
-	  if (*q++ != 'r' || *q++ != '-')
-	    break;
-
-	  if (from <= (uintptr_t) ptr && to >= (uintptr_t) ptr_end)
-	    {
-	      size = 0;
-	      break;
-	    }
-	  else if (from <= (uintptr_t) ptr)
-	    size -= to - (uintptr_t) ptr;
-	  else if (to >= (uintptr_t) ptr_end)
-	    size -= (uintptr_t) ptr_end - from;
-	  else
-	    size -= to - from;
-
-	  if (!size)
-	    break;
-	}
-    }
-
-  fclose (fp);
-  free (line);
-
-  return size == 0 ? readonly_noerror : readonly_area_writable;
+  return args.size == 0 ? readonly_noerror : readonly_area_writable;
 }
