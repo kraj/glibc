@@ -432,6 +432,11 @@ FTS_OPEN (char * const *argv,
                 __set_errno (EINVAL);
                 return (NULL);
         }
+	/* No point in returning a handle in such case.  */
+        if (*argv == NULL) {
+                __set_errno (EINVAL);
+                return (NULL);
+        }
 #if !_LIBC
         if ( ! (options & (FTS_LOGICAL | FTS_PHYSICAL))) {
                 __set_errno (EINVAL);

@@ -182,9 +182,21 @@ children (FTS *fts)
 /* Count the number of dirs seen in the test.  */
 static int dirs = 0;
 
+static void
+do_test_empty (void)
+{
+  char *empty[] = { NULL };
+
+  errno = 0;
+  TEST_VERIFY (fts_open (empty, FTS_LOGICAL, NULL) == NULL);
+  TEST_COMPARE (errno, EINVAL);
+}
+
 static int
 do_test (void)
 {
+  do_test_empty ();
+
   char *paths[2] = { fts_test_dir, NULL };
   FTS *fts;
   int flags = 0;
