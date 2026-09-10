@@ -39,14 +39,13 @@
      %r2-%r6: parameters 1 to 5
      %r7    : (*func) pointer
      %r8    : uc_link from ucontext structure
-     %r9    : address of setcontext
      %r14   : return address to uc_link trampoline
      %r15   : stack pointer.
 
    The trampoline looks like this:
      basr  %r14,%r7
      lgr   %r2,%r8
-     br    %r9.  */
+     brasl %r14,__setcontext  */
 
 void
 __makecontext (ucontext_t *ucp, void (*func) (void), int argc, ...)
@@ -89,9 +88,6 @@ __makecontext (ucontext_t *ucp, void (*func) (void), int argc, ...)
 
   /* Pass ucp->uc_link to __makecontext_ret in %r8.  */
   ucp->uc_mcontext.gregs[8] = (long int) ucp->uc_link;
-
-  /* Pass address of setcontext in %r9.  */
-  ucp->uc_mcontext.gregs[9] = (long int) &setcontext;
 
   /* Set stack pointer.  */
   ucp->uc_mcontext.gregs[15] = (long int) sp;

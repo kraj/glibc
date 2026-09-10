@@ -24,7 +24,7 @@ ENTRY(__makecontext_ret)
 	ltgr	%r8,%r8			/* Check whether uc_link is 0.  */
 	jz	1f
 	lgr	%r2,%r8
-	br	%r9
+	brasl	%r14,__setcontext
 1:	lghi	%r2,0
 	brasl	%r14,HIDDEN_JUMPTARGET (exit)
 	j	.+2			/* Trap if exit returns.  */
