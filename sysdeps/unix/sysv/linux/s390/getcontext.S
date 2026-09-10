@@ -65,8 +65,11 @@ ENTRY(__getcontext)
 	/* Set __getcontext return value to 0.  */
 	slgr    %r2,%r2
 
-	/* Store access registers.  */
-	stam    %a0,%a15,SC_ACRS(%r1)
+	/* Store access registers %a2 to %a15.  Store 0x0 for %a0 and
+	   %a1 as those are used for thread purposes and are not
+	   restored with setcontext.  */
+	stg     %r2,SC_ACRS(%r1)
+	stam    %a2,%a15,SC_ACRS+8(%r1)
 
 	/* Store general purpose registers.  */
 	stmg    %r0,%r15,SC_GPRS(%r1)
