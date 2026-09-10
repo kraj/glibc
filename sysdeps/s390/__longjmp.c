@@ -29,33 +29,23 @@
 void
 __longjmp (__jmp_buf env, int val)
 {
+  uintptr_t ret_addr = env->__gregs[8];
+  uintptr_t env_sp = env->__gregs[9];
 #ifdef PTR_DEMANGLE
-  uintptr_t guard = PTR_GUARD_VALUE;
-# ifdef CHECK_SP
-  CHECK_SP (env, guard);
-# endif
-#elif defined CHECK_SP
-  CHECK_SP (env, 0);
+  PTR_DEMANGLE (env_sp);
+  PTR_DEMANGLE (ret_addr);
+#endif
+#ifdef CHECK_SP
+  CHECK_SP (env_sp);
 #endif
   register long int r2 __asm__ ("%r2") = val == 0 ? 1 : val;
-#ifdef PTR_DEMANGLE
-  register uintptr_t r3 __asm__ ("%r3") = guard;
-  register void *r1 __asm__ ("%r1") = (void *) env;
-#endif
+  register uintptr_t r4 __asm__ ("%r4") = ret_addr;
+  register uintptr_t r5 __asm__ ("%r5") = env_sp;
   /* Restore registers and jump back.  */
   __asm__ __volatile__ (
 			/* longjmp probe expects longjmp first argument, second
 			   argument and target address.  */
-#ifdef PTR_DEMANGLE
-			"lmg  %%r4,%%r5,64(%1)\n\t"
-			"rllg %%r4,%%r4,47\n\t"
-			"xgr  %%r4,%2\n\t"
-			"rllg %%r5,%%r5,47\n\t"
-			"xgr  %%r5,%2\n\t"
-			LIBC_PROBE_ASM (longjmp, 8@%1 -4@%0 8@%%r4)
-#else
-			LIBC_PROBE_ASM (longjmp, 8@%1 -4@%0 8@%%r14)
-#endif
+			LIBC_PROBE_ASM (longjmp, 8@%1 -4@%0 8@%2)
 
 			/* restore fpregs  */
 			"ld    %%f8,80(%1)\n\t"
@@ -68,22 +58,11 @@ __longjmp (__jmp_buf env, int val)
 			"ld    %%f15,136(%1)\n\t"
 
 			/* restore gregs and return to jmp_buf target  */
-#ifdef PTR_DEMANGLE
 			"lmg  %%r6,%%r13,0(%1)\n\t"
-			"lgr  %%r15,%%r5\n\t"
-			LIBC_PROBE_ASM (longjmp_target, 8@%1 -4@%0 8@%%r4)
-			"br   %%r4"
-#else
-			"lmg  %%r6,%%r15,0(%1)\n\t"
-			LIBC_PROBE_ASM (longjmp_target, 8@%1 -4@%0 8@%%r14)
-			"br   %%r14"
-#endif
-			: : "r" (r2),
-#ifdef PTR_DEMANGLE
-			  "r" (r1), "r" (r3)
-#else
-			  "a" (env)
-#endif
+			"lgr  %%r15,%3\n\t"
+			LIBC_PROBE_ASM (longjmp_target, 8@%1 -4@%0 8@%2)
+			"br   %2"
+			: : "r" (r2), "a" (env), "r" (r4), "r" (r5)
 			);
 
   /* Avoid `volatile function does return' warnings.  */
