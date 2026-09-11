@@ -321,6 +321,7 @@ tests = \
   tst-pthread-defaultattr-free \
   tst-pthread-gdb-attach \
   tst-pthread-gdb-attach-static \
+  tst-pthread-getattr-guard-gap \
   tst-pthread-getcpuclockid-invalid \
   tst-pthread-key1-static \
   tst-pthread-timedlock-lockloop \

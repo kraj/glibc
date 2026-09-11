@@ -30,9 +30,16 @@
 #include <lowlevellock.h>
 
 
+/* Default value of the Linux stack_guard_gap boot parameter (in pages).
+   It can be changed with a boot argument and queried through /proc/cmdline.
+   A smaller configured gap only makes the computed size conservative,
+   however a larger value might make pthread_main_stack over-report.   */
+#define STACK_GUARD_GAP_PAGES 256
+
 struct find_stack_args
 {
   uintptr_t stack_end;
+  uintptr_t from;
   uintptr_t to;
 #if _STACK_GROWS_DOWN
   uintptr_t last_to;
@@ -48,6 +55,7 @@ find_stack_vma (uintptr_t start, uintptr_t end, const char *perm, void *arg)
 
   if (start <= args->stack_end && args->stack_end < end)
     {
+      args->from = start;
       args->to = end;
       args->found = true;
       return true;
@@ -88,6 +96,7 @@ pthread_main_stack (void **stackaddr, size_t *stacksize)
 
   uintptr_t to;
 #if _STACK_GROWS_DOWN
+  uintptr_t from = 0;
   uintptr_t last_to = 0;
   bool has_last_to = false;
 #endif
@@ -118,6 +127,7 @@ pthread_main_stack (void **stackaddr, size_t *stacksize)
     {
       to = args.to;
 #if _STACK_GROWS_DOWN
+      from = args.from;
       last_to = args.last_to;
       has_last_to = true;
 #endif
@@ -129,9 +139,16 @@ pthread_main_stack (void **stackaddr, size_t *stacksize)
      rlimit when the kernel rounds up the stack extension request.  */
   size &= -(uintptr_t) GLRO(dl_pagesize);
 #if _STACK_GROWS_DOWN
-  /* The limit might be too high.  */
-  if (has_last_to && size > (uintptr_t) stack_end - last_to)
-    size = (uintptr_t) stack_end - last_to;
+  /* The limit might be too high and the kernel does not grow the stack into
+     the stack guard gap above the mapping below it.  */
+  if (has_last_to)
+    {
+      uintptr_t lowest = last_to + STACK_GUARD_GAP_PAGES * GLRO(dl_pagesize);
+      if (lowest > from)
+	lowest = from;
+      if (size > (uintptr_t) stack_end - lowest)
+	size = (uintptr_t) stack_end - lowest;
+    }
 #else
   /* The limit might be too low.  */
   if (size < to - (uintptr_t) stack_end)
