@@ -281,8 +281,12 @@ resolv_conf_matches (const struct __res_state *resp,
   {
     if (resp->dnsrch[0] == NULL)
       {
-        /* Empty search list.  No default domain name.  */
-        return conf->search_list_size == 0 && resp->defdname[0] == '\0';
+        /* Empty search list, or the first entry does not fit in
+           resp->defdname.  No default domain name.  */
+        return resp->defdname[0] == '\0'
+          && (conf->search_list_size == 0
+              || (strlen (conf->search_list[0]) + 1
+                  > sizeof (resp->defdname)));
       }
 
     if (resp->dnsrch[0] != resp->defdname)
@@ -309,11 +313,12 @@ resolv_conf_matches (const struct __res_state *resp,
           }
         else
           {
-            /* resp->dnsrch is truncated if the number of elements
-               exceeds MAXDNSRCH, or if the combined storage space for
-               the search list exceeds what can be stored in
-               resp->defdname.  */
-            if (i == MAXDNSRCH || search_list_size > sizeof (resp->dnsrch))
+            /* resp->dnsrch is truncated if the number of elements exceeds
+               MAXDNSRCH, or if conf->search_list[i] does not fit in the
+               remaining space of resp->defdname.  */
+            if (i == MAXDNSRCH
+                || (search_list_size + strlen (conf->search_list[i]) + 1
+                    > sizeof (resp->defdname)))
               break;
             /* Otherwise, a mismatch indicates a match failure.  */
             return false;
