@@ -1,0 +1,29 @@
+SHIFT_JISX0213 decoding may hang on crafted input
+
+Converting crafted SHIFT_JISX0213 input to UCS-4 or the internal wide
+character encoding, for example with iconv, in the GNU C Library version
+2.3 to 2.44 may result in the converter making no progress, causing the
+calling application to hang.
+
+Some SHIFT_JISX0213 sequences decode to two code points.  If the output
+buffer has room for only the first one, the converter stores the second
+in the conversion state and returns E2BIG, but it never clears that
+pending character after emitting it on the next call.  The converter
+then keeps emitting the pending character without consuming further
+input, so an application that retries the conversion loops forever.
+The input must be attacker controlled and the application must convert
+it with an output buffer small enough to split the two code points.
+Only the SHIFT_JISX0213 character set is affected, which is not
+commonly used.  The related defect in the EUC_JISX0213 converter is
+tracked separately as CVE-2026-80489.
+
+CVE-Id: CVE-2026-77117
+Public-Date: 2026-08-21
+Vulnerable-Commit: 93a568aaba1d3da3497102dfe1eeb81070a24c1c (2.2.4-823)
+Fix-Commit: 68d94bbe50b7577d48998107d632ef3a0df050e3 (2.45)
+Fix-Commit: 6f9b2bfa500bf5d1cff5d990adfff4b71298dadd (2.44-30)
+Fix-Commit: 138c43f0180945b014e284a87b332d4d8237f537 (2.43-55)
+Fix-Commit: 67db60ee152d221782d2ae915268871d3e06a007 (2.42-88)
+Fix-Commit: e43e46f94398b3de446fec11da1e7633ea5202ec (2.41-157)
+CVSS: CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H - 5.9
+Reported-by: AISLE in partnership with Red Hat
