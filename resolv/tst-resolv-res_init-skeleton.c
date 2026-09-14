@@ -724,6 +724,41 @@ struct test_case test_cases[] =
      "nameserver 192.0.2.1\n"
      "; nameserver[0]: [192.0.2.1]:53\n"
     },
+/* Search list entries which do not fit in the legacy 256-byte
+   resp->defdname buffer (bug 31026).  LONG244 is 244 characters long,
+   so it does not fit after "example.com\0" (12 bytes).  LONG256 is 256
+   characters long, so it does not fit even as the first entry.  */
+#define LBL63 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+#define LONG244 LBL63 "." LBL63 "." LBL63 "." \
+  "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+#define LONG256 LBL63 "." LBL63 "." LBL63 "." LBL63 "a"
+    {.name = "search list truncated at long entry after short entry",
+     .conf = "nameserver 192.0.2.1\n"
+     "search example.com " LONG244 "\n",
+     .expected = "search example.com\n"
+     "; search[0]: example.com\n"
+     "; search[1]: " LONG244 "\n"
+     "nameserver 192.0.2.1\n"
+     "; nameserver[0]: [192.0.2.1]:53\n"
+    },
+    {.name = "search list truncated at long first entry",
+     .conf = "nameserver 192.0.2.1\n"
+     "search " LONG256 " example.com\n",
+     .expected = "; search[0]: " LONG256 "\n"
+     "; search[1]: example.com\n"
+     "nameserver 192.0.2.1\n"
+     "; nameserver[0]: [192.0.2.1]:53\n"
+    },
+    {.name = "long first entry from the domain directive",
+     .conf = "nameserver 192.0.2.1\n"
+     "domain " LONG256 "\n",
+     .expected = "; search[0]: " LONG256 "\n"
+     "nameserver 192.0.2.1\n"
+     "; nameserver[0]: [192.0.2.1]:53\n"
+    },
+#undef LONG256
+#undef LONG244
+#undef LBL63
     {.name = "trust-ad flag",
      .conf = "options trust-ad\n"
      "nameserver 192.0.2.1\n",
