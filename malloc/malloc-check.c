@@ -120,7 +120,8 @@ mem2chunk_check (void *mem, unsigned char **magic_p)
       if ((contig &&
            ((char *) p < mp_.sbrk_base ||
             ((char *) p + sz) >= (mp_.sbrk_base + main_arena.system_mem))) ||
-          sz < MINSIZE || sz & MALLOC_ALIGN_MASK || !inuse (p) ||
+          sz < MINSIZE || sz & MALLOC_ALIGN_MASK ||
+	  p == top (&main_arena) || !inuse (p) ||
           (!prev_inuse (p) && ((prev_size (p) & MALLOC_ALIGN_MASK) != 0 ||
                                (contig && (char *) prev_chunk (p) < mp_.sbrk_base) ||
                                next_chunk (prev_chunk (p)) != p)))
