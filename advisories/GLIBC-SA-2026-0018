@@ -1,0 +1,28 @@
+Stack-based out-of-bounds write in tdelete during tree rebalancing
+
+Calling tdelete on a sufficiently deep tree in the GNU C Library
+version 2.1 to 2.44 may write one pointer past the end of an
+alloca-allocated array on the stack, which may crash the application.
+
+The tdelete implementation keeps an explicit stack of parent nodes for
+rebalancing, which is grown as needed while descending the tree.  Two
+rebalancing branches push an additional entry without checking the
+capacity, and write past the array when the stack is exactly full.
+Triggering this requires a node at a depth of exactly 40 (or 40 plus a
+multiple of 20), which implies a tree with at least a million nodes, so
+an attacker must drive a large number of insertions and deletions
+through an application that uses tsearch and tdelete.  The written
+value is a pointer into a tree node and is not directly attacker
+controlled.  No affected application in common distributions has
+been identified.
+
+CVE-Id: CVE-2026-19542
+Public-Date: 2026-08-11
+Vulnerable-Commit: 993b3242cdc37152fbbc7fbd5ce22b2734b04b23 (1.93-194)
+Fix-Commit: e2789c46e3bfdcd67a82bea9946b315c179e83d3 (2.45)
+Fix-Commit: d6ff274313d79feb864cc10eb775b91c817a67e9 (2.44-26)
+Fix-Commit: 0afa34adb0fd9d756d1fe745064272e9b9aadbdc (2.43-51)
+Fix-Commit: 2ea357280d82dab462851419a2338d940516a37e (2.42-85)
+Fix-Commit: 9318c2571576017d280a31b7b9ab576c9b696b1a (2.41-154)
+Reported-by: AISLE in partnership with Red Hat
+CVSS: CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:L - 5.6
