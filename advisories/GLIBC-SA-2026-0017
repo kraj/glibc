@@ -1,0 +1,21 @@
+Buffer overflow in strfmon and strfmon_l right-justification padding
+
+Calling strfmon and strfmon_l in the GNU C Library version 2.38 to
+2.44 can write past the end of the caller-supplied output buffer
+when a conversion uses right-justified width padding.
+
+Exploitation requires an application code path that calls strfmon or
+strfmon_l with right-justified width padding into a destination buffer
+that is large enough for the padding to succeed but too small for the
+internal memmove call. The field width or format may be
+attacker-influenced or a fixed susceptible pattern in the caller.
+
+At the time of publication, no network-facing application impact is
+known.
+
+CVE-Id: CVE-2026-19499
+CVSS: CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:L/A:H - 7.7
+Public-Date: 2026-08-11
+Vulnerable-Commit: e88b9f0e5cc50cab57a299dc7efe1a4eb385161d (2.38)
+Fix-Commit: b090cf226ff65b913e41536f1f573f500855615c (2.45)
+Reported-by: AISLE in partnership with Red Hat
