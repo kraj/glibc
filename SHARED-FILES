@@ -810,6 +810,8 @@ arm-optimized-routines:
   sysdeps/aarch64/__mtag_tag_zero_region.S
   # string/aarch64/memchr-mte.S, revision 41e5ae5
   sysdeps/aarch64/memchr.S
+  # string/aarch64/memchr-sve2.S, revision 5e20a93
+  sysdeps/aarch64/multiarch/memchr_sve2.S
   # string/aarch64/memcmp.S, revision 41e5ae5
   sysdeps/aarch64/memcmp.S
   # string/aarch64/memcpy-advsimd.S, revision 41e5ae5

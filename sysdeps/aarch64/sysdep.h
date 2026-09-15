@@ -177,6 +177,20 @@ FEATURE_1_AND_MARK (FEATURE_1_BTI | FEATURE_1_PAC | FEATURE_1_GCS)
 #define syscall_error	__syscall_error
 #define mcount		_mcount
 
+/* Macro for SVE: Contiguous load of bytes.
+   Using LDBSVE without setting the predicate p0 to true would not
+   raise an error. However, it's the user's responsibility to ensure
+   the predicate p0 is set to true with ptrue.  */
+#ifdef __BIG_ENDIAN__ /* Assumption: PTRUE p0.b.  */
+  .macro LDBSVE sve_vect:req, src_address:vararg
+   ld1b {\sve_vect\().b}, p0/z, \src_address
+  .endm
+#else
+/* No endian conversion.  */
+# define LDBSVE LDR
+# define ldbsve LDR
+#endif
+
 #endif	/* __ASSEMBLER__ */
 
 #endif  /* _AARCH64_SYSDEP_H */
