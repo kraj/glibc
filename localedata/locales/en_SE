@@ -89,9 +89,12 @@ mon      "January";/
          "October";/
          "November";/
          "December"
-% date formats following ISO 8601-1988
-d_t_fmt  "%Y-%m-%dT%T%:z"
-date_fmt "%Y-%m-%dT%T%:z"
+% ISO 8601 date/time format. POSIX strftime() has no conversion
+% for the extended ISO 8601 timezone offset (+hh:mm); %z produces the
+% basic form (+hhmm). GNU date(1)'s %:z is a non-POSIX extension and
+% cannot be used here.
+d_t_fmt  "%Y-%m-%dT%T%z"
+date_fmt "%Y-%m-%dT%T%z"
 d_fmt    "%Y-%m-%d"
 t_fmt    "%T"
 am_pm    "";""
