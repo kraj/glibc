@@ -554,7 +554,6 @@ sysdep_routines += \
   pidfd_getpid \
   pidfd_spawn \
   pidfd_spawnp \
-  procmaps \
   procutils \
   sched_getcpu \
   spawnattr_getcgroup_np \
