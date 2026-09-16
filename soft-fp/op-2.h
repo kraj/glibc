@@ -515,6 +515,10 @@
       _v240 = _m240.i;							\
       _w240 = _n240.i;							\
       _x240 = _o240.i;							\
+      /* The low bits of the _o240 chunk are shifted out when R##_f0	\
+	 is assembled; fold them into the sticky bit.  */		\
+      if ((_x240 & ((((UDItype) 1) << ((wfracbits) - 97)) - 1)) != 0)	\
+	_y240 = 1;							\
       R##_f1 = ((_t240 << (128 - (wfracbits - 1)))			\
 		| ((_u240 & 0xffffff) >> ((wfracbits - 1) - 104)));	\
       R##_f0 = (((_u240 & 0xffffff) << (168 - (wfracbits - 1)))		\
