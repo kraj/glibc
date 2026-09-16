@@ -467,10 +467,12 @@ $(objpfx)tst-shstk-legacy-1e-static.out: \
 	$(SHELL) $< $(common-objpfx) 2> $@; \
 	$(evaluate-test)
 tst-shstk-legacy-1f-ENV = GLIBC_TUNABLES=glibc.cpu.hwcaps=SHSTK
+LDFLAGS-tst-shstk-legacy-1f = -Wl,--no-as-needed
 $(objpfx)tst-shstk-legacy-1f: $(objpfx)tst-shstk-legacy-mod-1.so
 $(objpfx)tst-shstk-legacy-mod-1.so: \
   $(objpfx)tst-shstk-legacy-mod-1.os \
   $(objpfx)tst-shstk-legacy-1-extra.os
+LDFLAGS-tst-shstk-legacy-1g = -Wl,--no-as-needed
 $(objpfx)tst-shstk-legacy-1g: $(objpfx)tst-shstk-legacy-mod-1.so
 $(objpfx)tst-shstk-legacy-1g.out: \
   $(..)/sysdeps/x86_64/tst-shstk-legacy-1g.sh $(objpfx)tst-shstk-legacy-1g
