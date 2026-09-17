@@ -394,9 +394,6 @@ clearenv (void)
 void
 __libc_setenv_freemem (void)
 {
-  /* Remove all traces.  */
-  clearenv ();
-
   /* Clear all backing arrays.  */
   while (__environ_array_list != NULL)
     {
