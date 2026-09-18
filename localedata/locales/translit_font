@@ -9,7 +9,7 @@ comment_char %
 % otherwise be governed by that license.
 
 % Transliterations of font equivalents.
-% Generated automatically from UnicodeData.txt by gen_translit_font.py on 2025-08-18 for Unicode 17.0.0.
+% Generated automatically from UnicodeData.txt by gen_translit_font.py on 2026-09-18 for Unicode 18.0.0.
 
 LC_CTYPE
 
@@ -752,6 +752,7 @@ translit_start
 <U0001D6A3> <U007A> % MATHEMATICAL MONOSPACE SMALL Z
 <U0001D6A4> <U0131> % MATHEMATICAL ITALIC SMALL DOTLESS I
 <U0001D6A5> <U0237> % MATHEMATICAL ITALIC SMALL DOTLESS J
+<U0001D6A6> <U0001DF95> % MATHEMATICAL ITALIC SMALL LIGATURE LONG S WITH DESCENDER S
 <U0001D6A8> <U0391> % MATHEMATICAL BOLD CAPITAL ALPHA
 <U0001D6A9> <U0392> % MATHEMATICAL BOLD CAPITAL BETA
 <U0001D6AA> <U0393> % MATHEMATICAL BOLD CAPITAL GAMMA

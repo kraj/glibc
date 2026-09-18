@@ -201,7 +201,7 @@ linux:
 # The following files are shared with the upstream Unicode project and must be
 # updated regularly to stay in sync with the upstream unicode releases.
 #
-# Merged from Unicode 17.0.0 release (2025 September 9)
+# Merged from Unicode 18.0 release (2026 September 16)
 unicode:
   localedata/unicode-gen/UnicodeData.txt
   localedata/unicode-gen/unicode-license.txt
