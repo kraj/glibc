@@ -3,7 +3,7 @@
 Copyright (c) 2024-2025 Alexei Sibidanov <sibid@uvic.ca>.
 
 The original version of this file was copied from the CORE-MATH
-project (file src/binary64/tgamma/tgamma.c, revision 0f185e23).
+project (file src/binary64/tgamma/tgamma.c, revision c537979a).
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -772,13 +772,14 @@ __ieee754_gamma_r (double x, int *signgamp)
   double fx = floor (x);
   /* compute k only after the overflow check, otherwise the cast to integer
      might overflow */
-  int64_t k = fx;
+  int64_t k;
   if (__glibc_unlikely (fx == x))
     { /* x is integer */
-      if (x == 0.0f)
+      if (x == 0.0)
 	return __math_divzero (0);
-      if (x < 0.0f)
+      if (x < 0.0)
 	return __math_invalid (0);
+      k = fx;
       double t0h = 1, t0l = 0, x0 = 1;
       for (int i = 1; i < k; i++, x0 += 1.0)
 	t0h = mulddd2 (x0, t0h, t0l, &t0l);
@@ -789,6 +790,7 @@ __ieee754_gamma_r (double x, int *signgamp)
     { /* negative non-integer */
       /* For x <= -184, x non-integer, |gamma(x)| < 2^-1078.  */
       static const double sgn[2] = { 0x1p-1022, -0x1p-1022 };
+      k = fx < (double) INT64_MIN ? INT64_MIN : fx;
       return __math_erange (0x1p-1022 * sgn[k & 1]);
     }
 
@@ -810,7 +812,7 @@ __ieee754_gamma_r (double x, int *signgamp)
 	  rh = -rh;
 	  rl = -rl;
 	}
-      double eps = rh * (0x1.eb2049057bc61p-68 - x * 0x1.61019f74442b7p-73);
+      double eps = rh * (0x1.48ad3caefe28p-67 - x * 0x1.61019f74442b7p-73);
       uint64_t th;
       if (__glibc_likely (ip >= -170))
 	{
@@ -855,7 +857,7 @@ __ieee754_gamma_r (double x, int *signgamp)
       double ll = 0, lh = as_lgamma_asym (x, &ll);
       int e;
       lh = as_expd (lh, &ll, &e);
-      double eps = lh * (0x1.2e3b40a0e9b4fp-69 + x * 0x1.6aad80c11872cp-73);
+      double eps = lh * (0x1.2e3b40a0e9b4fp-69 + x * 0x1.bce27bce24d11p-73);
       double ub = lh + (ll + eps), lb = lh + (ll - eps);
       if (ub != lb)
 	return as_tgamma_accurate (x);
