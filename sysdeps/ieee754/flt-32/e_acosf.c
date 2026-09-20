@@ -3,7 +3,7 @@
 Copyright (c) 2023-2024 Alexei Sibidanov.
 
 The original version of this file was copied from the CORE-MATH
-project (file src/binary32/acos/acosf.c, revision 56dd347).
+project (file src/binary32/acos/acosf.c, revision 50864ddf).
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -91,10 +91,12 @@ __acosf (float x)
 	};
       /* Avoid spurious underflow exception.  */
       if (__glibc_unlikely (ax <= 0x40000000u)) /* |x| < 2^-63 */
-	/* GCC <= 11 wrongly assumes the rounding is to nearest and
-	   performs a constant folding here:
-	   https://gcc.gnu.org/bugzilla/show_bug.cgi?id=57245 */
-	return math_opt_barrier (pi2);
+	{
+	  /* (float) pi2 would round pi/2 twice (to double, then to float);
+	     the sum below rounds once, in the current rounding mode.  */
+	  static const float pi2h = 0x1.921fb6p+0f, pi2l = -0x1.777a5cp-25f;
+	  return pi2h + pi2l;
+	}
       double z = xs;
       double z2 = z * z;
       double z4 = z2 * z2;
