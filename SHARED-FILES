@@ -271,7 +271,7 @@ core-math:
   sysdeps/ieee754/dbl-64/e_cosh.c
   # src/binary64/tgamma/tgamma.c, revision 0f185e23
   sysdeps/ieee754/dbl-64/e_gamma_r.c
-  # src/binary64/lgamma/lgamma.c, revision 0413bb7e
+  # src/binary64/lgamma/lgamma.c, revision c537979a
   sysdeps/ieee754/dbl-64/e_lgamma_r.c
   # src/binary64/sinh/sinh.c, revision 8127b7ac
   sysdeps/ieee754/dbl-64/e_sinh.c
