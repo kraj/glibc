@@ -4,7 +4,7 @@ value.
 Copyright (c) 2025 Alexei Sibidanov <sibid@uvic.ca>
 
 The original version of this file was copied from the CORE-MATH
-project (file src/binary64/lgamma/lgamma.c, revision 0413bb7e).
+project (file src/binary64/lgamma/lgamma.c, revision c537979a).
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -1349,7 +1349,7 @@ __ieee754_lgamma_r (double x, int *signgamp)
 	      z = ax - 2;
 	      fh = mulddd2 (z, fh, fl, &fl);
 	    }
-	  eps = fabs (fh) * 8.3e-20 + 1e-24;
+	  eps = fabs (fh) * 8.7e-20 + 1e-24;
 	}
       if (t >> 63)
 	{ // x<0 so use reflection formula
@@ -1359,7 +1359,7 @@ __ieee754_lgamma_r (double x, int *signgamp)
 	  ll += sl / sh;
 	  fh = -sumdd (fh, fl, lh, ll, &fl);
 	  fl = -fl;
-	  eps += fabs (lh) * 4e-22;
+	  eps += fabs (lh) * 8e-22;
 	  int64_t k = fx;
 	  *signgamp = 1 - 2 * (k & 1);
 	}
