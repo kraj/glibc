@@ -313,7 +313,7 @@ core-math:
   sysdeps/ieee754/flt-32/s_erfcf.c
   # src/binary32/erf/erff.c revision bc385c2
   sysdeps/ieee754/flt-32/s_erff.c
-  # src/binary32/exp10m1/exp10m1f.c, revision c46b85b
+  # src/binary32/exp10m1/exp10m1f.c, revision 8ea8ea35
   sysdeps/ieee754/flt-32/s_exp10m1f.c
   # src/binary32/exp2m1/exp2m1f.c, revision baf5f6b
   sysdeps/ieee754/flt-32/s_exp2m1f.c

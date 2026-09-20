@@ -3,7 +3,7 @@
 Copyright (c) 2022-2024 Alexei Sibidanov. Paul Zimmermann.
 
 The original version of this file was copied from the CORE-MATH
-project (file src/binary32/exp10m1/exp10m1f.c, revision c46b85b).
+project (file src/binary32/exp10m1/exp10m1f.c, revision 8ea8ea35).
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -80,7 +80,7 @@ __exp10m1f (float x)
 			      else
 				{
 				  if (__glibc_unlikely (ux == 0xb6fa215bu))
-				    return -0x1.1ff87ep-16 + 0x1p-68;
+				    return -0x1.1ff87ep-16f + 0x1p-68f;
 				  r = 0x1.26bb1bbb55516p+1
 				      + z * (0x1.53524c73ea62fp+1
 					     + z * 0x1.0470591de2c75p+1);
