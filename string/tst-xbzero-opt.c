@@ -111,14 +111,7 @@ use_test_buffer (unsigned char *buf)
 /* Always check the test buffer immediately after filling it; this
    makes externally visible side effects depend on the buffer existing
    and having been filled in.  */
-#if !__glibc_has_attribute (__indirect_return__)
-/* Without indirect_return, swapcontext is marked returns_twice, which
-   prevents always_inline from working.  */
-# define ALWAYS_INLINE
-#else
-# define ALWAYS_INLINE	__attribute__ ((always_inline))
-#endif
-static inline ALWAYS_INLINE void
+static inline void
 prepare_test_buffer (unsigned char *buf)
 {
   for (unsigned int i = 0; i < PATTERN_REPS; i++)
