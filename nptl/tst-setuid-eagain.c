@@ -30,15 +30,19 @@
    the queue drains.  */
 
 #include <errno.h>
+#include <fcntl.h>
 #include <pthread.h>
+#include <sched.h>
 #include <semaphore.h>
 #include <signal.h>
+#include <stdio.h>
 #include <sys/resource.h>
 #include <time.h>
 #include <unistd.h>
 
 #include <support/check.h>
 #include <support/xthread.h>
+#include <support/xunistd.h>
 
 /* How long to wait for the (no-op) setxid to complete before concluding it
    is correctly blocking on the full queue.  It should not return until the
@@ -72,9 +76,38 @@ setxid_thread (void *closure)
   return NULL;
 }
 
+/* The RLIMIT_SIGPENDING accounting is shared by all the processes of the same
+   real user ID within a user namespace.  If another process of the same user
+   dequeues one of its pending signals while the setxid is expected to block,
+   a tgkill succeeds and the setxid returns early.
+   Move the test to a new user namespace so the accounting only covers the
+   signals queued by the test itself.  It must be called while the process is
+   still single-threaded.  */
+static void
+isolate_sigpending (void)
+{
+  uid_t uid = getuid ();
+  if (unshare (CLONE_NEWUSER) != 0)
+    FAIL_UNSUPPORTED ("unable to create a user namespace: %m");
+
+  /* Map the original user ID, so the setresuid operates on a valid ID.  The
+     identity mapping also keeps the kernel user ID unchanged, so the test
+     driver can still signal this process on timeout.  */
+  char buf[64];
+  int len = snprintf (buf, sizeof (buf), "%llu %llu 1\n",
+		      (unsigned long long int) uid,
+		      (unsigned long long int) uid);
+  TEST_VERIFY_EXIT (len > 0 && len < sizeof (buf));
+  int fd = xopen ("/proc/self/uid_map", O_WRONLY, 0);
+  xwrite (fd, buf, len);
+  xclose (fd);
+}
+
 static int
 do_test (void)
 {
+  isolate_sigpending ();
+
   TEST_COMPARE (sem_init (&setxid_done, 0, 0), 0);
   TEST_COMPARE (sem_init (&worker_exit, 0, 0), 0);
   xpthread_barrier_init (&start_barrier, NULL, 3);
@@ -108,7 +141,10 @@ do_test (void)
   struct timespec ts;
   TEST_COMPARE (clock_gettime (CLOCK_REALTIME, &ts), 0);
   ts.tv_sec += BLOCK_WAIT_SECONDS;
-  int r = sem_timedwait (&setxid_done, &ts);
+  int r;
+  while ((r = sem_timedwait (&setxid_done, &ts)) != 0 && errno == EINTR)
+    /* Restart if interrupted by the SIGSETXID handler.  The deadline is
+       absolute, so the wait window is not extended.  */;
 
   if (r == 0)
     /* The setxid completed while the queue was still full: the broadcast
