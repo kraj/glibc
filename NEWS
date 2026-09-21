@@ -9,7 +9,8 @@ Version 2.45
 
 Major new features:
 
-  [Add new features here]
+* Additional optimized and correctly rounded mathematical functions have
+  been imported from the CORE-MATH project, in particular cbrt.
 
 Deprecated and removed features, and other changes affecting compatibility:
 

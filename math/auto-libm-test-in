@@ -4282,6 +4282,12 @@ cbrt 0x6.247f5p-4
 cbrt -0x3.48648028cb464p+0
 # the next value generates larger error bounds on x86_64 (binary64)
 cbrt -0x1.7cec1dab41272p-230
+# hard-to-round cases for binary64
+cbrt -0x1.a54a9e467372cp-714
+cbrt -0x1.8f58f0c1ddd2bp-887
+cbrt -0x1.a2bc455706c76p-198
+cbrt 0x1.e679dfb0c8f2cp-864
+cbrt 0x1.9e6586d963eacp-477
 cbrt max xfail:ibm128-libgcc
 cbrt -max xfail:ibm128-libgcc
 cbrt min
