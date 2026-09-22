@@ -25,4 +25,4 @@ Public-Date: 2026-07-06
 Vulnerable-Commit: 47c3cd7a74e8c089d60d603afce6d9cf661178d6 (2.13-113)
 Fix-Commit: ed0c137b97eb940b4b64981e84ed806d3276edd9 (2.45) 
 Reported-by: Jann Horn <jannh@google.com>
-CVSS: CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:H/A:H - 7.0
+CVSS: CVSS:3.1/AV:L/AC:H/PR:L/UI:R/S:U/C:H/I:H/A:L - 6.3
