@@ -19,13 +19,13 @@
 #include "ucontext_i.h"
 
 /* int setcontext(ucontext_t *ctx); */
-.weak setcontext
-ENTRY(setcontext)
+ENTRY(__libc_setcontext)
 
 	ba,pt	%xcc, 1f
 	 mov	1, %o1
 
-END(setcontext)
+END(__libc_setcontext)
+weak_alias (__libc_setcontext, setcontext)
 
 /* int __setcontext(ucontext_t *ctx, int restoremask); */
 ENTRY(__setcontext)
