@@ -103,7 +103,8 @@ do_test_by_size (size_t buffer_size)
   int fd = xopen (".", O_RDONLY | O_DIRECTORY, 0);
   TEST_VERIFY (fd >= 0);
 
-  char *data = xposix_memalign (_Alignof (struct dirent64), buffer_size);
+  char *data = xposix_memalign (_Alignof (struct dirent64),
+                                buffer_size + sizeof (struct dirent64));
 
   /* Perform two passes, with a rewind operating between passes.  */
   for (int pass = 0; pass < 2; ++pass)
