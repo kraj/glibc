@@ -92,12 +92,14 @@ do_test (void)
       result = 1;
     }
 
-  /* Get a valid address.  */
-  mem = malloc (2 * ps);
-  if (mem != NULL)
+  /* Get a valid, page-aligned address.  */
+  mem = mmap (NULL, 2 * ps, PROT_NONE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+  if (mem != MAP_FAILED)
     {
+      void *addr = (char *) mem + 1;
+
       /* Now we map at an address which is not mod pagesize.  */
-      ptr = mmap (mem + 1, 1000, PROT_READ, MAP_SHARED | MAP_FIXED, fd, ps);
+      ptr = mmap (addr, 1000, PROT_READ, MAP_SHARED | MAP_FIXED, fd, ps);
       if (ptr != MAP_FAILED)
 	{
 	  puts ("mapping at address with mod pagesize != 0 succeeded!");
@@ -110,7 +112,7 @@ do_test (void)
 	}
 
       /* Try the same for mmap64.  */
-      ptr = mmap64 (mem + 1, 1000, PROT_READ, MAP_SHARED | MAP_FIXED, fd, ps);
+      ptr = mmap64 (addr, 1000, PROT_READ, MAP_SHARED | MAP_FIXED, fd, ps);
       if (ptr != MAP_FAILED)
 	{
 	  puts ("mapping at address with mod pagesize != 0 succeeded!");
@@ -123,7 +125,7 @@ do_test (void)
 	}
 
       /* And again for MAP_PRIVATE.  */
-      ptr = mmap (mem + 1, 1000, PROT_READ, MAP_PRIVATE | MAP_FIXED, fd, ps);
+      ptr = mmap (addr, 1000, PROT_READ, MAP_PRIVATE | MAP_FIXED, fd, ps);
       if (ptr != MAP_FAILED)
 	{
 	  puts ("mapping at address with mod pagesize != 0 succeeded!");
@@ -136,7 +138,7 @@ do_test (void)
 	}
 
       /* Try the same for mmap64.  */
-      ptr = mmap64 (mem + 1, 1000, PROT_READ, MAP_PRIVATE | MAP_FIXED, fd, ps);
+      ptr = mmap64 (addr, 1000, PROT_READ, MAP_PRIVATE | MAP_FIXED, fd, ps);
       if (ptr != MAP_FAILED)
 	{
 	  puts ("mapping at address with mod pagesize != 0 succeeded!");
@@ -148,7 +150,7 @@ do_test (void)
 	  result = 1;
 	}
 
-      free (mem);
+      munmap (mem, 2 * ps);
     }
 
   /* Now map the memory and see whether the content of the mapped area
