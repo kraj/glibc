@@ -93,29 +93,34 @@ static inline bool
 tunable_str_comma_next (struct tunable_str_comma_state_t *state,
 			struct tunable_str_comma_t *str)
 {
-  if (*state->p == '\0' || state->plen >= state->maxplen)
+  if (state->plen >= state->maxplen || *state->p == '\0')
     return false;
 
   const char *c;
-  for (c = state->p; *c != ','; c++, state->plen++)
-    if (*c == '\0' || state->plen == state->maxplen)
+  for (c = state->p; state->plen < state->maxplen;
+       c++, state->plen++)
+    if (*c == '\0' || *c == ',')
       break;
 
   str->str = state->p;
   str->len = c - state->p;
+  str->disable = false;
 
-  if (str->len > 0)
+  /* For an empty suboption, *str->str is ',' or '\0', so a leading
+     '-' implies str->len > 0.  */
+  if (*str->str == '-')
     {
-      str->disable = *str->str == '-';
-      if (str->disable)
-	{
-	  str->str = str->str + 1;
-	  str->len = str->len - 1;
-	}
+      str->disable = true;
+      str->str = str->str + 1;
+      str->len = str->len - 1;
     }
 
-  state->p = c + 1;
-  state->plen++;
+  state->p = c;
+  if (state->plen < state->maxplen && *c == ',')
+    {
+      state->p++;
+      state->plen++;
+    }
 
   return true;
 }

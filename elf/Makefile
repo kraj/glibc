@@ -339,6 +339,7 @@ tests-internal := \
   $(tests-static-internal) \
   tst-tls1 \
   tst-tls_tp_offset \
+  tst-tunables-parse \
   tst-tunconf1 \
   # tests-internal
 
