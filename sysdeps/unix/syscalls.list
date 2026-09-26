@@ -24,7 +24,6 @@ getdomain	-	getdomainname	i:si	getdomainname
 getgid		-	getgid		Ei:	__getgid	getgid
 getgroups	-	getgroups	i:ip	__getgroups	getgroups
 gethostid	-	gethostid	i:	gethostid
-gethostname	-	gethostname	i:bn	__gethostname	gethostname
 getpeername	-	getpeername	i:ibN	__getpeername	getpeername
 getpid		-	getpid		Ei:	__getpid	getpid
 getpriority	-	getpriority	i:ii	__getpriority	getpriority
