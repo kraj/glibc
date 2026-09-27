@@ -3256,7 +3256,7 @@ __libc_realloc (void *oldmem, size_t bytes)
       if (newmem == NULL)
         return NULL;              /* propagate failure */
 
-      memcpy (newmem, oldmem, oldsize - CHUNK_HDR_SZ);
+      memcpy (newmem, oldmem, usable);
       munmap_chunk (oldp);
       return newmem;
     }
