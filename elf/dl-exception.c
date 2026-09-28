@@ -130,12 +130,14 @@ _dl_exception_create_format (struct dl_exception *exception, const char *objname
 	    case 'z':
 	      if (p[1] == 'x')
 		{
+		  va_arg (ap, unsigned long int);
 		  length += LONG_WIDTH / 4;
 		  ++p;
 		  break;
 		}
 	      [[fallthrough]];
 	    case 'x':
+	      va_arg (ap, unsigned int);
 	      length += INT_WIDTH / 4;
 	      break;
             default:
