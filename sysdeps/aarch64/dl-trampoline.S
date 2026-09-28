@@ -321,7 +321,9 @@ _dl_runtime_profile:
 	add	sp, sp, SF_SIZE + 16
 	cfi_adjust_cfa_offset (- SF_SIZE - 16)
 
-	br	lr
+	/* Use ret instead of br: the caller's return site is not a BTI
+	   landing pad.  */
+	ret
 
 	cfi_endproc
 	.size _dl_runtime_profile, .-_dl_runtime_profile
