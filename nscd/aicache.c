@@ -93,7 +93,9 @@ addhstaiX (struct database_dyn *db, int fd, request_header *req,
   int32_t ttl = INT32_MAX;
   ssize_t total = 0;
   char *key_copy = NULL;
-  bool alloca_used = false;
+  /* If not NULL, dataset is a temporary dataset not inserted into the
+     database, and needs to be free'd.  */
+  void *dataset_alloc = NULL;
   time_t timeout = MAX_TIMEOUT_VALUE;
 
   while (!no_more)
@@ -164,10 +166,12 @@ addhstaiX (struct database_dyn *db, int fd, request_header *req,
 	      /* We cannot permanently add the result in the moment.  But
 		 we can provide the result as is.  Store the data in some
 		 temporary memory.  */
-	      dataset = (struct dataset *) alloca (total + req->key_len);
+	      dataset = (struct dataset *) malloc (total + req->key_len);
+	      if (dataset == NULL)
+		goto out;
 
 	      /* We cannot add this record to the permanent database.  */
-	      alloca_used = true;
+	      dataset_alloc = dataset;
 	    }
 
 	  /* Fill in the address and address families.  */
@@ -336,10 +340,12 @@ addhstaiX (struct database_dyn *db, int fd, request_header *req,
 	      /* We cannot permanently add the result in the moment.  But
 		 we can provide the result as is.  Store the data in some
 		 temporary memory.  */
-	      dataset = (struct dataset *) alloca (total + req->key_len);
+	      dataset = (struct dataset *) malloc (total + req->key_len);
+	      if (dataset == NULL)
+		goto out;
 
 	      /* We cannot add this record to the permanent database.  */
-	      alloca_used = true;
+	      dataset_alloc = dataset;
 	    }
 
 	  /* Fill in the address and address families.  */
@@ -391,8 +397,7 @@ addhstaiX (struct database_dyn *db, int fd, request_header *req,
 						   resp)) == 0)
 	    {
 	      /* The data has not changed.  We will just bump the
-		 timeout value.  Note that the new record has been
-		 allocated on the stack and need not be freed.  */
+		 timeout value.  */
 	      dh->timeout = dataset->head.timeout;
 	      dh->ttl = dataset->head.ttl;
 	      ++dh->nreloads;
@@ -410,7 +415,9 @@ addhstaiX (struct database_dyn *db, int fd, request_header *req,
 		  key_copy = (char *) newp + (key_copy - (char *) dataset);
 
 		  dataset = memcpy (newp, dataset, total + req->key_len);
-		  alloca_used = false;
+
+		  free (dataset_alloc);
+		  dataset_alloc = NULL;
 		}
 
 	      /* Mark the old record as obsolete.  */
@@ -488,7 +495,7 @@ next_nip:
  out:
   __resolv_context_put (ctx);
 
-  if (dataset != NULL && !alloca_used)
+  if (dataset != NULL && dataset_alloc == NULL)
     {
       /* If necessary, we also propagate the data to disk.  */
       if (db->persistent)
@@ -513,6 +520,8 @@ next_nip:
   scratch_buffer_free (&tmpbuf6);
   scratch_buffer_free (&tmpbuf4);
   scratch_buffer_free (&canonbuf);
+
+  free (dataset_alloc);
 
   return timeout;
 }
