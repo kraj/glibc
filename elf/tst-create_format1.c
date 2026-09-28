@@ -90,6 +90,11 @@ do_test (void)
   TEST_LONG ("fffffffe",      "test", "%zx",      (size_t)~1ul);
   TEST_LONG ("fffffffe-test", "test", "%zx-test", (size_t)~1ul);
 
+  TEST ("0000007b-test",       NULL, "%x-%s",       123, "test");
+  TEST ("0000007b-test-000001c8", NULL, "%x-%s-%x", 123, "test", 456);
+  TEST_LONG ("fffffffd-test",  NULL, "%lx-%s",      (long int)~2ul, "test");
+  TEST_LONG ("fffffffe-test",  NULL, "%zx-%s",      (size_t)~1ul, "test");
+
   struct support_capture_subprocess result;
   result = support_capture_subprocess (do_test_invalid_conversion, NULL);
   support_capture_subprocess_check (&result, "dl-exception",
