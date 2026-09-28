@@ -15,7 +15,6 @@
    You should have received a copy of the GNU General Public License
    along with this program; if not, see <https://www.gnu.org/licenses/>.  */
 
-#include <alloca.h>
 #include <assert.h>
 #include <errno.h>
 #include <error.h>
@@ -187,7 +186,7 @@ cache_addhst (struct database_dyn *db, int fd, request_header *req,
       /* Determine the I/O structure.  */
       size_t h_name_len = strlen (hst->h_name) + 1;
       size_t h_aliases_cnt;
-      uint32_t *h_aliases_len;
+      uint32_t *h_aliases_len = NULL;
       size_t h_addr_list_cnt;
       char *addresses;
       char *aliases;
@@ -201,7 +200,13 @@ cache_addhst (struct database_dyn *db, int fd, request_header *req,
       for (cnt = 0; hst->h_aliases[cnt] != NULL; ++cnt)
 	++h_aliases_cnt;
       /* Determine the length of all aliases.  */
-      h_aliases_len = (uint32_t *) alloca (h_aliases_cnt * sizeof (uint32_t));
+      if (h_aliases_cnt > 0)
+	{
+	  h_aliases_len = (uint32_t *) reallocarray (NULL, h_aliases_cnt,
+						     sizeof (uint32_t));
+	  if (h_aliases_len == NULL)
+	    return MAX_TIMEOUT_VALUE;
+	}
       total = 0;
       for (cnt = 0; cnt < h_aliases_cnt; ++cnt)
 	{
@@ -215,8 +220,11 @@ cache_addhst (struct database_dyn *db, int fd, request_header *req,
 	++h_addr_list_cnt;
 
       if (h_addr_list_cnt == 0)
-	/* Invalid entry.  */
-	return MAX_TIMEOUT_VALUE;
+	{
+	  /* Invalid entry.  */
+	  free (h_aliases_len);
+	  return MAX_TIMEOUT_VALUE;
+	}
 
       total += (sizeof (struct dataset)
 		+ h_name_len
@@ -227,8 +235,10 @@ cache_addhst (struct database_dyn *db, int fd, request_header *req,
 	 change.  Allocate memory on the cache since it is likely
 	 discarded anyway.  If it turns out to be necessary to have a
 	 new record we can still allocate real memory.  */
-      bool alloca_used = false;
       dataset = NULL;
+      /* If not NULL, dataset is a temporary dataset not inserted into
+	 the database, and needs to be free'd.  */
+      void *dataset_alloc = NULL;
 
       /* If the record contains more than one IP address (used for
 	 load balancing etc) don't cache the entry.  This is something
@@ -244,10 +254,15 @@ cache_addhst (struct database_dyn *db, int fd, request_header *req,
 	  /* We cannot permanently add the result in the moment.  But
 	     we can provide the result as is.  Store the data in some
 	     temporary memory.  */
-	  dataset = (struct dataset *) alloca (total + req->key_len);
+	  dataset = (struct dataset *) malloc (total + req->key_len);
+	  if (dataset == NULL)
+	    {
+	      free (h_aliases_len);
+	      return MAX_TIMEOUT_VALUE;
+	    }
 
 	  /* We cannot add this record to the permanent database.  */
-	  alloca_used = true;
+	  dataset_alloc = dataset;
 	}
 
       timeout = datahead_init_pos (&dataset->head, total + req->key_len,
@@ -270,7 +285,8 @@ cache_addhst (struct database_dyn *db, int fd, request_header *req,
       cp = dataset->strdata;
 
       cp = mempcpy (cp, hst->h_name, h_name_len);
-      cp = mempcpy (cp, h_aliases_len, h_aliases_cnt * sizeof (uint32_t));
+      if (h_aliases_cnt > 0)
+	cp = mempcpy (cp, h_aliases_len, h_aliases_cnt * sizeof (uint32_t));
 
       /* The normal addresses first.  */
       addresses = cp;
@@ -281,6 +297,8 @@ cache_addhst (struct database_dyn *db, int fd, request_header *req,
       aliases = cp;
       for (cnt = 0; cnt < h_aliases_cnt; ++cnt)
 	cp = mempcpy (cp, hst->h_aliases[cnt], h_aliases_len[cnt]);
+
+      free (h_aliases_len);
 
       assert (cp
 	      == dataset->strdata + total - offsetof (struct dataset,
@@ -307,8 +325,7 @@ cache_addhst (struct database_dyn *db, int fd, request_header *req,
 			 dh->allocsize - offsetof (struct dataset, resp)) == 0)
 	    {
 	      /* The data has not changed.  We will just bump the
-		 timeout value.  Note that the new record has been
-		 allocated on the stack and need not be freed.  */
+		 timeout value.  */
 	      assert (h_addr_list_cnt == 1);
 	      dh->ttl = dataset->head.ttl;
 	      dh->timeout = dataset->head.timeout;
@@ -334,7 +351,9 @@ cache_addhst (struct database_dyn *db, int fd, request_header *req,
 		      key_copy = (char *) newp + (key_copy - (char *) dataset);
 
 		      dataset = memcpy (newp, dataset, total + req->key_len);
-		      alloca_used = false;
+
+		      free (dataset_alloc);
+		      dataset_alloc = NULL;
 		    }
 		}
 
@@ -362,7 +381,7 @@ cache_addhst (struct database_dyn *db, int fd, request_header *req,
 	 the current cache handling cannot handle and it is more than
 	 questionable whether it is worthwhile complicating the cache
 	 handling just for handling such a special case. */
-      if (! alloca_used)
+      if (dataset_alloc == NULL)
 	{
 	  /* If necessary, we also propagate the data to disk.  */
 	  if (db->persistent)
@@ -393,6 +412,8 @@ cache_addhst (struct database_dyn *db, int fd, request_header *req,
 
 	  pthread_rwlock_unlock (&db->lock);
 	}
+      free (dataset_alloc);
+      dataset_alloc = NULL;
     }
 
   if (__builtin_expect (!all_written, 0) && debug_level > 0)
