@@ -27,6 +27,10 @@ __getuid (void)
   error_t err;
   uid_t uid;
 
+  if (_hurd_ports == NULL)
+    /* We are still in system bootstrap. */
+    return 0;
+
 retry:
   HURD_CRITICAL_BEGIN;
   __mutex_lock (&_hurd_id.lock);
