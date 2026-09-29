@@ -65,7 +65,8 @@ typedef __gnuc_va_list va_list;
 #endif
 
 /* Tell the caller that we provide correct C++ prototypes.  */
-#if defined __cplusplus && __GNUC_PREREQ (4, 4)
+#if defined __cplusplus && (__GNUC_PREREQ (4, 4) \
+			    || __glibc_clang_prereq (3, 5))
 # define __CORRECT_ISO_CPP_WCHAR_H_PROTO
 #endif
 
