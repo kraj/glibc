@@ -93,7 +93,7 @@ do_test (void)
     }
 
   /* Get a valid, page-aligned address.  */
-  mem = mmap (NULL, 2 * ps, PROT_NONE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+  mem = mmap (NULL, 2 * ps, PROT_READ, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
   if (mem != MAP_FAILED)
     {
       void *addr = (char *) mem + 1;
