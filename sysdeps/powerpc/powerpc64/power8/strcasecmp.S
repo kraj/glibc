@@ -355,6 +355,14 @@ L(bytebybyte):
 	offset and string descriptors are only updated in the end
 	of loop unrolling. */
 	ld	rLOC, LOCALE_CTYPE_TOLOWER(rLOC)
+#ifdef USE_AS_STRNCASECMP
+	/* This entry point can be reached from the vector loop with
+	   r5 == 0 (the last vector chunk ended exactly at the `n'
+	   boundary).  Do not read s1[0]/s2[0] in that case: those
+	   bytes are s1[n]/s2[n], one past the caller's bound.  */
+	cmpdi	cr7, r5, 0
+	beq	cr7, L(retnull)
+#endif
 	lbz	rCHAR1, 0(rSTR1)	/* Load char from s1 */
 	lbz	rCHAR2, 0(rSTR2)	/* Load char from s2 */
 #ifdef USE_AS_STRNCASECMP
@@ -405,19 +413,23 @@ L(loop):
 	cmpw	cr1, rLWR1, rLWR2
 	crorc	4*cr1+eq,eq,4*cr1+eq
 	beq     cr1, L(done)
+#ifdef USE_AS_STRNCASECMP
+	/* Test the remaining count before touching the next byte. */
+	bdnz	L(loop_load)
+	b	L(lessthan4)
+L(loop_load):
+#endif
 	lbz	rCHAR1, 0(rSTR1)	/* Load char from s1 */
 	lbz	rCHAR2, 0(rSTR2)	/* Load char from s2 */
-#ifdef USE_AS_STRNCASECMP
-	bdnz	L(loop)
-#else
 	b	L(loop)
-#endif
 #ifdef USE_AS_STRNCASECMP
 L(lessthan4):
 	clrldi	r5, r5, 62
 	cmpdi	cr7, r5, 0
 	beq	cr7, L(retnull)
 	mtctr	r5
+	lbz	rCHAR1, 0(rSTR1)
+	lbz	rCHAR2, 0(rSTR2)
 L(loop1):
 	cmpdi	rCHAR1, 0
 	sldi	rADDR1, rCHAR1, 2
@@ -427,11 +439,14 @@ L(loop1):
 	cmpw	cr1, rLWR1, rLWR2
 	crorc	4*cr1+eq,eq,4*cr1+eq
 	beq	cr1, L(done)
+	bdnz	L(loop1_load)
+	b	L(retnull)
+L(loop1_load):
 	addi	rSTR1, rSTR1, 1
 	addi	rSTR2, rSTR2, 1
 	lbz	rCHAR1, 0(rSTR1)
 	lbz	rCHAR2, 0(rSTR2)
-	bdnz	L(loop1)
+	b	L(loop1)
 #endif
 L(done):
 	subf	r0, rLWR2, rLWR1
