@@ -250,8 +250,8 @@ endif
 # This test allocates a lot of memory and can run for a long time.
 xtests += tst-strcoll-overflow
 
-# This test runs for a long time.
-xtests += test-strncmp-nonarray
+# These tests run for a long time.
+xtests += test-strncasecmp-nonarray test-strncmp-nonarray
 
 # This test needs libdl.
 ifeq (yes,$(build-shared))
