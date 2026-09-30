@@ -3081,23 +3081,21 @@ __libc_realloc (void *oldmem, size_t bytes)
 #endif
 
   /* chunk corresponding to oldmem */
-  const mchunkptr oldp = mem2chunk (oldmem);
+  mchunkptr oldp = mem2chunk (oldmem);
+  INTERNAL_SIZE_T oldsize = chunksize (oldp);
+  size_t usable = chunksize2usable (oldsize);
 
   /* Return the chunk as is if the request grows within usable bytes, typically
      into the alignment padding.  We want to avoid reusing the block for
      shrinkages because it ends up unnecessarily fragmenting the address space.
      This is also why the heuristic misses alignment padding for THP for
      now.  */
-  size_t usable = musable (oldmem);
   if (bytes <= usable)
     {
       size_t difference = usable - bytes;
       if ((unsigned long) difference < 2 * sizeof (INTERNAL_SIZE_T))
 	return oldmem;
     }
-
-  /* its size */
-  const INTERNAL_SIZE_T oldsize = chunksize (oldp);
 
   /* Little security check which won't hurt performance: the allocator
      never wraps around at the end of the address space.  Therefore
@@ -4008,7 +4006,7 @@ _int_free_merge_chunk (mstate av, mchunkptr p, INTERNAL_SIZE_T size)
                         || nextsize >= av->system_mem))
     malloc_printerr ("free(): invalid next size (normal)");
 
-  free_perturb (chunk2mem(p), size - CHUNK_HDR_SZ);
+  free_perturb (chunk2mem(p), chunksize2usable (size));
 
   /* Consolidate backward.  */
   if (!prev_inuse(p))
