@@ -61,8 +61,8 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 	      IFUNC_IMPL_ADD (array, i, memset, mops, __memset_mops)
 	      IFUNC_IMPL_ADD (array, i, memset, 1, __memset_generic))
   IFUNC_IMPL (i, name, strlen,
+	      IFUNC_IMPL_ADD (array, i, strlen, sve2 && !mte, __strlen_sve2)
 	      IFUNC_IMPL_ADD (array, i, strlen, !mte, __strlen_asimd)
 	      IFUNC_IMPL_ADD (array, i, strlen, 1, __strlen_generic))
-
   return 0;
 }

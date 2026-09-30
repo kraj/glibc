@@ -831,6 +831,8 @@ arm-optimized-routines:
   # string/aarch64/memset-sve.S, revision 0f71101
   sysdeps/aarch64/multiarch/memset_sve_zva64.S
   # string/aarch64/memset.S, revision 098df8c
+  sysdeps/aarch64/multiarch/strlen_sve2.S
+  # string/aarch64/strlen-sve2.S, revision 375f32e
   sysdeps/aarch64/memset.S
   # string/aarch64/stpcpy.S, revision 189dfef
   sysdeps/aarch64/stpcpy.S

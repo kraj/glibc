@@ -20,6 +20,7 @@ sysdep_routines += \
   memset_zva64 \
   strlen_asimd \
   strlen_generic \
+  strlen_sve2 \
   # sysdep_routines
 endif # ifeq ($(subdir),string)
 
