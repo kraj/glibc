@@ -116,7 +116,7 @@ $link_libs = "";
   # is just a test NSS module
   "nss_test1",
   # is not provided by glibc
-  "gcc_s",
+  "gcc_s", "unwind",
   # are dummy SONAMEs for compatibility, unavailable for -l
   "nss_dns", "nss_files",
   # are empty static libraries, so ldd will not report them
