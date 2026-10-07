@@ -119,6 +119,8 @@ $link_libs = "";
   "gcc_s", "unwind",
   # are dummy SONAMEs for compatibility, unavailable for -l
   "nss_dns", "nss_files",
+  # conflicts with the libnsl package
+  "nsl",
   # are empty static libraries, so ldd will not report them
   "anl", "dl", "pthread", "rt", "util",
 );
