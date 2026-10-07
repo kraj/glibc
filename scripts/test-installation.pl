@@ -111,8 +111,6 @@ $link_libs = "";
 
 # Some libraries we don't want to link:
 @skip = (
-  # conflicts with libdb
-  "db1",
   # contains unresolved references
   "thread_db",
   # is just a test NSS module
