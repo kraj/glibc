@@ -117,8 +117,8 @@ $link_libs = "";
   "thread_db",
   # is just a test NSS module
   "nss_test1",
-  # are not provided by glibc
-  "libgcc_s", "nss_ldap",
+  # is not provided by glibc
+  "libgcc_s",
 );
 
 while (<SOVERSIONS>) {
