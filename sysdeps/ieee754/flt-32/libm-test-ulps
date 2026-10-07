@@ -143,16 +143,16 @@ float: 0
 Function: "exp10m1_upward":
 float: 0
 
-Function: "exp2m":
+Function: "exp2m1":
 float: 0
 
-Function: "exp2m_downward":
+Function: "exp2m1_downward":
 float: 0
 
-Function: "exp2m_towardzero":
+Function: "exp2m1_towardzero":
 float: 0
 
-Function: "exp2m_upward":
+Function: "exp2m1_upward":
 float: 0
 
 Function: "expm1":
@@ -215,16 +215,16 @@ float: 0
 Function: "log10_upward":
 float: 0
 
-Function: "log10p":
+Function: "log10p1":
 float: 0
 
-Function: "log10p_downward":
+Function: "log10p1_downward":
 float: 0
 
-Function: "log10p_towardzero":
+Function: "log10p1_towardzero":
 float: 0
 
-Function: "log10p_upward":
+Function: "log10p1_upward":
 float: 0
 
 Function: "log1p":
