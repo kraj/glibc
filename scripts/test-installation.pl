@@ -117,6 +117,8 @@ $link_libs = "";
   "nss_test1",
   # is not provided by glibc
   "gcc_s",
+  # are dummy SONAMEs for compatibility, unavailable for -l
+  "nss_dns", "nss_files",
 );
 
 while (<SOVERSIONS>) {
