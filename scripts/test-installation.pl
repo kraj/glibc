@@ -116,7 +116,7 @@ $link_libs = "";
   # is just a test NSS module
   "nss_test1",
   # is not provided by glibc
-  "libgcc_s",
+  "gcc_s",
 );
 
 while (<SOVERSIONS>) {
