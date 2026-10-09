@@ -263,6 +263,7 @@ tests := \
   tst-vfprintf-width-i18n \
   tst-vfprintf-width-prec-alloc \
   tst-wc-printf \
+  tst-wscanf-nul \
   tstdiomisc \
   tstgetln \
   tstscanf \
@@ -411,6 +412,7 @@ $(objpfx)tst-vfprintf-mbs-prec.out: $(gen-locales)
 $(objpfx)tst-vfprintf-width-i18n.out: $(gen-locales)
 $(objpfx)tst-grouping3.out: $(gen-locales)
 $(objpfx)tst-scanf-to_inpunct.out: $(gen-locales)
+$(objpfx)tst-wscanf-nul.out: $(gen-locales)
 endif
 
 tst-printf-bz18872-ENV = MALLOC_TRACE=$(objpfx)tst-printf-bz18872.mtrace \
