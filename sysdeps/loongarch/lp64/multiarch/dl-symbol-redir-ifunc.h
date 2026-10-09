@@ -24,8 +24,8 @@ asm ("memset = __memset_aligned");
 asm ("memcmp = __memcmp_aligned");
 asm ("__strchrnul = __strchrnul_aligned");
 asm ("strlen = __strlen_aligned");
-asm ("memcpy = __memcpy_unaligned");
-asm ("memmove = __memmove_unaligned");
+asm ("memcpy = __memcpy_aligned");
+asm ("memmove = __memmove_aligned");
 #endif
 
 #endif
