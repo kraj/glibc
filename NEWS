@@ -54,6 +54,9 @@ Security related changes:
   GLIBC-SA-2026-0003: wordexp with WRDE_REUSE and WRDE_APPEND may return
   uninitialized memory (CVE-2025-15281).
 
+  GLIBC-SA-2026-0027: scanf %s and %[ one-byte buffer overflow in wide
+  character conversion (CVE-2026-115819).
+
 The following bugs are resolved with this release:
 
   [12154] Do not fail DNS resolution for CNAMEs which are not host names
@@ -122,6 +125,8 @@ The following bugs are resolved with this release:
   [33814] glob: wordexp with WRDE_REUSE and WRDE_APPEND may return
     uninitialized memory
   [34752] libc: <sys/pidfd.h> not protected for C++
+  [34989] stdio: Wide scanf %s and %[ write an extra null byte past the
+    destination (CVE-2026-115819)
 
 Version 2.36
 
