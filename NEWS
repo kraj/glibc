@@ -56,6 +56,8 @@ The following bugs were resolved with this release:
     lane requires scalar fallback
   [34923] math: AArch64: SVE acosh loses accuracy near 1 depending on
     other vector lanes
+  [34989] stdio: Wide scanf %s and %[ write an extra null byte past the
+    destination (CVE-2026-115819)
 
 Version 2.41
 
