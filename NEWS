@@ -42,6 +42,10 @@ The following CVEs were fixed in this release:
     wordexp with WRDE_REUSE and WRDE_APPEND may return uninitialized
     memory (CVE-2025-15281)
 
+  GLIBC-SA-2026-0027
+    scanf %s and %[ one-byte buffer overflow in wide character
+    conversion (CVE-2026-115819)
+
 The following bugs are resolved with this release:
 
   [19341] ctype: Fallback initialization of TLS using relocations
@@ -118,6 +122,8 @@ The following bugs are resolved with this release:
   [34752] libc: <sys/pidfd.h> not protected for C++
   [34922] math: AArch64: SVE tanf returns incorrect results when another
     lane requires scalar fallback
+  [34989] stdio: Wide scanf %s and %[ write an extra null byte past the
+    destination (CVE-2026-115819)
 
 Version 2.39
 
