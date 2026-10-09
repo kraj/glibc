@@ -320,7 +320,12 @@ __pthread_mutex_lock_full (pthread_mutex_t *mutex)
 	  /* This mutex is now not recoverable.  */
 	  mutex->__data.__count = 0;
 	  int private = PTHREAD_ROBUST_MUTEX_PSHARED (mutex);
-	  lll_unlock (mutex->__data.__lock, private);
+	  /* lll_unlock cannot be used here, since it only wakes if the lock
+	     value is larger than 1, and a robust lock with FUTEX_WAITERS set
+	     is negative.  */
+	  if ((atomic_exchange_release (&mutex->__data.__lock, 0)
+	       & FUTEX_WAITERS) != 0)
+	    futex_wake ((unsigned int *) &mutex->__data.__lock, 1, private);
 	  /* FIXME This violates the mutex destruction requirements.  See
 	     __pthread_mutex_unlock_full.  */
 	  THREAD_SETMEM (THREAD_SELF, robust_head.list_op_pending, NULL);

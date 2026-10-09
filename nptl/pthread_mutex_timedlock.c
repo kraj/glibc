@@ -257,7 +257,11 @@ __pthread_mutex_clocklock_common (pthread_mutex_t *mutex,
 	  /* This mutex is now not recoverable.  */
 	  mutex->__data.__count = 0;
 	  int private = PTHREAD_ROBUST_MUTEX_PSHARED (mutex);
-	  lll_unlock (mutex->__data.__lock, private);
+	  /* See __pthread_mutex_lock_full for why lll_unlock cannot be used
+	     here.  */
+	  if ((atomic_exchange_release (&mutex->__data.__lock, 0)
+	       & FUTEX_WAITERS) != 0)
+	    futex_wake ((unsigned int *) &mutex->__data.__lock, 1, private);
 	  /* FIXME This violates the mutex destruction requirements.  See
 	     __pthread_mutex_unlock_full.  */
 	  return __pthread_mutex_robust_error (ENOTRECOVERABLE);

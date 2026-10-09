@@ -170,8 +170,12 @@ ___pthread_mutex_trylock (pthread_mutex_t *mutex)
 	    {
 	      /* This mutex is now not recoverable.  */
 	      mutex->__data.__count = 0;
-	      if (oldval == 0)
-		lll_unlock (mutex->__data.__lock,
+	     /* See __pthread_mutex_lock_full for why lll_unlock cannot be
+		used here.  */
+	      if (oldval == 0
+		  && (atomic_exchange_release (&mutex->__data.__lock, 0)
+		      & FUTEX_WAITERS) != 0)
+		futex_wake ((unsigned int *) &mutex->__data.__lock, 1,
 			    PTHREAD_ROBUST_MUTEX_PSHARED (mutex));
 	      /* FIXME This violates the mutex destruction requirements.  See
 		 __pthread_mutex_unlock_full.  */
