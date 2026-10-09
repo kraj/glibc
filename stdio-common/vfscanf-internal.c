@@ -1141,17 +1141,19 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
 		{
 #ifdef COMPILE_WSCANF
 		  /* We have to emit the code to get into the initial
-		     state.  */
+		     state.  __wcrtomb also stores the terminating null
+		     byte, which is included in N.  */
 		  char buf[MB_LEN_MAX];
 		  size_t n = __wcrtomb (buf, L'\0', &state);
-		  if (n > 0 && (flags & MALLOC)
-		      && str + n >= *strptr + strsize)
+		  if (__glibc_unlikely (n == (size_t) -1))
+		    encode_error ();
+		  if ((flags & MALLOC) && str - *strptr + n > strsize)
 		    {
 		      /* Enlarge the buffer.  */
 		      size_t strleng = str - *strptr;
 		      char *newstr;
 
-		      newstr = (char *) realloc (*strptr, strleng + n + 1);
+		      newstr = (char *) realloc (*strptr, strleng + n);
 		      if (newstr == NULL)
 			{
 			  if (flags & POSIX_MALLOC)
@@ -1171,13 +1173,14 @@ __vfscanf_internal (FILE *s, const char *format, va_list argptr,
 			{
 			  *strptr = newstr;
 			  str = newstr + strleng;
-			  strsize = strleng + n + 1;
+			  strsize = strleng + n;
 			}
 		    }
 
 		  str = __mempcpy (str, buf, n);
-#endif
+#else
 		  *str++ = '\0';
+#endif
 
 		  if ((flags & MALLOC) && str - *strptr != strsize)
 		    {
@@ -2994,17 +2997,19 @@ digits_extended_fail:
 		{
 #ifdef COMPILE_WSCANF
 		  /* We have to emit the code to get into the initial
-		     state.  */
+		     state.  __wcrtomb also stores the terminating null
+		     byte, which is included in N.  */
 		  char buf[MB_LEN_MAX];
 		  size_t n = __wcrtomb (buf, L'\0', &state);
-		  if (n > 0 && (flags & MALLOC)
-		      && str + n >= *strptr + strsize)
+		  if (__glibc_unlikely (n == (size_t) -1))
+		    encode_error ();
+		  if ((flags & MALLOC) && str - *strptr + n > strsize)
 		    {
 		      /* Enlarge the buffer.  */
 		      size_t strleng = str - *strptr;
 		      char *newstr;
 
-		      newstr = (char *) realloc (*strptr, strleng + n + 1);
+		      newstr = (char *) realloc (*strptr, strleng + n);
 		      if (newstr == NULL)
 			{
 			  if (flags & POSIX_MALLOC)
@@ -3024,13 +3029,14 @@ digits_extended_fail:
 			{
 			  *strptr = newstr;
 			  str = newstr + strleng;
-			  strsize = strleng + n + 1;
+			  strsize = strleng + n;
 			}
 		    }
 
 		  str = __mempcpy (str, buf, n);
-#endif
+#else
 		  *str++ = '\0';
+#endif
 
 		  if ((flags & MALLOC) && str - *strptr != strsize)
 		    {
