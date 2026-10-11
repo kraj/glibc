@@ -17,7 +17,10 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#define _TERMIOS2_NCCS 19
+/* The kernel's struct termios2 has 19 c_cc entries, but TCGETS2 and
+   TCSETS2 only transfer the first 17.  The size and layout are the same
+   either way, since c_ispeed is aligned to 4 bytes.  */
+#define _TERMIOS2_NCCS 17
 #define _HAVE_TERMIOS2_C_CC_BEFORE_C_LINE 0
 
 #define _HAVE_STRUCT_OLD_TERMIOS 1

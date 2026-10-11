@@ -432,6 +432,7 @@ sysdep_headers += \
   # sysdep_headers
 
 tests += \
+  tst-tcgetattr-stack \
   tst-termios-linux \
   # tests
 endif

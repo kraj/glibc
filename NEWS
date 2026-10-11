@@ -22,6 +22,8 @@ The following bugs are resolved with this release:
     cross-testing without python3 on target
   [34509] libc: [m68k] Regression: Perl locks up after upgrading glibc
     to 2.43
+  [34734] libc: sparc: tcgetattr returns uninitialized bytes in c_cc[17]
+    and c_cc[18]
 
 Version 2.44
 
