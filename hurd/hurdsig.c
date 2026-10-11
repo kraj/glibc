@@ -1149,11 +1149,11 @@ post_signal (struct hurd_sigstate *ss,
 	if (! (action->sa_flags & (SA_RESETHAND | SA_NODEFER)))
 	  __sigaddset (&ss->blocked, signo);
 
-	/* Reset to SIG_DFL if requested.  SIGILL and SIGTRAP cannot
-           be automatically reset when delivered; the system silently
-           enforces this restriction.  */
-	if (action->sa_flags & SA_RESETHAND
-	    && signo != SIGILL && signo != SIGTRAP)
+	/* Reset to SIG_DFL if requested.
+	   While Posix says that "SIGILL and SIGTRAP cannot be automatically
+	   reset when delivered; the system silently enforces this restriction",
+	   in practice applications expect them to be. */
+	if (action->sa_flags & SA_RESETHAND)
 	  action->sa_handler = SIG_DFL;
 
 	/* Any sigsuspend call must return after the handler does.  */
