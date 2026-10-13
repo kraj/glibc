@@ -14,13 +14,13 @@ especially for instructions on reporting issues privately.
 Most security vulnerabilities in the GNU C Library materialize only after an
 application uses functionality in a specific way.  Therefore, it is sometimes
 difficult to determine if a defect in the GNU C Library constitutes a
-vulnerability as such.  The follow guidelines can help with a decision.
+vulnerability as such.  The following guidelines can help with a decision.
 
 * Buffer overflows should be treated as security bugs if it is conceivable that
   the data triggering them can come from an untrusted source.
 * Other bugs that cause memory corruption which is likely exploitable should be
   treated as security bugs.
-* Information disclosure can be security bugs, especially if exposure through
+* Information disclosure can be a security bug, especially if exposure through
   applications can be determined.
 * Memory leaks and races are security bugs if they cause service breakage.
 * Stack overflow through unbounded alloca calls or variable-length arrays are
@@ -68,8 +68,7 @@ with certain classes of patterns.
 
 Consequently, certain issues which can be triggered only with crafted patterns
 (either during compilation or execution) are treated as regular bugs and not
-security issues.  Examples of such issues would include (but is not limited
-to):
+security issues.  Examples of such issues include (but are not limited to):
 
  * Running out of memory through valid use of malloc
  * Quadratic or exponential behaviour resulting in slow execution time
@@ -109,7 +108,7 @@ The `ldd` tool is not expected to be used with untrusted executables.
 #### Post-exploitation countermeasures
 
 Certain features have been added to the library only to make exploitation of
-security bugs (mainly for code execution) more difficult.  Examples includes
+security bugs (mainly for code execution) more difficult.  Examples include
 the stack smashing protector, function pointer obfuscation, vtable validation
 for stdio stream handles, and various heap consistency checks.  Failure of such
 countermeasures to stop exploitation of a different vulnerability is not a
@@ -157,7 +156,7 @@ The following links are helpful for finding untriaged bugs:
 For changes to master, the regular [consensus-driven
 process](https://sourceware.org/glibc/wiki/Consensus) must be followed.  It
 makes sense to obtain consensus in private, to ensure that the patch is likely
-in a committable state, before disclosing an emboargoed vulnerability.
+in a committable state, before disclosing an embargoed vulnerability.
 
 Security backports to release branches need to follow the
 [release process](https://sourceware.org/glibc/wiki/Release#General_policy).
