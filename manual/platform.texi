@@ -731,7 +731,10 @@ using a TSC deadline value.
 @code{X2APIC} -- x2APIC.
 
 @item
-@code{XFD} -- Extended Feature Disable (XFD).
+@code{XFD} -- Extended Feature Disable (XFD).  Note that availability of
+this feature needs to be probed via @code{arch_prctl} and its
+@code{ARCH_REQ_XCOMP_SUPP} operation, as described in
+@url{https://docs.kernel.org/arch/x86/xstate.html}.
 
 @item
 @code{XGETBV_ECX_1} -- XGETBV with ECX = 1.

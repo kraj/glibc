@@ -306,7 +306,6 @@ update_active (struct cpu_features *cpu_features)
       CPU_FEATURE_SET_ACTIVE (cpu_features, XSAVEOPT);
       CPU_FEATURE_SET_ACTIVE (cpu_features, XSAVEC);
       CPU_FEATURE_SET_ACTIVE (cpu_features, XGETBV_ECX_1);
-      CPU_FEATURE_SET_ACTIVE (cpu_features, XFD);
 
       /* For _dl_runtime_resolve, set xsave_state_size to xsave area
 	 size + integer register save size and align it to 64 bytes.  */
@@ -1211,7 +1210,6 @@ no_cpuid:
       CPU_FEATURE_UNSET (cpu_features, XSAVEOPT);
       CPU_FEATURE_UNSET (cpu_features, XSAVEC);
       CPU_FEATURE_UNSET (cpu_features, XGETBV_ECX_1);
-      CPU_FEATURE_UNSET (cpu_features, XFD);
 
       disable_xsave_features = true;
     }
