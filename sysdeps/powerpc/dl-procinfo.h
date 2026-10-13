@@ -219,7 +219,7 @@ _dl_procinfo (unsigned int type, unsigned long int word)
 
        /* We have to go through them all because the kernel added the
 	  AT_HWCAP4 features starting with the high bits.  */
-       for (int i = 0; i <= _DL_HWCAP_SIZE; ++i)
+       for (int i = 0; i < _DL_HWCAP_SIZE; ++i)
 	 if (word & (1 << i))
 	   _dl_printf (" %s", _dl_hwcap_string (_DL_HWCAP4_OFFSET + i));
        break;
