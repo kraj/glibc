@@ -436,7 +436,7 @@ extern ssize_t pwrite64 (int __fd, const void *__buf, size_t __n,
    Returns 0 if successful, -1 if not.  */
 extern int pipe (int __pipedes[2]) __THROW __wur;
 
-#ifdef __USE_GNU
+#ifdef __USE_XOPEN2K24
 /* Same as pipe but apply flags passed in FLAGS to the new file
    descriptors.  */
 extern int pipe2 (int __pipedes[2], int __flags) __THROW __wur;

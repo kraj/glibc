@@ -533,6 +533,9 @@ function int nice (int)
 function {long int} pathconf (const char*, int)
 function int pause (void)
 function int pipe (int[2])
+#if defined XOPEN2K24 || defined POSIX2024
+function int pipe2 (int[2], int)
+#endif
 #if !defined POSIX && !defined XPG4 && !defined XPG42
 function ssize_t pread (int, void*, size_t, off_t)
 #endif
