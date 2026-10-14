@@ -58,7 +58,7 @@ extern char *inet_ntoa (struct in_addr __in) __THROW;
 extern int inet_pton (int __af, const char *__restrict __cp,
 		      void *__restrict __buf) __THROW;
 
-/* Convert a Internet address in binary network format for interface
+/* Convert an Internet address in binary network format for interface
    type AF in buffer starting at CP to presentation form and place
    result in buffer of length LEN starting at BUF.  */
 extern const char *inet_ntop (int __af, const void *__restrict __cp,
