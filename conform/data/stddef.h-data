@@ -6,7 +6,7 @@ type ptrdiff_t
 type wchar_t
 type size_t
 
-#if defined ISO11 || defined ISO23
+#if defined ISO11 || defined ISO23 || defined XOPEN2K24 || defined POSIX2024
 type max_align_t
 #endif
 

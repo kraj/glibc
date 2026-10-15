@@ -40,11 +40,11 @@ function long a64l (const char*)
 #endif
 function void abort (void)
 function int abs (int)
-#if defined ISO11 || defined ISO23
+#if defined ISO11 || defined ISO23 || defined XOPEN2K24 || defined POSIX2024
 function {void *} aligned_alloc (size_t, size_t)
 #endif
 function int atexit (void(*)(void))
-#if defined ISO11 || defined ISO23
+#if defined ISO11 || defined ISO23 || defined XOPEN2K24 || defined POSIX2024
 function int at_quick_exit (void (*) (void))
 #endif
 function double atof (const char*)
@@ -129,7 +129,7 @@ function {char*} ptsname (int)
 function int putenv (char*)
 #endif
 function void qsort (void*, size_t, size_t, int(*)(const void*, const void*))
-#if defined ISO11 || defined ISO23
+#if defined ISO11 || defined ISO23 || defined XOPEN2K24 || defined POSIX2024
 function void quick_exit (int)
 #endif
 function int rand (void)

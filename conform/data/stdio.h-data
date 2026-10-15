@@ -112,7 +112,7 @@ function ssize_t getline (char**, size_t*, FILE*)
 #if defined XPG4 || defined XPG42 || defined UNIX98
 function int getopt (int, char *const[], const char *)
 #endif
-#if !defined ISO11 && !defined ISO23
+#if !defined ISO11 && !defined ISO23 && !defined XOPEN2K24 && !defined POSIX2024
 function {char*} gets (char*)
 #endif
 #if defined XPG4 || defined XPG42 || defined UNIX98

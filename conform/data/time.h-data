@@ -1,7 +1,7 @@
 macro-constant NULL == 0
 macro CLOCKS_PER_SEC {clock_t}
 
-#if defined ISO11 || defined ISO23
+#if defined ISO11 || defined ISO23 || defined XOPEN2K24 || defined POSIX2024
 macro-int-constant TIME_UTC > 0
 #endif
 
@@ -38,7 +38,7 @@ function {char*} ctime (const time_t*)
 function {struct tm*} gmtime (const time_t*)
 function {struct tm*} localtime (const time_t*)
 function size_t strftime (char*, size_t, const char*, const struct tm*)
-#if defined ISO11 || defined ISO23
+#if defined ISO11 || defined ISO23 || defined XOPEN2K24 || defined POSIX2024
 function int timespec_get (struct timespec *, int)
 #endif
 
