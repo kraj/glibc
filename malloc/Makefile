@@ -475,6 +475,7 @@ CFLAGS-tst-tcfree3.c += -fno-builtin-malloc -fno-builtin-free
 sLIBdir := $(shell echo $(slibdir) | sed 's,lib\(\|64\)$$,\\\\$$LIB,')
 
 $(objpfx)mtrace: mtrace.pl
+	$(make-target-directory)
 	rm -f $@.new
 	sed -e 's|@XXX@|$(address-width)|' \
 	    -e 's|@VERSION@|$(version)|' \
@@ -483,6 +484,7 @@ $(objpfx)mtrace: mtrace.pl
 	&& rm -f $@ && mv $@.new $@ && chmod +x $@
 
 $(objpfx)memusage: memusage.sh
+	$(make-target-directory)
 	rm -f $@.new
 	sed -e 's|@VERSION@|$(version)|' -e 's|@SLIBDIR@|$(sLIBdir)|' \
 	    -e 's|@BINDIR@|$(bindir)|' -e 's|@PKGVERSION@|$(PKGVERSION)|' \

@@ -250,6 +250,7 @@ $(objpfx)sotruss-lib.so: $(common-objpfx)libc.so $(objpfx)ld.so \
 	$(common-objpfx)libc_nonshared.a
 
 $(objpfx)sotruss: sotruss.sh $(common-objpfx)config.make
+	$(make-target-directory)
 	sed -e 's%@VERSION@%$(version)%g' \
 	    -e 's%@TEXTDOMAINDIR@%$(localedir)%g' \
 	    -e 's%@PREFIX@%$(prefix)%g' \
@@ -1762,6 +1763,7 @@ endif
 
 $(objpfx)ldd: ldd.bash.in $(common-objpfx)soversions.mk \
 	      $(common-objpfx)config.make
+	$(make-target-directory)
 	$(gen-ldd)
 	chmod 555 $@.new
 	mv -f $@.new $@

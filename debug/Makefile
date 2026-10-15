@@ -406,6 +406,7 @@ sLIBdir := $(shell echo $(slibdir) | sed 's,lib\(\|64\)$$,\\\\$$LIB,')
 $(objpfx)pcprofiledump: $(objpfx)pcprofiledump.o
 
 $(objpfx)xtrace: xtrace.sh
+	$(make-target-directory)
 	rm -f $@.new
 	sed -e 's|@VERSION@|$(version)|' -e 's|@SLIBDIR@|$(sLIBdir)|' \
 	    -e 's|@BINDIR@|$(bindir)|' -e 's|@PKGVERSION@|$(PKGVERSION)|' \
