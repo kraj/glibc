@@ -31,8 +31,10 @@ conformtest-standards := \
   ISO99 \
   POSIX \
   POSIX2008 \
+  POSIX2024 \
   UNIX98 \
   XOPEN2K \
+  XOPEN2K24 \
   XOPEN2K8 \
   XPG4 \
   XPG42 \
@@ -289,6 +291,13 @@ conformtest-headers-POSIX2008 := \
   wchar.h \
   wctype.h \
   # conformtest-headers-POSIX2008
+conformtest-headers-POSIX2024 := \
+  $(conformtest-headers-POSIX2008) \
+  stdalign.h \
+  stdnoreturn.h \
+  threads.h \
+  uchar.h \
+  # conformtest-headers-POSIX2024
 # Missing XOPEN2K8 expectations for:
 #   trace.h
 conformtest-headers-XOPEN2K8 := \
@@ -309,6 +318,24 @@ conformtest-headers-XOPEN2K8 := \
   ulimit.h \
   utmpx.h \
   # conformtest-headers-XOPEN2K8
+conformtest-headers-XOPEN2K24 := \
+  $(conformtest-headers-POSIX2024) \
+  fmtmsg.h \
+  ftw.h \
+  libgen.h \
+  ndbm.h \
+  search.h \
+  sys/ipc.h \
+  sys/msg.h \
+  sys/resource.h \
+  sys/sem.h \
+  sys/shm.h \
+  sys/time.h \
+  sys/uio.h \
+  syslog.h \
+  ulimit.h \
+  utmpx.h \
+  # conformtest-headers-XOPEN2K24
 
 conformtest-header-list-base := $(foreach std,$(conformtest-standards),\
 					      header-list-$(std).out)
@@ -371,6 +398,7 @@ test-xfail-XPG42/ndbm.h/conform = yes
 test-xfail-UNIX98/ndbm.h/conform = yes
 test-xfail-XOPEN2K/ndbm.h/conform = yes
 test-xfail-XOPEN2K8/ndbm.h/conform = yes
+test-xfail-XOPEN2K24/ndbm.h/conform = yes
 
 conformtest-cc-flags =  -I../include $(+sysdep-includes) $(sysincludes) -I.. $(no-file-offset-bits-source) $(no-time-bits-source)
 # conformtest-xfail-conds may be set by a sysdeps Makefile fragment to
@@ -421,6 +449,8 @@ linknamespace-libs-UNIX98 = $(linknamespace-libs-xsi)
 linknamespace-libs-XOPEN2K = $(linknamespace-libs-xsi)
 linknamespace-libs-POSIX2008 = $(linknamespace-libs-posix)
 linknamespace-libs-XOPEN2K8 = $(linknamespace-libs-xsi)
+linknamespace-libs-POSIX2024 = $(linknamespace-libs-posix)
+linknamespace-libs-XOPEN2K24 = $(linknamespace-libs-xsi)
 linknamespace-libs = $(foreach std,$(conformtest-standards),\
 				   $(linknamespace-libs-$(std)))
 
@@ -453,3 +483,4 @@ test-xfail-XPG42/ndbm.h/linknamespace = yes
 test-xfail-UNIX98/ndbm.h/linknamespace = yes
 test-xfail-XOPEN2K/ndbm.h/linknamespace = yes
 test-xfail-XOPEN2K8/ndbm.h/linknamespace = yes
+test-xfail-XOPEN2K24/ndbm.h/linknamespace = yes
