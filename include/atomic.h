@@ -520,8 +520,7 @@
 
 
 #ifndef atomic_forced_read
-# define atomic_forced_read(x) \
-  ({ __typeof (x) __x; __asm ("" : "=r" (__x) : "0" (x)); __x; })
+# define atomic_forced_read(x) (*((volatile __typeof (x) *) &(x)))
 #endif
 
 /* This is equal to 1 iff the architecture supports 64b atomic operations.  */
@@ -666,10 +665,7 @@ void __atomic_link_error (void);
 # endif
 
 # ifndef atomic_load_relaxed
-#  define atomic_load_relaxed(mem) \
-   ({ __typeof ((__typeof (*(mem))) *(mem)) __atg100_val;		      \
-   __asm ("" : "=r" (__atg100_val) : "0" (*(mem)));			      \
-   __atg100_val; })
+#  define atomic_load_relaxed(mem) (*((volatile __typeof (*mem) *) (mem)))
 # endif
 # ifndef atomic_load_acquire
 #  define atomic_load_acquire(mem) \
@@ -679,8 +675,8 @@ void __atomic_link_error (void);
 # endif
 
 # ifndef atomic_store_relaxed
-/* XXX Use inline asm here?  */
-#  define atomic_store_relaxed(mem, val) do { *(mem) = (val); } while (0)
+#  define atomic_store_relaxed(mem, val) \
+  do { *((volatile __typeof (*mem) *) (mem)) = (val); } while (0)
 # endif
 # ifndef atomic_store_release
 #  define atomic_store_release(mem, val) \
