@@ -24,7 +24,18 @@
 /* Get default empty definitions for simd declarations.  */
 #include <bits/libm-simd-decl-stubs.h>
 
-#if defined __x86_64__ && defined __FAST_MATH__
+/* The vector routines handle NaN and Inf but not errno, exception
+   flags, signed zeros or directed rounding, and can be less accurate
+   than the scalar functions.  Besides -ffast-math, enable the
+   declarations when GCC's predefined macros show that the code does
+   not rely on any of these and allows unsafe math optimizations, as
+   with -ffast-math -fno-finite-math-only.  */
+#if defined __x86_64__ \
+    && (defined __FAST_MATH__ \
+	|| (defined __NO_MATH_ERRNO__ && defined __NO_TRAPPING_MATH__ \
+	    && defined __NO_SIGNED_ZEROS__ \
+	    && defined __UNSAFE_MATH_OPTIMIZATIONS__ \
+	    && !defined __ROUNDING_MATH__))
 # if defined _OPENMP && _OPENMP >= 201307
 /* OpenMP case.  */
 #  define __DECL_SIMD_x86_64 _Pragma ("omp declare simd notinbranch")

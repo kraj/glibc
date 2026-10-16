@@ -25,7 +25,18 @@
 /* Get default empty definitions for simd declarations.  */
 #include <bits/libm-simd-decl-stubs.h>
 
-#if defined __aarch64__ && defined __FAST_MATH__ && __GNUC_PREREQ (6, 0)
+/* The vector routines handle NaN and Inf but not errno, exception
+   flags, signed zeros or directed rounding, and can be less accurate
+   than the scalar functions.  Besides -ffast-math, enable the
+   declarations when GCC's predefined macros show that the code does
+   not rely on any of these and allows unsafe math optimizations, as
+   with -ffast-math -fno-finite-math-only.  */
+#if defined __aarch64__ && __GNUC_PREREQ (6, 0) \
+    && (defined __FAST_MATH__ \
+	|| (defined __NO_MATH_ERRNO__ && defined __NO_TRAPPING_MATH__ \
+	    && defined __NO_SIGNED_ZEROS__ \
+	    && defined __UNSAFE_MATH_OPTIMIZATIONS__ \
+	    && !defined __ROUNDING_MATH__))
 /* Requires GCC >= 6 for __attribute__ ((__simd__)).  */
 # define __DECL_SIMD_aarch64 __attribute__ ((__simd__ ("notinbranch"), const))
 
