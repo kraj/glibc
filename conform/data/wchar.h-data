@@ -98,6 +98,10 @@ function size_t wcscspn (const wchar_t*, const wchar_t*)
 function {wchar_t*} wcsdup (const wchar_t*)
 # endif
 function size_t wcsftime (wchar_t*, size_t, const wchar_t*, const struct tm*)
+#if defined XOPEN2K24 || defined POSIX2024
+function size_t wcslcat (wchar_t*, const wchar_t*, size_t)
+function size_t wcslcpy (wchar_t*, const wchar_t*, size_t)
+#endif
 function size_t wcslen (const wchar_t*)
 # if defined XOPEN2K8 || defined XOPEN2K24 || defined POSIX2008 || defined POSIX2024
 function int wcsncasecmp (const wchar_t*, const wchar_t*, size_t)
