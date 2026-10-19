@@ -22,6 +22,8 @@
 #define TUNABLE_NAMESPACE malloc
 #include <elf/dl-tunables.h>
 
+#include <malloc-init.h>
+
 /* Compile-time constants.  */
 
 #define HEAP_MIN_SIZE (32 * 1024)
@@ -248,6 +250,9 @@ static void tcache_key_initialize (void);
 void
 __ptmalloc_init (void)
 {
+  /* Perform any target-specific initialisation.  */
+  ARCH_INIT_MALLOC ();
+
 #if USE_TCACHE
   tcache_key_initialize ();
 #endif

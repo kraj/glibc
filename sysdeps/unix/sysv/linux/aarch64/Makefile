@@ -394,6 +394,22 @@ ifeq ($(subdir),stdlib)
 gen-as-const-headers += ucontext_i.sym
 endif
 
+ifeq ($(subdir),malloc)
+# Add MTE tunable to all malloc tests except malloc-check and mcheck variants
+tests-malloc-mte = \
+  $(tests) \
+  $(tests-malloc-hugetlb1:%=%-malloc-hugetlb1) \
+  $(tests-malloc-hugetlb2:%=%-malloc-hugetlb2) \
+  $(tests-malloc-largetcache:%=%-malloc-largetcache) \
+  # tests-malloc-mte
+
+define tests-malloc-mte-ENVS
+$(1)-TUNABLES += glibc.cpu.mtemode=sync
+endef
+
+$(foreach t,$(tests-malloc-mte),$(eval $(call tests-malloc-mte-ENVS,$(t))))
+endif # ifeq ($(subdir),malloc)
+
 abi-variants := lp64
 abi-variants += lp64_be
 
