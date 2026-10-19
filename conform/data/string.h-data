@@ -11,6 +11,9 @@ function {void*} memccpy (void*, const void*, int, size_t)
 function {void*} memchr (const void*, int, size_t)
 function int memcmp (const void*, const void*, size_t)
 function {void*} memcpy (void*, const void*, size_t)
+#if defined XOPEN2K24 || defined POSIX2024
+function {void*} memmem (const void*, size_t, const void*, size_t)
+#endif
 function {void*} memmove (void*, const void*, size_t)
 function {void*} memset (void*, int, size_t)
 #if defined XOPEN2K8 || defined XOPEN2K24 || defined POSIX2008 || defined POSIX2024
@@ -36,6 +39,10 @@ function int strerror_r (int, char*, size_t)
 #endif
 #if defined XOPEN2K8 || defined XOPEN2K24 || defined POSIX2008 || defined POSIX2024
 function {char*} strerror_l (int, locale_t)
+#endif
+#if defined XOPEN2K24 || defined POSIX2024
+function size_t strlcat (char*, const char*, size_t)
+function size_t strlcpy (char*, const char*, size_t)
 #endif
 function size_t strlen (const char*)
 function {char*} strncat (char*, const char*, size_t)
