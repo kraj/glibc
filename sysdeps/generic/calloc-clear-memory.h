@@ -30,9 +30,16 @@ clear_memory (void *p, unsigned long clearsize)
   if (nclears > 9)
     return memset (d, 0, clearsize);
 
-  /* NB: The VRP pass in GCC 14.2 will optimize it out.  */
+  /* NB: The VRP pass in GCC 14.2 will optimize it out for the default size
+     calculations.  */
   if (nclears < 3)
-    __builtin_unreachable ();
+    {
+#ifdef MALLOC_USER_SIZE_ALIGNMENT
+      return memset (d, 0, clearsize);
+#else
+      __builtin_unreachable ();
+#endif
+    }
 
   /* Use repeated stores with 1 branch, instead of up to 3.  */
   *(d + 0) = 0;

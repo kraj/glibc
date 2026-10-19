@@ -283,6 +283,17 @@ verify (PTRDIFF_MAX <= SIZE_MAX / 2);
 #define MALLOC_DEBUG 0
 #endif
 
+/* If defined, additional alignment requirements for the size and thus
+   the end address of the user-visible memory.  Must not exceed
+   malloc's default pointer alignment.  */
+#ifndef MALLOC_USER_SIZE_ALIGNMENT
+# define CHUNK2USER_OVERHEAD SIZE_SZ
+#else
+verify (powerof2 (MALLOC_USER_SIZE_ALIGNMENT));
+verify (MALLOC_USER_SIZE_ALIGNMENT <= MALLOC_ALIGNMENT);
+# define CHUNK2USER_OVERHEAD roundup (SIZE_SZ, MALLOC_USER_SIZE_ALIGNMENT)
+#endif
+
 #if USE_TCACHE
 /* We want 64 entries.  This is an arbitrary limit, which tunables can reduce.  */
 # define TCACHE_SMALL_BINS		64
@@ -291,7 +302,10 @@ verify (PTRDIFF_MAX <= SIZE_MAX / 2);
 # define MAX_TCACHE_SMALL_SIZE	tidx2csize (TCACHE_SMALL_BINS-1)
 
 # define tidx2csize(idx)	(((size_t) idx) * MALLOC_ALIGNMENT + MINSIZE)
-# define tidx2usize(idx)	(((size_t) idx) * MALLOC_ALIGNMENT + MINSIZE - SIZE_SZ)
+# define tidx2usize(idx) \
+  (((size_t) idx) * MALLOC_ALIGNMENT \
+   + MINSIZE                         \
+   - CHUNK2USER_OVERHEAD)
 
 /* When "x" is from chunksize().  */
 # define csize2tidx(x) (((x) - MINSIZE) / MALLOC_ALIGNMENT)
@@ -1011,9 +1025,12 @@ checked_request2size (size_t req)
   if (__glibc_unlikely (req > PTRDIFF_MAX))
     return SIZE_MAX;
 
-  return (req + SIZE_SZ + MALLOC_ALIGN_MASK < MINSIZE
-	  ? MINSIZE
-	  : (req + SIZE_SZ + MALLOC_ALIGN_MASK) & ~MALLOC_ALIGN_MASK);
+  size_t rs = req + CHUNK2USER_OVERHEAD
+              + MALLOC_ALIGN_MASK;
+
+  return (rs < MINSIZE
+          ? MINSIZE
+          : (rs) & ~MALLOC_ALIGN_MASK);
 }
 
 /*
@@ -1115,7 +1132,7 @@ checked_request2size (size_t req)
 
 /* This is the size of the real usable data in the chunk.  Not valid for
    dumped heap chunks.  */
-#define chunksize2usable(n) (n - CHUNK_HDR_SZ + SIZE_SZ)
+#define chunksize2usable(n) (n - CHUNK2USER_OVERHEAD)
 #define memsize(p) (chunksize2usable (chunksize (p)))
 
 /* Huge page used for an mmap chunk.  */
@@ -3453,7 +3470,7 @@ _int_malloc (mstate av, size_t bytes)
   mchunkptr bck;                    /* misc temp for linking */
 
   /*
-     Convert request size to internal form by adding SIZE_SZ bytes
+     Convert request size to internal form by adding chunk-to-user
      overhead plus possibly more to obtain necessary alignment and/or
      to obtain a size of at least MINSIZE, the smallest allocatable
      size. Also, checked_request2size returns false for request sizes
