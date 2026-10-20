@@ -53,7 +53,7 @@
 /* The computed polynomial is a variation of the Taylor series expansion for
    sin(x):
 
-   x - x^3/3! + x^5/5! - x^7/7! + x^9/9! - dx*x^2/2 + dx
+   x - x^3/3! + x^5/5! - x^7/7! + x^9/9! - x^11/11! - dx*x^2/2 + dx
 
    The constants s1, s2, s3, etc. are pre-computed values of 1/3!, 1/5! and so
    on.  The result is returned to LHS.  */
