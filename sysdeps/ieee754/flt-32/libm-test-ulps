@@ -251,6 +251,18 @@ float: 0
 Function: "log2p1_upward":
 float: 0
 
+Function: "rsqrt":
+float: 0
+
+Function: "rsqrt_downward":
+float: 0
+
+Function: "rsqrt_towardzero":
+float: 0
+
+Function: "rsqrt_upward":
+float: 0
+
 Function: "sinh":
 float: 0
 
