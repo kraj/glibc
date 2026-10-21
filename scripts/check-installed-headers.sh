@@ -128,6 +128,8 @@ $fortify_mode
    ensure that this selection wins. */
 $expanded_lib_mode
 #include <$header>
+/* Check that the header is protected against multiple inclusion.  */
+#include <$header>
 int avoid_empty_translation_unit;
 EOF
                 if $cc_cmd -fsyntax-only $lang_mode "$cih_test_c" 2>&1
