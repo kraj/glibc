@@ -128,9 +128,13 @@ typedef unsigned long int fenv_t;
 # define FE_NONIEEE_ENV ((const fenv_t *) 0x8800000000003000UL)
 #endif
 
+__BEGIN_DECLS
+
 /* The system calls to talk to the kernel's FP code.  */
 extern unsigned long int __ieee_get_fp_control (void) __THROW;
 extern void __ieee_set_fp_control (unsigned long int __value) __THROW;
+
+__END_DECLS
 
 #if __GLIBC_USE (IEC_60559_BFP_EXT_C23)
 /* Type representing floating-point control modes.  */
