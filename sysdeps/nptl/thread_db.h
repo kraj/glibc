@@ -289,6 +289,8 @@ typedef struct td_thrinfo
 
 
 
+__BEGIN_DECLS
+
 /* Prototypes for exported library functions.  */
 
 /* Initialize the thread debug support library.  */
@@ -454,5 +456,7 @@ extern td_err_e td_thr_dbsuspend (const td_thrhandle_t *__th);
 
 /* Resume execution of thread TH.  */
 extern td_err_e td_thr_dbresume (const td_thrhandle_t *__th);
+
+__END_DECLS
 
 #endif	/* thread_db.h */
