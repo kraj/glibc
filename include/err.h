@@ -1,6 +1,8 @@
 #ifndef _ERR_H
 #include <misc/err.h>
 
+# ifndef _ISOMAC
+
 /* Prototypes for internal err.h functions.  */
 void
 __vwarnx_internal (const char *format, __gnuc_va_list ap,
@@ -9,8 +11,6 @@ __vwarnx_internal (const char *format, __gnuc_va_list ap,
 void
 __vwarn_internal (const char *format, __gnuc_va_list ap,
 		   unsigned int mode_flags);
-
-# ifndef _ISOMAC
 
 libc_hidden_ldbl_proto (warn)
 libc_hidden_ldbl_proto (warnx)
