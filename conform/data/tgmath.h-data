@@ -63,4 +63,55 @@ macro cimag
 macro conj
 macro cproj
 macro creal
+
+#if defined ISO23
+macro acospi
+macro asinpi
+macro atan2pi
+macro atanpi
+macro compoundn
+macro cospi
+macro exp10
+macro exp10m1
+macro exp2m1
+macro fmaximum
+macro fmaximum_mag
+macro fmaximum_mag_num
+macro fmaximum_num
+macro fminimum
+macro fminimum_mag
+macro fminimum_mag_num
+macro fminimum_num
+macro fromfp
+macro fromfpx
+macro llogb
+macro log10p1
+macro log2p1
+macro logp1
+macro nextdown
+macro nextup
+macro pown
+macro powr
+macro rootn
+macro roundeven
+macro rsqrt
+macro sinpi
+macro tanpi
+macro ufromfp
+macro ufromfpx
+
+macro fadd
+macro dadd
+macro fsub
+macro dsub
+macro fmul
+macro dmul
+macro fdiv
+macro ddiv
+macro ffma
+macro dfma
+macro fsqrt
+macro dsqrt
+#endif
+
 #endif

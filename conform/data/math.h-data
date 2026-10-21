@@ -14,6 +14,13 @@ macro isless
 macro islessequal
 macro islessgreater
 macro isunordered
+#  if defined ISO23
+macro iscanonical
+macro iseqsig
+macro issignaling
+macro issubnormal
+macro iszero
+#  endif
 type float_t
 type double_t
 # endif
@@ -50,12 +57,43 @@ macro-int-constant FP_NORMAL
 macro-int-constant FP_SUBNORMAL
 macro-int-constant FP_ZERO
 
+#if defined ISO23
+macro-int-constant FP_INT_UPWARD
+macro-int-constant FP_INT_DOWNWARD
+macro-int-constant FP_INT_TOWARDZERO
+macro-int-constant FP_INT_TONEARESTFROMZERO
+macro-int-constant FP_INT_TONEAREST
+#endif
+
 optional-macro-int-constant FP_FAST_FMA {int} == 1
 optional-macro-int-constant FP_FAST_FMAF {int} == 1
 optional-macro-int-constant FP_FAST_FMAL {int} == 1
 
+#if defined ISO23
+optional-macro-int-constant FP_FAST_FADD {int} == 1
+optional-macro-int-constant FP_FAST_FADDL {int} == 1
+optional-macro-int-constant FP_FAST_DADDL {int} == 1
+optional-macro-int-constant FP_FAST_FSUB {int} == 1
+optional-macro-int-constant FP_FAST_FSUBL {int} == 1
+optional-macro-int-constant FP_FAST_DSUBL {int} == 1
+optional-macro-int-constant FP_FAST_FMUL {int} == 1
+optional-macro-int-constant FP_FAST_FMULL {int} == 1
+optional-macro-int-constant FP_FAST_DMULL {int} == 1
+optional-macro-int-constant FP_FAST_FDIV {int} == 1
+optional-macro-int-constant FP_FAST_FDIVL {int} == 1
+optional-macro-int-constant FP_FAST_DDIVL {int} == 1
+optional-macro-int-constant FP_FAST_FSQRT {int} == 1
+optional-macro-int-constant FP_FAST_FSQRTL {int} == 1
+optional-macro-int-constant FP_FAST_DSQRTL {int} == 1
+#endif
+
 macro-int-constant FP_ILOGB0
 macro-int-constant FP_ILOGBNAN
+
+#if defined ISO23
+macro-int-constant FP_LLOGB0
+macro-int-constant FP_LLOGBNAN
+#endif
 
 macro-int-constant MATH_ERRNO {int} == 1
 macro-int-constant MATH_ERREXCEPT {int} == 2
@@ -325,6 +363,135 @@ allow sinhl
 allow sqrtl
 allow tanl
 allow tanhl
+#endif
+
+#if defined ISO23
+function double acospi (double)
+function double asinpi (double)
+function double atanpi (double)
+function double atan2pi (double, double)
+function int canonicalize (double*, const double*)
+function double compoundn (double, long long)
+function double cospi (double)
+function double exp10 (double)
+function double exp10m1 (double)
+function double exp2m1 (double)
+function double fmaximum (double, double)
+function double fmaximum_mag (double, double)
+function double fmaximum_mag_num (double, double)
+function double fmaximum_num (double, double)
+function double fminimum (double, double)
+function double fminimum_mag (double, double)
+function double fminimum_mag_num (double, double)
+function double fminimum_num (double, double)
+function double fromfp (double, int, unsigned int)
+function double fromfpx (double, int, unsigned int)
+function long llogb (double)
+function double log10p1 (double)
+function double log2p1 (double)
+function double logp1 (double)
+function double nextdown (double)
+function double nextup (double)
+function double pown (double, long long)
+function double powr (double, double)
+function double rootn (double, long long)
+function double roundeven (double)
+function double rsqrt (double)
+function double sinpi (double)
+function double tanpi (double)
+function double ufromfp (double, int, unsigned int)
+function double ufromfpx (double, int, unsigned int)
+
+function float acospif (float)
+function float asinpif (float)
+function float atanpif (float)
+function float atan2pif (float, float)
+function int canonicalizef (float*, const float*)
+function float compoundnf (float, long long)
+function float cospif (float)
+function float exp10f (float)
+function float exp10m1f (float)
+function float exp2m1f (float)
+function float fmaximumf (float, float)
+function float fmaximum_magf (float, float)
+function float fmaximum_mag_numf (float, float)
+function float fmaximum_numf (float, float)
+function float fminimumf (float, float)
+function float fminimum_magf (float, float)
+function float fminimum_mag_numf (float, float)
+function float fminimum_numf (float, float)
+function float fromfpf (float, int, unsigned int)
+function float fromfpxf (float, int, unsigned int)
+function long llogbf (float)
+function float log10p1f (float)
+function float log2p1f (float)
+function float logp1f (float)
+function float nextdownf (float)
+function float nextupf (float)
+function float pownf (float, long long)
+function float powrf (float, float)
+function float rootnf (float, long long)
+function float roundevenf (float)
+function float rsqrtf (float)
+function float sinpif (float)
+function float tanpif (float)
+function float ufromfpf (float, int, unsigned int)
+function float ufromfpxf (float, int, unsigned int)
+
+function {long double} acospil (long double)
+function {long double} asinpil (long double)
+function {long double} atanpil (long double)
+function {long double} atan2pil (long double, long double)
+function int canonicalizel (long double*, const long double*)
+function {long double} compoundnl (long double, long long)
+function {long double} cospil (long double)
+function {long double} exp10l (long double)
+function {long double} exp10m1l (long double)
+function {long double} exp2m1l (long double)
+function {long double} fmaximuml (long double, long double)
+function {long double} fmaximum_magl (long double, long double)
+function {long double} fmaximum_mag_numl (long double, long double)
+function {long double} fmaximum_numl (long double, long double)
+function {long double} fminimuml (long double, long double)
+function {long double} fminimum_magl (long double, long double)
+function {long double} fminimum_mag_numl (long double, long double)
+function {long double} fminimum_numl (long double, long double)
+function {long double} fromfpl (long double, int, unsigned int)
+function {long double} fromfpxl (long double, int, unsigned int)
+function long llogbl (long double)
+function {long double} log10p1l (long double)
+function {long double} log2p1l (long double)
+function {long double} logp1l (long double)
+function {long double} nextdownl (long double)
+function {long double} nextupl (long double)
+function {long double} pownl (long double, long long)
+function {long double} powrl (long double, long double)
+function {long double} rootnl (long double, long long)
+function {long double} roundevenl (long double)
+function {long double} rsqrtl (long double)
+function {long double} sinpil (long double)
+function {long double} tanpil (long double)
+function {long double} ufromfpl (long double, int, unsigned int)
+function {long double} ufromfpxl (long double, int, unsigned int)
+
+function float fadd (double, double)
+function float fdiv (double, double)
+function float ffma (double, double, double)
+function float fmul (double, double)
+function float fsqrt (double)
+function float fsub (double, double)
+function float faddl (long double, long double)
+function float fdivl (long double, long double)
+function float ffmal (long double, long double, long double)
+function float fmull (long double, long double)
+function float fsqrtl (long double)
+function float fsubl (long double, long double)
+function double daddl (long double, long double)
+function double ddivl (long double, long double)
+function double dfmal (long double, long double, long double)
+function double dmull (long double, long double)
+function double dsqrtl (long double)
+function double dsubl (long double, long double)
 #endif
 
 #if !defined ISO && !defined ISO99 && !defined ISO11 && !defined ISO23
