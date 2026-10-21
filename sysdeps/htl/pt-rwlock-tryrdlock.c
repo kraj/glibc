@@ -42,7 +42,14 @@ __pthread_rwlock_tryrdlock (struct __pthread_rwlock *rwlock)
   if (rwlock->__readers > 0)
     {
       assert (rwlock->__readerqueue == 0);
-      rwlock->__readers++;
+      unsigned int new__readers = rwlock->__readers + 1;
+      if (new__readers < rwlock->__readers)
+	{
+	  /* We would wrap around */
+	  __pthread_spin_unlock (&rwlock->__lock);
+	  return EAGAIN;
+	}
+      rwlock->__readers = new__readers;
       __pthread_spin_unlock (&rwlock->__lock);
       return 0;
     }
