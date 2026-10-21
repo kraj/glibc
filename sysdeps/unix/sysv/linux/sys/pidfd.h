@@ -17,6 +17,7 @@
    <https://www.gnu.org/licenses/>.  */
 
 #ifndef _PIDFD_H
+#define _PIDFD_H 1
 
 #include <fcntl.h>
 #include <bits/types/siginfo_t.h>
@@ -42,6 +43,8 @@
 #define PIDFD_GET_USER_NAMESPACE              _IO(PIDFS_IOCTL_MAGIC, 9)
 #define PIDFD_GET_UTS_NAMESPACE               _IO(PIDFS_IOCTL_MAGIC, 10)
 
+__BEGIN_DECLS
+
 /* Returns a file descriptor that refers to the process PID.  The
    close-on-exec is set on the file descriptor.  */
 extern int pidfd_open (__pid_t __pid, unsigned int __flags) __THROW;
@@ -62,5 +65,7 @@ extern int pidfd_send_signal (int __pidfd, int __sig, siginfo_t *__info,
 /* Query the process ID (PID) from process descriptor FD.  Return the PID
    or -1 in case of an error.  */
 extern pid_t pidfd_getpid (int __fd) __THROW;
+
+__END_DECLS
 
 #endif /* _PIDFD_H  */
