@@ -18,6 +18,7 @@ The following bugs are resolved with this release:
    cross-testing without python3 on target
  [34509] libc: [m68k] Regression: Perl locks up after upgrading glibc
    to 2.43
+ [34752] libc: <sys/pidfd.h> not protected for C++
  [34920] math: Bug in SVE pow and powf with mixed positive and negative
    base lanes with integer exponent
 
