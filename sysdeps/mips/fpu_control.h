@@ -113,6 +113,8 @@ extern fpu_control_t __fpu_control;
 /* Type of the control word.  */
 typedef unsigned int fpu_control_t __attribute__ ((__mode__ (__SI__)));
 
+__BEGIN_DECLS
+
 /* Macros for accessing the hardware control word.  */
 extern fpu_control_t __mips_fpu_getcw (void) __THROW;
 extern void __mips_fpu_setcw (fpu_control_t) __THROW;
@@ -126,6 +128,8 @@ extern void __mips_fpu_setcw (fpu_control_t) __THROW;
 
 /* Default control word set at startup.  */
 extern fpu_control_t __fpu_control;
+
+__END_DECLS
 
 #endif /* __mips_soft_float */
 
