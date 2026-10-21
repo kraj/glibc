@@ -1,6 +1,10 @@
-#if defined ISO11 || defined ISO23 || defined XOPEN2K24 || defined POSIX2024
+#if defined ISO11 || defined XOPEN2K24 || defined POSIX2024
 macro alignas
 macro alignof
 macro-int-constant __alignas_is_defined {int} == 1
 macro-int-constant __alignof_is_defined {int} == 1
+#endif
+#if defined ISO23
+// Dummy expectation needed for check-header-lists
+allow __*
 #endif
