@@ -30,7 +30,7 @@ struct __pthread_rwlock
 {
   __pthread_spinlock_t __held;
   __pthread_spinlock_t __lock;
-  int __readers;
+  unsigned int __readers;
   struct __pthread *__readerqueue;
   struct __pthread *__writerqueue;
   struct __pthread_rwlockattr *__attr;
