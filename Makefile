@@ -733,6 +733,16 @@ $(objpfx)check-installed-headers-cxx.out: $(+cih-cxx-iouts)
 	cat $^ > $@; \
 	! grep -qv '^0$$' $(+cih-cxx-iouts:%=%-ret); \
 	$(evaluate-test)
+
+tests-special += $(objpfx)check-cxx-linkage.out
+libof-check-cxx-linkage := testsuite
+$(objpfx)check-cxx-linkage.out: scripts/check-cxx-linkage.py $(headers)
+	$(PYTHON) $< \
+	  --cxx "$(CXX) $(test-config-cxxflags-finput-charset-ascii) \
+		 $(filter-out -std=%,$(CXXFLAGS)) -D_ISOMAC $(+includes)" \
+	  $(if $(supported-fortify),--fortify $(supported-fortify)) \
+	  $(headers) > $@ 2>&1; \
+	$(evaluate-test)
 endif # $(CXX)
 
 tests-special += $(objpfx)check-wrapper-headers.out
