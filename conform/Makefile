@@ -34,8 +34,8 @@ conformtest-standards := \
   POSIX2024 \
   UNIX98 \
   XOPEN2K \
-  XOPEN2K24 \
   XOPEN2K8 \
+  XOPEN2K24 \
   XPG4 \
   XPG42 \
   # conformtest-standards
