@@ -16,6 +16,7 @@
    <https://www.gnu.org/licenses/>.  */
 
 #include <link.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -29,7 +30,7 @@
 static int
 callback (struct dl_phdr_info *info, size_t size, void *ptr)
 {
-  static int last_adds = 0, last_subs = 0;
+  static unsigned long long last_adds = 0, last_subs = 0;
   intptr_t cmd = (intptr_t) ptr;
 
   printf ("  size = %zu\n", size);
@@ -43,6 +44,8 @@ callback (struct dl_phdr_info *info, size_t size, void *ptr)
   printf ("  dlpi_adds = %Lu dlpi_subs = %Lu\n",
 	  info->dlpi_adds, info->dlpi_subs);
 
+  int error = 0;
+
   switch (cmd)
     {
     case SET:
@@ -52,7 +55,14 @@ callback (struct dl_phdr_info *info, size_t size, void *ptr)
       if (leq (info->dlpi_adds, last_adds))
 	{
 	  fprintf (stderr, "dlpi_adds failed to get incremented!\n");
-	  exit (3);
+	  error = 3;
+	}
+      if (info->dlpi_subs != last_subs)
+	{
+	  fprintf (stderr, "dlpi_subs changed on load!"
+		   " now = %llu, before = %llu\n",
+		   info->dlpi_subs, last_subs);
+	  error = 6;
 	}
       break;
 
@@ -60,22 +70,36 @@ callback (struct dl_phdr_info *info, size_t size, void *ptr)
       if (leq (info->dlpi_subs, last_subs))
 	{
 	  fprintf (stderr, "dlpi_subs failed to get incremented!\n");
-	  exit (4);
+	  error = 4;
+	}
+      if (info->dlpi_adds != last_adds)
+	{
+	  fprintf (stderr, "dlpi_adds changed on unload!"
+		   " now = %llu, before = %llu\n",
+		   info->dlpi_adds, last_adds);
+	  error = 7;
 	}
       break;
     }
+
+  if (error)
+    exit (error);
+
   last_adds = info->dlpi_adds;
   last_subs = info->dlpi_subs;
   return -1;
 }
 
 static void *
-load (const char *path)
+load (const char *path, bool use_dlmopen)
 {
   void *handle;
 
   printf ("loading `%s'\n", path);
-  handle = dlopen (path, RTLD_LAZY);
+  if (use_dlmopen)
+    handle = dlmopen (LM_ID_NEWLM, path, RTLD_LAZY);
+  else
+    handle = dlopen (path, RTLD_LAZY);
   if (!handle)
     exit (1);
   dl_iterate_phdr (callback, (void *)(intptr_t) ADD);
@@ -97,10 +121,14 @@ do_test (void)
   void *handle1, *handle2;
 
   dl_iterate_phdr (callback, (void *)(intptr_t) SET);
-  handle1 = load ("firstobj.so");
-  handle2 = load ("globalmod1.so");
-  unload ("firstobj.so", handle1);
-  unload ("globalmod1.so", handle2);
+  for (int use_dlmopen = 0; use_dlmopen < 2; use_dlmopen++)
+    {
+      handle1 = load ("firstobj.so", use_dlmopen);
+      handle2 = load ("globalmod1.so", use_dlmopen);
+      unload ("firstobj.so", handle1);
+      unload ("globalmod1.so", handle2);
+    }
+
   return 0;
 }
 

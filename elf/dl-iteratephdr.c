@@ -45,18 +45,21 @@ __dl_iterate_phdr (int (*callback) (struct dl_phdr_info *info,
   Lmid_t ns = 0;
 #ifdef SHARED
   const void *caller = RETURN_ADDRESS (0);
+  /* We have to count the total number of loaded objects.  */
+  for (Lmid_t cnt = GL(dl_nns) - 1; cnt > 0; --cnt)
+    nloaded += GL(dl_ns)[cnt]._ns_nloaded;
+
   for (Lmid_t cnt = GL(dl_nns) - 1; cnt > 0; --cnt)
     for (struct link_map *l = GL(dl_ns)[cnt]._ns_loaded; l; l = l->l_next)
-      {
-	/* We have to count the total number of loaded objects.  */
-	nloaded += GL(dl_ns)[cnt]._ns_nloaded;
-
-	if (caller >= (const void *) l->l_map_start
-	    && caller < (const void *) l->l_map_end
-	    && (l->l_contiguous
-		|| _dl_addr_inside_object (l, (ElfW(Addr)) caller)))
+      if (caller >= (const void *) l->l_map_start
+	  && caller < (const void *) l->l_map_end
+	  && (l->l_contiguous
+	      || _dl_addr_inside_object (l, (ElfW(Addr)) caller)))
+	{
 	  ns = cnt;
-      }
+	  goto found_ns;
+	}
+ found_ns:
 #endif
 
   for (l = GL(dl_ns)[ns]._ns_loaded; l != NULL; l = l->l_next)
