@@ -481,6 +481,16 @@ _dl_close_worker (struct link_map *map, bool force)
 	  free (fsl->list[--fsl->count]);
     }
 
+  for (unsigned int i = first_loaded; i < nloaded; ++i)
+    {
+      struct link_map *imap = maps[i];
+      if (imap->l_map_used)
+	continue;
+
+      /* Update the data used by _dl_find_object.  */
+      _dl_find_object_dlclose (imap);
+    }
+
   size_t tls_free_start;
   size_t tls_free_end;
   tls_free_start = tls_free_end = NO_TLS_OFFSET;
@@ -659,9 +669,6 @@ _dl_close_worker (struct link_map *map, bool force)
 	  --ns->_ns_nloaded;
 	  if (imap->l_next != NULL)
 	    imap->l_next->l_prev = imap->l_prev;
-
-	  /* Update the data used by _dl_find_object.  */
-	  _dl_find_object_dlclose (imap);
 
 	  free (imap->l_versions);
 	  if (imap->l_origin != (char *) -1)

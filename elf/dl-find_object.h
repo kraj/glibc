@@ -155,13 +155,13 @@ void _dl_find_object_init (void) attribute_hidden;
 
 /* Called by dlopen/dlmopen to add new objects to the DWARF EH frame
    data structures.  NEW_MAP is the dlopen'ed link map.  Link maps on
-   the l_next list are added if l_object_processed is 0.  Needs to
-   be protected by loader write lock.  Returns true on success, false
-   on malloc failure.  */
+   the l_next list are added if l_find_object_processed is 0.  Needs
+   to be protected by GL(dl_load_lock).  Returns true on success,
+   false on malloc failure.  */
 bool _dl_find_object_update (struct link_map *new_map) attribute_hidden;
 
 /* Called by dlclose to remove the link map from the DWARF EH frame
-   data structures.  Needs to be protected by loader write lock.  */
+   data structures.  Needs to be protected by GL(dl_load_lock).  */
 void _dl_find_object_dlclose (struct link_map *l) attribute_hidden;
 
 /* Called from __libc_freeres to deallocate malloc'ed memory.  */

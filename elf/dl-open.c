@@ -69,6 +69,15 @@ struct dl_open_args
   /* Set to true if the end of dl_open_worker_begin was reached.  */
   bool worker_continue;
 
+  /* Set once the RT_CONSISTENT debugger/audit checkpoint has been
+     signalled, so that it happens exactly once on both the success
+     and the error path.  */
+  bool reported_r_debug_consistent;
+
+  /* Set to r_debug pointer after reloc_start probe is signalled.
+     Used to signal reloc_complete probe.  */
+  struct r_debug *relocation_probe_r_debug;
+
   /* Original parameters to the program and the current environment.  */
   int argc;
   char **argv;
@@ -395,21 +404,19 @@ activate_nodelete (struct link_map *new)
       }
 }
 
-/* Relocate the object L.  *RELOCATION_IN_PROGRESS controls whether
-   the debugger is notified of the start of relocation processing.  */
+/* Relocate the object L.  */
 static void
 _dl_open_relocate_one_object (struct dl_open_args *args, struct r_debug *r,
-			      struct link_map *l, int reloc_mode,
-			      bool *relocation_in_progress)
+			      struct link_map *l, int reloc_mode)
 {
   if (l->l_real->l_relocated)
     return;
 
-  if (!*relocation_in_progress)
+  if (args->relocation_probe_r_debug == NULL)
     {
       /* Notify the debugger that relocations are about to happen.  */
       LIBC_PROBE (reloc_start, 2, args->nsid, r);
-      *relocation_in_progress = true;
+      args->relocation_probe_r_debug = r;
     }
 
 #ifdef SHARED
@@ -609,8 +616,6 @@ dl_open_worker_begin (void *a)
     }
   while (l != NULL);
 
-  bool relocation_in_progress = false;
-
   /* This only performs the memory allocations.  The actual update of
      the scopes happens below, after failure is impossible.  */
   resize_scopes (new);
@@ -662,12 +667,74 @@ TLS generation counter wrapped!  Please report this."));
 #ifdef SHARED
   if (GL(dl_ns)[args->nsid].libc_map != NULL)
     _dl_open_relocate_one_object (args, r, GL(dl_ns)[args->nsid].libc_map,
-				  reloc_mode, &relocation_in_progress);
+				  reloc_mode);
 #endif
 
   for (unsigned int i = last; i-- > first; )
-    _dl_open_relocate_one_object (args, r, new->l_initfini[i], reloc_mode,
-				  &relocation_in_progress);
+    _dl_open_relocate_one_object (args, r, new->l_initfini[i], reloc_mode);
+
+  args->worker_continue = true;
+}
+
+/* Mark r_state as RT_CONSISTENT and fire relevant debugger probes and
+   audit callbacks, if not already done.  */
+static void
+maybe_report_r_debug_consistent (struct dl_open_args *args)
+{
+  if (args->reported_r_debug_consistent)
+    return;
+
+  /* Auditing checkpoint and debugger signalling.  Do this even on
+     error, so that dlopen exits with consistent state.  */
+  if (args->nsid >= 0 || args->map != NULL)
+    {
+      Lmid_t nsid = args->map != NULL ? args->map->l_ns : args->nsid;
+      struct r_debug *r = _dl_debug_update (nsid);
+#ifdef SHARED
+      bool was_not_consistent  = r->r_state != RT_CONSISTENT;
+#endif
+      _dl_debug_change_state (r, RT_CONSISTENT);
+      LIBC_PROBE (map_complete, 3, nsid, r, args->map);
+
+#ifdef SHARED
+      if (was_not_consistent)
+	/* Avoid redundant/recursive signalling.  */
+	_dl_audit_activity_nsid (nsid, LA_ACT_CONSISTENT);
+#endif
+    }
+
+  args->reported_r_debug_consistent = true;
+}
+
+static void
+dl_open_worker (void *a)
+{
+  struct dl_open_args *args = a;
+
+  args->worker_continue = false;
+
+  {
+    /* Protects global and module specific TLS state.  */
+    __rtld_lock_lock_recursive (GL(dl_load_tls_lock));
+
+    struct dl_exception ex;
+    int err = _dl_catch_exception (&ex, dl_open_worker_begin, args);
+
+    __rtld_lock_unlock_recursive (GL(dl_load_tls_lock));
+
+    if (__glibc_unlikely (ex.errstring != NULL))
+      /* Reraise the error.  */
+      _dl_signal_exception (err, &ex, NULL);
+  }
+
+  if (!args->worker_continue)
+    return;
+
+  int mode = args->mode;
+  struct link_map *new = args->map;
+
+  /* Relocation is complete and none of the code below needs to keep
+     dl_load_tls_lock held.  */
 
   if (!_dl_find_object_update (new))
     _dl_signal_error (ENOMEM, new->l_libname->name, NULL,
@@ -691,8 +758,9 @@ TLS generation counter wrapped!  Please report this."));
   update_scopes (new);
 
   /* Notify the debugger all new objects have been relocated.  */
-  if (relocation_in_progress)
-    LIBC_PROBE (reloc_complete, 3, args->nsid, r, new);
+  if (args->relocation_probe_r_debug != NULL)
+    LIBC_PROBE (reloc_complete, 3, args->nsid,
+		args->relocation_probe_r_debug, new);
 
   /* If libc.so was not there before, attempt to call its early
      initialization routine.  Indicate to the initialization routine
@@ -705,54 +773,7 @@ TLS generation counter wrapped!  Please report this."));
       _dl_call_libc_early_init (libc_map, false);
     }
 
-  args->worker_continue = true;
-}
-
-static void
-dl_open_worker (void *a)
-{
-  struct dl_open_args *args = a;
-
-  args->worker_continue = false;
-
-  {
-    /* Protects global and module specific TLS state.  */
-    __rtld_lock_lock_recursive (GL(dl_load_tls_lock));
-
-    struct dl_exception ex;
-    int err = _dl_catch_exception (&ex, dl_open_worker_begin, args);
-
-    __rtld_lock_unlock_recursive (GL(dl_load_tls_lock));
-
-    /* Auditing checkpoint and debugger signalling.  Do this even on
-       error, so that dlopen exists with consistent state.  */
-    if (args->nsid >= 0 || args->map != NULL)
-      {
-	Lmid_t nsid = args->map != NULL ? args->map->l_ns : args->nsid;
-	struct r_debug *r = _dl_debug_update (nsid);
-#ifdef SHARED
-	bool was_not_consistent  = r->r_state != RT_CONSISTENT;
-#endif
-	_dl_debug_change_state (r, RT_CONSISTENT);
-	LIBC_PROBE (map_complete, 3, nsid, r, args->map);
-
-#ifdef SHARED
-	if (was_not_consistent)
-	  /* Avoid redundant/recursive signalling.  */
-	  _dl_audit_activity_nsid (nsid, LA_ACT_CONSISTENT);
-#endif
-      }
-
-    if (__glibc_unlikely (ex.errstring != NULL))
-      /* Reraise the error.  */
-      _dl_signal_exception (err, &ex, NULL);
-  }
-
-  if (!args->worker_continue)
-    return;
-
-  int mode = args->mode;
-  struct link_map *new = args->map;
+  maybe_report_r_debug_consistent (args);
 
   /* Run the initializer functions of new objects.  Temporarily
      disable the exception handler, so that lazy binding failures are
@@ -825,6 +846,8 @@ no more namespaces available for dlmopen()"));
   args.nsid = nsid;
   /* args.libc_already_loaded is always assigned by dl_open_worker
      (before any explicit/non-local returns).  */
+  args.reported_r_debug_consistent = false;
+  args.relocation_probe_r_debug = NULL;
   args.argc = argc;
   args.argv = argv;
   args.env = env;
@@ -859,6 +882,8 @@ no more namespaces available for dlmopen()"));
 
   struct dl_exception exception;
   int errcode = _dl_catch_exception (&exception, dl_open_worker, &args);
+
+  maybe_report_r_debug_consistent (&args);
 
   /* Do this for both the error and success cases.  The old value has
      only been determined if the namespace ID was assigned (i.e., it
