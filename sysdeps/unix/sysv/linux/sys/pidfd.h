@@ -17,11 +17,14 @@
    <https://www.gnu.org/licenses/>.  */
 
 #ifndef _PIDFD_H
+#define _PIDFD_H 1
 
 #include <fcntl.h>
 #include <bits/types/siginfo_t.h>
 
 #define PIDFD_NONBLOCK O_NONBLOCK
+
+__BEGIN_DECLS
 
 /* Returns a file descriptor that refers to the process PID.  The
    close-on-exec is set on the file descriptor.
@@ -45,5 +48,7 @@ extern int pidfd_getfd (int __pidfd, int __targetfd,
    as 0.  */
 extern int pidfd_send_signal (int __pidfd, int __sig, siginfo_t *__info,
 			      unsigned int __flags) __THROW;
+
+__END_DECLS
 
 #endif /* _PIDFD_H  */
