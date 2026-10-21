@@ -454,6 +454,7 @@ tests += \
   tst-dlmopen4-pic \
   tst-dlopen-auditdup \
   tst-dlopen-constructor-null \
+  tst-dlopen-oom \
   tst-dlopen-self \
   tst-dlopen-tlsmodid \
   tst-dlopen-tlsreinit1 \
@@ -3360,6 +3361,8 @@ CFLAGS-tst-dl_find_object-mod6.c += -funwind-tables
 CFLAGS-tst-dl_find_object-mod7.c += -funwind-tables
 CFLAGS-tst-dl_find_object-mod8.c += -funwind-tables
 CFLAGS-tst-dl_find_object-mod9.c += -funwind-tables
+
+$(objpfx)tst-dlopen-oom.out: $(objpfx)tst-dl_find_object-mod1.so
 
 $(objpfx)tst-p_alignmod-base.so: $(libsupport)
 LDFLAGS-tst-p_alignmod-base.so += -Wl,-z,max-page-size=0x200000

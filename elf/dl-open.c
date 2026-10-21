@@ -669,6 +669,10 @@ TLS generation counter wrapped!  Please report this."));
     _dl_open_relocate_one_object (args, r, new->l_initfini[i], reloc_mode,
 				  &relocation_in_progress);
 
+  if (!_dl_find_object_update (new))
+    _dl_signal_error (ENOMEM, new->l_libname->name, NULL,
+		      N_ ("cannot allocate address lookup data"));
+
   /* Demarcation point: After this, no recoverable errors are allowed.
      All memory allocations for new objects must have happened
      before.  */
@@ -685,10 +689,6 @@ TLS generation counter wrapped!  Please report this."));
      update.  After this, dlsym and lazy binding can bind to new
      objects.  */
   update_scopes (new);
-
-  if (!_dl_find_object_update (new))
-    _dl_signal_error (ENOMEM, new->l_libname->name, NULL,
-		      N_ ("cannot allocate address lookup data"));
 
   /* Notify the debugger all new objects have been relocated.  */
   if (relocation_in_progress)
