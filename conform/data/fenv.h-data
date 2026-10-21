@@ -1,6 +1,9 @@
 #if !defined ISO && !defined POSIX && !defined XPG4 && !defined XPG42 && !defined UNIX98
 type fenv_t
 type fexcept_t
+#if defined ISO23
+type femode_t
+#endif
 
 optional-macro-int-constant FE_DIVBYZERO
 optional-macro-int-constant FE_INEXACT
@@ -11,12 +14,18 @@ macro-int-constant FE_ALL_EXCEPT
 
 optional-macro-int-constant FE_DOWNWARD
 optional-macro-int-constant FE_TONEAREST
+#if defined ISO23
+optional-macro-int-constant FE_TONEARESTFROMZERO
+#endif
 optional-macro-int-constant FE_TOWARDZERO
 optional-macro-int-constant FE_UPWARD
 
 allow FE_[ABCDEFGHIJKLMNOPQRSTUVWXYZ]*
 
 macro FE_DFL_ENV {const fenv_t *}
+#if defined ISO23
+macro FE_DFL_MODE {const femode_t *}
+#endif
 
 function int feclearexcept (int)
 function int fegetexceptflag (fexcept_t*, int)
@@ -29,6 +38,12 @@ function int fegetenv (fenv_t*)
 function int feholdexcept (fenv_t*)
 function int fesetenv (const fenv_t*)
 function int feupdateenv (const fenv_t *)
+#if defined ISO23
+function int fegetmode (femode_t*)
+function int fesetmode (const femode_t*)
+function int fesetexcept (int)
+function int fetestexceptflag (const fexcept_t*, int)
+#endif
 
 #if !defined ISO && !defined ISO99 && !defined ISO11 && !defined ISO23
 allow *_t
