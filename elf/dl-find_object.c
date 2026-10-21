@@ -345,6 +345,17 @@ _dlfo_lookup (uintptr_t pc, struct dl_find_object_internal *first1, size_t size)
     }
   else
     {
+      /* _dlfo_lookup is invoked after finding that PC is at or after
+         FIRST->map_start.  We come here with FIRST pointing at the
+         first entry that starts after PC (PC == FIRST->map_start is
+         checked above).  So it may seem that FIRST == FIRST1 is
+         impossible, but note that the segment could be updated
+         between the first check in _dl_find_object and the bisection
+         here.  So we need to check for this case to prevent a
+         possible read outside of the segment.  */
+      if (first == first1)
+        return NULL;
+
       /* Check to see if PC is in the previous mapping.  */
       --first;
       if (pc < atomic_load_relaxed (&first->map_end))
