@@ -20,6 +20,7 @@ The following bugs were resolved with this release:
     uninitialized memory
   [34507] nptl: Pretty-printer tests FAIL instead of UNSUPPORTED when
     cross-testing without python3 on target
+  [34752] libc: <sys/pidfd.h> not protected for C++
   [34920] math: Bug in SVE pow and powf with mixed positive and negative
     base lanes with integer exponent
 
