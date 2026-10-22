@@ -302,6 +302,13 @@ static int      fts_safe_changedir (FTSOBJ *, FTSENTRY *, int, const char *);
                            ? (cwd_advance_fd ((sp), (fd), true), 0) \
                            : fchdir (fd)))
 
+/* fts_read sets FTS_FOLLOWED, a private fts_flags bit defined with the
+   others in fts.h, on an entry that the application asked it to follow
+   with FTS_FOLLOW, even if it is not a symbolic link (an entry from the
+   fts_children list).  Unlike FTS_SYMFOLLOW, it is also set with
+   FTS_NOCHDIR.  Such a directory must be opened without O_NOFOLLOW, even
+   in a physical walk.  */
+
 
 /* fts_build flags */
 /* FIXME: make this an enum */
@@ -398,14 +405,15 @@ restore_initial_cwd (FTSOBJ *sp)
 
 /* Open the directory DIR if possible, and return a file
    descriptor.  Return -1 and set errno on failure.  It doesn't matter
-   whether the file descriptor has read or write access.  */
+   whether the file descriptor has read or write access.  In a physical
+   walk, DIR is not followed if it is a symbolic link (unless FOLLOW).  */
 
 static int
 internal_function
-diropen (FTSOBJ const *sp, char const *dir)
+diropen (FTSOBJ const *sp, char const *dir, bool follow)
 {
   int open_flags = (O_SEARCH | O_CLOEXEC | O_DIRECTORY | O_NOCTTY | O_NONBLOCK
-                    | (ISSET (FTS_PHYSICAL) ? O_NOFOLLOW : 0));
+                    | (ISSET (FTS_PHYSICAL) && !follow ? O_NOFOLLOW : 0));
 
   int fd = (ISSET (FTS_CWDFD)
             ? openat (sp->fts_cwd_fd, dir, open_flags)
@@ -605,7 +613,7 @@ FTS_OPEN (char * const *argv,
          * descriptor we run anyway, just more slowly.
          */
         if (!ISSET(FTS_NOCHDIR) && !ISSET(FTS_CWDFD)
-            && (sp->fts_rfd = diropen (sp, ".")) < 0)
+            && (sp->fts_rfd = diropen (sp, ".", false)) < 0)
                 SET(FTS_NOCHDIR);
 
         i_ring_init (&sp->fts_fd_ring, -1);
@@ -940,8 +948,9 @@ FTS_READ (FTSOBJ *sp)
         if (instr == FTS_FOLLOW &&
             (p->fts_info == FTS_SL || p->fts_info == FTS_SLNONE)) {
                 p->fts_info = fts_stat(sp, p, true);
+                p->fts_flags |= FTS_FOLLOWED;
                 if (p->fts_info == FTS_D && !ISSET(FTS_NOCHDIR)) {
-                        if ((p->fts_symfd = diropen (sp, ".")) < 0) {
+                        if ((p->fts_symfd = diropen (sp, ".", false)) < 0) {
                                 p->fts_errno = errno;
                                 p->fts_info = FTS_ERR;
                         } else
@@ -1066,8 +1075,10 @@ next: ;
                         goto next;
                 if (p->fts_instr == FTS_FOLLOW) {
                         p->fts_info = fts_stat(sp, p, true);
+                        p->fts_flags |= FTS_FOLLOWED;
                         if (p->fts_info == FTS_D && !ISSET(FTS_NOCHDIR)) {
-                                if ((p->fts_symfd = diropen (sp, ".")) < 0) {
+                                if ((p->fts_symfd
+                                     = diropen (sp, ".", false)) < 0) {
                                         p->fts_errno = errno;
                                         p->fts_info = FTS_ERR;
                                 } else
@@ -1257,7 +1268,7 @@ FTS_CHILDREN (FTSOBJ *sp, int instr)
             ISSET(FTS_NOCHDIR))
                 return (sp->fts_child = fts_build(sp, instr));
 
-        int fd = diropen (sp, ".");
+        int fd = diropen (sp, ".", false);
         if (fd < 0)
                 return (sp->fts_child = NULL);
         sp->fts_child = fts_build(sp, instr);
@@ -1338,6 +1349,7 @@ set_stat_type (struct STRUCT_STAT *st, unsigned int dtype)
                    ? sp->fts_cwd_fd : AT_FDCWD),                \
                   file,                                         \
                   (((ISSET(FTS_PHYSICAL)                        \
+                     && ! (cur->fts_flags & FTS_FOLLOWED)       \
                      && ! (ISSET(FTS_COMFOLLOW)                 \
                            && cur->fts_level == FTS_ROOTLEVEL)) \
                     ? O_NOFOLLOW : 0)),                         \
@@ -2182,19 +2194,24 @@ fts_safe_changedir (FTSOBJ *sp, FTSENTRY *p, int fd, char const *dir)
               }
           }
 
+        /* P was reached through a symbolic link at the application's
+           request (FTS_FOLLOW), so it must be followed again here.  */
+        bool follow = ! is_dotdot && (p->fts_flags & FTS_FOLLOWED);
+
         int newfd = fd;
-        if (fd < 0 && (newfd = diropen (sp, dir)) < 0)
+        if (fd < 0 && (newfd = diropen (sp, dir, follow)) < 0)
           return -1;
 
         /* The following dev/inode check is necessary if we're doing a
            "logical" traversal (through symlinks, a la chown -L), if the
-           system lacks O_NOFOLLOW support, or if we're changing to ".."
+           system lacks O_NOFOLLOW support, if we're following a symlink
+           at the application's request, or if we're changing to ".."
            (but not via a popped file descriptor).  When changing to the
            name "..", O_NOFOLLOW can't help.  In general, when the target is
            not "..", diropen's use of O_NOFOLLOW ensures we don't mistakenly
            follow a symlink, so we can avoid the expense of this fstat.  */
         int ret;
-        if (ISSET(FTS_LOGICAL) || ! HAVE_WORKING_O_NOFOLLOW
+        if (ISSET(FTS_LOGICAL) || ! HAVE_WORKING_O_NOFOLLOW || follow
             || (dir && streq (dir, "..")))
           {
             struct STRUCT_STAT sb;
