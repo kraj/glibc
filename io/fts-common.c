@@ -2019,8 +2019,14 @@ fts_alloc (FTSOBJ *sp, const char *name, register size_t namelen)
 #else
 	/*
 	 * For glibc, we use a wrapper struct to provide the extra required
-	 * fields without changing the FSENT layout.
+	 * fields without changing the FSENT layout.  That layout also keeps
+	 * fts_namelen and fts_pathlen as unsigned short, so reject a name
+	 * that does not fit (only fts_open root arguments can be that long).
 	 */
+	if (namelen > USHRT_MAX) {
+		__set_errno (ENAMETOOLONG);
+		return (NULL);
+	}
 	len += sizeof (struct FTSENT_wrapper);
 	struct FTSENT_wrapper *wrapper = malloc(len);
 	if (wrapper == NULL)

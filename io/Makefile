@@ -199,6 +199,7 @@ tests := \
   tst-fts \
   tst-fts-bz22944 \
   tst-fts-bz34782 \
+  tst-fts-bz34782-root \
   tst-fts-cwdfd-follow \
   tst-fts-follow \
   tst-fts-lfs \
