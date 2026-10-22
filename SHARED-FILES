@@ -433,7 +433,7 @@ arm-optimized-routines:
   sysdeps/aarch64/fpu/sve/acosf.c
   # math/aarch64/sve/acosh.c, revision 8b665af
   sysdeps/aarch64/fpu/sve/acosh.c
-  # math/aarch64/sve/acoshf.c, revision 1aad38d
+  # math/aarch64/sve/acoshf.c, revision 724f318
   sysdeps/aarch64/fpu/sve/acoshf.c
   # math/aarch64/sve/acospi.c, revision 1aad38d
   sysdeps/aarch64/fpu/sve/acospi.c
@@ -445,7 +445,7 @@ arm-optimized-routines:
   sysdeps/aarch64/fpu/sve/asinf.c
   # math/aarch64/sve/asinh.c, revision 9bf4cfc
   sysdeps/aarch64/fpu/sve/asinh.c
-  # math/aarch64/sve/asinhf.c, revision 1aad38d
+  # math/aarch64/sve/asinhf.c, revision 6956043
   sysdeps/aarch64/fpu/sve/asinhf.c
   # math/aarch64/sve/asinpi.c, revision 1aad38d
   sysdeps/aarch64/fpu/sve/asinpi.c
@@ -465,7 +465,7 @@ arm-optimized-routines:
   sysdeps/aarch64/fpu/sve/atanf.c
   # math/aarch64/sve/atanh.c, revision 29c7342
   sysdeps/aarch64/fpu/sve/atanh.c
-  # math/aarch64/sve/atanhf.c, revision 1aad38d
+  # math/aarch64/sve/atanhf.c, revision 68d894a
   sysdeps/aarch64/fpu/sve/atanhf.c
   # math/aarch64/sve/atanpi.c, revision 1aad38d
   sysdeps/aarch64/fpu/sve/atanpi.c
@@ -535,7 +535,7 @@ arm-optimized-routines:
   sysdeps/aarch64/fpu/sve/log10p1f.c
   # math/aarch64/sve/log1p.c, revision 1aad38d
   sysdeps/aarch64/fpu/sve/log1p.c
-  # math/aarch64/sve/log1pf.c, revision 1aad38d
+  # math/aarch64/sve/log1pf.c, revision 35deb10
   sysdeps/aarch64/fpu/sve/log1pf.c
   # math/aarch64/sve/log2.c, revision 91b052e
   sysdeps/aarch64/fpu/sve/log2.c
@@ -593,7 +593,7 @@ arm-optimized-routines:
   sysdeps/aarch64/fpu/sve/sv_expm1f_inline.h
   # math/aarch64/sve/sv_log1p_inline.h, revision 7d08237
   sysdeps/aarch64/fpu/sve/sv_log1p_inline.h
-  # math/aarch64/sve/sv_log1pf_inline.h, revision a386525
+  # math/aarch64/sve/sv_log1pf_inline.h, revision a553540
   sysdeps/aarch64/fpu/sve/sv_log1pf_inline.h
   # math/aarch64/sve/sv_pow_inline.h, revision 30da949
   sysdeps/aarch64/fpu/sve/sv_pow_inline.h
