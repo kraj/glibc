@@ -258,6 +258,7 @@ typedef struct _ftsent {
 
 #define	FTS_DONTCHDIR	 0x01		/* don't chdir .. to the parent */
 #define	FTS_SYMFOLLOW	 0x02		/* followed a symlink to get here */
+#define	FTS_FOLLOWED	 0x04		/* followed with fts_set FTS_FOLLOW */
 	unsigned short fts_flags;	/* private flags for FTSENT structure */
 
 #define	FTS_AGAIN	 1		/* read node again */

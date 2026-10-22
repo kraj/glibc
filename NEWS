@@ -25,6 +25,7 @@ The following bugs are resolved with this release:
   [34699] build: Parallel build failures with make check xcheck
   [34734] libc: sparc: tcgetattr returns uninitialized bytes in c_cc[17]
     and c_cc[18]
+  [34775] libc: Regression in fts with FTS_FOLLOW
   [34781] libc: fts: FTS_CWDFD walk breaks after leaving a directory
     followed with FTS_FOLLOW
   [34875] string: 2.44 regression: Hygon non-temporal threshold can be
