@@ -105,8 +105,8 @@ struct ftw_frame
   struct dir_data dir;
   struct STRUCT_STAT st;
   int previous_base;
-  char *runp;
   enum ftw_frame_state state;
+  char *runp;
 };
 
 struct ftw_stack
