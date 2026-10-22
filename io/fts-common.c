@@ -1145,11 +1145,28 @@ cd_dot_dot:
                         SET(FTS_STOP);
                 }
         } else if (p->fts_flags & FTS_SYMFOLLOW) {
-                if (FCHDIR(sp, p->fts_symfd)) {
-                        p->fts_errno = errno;
-                        SET(FTS_STOP);
+                if (ISSET(FTS_CWDFD)) {
+                        /* The descriptor pushed on the ring when changing
+                           into P refers to the same directory as
+                           fts_symfd, so discard it.  It is not there if
+                           the change failed, and the ring is empty if
+                           deeper levels displaced it.  */
+                        if (!(p->fts_flags & FTS_DONTCHDIR)
+                            && ! i_ring_empty (&sp->fts_fd_ring)) {
+                                int fd = i_ring_pop (&sp->fts_fd_ring);
+                                if (0 <= fd)
+                                        close (fd);
+                        }
+                        /* fts_symfd becomes the virtual working directory,
+                           so it must not be closed here.  */
+                        cwd_advance_fd (sp, p->fts_symfd, false);
+                } else {
+                        if (FCHDIR(sp, p->fts_symfd)) {
+                                p->fts_errno = errno;
+                                SET(FTS_STOP);
+                        }
+                        (void)close(p->fts_symfd);
                 }
-                (void)close(p->fts_symfd);
         } else if (!(p->fts_flags & FTS_DONTCHDIR) &&
                    fts_safe_changedir(sp, p->fts_parent, -1, "..")) {
                 p->fts_errno = errno;
