@@ -66,6 +66,7 @@ static char sccsid[] = "@(#)fts.c       8.6 (Berkeley) 8/14/94";
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <intprops.h>
 
 /* Support for the LFS API version.  */
 #ifndef FTS_OPEN
@@ -1588,14 +1589,15 @@ mem1: ;
                         maxlen = sp->fts_pathlen - len;
                 }
 
-                size_t new_len = len + d_namelen;
-                if (new_len < len) {
+                if (INT_ADD_WRAPV (len, d_namelen, &p->fts_pathlen)) {
                         /*
-                         * In the unlikely event that we would end up
-                         * with a file name longer than SIZE_MAX, free up
+                         * For !_LIBC In the unlikely event that we would end
+                         * up with a file name longer than SIZE_MAX, free up
                          * the current structure and the structures already
                          * allocated, then error out with ENAMETOOLONG.
-                         */
+                         *
+                         * However, for _LIBC the FTSENT::fts_pathlen is an
+                         * unsigned short, so it can wrap around here.  */
                         free(FTSENT_WRAPPER(p));
                         fts_lfree(head);
                         closedir_and_clear(FTSENT_DIRP(cur));
@@ -1606,7 +1608,6 @@ mem1: ;
                 }
                 p->fts_level = level;
                 p->fts_parent = sp->fts_cur;
-                p->fts_pathlen = new_len;
 
                 /* Store dirent.d_ino, in case we need to sort
                    entries before processing them.  */
@@ -2073,18 +2074,15 @@ static bool
 internal_function
 fts_palloc (FTSOBJ *sp, size_t more)
 {
-        size_t new_len = sp->fts_pathlen + more + 256;
-
         /*
-         * See if fts_pathlen would overflow.
+         * See if fts_pathlen, an int in an FTS, would overflow.
          */
-        if (new_len < sp->fts_pathlen) {
+        if (INT_ADD_WRAPV (sp->fts_pathlen, more + 256, &sp->fts_pathlen)) {
                 free(sp->fts_path);
                 sp->fts_path = NULL;
                 __set_errno (ENAMETOOLONG);
                 return false;
         }
-        sp->fts_pathlen = new_len;
         char *p = realloc(sp->fts_path, sp->fts_pathlen);
         if (p == NULL) {
                 free(sp->fts_path);

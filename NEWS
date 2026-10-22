@@ -28,6 +28,8 @@ The following bugs are resolved with this release:
   [34775] libc: Regression in fts with FTS_FOLLOW
   [34781] libc: fts: FTS_CWDFD walk breaks after leaving a directory
     followed with FTS_FOLLOW
+  [34782] libc: fts: wrong fts_path and fts_pathlen for paths longer
+    than USHRT_MAX
   [34875] string: 2.44 regression: Hygon non-temporal threshold can be
     zero
 

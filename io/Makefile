@@ -198,6 +198,7 @@ tests := \
   tst-fstatat \
   tst-fts \
   tst-fts-bz22944 \
+  tst-fts-bz34782 \
   tst-fts-cwdfd-follow \
   tst-fts-follow \
   tst-fts-lfs \
