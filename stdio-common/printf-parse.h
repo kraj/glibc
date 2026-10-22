@@ -27,6 +27,8 @@ struct printf_spec
   {
     /* Information parsed from the format spec.  */
     struct printf_info info;
+    /* Size of the parameter for PA_USER type.  */
+    int size;
 
     /* Pointers into the format string for the end of this format
        spec and the next (or to the end of the string if no more).  */
@@ -40,8 +42,6 @@ struct printf_spec
     int data_arg_type;		/* Type of first argument.  */
     /* Number of arguments consumed by this format specifier.  */
     size_t ndata_args;
-    /* Size of the parameter for PA_USER type.  */
-    int size;
   };
 
 #ifndef DONT_NEED_READ_INT
