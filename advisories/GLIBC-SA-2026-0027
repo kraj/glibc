@@ -1,0 +1,31 @@
+scanf %s and %[ one-byte buffer overflow in wide character conversion
+
+Calling the wide scanf family of functions (swscanf, fwscanf, wscanf,
+vswscanf, vfwscanf and vwscanf) with a %s or %[ conversion without the
+'l' length modifier in the GNU C Library version 2.2 to version 2.44
+writes an extra null byte one past the end of the destination buffer
+when the converted multibyte string and its terminator exactly fill
+that buffer.
+
+Such a conversion stores each wide input character into the caller's
+char array as a multibyte sequence produced by __wcrtomb.  To emit the
+sequence that returns to the initial shift state, __vfwscanf_internal
+finishes with __wcrtomb (buf, L'\0', &state), which also stores the
+terminating null byte; that byte is copied to the destination.  The code
+then appends a second null byte unconditionally, so a buffer sized for
+the converted string and a single terminator, as the C standard requires
+the caller to provide, is written one byte past its end.  The overflowing
+byte is always a null byte.
+
+The impact is limited.  The narrow scanf functions, the wide conversions
+with the 'l' modifier into a wchar_t array, and the 'a'/'m' (allocation)
+modifier are all unaffected; only the uncommon idiom of a wide scanf
+storing into a narrow char array through %s or %[ is vulnerable, and the
+overwrite only occurs when the converted input and its terminating null
+byte exactly fill the destination array.
+
+CVE-Id: CVE-2026-115819
+Public-Date: 2026-11-11
+Vulnerable-Commit: d64b6ad07585b8a37e5fecc9a47fcee766d52ede (2.2)
+CVSS: CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:L/A:L - 4.8
+Reported-By: Russell Miller <rmiller@duskglow.com>
