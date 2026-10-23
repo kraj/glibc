@@ -17,6 +17,7 @@ Dynamic linkers are sometimes called @dfn{dynamic loaders}.
 * Dynamic Linker Environment Variables:: Environment variables that control the
                                           dynamic linker.
 * Dynamic Linker Introspection::    Interfaces for querying mapping information.
+* Dynamic Linker Auditing::     Auditing interface.
 * Indirect Functions::          Selecting function implementations at load time.
 * Dynamic Linker Hardening::    Avoiding unexpected issues with dynamic linking.
 @end menu
@@ -735,6 +736,398 @@ A bit mask used to signal that the object contains SFrame data.  See
 @code{dlfo_sframe} above.
 
 @end table
+
+@node Dynamic Linker Auditing
+@section Dynamic Linker Auditing
+@cindex Auditing
+@cindex LD_AUDIT
+
+The dynamic linker's auditing interface allows external code to
+observe and affect the loading of dynamic objects.  As this allows the
+external code to modify the operation of the program, great care
+should be taken when creating and deploying audit modules (auditors).
+
+Audit modules should include @file{link.h} to import constants and
+prototypes used by the audit API.  Note that the audit interface is an
+extension to @theglibc{} so requires @code{_GNU_SOURCE} to be defined
+before including @file{link.h}.
+
+Note that while auditors can do pretty much anything to the audited
+program, anything other than the uses documented here is not
+supported.
+
+@menu
+* Audit Module Loading::  How modules are selected and loaded.
+* Audit API Callbacks::   Audit functions called by the dynamic linker.
+@end menu
+
+@node Audit Module Loading
+@subsection Audit Module Loading
+
+An audit module (auditor) is a shared object (plus its
+@code{DT_NEEDED} dependencies) that is loaded very early in the
+dynamic loading process in its own link namespace.  An auditor can load
+a set of support libraries into its link namespace and the symbols
+that these libraries define will be invisible to the main executable
+and its dependencies.  For example, each auditor may load its own
+libstdc++, which may be incompatible with those used by the main
+executable and/or other auditors, and will have its own copy of glibc
+itself (separate malloc, heap, stdio, etc.).  Despite the fact that an
+auditor in its own link namespace is somewhat isolated from the main
+executable and other auditors, auditors and the main executable share
+@file{ld.so} and process state, including Linux namespaces (distinct
+from link namespaces), process ID, and file descriptors.
+
+Once an auditor is loaded, the dynamic loader will call functions in
+the auditor to report key actions in the load process---associated
+with itself, other auditors, the executable, and any shared objects.
+Example actions include opening a shared object, binding a symbol, or
+completion of changes to the link map.  While an auditor receives
+notifications of all dynamic linker actions on behalf of the main
+executable and its shared objects, as explained later, an auditor
+only receives limited notifications about its own actions or those of
+other auditors.
+
+Auditors are specified by four methods, each of which specifies a
+colon-separated list of auditors:
+
+@table @code
+
+@item LD_AUDIT
+The @code{LD_AUDIT} environment variable.
+
+@item --audit
+If the dynamic linker is invoked manually, it allows an @code{--audit}
+command line parameter followed by a list of auditors.
+
+@item DT_AUDIT
+If the main program has a @code{DT_AUDIT} dynamic tag, that tag
+specifies a list of auditors.
+
+@item DT_DEPAUDIT
+If the main program has a @code{DT_DEPAUDIT} dynamic tag, that tag is
+a separate tag for auditors that are requested not by the main object,
+but by one of the shared objects it was linked against.
+
+@end table
+
+Auditors are loaded in the order of the table above: first those from
+@code{LD_AUDIT}, then those from @code{--audit}, @code{DT_AUDIT}, and
+@code{DT_DEPAUDIT}.  For each callback the dynamic loader calls, the
+modules will be called in the order in which they were loaded.
+
+Note that @code{--audit} may occur multiple times.  The limit on the
+number of colon-separated lists is currently 16.  The limit on the
+number of auditors currently defaults to 12 due to limits on remaining
+namespaces (@pxref{Dynamic Linking Tunables}).  The program will fail
+to start if too many auditors are requested.  Every auditor named
+counts towards that limit, including ones that cannot be loaded or
+that @code{la_version} rejects, because the names are counted before
+any auditor is loaded.  An auditor that cannot be loaded is reported
+with an error message, and the program runs without it.
+
+As each auditor is loaded, its @code{la_version} callback is called to
+ensure the module supports the API version the dynamic loader is
+using.  Auditors which do not are unloaded.  Once an auditor is
+loaded, it may audit the loading of further auditors@footnote{The
+current implementation sends events for the searching and loading, but
+nothing significant after that.  This may be intentional or it may be
+a bug, and auditors should assume auditing auditors is unsupported but
+plan for such events.}.  Each auditor is loaded into its own
+namespace, that is, any symbols exported by the auditor will not be
+visible to the main program or other auditors.
+
+If the program running is @code{AT_SECURE} (for example, set-user-id
+programs), auditors are limited to secure auditors---auditor names
+must not include @samp{/} characters and will only be searched for in
+standard directories (ignoring @file{ld.so.cache}).  Additionally,
+such auditors must themselves be set-user-id, and have names less than
+255 characters long.
+
+@node Audit API Callbacks
+@subsection Audit API Callbacks
+
+Each auditor provides one or more callbacks in the form of global
+functions that the dynamic linker may call.  @code{la_version} is
+required of all auditors, but every other callback is optional.  The
+auditor defines the callback if it wants those events.
+
+Each auditor may associate private data with each shared object in the
+system via a word of storage in ld.so (as a @code{uintptr_t}, so type
+casting is always needed when storing pointers).  There is one word of
+private data per shared object, per auditor.
+
+This word may be an index into an array, a bitmask, or a pointer, and
+the address of it is passed to most callbacks.  This word is
+initialized just before calling @code{la_objopen} (or, for the first
+object in a new namespace, @code{la_activity}), to be a pointer to the
+link map for the shared object.  The auditor may choose to initialize
+it to something else (typically in @code{la_objopen()}) in order to
+store more or different data per object.  There is no guaranteed way
+to free or clean up allocated data used for this purpose, but a
+reasonable option is to clean it up in @code{la_objclose()} @emph{and}
+set the word to zero at that time.  With that, all callbacks would
+need to check for a zero word and assume the related object has been
+or is being closed.
+
+@deftypefun {unsigned int} la_version (unsigned int @var{version})
+This mandatory callback is called when the auditor is loaded.  It is
+passed the API version the dynamic linker is using.  It should return
+the API version the module is using, or zero to silently unload the
+module.  If the module and the dynamic linker are using incompatible
+API versions, the auditor is unloaded and an error is printed.  The
+expectation is that the module will return the @code{LAV_CURRENT}
+value from @file{link.h}.
+
+Note that @code{la_version()} may return values other than
+@code{LAV_CURRENT} if it has knowledge of what the various versions
+provide and can adapt to the @var{version} given, but doing this is
+outside the scope of this document.  This may be complicated by
+@code{LAV_CURRENT} being different for different architectures.
+
+@end deftypefun
+
+@deftypefun void la_activity (uintptr_t *@var{privdata}, unsigned int @var{flag})
+This callback is used to signal activity in a namespace.
+@var{privdata} points to the private data for a shared object in that
+namespace.  The @var{flag} is one of the following:
+
+@table @code
+
+@item LA_ACT_ADD
+A shared object is being added to the namespace.  Further additions
+are not signalled until the namespace is marked consistent again.
+
+@item LA_ACT_DELETE
+A shared object is being removed from the namespace.  Further
+deletions will not be signalled until the namespace is marked
+consistent again.
+
+@item LA_ACT_CONSISTENT
+All adds or deletes are complete for this namespace.  After this
+callback, the namespace is considered consistent, and further
+additions or deletions will cause another activity callback.  Note
+that this callback will not happen if the namespace is empty.
+
+@end table
+
+@end deftypefun
+
+@deftypefun {char *} la_objsearch (const char *@var{name}, uintptr_t *@var{privdata}, unsigned int @var{flag})
+Called when the dynamic linker tries to locate a shared object to load
+it.  @var{name} is the name of the object to be loaded.  The callback
+must return @var{name} if it does not want to change the loader's
+behavior.  Otherwise, it may return a different string to change the
+object to be searched for.  For @code{LA_SER_ORIG}, @var{name} is the
+name as requested, such as a @code{DT_NEEDED} entry (like
+@file{libfoo.so.1}) or the string passed to @code{dlopen}.  If it
+contains a slash, no search is done and there are no further calls.
+For the other flags, it is the path of the file about to be tried
+(like @file{/usr/lib/libfoo.so.1}).
+
+If the auditor returns an alternate string for this callback, the
+string must remain valid for the duration of the application.  There
+is no mechanism for freeing any allocated memory.  The alternate
+string will be passed to the remaining auditors in the audit chain,
+unless an auditor returns @code{NULL}, which terminates the chain.
+A @code{NULL} returned for @code{LA_SER_ORIG} causes that object to
+not be loaded at all, while a @code{NULL} for other flags causes that
+path to be skipped.
+
+The @var{privdata} points to the private data for the object doing the
+search.  The @var{flag} is one of the following:
+
+@table @code
+
+@item LA_SER_ORIG
+The dynamic linker is starting a search for @var{name}, usually via a
+call to @code{dlopen()} or a @code{DT_NEEDED} entry.  A callback with
+this flag will happen before a callback with any of the other flags,
+which indicate progress through the search.
+
+@item LA_SER_LIBPATH
+The dynamic loader is searching for @var{name} in one of the paths
+specified by @code{LD_LIBRARY_PATH}.
+
+@item LA_SER_RUNPATH
+The dynamic loader is searching for @var{name} in one of the paths
+specified by @code{DT_RPATH} or @code{DT_RUNPATH}.
+
+@item LA_SER_CONFIG
+The dynamic loader is trying a candidate for @var{name} in the paths
+stored in @file{ld.so.cache}.
+
+@item LA_SER_DEFAULT
+The dynamic loader is searching for @var{name} in one of the
+default paths hardcoded in the dynamic linker itself.
+
+@item LA_SER_SECURE
+Unused.
+
+@end table
+
+@end deftypefun
+
+@deftypefun {unsigned int} la_objopen (struct link_map *@var{map}, Lmid_t @var{lmid}, uintptr_t *@var{privdata})
+Called when a shared object is loaded, including the main, ld.so, and
+vDSO objects.  Unlike @code{la_activity} this callback is called once
+for each object.  @var{map} is the link map for the object.  The
+@var{privdata} points to the private data for the object being loaded,
+is initialized to @var{map} before this callback@footnote{As if this
+callback did @code{*privdata = (uintptr_t) map}}, and may be
+initialized to point to auditor-specific data by this callback.
+@var{lmid} is the namespace the object was loaded into, either
+@code{LM_ID_BASE} for the base namespace, or some other value for
+namespaces created with @code{dlmopen()}.
+
+The value returned by this callback is a bitmask of zero or more of
+these flags:
+
+@table @code
+
+@item LA_FLG_BINDTO
+Audit symbols bound to this object.
+
+@item LA_FLG_BINDFROM
+Audit symbols bound from this object.
+
+@end table
+
+@end deftypefun
+
+@deftypefun {unsigned int} la_objclose (uintptr_t *@var{privdata})
+Called when a shared object is unloaded by @code{dlclose}, and at
+process exit, after its destructors have run, for every non-auditor
+object that is still loaded (except the vDSO).  This is called after
+@code{la_activity} signals its deletion.  The return value is ignored.
+
+@end deftypefun
+
+@deftypefun void la_preinit (uintptr_t *@var{privdata})
+This callback is called after ELF constructors, just before
+@code{main} is called.  The @var{privdata} always points to the
+private data for the main application.
+
+@end deftypefun
+
+@deftypefun uintptr_t la_symbind32 (Elf32_Sym *@var{sym}, unsigned int @var{ndx}, uintptr_t *@var{refdata}, uintptr_t *@var{defdata}, unsigned int *@var{flags}, const char *@var{symname})
+@deftypefunx uintptr_t la_symbind64 (Elf64_Sym *@var{sym}, unsigned int @var{ndx}, uintptr_t *@var{refdata}, uintptr_t *@var{defdata}, unsigned int *@var{flags}, const char *@var{symname})
+Called when a binding occurs between the reference to a symbol
+@var{symname} and its definition @var{sym}.  @var{refdata} points to
+the private data for the object referencing the symbol, and
+@var{defdata} points to the private data for the object providing the
+definition of the symbol.  @var{ndx} is the index of the symbol in the
+symbol table of the shared object in which it is defined.
+
+This callback will be called only for symbols in objects where
+@code{la_objopen} returned a nonzero value.  It will also only be
+called for symbols that represent a function call and use the PLT for
+that call, and for queries from @code{dlsym}/@code{dlvsym}.  For
+@code{dlsym}/@code{dlvsym}, either @code{LA_FLG_BINDFROM} must have
+been returned for the referencing object, or @code{LA_FLG_BINDTO} for
+the defining object.  For all other cases, both flags must be set.
+
+This callback is actually one of two callbacks, either
+@code{la_symbind32} or @code{la_symbind64}, with corresponding
+@code{Elf32_Sym} or @code{Elf64_Sym} parameters.  Both callbacks
+function the same other than the symbol size.  The auditor may define
+either or both, but if both, only one is ever called---the one that
+corresponds to the application's architecture.
+
+@var{flags} points to a bitmask which may include any of the following:
+
+@table @code
+@item LA_SYMB_NOPLTENTER
+@itemx LA_SYMB_NOPLTEXIT
+The auditor may add these flags to *@var{flags} to request skipping
+callbacks for the architecture-specific la_pltenter and/or la_pltexit
+events.  Note that to avoid the performance overhead associated with
+the PLT callback hooks, all auditors must have neither an
+@code{la_pltenter} nor an @code{la_pltexit} callback.
+
+@item LA_SYMB_STRUCTCALL
+Unused.
+
+@item LA_SYMB_DLSYM
+The symbol is being bound due to a @code{dlsym()} or @code{dlvsym()}
+call.
+
+@item LA_SYMB_ALTVALUE
+The symbol's value has been altered by an earlier auditor's
+@code{la_symbind} callback.
+
+@end table
+
+The value returned by @code{la_symbind()} is used as the address of
+the symbol.  The auditor should return @code{sym->st_value} if it does
+not wish to modify the application's behavior.
+
+@end deftypefun
+
+@deftypefun uintptr_t la_pltenter (@dots{})
+This ``callback'' represents one of many architecture-defined
+callbacks listed in @file{link.h}, refer to that for specifics.  The
+parameters are similar to @code{la_symbind}, with the addition of one
+or more parameters for passing register contents.  For example, the
+x86-64 prototype is:
+
+@example
+Elf64_Addr la_x86_64_gnu_pltenter (Elf64_Sym *sym,
+    unsigned int ndx, uintptr_t *refdata, uintptr_t *defdata,
+    La_x86_64_regs *regs, unsigned int *flags,
+    const char *symname, long int *framesizep);
+@end example
+
+Note that decoding the arguments is very dependent on the platform and
+compiler flags, and is outside the scope of this document.
+
+@c FIXME add architecture-specific prototypes and documentation
+
+The @code{la_pltenter} callback is called when a caller is about to
+call a function through a PLT entry which is lazily bound, if the
+caller and callee objects have been marked for auditing by
+@code{la_objopen()}.  The callback returns the address to actually
+call, or @code{sym->st_value} if it does not wish to modify the call.
+Note that the PLT remains lazily bound for the life of the program if
+this callback is defined.
+
+Calls are not traced if the PLT is bound at load time with
+@code{LD_BIND_NOW=1}, or if the code does not use the PLT at all (for
+example, when built with @code{-fno-plt}).  Linking with @code{-z now}
+does not prevent tracing, because the dynamic linker keeps lazy
+binding when an auditor defines @code{la_pltenter} or
+@code{la_pltexit}.
+
+*@var{framesizep} is initially -1, which means @code{la_pltexit} is
+not wanted.  To receive @code{la_pltexit}, set it to the number of
+bytes of the caller's stack (the arguments passed on the stack) that
+must be copied for the call.  The dynamic linker calls the function
+from its own frame, so that the function returns to the dynamic
+linker, and copies that many bytes into that frame.  If the value is
+too small, the function reads garbage for its stack arguments; 0 is
+fine for functions with no stack arguments.  If several auditors set
+it, the largest value is used.
+
+@end deftypefun
+
+@deftypefun {unsigned int} la_pltexit (@dots{})
+Architecture-specific function similar to @code{la_pltenter}.  This
+callback is called when a function, called through the PLT, returns to
+the caller.  It will only be called if @code{la_pltenter} specified a
+frame size for it.  The parameters are architecture-dependent, but all
+include an in-registers parameter, which contains the original
+registers at the time of @code{la_pltenter}, and an out-registers
+parameter, which contains the return value of the function, which the
+auditor may modify.  For example, the x86-64 function is:
+
+@example
+unsigned int la_x86_64_gnu_pltexit (Elf64_Sym *sym,
+    unsigned int ndx, uintptr_t *refdata, uintptr_t *defdata,
+    const La_x86_64_regs *inregs, La_x86_64_retval *outregs,
+    const char *symname);
+@end example
+
+@end deftypefun
 
 @node Indirect Functions
 @section Indirect Functions
