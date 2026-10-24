@@ -23,10 +23,14 @@ extern __typeof (REDIRECT_NAME) OPTIMIZE (erms) attribute_hidden;
 
 extern __typeof (REDIRECT_NAME) OPTIMIZE (avx512_unaligned)
   attribute_hidden;
-extern __typeof (REDIRECT_NAME) OPTIMIZE (avx512_unaligned_erms)
-  attribute_hidden;
-extern __typeof (REDIRECT_NAME) OPTIMIZE (avx512_no_vzeroupper)
-  attribute_hidden;
+extern __typeof (REDIRECT_NAME)
+    OPTIMIZE (avx512_unaligned_page_unrolled) attribute_hidden;
+extern __typeof (REDIRECT_NAME)
+    OPTIMIZE (avx512_unaligned_erms) attribute_hidden;
+extern __typeof (REDIRECT_NAME)
+    OPTIMIZE (avx512_unaligned_erms_page_unrolled) attribute_hidden;
+extern __typeof (REDIRECT_NAME)
+    OPTIMIZE (avx512_no_vzeroupper) attribute_hidden;
 
 extern __typeof (REDIRECT_NAME) OPTIMIZE (evex_unaligned) attribute_hidden;
 extern __typeof (REDIRECT_NAME)
@@ -54,8 +58,12 @@ extern __typeof (REDIRECT_NAME) OPTIMIZE (ssse3) attribute_hidden;
 
 extern __typeof (REDIRECT_NAME) OPTIMIZE (sse2_unaligned)
   attribute_hidden;
-extern __typeof (REDIRECT_NAME) OPTIMIZE (sse2_unaligned_erms)
-  attribute_hidden;
+extern __typeof (REDIRECT_NAME)
+    OPTIMIZE (sse2_unaligned_page_unrolled) attribute_hidden;
+extern __typeof (REDIRECT_NAME)
+    OPTIMIZE (sse2_unaligned_erms) attribute_hidden;
+extern __typeof (REDIRECT_NAME)
+    OPTIMIZE (sse2_unaligned_erms_page_unrolled) attribute_hidden;
 
 static inline void *
 IFUNC_SELECTOR (void)
@@ -72,8 +80,16 @@ IFUNC_SELECTOR (void)
       if (X86_ISA_CPU_FEATURE_USABLE_P (cpu_features, AVX512VL))
 	{
 	  if (CPU_FEATURE_USABLE_P (cpu_features, ERMS))
-	    return OPTIMIZE (avx512_unaligned_erms);
+	    {
+	      if (CPU_FEATURES_ARCH_P (cpu_features,
+				       Prefer_Page_Unrolled_Large_Copy))
+		return OPTIMIZE (avx512_unaligned_erms_page_unrolled);
+	      return OPTIMIZE (avx512_unaligned_erms);
+	    }
 
+	  if (CPU_FEATURES_ARCH_P (cpu_features,
+				   Prefer_Page_Unrolled_Large_Copy))
+	    return OPTIMIZE (avx512_unaligned_page_unrolled);
 	  return OPTIMIZE (avx512_unaligned);
 	}
 
@@ -140,7 +156,13 @@ IFUNC_SELECTOR (void)
     }
 
   if (CPU_FEATURE_USABLE_P (cpu_features, ERMS))
-    return OPTIMIZE (sse2_unaligned_erms);
+    {
+      if (CPU_FEATURES_ARCH_P (cpu_features, Prefer_Page_Unrolled_Large_Copy))
+	return OPTIMIZE (sse2_unaligned_erms_page_unrolled);
+      return OPTIMIZE (sse2_unaligned_erms);
+    }
 
+  if (CPU_FEATURES_ARCH_P (cpu_features, Prefer_Page_Unrolled_Large_Copy))
+    return OPTIMIZE (sse2_unaligned_page_unrolled);
   return OPTIMIZE (sse2_unaligned);
 }

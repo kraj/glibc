@@ -787,6 +787,20 @@ init_cpu_features (struct cpu_features *cpu_features)
       cpu_features->preferred[index_arch_Avoid_Non_Temporal_Memset]
 	  &= ~bit_arch_Avoid_Non_Temporal_Memset;
 
+      /* Enable page unrolled large implementation to remain consistent
+	 with glibc 2.34 and earlier. Thus far all benchmarks on Intel Bigcore
+	 hardware suggest the large implementation is equal to or more
+	 performant than the standard large memmove implementation.
+	 However, since the page-unrolled implementation is less
+	 standard/obvious, it may not receive as much optimization
+	 attention from hardware implementors, so we should continue to
+	 benchmark new hardware to ensure this is the right decision.
+	 Note: As of writing this, there have been no benchmarks indicating the
+	 page-unrolled implementation is prefered on Atom processors. We keep
+	 enabled in the interest of remaining consistent with glibc 2.34.  */
+      cpu_features->preferred[index_arch_Prefer_Page_Unrolled_Large_Copy]
+	  |= bit_arch_Prefer_Page_Unrolled_Large_Copy;
+
       enum intel_microarch microarch = INTEL_UNKNOWN;
       if (family == 0x06)
 	{

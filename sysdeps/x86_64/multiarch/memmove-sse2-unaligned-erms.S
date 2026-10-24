@@ -32,7 +32,7 @@
 
 # include "multiarch/memmove-vec-unaligned-erms.S"
 
-# if MINIMUM_X86_ISA_LEVEL <= 2
+# if MINIMUM_X86_ISA_LEVEL <= 2 && !(defined PAGE_UNROLLED)
 #  include "memmove-shlib-compat.h"
 # endif
 #endif

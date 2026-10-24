@@ -129,7 +129,13 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 				     __memmove_chk_avx512_unaligned)
 	      X86_IFUNC_IMPL_ADD_V4 (array, i, __memmove_chk,
 				     CPU_FEATURE_USABLE (AVX512VL),
+				     __memmove_chk_avx512_unaligned_page_unrolled)
+	      X86_IFUNC_IMPL_ADD_V4 (array, i, __memmove_chk,
+				     CPU_FEATURE_USABLE (AVX512VL),
 				     __memmove_chk_avx512_unaligned_erms)
+	      X86_IFUNC_IMPL_ADD_V4 (array, i, __memmove_chk,
+				     CPU_FEATURE_USABLE (AVX512VL),
+				     __memmove_chk_avx512_unaligned_erms_page_unrolled)
 	      X86_IFUNC_IMPL_ADD_V4 (array, i, __memmove_chk,
 				     CPU_FEATURE_USABLE (AVX512VL),
 				     __memmove_chk_evex_unaligned)
@@ -181,7 +187,11 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 	      X86_IFUNC_IMPL_ADD_V2 (array, i, __memmove_chk, 1,
 				     __memmove_chk_sse2_unaligned)
 	      X86_IFUNC_IMPL_ADD_V2 (array, i, __memmove_chk, 1,
-				     __memmove_chk_sse2_unaligned_erms))
+				     __memmove_chk_sse2_unaligned_page_unrolled)
+	      X86_IFUNC_IMPL_ADD_V2 (array, i, __memmove_chk, 1,
+				     __memmove_chk_sse2_unaligned_erms)
+	      X86_IFUNC_IMPL_ADD_V2 (array, i, __memmove_chk, 1,
+				     __memmove_chk_sse2_unaligned_erms_page_unrolled))
 #endif
 
   /* Support sysdeps/x86_64/multiarch/memmove.c.  */
@@ -196,7 +206,13 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 				     __memmove_avx512_unaligned)
 	      X86_IFUNC_IMPL_ADD_V4 (array, i, memmove,
 				     CPU_FEATURE_USABLE (AVX512VL),
+				     __memmove_avx512_unaligned_page_unrolled)
+	      X86_IFUNC_IMPL_ADD_V4 (array, i, memmove,
+				     CPU_FEATURE_USABLE (AVX512VL),
 				     __memmove_avx512_unaligned_erms)
+	      X86_IFUNC_IMPL_ADD_V4 (array, i, memmove,
+				     CPU_FEATURE_USABLE (AVX512VL),
+				     __memmove_avx512_unaligned_erms_page_unrolled)
 	      X86_IFUNC_IMPL_ADD_V4 (array, i, memmove,
 				     CPU_FEATURE_USABLE (AVX512VL),
 				     __memmove_evex_unaligned)
@@ -248,7 +264,11 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 	      X86_IFUNC_IMPL_ADD_V2 (array, i, memmove, 1,
 				     __memmove_sse2_unaligned)
 	      X86_IFUNC_IMPL_ADD_V2 (array, i, memmove, 1,
-				     __memmove_sse2_unaligned_erms))
+				     __memmove_sse2_unaligned_page_unrolled)
+	      X86_IFUNC_IMPL_ADD_V2 (array, i, memmove, 1,
+				     __memmove_sse2_unaligned_erms)
+	      X86_IFUNC_IMPL_ADD_V2 (array, i, memmove, 1,
+				     __memmove_sse2_unaligned_erms_page_unrolled))
 
   /* Support sysdeps/x86_64/multiarch/memrchr.c.  */
   IFUNC_IMPL (i, name, memrchr,
@@ -1176,7 +1196,13 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 				     __memcpy_chk_avx512_unaligned)
 	      X86_IFUNC_IMPL_ADD_V4 (array, i, __memcpy_chk,
 				     CPU_FEATURE_USABLE (AVX512VL),
+				     __memcpy_chk_avx512_unaligned_page_unrolled)
+	      X86_IFUNC_IMPL_ADD_V4 (array, i, __memcpy_chk,
+				     CPU_FEATURE_USABLE (AVX512VL),
 				     __memcpy_chk_avx512_unaligned_erms)
+	      X86_IFUNC_IMPL_ADD_V4 (array, i, __memcpy_chk,
+				     CPU_FEATURE_USABLE (AVX512VL),
+				     __memcpy_chk_avx512_unaligned_erms_page_unrolled)
 	      X86_IFUNC_IMPL_ADD_V4 (array, i, __memcpy_chk,
 				     CPU_FEATURE_USABLE (AVX512VL),
 				     __memcpy_chk_evex_unaligned)
@@ -1228,7 +1254,11 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 	      X86_IFUNC_IMPL_ADD_V2 (array, i, __memcpy_chk, 1,
 				     __memcpy_chk_sse2_unaligned)
 	      X86_IFUNC_IMPL_ADD_V2 (array, i, __memcpy_chk, 1,
-				     __memcpy_chk_sse2_unaligned_erms))
+				     __memcpy_chk_sse2_unaligned_page_unrolled)
+	      X86_IFUNC_IMPL_ADD_V2 (array, i, __memcpy_chk, 1,
+				     __memcpy_chk_sse2_unaligned_erms)
+	      X86_IFUNC_IMPL_ADD_V2 (array, i, __memcpy_chk, 1,
+				     __memcpy_chk_sse2_unaligned_erms_page_unrolled))
 #endif
 
   /* Support sysdeps/x86_64/multiarch/memcpy.c.  */
@@ -1243,7 +1273,13 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 				     __memcpy_avx512_unaligned)
 	      X86_IFUNC_IMPL_ADD_V4 (array, i, memcpy,
 				     CPU_FEATURE_USABLE (AVX512VL),
+				     __memcpy_avx512_unaligned_page_unrolled)
+	      X86_IFUNC_IMPL_ADD_V4 (array, i, memcpy,
+				     CPU_FEATURE_USABLE (AVX512VL),
 				     __memcpy_avx512_unaligned_erms)
+	      X86_IFUNC_IMPL_ADD_V4 (array, i, memcpy,
+				     CPU_FEATURE_USABLE (AVX512VL),
+				     __memcpy_avx512_unaligned_erms_page_unrolled)
 	      X86_IFUNC_IMPL_ADD_V4 (array, i, memcpy,
 				     CPU_FEATURE_USABLE (AVX512VL),
 				     __memcpy_evex_unaligned)
@@ -1295,7 +1331,11 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 	      X86_IFUNC_IMPL_ADD_V2 (array, i, memcpy, 1,
 				     __memcpy_sse2_unaligned)
 	      X86_IFUNC_IMPL_ADD_V2 (array, i, memcpy, 1,
-				     __memcpy_sse2_unaligned_erms))
+				     __memcpy_sse2_unaligned_page_unrolled)
+	      X86_IFUNC_IMPL_ADD_V2 (array, i, memcpy, 1,
+				     __memcpy_sse2_unaligned_erms)
+	      X86_IFUNC_IMPL_ADD_V2 (array, i, memcpy, 1,
+				     __memcpy_sse2_unaligned_erms_page_unrolled))
 
 #ifdef SHARED
   /* Support sysdeps/x86_64/multiarch/mempcpy_chk.c.  */
@@ -1310,7 +1350,13 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 				     __mempcpy_chk_avx512_unaligned)
 	      X86_IFUNC_IMPL_ADD_V4 (array, i, __mempcpy_chk,
 				     CPU_FEATURE_USABLE (AVX512VL),
+				     __mempcpy_chk_avx512_unaligned_page_unrolled)
+	      X86_IFUNC_IMPL_ADD_V4 (array, i, __mempcpy_chk,
+				     CPU_FEATURE_USABLE (AVX512VL),
 				     __mempcpy_chk_avx512_unaligned_erms)
+	      X86_IFUNC_IMPL_ADD_V4 (array, i, __mempcpy_chk,
+				     CPU_FEATURE_USABLE (AVX512VL),
+				     __mempcpy_chk_avx512_unaligned_erms_page_unrolled)
 	      X86_IFUNC_IMPL_ADD_V4 (array, i, __mempcpy_chk,
 				     CPU_FEATURE_USABLE (AVX512VL),
 				     __mempcpy_chk_evex_unaligned)
@@ -1362,7 +1408,11 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 	      X86_IFUNC_IMPL_ADD_V2 (array, i, __mempcpy_chk, 1,
 				     __mempcpy_chk_sse2_unaligned)
 	      X86_IFUNC_IMPL_ADD_V2 (array, i, __mempcpy_chk, 1,
-				     __mempcpy_chk_sse2_unaligned_erms))
+				     __mempcpy_chk_sse2_unaligned_page_unrolled)
+	      X86_IFUNC_IMPL_ADD_V2 (array, i, __mempcpy_chk, 1,
+				     __mempcpy_chk_sse2_unaligned_erms)
+	      X86_IFUNC_IMPL_ADD_V2 (array, i, __mempcpy_chk, 1,
+				     __mempcpy_chk_sse2_unaligned_erms_page_unrolled))
 #endif
 
   /* Support sysdeps/x86_64/multiarch/mempcpy.c.  */
@@ -1377,7 +1427,13 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 				     __mempcpy_avx512_unaligned)
 	      X86_IFUNC_IMPL_ADD_V4 (array, i, mempcpy,
 				     CPU_FEATURE_USABLE (AVX512VL),
+				     __mempcpy_avx512_unaligned_page_unrolled)
+	      X86_IFUNC_IMPL_ADD_V4 (array, i, mempcpy,
+				     CPU_FEATURE_USABLE (AVX512VL),
 				     __mempcpy_avx512_unaligned_erms)
+	      X86_IFUNC_IMPL_ADD_V4 (array, i, mempcpy,
+				     CPU_FEATURE_USABLE (AVX512VL),
+				     __mempcpy_avx512_unaligned_erms_page_unrolled)
 	      X86_IFUNC_IMPL_ADD_V4 (array, i, mempcpy,
 				     CPU_FEATURE_USABLE (AVX512VL),
 				     __mempcpy_evex_unaligned)
@@ -1429,7 +1485,11 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 	      X86_IFUNC_IMPL_ADD_V2 (array, i, mempcpy, 1,
 				     __mempcpy_sse2_unaligned)
 	      X86_IFUNC_IMPL_ADD_V2 (array, i, mempcpy, 1,
-				     __mempcpy_sse2_unaligned_erms))
+				     __mempcpy_sse2_unaligned_page_unrolled)
+	      X86_IFUNC_IMPL_ADD_V2 (array, i, mempcpy, 1,
+				     __mempcpy_sse2_unaligned_erms)
+	      X86_IFUNC_IMPL_ADD_V2 (array, i, mempcpy, 1,
+				     __mempcpy_sse2_unaligned_erms_page_unrolled))
 
   /* Support sysdeps/x86_64/multiarch/strncmp.c.  */
   IFUNC_IMPL (i, name, strncmp,
