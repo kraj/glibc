@@ -39,6 +39,8 @@ __pthread_timedblock (struct __pthread *thread,
   mach_msg_header_t msg;
   mach_msg_timeout_t timeout;
   struct timespec now;
+  time_t sec_diff;
+  mach_msg_timeout_t sec_diff_timeout, nsec_diff_timeout;
 
 retry:
   /* We have an absolute time and now we have to convert it to a
@@ -51,13 +53,23 @@ retry:
       || (now.tv_sec == abstime->tv_sec && now.tv_nsec > abstime->tv_nsec))
     return ETIMEDOUT;
 
-  timeout = (abstime->tv_sec - now.tv_sec) * 1000;
+  sec_diff = abstime->tv_sec - now.tv_sec;
 
   if (abstime->tv_nsec >= now.tv_nsec)
-    timeout += (abstime->tv_nsec - now.tv_nsec + 999999) / 1000000;
+    nsec_diff_timeout = (abstime->tv_nsec - now.tv_nsec + 999999) / 1000000;
   else
-    /* Need to do a carry.  */
-    timeout -= (now.tv_nsec - abstime->tv_nsec + 999999) / 1000000;
+    {
+      /* Need to do a carry.  */
+      sec_diff--;
+      nsec_diff_timeout = (abstime->tv_nsec + 1000000000 - now.tv_nsec + 999999) / 1000000;
+    }
+
+  sec_diff_timeout = sec_diff;
+  if (sec_diff_timeout != sec_diff
+      || __builtin_mul_overflow (sec_diff_timeout, 1000u, &timeout)
+      || __builtin_add_overflow (timeout, nsec_diff_timeout, &timeout))
+    /* Overflow, use maximum expressable value.  */
+    timeout = (mach_msg_timeout_t) -1;
 
   err = __mach_msg (&msg, MACH_RCV_MSG | MACH_RCV_TIMEOUT | MSG_OPTIONS | MACH_RCV_INTERRUPT, 0,
 		    sizeof msg, thread->wakeupmsg.msgh_remote_port,
