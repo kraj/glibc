@@ -127,7 +127,7 @@
 #endif
 
 #ifndef MEMMOVE_VEC_LARGE_IMPL
-# define MEMMOVE_VEC_LARGE_IMPL	"memmove-vec-large-page-unrolled.S"
+# define MEMMOVE_VEC_LARGE_IMPL	"memmove-vec-large.S"
 #endif
 
 #ifndef SECTION
