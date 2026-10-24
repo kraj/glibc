@@ -135,13 +135,25 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 				     __memmove_chk_evex_unaligned)
 	      X86_IFUNC_IMPL_ADD_V4 (array, i, __memmove_chk,
 				     CPU_FEATURE_USABLE (AVX512VL),
+				     __memmove_chk_evex_unaligned_page_unrolled)
+	      X86_IFUNC_IMPL_ADD_V4 (array, i, __memmove_chk,
+				     CPU_FEATURE_USABLE (AVX512VL),
 				     __memmove_chk_evex_unaligned_erms)
+	      X86_IFUNC_IMPL_ADD_V4 (array, i, __memmove_chk,
+				     CPU_FEATURE_USABLE (AVX512VL),
+				     __memmove_chk_evex_unaligned_erms_page_unrolled)
 	      X86_IFUNC_IMPL_ADD_V3 (array, i, __memmove_chk,
 				     CPU_FEATURE_USABLE (AVX),
 				     __memmove_chk_avx_unaligned)
 	      X86_IFUNC_IMPL_ADD_V3 (array, i, __memmove_chk,
 				     CPU_FEATURE_USABLE (AVX),
+				     __memmove_chk_avx_unaligned_page_unrolled)
+	      X86_IFUNC_IMPL_ADD_V3 (array, i, __memmove_chk,
+				     CPU_FEATURE_USABLE (AVX),
 				     __memmove_chk_avx_unaligned_erms)
+	      X86_IFUNC_IMPL_ADD_V3 (array, i, __memmove_chk,
+				     CPU_FEATURE_USABLE (AVX),
+				     __memmove_chk_avx_unaligned_erms_page_unrolled)
 	      X86_IFUNC_IMPL_ADD_V3 (array, i, __memmove_chk,
 				     (CPU_FEATURE_USABLE (AVX)
 				      && CPU_FEATURE_USABLE (RTM)),
@@ -149,7 +161,15 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 	      X86_IFUNC_IMPL_ADD_V3 (array, i, __memmove_chk,
 				     (CPU_FEATURE_USABLE (AVX)
 				      && CPU_FEATURE_USABLE (RTM)),
+				     __memmove_chk_avx_unaligned_page_unrolled_rtm)
+	      X86_IFUNC_IMPL_ADD_V3 (array, i, __memmove_chk,
+				     (CPU_FEATURE_USABLE (AVX)
+				      && CPU_FEATURE_USABLE (RTM)),
 				     __memmove_chk_avx_unaligned_erms_rtm)
+	      X86_IFUNC_IMPL_ADD_V3 (array, i, __memmove_chk,
+				     (CPU_FEATURE_USABLE (AVX)
+				      && CPU_FEATURE_USABLE (RTM)),
+				     __memmove_chk_avx_unaligned_erms_page_unrolled_rtm)
 	      /* By V3 we assume fast aligned copy.  */
 	      X86_IFUNC_IMPL_ADD_V2 (array, i, __memmove_chk,
 				     CPU_FEATURE_USABLE (SSSE3),
@@ -182,13 +202,25 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 				     __memmove_evex_unaligned)
 	      X86_IFUNC_IMPL_ADD_V4 (array, i, memmove,
 				     CPU_FEATURE_USABLE (AVX512VL),
+				     __memmove_evex_unaligned_page_unrolled)
+	      X86_IFUNC_IMPL_ADD_V4 (array, i, memmove,
+				     CPU_FEATURE_USABLE (AVX512VL),
 				     __memmove_evex_unaligned_erms)
+	      X86_IFUNC_IMPL_ADD_V4 (array, i, memmove,
+				     CPU_FEATURE_USABLE (AVX512VL),
+				     __memmove_evex_unaligned_erms_page_unrolled)
 	      X86_IFUNC_IMPL_ADD_V3 (array, i, memmove,
 				     CPU_FEATURE_USABLE (AVX),
 				     __memmove_avx_unaligned)
 	      X86_IFUNC_IMPL_ADD_V3 (array, i, memmove,
 				     CPU_FEATURE_USABLE (AVX),
+				     __memmove_avx_unaligned_page_unrolled)
+	      X86_IFUNC_IMPL_ADD_V3 (array, i, memmove,
+				     CPU_FEATURE_USABLE (AVX),
 				     __memmove_avx_unaligned_erms)
+	      X86_IFUNC_IMPL_ADD_V3 (array, i, memmove,
+				     CPU_FEATURE_USABLE (AVX),
+				     __memmove_avx_unaligned_erms_page_unrolled)
 	      X86_IFUNC_IMPL_ADD_V3 (array, i, memmove,
 				     (CPU_FEATURE_USABLE (AVX)
 				      && CPU_FEATURE_USABLE (RTM)),
@@ -196,7 +228,15 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 	      X86_IFUNC_IMPL_ADD_V3 (array, i, memmove,
 				     (CPU_FEATURE_USABLE (AVX)
 				      && CPU_FEATURE_USABLE (RTM)),
+				     __memmove_avx_unaligned_page_unrolled_rtm)
+	      X86_IFUNC_IMPL_ADD_V3 (array, i, memmove,
+				     (CPU_FEATURE_USABLE (AVX)
+				      && CPU_FEATURE_USABLE (RTM)),
 				     __memmove_avx_unaligned_erms_rtm)
+	      X86_IFUNC_IMPL_ADD_V3 (array, i, memmove,
+				     (CPU_FEATURE_USABLE (AVX)
+				      && CPU_FEATURE_USABLE (RTM)),
+				     __memmove_avx_unaligned_erms_page_unrolled_rtm)
 	      /* By V3 we assume fast aligned copy.  */
 	      X86_IFUNC_IMPL_ADD_V2 (array, i, memmove,
 				     CPU_FEATURE_USABLE (SSSE3),
@@ -1142,13 +1182,25 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 				     __memcpy_chk_evex_unaligned)
 	      X86_IFUNC_IMPL_ADD_V4 (array, i, __memcpy_chk,
 				     CPU_FEATURE_USABLE (AVX512VL),
+				     __memcpy_chk_evex_unaligned_page_unrolled)
+	      X86_IFUNC_IMPL_ADD_V4 (array, i, __memcpy_chk,
+				     CPU_FEATURE_USABLE (AVX512VL),
 				     __memcpy_chk_evex_unaligned_erms)
+	      X86_IFUNC_IMPL_ADD_V4 (array, i, __memcpy_chk,
+				     CPU_FEATURE_USABLE (AVX512VL),
+				     __memcpy_chk_evex_unaligned_erms_page_unrolled)
 	      X86_IFUNC_IMPL_ADD_V3 (array, i, __memcpy_chk,
 				     CPU_FEATURE_USABLE (AVX),
 				     __memcpy_chk_avx_unaligned)
 	      X86_IFUNC_IMPL_ADD_V3 (array, i, __memcpy_chk,
 				     CPU_FEATURE_USABLE (AVX),
+				     __memcpy_chk_avx_unaligned_page_unrolled)
+	      X86_IFUNC_IMPL_ADD_V3 (array, i, __memcpy_chk,
+				     CPU_FEATURE_USABLE (AVX),
 				     __memcpy_chk_avx_unaligned_erms)
+	      X86_IFUNC_IMPL_ADD_V3 (array, i, __memcpy_chk,
+				     CPU_FEATURE_USABLE (AVX),
+				     __memcpy_chk_avx_unaligned_erms_page_unrolled)
 	      X86_IFUNC_IMPL_ADD_V3 (array, i, __memcpy_chk,
 				     (CPU_FEATURE_USABLE (AVX)
 				      && CPU_FEATURE_USABLE (RTM)),
@@ -1156,7 +1208,15 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 	      X86_IFUNC_IMPL_ADD_V3 (array, i, __memcpy_chk,
 				     (CPU_FEATURE_USABLE (AVX)
 				      && CPU_FEATURE_USABLE (RTM)),
+				     __memcpy_chk_avx_unaligned_page_unrolled_rtm)
+	      X86_IFUNC_IMPL_ADD_V3 (array, i, __memcpy_chk,
+				     (CPU_FEATURE_USABLE (AVX)
+				      && CPU_FEATURE_USABLE (RTM)),
 				     __memcpy_chk_avx_unaligned_erms_rtm)
+	      X86_IFUNC_IMPL_ADD_V3 (array, i, __memcpy_chk,
+				     (CPU_FEATURE_USABLE (AVX)
+				      && CPU_FEATURE_USABLE (RTM)),
+				     __memcpy_chk_avx_unaligned_erms_page_unrolled_rtm)
 	      /* By V3 we assume fast aligned copy.  */
 	      X86_IFUNC_IMPL_ADD_V2 (array, i, __memcpy_chk,
 				     CPU_FEATURE_USABLE (SSSE3),
@@ -1189,13 +1249,25 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 				     __memcpy_evex_unaligned)
 	      X86_IFUNC_IMPL_ADD_V4 (array, i, memcpy,
 				     CPU_FEATURE_USABLE (AVX512VL),
+				     __memcpy_evex_unaligned_page_unrolled)
+	      X86_IFUNC_IMPL_ADD_V4 (array, i, memcpy,
+				     CPU_FEATURE_USABLE (AVX512VL),
 				     __memcpy_evex_unaligned_erms)
+	      X86_IFUNC_IMPL_ADD_V4 (array, i, memcpy,
+				     CPU_FEATURE_USABLE (AVX512VL),
+				     __memcpy_evex_unaligned_erms_page_unrolled)
 	      X86_IFUNC_IMPL_ADD_V3 (array, i, memcpy,
 				     CPU_FEATURE_USABLE (AVX),
 				     __memcpy_avx_unaligned)
 	      X86_IFUNC_IMPL_ADD_V3 (array, i, memcpy,
 				     CPU_FEATURE_USABLE (AVX),
+				     __memcpy_avx_unaligned_page_unrolled)
+	      X86_IFUNC_IMPL_ADD_V3 (array, i, memcpy,
+				     CPU_FEATURE_USABLE (AVX),
 				     __memcpy_avx_unaligned_erms)
+	      X86_IFUNC_IMPL_ADD_V3 (array, i, memcpy,
+				     CPU_FEATURE_USABLE (AVX),
+				     __memcpy_avx_unaligned_erms_page_unrolled)
 	      X86_IFUNC_IMPL_ADD_V3 (array, i, memcpy,
 				     (CPU_FEATURE_USABLE (AVX)
 				      && CPU_FEATURE_USABLE (RTM)),
@@ -1203,7 +1275,15 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 	      X86_IFUNC_IMPL_ADD_V3 (array, i, memcpy,
 				     (CPU_FEATURE_USABLE (AVX)
 				      && CPU_FEATURE_USABLE (RTM)),
+				     __memcpy_avx_unaligned_page_unrolled_rtm)
+	      X86_IFUNC_IMPL_ADD_V3 (array, i, memcpy,
+				     (CPU_FEATURE_USABLE (AVX)
+				      && CPU_FEATURE_USABLE (RTM)),
 				     __memcpy_avx_unaligned_erms_rtm)
+	      X86_IFUNC_IMPL_ADD_V3 (array, i, memcpy,
+				     (CPU_FEATURE_USABLE (AVX)
+				      && CPU_FEATURE_USABLE (RTM)),
+				     __memcpy_avx_unaligned_erms_page_unrolled_rtm)
 	      /* By V3 we assume fast aligned copy.  */
 	      X86_IFUNC_IMPL_ADD_V2 (array, i, memcpy,
 				     CPU_FEATURE_USABLE (SSSE3),
@@ -1236,13 +1316,25 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 				     __mempcpy_chk_evex_unaligned)
 	      X86_IFUNC_IMPL_ADD_V4 (array, i, __mempcpy_chk,
 				     CPU_FEATURE_USABLE (AVX512VL),
+				     __mempcpy_chk_evex_unaligned_page_unrolled)
+	      X86_IFUNC_IMPL_ADD_V4 (array, i, __mempcpy_chk,
+				     CPU_FEATURE_USABLE (AVX512VL),
 				     __mempcpy_chk_evex_unaligned_erms)
+	      X86_IFUNC_IMPL_ADD_V4 (array, i, __mempcpy_chk,
+				     CPU_FEATURE_USABLE (AVX512VL),
+				     __mempcpy_chk_evex_unaligned_erms_page_unrolled)
 	      X86_IFUNC_IMPL_ADD_V3 (array, i, __mempcpy_chk,
 				     CPU_FEATURE_USABLE (AVX),
 				     __mempcpy_chk_avx_unaligned)
 	      X86_IFUNC_IMPL_ADD_V3 (array, i, __mempcpy_chk,
 				     CPU_FEATURE_USABLE (AVX),
+				     __mempcpy_chk_avx_unaligned_page_unrolled)
+	      X86_IFUNC_IMPL_ADD_V3 (array, i, __mempcpy_chk,
+				     CPU_FEATURE_USABLE (AVX),
 				     __mempcpy_chk_avx_unaligned_erms)
+	      X86_IFUNC_IMPL_ADD_V3 (array, i, __mempcpy_chk,
+				     CPU_FEATURE_USABLE (AVX),
+				     __mempcpy_chk_avx_unaligned_erms_page_unrolled)
 	      X86_IFUNC_IMPL_ADD_V3 (array, i, __mempcpy_chk,
 				     (CPU_FEATURE_USABLE (AVX)
 				      && CPU_FEATURE_USABLE (RTM)),
@@ -1250,7 +1342,15 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 	      X86_IFUNC_IMPL_ADD_V3 (array, i, __mempcpy_chk,
 				     (CPU_FEATURE_USABLE (AVX)
 				      && CPU_FEATURE_USABLE (RTM)),
+				     __mempcpy_chk_avx_unaligned_page_unrolled_rtm)
+	      X86_IFUNC_IMPL_ADD_V3 (array, i, __mempcpy_chk,
+				     (CPU_FEATURE_USABLE (AVX)
+				      && CPU_FEATURE_USABLE (RTM)),
 				     __mempcpy_chk_avx_unaligned_erms_rtm)
+	      X86_IFUNC_IMPL_ADD_V3 (array, i, __mempcpy_chk,
+				     (CPU_FEATURE_USABLE (AVX)
+				      && CPU_FEATURE_USABLE (RTM)),
+				     __mempcpy_chk_avx_unaligned_erms_page_unrolled_rtm)
 	      /* By V3 we assume fast aligned copy.  */
 	      X86_IFUNC_IMPL_ADD_V2 (array, i, __mempcpy_chk,
 				     CPU_FEATURE_USABLE (SSSE3),
@@ -1283,13 +1383,25 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 				     __mempcpy_evex_unaligned)
 	      X86_IFUNC_IMPL_ADD_V4 (array, i, mempcpy,
 				     CPU_FEATURE_USABLE (AVX512VL),
+				     __mempcpy_evex_unaligned_page_unrolled)
+	      X86_IFUNC_IMPL_ADD_V4 (array, i, mempcpy,
+				     CPU_FEATURE_USABLE (AVX512VL),
 				     __mempcpy_evex_unaligned_erms)
+	      X86_IFUNC_IMPL_ADD_V4 (array, i, mempcpy,
+				     CPU_FEATURE_USABLE (AVX512VL),
+				     __mempcpy_evex_unaligned_erms_page_unrolled)
 	      X86_IFUNC_IMPL_ADD_V3 (array, i, mempcpy,
 				     CPU_FEATURE_USABLE (AVX),
 				     __mempcpy_avx_unaligned)
 	      X86_IFUNC_IMPL_ADD_V3 (array, i, mempcpy,
 				     CPU_FEATURE_USABLE (AVX),
+				     __mempcpy_avx_unaligned_page_unrolled)
+	      X86_IFUNC_IMPL_ADD_V3 (array, i, mempcpy,
+				     CPU_FEATURE_USABLE (AVX),
 				     __mempcpy_avx_unaligned_erms)
+	      X86_IFUNC_IMPL_ADD_V3 (array, i, mempcpy,
+				     CPU_FEATURE_USABLE (AVX),
+				     __mempcpy_avx_unaligned_erms_page_unrolled)
 	      X86_IFUNC_IMPL_ADD_V3 (array, i, mempcpy,
 				     (CPU_FEATURE_USABLE (AVX)
 				      && CPU_FEATURE_USABLE (RTM)),
@@ -1297,7 +1409,15 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 	      X86_IFUNC_IMPL_ADD_V3 (array, i, mempcpy,
 				     (CPU_FEATURE_USABLE (AVX)
 				      && CPU_FEATURE_USABLE (RTM)),
+				     __mempcpy_avx_unaligned_page_unrolled_rtm)
+	      X86_IFUNC_IMPL_ADD_V3 (array, i, mempcpy,
+				     (CPU_FEATURE_USABLE (AVX)
+				      && CPU_FEATURE_USABLE (RTM)),
 				     __mempcpy_avx_unaligned_erms_rtm)
+	      X86_IFUNC_IMPL_ADD_V3 (array, i, mempcpy,
+				     (CPU_FEATURE_USABLE (AVX)
+				      && CPU_FEATURE_USABLE (RTM)),
+				     __mempcpy_avx_unaligned_erms_page_unrolled_rtm)
 	      /* By V3 we assume fast aligned copy.  */
 	      X86_IFUNC_IMPL_ADD_V2 (array, i, mempcpy,
 				     CPU_FEATURE_USABLE (SSSE3),

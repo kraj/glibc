@@ -942,6 +942,11 @@ disable_tsx:
 	case INTEL_BIGCORE_HASWELL:
 	case INTEL_BIGCORE_BROADWELL:
 	  cpu_features->cachesize_non_temporal_divisor = 8;
+	  /* Benchmarks indicate page unrolled large implementation
+	 performs better than standard copy loop on HSW (and
+	 presumably SnB).  */
+	  cpu_features->preferred[index_arch_Prefer_Page_Unrolled_Large_Copy]
+	      |= bit_arch_Prefer_Page_Unrolled_Large_Copy;
 	  goto default_tuning;
 
 	  /* Newer Bigcore microarch (larger non-temporal store
@@ -962,6 +967,11 @@ disable_tsx:
 	case INTEL_BIGCORE_ICELAKE:
 	case INTEL_BIGCORE_TIGERLAKE:
 	case INTEL_BIGCORE_ROCKETLAKE:
+	  /* Benchmarks indicate page unrolled large implementation
+	 performs better than standard copy loop on Skylake/SKX/ICX.  */
+	  cpu_features->preferred[index_arch_Prefer_Page_Unrolled_Large_Copy]
+	      |= bit_arch_Prefer_Page_Unrolled_Large_Copy;
+	  [[fallthrough]];
 	case INTEL_BIGCORE_RAPTORLAKE:
 	case INTEL_BIGCORE_METEORLAKE:
 	case INTEL_BIGCORE_LUNARLAKE:

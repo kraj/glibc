@@ -265,6 +265,12 @@ TUNABLE_CALLBACK (set_hwcaps) (tunable_val_t *valp)
 		(n, cpu_features, Prefer_PMINUB_for_stringop, SSE2, 26);
 	    }
 	  break;
+	case 31:
+	  {
+	    CHECK_GLIBC_IFUNC_PREFERRED_BOTH (
+		n, cpu_features, Prefer_Page_Unrolled_Large_Copy, 31);
+	  }
+	  break;
 	}
     }
 }

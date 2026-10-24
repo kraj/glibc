@@ -16,11 +16,14 @@ sysdep_routines += \
   memcmpeq-evex \
   memcmpeq-sse2 \
   memmove-avx-unaligned-erms \
+  memmove-avx-unaligned-erms-page-unrolled \
+  memmove-avx-unaligned-erms-page-unrolled-rtm \
   memmove-avx-unaligned-erms-rtm \
   memmove-avx512-no-vzeroupper \
   memmove-avx512-unaligned-erms \
   memmove-erms \
   memmove-evex-unaligned-erms \
+  memmove-evex-unaligned-erms-page-unrolled \
   memmove-sse2-unaligned-erms \
   memmove-ssse3 \
   memrchr-avx2 \

@@ -28,18 +28,27 @@ extern __typeof (REDIRECT_NAME) OPTIMIZE (avx512_unaligned_erms)
 extern __typeof (REDIRECT_NAME) OPTIMIZE (avx512_no_vzeroupper)
   attribute_hidden;
 
-extern __typeof (REDIRECT_NAME) OPTIMIZE (evex_unaligned)
-  attribute_hidden;
-extern __typeof (REDIRECT_NAME) OPTIMIZE (evex_unaligned_erms)
-  attribute_hidden;
+extern __typeof (REDIRECT_NAME) OPTIMIZE (evex_unaligned) attribute_hidden;
+extern __typeof (REDIRECT_NAME)
+    OPTIMIZE (evex_unaligned_page_unrolled) attribute_hidden;
+extern __typeof (REDIRECT_NAME)
+    OPTIMIZE (evex_unaligned_erms) attribute_hidden;
+extern __typeof (REDIRECT_NAME)
+    OPTIMIZE (evex_unaligned_erms_page_unrolled) attribute_hidden;
 
 extern __typeof (REDIRECT_NAME) OPTIMIZE (avx_unaligned) attribute_hidden;
-extern __typeof (REDIRECT_NAME) OPTIMIZE (avx_unaligned_erms)
-  attribute_hidden;
-extern __typeof (REDIRECT_NAME) OPTIMIZE (avx_unaligned_rtm)
-  attribute_hidden;
-extern __typeof (REDIRECT_NAME) OPTIMIZE (avx_unaligned_erms_rtm)
-  attribute_hidden;
+extern __typeof (REDIRECT_NAME)
+    OPTIMIZE (avx_unaligned_page_unrolled) attribute_hidden;
+extern __typeof (REDIRECT_NAME) OPTIMIZE (avx_unaligned_erms) attribute_hidden;
+extern __typeof (REDIRECT_NAME)
+    OPTIMIZE (avx_unaligned_erms_page_unrolled) attribute_hidden;
+extern __typeof (REDIRECT_NAME) OPTIMIZE (avx_unaligned_rtm) attribute_hidden;
+extern __typeof (REDIRECT_NAME)
+    OPTIMIZE (avx_unaligned_page_unrolled_rtm) attribute_hidden;
+extern __typeof (REDIRECT_NAME)
+    OPTIMIZE (avx_unaligned_erms_rtm) attribute_hidden;
+extern __typeof (REDIRECT_NAME)
+    OPTIMIZE (avx_unaligned_erms_page_unrolled_rtm) attribute_hidden;
 
 extern __typeof (REDIRECT_NAME) OPTIMIZE (ssse3) attribute_hidden;
 
@@ -71,40 +80,60 @@ IFUNC_SELECTOR (void)
       return OPTIMIZE (avx512_no_vzeroupper);
     }
 
-  if (X86_ISA_CPU_FEATURES_ARCH_P (cpu_features,
-				   AVX_Fast_Unaligned_Load, ))
+  if (X86_ISA_CPU_FEATURES_ARCH_P (cpu_features, AVX_Fast_Unaligned_Load, ))
     {
       if (X86_ISA_CPU_FEATURE_USABLE_P (cpu_features, AVX512VL))
 	{
 	  if (CPU_FEATURE_USABLE_P (cpu_features, ERMS))
-	    return OPTIMIZE (evex_unaligned_erms);
+	    {
+	      if (CPU_FEATURES_ARCH_P (cpu_features,
+				       Prefer_Page_Unrolled_Large_Copy))
+		return OPTIMIZE (evex_unaligned_erms_page_unrolled);
+	      return OPTIMIZE (evex_unaligned_erms);
+	    }
 
+	  if (CPU_FEATURES_ARCH_P (cpu_features,
+				   Prefer_Page_Unrolled_Large_Copy))
+	    return OPTIMIZE (evex_unaligned_page_unrolled);
 	  return OPTIMIZE (evex_unaligned);
 	}
 
       if (CPU_FEATURE_USABLE_P (cpu_features, RTM))
 	{
 	  if (CPU_FEATURE_USABLE_P (cpu_features, ERMS))
-	    return OPTIMIZE (avx_unaligned_erms_rtm);
-
+	    {
+	      if (CPU_FEATURES_ARCH_P (cpu_features,
+				       Prefer_Page_Unrolled_Large_Copy))
+		return OPTIMIZE (avx_unaligned_erms_page_unrolled_rtm);
+	      return OPTIMIZE (avx_unaligned_erms_rtm);
+	    }
+	  if (CPU_FEATURES_ARCH_P (cpu_features,
+				   Prefer_Page_Unrolled_Large_Copy))
+	    return OPTIMIZE (avx_unaligned_page_unrolled_rtm);
 	  return OPTIMIZE (avx_unaligned_rtm);
 	}
 
-      if (X86_ISA_CPU_FEATURES_ARCH_P (cpu_features,
-				       Prefer_No_VZEROUPPER, !))
+      if (X86_ISA_CPU_FEATURES_ARCH_P (cpu_features, Prefer_No_VZEROUPPER, !))
 	{
 	  if (CPU_FEATURE_USABLE_P (cpu_features, ERMS))
-	    return OPTIMIZE (avx_unaligned_erms);
-
+	    {
+	      if (CPU_FEATURES_ARCH_P (cpu_features,
+				       Prefer_Page_Unrolled_Large_Copy))
+		return OPTIMIZE (avx_unaligned_erms_page_unrolled);
+	      return OPTIMIZE (avx_unaligned_erms);
+	    }
+	  if (CPU_FEATURES_ARCH_P (cpu_features,
+				   Prefer_Page_Unrolled_Large_Copy))
+	    return OPTIMIZE (avx_unaligned_page_unrolled);
 	  return OPTIMIZE (avx_unaligned);
 	}
     }
 
   if (X86_ISA_CPU_FEATURE_USABLE_P (cpu_features, SSSE3)
       /* Leave this as runtime check.  The SSSE3 is optimized almost
-         exclusively for avoiding unaligned memory access during the
-         copy and by and large is not better than the sse2
-         implementation as a general purpose memmove.  */
+	 exclusively for avoiding unaligned memory access during the
+	 copy and by and large is not better than the sse2
+	 implementation as a general purpose memmove.  */
       && !CPU_FEATURES_ARCH_P (cpu_features, Fast_Unaligned_Copy))
     {
       return OPTIMIZE (ssse3);
