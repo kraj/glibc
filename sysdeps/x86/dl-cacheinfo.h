@@ -1,5 +1,6 @@
 /* Initialize x86 cache info.
    Copyright (C) 2020-2026 Free Software Foundation, Inc.
+   Copyright The GNU Toolchain Authors.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -1281,7 +1282,14 @@ dl_init_cacheinfo (struct cpu_features *cpu_features)
          Use 3/8 of the shared cache size per thread for memcpy and
          memmove.  The memset threshold has already been initialized
          above and is intentionally left unchanged.  */
-      non_temporal_threshold = shared_per_thread * 3 / 8;
+      unsigned long int hygon_non_temporal_threshold
+	  = shared_per_thread * 3 / 8;
+
+      /* Missing cache information makes shared_per_thread zero.  Do not
+	 replace the 64 MiB fallback with an invalid threshold.  */
+      if (hygon_non_temporal_threshold >= minimum_non_temporal_threshold
+	  && hygon_non_temporal_threshold <= maximum_non_temporal_threshold)
+	non_temporal_threshold = hygon_non_temporal_threshold;
     }
 
   tunable_size = TUNABLE_GET (x86_memset_non_temporal_threshold, long int, NULL);
