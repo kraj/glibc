@@ -318,6 +318,7 @@ tests := \
   test-rpcent \
   testgrp \
   tst-default-domain \
+  tst-fgetent-seek \
   tst-fgetsgent_r \
   tst-getaddrinfo \
   tst-getaddrinfo2 \
@@ -435,12 +436,19 @@ extra-test-objs		+= nss_test1.os nss_test2.os nss_test_errno.os \
 
 ifeq ($(run-built-tests),yes)
 ifneq (no,$(PERL))
-tests-special += $(objpfx)mtrace-tst-nss-gai-hv2-canonname.out
+tests-special += \
+  $(objpfx)mtrace-tst-fgetent-seek.out \
+  $(objpfx)mtrace-tst-nss-gai-hv2-canonname.out \
+  # tests-special
 endif
 endif
 
-generated += mtrace-tst-nss-gai-hv2-canonname.out \
-		tst-nss-gai-hv2-canonname.mtrace
+generated += \
+  mtrace-tst-fgetent-seek.out \
+  mtrace-tst-nss-gai-hv2-canonname.out \
+  tst-fgetent-seek.mtrace \
+  tst-nss-gai-hv2-canonname.mtrace \
+  # generated
 
 include ../Rules
 
@@ -517,6 +525,16 @@ $(objpfx)tst-getaddrinfo4: \
   $(common-objpfx)resolv/libresolv.so $(shared-thread-library)
 
 $(objpfx)tst-default-domain: $(objpfx)nisdomain.os
+
+tst-fgetent-seek-ENV = \
+  MALLOC_TRACE=$(objpfx)tst-fgetent-seek.mtrace \
+  LD_PRELOAD=$(common-objpfx)malloc/libc_malloc_debug.so
+$(objpfx)mtrace-tst-fgetent-seek.out: $(objpfx)tst-fgetent-seek.out
+	{ test -r $(objpfx)tst-fgetent-seek.mtrace \
+	|| ( echo "tst-fgetent-seek.mtrace does not exist"; exit 77; ) \
+	&& $(common-objpfx)malloc/mtrace \
+	$(objpfx)tst-fgetent-seek.mtrace; } > $@; \
+	$(evaluate-test)
 
 tst-nss-gai-hv2-canonname-ENV = \
 		MALLOC_TRACE=$(objpfx)tst-nss-gai-hv2-canonname.mtrace \

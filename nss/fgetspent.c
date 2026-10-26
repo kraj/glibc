@@ -37,12 +37,8 @@ fgetspent (FILE *stream)
 {
   static size_t buffer_size;
   static struct spwd resbuf;
-  fpos_t pos;
   struct spwd *result;
   int save;
-
-  if (fgetpos (stream, &pos) != 0)
-    return NULL;
 
   /* Get lock.  */
   __libc_lock_lock (lock);
@@ -70,10 +66,6 @@ fgetspent (FILE *stream)
 	  __set_errno (save);
 	}
       buffer = new_buf;
-
-      /* Reset the stream.  */
-      if (fsetpos (stream, &pos) != 0)
-	buffer = NULL;
     }
 
   if (buffer == NULL)

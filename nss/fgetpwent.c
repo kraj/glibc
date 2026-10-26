@@ -34,12 +34,8 @@ fgetpwent (FILE *stream)
 {
   static size_t buffer_size;
   static struct passwd resbuf;
-  fpos_t pos;
   struct passwd *result;
   int save;
-
-  if (fgetpos (stream, &pos) != 0)
-    return NULL;
 
   /* Get lock.  */
   __libc_lock_lock (lock);
@@ -67,10 +63,6 @@ fgetpwent (FILE *stream)
 	  __set_errno (save);
 	}
       buffer = new_buf;
-
-      /* Reset the stream.  */
-      if (fsetpos (stream, &pos) != 0)
-	buffer = NULL;
     }
 
   if (buffer == NULL)
