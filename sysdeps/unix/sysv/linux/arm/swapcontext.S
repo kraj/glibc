@@ -56,7 +56,7 @@ ENTRY(swapcontext)
 	str	r14,[r0, #MCONTEXT_ARM_LR]
 	str	r14,[r0, #MCONTEXT_ARM_PC]
 
-	/* And swap using swapcontext().  */
+	/* And swap using setcontext().  */
 	mov	r0, r1
 	b	__setcontext
 
