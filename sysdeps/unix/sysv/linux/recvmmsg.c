@@ -95,7 +95,7 @@ __recvmmsg (int fd, struct mmsghdr *vmessages, unsigned int vlen, int flags,
     }
   int r = recvmmsg_syscall (fd, vmessages, vlen, flags, pts64);
   if (r >= 0 && timeout != NULL)
-    /* The remanining timeout will be always less the input TIMEOUT.  */
+    /* The remaining timeout will be always less the input TIMEOUT.  */
     *timeout = valid_timespec64_to_timespec (ts64);
   return r;
 }

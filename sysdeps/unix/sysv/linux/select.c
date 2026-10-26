@@ -131,7 +131,7 @@ __select (int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
     }
   int r = __select64 (nfds, readfds, writefds, exceptfds, ptv64);
   if (timeout != NULL)
-    /* The remanining timeout will be always less the input TIMEOUT.  */
+    /* The remaining timeout will be always less the input TIMEOUT.  */
     *timeout = valid_timeval64_to_timeval (tv64);
   return r;
 }

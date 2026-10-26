@@ -327,7 +327,7 @@ __spawnix (int *pid, const char *file,
      to handle the error on the helper process, check for full pidfd
      support.
      ENOSYS is returned because without proper waitid support, pidfd_spawn
-     can not be used proporly independently of its arguments.  */
+     can not be used properly independently of its arguments.  */
   if (use_pidfd && !__clone_pidfd_supported ())
     return ENOSYS;
 

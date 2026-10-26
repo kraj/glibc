@@ -90,7 +90,7 @@ def parse_trace(cmd, fref):
 def get_parser():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('command',
-                        help='comand to run')
+                        help='command to run')
     parser.add_argument('reference',
                         help='reference file to compare')
     return parser

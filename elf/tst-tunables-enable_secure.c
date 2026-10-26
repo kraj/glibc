@@ -19,7 +19,7 @@
 #include <array_length.h>
 /* The test uses the tunable_env_alias_list size, which is only exported for
    ld.so.  This will result in a copy of tunable_list and
-   tunable_env_alias_list, which is ununsed by the test itself.  */
+   tunable_env_alias_list, which is unused by the test itself.  */
 #define TUNABLES_INTERNAL 1
 #include <dl-tunables.h>
 #include <getopt.h>
@@ -77,7 +77,7 @@ static const struct test_t
     0,
     1,
   },
-  /* Same as before, but with enviroment alias prior GLIBC_TUNABLES.  */
+  /* Same as before, but with environment alias prior GLIBC_TUNABLES.  */
   {
     "MALLOC_CHECK_=2",
     "GLIBC_TUNABLES=glibc.malloc.check=2:glibc.rtld.enable_secure=1",

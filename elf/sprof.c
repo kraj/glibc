@@ -280,7 +280,7 @@ main (int argc, char *argv[])
     exit (1);
 
   /* We can now determine the filename for the profiling data, if
-     nececessary.  */
+     necessary.  */
   if (profdata == NULL)
     {
       char *newp;

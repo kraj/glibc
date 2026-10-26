@@ -36,7 +36,7 @@ int do_test (void)
      ld.so.  */
   struct rtld_global_ro *glro = xdlsym (NULL, "_rtld_global_ro");
   printf ("info: _dl_tls_static_surplus: %zu\n", glro->_dl_tls_static_surplus);
-  /* Hisoric value: 16 * 100 + 64.  */
+  /* Historic value: 16 * 100 + 64.  */
   TEST_VERIFY (glro->_dl_tls_static_surplus >= 1664);
   return 0;
 }

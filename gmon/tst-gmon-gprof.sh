@@ -1,5 +1,5 @@
 #!/bin/sh
-# Check the output of gprof against a carfully crafted binary.
+# Check the output of gprof against a carefully crafted binary.
 # Copyright (C) 2017-2026 Free Software Foundation, Inc.
 # This file is part of the GNU C Library.
 

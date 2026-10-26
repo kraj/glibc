@@ -71,7 +71,7 @@ do_test (void)
 	  {
 	    /* This happens if we're trying to create a nested container,
 	       like if the build is running under podman, and we lack
-	       priviledges.  */
+	       privileges.  */
 	    if (errno  == EPERM)
 	      _exit (EXIT_UNSUPPORTED);
 	    else

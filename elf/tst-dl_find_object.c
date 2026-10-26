@@ -73,7 +73,7 @@ check (void *address,
     }
   if (expected->dlfo_link_map->l_contiguous)
     {
-      /* If the mappings are not contiguous, the actual and execpted
+      /* If the mappings are not contiguous, the actual and expected
          mappings may differ, so this subtest will not work.  */
       if (actual.dlfo_flags != expected->dlfo_flags)
         {

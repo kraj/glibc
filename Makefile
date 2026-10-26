@@ -620,7 +620,7 @@ ifeq (yes,$(build-shared))
 # The top-level libc.so and linkobj/libc_pic.a rules list these
 # subdirectory-built files as prerequisites, but no rule at this level
 # builds them.  The explicit empty recipe (';') is required, a
-# prerequisite-only rule would send make on an implicitrule search and
+# prerequisite-only rule would send make on an implicit rule search and
 # have this level compile them itself with the wrong context.
 ifneq (,$(filter elf,$(subdirs)))
 $(elf-objpfx)ld.so $(elf-objpfx)sofini.os $(elf-objpfx)interp.os: \
@@ -631,7 +631,7 @@ ifneq (,$(filter sunrpc,$(subdirs)))
 # libc_pic.a.
 $(common-objpfx)sunrpc/librpc_compat_pic.a: | sunrpc/subdir_lib ;
 endif
-# Hurd sysdedp Makeilfe links libc.so against the lib*user-link.so
+# Hurd sysdep Makefile links libc.so against the lib*user-link.so
 # objects, built by the %-link.so: %_pic.a pattern rule from archives
 # that only the mach and hurd sub-makes create.
 ifneq (,$(filter mach,$(subdirs)))

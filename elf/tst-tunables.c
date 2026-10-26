@@ -18,7 +18,7 @@
 
 #include <array_length.h>
 /* The test uses the tunable_list size, which is only exported for
-   ld.so.  This will result in a copy of tunable_list, which is ununsed by
+   ld.so.  This will result in a copy of tunable_list, which is unused by
    the test itself.  */
 #define TUNABLES_INTERNAL 1
 #include <dl-tunables.h>
@@ -184,7 +184,7 @@ static struct test_t
     0,
     0,
   },
-  /* An ill-formatted tunable in the for key=key=value will considere the
+  /* An ill-formatted tunable in the for key=key=value will consider the
      value as 'key=value' (which can not be parsed as an integer).  */
   {
     "GLIBC_TUNABLES",
@@ -366,7 +366,7 @@ do_test (int argc, char *argv[])
 			 i == (tunables_list_size - 1) ? '\0' : ':');
     tests[33].value = value;
   }
-  /* Same as before, but the last tunable values is differen than the
+  /* Same as before, but the last tunable values is different than the
      rest.  */
   {
     enum { tunables_list_size = array_length (tunable_list) };

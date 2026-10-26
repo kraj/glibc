@@ -1,4 +1,4 @@
-/* Test that glibc.cpu.mtemode selects corect mode for MTE tag checking.
+/* Test that glibc.cpu.mtemode selects correct mode for MTE tag checking.
    Copyright (C) 2026 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 

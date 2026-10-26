@@ -15,7 +15,7 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-/* These system calls have iregular names and are used by glibc.  */
+/* These system calls have irregular names and are used by glibc.  */
 #ifndef __NR_cacheflush
 # define __NR_cacheflush __ARM_NR_cacheflush
 #endif

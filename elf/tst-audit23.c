@@ -210,7 +210,7 @@ do_one_test (int argc, char *argv[], bool pass_dlclose_flag)
 	  nobjs++;
 
 	  /* This indirectly checks that la_objopen always comes before
-	     la_objclose btween la_activity calls.  */
+	     la_objclose between la_activity calls.  */
 	  seen_first_objclose = false;
 	}
       else if (startswith (buffer, "la_objclose: "))

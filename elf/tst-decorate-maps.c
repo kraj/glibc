@@ -142,7 +142,7 @@ do_test_threads (bool set_guard)
       }
   }
 
-  /* Wait all threads to finshed statup and stack allocation.  */
+  /* Wait all threads to finish startup and stack allocation.  */
   xpthread_barrier_wait (&b);
 
   {

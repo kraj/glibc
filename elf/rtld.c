@@ -2261,7 +2261,7 @@ dl_main (const ElfW(Phdr) *phdr,
       rtld_timer_accum (&relocate_time, start);
   }
 
-  /* Populate the DTV slotinfo and copy each TLS module's into thestatic TLS
+  /* Populate the DTV slotinfo and copy each TLS module's into the static TLS
      block *before* the relocation loop.  IFUNC resolvers fired during phase 2
      of the per-object two-phase scheme therefore observe initialised TLS.  */
   if (__rtld_tls_init_tp_called)
