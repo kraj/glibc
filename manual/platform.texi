@@ -136,6 +136,9 @@ ordering on only the current thread is necessary.  All other flag bits are
 reserved.
 @end deftypefun
 
+The RISC-V port of @theglibc{} does not support applications that disable the vector
+extension by calling @code{prctl(PR_RISCV_V_SET_CONTROL, ...)}.
+
 @node X86
 @appendixsec X86-specific Facilities
 
