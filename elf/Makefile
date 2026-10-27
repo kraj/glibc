@@ -3478,11 +3478,12 @@ $(objpfx)tst-trace$(1).out: $(objpfx)libtracemod1/libtracemod1.so \
 			    $(objpfx)libtracemod5/libtracemod5.so \
 			    $(..)scripts/tst-ld-trace.py \
 			    tst-trace$(1).exp
-	${ $(PYTHON) $(..)scripts/tst-ld-trace.py \
-	    "$(test-wrapper-env) $(elf-objpfx)$(rtld-installed-name) \
+	$(PYTHON) $(..)scripts/tst-ld-trace.py \
+	    "$(test-wrapper-env) LD_TRACE_LOADED_OBJECTS=1 \
+	    $(elf-objpfx)$(rtld-installed-name) \
 	    --library-path $(common-objpfx):$(strip $(2)) \
 	    $(objpfx)libtracemod1/libtracemod1.so" tst-trace$(1).exp \
-	} > $$@; $$(evaluate-test)
+	> $$@; $$(evaluate-test)
 endef
 
 $(eval $(call tst-trace-skeleton,1,))

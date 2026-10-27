@@ -18,7 +18,6 @@
 # License along with the GNU C Library; if not, see
 # <https://www.gnu.org/licenses/>.
 
-import argparse
 import os
 import subprocess
 import sys
@@ -54,10 +53,9 @@ def is_vdso(lib):
 
 
 def parse_trace(cmd, fref):
-    new_env = os.environ.copy()
-    new_env['LD_TRACE_LOADED_OBJECTS'] = '1'
-    trace_out = subprocess.run(cmd, stdout=subprocess.PIPE, check=True,
-                               universal_newlines=True, env=new_env).stdout
+    trace_out = subprocess.run(cmd, shell=True,
+                               stdout=subprocess.PIPE, check=True,
+                               universal_newlines=True).stdout
     trace = []
     for line in trace_out.splitlines():
         line = line.strip()
@@ -87,21 +85,10 @@ def parse_trace(cmd, fref):
     sys.exit(ret)
 
 
-def get_parser():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('command',
-                        help='command to run')
-    parser.add_argument('reference',
-                        help='reference file to compare')
-    return parser
-
-
 def main(argv):
-    parser = get_parser()
-    opts = parser.parse_args(argv)
-    with open(opts.reference, 'r') as fref:
-        # Remove the initial 'env' command.
-        parse_trace(opts.command.split()[1:], fref)
+    command, reference = argv
+    with open(reference, 'r') as fref:
+        parse_trace(command, fref)
 
 
 if __name__ == '__main__':
