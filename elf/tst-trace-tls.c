@@ -34,8 +34,9 @@ static struct support_capture_subprocess
 run_ldso (const char *env1, const char *env2)
 {
   char *const argv[] = { mod, NULL };
+  /* Use value 2 to enable printing of the main program path.  */
   char *const envp[] =
-    { (char *) "LD_TRACE_LOADED_OBJECTS=1", (char *) env1, (char *) env2,
+    { (char *) "LD_TRACE_LOADED_OBJECTS=2", (char *) env1, (char *) env2,
       NULL };
 
   struct support_spawn_wrapped *wrapped
@@ -60,6 +61,8 @@ run_trace (const char *title, const char *env1, const char *env2,
 
   if (check_undefined)
     {
+      /* The output must include executable path.  */
+      TEST_VERIFY (strstr (result.out.buffer, mod) != NULL);
       /* The dependencies must come from the build tree.  */
       TEST_VERIFY (strstr (result.out.buffer, libc_path) != NULL);
       TEST_VERIFY (strstr (result.err.buffer,

@@ -2085,7 +2085,8 @@ dl_main (const ElfW(Phdr) *phdr,
 	    else if (strcmp (l->l_libname->name, l->l_name) == 0)
 	      /* Print vDSO like libraries without duplicate name.  Some
 		 consumers depend of this format.  */
-	      _dl_printf ("\t%s (0x%0*zx)\n", l->l_libname->name,
+	      _dl_printf ("\t%s (0x%0*zx)\n",
+			  DSO_FILENAME (l->l_libname->name),
 			  (int) sizeof l->l_map_start * 2,
 			  (size_t) l->l_map_start);
 	    else
