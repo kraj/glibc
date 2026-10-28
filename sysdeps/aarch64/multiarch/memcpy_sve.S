@@ -59,9 +59,9 @@
 	.arch armv8.2-a+sve
 
 ENTRY (__memcpy_sve)
+	cntb	vlen
 	cmp	count, 128
 	b.hi	L(copy_long)
-	cntb	vlen
 	cmp	count, vlen, lsl 1
 	b.hi	L(copy32_128)
 	whilelo p0.b, xzr, count
@@ -90,7 +90,12 @@ L(copy128):
 	cmp	count, 96
 	b.ls	L(copy96)
 	ldp	G_q, H_q, [srcend, -64]
+	stp	A_q, B_q, [dstin]
+	stp	E_q, F_q, [dstin, 32]
 	stp	G_q, H_q, [dstend, -64]
+	stp	C_q, D_q, [dstend, -32]
+	ret
+
 L(copy96):
 	stp	A_q, B_q, [dstin]
 	stp	E_q, F_q, [dstin, 32]
