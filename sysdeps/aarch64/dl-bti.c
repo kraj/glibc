@@ -55,6 +55,11 @@ _dl_bti_protect (struct link_map *map, int fd)
 	if (fd == -1)
 	  /* Ignore failures for kernel mapped binaries.  */
 	  __mprotect (start, len, prot);
+	else if (phdr->p_flags & PF_W)
+	  /* Mapping a writable segment again from the file would discard
+	     the changes already made to it, such as the relocation of the
+	     dynamic section and the zeroing of the start of .bss.  */
+	  map->l_mach.bti_fail = __mprotect (start, len, prot) != 0;
 	else
 	  map->l_mach.bti_fail = __mmap (start, len, prot,
 					 MAP_FIXED|MAP_COPY|MAP_FILE,
