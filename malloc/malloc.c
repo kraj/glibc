@@ -3021,7 +3021,10 @@ libc_hidden_def (__libc_malloc)
 static void __attribute_noinline__
 tcache_free_init (void *mem)
 {
+  /* Preserve errno in case malloc in tcache_init sets it.  */
+  int err = errno;
   tcache_init (NULL);
+  __set_errno (err);
   __libc_free (mem);
 }
 
