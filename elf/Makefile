@@ -711,6 +711,19 @@ $(objpfx)tst-relro-libc.out: tst-relro-symbols.py $(..)/scripts/glibcelf.py \
 	    --required=__io_vtables \
 	  > $@ 2>&1; $(evaluate-test)
 
+tests-special += \
+  $(objpfx)tst-eh-frame-terminator-ldso.out \
+  $(objpfx)tst-eh-frame-terminator-libc.out \
+  # tests-special
+$(objpfx)tst-eh-frame-terminator-ldso.out: tst-eh-frame-terminator.py \
+  $(..)/scripts/glibcelf.py $(objpfx)ld.so
+	$(PYTHON) tst-eh-frame-terminator.py $(objpfx)ld.so \
+	  > $@ 2>&1; $(evaluate-test)
+$(objpfx)tst-eh-frame-terminator-libc.out: tst-eh-frame-terminator.py \
+  $(..)/scripts/glibcelf.py $(common-objpfx)libc.so
+	$(PYTHON) tst-eh-frame-terminator.py $(common-objpfx)libc.so \
+	  > $@ 2>&1; $(evaluate-test)
+
 ifeq ($(run-built-tests),yes)
 tests-special += $(objpfx)tst-valgrind-smoke.out
 endif
@@ -1683,7 +1696,8 @@ generated += librtld.map librtld.mk rtld-libc.a librtld.os.map
 
 z-now-yes = -Wl,-z,now
 
-$(objpfx)ld.so: $(objpfx)librtld.os $(ld-map)
+# sofini.os must be placed last since it terminates .eh_frame section.
+$(objpfx)ld.so: $(objpfx)librtld.os $(objpfx)sofini.os $(ld-map)
 # Link into a temporary file so that we don't touch $@ at all
 # if the sanity check below fails.
 	$(LINK.o) -nostdlib -nostartfiles -shared -o $@.new		\
@@ -1786,7 +1800,7 @@ CFLAGS-dl-diagnostics.c += $(SYSCONF-FLAGS) \
   -D'PREFIX="$(prefix)"' \
   -D'RTLD="$(rtlddir)/$(rtld-installed-name)"'
 
-cpp-srcs-left := $(all-rtld-routines:=.os)
+cpp-srcs-left := $(all-rtld-routines:=.os) sofini.os
 lib := rtld
 include $(patsubst %,$(..)libof-iterator.mk,$(cpp-srcs-left))
 
