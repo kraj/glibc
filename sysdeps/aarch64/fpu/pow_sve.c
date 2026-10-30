@@ -389,8 +389,8 @@ svfloat64_t SV_NAME_D2 (pow) (svfloat64_t x, svfloat64_t y, const svbool_t pg)
   svuint64_t vix = vix0;
   if (__glibc_unlikely (svptest_any (pg, xisneg)))
     {
-      /* Determine nature of y.  */
-      yint_or_xpos = sv_isint (xisneg, y);
+      /* Determine nature of y, preserving lanes where x isn't negative.  */
+      yint_or_xpos = svorn_z (pg, sv_isint (xisneg, y), xisneg);
       svbool_t yisodd_xisneg = sv_isodd (xisneg, y);
       /* ix set to abs(ix) if y is integer.  */
       vix = svand_m (yint_or_xpos, vix0, 0x7fffffffffffffff);
