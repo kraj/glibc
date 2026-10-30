@@ -32,6 +32,8 @@ The following bugs are resolved with this release:
     than USHRT_MAX
   [34875] string: 2.44 regression: Hygon non-temporal threshold can be
     zero
+  [34920] math: Bug in SVE pow and powf with mixed positive and negative
+    base lanes with integer exponent
 
 Version 2.44
 
