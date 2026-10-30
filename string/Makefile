@@ -201,6 +201,7 @@ tests := \
   tst-endian \
   tst-inlcall \
   tst-memmove-overflow \
+  tst-memrchr-overflow \
   tst-strerror-fail \
   tst-strfry \
   tst-string-posix2024 \

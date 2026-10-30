@@ -438,7 +438,7 @@ L(page_cross_check):
 	jz	L(page_cross_continue)
 
 	lzcnt	%VRSI, %VRSI
-	subl	%esi, %edx
+	subq	%rsi, %rdx
 L(page_cross_ret):
 	leaq	-1(%rdi, %rdx), %rax
 	ret

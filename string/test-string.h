@@ -173,7 +173,7 @@ static impl_t *impl_array __attribute__ ((unused));
 # define BUF1PAGES 1
 #endif
 
-static void
+static __attribute_maybe_unused__ void
 test_init (void)
 {
 #ifdef TEST_NAME
