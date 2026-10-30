@@ -34,6 +34,8 @@ The following bugs are resolved with this release:
     zero
   [34920] math: Bug in SVE pow and powf with mixed positive and negative
     base lanes with integer exponent
+  [34921] math: Bug in SVE pow and powf with mixed subnormal and
+    negative base lanes with integer exponent
 
 Version 2.44
 

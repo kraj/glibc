@@ -104,7 +104,8 @@ svfloat32_t SV_NAME_F2 (pow) (svfloat32_t x, svfloat32_t y, const svbool_t pg)
   if (__glibc_unlikely (svptest_any (yint_or_xpos, x_is_subnormal)))
     {
       /* Normalize subnormal x so exponent becomes negative.  */
-      vix = svreinterpret_u32 (svmul_m (x_is_subnormal, x, 0x1p23f));
+      vix = svreinterpret_u32 (
+	  svmul_m (x_is_subnormal, svreinterpret_f32 (vix), 0x1p23f));
       vix = svand_m (x_is_subnormal, vix, 0x7fffffff);
       vix = svsub_m (x_is_subnormal, vix, d->subnormal_bias);
     }
