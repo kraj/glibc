@@ -23,3 +23,9 @@ ifeq ($(subdir),elf)
 # at runtime.
 THP-PAGE-SIZE = 0x2000000
 endif
+
+ifeq ($(subdir),posix)
+tests += \
+  tst-sysconf-cache \
+  # tests
+endif
