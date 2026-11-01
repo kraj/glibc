@@ -142,7 +142,7 @@ ld-test-names := test1 test2 test3 test4 test5 test6 test7
 ld-test-srcs := $(addprefix tests/,$(addsuffix .cm,$(ld-test-names)) \
 				   $(addsuffix .def,$(ld-test-names)) \
 				   $(addsuffix .ds,test5 test6) \
-				   test6.c trans.def)
+				   test6.c test8.def trans.def)
 
 fmon-tests = \
   n01y12 \
@@ -174,6 +174,7 @@ generated-dirs += \
   $(addprefix tstfmon_,$(fmon-tests)) \
   $(ld-test-names) \
   de_DE.437 \
+  test8 \
   tt_TT \
   # generated-dirs
 

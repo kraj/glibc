@@ -813,12 +813,12 @@ get_string (struct linereader *lr, const struct charmap_t *charmap,
     {
       bool illegal_string = false;
       size_t buf2act = 0;
-      size_t buf2max = 56 * sizeof (uint32_t);
+      size_t buf2max = 56;
       int ch;
 
       /* We have to provide the wide character result as well.  */
       if (return_widestr)
-	buf2 = xmalloc (buf2max);
+	buf2 = xmalloc (buf2max * sizeof (uint32_t));
 
       /* Read until the end of the string (or end of the line or file).  */
       while ((ch = lr_getc (lr)) != '"' && ch != '\n' && ch != EOF)
