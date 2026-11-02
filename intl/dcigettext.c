@@ -591,10 +591,10 @@ DCIGETTEXT (const char *domainname, const char *msgid1, const char *msgid2,
 	    *cp++ = *categoryvalue++;
 	  *cp = '\0';
 
-	  /* When this is a SUID binary we must not allow accessing files
-	     outside the dedicated directories.  */
-	  if (ENABLE_SECURE && IS_PATH_WITH_DIR (single_locale))
-	    /* Ignore this entry.  */
+	  /* Do not allow accessing files outside the dedicated
+	     directories.  */
+	  if (IS_PATH_WITH_DIR (single_locale)
+	      || strcmp (single_locale, "..") == 0)
 	    continue;
 	}
 
