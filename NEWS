@@ -13,6 +13,10 @@ Deprecated and removed features, and other changes affecting compatibility:
   programs that require an executable stack through dynamic loaded
   shared libraries.
 
+* The gettext functions now reject LANGUAGE values containing '/' or
+  equal to '..' for all programs.  Previously this check only applied
+  to SUID/SGID binaries.
+
 The following bugs were resolved with this release:
 
   [19341] ctype: Fallback initialization of TLS using relocations
