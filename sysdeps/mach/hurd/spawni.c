@@ -19,6 +19,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <paths.h>
+#include <confstr.h>
 #include <spawn.h>
 #include <stdlib.h>
 #include <string.h>
@@ -44,7 +45,8 @@ __spawni (pid_t *pid, const char *file,
 	  int xflags)
 {
   pid_t new_pid;
-  char *path, *p, *name;
+  const char *path, *p;
+  char *name;
   char *concat_name = NULL;
   const char *relpath, *abspath;
   int res;
@@ -732,15 +734,7 @@ retry:
       /* We have to search for FILE on the path.  */
       path = getenv ("PATH");
       if (path == NULL)
-	{
-	  /* There is no `PATH' in the environment.
-	     The default search path is the current directory
-	     followed by the path `confstr' returns for `_CS_PATH'.  */
-	  len = __confstr (_CS_PATH, (char *) NULL, 0);
-	  path = (char *) __alloca (1 + len);
-	  path[0] = ':';
-	  (void) __confstr (_CS_PATH, path + 1, len);
-	}
+	path = CS_PATH;
 
       len = strlen (file) + 1;
       pathlen = strlen (path);
