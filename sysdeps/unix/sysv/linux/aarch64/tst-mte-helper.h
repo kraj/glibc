@@ -31,6 +31,8 @@
 
 #define GRANULE_SIZE 16
 
+#define __memtag __attribute__ ((target("arch=armv9-a+memtag")))
+
 /* Extract logical tag from pointer PTR.  */
 static __always_inline uint64_t
 get_logical_tag (const void *ptr)
@@ -40,7 +42,7 @@ get_logical_tag (const void *ptr)
 }
 
 /* Load allocation tag from memory pointed-to by the PTR pointer.  */
-static __always_inline uint64_t
+static __memtag uint64_t
 get_allocation_tag (const void *ptr)
 {
   uint64_t t;
@@ -49,7 +51,7 @@ get_allocation_tag (const void *ptr)
 }
 
 /* Read the Tag Check Override bit.  */
-static __always_inline uint64_t
+static __memtag uint64_t
 get_pstate_tco (void)
 {
   uint64_t t;

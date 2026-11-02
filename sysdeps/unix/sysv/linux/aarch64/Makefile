@@ -411,16 +411,10 @@ tests-static += \
   tst-mte-realloc-static \
   # tests-static
 
-CFLAGS-tst-mte-malloc.o += -march=armv9-a+memtag
-CFLAGS-tst-mte-malloc-static.o += -march=armv9-a+memtag
-CFLAGS-tst-mte-realloc.o += -march=armv9-a+memtag
-CFLAGS-tst-mte-realloc-static.o += -march=armv9-a+memtag
-
 tests-exclude-malloc-check += $(tests-for-mte)
 tests-exclude-mcheck += $(tests-for-mte)
 tests-exclude-hugetlb1 += $(tests-for-mte)
 tests-exclude-hugetlb2 += $(tests-for-mte)
-endif # ifneq ($(multi-arch),no)
 
 # Add MTE tunable to all malloc tests except malloc-check and mcheck variants
 tests-malloc-mte = \
@@ -435,6 +429,7 @@ $(1)-TUNABLES += glibc.cpu.mtemode=sync
 endef
 
 $(foreach t,$(tests-malloc-mte),$(eval $(call tests-malloc-mte-ENVS,$(t))))
+endif # ifneq ($(multi-arch),no)
 endif # ifeq ($(subdir),malloc)
 
 abi-variants := lp64
