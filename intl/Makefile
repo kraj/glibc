@@ -53,6 +53,7 @@ $(objpfx)plural.o: $(objpfx)plural.c
 ifeq ($(run-built-tests),yes)
 ifeq (yes,$(build-shared))
 ifneq ($(strip $(MSGFMT)),:)
+tests += tst-gettext-path-traversal
 tests-special += $(objpfx)tst-translit.out $(objpfx)tst-gettext.out \
 		 $(objpfx)tst-gettext2.out $(objpfx)tst-codeset.out \
 		 $(objpfx)tst-gettext3.out
@@ -107,6 +108,7 @@ $(objpfx)tst-gettext6.out: tst-gettext6.sh $(objpfx)tst-gettext6
 $(objpfx)tst-codeset.out: $(codeset_mo)
 $(objpfx)tst-gettext3.out: $(codeset_mo)
 $(objpfx)tst-gettext5.out: $(codeset_mo)
+$(objpfx)tst-gettext-path-traversal.out: $(codeset_mo)
 endif
 
 LOCALES := de_DE.ISO-8859-1 de_DE.UTF-8 en_US.ANSI_X3.4-1968 fr_FR.ISO-8859-1 \
@@ -121,6 +123,7 @@ $(objpfx)tst-gettext4.out: $(gen-locales)
 $(objpfx)tst-gettext5.out: $(gen-locales)
 $(objpfx)tst-gettext6.out: $(gen-locales)
 $(objpfx)tst-gettext-c-utf8.out: $(gen-locales)
+$(objpfx)tst-gettext-path-traversal.out: $(gen-locales)
 $(objpfx)tst-translit.out: $(gen-locales)
 endif
 
@@ -140,6 +143,7 @@ CFLAGS-tst-gettext3.c += -DOBJPFX=\"$(objpfx)\"
 CFLAGS-tst-gettext4.c += -DOBJPFX=\"$(objpfx)\"
 CFLAGS-tst-gettext5.c += -DOBJPFX=\"$(objpfx)\"
 CFLAGS-tst-gettext6.c += -DOBJPFX=\"$(objpfx)\"
+CFLAGS-tst-gettext-path-traversal.c += -DOBJPFX=\"$(objpfx)\"
 
 ifeq ($(have-thread-library),yes)
 ifeq (yes,$(build-shared))
