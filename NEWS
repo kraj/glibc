@@ -18,6 +18,10 @@ Deprecated and removed features, and other changes affecting compatibility:
   functions, added in glibc 2.44 as header redirects to the _np variants, are
   now exported from libc.so under the GLIBC_2.45 symbol version.
 
+* The gettext functions now reject LANGUAGE values containing '/' or
+  equal to '..' for all programs.  Previously this check only applied
+  to SUID/SGID binaries.
+
 Changes to build and runtime requirements:
 
   [Add changes to build and runtime requirements here]
