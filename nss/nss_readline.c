@@ -71,7 +71,8 @@ __nss_readline (FILE *fp, char *buf, size_t len, off64_t *poffset)
         /* Skip empty lines and comments.  */
         continue;
       if (p != buf)
-        memmove (buf, p, strlen (p));
+        /* Include the NUL terminator while moving the buffer.  */
+        memmove (buf, p, strlen (p) + 1);
 
       /* Return line to the caller.  */
       return 0;

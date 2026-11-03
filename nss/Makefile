@@ -306,6 +306,7 @@ tests-static            = tst-field
 
 tests-internal := \
   tst-field \
+  tst-nss-readline-whitespace \
   tst-rfc3484 \
   tst-rfc3484-2 \
   tst-rfc3484-3 \
