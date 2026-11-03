@@ -372,6 +372,12 @@ tests += tst-nss-files-hosts-getent
 tests += tst-nss-files-alias-leak
 tests += tst-nss-files-alias-truncated
 tests += tst-nss-files-network
+
+tests += tst-getnameinfo-idn-leak
+modules-names += tst-no-libidn2
+extra-test-objs += tst-no-libidn2.os
+LDFLAGS-tst-no-libidn2.so = -Wl,-soname,libidn2.so.0
+
 # tst_fgetgrent currently only works with shared libraries
 test-srcs :=  tst_fgetgrent
 ifeq ($(run-built-tests),yes)
@@ -440,13 +446,18 @@ tests-special += \
   $(objpfx)mtrace-tst-fgetent-seek.out \
   $(objpfx)mtrace-tst-nss-gai-hv2-canonname.out \
   # tests-special
+ifeq (yes,$(build-shared))
+tests-special += $(objpfx)mtrace-tst-getnameinfo-idn-leak.out
+endif
 endif
 endif
 
 generated += \
   mtrace-tst-fgetent-seek.out \
+  mtrace-tst-getnameinfo-idn-leak.out \
   mtrace-tst-nss-gai-hv2-canonname.out \
   tst-fgetent-seek.mtrace \
+  tst-getnameinfo-idn-leak.mtrace \
   tst-nss-gai-hv2-canonname.mtrace \
   # generated
 
@@ -524,6 +535,11 @@ $(objpfx)tst-nss-files-alias-truncated.out: $(objpfx)libnss_files.so
 $(objpfx)tst-getaddrinfo4: \
   $(common-objpfx)resolv/libresolv.so $(shared-thread-library)
 
+# The resolver test support starts DNS server threads.
+$(objpfx)tst-getnameinfo-idn-leak: \
+  $(common-objpfx)resolv/libresolv.so $(shared-thread-library)
+$(objpfx)tst-getnameinfo-idn-leak.out: $(objpfx)tst-no-libidn2.so
+
 $(objpfx)tst-default-domain: $(objpfx)nisdomain.os
 
 tst-fgetent-seek-ENV = \
@@ -534,6 +550,15 @@ $(objpfx)mtrace-tst-fgetent-seek.out: $(objpfx)tst-fgetent-seek.out
 	|| ( echo "tst-fgetent-seek.mtrace does not exist"; exit 77; ) \
 	&& $(common-objpfx)malloc/mtrace \
 	$(objpfx)tst-fgetent-seek.mtrace; } > $@; \
+	$(evaluate-test)
+
+tst-getnameinfo-idn-leak-ENV = \
+		MALLOC_TRACE=$(objpfx)tst-getnameinfo-idn-leak.mtrace \
+		LD_PRELOAD=$(common-objpfx)/malloc/libc_malloc_debug.so
+$(objpfx)mtrace-tst-getnameinfo-idn-leak.out: \
+  $(objpfx)tst-getnameinfo-idn-leak.out
+	$(common-objpfx)malloc/mtrace \
+	  $(objpfx)tst-getnameinfo-idn-leak.mtrace > $@; \
 	$(evaluate-test)
 
 tst-nss-gai-hv2-canonname-ENV = \

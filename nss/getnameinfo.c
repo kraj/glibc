@@ -315,15 +315,12 @@ gni_host_inet_name (struct scratch_buffer *tmpbuf,
       if (!do_idn)
 	h_name = h->h_name;
 
-      size_t len = strlen (h_name) + 1;
-      if (len > hostlen)
-	return EAI_OVERFLOW;
-      memcpy (host, h_name, len);
+      int result = checked_copy (host, hostlen, h_name);
 
       if (do_idn)
 	free (h_name);
 
-      return 0;
+      return result;
     }
 
   return EAI_NONAME;
