@@ -235,6 +235,7 @@ tests += \
   tst-sigtimedwait \
   tst-sync_file_range \
   tst-syscall-restart \
+  tst-syscall-upper-bits \
   tst-sysconf-iov_max \
   tst-sysvmsg-linux \
   tst-sysvsem-linux \

@@ -220,12 +220,13 @@
 /* Registers clobbered by syscall.  */
 # define REGISTERS_CLOBBERED_BY_SYSCALL "cc", "r11", "cx"
 
-/* NB: This also works when X is an array.  For an array X,  type of
-   (X) - (X) is ptrdiff_t, which is signed, since size of ptrdiff_t
-   == size of pointer, cast is a NOP.   */
-#define TYPEFY1(X) __typeof__ ((X) - (X))
-/* Explicit cast the argument.  */
-#define ARGIFY(X) ((TYPEFY1 (X)) (X))
+/* The psABI leaves the upper 32 bits of a register holding a 32-bit argument
+   unspecified, but the kernel reads the whole register for arguments it
+   declares as long or unsigned long.  Some of those are int in the C
+   interface (the ptrace request, for instance).  Extend each argument to the
+   full register, which sign- or zero-extends integers according to their
+   signedness.  This also works for pointers and arrays.  */
+#define ARGIFY(X) ((long int) (X))
 /* Create a variable 'name' based on type of variable 'X' to avoid
    explicit types.  */
 #define TYPEFY(X, name) __typeof__ (ARGIFY (X)) name
