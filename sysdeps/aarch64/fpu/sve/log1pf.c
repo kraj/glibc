@@ -27,11 +27,11 @@ special_case (svfloat32_t x, svfloat32_t y, svbool_t pg, svbool_t special,
 {
   y = svsel_f32 (special, svreinterpret_f32 (sv_u32 (d->nan)), y);
 
-  svbool_t ret_pinf = svcmpeq (pg, x, asfloat (d->inf));
+  svbool_t ret_pinf = svcmpeq (pg, x, INFINITY);
   svbool_t ret_minf = svcmpeq (pg, x, -1.0f);
 
-  y = svsel_f32 (ret_pinf, svreinterpret_f32 (sv_u32 (d->inf)), y);
-  return svsel_f32 (ret_minf, sv_f32 (-d->inf), y);
+  y = svsel_f32 (ret_pinf, sv_f32 (INFINITY), y);
+  return svsel_f32 (ret_minf, sv_f32 (-INFINITY), y);
 }
 
 /* Vector log1pf approximation using polynomial on reduced interval. Worst-case
@@ -43,7 +43,7 @@ svfloat32_t SV_NAME_F1 (log1p) (svfloat32_t x, svbool_t pg)
 
   const struct sv_log1pf_data *d = ptr_barrier (&sv_log1pf_data);
   /* x < -1, Inf/Nan.  */
-  svbool_t special = svcmpeq (pg, svreinterpret_u32 (x), d->inf);
+  svbool_t special = svcmpeq (pg, x, INFINITY);
   special = svorn_z (pg, special, svcmpge (pg, x, -1.0f));
 
   if (__glibc_unlikely (svptest_any (pg, special)))

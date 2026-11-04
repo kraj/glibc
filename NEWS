@@ -39,6 +39,7 @@ The following bugs are resolved with this release:
     negative base lanes with integer exponent
   [34923] math: AArch64: SVE acosh loses accuracy near 1 depending on
     other vector lanes
+  [34940] math: Bug in SVE log1pf special case
 
 Version 2.44
 
