@@ -1,0 +1,25 @@
+BIG-HKSCS decoding hang on crafted input
+
+Converting crafted BIG-HKSCS input to UCS-4 or the internal wide
+character encoding, for example with iconv, in the GNU C Library version
+2.18 through 2.31 may result in the converter making no progress,
+causing the calling application to hang.
+
+When decoding input in the BIG5-HKSCS character set, four double-byte
+sequences map to two Unicode code points each (for example, 0x88 0x62
+maps to U+00CA U+0304).  The BIG5-HKSCS gconv step emits the first code
+point and saves the second one in the converter state, to be emitted on
+the following call.  After emitting the saved second code point the step
+failed to clear the converter state.  As a result, when such a sequence
+is decoded, subsequent calls repeatedly re-emit the saved second code
+point and consume no input.  The converter then keeps emitting the
+pending character without consiming further input, so an application
+that retries the conversion loops forever.  The input and encoding must
+be attacker controlled.
+
+CVE-Id: CVE-2026-122054
+Public-Date: 2020-03-27
+Vulnerable-Commit: f22bc486c1ce5e92380a0d06b98fbba639d170e4 (2.17.90-786)
+Fix-Commit: c580e6466d6da8262820cdbad19f32c5546226cf (2.32)
+CVSS: CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H - 5.9
+Reported-By: Tom Honermann
