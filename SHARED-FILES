@@ -535,7 +535,7 @@ arm-optimized-routines:
   sysdeps/aarch64/fpu/sve/log10p1f.c
   # math/aarch64/sve/log1p.c, revision 1aad38d
   sysdeps/aarch64/fpu/sve/log1p.c
-  # math/aarch64/sve/log1pf.c, revision 35deb10
+  # math/aarch64/sve/log1pf.c, revision 5e51e52
   sysdeps/aarch64/fpu/sve/log1pf.c
   # math/aarch64/sve/log2.c, revision 91b052e
   sysdeps/aarch64/fpu/sve/log2.c
