@@ -16,4 +16,4 @@ wordfree may then issue an invalid call to free().
 CVE-Id: CVE-2026-6368
 Public-Date: 2026-07-14
 Vulnerable-Commit: 8f2ece695d8822e9ecc63ecd157e90bf17a6fe65 (1.93-260)
-Reported-by: shinobu
+Reported-By: shinobu

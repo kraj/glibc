@@ -20,4 +20,4 @@ may be limited to bespoke use cases.
 CVE-Id: CVE-2026-5450
 Public-Date: 2026-03-19
 Vulnerable-Commit: 874aa52349cc111d1f6ea5dff24bb14c306714e0 (2.7)
-Reported-by: Rocket Ma
+Reported-By: Rocket Ma

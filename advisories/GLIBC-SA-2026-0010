@@ -20,5 +20,5 @@ is not possible in the standard Unicode character sets.
 
 CVE-Id: CVE-2026-5928
 Public-Date: 2026-03-17
-Reported-by: Rocket Ma
+Reported-By: Rocket Ma
 Vulnerable-Commit: d64b6ad07585b8a37e5fecc9a47fcee766d52ede (2.1.1-89)

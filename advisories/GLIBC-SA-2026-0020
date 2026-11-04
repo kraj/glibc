@@ -26,4 +26,4 @@ Fix-Commit: 3ad1bbd8f94a207efb108a38d434695eab8a1831 (2.43-56)
 Fix-Commit: 87c2795cf6a7584e351036ab43e74b03ccc54a83 (2.42-89)
 Fix-Commit: ec116a0fbedcc860631e525e70b409cf295f27da (2.41-158)
 CVSS: CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H - 5.9
-Reported-by: AISLE in partnership with Red Hat
+Reported-By: AISLE in partnership with Red Hat

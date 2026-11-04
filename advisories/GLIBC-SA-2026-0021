@@ -22,5 +22,5 @@ CVE-Id: CVE-2026-8674
 Public-Date: 2023-11-07
 Vulnerable-Commit: 3f853f22c87f0b671c0366eb290919719fa56c0e (2.26)
 Fix-Commit: 506ea57086bfb9ce3daff1c14246a1cb532aba0a (2.45)
-Reported-by: Joshua Rogers - joshua@joshua.hu
+Reported-By: Joshua Rogers - joshua@joshua.hu
 CVSS: CVSS:3.1/AV:A/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H - 5.3

@@ -32,5 +32,5 @@ command; the attacker may use this to escape the restriction.
 CVE-Id: CVE-2026-84243
 Public-Date: 2014-07-11
 Vulnerable-Commit: 24906b43b9bd9108aef17d18dfbb8764212085f7 (1.09-261)
-Reported-by: Florian Weimer <fweimer@redhat.com>
+Reported-By: Florian Weimer <fweimer@redhat.com>
 CVSS: CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:H/I:H/A:H - 7.0

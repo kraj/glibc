@@ -24,4 +24,4 @@ Vulnerable-Commit: 77f523c473878ec0051582ef15161c6982879095 (2.36-30)
 Vulnerable-Commit: e32547d661a43da63368e488b6cfa9c53b4dcf92 (2.37)
 Fix-Commit: dd9945c0ba40d2dbc9eb7c99291ba6b69bd66718 (2.43-17)
 Fix-Commit: e10977481f4db4b2a3ce34fa4c3a1e26651ae312 (2.44)
-Reported-by: Antonio Maini (0rbitingZer0) - 0rbitingZer0@proton.me
+Reported-By: Antonio Maini (0rbitingZer0) - 0rbitingZer0@proton.me

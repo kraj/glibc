@@ -17,4 +17,4 @@ can trigger a stack clash.
 CVE-Id: CVE-2026-6791
 Public-Date: 2026-06-22
 Vulnerable-Commit: 344af000e1d6e9c7882b9bc48e71cb3f1b5fc03c (2.2.3-114)
-Reported-by: storm
+Reported-By: storm
