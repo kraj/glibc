@@ -13,7 +13,7 @@ the following call.  After emitting the saved second code point the step
 failed to clear the converter state.  As a result, when such a sequence
 is decoded, subsequent calls repeatedly re-emit the saved second code
 point and consume no input.  The converter then keeps emitting the
-pending character without consiming further input, so an application
+pending character without consuming further input, so an application
 that retries the conversion loops forever.  The input and encoding must
 be attacker controlled.
 
