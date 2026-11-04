@@ -17,6 +17,7 @@
    <https://www.gnu.org/licenses/>.  */
 
 #include <errno.h>
+#include <sched.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -161,6 +162,19 @@ test_remap_file_pages (void)
   xclose (fd);
 }
 
+static int __attribute_noinline__
+call_unshare (uint64_t flags)
+{
+  return unshare (flags);
+}
+
+/* The kernel rejects unknown flags.  */
+static void
+test_unshare (void)
+{
+  COMPARE_CALLS (unshare (0), call_unshare (DIRTY (0)));
+}
+
 static long int __attribute_noinline__
 call_ptrace (uint64_t request, pid_t pid, void *addr, void *data)
 {
@@ -200,6 +214,7 @@ do_test (void)
   test_pkey_mprotect ();
   test_pkey_alloc ();
   test_remap_file_pages ();
+  test_unshare ();
   test_ptrace ();
 
   return 0;

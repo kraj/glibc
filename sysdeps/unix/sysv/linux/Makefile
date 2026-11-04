@@ -109,6 +109,7 @@ sysdep_routines += \
   timerfd_settime \
   umount \
   umount2 \
+  unshare \
   vmsplice \
   xmknod \
   xmknodat \
