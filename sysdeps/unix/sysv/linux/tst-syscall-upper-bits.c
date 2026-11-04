@@ -25,6 +25,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <support/check.h>
+#include <support/temp_file.h>
 #include <support/xunistd.h>
 
 /* Some ABI (x86_64, aarch64) leave the upper 32 bits of a register holding
@@ -137,6 +138,29 @@ test_pkey_alloc (void)
     }
 }
 
+static int __attribute_noinline__
+call_remap_file_pages (void *start, size_t size, uint64_t prot,
+		       size_t pgoff, uint64_t flags)
+{
+  return remap_file_pages (start, size, prot, pgoff, flags);
+}
+
+/* The kernel rejects any nonzero prot.  */
+static void
+test_remap_file_pages (void)
+{
+  size_t pagesize = getpagesize ();
+  int fd = create_temp_file ("tst-syscall-upper-bits-", NULL);
+  TEST_VERIFY_EXIT (fd >= 0);
+  xftruncate (fd, pagesize);
+  void *p = xmmap (NULL, pagesize, PROT_READ, MAP_SHARED, fd);
+  COMPARE_CALLS (remap_file_pages (p, pagesize, 0, 0, 0),
+		 call_remap_file_pages (p, pagesize, DIRTY (0), 0,
+					DIRTY (0)));
+  xmunmap (p, pagesize);
+  xclose (fd);
+}
+
 static long int __attribute_noinline__
 call_ptrace (uint64_t request, pid_t pid, void *addr, void *data)
 {
@@ -175,6 +199,7 @@ do_test (void)
   test_mprotect ();
   test_pkey_mprotect ();
   test_pkey_alloc ();
+  test_remap_file_pages ();
   test_ptrace ();
 
   return 0;
