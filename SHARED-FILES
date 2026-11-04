@@ -588,7 +588,7 @@ arm-optimized-routines:
   sysdeps/aarch64/fpu/sve/sv_expf_special_inline.h
   # math/aarch64/sve/sv_expm1f_inline.h, revision 78cd003
   sysdeps/aarch64/fpu/sve/sv_expm1f_inline.h
-  # math/aarch64/sve/sv_log1p_inline.h, revision 7d08237
+  # math/aarch64/sve/sv_log1p_inline.h, revision 5e51e52
   sysdeps/aarch64/fpu/sve/sv_log1p_inline.h
   # math/aarch64/sve/sv_log1pf_inline.h, revision a386525
   sysdeps/aarch64/fpu/sve/sv_log1pf_inline.h
