@@ -570,7 +570,7 @@ arm-optimized-routines:
   sysdeps/aarch64/fpu/sve/sinpif.c
   # math/aarch64/sve/tan.c, revision 1aad38d
   sysdeps/aarch64/fpu/sve/tan.c
-  # math/aarch64/sve/tanf.c, revision 1aad38d
+  # math/aarch64/sve/tanf.c, revision 5e51e52
   sysdeps/aarch64/fpu/sve/tanf.c
   # math/aarch64/sve/tanh.c, revision 1aad38d
   sysdeps/aarch64/fpu/sve/tanh.c

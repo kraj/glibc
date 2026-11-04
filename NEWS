@@ -37,6 +37,8 @@ The following bugs are resolved with this release:
     base lanes with integer exponent
   [34921] math: Bug in SVE pow and powf with mixed subnormal and
     negative base lanes with integer exponent
+  [34922] math: AArch64: SVE tanf returns incorrect results when another
+    lane requires scalar fallback
   [34923] math: AArch64: SVE acosh loses accuracy near 1 depending on
     other vector lanes
   [34940] math: Bug in SVE log1pf special case
