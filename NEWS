@@ -23,6 +23,8 @@ The following bugs were resolved with this release:
   [34752] libc: <sys/pidfd.h> not protected for C++
   [34920] math: Bug in SVE pow and powf with mixed positive and negative
     base lanes with integer exponent
+  [34923] math: AArch64: SVE acosh loses accuracy near 1 depending on
+    other vector lanes
 
 Version 2.42
 
