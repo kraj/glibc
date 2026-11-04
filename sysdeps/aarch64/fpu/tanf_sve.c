@@ -47,8 +47,10 @@ static const struct data
 };
 
 static svfloat32_t NOINLINE
-special_case (svfloat32_t x, svfloat32_t y, svbool_t cmp)
+special_case (svfloat32_t x, svfloat32_t y, svbool_t cmp, svbool_t pred_alt)
 {
+  svfloat32_t inv_y = svdivr_x (svptrue_b32 (), y, 1.0f);
+  y = svsel (pred_alt, inv_y, y);
   return sv_call_f32 (tanf, x, y, cmp);
 }
 
@@ -107,7 +109,7 @@ svfloat32_t SV_NAME_F1 (tan) (svfloat32_t x, const svbool_t pg)
   /* Determine whether input is too large to perform fast regression.  */
   svbool_t cmp = svacge (pg, x, d->range_val);
   if (__glibc_unlikely (svptest_any (pg, cmp)))
-    return special_case (x, svdivr_x (pg, y, 1.0f), cmp);
+    return special_case (x, y, cmp, pred_alt);
 
   svfloat32_t inv_y = svdivr_x (pg, y, 1.0f);
   return svsel (pred_alt, inv_y, y);
