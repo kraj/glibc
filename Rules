@@ -426,6 +426,7 @@ ifneq "$(strip $(tests) $(tests-container) $(tests-internal) $(xtests) $(test-sr
 # These are the implicit rules for making test outputs
 # from the test programs and whatever input files are present.
 define make-test-out
+$(if $(findstring GLIBC_TUNABLES,$($*-ENV)),$(error $*-ENV contains GLIBC_TUNABLES)) \
 $(if $($*-ENV-only),$(test-wrapper-env-only) $($*-ENV-only) $(test-tunables),\
      $(test-wrapper-env) $(run-program-env) $($*-ENV) $(test-tunables)) \
 $(host-test-program-cmd) $($*-ARGS)
