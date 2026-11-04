@@ -787,7 +787,7 @@ endif
 
 LDFLAGS-tst-thp-size-mod.so = -Wl,-z,noseparate-code \
 			      $(THP-PAGE-SIZE-LDFLAGS)
-tst-thp-align-ENV = GLIBC_TUNABLES=glibc.elf.thp=1
+tst-thp-align-TUNABLES += glibc.elf.thp=1
 $(objpfx)tst-thp-align.out: $(objpfx)tst-thp-size-mod.so
 
 tests += \
@@ -837,15 +837,15 @@ $(objpfx)tst-thp-1-no-s-code: $(objpfx)tst-thp-size.o
 $(objpfx)tst-thp-1-no-s-code-pde: $(objpfx)tst-thp-size.o
 $(objpfx)tst-thp-1-no-s-code-static: $(objpfx)tst-thp-size.o
 
-tst-thp-1-no-s-code-ENV = GLIBC_TUNABLES=glibc.elf.thp=1
-tst-thp-1-no-s-code-pde-ENV = GLIBC_TUNABLES=glibc.elf.thp=1
-tst-thp-1-no-s-code-static-ENV = GLIBC_TUNABLES=glibc.elf.thp=1
+tst-thp-1-no-s-code-TUNABLES += glibc.elf.thp=1
+tst-thp-1-no-s-code-pde-TUNABLES += glibc.elf.thp=1
+tst-thp-1-no-s-code-static-TUNABLES += glibc.elf.thp=1
 
 tst-thp-1-no-s-code-pde-no-pie = yes
 
-tst-thp-1-ENV = GLIBC_TUNABLES=glibc.elf.thp=1
-tst-thp-1-pde-ENV = GLIBC_TUNABLES=glibc.elf.thp=1
-tst-thp-1-static-ENV = GLIBC_TUNABLES=glibc.elf.thp=1
+tst-thp-1-TUNABLES += glibc.elf.thp=1
+tst-thp-1-pde-TUNABLES += glibc.elf.thp=1
+tst-thp-1-static-TUNABLES += glibc.elf.thp=1
 
 $(objpfx)tst-thp-1: $(objpfx)tst-thp-size.o
 $(objpfx)tst-thp-1-pde: $(objpfx)tst-thp-size.o

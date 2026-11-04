@@ -107,8 +107,8 @@ $(objpfx)tst-isa-level-1.out: $(objpfx)tst-isa-level-mod-1-baseline.so \
 			      $(objpfx)tst-isa-level-mod-1-v3.so \
 			      $(objpfx)tst-isa-level-mod-1-v4.so
 endif
-tst-ifunc-isa-2-ENV = GLIBC_TUNABLES=glibc.cpu.hwcaps=-SSE4_2,-AVX,-AVX2,-AVX512F
-tst-ifunc-isa-2-static-ENV = $(tst-ifunc-isa-2-ENV)
+tst-ifunc-isa-2-TUNABLES = glibc.cpu.hwcaps=-SSE4_2,-AVX,-AVX2,-AVX512F
+tst-ifunc-isa-2-static-TUNABLES = $(tst-ifunc-isa-2-TUNABLES)
 tst-hwcap-tunables-ARGS = -- $(host-test-program-cmd)
 
 CFLAGS-tst-tunables-seal.c += -DTST_SEAL_TUNABLE_NAME=hwcaps
@@ -133,9 +133,9 @@ LDFLAGS-tst-gnu2-tls2-x86-noxsavexsavec += -Wl,-z,lazy -rdynamic
 
 # Test for bug 32810: incorrect XSAVE state size if XSAVEC is disabled
 # via tunable.
-tst-gnu2-tls2-x86-noxsave-ENV = GLIBC_TUNABLES=glibc.cpu.hwcaps=-XSAVE
-tst-gnu2-tls2-x86-noxsavec-ENV = GLIBC_TUNABLES=glibc.cpu.hwcaps=-XSAVEC
-tst-gnu2-tls2-x86-noxsavexsavec-ENV = GLIBC_TUNABLES=glibc.cpu.hwcaps=-XSAVE,-XSAVEC
+tst-gnu2-tls2-x86-noxsave-TUNABLES += glibc.cpu.hwcaps=-XSAVE
+tst-gnu2-tls2-x86-noxsavec-TUNABLES += glibc.cpu.hwcaps=-XSAVEC
+tst-gnu2-tls2-x86-noxsavexsavec-TUNABLES += glibc.cpu.hwcaps=-XSAVE,-XSAVEC
 $(objpfx)tst-gnu2-tls2-x86-noxsave: $(shared-thread-library)
 $(objpfx)tst-gnu2-tls2-x86-noxsavec: $(shared-thread-library)
 $(objpfx)tst-gnu2-tls2-x86-noxsavexsavec: $(shared-thread-library)
