@@ -102,10 +102,7 @@ sv_log1p_inline (svfloat64_t x, const svbool_t pg)
      that the approximation is solely the polynomial.  */
   svbool_t knot0 = svcmpne (pg, k, 0);
   cm = svdiv_z (knot0, c, m);
-  if (__glibc_likely (!svptest_any (pg, knot0)))
-    {
-      f = svsel (knot0, f, x);
-    }
+  f = svsel (knot0, f, x);
 #else
   /* No shortcut.  */
   cm = svdiv_x (pg, c, m);
