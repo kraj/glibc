@@ -39,7 +39,6 @@ lseek		-	lseek		i:iii	__libc_lseek	__lseek lseek
 madvise		-	madvise		i:pUi	__madvise	madvise
 mkdir		-	mkdir		i:si	__mkdir		mkdir
 mmap		-	mmap		b:aUiiii __mmap		mmap
-mprotect	-	mprotect	i:aUi	__mprotect	mprotect
 munmap		-	munmap		i:aU	__munmap	munmap
 open		-	open		Ci:siv	__libc_open __open open
 profil		-	profil		i:piii	__profil	profil

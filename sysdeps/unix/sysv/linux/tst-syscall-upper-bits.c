@@ -87,6 +87,25 @@ test_pkey_mprotect (void)
   pkey_free (key);
 }
 
+static int __attribute_noinline__
+call_mprotect (void *addr, size_t len, uint64_t prot)
+{
+  return mprotect (addr, len, prot);
+}
+
+/* The kernel rejects unknown prot bits.  */
+static void
+test_mprotect (void)
+{
+  size_t pagesize = getpagesize ();
+  void *p = xmmap (NULL, pagesize, PROT_READ | PROT_WRITE,
+		   MAP_PRIVATE | MAP_ANONYMOUS, -1);
+  TEST_COMPARE (call_mprotect (p, pagesize, DIRTY (PROT_READ)), 0);
+  TEST_COMPARE (call_mprotect (p, pagesize, DIRTY (PROT_READ | PROT_WRITE)),
+		0);
+  xmunmap (p, pagesize);
+}
+
 static long int __attribute_noinline__
 call_ptrace (uint64_t request, pid_t pid, void *addr, void *data)
 {
@@ -122,6 +141,7 @@ test_ptrace (void)
 static int
 do_test (void)
 {
+  test_mprotect ();
   test_pkey_mprotect ();
   test_ptrace ();
 
