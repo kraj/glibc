@@ -85,6 +85,7 @@ sysdep_routines += \
   mremap \
   open_by_handle_at \
   personality \
+  pkey_alloc \
   pkey_get \
   pkey_mprotect \
   pkey_set \

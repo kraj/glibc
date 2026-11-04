@@ -106,6 +106,37 @@ test_mprotect (void)
   xmunmap (p, pagesize);
 }
 
+static int __attribute_noinline__
+call_pkey_alloc (uint64_t flags, uint64_t access_restrictions)
+{
+  return pkey_alloc (flags, access_restrictions);
+}
+
+/* The kernel rejects nonzero flags even if protection keys are not
+   supported.  */
+static void
+test_pkey_alloc (void)
+{
+  errno = 0;
+  int key = pkey_alloc (0, 0);
+  int err = errno;
+  errno = 0;
+  int dkey = call_pkey_alloc (DIRTY (0), DIRTY (0));
+  int derr = errno;
+  if (key < 0)
+    {
+      TEST_COMPARE (dkey, -1);
+      TEST_COMPARE (derr, err);
+    }
+  else
+    {
+      TEST_VERIFY (dkey >= 0);
+      pkey_free (key);
+      if (dkey >= 0)
+	pkey_free (dkey);
+    }
+}
+
 static long int __attribute_noinline__
 call_ptrace (uint64_t request, pid_t pid, void *addr, void *data)
 {
@@ -143,6 +174,7 @@ do_test (void)
 {
   test_mprotect ();
   test_pkey_mprotect ();
+  test_pkey_alloc ();
   test_ptrace ();
 
   return 0;
