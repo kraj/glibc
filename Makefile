@@ -788,7 +788,7 @@ define summarize-tests
 	    case "$$line" in \
 	      FAIL:*) \
 	        name=$${line#FAIL: }; \
-	        escaped_name=`printf '%s' "$$name" | sed 's/[.+]/\\&/g'`; \
+	        escaped_name=$$(printf '%s' "$$name" | sed 's/[.+]/\\&/g'); \
 	        if grep -Eq -- "^$${escaped_name}[[:space:]]*#" \
 	          $(..)allowed-failures.txt; then \
 	          echo "Ignoring allowed FAIL: $${name}"; \
