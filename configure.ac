@@ -2125,6 +2125,7 @@ fi
 
 # Support configure.ac under sysdeps.
 AC_SUBST(libc_cv_test_cc_mprefer_vector_width)
+AC_SUBST(libc_cv_test_cc_fcall_used_g6)
 AC_SUBST(test_enable_cet)
 
 enable_gsframe=no

@@ -603,6 +603,7 @@ DEFINES
 profile
 libc_cv_multidir
 test_enable_cet
+libc_cv_test_cc_fcall_used_g6
 libc_cv_test_cc_mprefer_vector_width
 shared
 static
@@ -9276,6 +9277,7 @@ if test $libc_cv_sfp_handle_exceptions = yes; then
 fi
 
 # Support configure.ac under sysdeps.
+
 
 
 

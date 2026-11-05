@@ -5,6 +5,7 @@ TEST_CXX = @TEST_CXX@
 test-cc-option-wimplicit-fallthrough = @libc_cv_test_cc_wimplicit_fallthrough@
 test-config-cflags-mprefer-vector-width = @libc_cv_test_cc_mprefer_vector_width@
 test-config-cflags-signaling-nans = @libc_cv_test_cc_signaling_nans@
+test-config-cflags-fcall-used-g6 = @libc_cv_test_cc_fcall_used_g6@
 test-cc-option-wfree-labels = @libc_cv_test_cc_wfree_labels@
 test-cc-option-wmissing-parameter-name = @libc_cv_test_cc_wmissing_parameter_name@
 test-enable-cet = @test_enable_cet@
@@ -27,6 +28,7 @@ check xcheck test:
 		cc-option-wimplicit-fallthrough="$(test-cc-option-wimplicit-fallthrough)" \
 		config-cflags-mprefer-vector-width="$(test-config-cflags-mprefer-vector-width)" \
 		config-cflags-signaling-nans="$(test-config-cflags-signaling-nans)" \
+		config-cflags-fcall-used-g6="$(test-config-cflags-fcall-used-g6)" \
 		cc-option-wfree-labels="$(test-cc-option-wfree-labels)" \
 		cc-option-wmissing-parameter-name="$(test-cc-option-wmissing-parameter-name)" \
 		enable-cet="$(test-enable-cet)" \
