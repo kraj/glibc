@@ -266,7 +266,7 @@
 			  ".machine pop"				\
 			  : /* outputs */ [R_IN] "+a" (inptr)		\
 			    , [R_I] "=&a" (index)			\
-			    , [R_TMP] "=d" (tmp)			\
+			    , [R_TMP] "=&d" (tmp)			\
 			    , [R_LI] "+d" (remaining_loop_count)	\
 			  : /* inputs */ [R_BUF] "a" (buf)		\
 			    , [R_MAX] "d" (max)				\
