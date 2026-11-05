@@ -20,6 +20,7 @@
 #include <libm-alias-float.h>
 #include <math-svid-compat.h>
 #include <math.h>
+#include <stdbit.h>
 #include "math_config.h"
 
 /* With x = mx * 2^ex and y = my * 2^ey (mx, my, ex, ey being integers), the
@@ -97,7 +98,7 @@ __fmodf (float x, float y)
 
       if (__glibc_unlikely (mx == 0))
 	return asfloat (sx);
-      int shift = __builtin_clz (mx);
+      int shift = stdc_leading_zeros (mx);
       ex -= shift + 1;
       mx <<= shift;
       mx = sx | (mx >> EXPONENT_WIDTH);
@@ -130,10 +131,10 @@ __fmodf (float x, float y)
       my = hy;
       ey = 0;
       exp_diff--;
-      lead_zeros_my = __builtin_clz (my);
+      lead_zeros_my = stdc_leading_zeros (my);
     }
 
-  int tail_zeros_my = __builtin_ctz (my);
+  int tail_zeros_my = stdc_trailing_zeros (my);
   int sides_zeroes = lead_zeros_my + tail_zeros_my;
 
   int right_shift = exp_diff < tail_zeros_my ? exp_diff : tail_zeros_my;
