@@ -30,7 +30,7 @@
 # define weak_alias(a, b)
 
 # ifdef SHARED
-/* It doesn't make sense to send libc-internal strchr calls through a PLT.  */
+/* It doesn't make sense to send libc-internal memchr calls through a PLT.  */
 	.globl __GI_memchr; __GI_memchr = __memchr_generic
 # endif
 #endif

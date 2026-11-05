@@ -38,31 +38,31 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 	      IFUNC_IMPL_ADD (array, i, memchr, true, __memchr_generic))
   IFUNC_IMPL (i, name, memcmp,
 	      IFUNC_IMPL_ADD (array, i, memcmp, sve, __memcmp_kunpeng950)
-	      IFUNC_IMPL_ADD (array, i, memcmp, 1, __memcmp_generic))
+	      IFUNC_IMPL_ADD (array, i, memcmp, true, __memcmp_generic))
   IFUNC_IMPL (i, name, memcpy,
-	      IFUNC_IMPL_ADD (array, i, memcpy, 1, __memcpy_oryon1)
+	      IFUNC_IMPL_ADD (array, i, memcpy, true, __memcpy_oryon1)
 	      IFUNC_IMPL_ADD (array, i, memcpy, sve, __memcpy_a64fx)
 	      IFUNC_IMPL_ADD (array, i, memcpy, sve, __memcpy_sve)
 	      IFUNC_IMPL_ADD (array, i, memcpy, sve, __memcpy_kunpeng950)
 	      IFUNC_IMPL_ADD (array, i, memcpy, mops, __memcpy_mops)
-	      IFUNC_IMPL_ADD (array, i, memcpy, 1, __memcpy_generic))
+	      IFUNC_IMPL_ADD (array, i, memcpy, true, __memcpy_generic))
   IFUNC_IMPL (i, name, memmove,
-	      IFUNC_IMPL_ADD (array, i, memmove, 1, __memmove_oryon1)
+	      IFUNC_IMPL_ADD (array, i, memmove, true, __memmove_oryon1)
 	      IFUNC_IMPL_ADD (array, i, memmove, sve, __memmove_a64fx)
 	      IFUNC_IMPL_ADD (array, i, memmove, sve, __memmove_sve)
 	      IFUNC_IMPL_ADD (array, i, memmove, mops, __memmove_mops)
-	      IFUNC_IMPL_ADD (array, i, memmove, 1, __memmove_generic))
+	      IFUNC_IMPL_ADD (array, i, memmove, true, __memmove_generic))
   IFUNC_IMPL (i, name, memset,
-	      IFUNC_IMPL_ADD (array, i, memset, (zva_size == 64), __memset_zva64)
-	      IFUNC_IMPL_ADD (array, i, memset, (zva_size == 64), __memset_oryon1)
-	      IFUNC_IMPL_ADD (array, i, memset, 1, __memset_kunpeng)
+	      IFUNC_IMPL_ADD (array, i, memset, zva_size == 64, __memset_zva64)
+	      IFUNC_IMPL_ADD (array, i, memset, zva_size == 64, __memset_oryon1)
+	      IFUNC_IMPL_ADD (array, i, memset, true, __memset_kunpeng)
 	      IFUNC_IMPL_ADD (array, i, memset, sve && zva_size == 256, __memset_a64fx)
 	      IFUNC_IMPL_ADD (array, i, memset, sve && zva_size == 64, __memset_sve_zva64)
 	      IFUNC_IMPL_ADD (array, i, memset, mops, __memset_mops)
-	      IFUNC_IMPL_ADD (array, i, memset, 1, __memset_generic))
+	      IFUNC_IMPL_ADD (array, i, memset, true, __memset_generic))
   IFUNC_IMPL (i, name, strlen,
 	      IFUNC_IMPL_ADD (array, i, strlen, sve2 && !mte, __strlen_sve2)
 	      IFUNC_IMPL_ADD (array, i, strlen, !mte, __strlen_asimd)
-	      IFUNC_IMPL_ADD (array, i, strlen, 1, __strlen_generic))
+	      IFUNC_IMPL_ADD (array, i, strlen, true, __strlen_generic))
   return 0;
 }
