@@ -196,7 +196,7 @@ get_exponent (uint32_t x)
 static inline double
 make_float (uint32_t x, int ep, uint32_t s)
 {
-  int lz = __builtin_clz (x) - EXPONENT_WIDTH;
+  int lz = stdc_leading_zeros (x) - EXPONENT_WIDTH;
   x <<= lz;
   ep -= lz;
 

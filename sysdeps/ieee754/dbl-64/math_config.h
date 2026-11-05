@@ -58,7 +58,7 @@ roundeven_finite (double x)
     {
       union { double f; uint64_t i; } u = {y};
       union { double f; uint64_t i; } v = {y - copysign (1.0, x)};
-      if (__builtin_ctzll (v.i) > __builtin_ctzll (u.i))
+      if (stdc_trailing_zeros (v.i) > stdc_trailing_zeros (u.i))
         y = v.f;
     }
   return y;
