@@ -24,3 +24,7 @@ Vulnerable-Commit: 3f853f22c87f0b671c0366eb290919719fa56c0e (2.26)
 Fix-Commit: 506ea57086bfb9ce3daff1c14246a1cb532aba0a (2.45)
 Reported-By: Joshua Rogers - joshua@joshua.hu
 CVSS: CVSS:3.1/AV:A/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H - 5.3
+Fix-Commit: c97fdd483232a831829aaff458a212307f1bf4bc (2.41-163)
+Fix-Commit: c0c8a45dee30c8089822d859575a3ad4324b15ff (2.42-99)
+Fix-Commit: d6c6dd71c63411229e3a39cb4946546acd22a668 (2.43-70)
+Fix-Commit: 1f5026241027260e9280039698bca031484c82ad (2.44-48)

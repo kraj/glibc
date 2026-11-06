@@ -15,3 +15,7 @@ Vulnerable-Commit: c8376f3e07602aaef9cb843bb73cb5f2b860634a (2.23.90-474)
 Fix-Commit: e622f82ea8797704ac8f761f88ed3e429e97fedd (2.45)
 CVSS: CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:L - 3.7
 Reported-By: AISLE in partnership with Red Hat
+Fix-Commit: f247c0a2fb5b3e48a771d2d23efc9a45c64e957d (2.41-167)
+Fix-Commit: e39d4ded3f28903fd2a504da8dfd136bcd285477 (2.42-103)
+Fix-Commit: 562cd7badd3f9edd74b68316439f910f6f7c4c1f (2.43-75)
+Fix-Commit: 34106fee698c83eb0af71d4d0381e66b399be746 (2.44-57)

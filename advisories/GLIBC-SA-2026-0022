@@ -26,3 +26,7 @@ Vulnerable-Commit: 47c3cd7a74e8c089d60d603afce6d9cf661178d6 (2.13-113)
 Fix-Commit: ed0c137b97eb940b4b64981e84ed806d3276edd9 (2.45)
 Reported-By: Jann Horn <jannh@google.com>
 CVSS: CVSS:3.1/AV:L/AC:H/PR:L/UI:R/S:U/C:H/I:H/A:L - 6.3
+Fix-Commit: 6b48c0b29c359dfa84c09c32373a48c8f663c304 (2.44-49)
+Fix-Commit: 629565b0c91dc326ac622b05982f21a374cd03c4 (2.41-165)
+Fix-Commit: 58927d6ca643e6c5b00625d7b5b323f7e14dc791 (2.42-101)
+Fix-Commit: 533e1c955c7bb9b761749751ec743b46c6bd2238 (2.43-74)

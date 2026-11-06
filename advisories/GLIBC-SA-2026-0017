@@ -19,3 +19,7 @@ Public-Date: 2026-08-11
 Vulnerable-Commit: e88b9f0e5cc50cab57a299dc7efe1a4eb385161d (2.38)
 Fix-Commit: b090cf226ff65b913e41536f1f573f500855615c (2.45)
 Reported-By: AISLE in partnership with Red Hat
+Fix-Commit: 5256941bc811248670eda4636dccd0a390d34dec (2.41-156)
+Fix-Commit: 6ad255db1dad9f2761935d3125b5bc7fa0e6128f (2.42-87)
+Fix-Commit: 713998bf001027c2507cb56f9d1c73e46a6bad0b (2.43-54)
+Fix-Commit: 63b53df549451a5d69fcba6d7612ea99f517e8e3 (2.44-29)

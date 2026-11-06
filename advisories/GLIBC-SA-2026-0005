@@ -35,3 +35,10 @@ Fix-Commit: 5c6fca0c62ce5bd6e68e259f138097756cbafd4d (2.43-16)
 Fix-Commit: 9f5f18aab40ec6b61fa49a007615e6077e9a979b (2.44)
 Reported-By: Antonio Maini (0rbitingZer0) - 0rbitingZer0@proton.me
 Reported-By: Kevin Farrell
+Fix-Commit: fe7ce8f57442cbe647f3af1b3e35343e2ef437b3 (2.36-249)
+Fix-Commit: 0cd6f8733d99d0fc6ebe52d0215cb09438246411 (2.37-177)
+Fix-Commit: 1583ad96e53a879d7421f33eff5d08fecf9373b0 (2.38-217)
+Fix-Commit: 5663ab0b833df187b15e7bb4b18173e22beb8bd1 (2.39-293)
+Fix-Commit: acf870165a07fb229e10e53b1fd53520e8c0cf9d (2.40-222)
+Fix-Commit: dbd8335c8ce8af11226ee1514d7a020b15c63345 (2.41-131)
+Fix-Commit: 8e863fb1c92360520704a69dc948be6bb4a17cb3 (2.42-58)
