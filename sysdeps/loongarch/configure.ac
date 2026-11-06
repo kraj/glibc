@@ -75,7 +75,7 @@ void foo (void)
   asm volatile ("vldi \$vr0, 1" ::: "\$vr0");
 }
 EOF
-if AC_TRY_COMMAND(${CC-cc} -c -mlsx $CFLAGS conftest.s -o conftest 1>&AS_MESSAGE_LOG_FD); then
+if AC_TRY_COMMAND(${CC-cc} -c -mlsx $CFLAGS conftest.c -o conftest 1>&AS_MESSAGE_LOG_FD); then
   libc_cv_loongarch_vec_com=yes
 else
   libc_cv_loongarch_vec_com=no
