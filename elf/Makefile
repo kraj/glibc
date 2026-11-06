@@ -3324,6 +3324,7 @@ tst-getauxval-static-ENV = LD_LIBRARY_PATH=$(objpfx):$(common-objpfx)
 
 $(objpfx)tst-ptrguard-static-dlopen.out: \
   $(objpfx)tst-ptrguard-static-dlopen-mod.so
+tst-ptrguard-static-dlopen-ENV = $(static-dlopen-environment)
 
 $(objpfx)tst-dlmopen-gethostbyname.out: $(objpfx)tst-dlmopen-gethostbyname-mod.so
 
