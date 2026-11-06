@@ -1,7 +1,7 @@
 GLIBC_PROVIDES dnl See aclocal.m4 in the top level source directory.
 # Local configure fragment for sysdeps/arm.
 
-dnl Test if the foolchain supports static PIE, the -static-pie should not only
+dnl Test if the toolchain supports static PIE, the -static-pie should not only
 dnl be accepted, but also generate a ET_DYN without a INTERP entry.
 AC_CACHE_CHECK([if compiler support static PIE],
 libc_cv_static_pie_on_arm, [
