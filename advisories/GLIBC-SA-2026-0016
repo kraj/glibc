@@ -25,5 +25,5 @@ resolving names, but it does not result in a denial of service.
 CVE-Id: CVE-2026-89092
 CVSS: CVSS:3.1/AV:A/AC:H/PR:N/UI:N/S:U/C:N/I:L/A:L - 4.2
 Public-Date: 2026-09-10
-Vulnerable-Commit: d19687d6ebc545b633e14c07429f7892a599d0b9
+Vulnerable-Commit: d19687d6ebc545b633e14c07429f7892a599d0b9 (2.3.4)
 Reported-By: Anmol Singh Rajput
