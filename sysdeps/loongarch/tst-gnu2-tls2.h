@@ -76,7 +76,7 @@
   unsigned long hwcap = getauxval (AT_HWCAP);
 
 #define	LOAD_REGISTER_FLOAT()						\
-  for (int i = 0; i < 24; i++)						\
+  for (int i = 0; i < 32; i++)						\
     src_float[i] = i + 1;						\
   asm volatile ("fld.d $f0, %0" ::"m"(src_float[0]) :"$f0");		\
   asm volatile ("fld.d $f1, %0" ::"m"(src_float[1]) :"$f1"); 		\
@@ -102,9 +102,25 @@
   asm volatile ("fld.d $f21, %0" ::"m"(src_float[21]) :"$f21");		\
   asm volatile ("fld.d $f22, %0" ::"m"(src_float[22]) :"$f22");		\
   asm volatile ("fld.d $f23, %0" ::"m"(src_float[23]) :"$f23");		\
+  /* Keep the callee-saved values live as operands across TLSDESC_CALL.  */ \
+  asm volatile ("fld.d %0, %8\n\t"					\
+		"fld.d %1, %9\n\t"					\
+		"fld.d %2, %10\n\t"					\
+		"fld.d %3, %11\n\t"					\
+		"fld.d %4, %12\n\t"					\
+		"fld.d %5, %13\n\t"					\
+		"fld.d %6, %14\n\t"					\
+		"fld.d %7, %15"						\
+		: "=f"(src_f24), "=f"(src_f25), "=f"(src_f26),		\
+		  "=f"(src_f27), "=f"(src_f28), "=f"(src_f29),		\
+		  "=f"(src_f30), "=f"(src_f31)				\
+		: "m"(src_float[24]), "m"(src_float[25]),		\
+		  "m"(src_float[26]), "m"(src_float[27]),		\
+		  "m"(src_float[28]), "m"(src_float[29]),		\
+		  "m"(src_float[30]), "m"(src_float[31]));		\
 
 #define	SAVE_REGISTER_FLOAT()						\
-  double restore_float[24];						\
+  double restore_float[32];						\
   asm volatile ("fst.d $f0, %0" :"=m"(restore_float[0]));		\
   asm volatile ("fst.d $f1, %0" :"=m"(restore_float[1])); 		\
   asm volatile ("fst.d $f2, %0" :"=m"(restore_float[2])); 		\
@@ -129,6 +145,23 @@
   asm volatile ("fst.d $f21, %0" :"=m"(restore_float[21]));		\
   asm volatile ("fst.d $f22, %0" :"=m"(restore_float[22]));		\
   asm volatile ("fst.d $f23, %0" :"=m"(restore_float[23]));		\
+  /* Tie the stores to the values loaded above so GCC cannot restore
+     the callee-saved registers before store.  */			\
+  asm volatile ("fst.d %8, %0\n\t"					\
+		"fst.d %9, %1\n\t"					\
+		"fst.d %10, %2\n\t"					\
+		"fst.d %11, %3\n\t"					\
+		"fst.d %12, %4\n\t"					\
+		"fst.d %13, %5\n\t"					\
+		"fst.d %14, %6\n\t"					\
+		"fst.d %15, %7"						\
+		: "=m"(restore_float[24]), "=m"(restore_float[25]),	\
+		  "=m"(restore_float[26]), "=m"(restore_float[27]),	\
+		  "=m"(restore_float[28]), "=m"(restore_float[29]),	\
+		  "=m"(restore_float[30]), "=m"(restore_float[31])	\
+		: "f"(src_f24), "f"(src_f25), "f"(src_f26),		\
+		  "f"(src_f27), "f"(src_f28), "f"(src_f29),		\
+		  "f"(src_f30), "f"(src_f31));				\
   if (memcmp (src_float, restore_float, sizeof (src_float)) != 0)	\
     {									\
       printf ("Float registers compare failed!\n");			\
@@ -162,14 +195,17 @@
     asm volatile ("vldi $vr21, 22" ::: "$vr21");			\
     asm volatile ("vldi $vr22, 23" ::: "$vr22");			\
     asm volatile ("vldi $vr23, 24" ::: "$vr23");			\
-    asm volatile ("vldi $vr24, 25" ::: "$vr24");			\
-    asm volatile ("vldi $vr25, 26" ::: "$vr25");			\
-    asm volatile ("vldi $vr26, 27" ::: "$vr26");			\
-    asm volatile ("vldi $vr27, 28" ::: "$vr27");			\
-    asm volatile ("vldi $vr28, 29" ::: "$vr28");			\
-    asm volatile ("vldi $vr29, 30" ::: "$vr29");			\
-    asm volatile ("vldi $vr30, 31" ::: "$vr30");			\
-    asm volatile ("vldi $vr31, 32" ::: "$vr31");
+    asm volatile ("vldi %w0, 25\n\t"					\
+		  "vldi %w1, 26\n\t"					\
+		  "vldi %w2, 27\n\t"					\
+		  "vldi %w3, 28\n\t"					\
+		  "vldi %w4, 29\n\t"					\
+		  "vldi %w5, 30\n\t"					\
+		  "vldi %w6, 31\n\t"					\
+		  "vldi %w7, 32"					\
+		  : "=f"(src_f24), "=f"(src_f25), "=f"(src_f26),	\
+		    "=f"(src_f27), "=f"(src_f28), "=f"(src_f29),	\
+		    "=f"(src_f30), "=f"(src_f31));
 #else
   #define	LOAD_REGISTER_LSX()
 #endif
@@ -202,14 +238,24 @@
     asm volatile ("vst $vr21, %0" :"=m"(restore_lsx[21]));		\
     asm volatile ("vst $vr22, %0" :"=m"(restore_lsx[22]));		\
     asm volatile ("vst $vr23, %0" :"=m"(restore_lsx[23]));		\
-    asm volatile ("vst $vr24, %0" :"=m"(restore_lsx[24]));		\
-    asm volatile ("vst $vr25, %0" :"=m"(restore_lsx[25]));		\
-    asm volatile ("vst $vr26, %0" :"=m"(restore_lsx[26]));		\
-    asm volatile ("vst $vr27, %0" :"=m"(restore_lsx[27]));		\
-    asm volatile ("vst $vr28, %0" :"=m"(restore_lsx[28]));		\
-    asm volatile ("vst $vr29, %0" :"=m"(restore_lsx[29]));		\
-    asm volatile ("vst $vr30, %0" :"=m"(restore_lsx[30]));		\
-    asm volatile ("vst $vr31, %0" :"=m"(restore_lsx[31]));		\
+    /* Tie the stores to the values loaded above so GCC cannot restore
+       the callee-save registers($f24-$f31, which overlap with the low
+       64 bits of $vr24-$vr31) before the store.  */			\
+    asm volatile ("vst %w8, %0\n\t"					\
+		  "vst %w9, %1\n\t"					\
+		  "vst %w10, %2\n\t"					\
+		  "vst %w11, %3\n\t"					\
+		  "vst %w12, %4\n\t"					\
+		  "vst %w13, %5\n\t"					\
+		  "vst %w14, %6\n\t"					\
+		  "vst %w15, %7"					\
+		  : "=m"(restore_lsx[24]), "=m"(restore_lsx[25]),	\
+		    "=m"(restore_lsx[26]), "=m"(restore_lsx[27]),	\
+		    "=m"(restore_lsx[28]), "=m"(restore_lsx[29]),	\
+		    "=m"(restore_lsx[30]), "=m"(restore_lsx[31])	\
+		  : "f"(src_f24), "f"(src_f25), "f"(src_f26),		\
+		    "f"(src_f27), "f"(src_f28), "f"(src_f29),		\
+		    "f"(src_f30), "f"(src_f31));			\
     for (int i = 0; i < 32; i++)					\
       for (int j = 0; j < 4; j++)					\
 	{								\
@@ -251,14 +297,17 @@
     asm volatile ("xvldi $xr21, 22" ::: "$xr21");			\
     asm volatile ("xvldi $xr22, 23" ::: "$xr22");			\
     asm volatile ("xvldi $xr23, 24" ::: "$xr23");			\
-    asm volatile ("xvldi $xr24, 25" ::: "$xr24");			\
-    asm volatile ("xvldi $xr25, 26" ::: "$xr25");			\
-    asm volatile ("xvldi $xr26, 27" ::: "$xr26");			\
-    asm volatile ("xvldi $xr27, 28" ::: "$xr27");			\
-    asm volatile ("xvldi $xr28, 29" ::: "$xr28");			\
-    asm volatile ("xvldi $xr29, 30" ::: "$xr29");			\
-    asm volatile ("xvldi $xr30, 31" ::: "$xr30");			\
-    asm volatile ("xvldi $xr31, 32" ::: "$xr31");
+    asm volatile ("xvldi %u0, 25\n\t"					\
+		  "xvldi %u1, 26\n\t"					\
+		  "xvldi %u2, 27\n\t"					\
+		  "xvldi %u3, 28\n\t"					\
+		  "xvldi %u4, 29\n\t"					\
+		  "xvldi %u5, 30\n\t"					\
+		  "xvldi %u6, 31\n\t"					\
+		  "xvldi %u7, 32"					\
+		  : "=f"(src_f24), "=f"(src_f25), "=f"(src_f26),	\
+		    "=f"(src_f27), "=f"(src_f28), "=f"(src_f29),	\
+		    "=f"(src_f30), "=f"(src_f31));
 #else
   #define	LOAD_REGISTER_LASX()
 #endif
@@ -291,14 +340,21 @@
     asm volatile ("xvst $xr21, %0" :"=m"(restore_lasx[21]));		\
     asm volatile ("xvst $xr22, %0" :"=m"(restore_lasx[22]));		\
     asm volatile ("xvst $xr23, %0" :"=m"(restore_lasx[23]));		\
-    asm volatile ("xvst $xr24, %0" :"=m"(restore_lasx[24]));		\
-    asm volatile ("xvst $xr25, %0" :"=m"(restore_lasx[25]));		\
-    asm volatile ("xvst $xr26, %0" :"=m"(restore_lasx[26]));		\
-    asm volatile ("xvst $xr27, %0" :"=m"(restore_lasx[27]));		\
-    asm volatile ("xvst $xr28, %0" :"=m"(restore_lasx[28]));		\
-    asm volatile ("xvst $xr29, %0" :"=m"(restore_lasx[29]));		\
-    asm volatile ("xvst $xr30, %0" :"=m"(restore_lasx[30]));		\
-    asm volatile ("xvst $xr31, %0" :"=m"(restore_lasx[31]));		\
+    asm volatile ("xvst %u8, %0\n\t"					\
+		  "xvst %u9, %1\n\t"					\
+		  "xvst %u10, %2\n\t"					\
+		  "xvst %u11, %3\n\t"					\
+		  "xvst %u12, %4\n\t"					\
+		  "xvst %u13, %5\n\t"					\
+		  "xvst %u14, %6\n\t"					\
+		  "xvst %u15, %7"					\
+		  : "=m"(restore_lasx[24]), "=m"(restore_lasx[25]),	\
+		    "=m"(restore_lasx[26]), "=m"(restore_lasx[27]),	\
+		    "=m"(restore_lasx[28]), "=m"(restore_lasx[29]),	\
+		    "=m"(restore_lasx[30]), "=m"(restore_lasx[31])	\
+		  : "f"(src_f24), "f"(src_f25), "f"(src_f26),		\
+		    "f"(src_f27), "f"(src_f28), "f"(src_f29),		\
+		    "f"(src_f30), "f"(src_f31));			\
     /* memcmp_lasx/strlen_lasx corrupts LSX/LASX registers, */		\
     for (int i = 0; i < 32; i++)					\
       for (int j = 0; j < 8; j++)					\
@@ -316,8 +372,19 @@
 
 #define BEFORE_TLSDESC_CALL()						\
   unsigned long src;							\
-  double src_float[24];							\
+  double src_float[32];							\
   unsigned int src_fcc[8];						\
+  /* Model the callee-saved low 64 bits so the compiler cannot restore
+     the entry values before the save macros store the full-width vector
+     registers.  */							\
+  register double src_f24 asm ("$f24");					\
+  register double src_f25 asm ("$f25");					\
+  register double src_f26 asm ("$f26");					\
+  register double src_f27 asm ("$f27");					\
+  register double src_f28 asm ("$f28");					\
+  register double src_f29 asm ("$f29");					\
+  register double src_f30 asm ("$f30");					\
+  register double src_f31 asm ("$f31");					\
   SAVE_REGISTER (src);							\
 									\
   if (hwcap & HWCAP_LOONGARCH_LASX)					\
