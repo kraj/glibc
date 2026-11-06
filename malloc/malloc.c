@@ -2551,7 +2551,6 @@ mremap_chunk (mchunkptr p, size_t new_size)
   bool is_hp = mmap_is_hp (p);
   size_t pagesize = is_hp ? mp_.hp_pagesize : GLRO (dl_pagesize);
   INTERNAL_SIZE_T offset = mmap_base_offset (p);
-  INTERNAL_SIZE_T size = chunksize (p);
   char *cp;
 
   assert (chunk_is_mmapped (p));
@@ -2571,7 +2570,7 @@ mremap_chunk (mchunkptr p, size_t new_size)
     return p;
 
   cp = (char *) __mremap ((char *) block, total_size, new_size,
-                          MREMAP_MAYMOVE);
+			  MREMAP_MAYMOVE);
 
   if (cp == MAP_FAILED)
     return NULL;
@@ -2584,8 +2583,8 @@ mremap_chunk (mchunkptr p, size_t new_size)
   p = mmap_set_chunk ((uintptr_t) cp, new_size, offset, is_hp);
 
   INTERNAL_SIZE_T new;
-  new = atomic_fetch_add_relaxed (&mp_.mmapped_mem, new_size - size - offset)
-        + new_size - size - offset;
+  new = atomic_fetch_add_relaxed (&mp_.mmapped_mem, new_size - total_size)
+	+ new_size - total_size;
   atomic_max (&mp_.max_mmapped_mem, new);
   return p;
 }
