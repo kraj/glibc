@@ -19,6 +19,9 @@
 
 	.text
 
+/* Keep __start_context - 1 outside of any FDE to stop unwinding.  */
+	nop
+
 /* This is the helper code which gets called if a function which is
    registered with 'makecontext' returns.  In this case we have to
    install the context listed in the uc_link element of the context
