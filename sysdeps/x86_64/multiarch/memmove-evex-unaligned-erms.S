@@ -11,7 +11,7 @@
 # include "memmove-vec-unaligned-erms.S"
 
 
-# if MINIMUM_X86_ISA_LEVEL == 4
+# if MINIMUM_X86_ISA_LEVEL == 4 && !defined PAGE_UNROLLED
 #  include "memmove-shlib-compat.h"
 # endif
 #endif
