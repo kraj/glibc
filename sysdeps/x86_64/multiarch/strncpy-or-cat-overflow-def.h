@@ -39,7 +39,11 @@
 #    define ISA_EXT _evex512
 #  endif
 #else
-#  define UNDERSCORES
+#  if defined USE_AS_STPCPY || defined USE_AS_WCSCPY
+#    define UNDERSCORES __
+#  else
+#    define UNDERSCORES
+#  endif
 #  define ISA_EXT
 #endif
 
@@ -65,7 +69,13 @@
 #define PRIMITIVE_OF_NAMER(underscores, prefix, postfix, ext)                 \
   underscores##prefix##postfix##ext
 
-#define OF_NAMER(...) PRIMITIVE_OF_NAMER (__VA_ARGS__)
+#if IS_IN (libc) && !defined USE_MULTIARCH
+#  define OF_JUMPTARGET(...) HIDDEN_JUMPTARGET (__VA_ARGS__)
+#else
+#  define OF_JUMPTARGET(...) __VA_ARGS__
+#endif
+
+#define OF_NAMER(...) OF_JUMPTARGET (PRIMITIVE_OF_NAMER (__VA_ARGS__))
 
 #ifndef OVERFLOW_STRCPY
 #  define OVERFLOW_STRCPY                                                     \
