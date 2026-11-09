@@ -230,6 +230,15 @@ passed to 'configure'.  For example:
      Disable using 'scv' instruction for syscalls.  All syscalls will
      use 'sc' instead, even if the kernel supports 'scv'.  PowerPC only.
 
+'--disable-malloc-default-thp'
+     Do not make 'malloc' use Transparent Huge Pages by default.  This
+     restores the behavior of 'glibc.malloc.hugetlb=0' as the default,
+     which can reduce memory usage on systems with limited memory.  Huge
+     pages can still be enabled at run time by setting the
+     'glibc.malloc.hugetlb' tunable to '1'.  This only affects targets
+     which use Transparent Huge Pages in 'malloc' by default, currently
+     AArch64.
+
 '--build=BUILD-SYSTEM'
 '--host=HOST-SYSTEM'
      These options are for cross-compiling.  If you specify both options

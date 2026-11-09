@@ -16,6 +16,13 @@
    License along with the GNU C Library; see the file COPYING.LIB.  If
    not, see <https://www.gnu.org/licenses/>.  */
 
+#ifndef _LINUX_AARCH64_HUGEPAGES_H
+#define _LINUX_AARCH64_HUGEPAGES_H
+
+/* Only define this on the first inclusion, the generic hugepages.h may
+   undefine it if glibc is configured with --disable-malloc-default-thp.  */
 #define MALLOC_DEFAULT_THP_PAGESIZE	(1UL << 21)
 
 #include_next <hugepages.h>
+
+#endif

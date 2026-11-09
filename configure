@@ -815,6 +815,7 @@ enable_pt_chown
 enable_mathvec
 enable_cet
 enable_scv
+enable_malloc_default_thp
 enable_fortify_source
 enable_sframe
 with_cpu
@@ -1495,6 +1496,10 @@ Optional Features:
                           (CET), x86 only
   --disable-scv           syscalls will not use scv instruction, even if the
                           kernel supports it, powerpc only
+  --disable-malloc-default-thp
+                          malloc will not use Transparent Huge Pages by
+                          default on targets which enable them,
+                          glibc.malloc.hugetlb=1 can still enable them
   --enable-fortify-source[=1|2|3]
                           Use -D_FORTIFY_SOURCE=[1|2|3] to control code
                           hardening, defaults to highest possible value
@@ -4826,6 +4831,22 @@ fi
 if test "$use_scv" != "no"
 then :
   printf "%s\n" "#define USE_PPC_SCV 1" >>confdefs.h
+
+fi
+
+# Check whether --enable-malloc-default-thp was given.
+if test ${enable_malloc_default_thp+y}
+then :
+  enableval=$enable_malloc_default_thp; use_malloc_default_thp=$enableval
+else case e in #(
+  e) use_malloc_default_thp=yes ;;
+esac
+fi
+
+
+if test "$use_malloc_default_thp" != "no"
+then :
+  printf "%s\n" "#define USE_MALLOC_DEFAULT_THP 1" >>confdefs.h
 
 fi
 

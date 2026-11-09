@@ -369,7 +369,8 @@ still be created depending on the OS settings.
 Setting its value to @code{1} enables the use of @code{madvise} with
 @code{MADV_HUGEPAGE} after memory allocation with @code{mmap}.  It is enabled
 only if the system supports Transparent Huge Page (currently only on Linux).
-This is the default used for AArch64.
+This is the default used for AArch64, unless @theglibc{} was configured
+with @option{--disable-malloc-default-thp}.
 
 When @code{glibc.elf.thp} set to 1, malloc uses the actual kernel THP mode
 instead of defaulting to madvise mode and madvise_thp will stop issuing

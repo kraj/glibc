@@ -261,6 +261,14 @@ C++ libraries.
 Disable using @code{scv} instruction for syscalls. All syscalls will use
 @code{sc} instead, even if the kernel supports @code{scv}. PowerPC only.
 
+@item --disable-malloc-default-thp
+Do not make @code{malloc} use Transparent Huge Pages by default.  This
+restores the behavior of @code{glibc.malloc.hugetlb=0} as the default,
+which can reduce memory usage on systems with limited memory.  Huge pages
+can still be enabled at run time by setting the @code{glibc.malloc.hugetlb}
+tunable to @code{1}.  This only affects targets which use Transparent
+Huge Pages in @code{malloc} by default, currently AArch64.
+
 @item --build=@var{build-system}
 @itemx --host=@var{host-system}
 These options are for cross-compiling.  If you specify both options and

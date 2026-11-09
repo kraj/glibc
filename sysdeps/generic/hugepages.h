@@ -53,6 +53,10 @@ enum thp_mode_t __get_thp_mode (void) attribute_hidden;
 void __get_hugepage_config (size_t requested, size_t *pagesize, int *flags)
      attribute_hidden;
 
+#ifndef USE_MALLOC_DEFAULT_THP
+# undef MALLOC_DEFAULT_THP_PAGESIZE
+#endif
+
 #ifndef MALLOC_DEFAULT_THP_PAGESIZE
 # define MALLOC_DEFAULT_THP_PAGESIZE	0
 #endif

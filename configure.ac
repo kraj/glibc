@@ -401,6 +401,14 @@ AC_ARG_ENABLE([scv],
 
 AS_IF([[test "$use_scv" != "no"]],[AC_DEFINE(USE_PPC_SCV)])
 
+AC_ARG_ENABLE([malloc-default-thp],
+	      AS_HELP_STRING([--disable-malloc-default-thp],
+			     [malloc will not use Transparent Huge Pages by default on targets which enable them, glibc.malloc.hugetlb=1 can still enable them]),
+	      [use_malloc_default_thp=$enableval],
+	      [use_malloc_default_thp=yes])
+
+AS_IF([[test "$use_malloc_default_thp" != "no"]],[AC_DEFINE(USE_MALLOC_DEFAULT_THP)])
+
 dnl Build glibc with _FORTIFY_SOURCE
 AC_ARG_ENABLE(fortify-source,
               AS_HELP_STRING([--enable-fortify-source@<:@=1|2|3@:>@],
