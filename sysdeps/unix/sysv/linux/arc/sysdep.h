@@ -24,25 +24,6 @@
 #include <sysdeps/unix/sysdep.h>
 #include <sysdeps/unix/sysv/linux/sysdep.h>
 
-/* "workarounds" for generic code needing to handle 64-bit time_t.  */
-
-/* Fix sysdeps/unix/sysv/linux/clock_getcpuclockid.c.  */
-#define __NR_clock_getres	__NR_clock_getres_time64
-/* Fix sysdeps/nptl/lowlevellock-futex.h.  */
-#define __NR_futex		__NR_futex_time64
-/* Fix sysdeps/unix/sysv/linux/pause.c.  */
-#define __NR_ppoll		__NR_ppoll_time64
-/* Fix sysdeps/unix/sysv/linux/select.c.  */
-#define __NR_pselect6		__NR_pselect6_time64
-/* Fix sysdeps/unix/sysv/linux/recvmmsg.c.  */
-#define __NR_recvmmsg		__NR_recvmmsg_time64
-/* Fix sysdeps/unix/sysv/linux/sigtimedwait.c.  */
-#define __NR_rt_sigtimedwait	__NR_rt_sigtimedwait_time64
-/* Fix sysdeps/unix/sysv/linux/semtimedop.c.  */
-#define __NR_semtimedop		__NR_semtimedop_time64
-/* Hack sysdeps/unix/sysv/linux/generic/utimes.c.  */
-#define __NR_utimensat		__NR_utimensat_time64
-
 /* For RTLD_PRIVATE_ERRNO.  */
 #include <dl-sysdep.h>
 

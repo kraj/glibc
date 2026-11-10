@@ -176,10 +176,6 @@ __pthread_mutex_unlock_full (pthread_mutex_t *mutex, int decr)
       THREAD_SETMEM (THREAD_SELF, robust_head.list_op_pending, NULL);
       break;
 
-    /* The PI support requires the Linux futex system call.  If that's not
-       available, pthread_mutex_init should never have allowed the type to
-       be set.  So it will get the default case for an invalid type.  */
-#ifdef __NR_futex
     case PTHREAD_MUTEX_PI_RECURSIVE_NP:
       /* Recursive mutex.  */
       if (mutex->__data.__owner != THREAD_GETMEM (THREAD_SELF, tid))
@@ -292,7 +288,6 @@ __pthread_mutex_unlock_full (pthread_mutex_t *mutex, int decr)
 	 PTHREAD_MUTEX_ROBUST_NORMAL_NP.  */
       THREAD_SETMEM (THREAD_SELF, robust_head.list_op_pending, NULL);
       break;
-#endif  /* __NR_futex.  */
 
     case PTHREAD_MUTEX_PP_RECURSIVE_NP:
       /* Recursive mutex.  */
