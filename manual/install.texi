@@ -116,6 +116,11 @@ smallest version of the Linux kernel the generated library is expected
 to support.  The higher the @var{version} number is, the less
 compatibility code is added, and the faster the code gets.
 
+On 32-bit targets that still support a 32-bit @code{time_t}, such as
+i386 and arm, a @var{version} of 5.1.0 or later also makes @theglibc{}
+use only the 64-bit time system calls.  This is required to run on
+kernels built without @code{CONFIG_COMPAT_32BIT_TIME}.
+
 @item --with-binutils=@var{directory}
 Use the binutils (assembler and linker) in @file{@var{directory}}, not
 the ones the C compiler would default to.  You can use this option if

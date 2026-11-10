@@ -86,6 +86,11 @@ passed to 'configure'.  For example:
      expected to support.  The higher the VERSION number is, the less
      compatibility code is added, and the faster the code gets.
 
+     On 32-bit targets that still support a 32-bit 'time_t', such as
+     i386 and arm, a VERSION of 5.1.0 or later also makes the GNU C
+     Library use only the 64-bit time system calls.  This is required to
+     run on kernels built without 'CONFIG_COMPAT_32BIT_TIME'.
+
 '--with-binutils=DIRECTORY'
      Use the binutils (assembler and linker) in 'DIRECTORY', not the
      ones the C compiler would default to.  You can use this option if

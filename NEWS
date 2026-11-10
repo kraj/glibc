@@ -24,7 +24,11 @@ Deprecated and removed features, and other changes affecting compatibility:
 
 Changes to build and runtime requirements:
 
-  [Add changes to build and runtime requirements here]
+* On 32-bit targets that still support a 32-bit time_t, such as i386 and
+  arm, the library now uses only the 64-bit time system calls when it is
+  configured with --enable-kernel=5.1.0 or later.  Such a build can run
+  on Linux kernels built without CONFIG_COMPAT_32BIT_TIME.  With an older
+  minimum kernel version, the 32-bit time system calls are still used.
 
 Security related changes:
 
