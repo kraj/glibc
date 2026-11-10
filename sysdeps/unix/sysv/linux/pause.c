@@ -27,6 +27,8 @@ __libc_pause (void)
 {
 #ifdef __NR_pause
   return SYSCALL_CANCEL (pause);
+#elif defined(__ASSUME_TIME64_SYSCALLS) && defined(__NR_ppoll_time64)
+  return SYSCALL_CANCEL (ppoll_time64, NULL, 0, NULL, NULL);
 #else
   return SYSCALL_CANCEL (ppoll, NULL, 0, NULL, NULL);
 #endif

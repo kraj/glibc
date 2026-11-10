@@ -99,7 +99,11 @@ __getrandom_nocancel_nostatus_direct (void *buf, size_t buflen, unsigned int fla
 static inline int
 __poll_infinity_nocancel (struct pollfd *fds, nfds_t nfds)
 {
+#if defined(__ASSUME_TIME64_SYSCALLS) && defined(__NR_ppoll_time64)
+  return INLINE_SYSCALL_CALL (ppoll_time64, fds, nfds, NULL, NULL, 0);
+#else
   return INLINE_SYSCALL_CALL (ppoll, fds, nfds, NULL, NULL, 0);
+#endif
 }
 
 #endif /* NOT_CANCEL_H  */

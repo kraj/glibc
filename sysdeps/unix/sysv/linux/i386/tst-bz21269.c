@@ -66,6 +66,12 @@ static int
 futex (int *uaddr, int futex_op, int val, void *timeout, int *uaddr2,
 	int val3)
 {
+#ifdef SYS_futex_time64
+  long int r = syscall (SYS_futex_time64, uaddr, futex_op, val, timeout,
+			uaddr2, val3);
+  if (r != -1 || errno != ENOSYS)
+    return r;
+#endif
   return syscall (SYS_futex, uaddr, futex_op, val, timeout, uaddr2, val3);
 }
 
