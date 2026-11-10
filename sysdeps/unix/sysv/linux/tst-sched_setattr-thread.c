@@ -18,6 +18,7 @@
 
 #include <sched.h>
 
+#include <errno.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <support/check.h>
@@ -79,8 +80,24 @@ thread_routine (void *nice_value_ptr)
 static int
 do_test (void)
 {
-  if (nice (initial_nice_value) != initial_nice_value)
-    FAIL_UNSUPPORTED ("cannot set nice value to initial_nice_value: %m");
+  /* Start with SCHED_OTHER and initial_nice_value to avoid the
+     environment's scheduling policy and nice value affecting us
+     as much as possible.  */
+  struct sched_attr attr =
+    {
+      .size = sizeof (attr),
+      .sched_policy = SCHED_OTHER,
+      .sched_nice = initial_nice_value,
+    };
+  if (sched_setattr (0, &attr, 0) != 0)
+    {
+      /* Leaving SCHED_IDLE or lowering the nice value needs
+         CAP_SYS_NICE or a sufficient RLIMIT_NICE.  */
+      if (errno == EPERM)
+        FAIL_UNSUPPORTED ("cannot set SCHED_OTHER with nice value %d: %m",
+                          initial_nice_value);
+      FAIL_EXIT1 ("sched_setattr: %m");
+    }
 
   xpthread_barrier_init (&barrier, NULL, 3);
 
