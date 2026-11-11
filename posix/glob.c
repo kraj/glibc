@@ -1227,7 +1227,10 @@ collated_compare (const void *a, const void *b)
 /* Prepend DIRNAME to each of N members of ARRAY, replacing ARRAY's
    elements in place.  Return nonzero if out of memory, zero if successful.
    A slash is inserted between DIRNAME and each elt of ARRAY,
-   unless DIRNAME is just "/".  Each old element of ARRAY is freed.  */
+   unless DIRNAME is just "/".  Each old element of ARRAY is freed.
+   If out of memory, ARRAY keeps the elements already replaced and the
+   original ones after them, so the caller can free all of them with
+   globfree.  */
 static int
 prefix_array (const char *dirname, char **array, size_t n)
 {
@@ -1259,20 +1262,16 @@ prefix_array (const char *dirname, char **array, size_t n)
     {
       size_t eltlen = strlen (array[i]) + 1;
       char *new = malloc (dirlen + 1 + eltlen);
-      if (new == NULL)
+      if (new != NULL)
         {
-          while (i > 0)
-            free (array[--i]);
-          return 1;
+          char *endp = mempcpy (new, dirname, dirlen);
+          *endp++ = dirsep_char;
+          mempcpy (endp, array[i], eltlen);
+          free (array[i]);
+          array[i] = new;
         }
-
-      {
-        char *endp = mempcpy (new, dirname, dirlen);
-        *endp++ = dirsep_char;
-        mempcpy (endp, array[i], eltlen);
-      }
-      free (array[i]);
-      array[i] = new;
+      else
+        return 1;
     }
 
   return 0;
