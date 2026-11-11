@@ -74,6 +74,9 @@ Security related changes:
   GLIBC-SA-2026-0030: ISO-2022-CN-EXT decoder may read past input
   (CVE-2026-121758).
 
+  GLIBC-SA-2026-0032: Double free after allocation failure in glob
+  (CVE-2026-126765).
+
 The following bugs are resolved with this release:
 
   [11053] regex: Wrong results with backreferences
@@ -197,6 +200,8 @@ The following bugs are resolved with this release:
     (CVE-2026-121758)
   [34989] stdio: Wide scanf %s and %[ write an extra null byte past the
     destination (CVE-2026-115819)
+  [34993] glob: double free in prefix_array after a memory allocation
+    failure (CVE-2026-126765)
 
 Version 2.34
 
