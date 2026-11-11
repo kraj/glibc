@@ -76,6 +76,8 @@ L (thread_start):
 	   .cfi_label to force starting the FDE.  */
 	.cfi_label .Ldummy
 	cfi_undefined (ra)
+	/* Terminate the frame-pointer chain.  */
+	li	s0, 0
 
 	/* Restore the arg for user's function.  */
 	REG_L		a1,0(sp)	/* Function pointer.  */

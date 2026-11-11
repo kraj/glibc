@@ -47,6 +47,8 @@ ENTRY (ENTRY_POINT)
 	   .cfi_label to force starting the FDE.  */
 	.cfi_label .Ldummy
 	cfi_undefined (ra)
+	/* Terminate the frame-pointer chain.  */
+	li	s0, 0
 	call  load_gp
 	mv    a5, a0  /* rtld_fini.  */
 	/* main may be in a shared library.  */
