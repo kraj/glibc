@@ -569,6 +569,7 @@ $(objpfx)tst-regexloc.out: $(gen-locales)
 $(objpfx)tst-rxspencer.out: $(gen-locales)
 $(objpfx)tst-rxspencer-no-utf8.out: $(gen-locales)
 $(objpfx)tst-regcomp-truncated.out: $(gen-locales)
+$(objpfx)tst-regcomp-bracket-free.out: $(gen-locales)
 endif
 
 # If we will use the generic uname implementation, we must figure out what
