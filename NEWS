@@ -38,6 +38,8 @@ The following bugs were resolved with this release:
     other vector lanes
   [34989] stdio: Wide scanf %s and %[ write an extra null byte past the
     destination (CVE-2026-115819)
+  [34993] glob: double free in prefix_array after a memory allocation
+    failure (CVE-2026-126765)
 
 Version 2.42
 

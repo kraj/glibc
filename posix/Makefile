@@ -288,6 +288,7 @@ tests := \
   tst-fork \
   tst-gai_strerror \
   tst-getopt_long1 \
+  tst-glob-nospace \
   tst-glob-tilde \
   tst-glob_symlinks \
   tst-gnuglob \
