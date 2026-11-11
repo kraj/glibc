@@ -45,20 +45,15 @@ double-sve-funcs = $(libmvec-supported-funcs)
 mathvec-types = float double
 mathvec-subdirs = advsimd sve
 
+# Archive members do not retain their directories, so use distinct basenames
+# for AdvSIMD and SVE objects.
+sysd-rules-patterns += $(foreach dir,$(mathvec-subdirs),\
+                        $(dir)_%:$(dir)/%)
+
 ifeq ($(subdir),mathvec)
-generated-dirs += $(mathvec-subdirs)
-generated += $(addsuffix /stamp,$(mathvec-subdirs))
-before-compile += $(addprefix $(objpfx),$(addsuffix /stamp,$(mathvec-subdirs)))
-
-$(addprefix $(objpfx),$(addsuffix /stamp,$(mathvec-subdirs))):
-	$(make-target-directory)
-	touch $@
-
-sysd-rules-patterns += $(foreach dir,$(mathvec-subdirs),$(dir)/%:$(dir)/%)
-
 define libmvec-routines-for
-$(addprefix $(1)/,$(addsuffix f,$(float-$(1)-funcs))) \
-$(addprefix $(1)/,$(double-$(1)-funcs))
+$(addprefix $(1)_,$(addsuffix f,$(float-$(1)-funcs))) \
+$(addprefix $(1)_,$(double-$(1)-funcs))
 endef
 
 libmvec-vector-routines = $(foreach dir,$(mathvec-subdirs),\
@@ -128,11 +123,7 @@ $(foreach type,$(mathvec-types),\
     $(eval $(call sve-bench-cflags-template,$(type),$(f)))))
 
 # Specialize CFLAGS used for building SVE sources.
-define sve-object-cflags-template
-$(objpfx)sve/%$(1): CFLAGS += $(sve-cflags)
-endef
-
-$(foreach o,$(all-object-suffixes),$(eval $(call sve-object-cflags-template,$(o))))
+sve_CFLAGS = $(sve-cflags)
 
 CFLAGS-test-float-sve-wrappers.c = $(sve-cflags)
 CFLAGS-test-double-sve-wrappers.c = $(sve-cflags)
