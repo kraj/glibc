@@ -289,6 +289,7 @@ tests := \
   tst-getaddrinfo2 \
   tst-getaddrinfo3 \
   tst-getopt_long1 \
+  tst-glob-nospace \
   tst-glob-tilde \
   tst-glob_symlinks \
   tst-gnuglob \
