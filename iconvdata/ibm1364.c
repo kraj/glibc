@@ -286,7 +286,7 @@ enum
     while (cmbp->res1 < ch)						      \
       ++cmbp;								      \
     /* XXX if last char is beginning of combining store in state */	      \
-    if (cmbp->res1 == ch && inptr + 4 < inend)				      \
+    if (cmbp->res1 == ch && inend - inptr >= 8)				      \
       {									      \
 	/* See if input is part of a combined character.  */		      \
 	uint32_t ch_next = get32 (inptr + 4);				      \
