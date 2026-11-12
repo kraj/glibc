@@ -54,6 +54,9 @@ The following bugs are resolved with this release:
  [34752] libc: <sys/pidfd.h> not protected for C++
  [34766] malloc: Setting tcache_max >= 2^32 makes malloc read out of
    bounds
+ [34774] locale: ISO-2022-CN-EXT iconv decoder: SO byte without a
+   designation advances the input pointer out of bounds
+   (CVE-2026-121758)
  [34920] math: Bug in SVE pow and powf with mixed positive and negative
    base lanes with integer exponent
  [34922] math: AArch64: SVE tanf returns incorrect results when another
