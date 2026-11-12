@@ -248,12 +248,9 @@ enum
       }									      \
     else if (ch == SO)							      \
       {									      \
-	/* Switch to use GB2312, GB12345, CNS 11643 plane 1, or ISO-IR-165,   \
-	   depending on which S0 designation came last.  The only problem     \
-	   is what to do with faulty input files where no designator came.    \
-	   XXX For now I'll default to use GB2312.  If this is not the	      \
-	   best behavior (e.g., we should flag an error) let me know.  */     \
-	++inptr;							      \
+	/* Switch to the character set designated last for SO.  A faulty      \
+	   input file may contain an SO byte without a prior SO               \
+	   designation; treat such a lone SO as an illegal sequence.  */      \
 	if ((ann & SO_ann) != 0)					      \
 	  switch (ann & SO_ann)						      \
 	    {								      \
@@ -276,6 +273,7 @@ enum
 	  {								      \
 	    STANDARD_FROM_LOOP_ERR_HANDLER (1);				      \
 	  }								      \
+	++inptr;							      \
 	continue;							      \
       }									      \
     else if (ch == SI)							      \
