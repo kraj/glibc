@@ -26,6 +26,9 @@ The following bugs were resolved with this release:
   [34507] nptl: Pretty-printer tests FAIL instead of UNSUPPORTED when
     cross-testing without python3 on target
   [34752] libc: <sys/pidfd.h> not protected for C++
+  [34774] locale: ISO-2022-CN-EXT iconv decoder: SO byte without a
+    designation advances the input pointer out of bounds
+    (CVE-2026-121758)
   [34920] math: Bug in SVE pow and powf with mixed positive and negative
     base lanes with integer exponent
   [34922] math: AArch64: SVE tanf returns incorrect results when another
