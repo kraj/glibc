@@ -83,6 +83,9 @@ The following bugs are resolved with this release:
     designation advances the input pointer out of bounds
     (CVE-2026-121758)
   [34890] malloc: free may change errno under some conditions
+  [34914] locale: iconv: IBM1390/IBM1399 encoders read up to 3 bytes
+    past the input buffer when the last complete character is a
+    combining base (CVE-2026-124024)
   [34920] math: Bug in SVE pow and powf with mixed positive and negative
     base lanes with integer exponent
   [34922] math: AArch64: SVE tanf returns incorrect results when another
