@@ -89,6 +89,7 @@ tests = \
   tst-bug33980 \
   tst-e2big \
   tst-iconv-big5-hkscs-to-2ucs4 \
+  tst-iconv-ibm1390 \
   tst-iconv-iso-2022-cn-ext \
   tst-iconv4 \
   tst-iconv6 \
@@ -356,6 +357,8 @@ $(objpfx)tst-bug33980.out: $(addprefix $(objpfx), $(gconv-modules)) \
 			   $(addprefix $(objpfx),$(modules.so))
 $(objpfx)tst-jisx0213-progress.out: \
   $(addprefix $(objpfx), $(gconv-modules)) $(addprefix $(objpfx),$(modules.so))
+$(objpfx)tst-iconv-ibm1390.out: $(addprefix $(objpfx), $(gconv-modules)) \
+				$(addprefix $(objpfx),$(modules.so))
 
 $(objpfx)iconv-test.out: run-iconv-test.sh \
 			 $(addprefix $(objpfx), $(gconv-modules)) \
