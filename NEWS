@@ -57,6 +57,9 @@ Security related changes:
   GLIBC-SA-2026-0027: scanf %s and %[ one-byte buffer overflow in wide
   character conversion (CVE-2026-115819).
 
+  GLIBC-SA-2026-0030: ISO-2022-CN-EXT decoder may read past input
+  (CVE-2026-121758).
+
 The following bugs are resolved with this release:
 
   [12154] Do not fail DNS resolution for CNAMEs which are not host names
@@ -125,6 +128,9 @@ The following bugs are resolved with this release:
   [33814] glob: wordexp with WRDE_REUSE and WRDE_APPEND may return
     uninitialized memory
   [34752] libc: <sys/pidfd.h> not protected for C++
+  [34774] locale: ISO-2022-CN-EXT iconv decoder: SO byte without a
+    designation advances the input pointer out of bounds
+    (CVE-2026-121758)
   [34989] stdio: Wide scanf %s and %[ write an extra null byte past the
     destination (CVE-2026-115819)
 
