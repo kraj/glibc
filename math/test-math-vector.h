@@ -67,6 +67,8 @@ mathvec_fill (FLOAT *vec, FLOAT val, int len)
       { -FUNC (__builtin_nan) (""), "-qNaN" },
       { CONCAT (PREFIX, _MAX), "max" },
       { -CONCAT (PREFIX, _MAX), "-max" },
+      { 1.0, "1" },
+      { -1.0, "-1" },
       { CONCAT (PREFIX, _TRUE_MIN), "min_subnorm" },
       { -CONCAT (PREFIX, _TRUE_MIN), "-min_subnorm" },
       { 0.0, "0" },
