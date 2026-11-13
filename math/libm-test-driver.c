@@ -24,6 +24,13 @@
 const int flag_test_errno = TEST_ERRNO;
 const int flag_test_exceptions = TEST_EXCEPTIONS;
 const int flag_test_mathvec = TEST_MATHVEC;
+#if TEST_MATHVEC
+/* Lane layout state shared with the vector wrappers, see
+   test-math-vector.h.  */
+int mathvec_layout;
+int mathvec_num_layouts = 1;
+char mathvec_layout_desc[MATHVEC_LAYOUT_DESC_LEN];
+#endif
 
 #if TEST_NARROW
 const int snan_tests_arg = SNAN_TESTS (ARG_FLOAT);
@@ -500,10 +507,36 @@ struct test_Ff_b1_data
 #define EXTRA_OUTPUT_TEST_CLEANUP(N)		\
   free (extra##N##_name)
 
+#if TEST_MATHVEC
+/* Run CALL and check its result once for each lane layout provided by the
+   vector wrapper.  */
+# define RUN_TEST_MATHVEC(ARG_STR, CALL, EXPECTED, EXCEPTIONS)		\
+  do									\
+    if (enable_test (EXCEPTIONS))					\
+      for (mathvec_layout = 0; mathvec_layout < mathvec_num_layouts;	\
+	   mathvec_layout++)						\
+	{								\
+	  FLOAT mathvec_ret = (CALL);					\
+	  char *test_name;						\
+	  if (asprintf (&test_name, "%s (%s)%s", this_func, (ARG_STR),	\
+			mathvec_layout_desc) == -1)			\
+	    abort ();							\
+	  check_float (test_name, mathvec_ret, EXPECTED, EXCEPTIONS);	\
+	  COMMON_TEST_CLEANUP;						\
+	}								\
+  while (0)
 /* Run an individual test, including any required setup and checking
    of results, or loop over all tests in an array.  */
-#define RUN_TEST_1_f(ARG_STR, FUNC_NAME, ARG, EXPECTED,			\
-		     EXCEPTIONS)					\
+# define RUN_TEST_1_f(ARG_STR, FUNC_NAME, ARG, EXPECTED, EXCEPTIONS)	\
+  RUN_TEST_MATHVEC (ARG_STR, FUNC_TEST (FUNC_NAME) (ARG), EXPECTED,	\
+		    EXCEPTIONS)
+# define RUN_TEST_2_f(ARG_STR, FUNC_NAME, ARG1, ARG2, EXPECTED,		\
+		      EXCEPTIONS)					\
+  RUN_TEST_MATHVEC (ARG_STR, FUNC_TEST (FUNC_NAME) (ARG1, ARG2),	\
+		    EXPECTED, EXCEPTIONS)
+#else
+# define RUN_TEST_1_f(ARG_STR, FUNC_NAME, ARG, EXPECTED,		\
+		      EXCEPTIONS)					\
   do									\
     if (enable_test (EXCEPTIONS))					\
       {									\
@@ -513,6 +546,18 @@ struct test_Ff_b1_data
 	COMMON_TEST_CLEANUP;						\
       }									\
   while (0)
+# define RUN_TEST_2_f(ARG_STR, FUNC_NAME, ARG1, ARG2, EXPECTED,	\
+		      EXCEPTIONS)				\
+  do								\
+    if (enable_test (EXCEPTIONS))				\
+      {								\
+	COMMON_TEST_SETUP (ARG_STR);				\
+	check_float (test_name, FUNC_TEST (FUNC_NAME) (ARG1, ARG2),	\
+		     EXPECTED, EXCEPTIONS);			\
+	COMMON_TEST_CLEANUP;					\
+      }								\
+  while (0)
+#endif /* #if TEST_MATHVEC */
 #define RUN_TEST_LOOP_1_f(FUNC_NAME, ARRAY, ROUNDING_MODE)		\
   IF_ROUND_INIT_ ## ROUNDING_MODE					\
     for (size_t i = 0; i < sizeof (ARRAY) / sizeof (ARRAY)[0]; i++)	\
@@ -540,17 +585,6 @@ struct test_Ff_b1_data
 		    (ARRAY)[i].RM_##ROUNDING_MODE.expected,		\
 		    (ARRAY)[i].RM_##ROUNDING_MODE.exceptions);		\
   ROUND_RESTORE_ ## ROUNDING_MODE
-#define RUN_TEST_2_f(ARG_STR, FUNC_NAME, ARG1, ARG2, EXPECTED,	\
-		     EXCEPTIONS)				\
-  do								\
-    if (enable_test (EXCEPTIONS))				\
-      {								\
-	COMMON_TEST_SETUP (ARG_STR);				\
-	check_float (test_name, FUNC_TEST (FUNC_NAME) (ARG1, ARG2),	\
-		     EXPECTED, EXCEPTIONS);			\
-	COMMON_TEST_CLEANUP;					\
-      }								\
-  while (0)
 #define RUN_TEST_LOOP_2_f(FUNC_NAME, ARRAY, ROUNDING_MODE)		\
   IF_ROUND_INIT_ ## ROUNDING_MODE					\
     for (size_t i = 0; i < sizeof (ARRAY) / sizeof (ARRAY)[0]; i++)	\

@@ -22,12 +22,13 @@
   VEC_TYPE vector_func (VEC_TYPE);                                            \
   FLOAT scalar_func (FLOAT x)                                                 \
   {                                                                           \
-    int i;                                                                    \
-    VEC_TYPE mx;                                                              \
-    INIT_VEC_LOOP (mx, x, VEC_LEN);                                           \
-    VEC_TYPE mr = vector_func (mx);                                           \
-    TEST_VEC_LOOP (mr, VEC_LEN);                                              \
-    return ((FLOAT) mr[0]);                                                   \
+    FLOAT a[VEC_LEN], r[VEC_LEN];                                             \
+    int lane = mathvec_fill (a, x, VEC_LEN);                                  \
+    VEC_TYPE mx, mr;                                                          \
+    memcpy (&mx, a, sizeof (mx));                                             \
+    mr = vector_func (mx);                                                    \
+    memcpy (r, &mr, sizeof (mr));                                             \
+    return r[lane];                                                           \
   }
 
 #define VPCS_VECTOR_WRAPPER_ff(scalar_func, vector_func)                      \
@@ -35,11 +36,13 @@
   VEC_TYPE vector_func (VEC_TYPE, VEC_TYPE);                                  \
   FLOAT scalar_func (FLOAT x, FLOAT y)                                        \
   {                                                                           \
-    int i;                                                                    \
-    VEC_TYPE mx, my;                                                          \
-    INIT_VEC_LOOP (mx, x, VEC_LEN);                                           \
-    INIT_VEC_LOOP (my, y, VEC_LEN);                                           \
-    VEC_TYPE mr = vector_func (mx, my);                                       \
-    TEST_VEC_LOOP (mr, VEC_LEN);                                              \
-    return ((FLOAT) mr[0]);                                                   \
+    FLOAT a[VEC_LEN], b[VEC_LEN], r[VEC_LEN];                                 \
+    int lane = mathvec_fill (a, x, VEC_LEN);                                  \
+    mathvec_fill (b, y, VEC_LEN);                                             \
+    VEC_TYPE mx, my, mr;                                                      \
+    memcpy (&mx, a, sizeof (mx));                                             \
+    memcpy (&my, b, sizeof (my));                                             \
+    mr = vector_func (mx, my);                                                \
+    memcpy (r, &mr, sizeof (mr));                                             \
+    return r[lane];                                                           \
   }

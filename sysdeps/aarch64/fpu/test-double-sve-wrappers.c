@@ -27,19 +27,27 @@
   extern VEC_TYPE vector_func (VEC_TYPE, svbool_t);                           \
   FLOAT scalar_func (FLOAT x)                                                 \
   {                                                                           \
-    VEC_TYPE mx = svdup_n_f64 (x);                                            \
-    VEC_TYPE mr = vector_func (mx, svptrue_b64 ());                           \
-    return svlastb_f64 (svptrue_b64 (), mr);                                  \
+    FLOAT a[VEC_LEN], r[VEC_LEN];                                             \
+    int lane = mathvec_fill (a, x, VEC_LEN);                                  \
+    svbool_t pg = svptrue_b64 ();                                             \
+    VEC_TYPE mr = vector_func (svld1_f64 (pg, a), pg);                        \
+    svst1_f64 (pg, r, mr);                                                    \
+    return r[lane];                                                           \
   }
 
 #define SVE_VECTOR_WRAPPER_ff(scalar_func, vector_func)                       \
   extern VEC_TYPE vector_func (VEC_TYPE, VEC_TYPE, svbool_t);                 \
   FLOAT scalar_func (FLOAT x, FLOAT y)                                        \
   {                                                                           \
-    VEC_TYPE mx = svdup_n_f64 (x);                                            \
-    VEC_TYPE my = svdup_n_f64 (y);                                            \
-    VEC_TYPE mr = vector_func (mx, my, svptrue_b64 ());                       \
-    return svlastb_f64 (svptrue_b64 (), mr);                                  \
+    FLOAT a[VEC_LEN], b[VEC_LEN], r[VEC_LEN];                                 \
+    int lane = mathvec_fill (a, x, VEC_LEN);                                  \
+    mathvec_fill (b, y, VEC_LEN);                                             \
+    svbool_t pg = svptrue_b64 ();                                             \
+    VEC_TYPE mx = svld1_f64 (pg, a);                                          \
+    VEC_TYPE my = svld1_f64 (pg, b);                                          \
+    VEC_TYPE mr = vector_func (mx, my, pg);                                   \
+    svst1_f64 (pg, r, mr);                                                    \
+    return r[lane];                                                           \
   }
 
 SVE_VECTOR_WRAPPER (acos_sve, _ZGVsMxv_acos)
