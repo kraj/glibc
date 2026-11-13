@@ -20,10 +20,10 @@
 
 static const struct test_ff_f_data pow_test_data[] =
   {
-    TEST_ff_f (pow, qnan_value, 0, 1, ERRNO_UNCHANGED|NO_TEST_MATHVEC),
-    TEST_ff_f (pow, -qnan_value, 0, 1, ERRNO_UNCHANGED|NO_TEST_MATHVEC),
-    TEST_ff_f (pow, qnan_value, minus_zero, 1, ERRNO_UNCHANGED|NO_TEST_MATHVEC),
-    TEST_ff_f (pow, -qnan_value, minus_zero, 1, ERRNO_UNCHANGED|NO_TEST_MATHVEC),
+    TEST_ff_f (pow, qnan_value, 0, 1, ERRNO_UNCHANGED),
+    TEST_ff_f (pow, -qnan_value, 0, 1, ERRNO_UNCHANGED),
+    TEST_ff_f (pow, qnan_value, minus_zero, 1, ERRNO_UNCHANGED),
+    TEST_ff_f (pow, -qnan_value, minus_zero, 1, ERRNO_UNCHANGED),
     TEST_ff_f (pow, snan_value, 0, qnan_value, INVALID_EXCEPTION|NO_TEST_MATHVEC),
     TEST_ff_f (pow, -snan_value, 0, qnan_value, INVALID_EXCEPTION|NO_TEST_MATHVEC),
     TEST_ff_f (pow, snan_value, minus_zero, qnan_value, INVALID_EXCEPTION|NO_TEST_MATHVEC),
