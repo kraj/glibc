@@ -30,6 +30,8 @@ const int flag_test_mathvec = TEST_MATHVEC;
 int mathvec_layout;
 int mathvec_num_layouts = 1;
 char mathvec_layout_desc[MATHVEC_LAYOUT_DESC_LEN];
+struct mathvec_changed mathvec_changed[MATHVEC_MAX_LANES];
+int mathvec_num_changed;
 #endif
 
 #if TEST_NARROW
@@ -508,8 +510,27 @@ struct test_Ff_b1_data
   free (extra##N##_name)
 
 #if TEST_MATHVEC
+/* Check the control lanes whose results changed in the last call to a vector
+   wrapper against their results with the control value in every lane (see
+   test-math-vector.h).  TEST_NAME is the name of the test of the checked
+   lane.  */
+static inline void
+mathvec_check_changed (const char *test_name)
+{
+  for (int i = 0; i < mathvec_num_changed; i++)
+    {
+      char *name;
+      if (asprintf (&name, "%s [control lane %d]", test_name,
+		    mathvec_changed[i].lane) == -1)
+	abort ();
+      check_float (name, mathvec_changed[i].result,
+		   mathvec_changed[i].expected, 0);
+      free (name);
+    }
+}
+
 /* Run CALL and check its result once for each lane layout provided by the
-   vector wrapper.  */
+   vector wrapper, including the control lanes that changed.  */
 # define RUN_TEST_MATHVEC(ARG_STR, CALL, EXPECTED, EXCEPTIONS)		\
   do									\
     if (enable_test (EXCEPTIONS))					\
@@ -522,6 +543,7 @@ struct test_Ff_b1_data
 			mathvec_layout_desc) == -1)			\
 	    abort ();							\
 	  check_float (test_name, mathvec_ret, EXPECTED, EXCEPTIONS);	\
+	  mathvec_check_changed (test_name);				\
 	  COMMON_TEST_CLEANUP;						\
 	}								\
   while (0)

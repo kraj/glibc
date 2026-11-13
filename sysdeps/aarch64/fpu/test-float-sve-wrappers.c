@@ -25,29 +25,30 @@
    predication.  */
 #define SVE_VECTOR_WRAPPER(scalar_func, vector_func)                          \
   extern VEC_TYPE vector_func (VEC_TYPE, svbool_t);                           \
+  static void                                                                 \
+  CONCAT (scalar_func, _call) (const FLOAT *a, FLOAT *r)                      \
+  {                                                                           \
+    svbool_t pg = svptrue_b32 ();                                             \
+    svst1_f32 (pg, r, vector_func (svld1_f32 (pg, a), pg));                   \
+  }                                                                           \
   FLOAT scalar_func (FLOAT x)                                                 \
   {                                                                           \
-    FLOAT a[VEC_LEN], r[VEC_LEN];                                             \
-    int lane = mathvec_fill (a, x, VEC_LEN);                                  \
-    svbool_t pg = svptrue_b32 ();                                             \
-    VEC_TYPE mr = vector_func (svld1_f32 (pg, a), pg);                        \
-    svst1_f32 (pg, r, mr);                                                    \
-    return r[lane];                                                           \
+    return mathvec_run_f (CONCAT (scalar_func, _call), x, VEC_LEN);           \
   }
 
 #define SVE_VECTOR_WRAPPER_ff(scalar_func, vector_func)                       \
   extern VEC_TYPE vector_func (VEC_TYPE, VEC_TYPE, svbool_t);                 \
-  FLOAT scalar_func (FLOAT x, FLOAT y)                                        \
+  static void                                                                 \
+  CONCAT (scalar_func, _call) (const FLOAT *a, const FLOAT *b, FLOAT *r)      \
   {                                                                           \
-    FLOAT a[VEC_LEN], b[VEC_LEN], r[VEC_LEN];                                 \
-    int lane = mathvec_fill (a, x, VEC_LEN);                                  \
-    mathvec_fill (b, y, VEC_LEN);                                             \
     svbool_t pg = svptrue_b32 ();                                             \
     VEC_TYPE mx = svld1_f32 (pg, a);                                          \
     VEC_TYPE my = svld1_f32 (pg, b);                                          \
-    VEC_TYPE mr = vector_func (mx, my, pg);                                   \
-    svst1_f32 (pg, r, mr);                                                    \
-    return r[lane];                                                           \
+    svst1_f32 (pg, r, vector_func (mx, my, pg));                              \
+  }                                                                           \
+  FLOAT scalar_func (FLOAT x, FLOAT y)                                        \
+  {                                                                           \
+    return mathvec_run_ff (CONCAT (scalar_func, _call), x, y, VEC_LEN);       \
   }
 
 SVE_VECTOR_WRAPPER (acosf_sve, _ZGVsMxv_acosf)

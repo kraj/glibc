@@ -20,29 +20,32 @@
 #define VPCS_VECTOR_WRAPPER(scalar_func, vector_func)                         \
   extern __attribute__ ((aarch64_vector_pcs))                                 \
   VEC_TYPE vector_func (VEC_TYPE);                                            \
-  FLOAT scalar_func (FLOAT x)                                                 \
+  static void                                                                 \
+  CONCAT (scalar_func, _call) (const FLOAT *a, FLOAT *r)                      \
   {                                                                           \
-    FLOAT a[VEC_LEN], r[VEC_LEN];                                             \
-    int lane = mathvec_fill (a, x, VEC_LEN);                                  \
     VEC_TYPE mx, mr;                                                          \
     memcpy (&mx, a, sizeof (mx));                                             \
     mr = vector_func (mx);                                                    \
     memcpy (r, &mr, sizeof (mr));                                             \
-    return r[lane];                                                           \
+  }                                                                           \
+  FLOAT scalar_func (FLOAT x)                                                 \
+  {                                                                           \
+    return mathvec_run_f (CONCAT (scalar_func, _call), x, VEC_LEN);           \
   }
 
 #define VPCS_VECTOR_WRAPPER_ff(scalar_func, vector_func)                      \
   extern __attribute__ ((aarch64_vector_pcs))                                 \
   VEC_TYPE vector_func (VEC_TYPE, VEC_TYPE);                                  \
-  FLOAT scalar_func (FLOAT x, FLOAT y)                                        \
+  static void                                                                 \
+  CONCAT (scalar_func, _call) (const FLOAT *a, const FLOAT *b, FLOAT *r)      \
   {                                                                           \
-    FLOAT a[VEC_LEN], b[VEC_LEN], r[VEC_LEN];                                 \
-    int lane = mathvec_fill (a, x, VEC_LEN);                                  \
-    mathvec_fill (b, y, VEC_LEN);                                             \
     VEC_TYPE mx, my, mr;                                                      \
     memcpy (&mx, a, sizeof (mx));                                             \
     memcpy (&my, b, sizeof (my));                                             \
     mr = vector_func (mx, my);                                                \
     memcpy (r, &mr, sizeof (mr));                                             \
-    return r[lane];                                                           \
+  }                                                                           \
+  FLOAT scalar_func (FLOAT x, FLOAT y)                                        \
+  {                                                                           \
+    return mathvec_run_ff (CONCAT (scalar_func, _call), x, y, VEC_LEN);       \
   }
