@@ -64,7 +64,7 @@ texis-path := $(filter-out $(libc-texi-generated) summary.texi $(examples), \
 					$(examples), $(texis)))
 
 # Kludge: implicit rule so Make knows the one command does it all.
-chapters.% top-menu.%: libc-texinfo.sh $(texis-path) Makefile
+$(objpfx)chapters.% $(objpfx)top-menu.%: libc-texinfo.sh $(texis-path) Makefile
 	AWK=$(AWK) $(SHELL) $< $(objpfx) \
 				'$(chapters)' \
 			       '$(appendices) $(licenses)'

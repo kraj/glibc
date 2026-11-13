@@ -834,7 +834,7 @@ $(objpfx)testroot.pristine/install.stamp :
 	cp $(objpfx)support/true-container $(objpfx)testroot.pristine/bin/true
 	# We need to be able to load extra language libraries.
 	mkdir -p $(objpfx)testroot.pristine/etc/ld.so.conf.d
-	echo 'include ld.so.conf.d/*.conf' > $(objpfx)testroot.pristine/etc/ld.so.conf
+	echo 'include /etc/ld.so.conf.d/*.conf' > $(objpfx)testroot.pristine/etc/ld.so.conf
 	echo $(gnulib-extralibdir) >> $(objpfx)testroot.pristine/etc/ld.so.conf
 	echo '# file without content' > $(objpfx)testroot.pristine/etc/ld.so.conf.d/999-empty.conf
 ifeq ($(run-built-tests),yes)
