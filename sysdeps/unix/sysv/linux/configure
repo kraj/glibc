@@ -7,7 +7,7 @@ if test -n "$sysheaders"; then
 fi
 
 
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking installed Linux kernel header files" >&5
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking installed Linux kernel header files" >&5
 printf %s "checking installed Linux kernel header files... " >&6; }
 if test ${libc_cv_linux320+y}
 then :
@@ -37,8 +37,8 @@ fi
 rm -f conftest.err conftest.i conftest.$ac_ext ;;
 esac
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_cv_linux320" >&5
-printf "%s\n" "$libc_cv_linux320" >&6; }
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: $libc_cv_linux320" >&5
+printf '%s\n' "$libc_cv_linux320" >&6; }
 if test "$libc_cv_linux320" != '3.2.0 or later'; then
   as_fn_error $? "GNU libc requires kernel header files from
 Linux 3.2.0 or later to be installed before configuring.
@@ -63,15 +63,15 @@ if test -n "$minimum_kernel"; then
   arch_version=$((`echo "$arch_minimum_kernel.0.0.0" | sed 's/\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\).*/\1 \* 65536 + \2 \* 256 + \3/'`))
 
   if test $user_version -lt $arch_version; then
-    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: minimum kernel version reset to $arch_minimum_kernel" >&5
-printf "%s\n" "$as_me: WARNING: minimum kernel version reset to $arch_minimum_kernel" >&2;}
+    { printf '%s\n' "$as_me:${as_lineno-$LINENO}: WARNING: minimum kernel version reset to $arch_minimum_kernel" >&5
+printf '%s\n' "$as_me: WARNING: minimum kernel version reset to $arch_minimum_kernel" >&2;}
     minimum_kernel=$arch_minimum_kernel
   fi
 else
   minimum_kernel=$arch_minimum_kernel
 fi
 
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for kernel header at least $minimum_kernel" >&5
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking for kernel header at least $minimum_kernel" >&5
 printf %s "checking for kernel header at least $minimum_kernel... " >&6; }
 decnum=`echo "$minimum_kernel.0.0.0" | sed 's/\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\).*/(\1 * 65536 + \2 * 256 + \3)/'`;
 abinumstr=`echo "$minimum_kernel.0.0.0" | sed 's/\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\).*/\1.\2.\3/'`;
@@ -98,14 +98,14 @@ else case e in #(
 esac
 fi
 rm -f conftest.err conftest.i conftest.$ac_ext
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_minimum_kernel" >&5
-printf "%s\n" "$libc_minimum_kernel" >&6; }
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: $libc_minimum_kernel" >&5
+printf '%s\n' "$libc_minimum_kernel" >&6; }
 if test "$libc_minimum_kernel" = ok; then
-  printf "%s\n" "#define __LINUX_KERNEL_VERSION $decnum" >>confdefs.h
+  printf '%s\n' "#define __LINUX_KERNEL_VERSION $decnum" >>confdefs.h
 
-  printf "%s\n" "#define __LINUX_KERNEL_VERSION_STR \"$abinumstr\"" >>confdefs.h
+  printf '%s\n' "#define __LINUX_KERNEL_VERSION_STR \"$abinumstr\"" >>confdefs.h
 
-  printf "%s\n" "#define __ABI_TAG_VERSION $abinum" >>confdefs.h
+  printf '%s\n' "#define __ABI_TAG_VERSION $abinum" >>confdefs.h
 
 else
   as_fn_error $? "*** The available kernel headers are older than the requested
@@ -145,7 +145,7 @@ if test $host = $build; then
   else
     ac_prefix=$ac_default_prefix
   fi
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for symlinks in ${ac_prefix}/include" >&5
+  { printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking for symlinks in ${ac_prefix}/include" >&5
 printf %s "checking for symlinks in ${ac_prefix}/include... " >&6; }
   ac_message=
   if test -L ${ac_prefix}/include/net; then
@@ -162,12 +162,12 @@ printf %s "checking for symlinks in ${ac_prefix}/include... " >&6; }
 Delete the links and re-run configure, or better still, move the entire
 ${ac_prefix}/include directory out of the way." "$LINENO" 5
   else
-    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: ok" >&5
-printf "%s\n" "ok" >&6; }
+    { printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: ok" >&5
+printf '%s\n' "ok" >&6; }
   fi
 fi
 
 # We have inlined syscalls.
-printf "%s\n" "#define HAVE_INLINED_SYSCALLS 1" >>confdefs.h
+printf '%s\n' "#define HAVE_INLINED_SYSCALLS 1" >>confdefs.h
 
 

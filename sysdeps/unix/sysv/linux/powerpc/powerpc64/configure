@@ -17,7 +17,7 @@ esac
 # Define default-abi according to compiler flags.
 
 
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for egrep -e" >&5
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking for egrep -e" >&5
 printf %s "checking for egrep -e... " >&6; }
 if test ${ac_cv_path_EGREP_TRADITIONAL+y}
 then :
@@ -54,7 +54,7 @@ case `"$ac_path_EGREP_TRADITIONAL" --version 2>&1` in #(
     cat "conftest.in" "conftest.in" >"conftest.tmp"
     mv "conftest.tmp" "conftest.in"
     cp "conftest.in" "conftest.nl"
-    printf "%s\n" 'EGREP_TRADITIONAL' >> "conftest.nl"
+    printf '%s\n' 'EGREP_TRADITIONAL' >> "conftest.nl"
     "$ac_path_EGREP_TRADITIONAL" -E 'EGR(EP|AC)_TRADITIONAL$' < "conftest.nl" >"conftest.out" 2>/dev/null || break
     diff "conftest.out" "conftest.nl" >/dev/null 2>&1 || break
     as_fn_arith $ac_count + 1 && ac_count=$as_val
@@ -116,7 +116,7 @@ case `"$ac_path_EGREP_TRADITIONAL" --version 2>&1` in #(
     cat "conftest.in" "conftest.in" >"conftest.tmp"
     mv "conftest.tmp" "conftest.in"
     cp "conftest.in" "conftest.nl"
-    printf "%s\n" 'EGREP_TRADITIONAL' >> "conftest.nl"
+    printf '%s\n' 'EGREP_TRADITIONAL' >> "conftest.nl"
     "$ac_path_EGREP_TRADITIONAL" 'EGR(EP|AC)_TRADITIONAL$' < "conftest.nl" >"conftest.out" 2>/dev/null || break
     diff "conftest.out" "conftest.nl" >/dev/null 2>&1 || break
     as_fn_arith $ac_count + 1 && ac_count=$as_val
@@ -147,11 +147,11 @@ esac
 fi ;;
 esac
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_path_EGREP_TRADITIONAL" >&5
-printf "%s\n" "$ac_cv_path_EGREP_TRADITIONAL" >&6; }
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: $ac_cv_path_EGREP_TRADITIONAL" >&5
+printf '%s\n' "$ac_cv_path_EGREP_TRADITIONAL" >&6; }
  EGREP_TRADITIONAL=$ac_cv_path_EGREP_TRADITIONAL
 
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether the compiler is using the PowerPC64 ELFv2 ABI" >&5
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking whether the compiler is using the PowerPC64 ELFv2 ABI" >&5
 printf %s "checking whether the compiler is using the PowerPC64 ELFv2 ABI... " >&6; }
 if test ${libc_cv_ppc64_elfv2_abi+y}
 then :
@@ -176,19 +176,19 @@ rm -rf conftest*
  ;;
 esac
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_cv_ppc64_elfv2_abi" >&5
-printf "%s\n" "$libc_cv_ppc64_elfv2_abi" >&6; }
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: $libc_cv_ppc64_elfv2_abi" >&5
+printf '%s\n' "$libc_cv_ppc64_elfv2_abi" >&6; }
 if test $libc_cv_ppc64_elfv2_abi = yes; then
   config_vars="$config_vars
 default-abi = 64-v2"
   # For shlib-versions.
-  printf "%s\n" "#define HAVE_ELFV2_ABI 1" >>confdefs.h
+  printf '%s\n' "#define HAVE_ELFV2_ABI 1" >>confdefs.h
 
 else
   config_vars="$config_vars
 default-abi = 64-v1"
   # Compiler that do not support ELFv2 ABI does not define _CALL_ELF
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether the compiler defines _CALL_ELF" >&5
+  { printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking whether the compiler defines _CALL_ELF" >&5
 printf %s "checking whether the compiler defines _CALL_ELF... " >&6; }
 if test ${libc_cv_ppc64_def_call_elf+y}
 then :
@@ -213,14 +213,14 @@ rm -rf conftest*
  ;;
 esac
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_cv_ppc64_def_call_elf" >&5
-printf "%s\n" "$libc_cv_ppc64_def_call_elf" >&6; }
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: $libc_cv_ppc64_def_call_elf" >&5
+printf '%s\n' "$libc_cv_ppc64_def_call_elf" >&6; }
   if test $libc_cv_ppc64_def_call_elf = no; then
     libc_extra_cppflags="$libc_extra_cppflags -D_CALL_ELF=1"
   fi
 fi
 # Set minimum kernel version for ppc64le.
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking the machine type to set minimum kernel version" >&5
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking the machine type to set minimum kernel version" >&5
 printf %s "checking the machine type to set minimum kernel version... " >&6; }
 if test ${libc_cv_ppc64_le+y}
 then :
@@ -245,6 +245,6 @@ rm -rf conftest*
  ;;
 esac
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_cv_ppc64_le" >&5
-printf "%s\n" "$libc_cv_ppc64_le" >&6; }
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: $libc_cv_ppc64_le" >&5
+printf '%s\n' "$libc_cv_ppc64_le" >&6; }
 

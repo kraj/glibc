@@ -25,7 +25,7 @@ fi
 # check for i386, instead we make sure the compiler has support for inlining
 # the builtin __sync_val_compare_and_swap. If it does then we should have no
 # problem building for i386.
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for compiler support of inlined builtin function __sync_val_compare_and_swap" >&5
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking for compiler support of inlined builtin function __sync_val_compare_and_swap" >&5
 printf %s "checking for compiler support of inlined builtin function __sync_val_compare_and_swap... " >&6; }
 libc_compiler_builtin_inlined=no
 cat > conftest.c <<EOF
@@ -38,7 +38,7 @@ if ! { ac_try='${CC-cc} $CFLAGS $CPPFLAGS $LDFLAGS $no_ssp
   { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  printf '%s\n' "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; }
 then
   libc_compiler_builtin_inlined=yes
@@ -52,11 +52,11 @@ else
 *** Please use host i786, i686, i586, or i486.
 *** For example: /source/glibc/configure CFLAGS='-O2 -march=i686' ..." "$LINENO" 5
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_compiler_builtin_inlined" >&5
-printf "%s\n" "$libc_compiler_builtin_inlined" >&6; }
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: $libc_compiler_builtin_inlined" >&5
+printf '%s\n' "$libc_compiler_builtin_inlined" >&6; }
 
 if test "$static_pie" = yes; then
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for linker static PIE support" >&5
+  { printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking for linker static PIE support" >&5
 printf %s "checking for linker static PIE support... " >&6; }
 if test ${libc_cv_ld_static_pie+y}
 then :
@@ -74,7 +74,7 @@ EOF
   { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  printf '%s\n' "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; }; then
     if $READELF -r conftest | grep 'There are no relocations in this file.' > /dev/null; then
       libc_cv_ld_static_pie=yes
@@ -83,20 +83,20 @@ EOF
 rm -f conftest* ;;
 esac
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_cv_ld_static_pie" >&5
-printf "%s\n" "$libc_cv_ld_static_pie" >&6; }
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: $libc_cv_ld_static_pie" >&5
+printf '%s\n' "$libc_cv_ld_static_pie" >&6; }
   if test "$libc_cv_ld_static_pie" != yes; then
     as_fn_error $? "linker support for static PIE needed" "$LINENO" 5
   fi
 fi
 
 if test x"$multi_arch" != xno; then
-  printf "%s\n" "#define NO_HIDDEN_EXTERN_FUNC_IN_PIE 1" >>confdefs.h
+  printf '%s\n' "#define NO_HIDDEN_EXTERN_FUNC_IN_PIE 1" >>confdefs.h
 
 fi
 
 
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking -mfentry" >&5
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking -mfentry" >&5
 printf %s "checking -mfentry... " >&6; }
 if test ${libc_cv_cc_cflags_mfentry+y}
 then :
@@ -106,7 +106,7 @@ else case e in #(
   { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  printf '%s\n' "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; }
 then :
   libc_cv_cc_cflags_mfentry=yes
@@ -116,15 +116,15 @@ esac
 fi ;;
 esac
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_cv_cc_cflags_mfentry" >&5
-printf "%s\n" "$libc_cv_cc_cflags_mfentry" >&6; }
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: $libc_cv_cc_cflags_mfentry" >&5
+printf '%s\n' "$libc_cv_cc_cflags_mfentry" >&6; }
 if test "$TEST_CC" = "$CC"; then
   libc_cv_test_cc_cflags_mfentry=$libc_cv_cc_cflags_mfentry
 else
 
 saved_CC="$CC"
 CC="$TEST_CC"
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking -mfentry in testing" >&5
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking -mfentry in testing" >&5
 printf %s "checking -mfentry in testing... " >&6; }
 if test ${libc_cv_test_cc_cflags_mfentry+y}
 then :
@@ -134,7 +134,7 @@ else case e in #(
   { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  printf '%s\n' "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; }
 then :
   libc_cv_test_cc_cflags_mfentry=yes
@@ -145,8 +145,8 @@ esac
 fi ;;
 esac
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_cv_test_cc_cflags_mfentry" >&5
-printf "%s\n" "$libc_cv_test_cc_cflags_mfentry" >&6; }
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: $libc_cv_test_cc_cflags_mfentry" >&5
+printf '%s\n' "$libc_cv_test_cc_cflags_mfentry" >&6; }
 
 CC="$saved_CC"
 

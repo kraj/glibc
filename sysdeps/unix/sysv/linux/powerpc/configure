@@ -2,7 +2,7 @@
  # Local configure fragment for sysdeps/unix/sysv/linux/powerpc/.
 
 
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether $CC $CFLAGS -mlong-double-128 uses IBM extended format" >&5
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking whether $CC $CFLAGS -mlong-double-128 uses IBM extended format" >&5
 printf %s "checking whether $CC $CFLAGS -mlong-double-128 uses IBM extended format... " >&6; }
 if test ${libc_cv_mlong_double_128ibm+y}
 then :
@@ -30,14 +30,14 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
 CFLAGS="$save_CFLAGS" ;;
 esac
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_cv_mlong_double_128ibm" >&5
-printf "%s\n" "$libc_cv_mlong_double_128ibm" >&6; }
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: $libc_cv_mlong_double_128ibm" >&5
+printf '%s\n' "$libc_cv_mlong_double_128ibm" >&6; }
 
 if test "$libc_cv_mlong_double_128ibm" = no; then
   CFLAGS="$CFLAGS -mabi=ibmlongdouble"
 fi
 
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for linker that supports --no-tls-get-addr-optimize" >&5
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking for linker that supports --no-tls-get-addr-optimize" >&5
 printf %s "checking for linker that supports --no-tls-get-addr-optimize... " >&6; }
 libc_linker_feature=no
 cat > conftest.c <<EOF
@@ -50,7 +50,7 @@ if { ac_try='${CC-cc} $CFLAGS $CPPFLAGS $LDFLAGS $no_ssp
   { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  printf '%s\n' "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; }
 then
   if ${CC-cc} $CFLAGS $CPPFLAGS $LDFLAGS $no_ssp -Wl,--no-tls-get-addr-optimize -nostdlib \
@@ -67,8 +67,8 @@ if test $libc_linker_feature = yes; then
 else
   libc_cv_tls_get_addr_optimize=no
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_linker_feature" >&5
-printf "%s\n" "$libc_linker_feature" >&6; }
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: $libc_linker_feature" >&5
+printf '%s\n' "$libc_linker_feature" >&6; }
 config_vars="$config_vars
 have-tls-get-addr-optimize = $libc_cv_tls_get_addr_optimize"
 

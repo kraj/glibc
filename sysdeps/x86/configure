@@ -2,7 +2,7 @@
  # Local configure fragment for sysdeps/x86.
 
 # Check if linker supports x86 ISA level.
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for linker x86 ISA level support" >&5
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking for linker x86 ISA level support" >&5
 printf %s "checking for linker x86 ISA level support... " >&6; }
 if test ${libc_cv_include_x86_isa_level+y}
 then :
@@ -63,7 +63,7 @@ if { ac_try='${CC-cc} $CFLAGS $CPPFLAGS -nostartfiles -nostdlib -r -o conftest c
   { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  printf '%s\n' "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; }; then
   count=`LC_ALL=C $READELF -n conftest | grep NT_GNU_PROPERTY_TYPE_0 | wc -l`
   if test "$count" -eq 1; then
@@ -73,12 +73,12 @@ fi
 rm -f conftest* ;;
 esac
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_cv_include_x86_isa_level" >&5
-printf "%s\n" "$libc_cv_include_x86_isa_level" >&6; }
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: $libc_cv_include_x86_isa_level" >&5
+printf '%s\n' "$libc_cv_include_x86_isa_level" >&6; }
 if test $libc_cv_include_x86_isa_level = yes; then
-  printf "%s\n" "#define INCLUDE_X86_ISA_LEVEL 1" >>confdefs.h
+  printf '%s\n' "#define INCLUDE_X86_ISA_LEVEL 1" >>confdefs.h
 
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for LAHF/SAHF instruction support" >&5
+  { printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking for LAHF/SAHF instruction support" >&5
 printf %s "checking for LAHF/SAHF instruction support... " >&6; }
 if test ${libc_cv_have_x86_lahf_sahf+y}
 then :
@@ -89,20 +89,20 @@ else case e in #(
   { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  printf '%s\n' "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; } | grep -qE '(-msahf\b|-march=x86-64-v)'; then
       libc_cv_have_x86_lahf_sahf=yes
     fi ;;
 esac
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_cv_have_x86_lahf_sahf" >&5
-printf "%s\n" "$libc_cv_have_x86_lahf_sahf" >&6; }
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: $libc_cv_have_x86_lahf_sahf" >&5
+printf '%s\n' "$libc_cv_have_x86_lahf_sahf" >&6; }
   if test $libc_cv_have_x86_lahf_sahf = yes; then
-    printf "%s\n" "#define HAVE_X86_LAHF_SAHF 1" >>confdefs.h
+    printf '%s\n' "#define HAVE_X86_LAHF_SAHF 1" >>confdefs.h
 
     ISAFLAG="-DHAVE_X86_LAHF_SAHF"
   fi
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for MOVBE instruction support" >&5
+  { printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking for MOVBE instruction support" >&5
 printf %s "checking for MOVBE instruction support... " >&6; }
 if test ${libc_cv_have_x86_movbe+y}
 then :
@@ -113,22 +113,22 @@ else case e in #(
   { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  printf '%s\n' "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; } | grep -qE '(-mmovbe\b|-march=x86-64-v([3-9]|[1-9][0-9]))'; then
       libc_cv_have_x86_movbe=yes
     fi ;;
 esac
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_cv_have_x86_movbe" >&5
-printf "%s\n" "$libc_cv_have_x86_movbe" >&6; }
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: $libc_cv_have_x86_movbe" >&5
+printf '%s\n' "$libc_cv_have_x86_movbe" >&6; }
   if test $libc_cv_have_x86_movbe = yes; then
-    printf "%s\n" "#define HAVE_X86_MOVBE 1" >>confdefs.h
+    printf '%s\n' "#define HAVE_X86_MOVBE 1" >>confdefs.h
 
     ISAFLAG="$ISAFLAG -DHAVE_X86_MOVBE"
   fi
 
   # Check for ISA level support.
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for ISA level support" >&5
+  { printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking for ISA level support" >&5
 printf %s "checking for ISA level support... " >&6; }
 if test ${libc_cv_have_x86_isa_level+y}
 then :
@@ -154,18 +154,18 @@ EOF
 		 rm -rf conftest* ;;
 esac
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_cv_have_x86_isa_level" >&5
-printf "%s\n" "$libc_cv_have_x86_isa_level" >&6; }
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: $libc_cv_have_x86_isa_level" >&5
+printf '%s\n' "$libc_cv_have_x86_isa_level" >&6; }
 elif test $base_machine = x86_64; then
   libc_cv_have_x86_isa_level=baseline
 else
   libc_cv_have_x86_isa_level=0
 fi
 if test $libc_cv_have_x86_isa_level = baseline; then
-  printf "%s\n" "#define MINIMUM_X86_ISA_LEVEL 1" >>confdefs.h
+  printf '%s\n' "#define MINIMUM_X86_ISA_LEVEL 1" >>confdefs.h
 
 else
-  printf "%s\n" "#define MINIMUM_X86_ISA_LEVEL $libc_cv_have_x86_isa_level" >>confdefs.h
+  printf '%s\n' "#define MINIMUM_X86_ISA_LEVEL $libc_cv_have_x86_isa_level" >>confdefs.h
 
 fi
 config_vars="$config_vars
@@ -183,7 +183,7 @@ enable-x86-isa-level = $libc_cv_include_x86_isa_level"
 
 saved_CC="$CC"
 CC="$TEST_CC"
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if -mfpmath=387 works in testing" >&5
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking if -mfpmath=387 works in testing" >&5
 printf %s "checking if -mfpmath=387 works in testing... " >&6; }
 if test ${libc_cv_have_test_cc_cflags_mfpmath_387+y}
 then :
@@ -193,7 +193,7 @@ else case e in #(
   { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  printf '%s\n' "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; }
 then :
   libc_cv_have_test_cc_cflags_mfpmath_387=yes
@@ -204,8 +204,8 @@ esac
 fi ;;
 esac
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_cv_have_test_cc_cflags_mfpmath_387" >&5
-printf "%s\n" "$libc_cv_have_test_cc_cflags_mfpmath_387" >&6; }
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: $libc_cv_have_test_cc_cflags_mfpmath_387" >&5
+printf '%s\n' "$libc_cv_have_test_cc_cflags_mfpmath_387" >&6; }
 
 CC="$saved_CC"
 
@@ -225,7 +225,7 @@ foo_p (void)
 cat > conftest.c <<EOF
 $conftest_code
 EOF
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if no direct extern access is enabled by default" >&5
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking if no direct extern access is enabled by default" >&5
 printf %s "checking if no direct extern access is enabled by default... " >&6; }
 if test ${libc_cv_cc_no_direct_extern_access+y}
 then :
@@ -235,7 +235,7 @@ else case e in #(
   { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  printf '%s\n' "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; }
   then
 
@@ -263,15 +263,15 @@ exit 1
   fi ;;
 esac
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_cv_cc_no_direct_extern_access" >&5
-printf "%s\n" "$libc_cv_cc_no_direct_extern_access" >&6; }
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: $libc_cv_cc_no_direct_extern_access" >&5
+printf '%s\n' "$libc_cv_cc_no_direct_extern_access" >&6; }
 rm -f conftest*
 
 
 
 saved_CC="$CC"
 CC="$TEST_CC"
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if -mno-direct-extern-access works in testing" >&5
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking if -mno-direct-extern-access works in testing" >&5
 printf %s "checking if -mno-direct-extern-access works in testing... " >&6; }
 if test ${libc_cv_test_cc_cflags_mno_direct_extern_access+y}
 then :
@@ -281,7 +281,7 @@ else case e in #(
   { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  printf '%s\n' "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; }
 then :
   libc_cv_test_cc_cflags_mno_direct_extern_access=yes
@@ -292,8 +292,8 @@ esac
 fi ;;
 esac
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_cv_test_cc_cflags_mno_direct_extern_access" >&5
-printf "%s\n" "$libc_cv_test_cc_cflags_mno_direct_extern_access" >&6; }
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: $libc_cv_test_cc_cflags_mno_direct_extern_access" >&5
+printf '%s\n' "$libc_cv_test_cc_cflags_mno_direct_extern_access" >&6; }
 
 CC="$saved_CC"
 
@@ -303,7 +303,7 @@ CC="$saved_CC"
 
 saved_CC="$CC"
 CC="$TEST_CC"
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if -fno-direct-access-external-data works in testing" >&5
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking if -fno-direct-access-external-data works in testing" >&5
 printf %s "checking if -fno-direct-access-external-data works in testing... " >&6; }
 if test ${libc_cv_test_cc_cflags_fno_direct_access_external_data+y}
 then :
@@ -313,7 +313,7 @@ else case e in #(
   { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  printf '%s\n' "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; }
 then :
   libc_cv_test_cc_cflags_fno_direct_access_external_data=yes
@@ -324,8 +324,8 @@ esac
 fi ;;
 esac
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_cv_test_cc_cflags_fno_direct_access_external_data" >&5
-printf "%s\n" "$libc_cv_test_cc_cflags_fno_direct_access_external_data" >&6; }
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: $libc_cv_test_cc_cflags_fno_direct_access_external_data" >&5
+printf '%s\n' "$libc_cv_test_cc_cflags_fno_direct_access_external_data" >&6; }
 
 CC="$saved_CC"
 
@@ -353,7 +353,7 @@ tf (float x)
 cat > conftest.c <<EOF
 $conftest_code
 EOF
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if -Os inlines trunc" >&5
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking if -Os inlines trunc" >&5
 printf %s "checking if -Os inlines trunc... " >&6; }
 if test ${libc_cv_cc_x86_inline_trunc+y}
 then :
@@ -363,7 +363,7 @@ else case e in #(
   { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  printf '%s\n' "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; }
   then
 
@@ -381,14 +381,14 @@ exit 1
   fi ;;
 esac
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_cv_cc_x86_inline_trunc" >&5
-printf "%s\n" "$libc_cv_cc_x86_inline_trunc" >&6; }
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: $libc_cv_cc_x86_inline_trunc" >&5
+printf '%s\n' "$libc_cv_cc_x86_inline_trunc" >&6; }
 rm -f conftest*
 if test "$libc_cv_cc_x86_inline_trunc" = yes; then
-  printf "%s\n" "#define HAVE_X86_INLINE_TRUNC 1" >>confdefs.h
+  printf '%s\n' "#define HAVE_X86_INLINE_TRUNC 1" >>confdefs.h
 
 else
-  printf "%s\n" "#define HAVE_X86_INLINE_TRUNC 0" >>confdefs.h
+  printf '%s\n' "#define HAVE_X86_INLINE_TRUNC 0" >>confdefs.h
 
 fi
 
@@ -400,7 +400,7 @@ int __gcc_CMPtype_GCC __attribute__ ((mode (__libgcc_cmp_return__)));
 cat > conftest.c <<EOF
 $conftest_code
 EOF
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for __libgcc_cmp_return__ mode attribute support" >&5
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking for __libgcc_cmp_return__ mode attribute support" >&5
 printf %s "checking for __libgcc_cmp_return__ mode attribute support... " >&6; }
 if test ${libc_cv_cc_x86_libgcc_cmp_return_attribute+y}
 then :
@@ -410,7 +410,7 @@ else case e in #(
   { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  printf '%s\n' "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; }
   then
     libc_cv_cc_x86_libgcc_cmp_return_attribute=yes
@@ -419,14 +419,14 @@ else case e in #(
   fi ;;
 esac
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_cv_cc_x86_libgcc_cmp_return_attribute" >&5
-printf "%s\n" "$libc_cv_cc_x86_libgcc_cmp_return_attribute" >&6; }
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: $libc_cv_cc_x86_libgcc_cmp_return_attribute" >&5
+printf '%s\n' "$libc_cv_cc_x86_libgcc_cmp_return_attribute" >&6; }
 rm -f conftest*
 if test "$libc_cv_cc_x86_libgcc_cmp_return_attribute" = yes; then
-  printf "%s\n" "#define HAVE_X86_LIBGCC_CMP_RETURN_ATTR 1" >>confdefs.h
+  printf '%s\n' "#define HAVE_X86_LIBGCC_CMP_RETURN_ATTR 1" >>confdefs.h
 
 else
-  printf "%s\n" "#define HAVE_X86_LIBGCC_CMP_RETURN_ATTR 0" >>confdefs.h
+  printf '%s\n' "#define HAVE_X86_LIBGCC_CMP_RETURN_ATTR 0" >>confdefs.h
 
 fi
 
@@ -440,7 +440,7 @@ double foo (double x, double y)
 cat > conftest.c <<EOF
 $conftest_code
 EOF
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if compiler inlines __builtin_fmod/__builtin_remainder" >&5
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking if compiler inlines __builtin_fmod/__builtin_remainder" >&5
 printf %s "checking if compiler inlines __builtin_fmod/__builtin_remainder... " >&6; }
 if test ${libc_cv_cc_x86_inline_fmod+y}
 then :
@@ -450,7 +450,7 @@ else case e in #(
   { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  printf '%s\n' "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; }
   then
 
@@ -468,14 +468,14 @@ exit 1
   fi ;;
 esac
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_cv_cc_x86_inline_fmod" >&5
-printf "%s\n" "$libc_cv_cc_x86_inline_fmod" >&6; }
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: $libc_cv_cc_x86_inline_fmod" >&5
+printf '%s\n' "$libc_cv_cc_x86_inline_fmod" >&6; }
 rm -f conftest*
 if test "$libc_cv_cc_x86_inline_fmod" = yes; then
-  printf "%s\n" "#define HAVE_X86_INLINE_FMOD 1" >>confdefs.h
+  printf '%s\n' "#define HAVE_X86_INLINE_FMOD 1" >>confdefs.h
 
 else
-  printf "%s\n" "#define HAVE_X86_INLINE_FMOD 0" >>confdefs.h
+  printf '%s\n' "#define HAVE_X86_INLINE_FMOD 0" >>confdefs.h
 
 fi
 
@@ -483,6 +483,6 @@ if test "${libc_cv_cc_no_direct_extern_access}${libc_cv_test_cc_cflags_no_direct
   libc_cv_protected_data=no
 fi
 
-printf "%s\n" "#define SUPPORT_STATIC_PIE 1" >>confdefs.h
+printf '%s\n' "#define SUPPORT_STATIC_PIE 1" >>confdefs.h
 
 

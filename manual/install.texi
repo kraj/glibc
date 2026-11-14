@@ -632,7 +632,7 @@ If you change any of the @file{configure.ac} files you will also need
 
 @itemize @bullet
 @item
-GNU @code{autoconf} 2.72 (exactly)
+GNU @code{autoconf} 2.73 (exactly)
 @end itemize
 
 @noindent

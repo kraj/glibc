@@ -2,7 +2,7 @@
  # Local configure fragment for sysdeps/ieee754/ldbl-opt/.
 
 
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether $CC $CFLAGS supports -mlong-double-128" >&5
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking whether $CC $CFLAGS supports -mlong-double-128" >&5
 printf %s "checking whether $CC $CFLAGS supports -mlong-double-128... " >&6; }
 if test ${libc_cv_mlong_double_128+y}
 then :
@@ -29,8 +29,8 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
 CFLAGS="$save_CFLAGS" ;;
 esac
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_cv_mlong_double_128" >&5
-printf "%s\n" "$libc_cv_mlong_double_128" >&6; }
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: $libc_cv_mlong_double_128" >&5
+printf '%s\n' "$libc_cv_mlong_double_128" >&6; }
 if test "$libc_cv_mlong_double_128" = no; then
   as_fn_error $? "this configuration requires -mlong-double-128 support" "$LINENO" 5
 fi

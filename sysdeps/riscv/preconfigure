@@ -75,9 +75,9 @@ riscv*)
     base_machine=riscv
     machine=riscv/rv$xlen/$float_machine
 
-    printf "%s\n" "#define RISCV_ABI_XLEN $xlen" >>confdefs.h
+    printf '%s\n' "#define RISCV_ABI_XLEN $xlen" >>confdefs.h
 
-    printf "%s\n" "#define RISCV_ABI_FLEN $abi_flen" >>confdefs.h
+    printf '%s\n' "#define RISCV_ABI_FLEN $abi_flen" >>confdefs.h
 
     ;;
 esac

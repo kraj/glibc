@@ -6,7 +6,7 @@ x86_64)
   base_machine=x86_64
   # Check if we are building for x32.
 
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether $CC compiles in -mx32 mode by default" >&5
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking whether $CC compiles in -mx32 mode by default" >&5
 printf %s "checking whether $CC compiles in -mx32 mode by default... " >&6; }
 if test ${libc_cv_x32+y}
 then :
@@ -35,8 +35,8 @@ fi
 rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext ;;
 esac
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_cv_x32" >&5
-printf "%s\n" "$libc_cv_x32" >&6; }
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: $libc_cv_x32" >&5
+printf '%s\n' "$libc_cv_x32" >&6; }
   if test $libc_cv_x32 = yes; then
     machine=x86_64/x32
   else

@@ -2,7 +2,7 @@
  # Local configure fragment for sysdeps/s390.
 
 
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for S390 vector instruction support" >&5
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking for S390 vector instruction support" >&5
 printf %s "checking for S390 vector instruction support... " >&6; }
 if test ${libc_cv_asm_s390_vx+y}
 then :
@@ -30,19 +30,19 @@ fi
 rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext ;;
 esac
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_cv_asm_s390_vx" >&5
-printf "%s\n" "$libc_cv_asm_s390_vx" >&6; }
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: $libc_cv_asm_s390_vx" >&5
+printf '%s\n' "$libc_cv_asm_s390_vx" >&6; }
 if test "$libc_cv_asm_s390_vx" = yes ;
 then
-  printf "%s\n" "#define HAVE_S390_VX_ASM_SUPPORT 1" >>confdefs.h
+  printf '%s\n' "#define HAVE_S390_VX_ASM_SUPPORT 1" >>confdefs.h
 
 else
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: Use binutils with vector-support in order to use optimized implementations." >&5
-printf "%s\n" "$as_me: WARNING: Use binutils with vector-support in order to use optimized implementations." >&2;}
+  { printf '%s\n' "$as_me:${as_lineno-$LINENO}: WARNING: Use binutils with vector-support in order to use optimized implementations." >&5
+printf '%s\n' "$as_me: WARNING: Use binutils with vector-support in order to use optimized implementations." >&2;}
 fi
 
 
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for S390 vector support in gcc" >&5
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking for S390 vector support in gcc" >&5
 printf %s "checking for S390 vector support in gcc... " >&6; }
 if test ${libc_cv_gcc_s390_vx+y}
 then :
@@ -68,16 +68,16 @@ fi
 rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext ;;
 esac
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_cv_gcc_s390_vx" >&5
-printf "%s\n" "$libc_cv_gcc_s390_vx" >&6; }
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: $libc_cv_gcc_s390_vx" >&5
+printf '%s\n' "$libc_cv_gcc_s390_vx" >&6; }
 if test "$libc_cv_gcc_s390_vx" = yes ;
 then
-  printf "%s\n" "#define HAVE_S390_VX_GCC_SUPPORT 1" >>confdefs.h
+  printf '%s\n' "#define HAVE_S390_VX_GCC_SUPPORT 1" >>confdefs.h
 
 fi
 
 
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for S390 arch13 zarch instruction support" >&5
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking for S390 arch13 zarch instruction support" >&5
 printf %s "checking for S390 arch13 zarch instruction support... " >&6; }
 if test ${libc_cv_asm_s390_arch13+y}
 then :
@@ -107,16 +107,16 @@ fi
 rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext ;;
 esac
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_cv_asm_s390_arch13" >&5
-printf "%s\n" "$libc_cv_asm_s390_arch13" >&6; }
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: $libc_cv_asm_s390_arch13" >&5
+printf '%s\n' "$libc_cv_asm_s390_arch13" >&6; }
 if test "$libc_cv_asm_s390_arch13" = yes ;
 then
-  printf "%s\n" "#define HAVE_S390_ARCH13_ASM_SUPPORT 1" >>confdefs.h
+  printf '%s\n' "#define HAVE_S390_ARCH13_ASM_SUPPORT 1" >>confdefs.h
 
 fi
 
 
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for S390 z10 zarch instruction support as default" >&5
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking for S390 z10 zarch instruction support as default" >&5
 printf %s "checking for S390 z10 zarch instruction support as default... " >&6; }
 if test ${libc_cv_asm_s390_min_z10_zarch+y}
 then :
@@ -147,16 +147,16 @@ fi
 rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext ;;
 esac
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_cv_asm_s390_min_z10_zarch" >&5
-printf "%s\n" "$libc_cv_asm_s390_min_z10_zarch" >&6; }
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: $libc_cv_asm_s390_min_z10_zarch" >&5
+printf '%s\n' "$libc_cv_asm_s390_min_z10_zarch" >&6; }
 if test "$libc_cv_asm_s390_min_z10_zarch" = yes ;
 then
-  printf "%s\n" "#define HAVE_S390_MIN_Z10_ZARCH_ASM_SUPPORT 1" >>confdefs.h
+  printf '%s\n' "#define HAVE_S390_MIN_Z10_ZARCH_ASM_SUPPORT 1" >>confdefs.h
 
 fi
 
 
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for S390 z196 zarch instruction support as default" >&5
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking for S390 z196 zarch instruction support as default" >&5
 printf %s "checking for S390 z196 zarch instruction support as default... " >&6; }
 if test ${libc_cv_asm_s390_min_z196_zarch+y}
 then :
@@ -184,16 +184,16 @@ fi
 rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext ;;
 esac
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_cv_asm_s390_min_z196_zarch" >&5
-printf "%s\n" "$libc_cv_asm_s390_min_z196_zarch" >&6; }
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: $libc_cv_asm_s390_min_z196_zarch" >&5
+printf '%s\n' "$libc_cv_asm_s390_min_z196_zarch" >&6; }
 if test "$libc_cv_asm_s390_min_z196_zarch" = yes ;
 then
-  printf "%s\n" "#define HAVE_S390_MIN_Z196_ZARCH_ASM_SUPPORT 1" >>confdefs.h
+  printf '%s\n' "#define HAVE_S390_MIN_Z196_ZARCH_ASM_SUPPORT 1" >>confdefs.h
 
 fi
 
 
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for S390 z13 zarch instruction support as default" >&5
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking for S390 z13 zarch instruction support as default" >&5
 printf %s "checking for S390 z13 zarch instruction support as default... " >&6; }
 if test ${libc_cv_asm_s390_min_z13_zarch+y}
 then :
@@ -223,16 +223,16 @@ fi
 rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext ;;
 esac
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_cv_asm_s390_min_z13_zarch" >&5
-printf "%s\n" "$libc_cv_asm_s390_min_z13_zarch" >&6; }
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: $libc_cv_asm_s390_min_z13_zarch" >&5
+printf '%s\n' "$libc_cv_asm_s390_min_z13_zarch" >&6; }
 if test "$libc_cv_asm_s390_min_z13_zarch" = yes ;
 then
-  printf "%s\n" "#define HAVE_S390_MIN_Z13_ZARCH_ASM_SUPPORT 1" >>confdefs.h
+  printf '%s\n' "#define HAVE_S390_MIN_Z13_ZARCH_ASM_SUPPORT 1" >>confdefs.h
 
 fi
 
 
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for S390 arch13 zarch instruction support as default" >&5
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking for S390 arch13 zarch instruction support as default" >&5
 printf %s "checking for S390 arch13 zarch instruction support as default... " >&6; }
 if test ${libc_cv_asm_s390_min_arch13_zarch+y}
 then :
@@ -261,18 +261,18 @@ fi
 rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext ;;
 esac
 fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $libc_cv_asm_s390_min_arch13_zarch" >&5
-printf "%s\n" "$libc_cv_asm_s390_min_arch13_zarch" >&6; }
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: $libc_cv_asm_s390_min_arch13_zarch" >&5
+printf '%s\n' "$libc_cv_asm_s390_min_arch13_zarch" >&6; }
 if test "$libc_cv_asm_s390_min_arch13_zarch" = yes ;
 then
-  printf "%s\n" "#define HAVE_S390_MIN_ARCH13_ZARCH_ASM_SUPPORT 1" >>confdefs.h
+  printf '%s\n' "#define HAVE_S390_MIN_ARCH13_ZARCH_ASM_SUPPORT 1" >>confdefs.h
 
 fi
 
 # Minimal checking for static PIE support in ld.
 # Compare to ld testcase/bugzilla:
 # <binutils-source>/ld/testsuite/ld-elf/pr22263-1.rd
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for s390-specific static PIE requirements" >&5
+{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking for s390-specific static PIE requirements" >&5
 printf %s "checking for s390-specific static PIE requirements... " >&6; }
 if { as_var=\
 libc_cv_s390x_staticpie_req_runtime; eval test \${$as_var+y}; }
@@ -318,49 +318,49 @@ EOF
   { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  printf '%s\n' "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; } \
      && { ac_try='${CC-cc} $CFLAGS $CPPFLAGS $LDFLAGS -fPIE -c conftest2.c -o conftest2.o'
   { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  printf '%s\n' "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; } \
      && { ac_try='${CC-cc} $CFLAGS $CPPFLAGS $LDFLAGS -static-pie -nostartfiles -nostdlib -fPIE -o conftest conftest1.o conftest2.o'
   { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  printf '%s\n' "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; } \
      && { ac_try='! LC_ALL=C $READELF -Wr conftest | grep R_390_TLS_TPOFF >&5'
   { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  printf '%s\n' "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; } \
      && { ac_try='LC_ALL=C $READELF -Wr conftest | grep R_390_IRELATIVE >&5'
   { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  printf '%s\n' "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; } \
      && ( { ac_try='LC_ALL=C $READELF -Wr conftest | grep \.rela\.plt >&5'
   { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  printf '%s\n' "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; } \
 	  && { ac_try='LC_ALL=C $READELF -Wd conftest | grep JMPREL >&5'
   { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  printf '%s\n' "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; } \
 	  || { ac_try='LC_ALL=C $READELF -Wr conftest | grep \.rela\.dyn >&5'
   { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  printf '%s\n' "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; } )
   then
     libc_cv_s390x_staticpie_req_runtime=yes
@@ -370,14 +370,14 @@ esac
 fi
 eval ac_res=\$\
 libc_cv_s390x_staticpie_req_runtime
-	       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
-printf "%s\n" "$ac_res" >&6; }
+	       { printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+printf '%s\n' "$ac_res" >&6; }
 
 if test $libc_cv_s390x_staticpie_req_runtime = yes; then
    # Some kernels might fail with /proc/sys/kernel/randomize_va_space set to 0
    # due not enough space for a brk call.  However, there is no reliable way to
    # test it.
-   printf "%s\n" "#define SUPPORT_STATIC_PIE 1" >>confdefs.h
+   printf '%s\n' "#define SUPPORT_STATIC_PIE 1" >>confdefs.h
 
 fi
 
