@@ -13,11 +13,6 @@ AC_DEFINE_UNQUOTED([PKGVERSION], ["$PKGVERSION"],
 AC_DEFINE_UNQUOTED([REPORT_BUGS_TO], ["$REPORT_BUGS_TO"],
 		   [Bug reporting address])
 
-# Glibc should not depend on any header files
-AC_DEFUN([_AC_INCLUDES_DEFAULT_REQUIREMENTS],
-  [m4_divert_text([DEFAULTS],
-    [ac_includes_default='/* none */'])])
-
 # We require GCC, and by default use its preprocessor.  Override AC_PROG_CPP
 # here to work around the Autoconf issue discussed in
 # <https://sourceware.org/ml/libc-alpha/2013-01/msg00721.html>.
@@ -34,11 +29,6 @@ if test -z "$CPP"; then
 fi
 AC_SUBST(CPP)dnl
 ])# AC_PROG_CPP
-
-# We require GCC.  Override _AC_PROG_CC_C89 here to work around the Autoconf
-# issue discussed in
-# <https://sourceware.org/ml/libc-alpha/2013-01/msg00757.html>.
-AC_DEFUN([_AC_PROG_CC_C89], [[$1]])
 
 dnl This is here so we can set $subdirs directly based on configure fragments.
 AC_CONFIG_SUBDIRS()
