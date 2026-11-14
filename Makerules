@@ -1381,6 +1381,23 @@ update-abi: subdir_update-abi
 update-all-abi: subdir_update-all-abi
 endif
 
+ifneq ($(AUTOCONF),no)
+define autoconf-it
+@-rm -f $@.new
+$(AUTOCONF) $(ACFLAGS) $< > $@.new
+chmod a-w$(patsubst %,$(comma)a+x,$(filter .,$(@D))) $@.new
+mv -f $@.new $@
+endef
+
+configure: configure.ac aclocal.m4; $(autoconf-it)
+%/configure: %/configure.ac aclocal.m4; $(autoconf-it)
+%/preconfigure: %/preconfigure.ac aclocal.m4; $(autoconf-it)
+
+# Use "touch aclocal.m4" to force execution of this rule.  Set
+# AUTOCONF=autoconf to activate it.
+update-configure: $(shell find -name configure -o -name preconfigure)
+endif # $(AUTOCONF) = no
+
 ifeq ($(subdir),elf)
 check-abi: $(objpfx)check-abi-libc.out
 tests-special += $(objpfx)check-abi-libc.out

@@ -37,23 +37,6 @@ minihelp:
 	@echo type \"make help\" for help with common glibc makefile targets
 	@echo
 
-
-ifneq ($(AUTOCONF),no)
-
-define autoconf-it
-@-rm -f $@.new
-$(AUTOCONF) $(ACFLAGS) $< > $@.new
-chmod a-w$(patsubst %,$(comma)a+x,$(filter .,$(@D))) $@.new
-mv -f $@.new $@
-endef
-
-configure: configure.ac aclocal.m4; $(autoconf-it)
-%/configure: %/configure.ac aclocal.m4; $(autoconf-it)
-%/preconfigure: %/preconfigure.ac aclocal.m4; $(autoconf-it)
-
-endif # $(AUTOCONF) = no
-
-
 # These are the targets that are made by making them in each subdirectory.
 +subdir_targets	:= subdir_lib objects objs others subdir_mostlyclean	\
 		   subdir_clean subdir_distclean subdir_realclean	\
