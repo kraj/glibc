@@ -53,9 +53,20 @@
 # define __lll_private_flag(fl, private) \
   (((fl) | FUTEX_PRIVATE_FLAG) ^ (private))
 
+# ifndef __NR_futex_time64
+#  define __NR_futex_time64 __NR_futex
+# endif
+
+/* The operations below never pass a timeout, so both futex variants work.  */
+# ifdef __ASSUME_TIME64_SYSCALLS
+#  define __NR_lll_futex __NR_futex_time64
+# else
+#  define __NR_lll_futex __NR_futex
+# endif
+
 # define lll_futex_syscall(nargs, futexp, op, ...)                      \
   ({                                                                    \
-    long int __ret = INTERNAL_SYSCALL (futex, nargs, futexp, op, 	\
+    long int __ret = INTERNAL_SYSCALL (lll_futex, nargs, futexp, op,	\
 				       __VA_ARGS__);                    \
     (__glibc_unlikely (INTERNAL_SYSCALL_ERROR_P (__ret))         	\
      ? -INTERNAL_SYSCALL_ERRNO (__ret) : 0);                     	\
@@ -70,12 +81,9 @@
 
 /* Wait while *FUTEXP == VAL for an lll_futex_wake call on FUTEXP.  */
 # define lll_futex_wait(futexp, val, private) \
-  lll_futex_timed_wait (futexp, val, NULL, private)
-
-# define lll_futex_timed_wait(futexp, val, timeout, private)     \
   lll_futex_syscall (4, futexp,                                 \
 		     __lll_private_flag (FUTEX_WAIT, private),  \
-		     val, timeout)
+		     val, NULL)
 
 /* Verify whether the supplied clockid is supported by
    lll_futex_clock_wait_bitset.  */
@@ -104,7 +112,7 @@
 		     FUTEX_OP_CLEAR_WAKE_IF_GT_ONE)
 
 
-#define lll_futex_timed_unlock_pi(futexp, private) 			\
+#define lll_futex_unlock_pi(futexp, private) 				\
   lll_futex_syscall (4, futexp,						\
 		     __lll_private_flag (FUTEX_UNLOCK_PI, private),	\
 		     0, 0)
@@ -122,7 +130,7 @@
 # define lll_futex_wait_cancel(futexp, val, private)			\
   ({									\
      int __op = __lll_private_flag (FUTEX_WAIT, private);		\
-     INTERNAL_SYSCALL_CANCEL (futex, futexp, __op, val, NULL);		\
+     INTERNAL_SYSCALL_CANCEL (lll_futex, futexp, __op, val, NULL);	\
   })
 
 #endif  /* !__ASSEMBLER__  */
