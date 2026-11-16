@@ -24,10 +24,14 @@ bool
 support_mutex_pi_monotonic (void)
 {
 #ifdef __linux__
-# ifndef __NR_futex
-#  define __NR_futex __NR_futex_time64
+  /* FUTEX_LOCK_PI2 (Linux 5.14) is newer than futex_time64 (Linux 5.1), so
+     prefer the latter where it exists.  */
+# ifdef __NR_futex_time64
+  long int nr = __NR_futex_time64;
+# else
+  long int nr = __NR_futex;
 # endif
-  int r = syscall (__NR_futex, &(unsigned int){0}, 13 /* FUTEX_LOCK_PI2  */,
+  int r = syscall (nr, &(unsigned int){0}, 13 /* FUTEX_LOCK_PI2  */,
 		   0, NULL);
   return r == 0;
 #else
