@@ -56,10 +56,11 @@ f (void *a)
 static inline int
 futex_wait (_Atomic int *futexp, int val)
 {
-#ifdef __NR_futex
-  return syscall (__NR_futex, futexp, FUTEX_WAIT, val);
+  /* clone3 needs Linux 5.3, so assume futex_time64 (Linux 5.1).  */
+#ifdef __NR_futex_time64
+  return syscall (__NR_futex_time64, futexp, FUTEX_WAIT, val, NULL);
 #else
-  return syscall (__NR_futex_time64, futexp, FUTEX_WAIT, val);
+  return syscall (__NR_futex, futexp, FUTEX_WAIT, val, NULL);
 #endif
 }
 
