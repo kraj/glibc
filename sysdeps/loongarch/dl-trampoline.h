@@ -78,7 +78,7 @@ ENTRY (_dl_runtime_resolve)
 	ADD	a1, a1, t1
 	la	a2, _dl_fixup
 	jirl	ra, a2, 0
-	or	t1, v0, zero
+	or	t1, a0, zero
 
 	/* Restore arguments from stack. */
 	REG_L	ra, sp, 0*SZREG
@@ -220,7 +220,7 @@ ENTRY (_dl_runtime_profile)
 	bge	t3, zero, 1f
 
 	/* Save the return.  */
-	or	t4, v0, zero
+	or	t4, a0, zero
 
 	/* Restore arguments from stack.  */
 	REG_L	a0, fp, OFFSET_RG + DL_OFFSET_RG_A0 + 0*SZREG

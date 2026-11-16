@@ -63,7 +63,7 @@ ENTRY (__sigsetjmp)
 #endif
 
 #if !IS_IN (libc) && IS_IN(rtld)
-	li.w		v0, 0
+	li.w		a0, 0
 	jirl		zero, ra, 0
 #else
 	b		__sigjmp_save
