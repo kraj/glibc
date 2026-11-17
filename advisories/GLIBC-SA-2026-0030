@@ -1,0 +1,20 @@
+ISO-2022-CN-EXT decoder may read past input
+
+Converting crafted ISO-2022-CN-EXT input to UTF-8 character encoding, in
+the GNU C Library version 2.2 through 2.44 may result in the converter
+reading past the end of the input buffer, causing the calling
+application to crash.
+
+When the ISO-2022-CN-EXT decoder encounters an invalid input byte
+sequence like '\x0e' it ends up advancing the pointer tracking the read
+buffer position twice.  If this sequence is at the end of the input
+buffer, the decoder may then end up reading past the bounds of the input
+buffer.  To exploit this, the input and encoding needs to be attacker
+controlled.
+
+CVE-Id: CVE-2026-121758
+Public-Date: 2020-10-21
+Vulnerable-Commit: c0d99958f9f329400d25040b3d422fa937522b65 (2.1.93-124)
+Fix-Commit: 170ee485fa89b95c3bb7d5606c9812c6c100c9be (2.45)
+CVSS: CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H - 5.9
+Reported-By: Ksawery Radziwiłowicz
