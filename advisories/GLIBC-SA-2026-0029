@@ -1,0 +1,20 @@
+CP949 decoder may read past input
+
+Converting crafted CP949 input to UTF-8 character encoding and ignoring
+invalid characters, in the GNU C Library version 2.1 or later may result
+in the converter reading past the end of the input buffer, causing the
+calling application to crash.
+
+When the CP949 decoder encounters an invalid input byte sequence like
+'\xa2\xe8' it ends up advancing the pointer tracking the read buffer
+position twice.  If //IGNORE is set on the destination encoding and this
+sequence is at the end of the input buffer, the decoder may then end up
+reading past the bounds of the input buffer.  To exploit this, the
+target iconv function needs to set //IGNORE on the destination of the
+conversion and the input and encoding needs to be attacker controlled.
+
+CVE-Id: CVE-2026-121757
+Public-Date: 2020-11-17
+Vulnerable-Commit: 918b9d72a9980efd4622bd25506da9531a952dbe (2.0.92-117)
+CVSS: CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H - 5.9
+Reported-By: Dickson Wu (SEAL & CertiK)
