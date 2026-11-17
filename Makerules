@@ -1384,14 +1384,14 @@ endif
 ifneq ($(AUTOCONF),no)
 define autoconf-it
 @-rm -f $@.new
-$(AUTOCONF) $(ACFLAGS) $< > $@.new
-chmod a-w$(patsubst %,$(comma)a+x,$(filter .,$(@D))) $@.new
+$(AUTOCONF) $(patsubst %/,-I%,$(..)) $(ACFLAGS) $< > $@.new
+chmod a-w$(patsubst %,$(comma)a+x,$(filter $(patsubst %/,%,$(..)) .,$(@D))) $@.new
 mv -f $@.new $@
 endef
 
-configure: configure.ac aclocal.m4; $(autoconf-it)
-%/configure: %/configure.ac aclocal.m4; $(autoconf-it)
-%/preconfigure: %/preconfigure.ac aclocal.m4; $(autoconf-it)
+configure: configure.ac $(..)aclocal.m4; $(autoconf-it)
+%/configure: %/configure.ac $(..)aclocal.m4; $(autoconf-it)
+%/preconfigure: %/preconfigure.ac $(..)aclocal.m4; $(autoconf-it)
 
 # Use "touch aclocal.m4" to force execution of this rule.  Set
 # AUTOCONF=autoconf to activate it.
