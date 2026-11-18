@@ -36,17 +36,33 @@ The following bugs are resolved with this release:
   [34441] math: math: sinh() returns wrong results for some inputs with
     |x| > 36.736801
   [34465] math: math: x86_64 tanh ifunc selection wrong
+  [34506] libc: Out-of-bounds stack array access in tdelete
+    (CVE-2026-19542)
   [34507] nptl: Pretty-printer tests FAIL instead of UNSUPPORTED when
     cross-testing without python3 on target
   [34509] libc: [m68k] Regression: Perl locks up after upgrading glibc
     to 2.43
+  [34510] locale: Buffer overflow in strfmon right-justification padding
+    (CVE-2026-19499)
+  [34530] libc: Regression in POWER fortified longjmp with pointer guard
+    rotation
+  [34556] locale: SHIFT_JISX0213 converter hang in shift_jisx0213.c
+    (CVE-2026-77117)
+  [34568] locale: EUC_JISX0213 converter hang in euc-jisx0213.c
+    (CVE-2026-80489)
+  [34624] nscd: nscd: unbound alloca use in aicache and hostcache
+    (CVE-2026-89092)
   [34574] stdio: Buffer overflow in fopen ,ccs= argument processing
     (CVE-2026-18374)
   [34600] dynamic-link: [2.44 regression] ld.so segfaults at startup
     with an old-format ld.so.cache
+  [34683] string: power8: one byte overread in strncasecmp
+    (CVE-2026-97399)
   [34697] malloc: Corrupted trailing content on realloc of mmap
     allocation but mremap failed
   [34699] build: Parallel build failures with make check xcheck
+  [34706] malloc: malloc: mremap_chunk overcounts mmapped_mem by
+    CHUNK_HDR_SZ per remap, making mallinfo2().hblkhd wrong
   [34734] libc: sparc: tcgetattr returns uninitialized bytes in c_cc[17]
     and c_cc[18]
   [34752] libc: <sys/pidfd.h> not protected for C++
@@ -60,6 +76,7 @@ The following bugs are resolved with this release:
     than USHRT_MAX
   [34875] string: 2.44 regression: Hygon non-temporal threshold can be
     zero
+  [34890] malloc: free may change errno under some conditions
   [34920] math: Bug in SVE pow and powf with mixed positive and negative
     base lanes with integer exponent
   [34921] math: Bug in SVE pow and powf with mixed subnormal and
