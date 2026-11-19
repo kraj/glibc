@@ -735,14 +735,14 @@ ifeq ($(run-built-tests),yes)
 tests-special += $(objpfx)tst-rtld-does-not-exist.out
 endif
 $(objpfx)tst-rtld-does-not-exist.out: tst-rtld-does-not-exist.sh $(objpfx)ld.so
-	$(SHELL) $< $(objpfx)ld.so > $@; \
+	$(SHELL) $< '$(test-wrapper) $(objpfx)ld.so' > $@; \
 	$(evaluate-test)
 
 ifeq ($(run-built-tests),yes)
 tests-special += $(objpfx)tst-rtld-dash-dash.out
 endif
 $(objpfx)tst-rtld-dash-dash.out: tst-rtld-dash-dash.sh $(objpfx)ld.so
-	$(SHELL) $< $(objpfx)ld.so > $@; \
+	$(SHELL) $< '$(test-wrapper) $(objpfx)ld.so' > $@; \
 	$(evaluate-test)
 
 tests += $(tests-execstack-$(have-z-execstack))
@@ -3752,12 +3752,12 @@ $(objpfx)tst-nolink-libc-1: $(objpfx)tst-nolink-libc.o $(objpfx)ld.so
 	$(LINK.o) -nostdlib -nostartfiles -o $@ $< \
 	  -Wl,--dynamic-linker=$(objpfx)ld.so,--no-as-needed $(objpfx)ld.so
 $(objpfx)tst-nolink-libc-1.out: $(objpfx)tst-nolink-libc-1 $(objpfx)ld.so
-	$< > $@ 2>&1; $(evaluate-test)
+	$(test-wrapper) $< > $@ 2>&1; $(evaluate-test)
 $(objpfx)tst-nolink-libc-2: $(objpfx)tst-nolink-libc.o
 	$(LINK.o) -nostdlib -nostartfiles -o $@ $< \
 	  -Wl,--dynamic-linker=$(objpfx)ld.so
 $(objpfx)tst-nolink-libc-2.out: $(objpfx)tst-nolink-libc-2 $(objpfx)ld.so
-	$< > $@ 2>&1; $(evaluate-test)
+	$(test-wrapper) $< > $@ 2>&1; $(evaluate-test)
 
 $(objpfx)tst-version-hash-zero.out: \
   $(objpfx)tst-version-hash-zero-mod.so \
