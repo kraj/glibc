@@ -22,37 +22,47 @@ static __always_inline void *
 clear_memory (void *p, unsigned long clearsize)
 {
   INTERNAL_SIZE_T *d = (INTERNAL_SIZE_T *) p;
-  /* Unroll clear memory size up to 9 * INTERNAL_SIZE_T bytes.  We know
-     that contents have an odd number of INTERNAL_SIZE_T-sized words;
-     minimally 3 words.  */
-  unsigned long nclears = clearsize / SIZE_SZ;
+  INTERNAL_SIZE_T *end = (INTERNAL_SIZE_T *) ((uintptr_t) p + clearsize);
 
-  if (nclears > 9)
+  /* Clearsize is the usable size of a chunk.  It is a multiple of SIZE_SZ
+     and increments by MALLOC_ALIGNMENT.  Depending on the chunk layout,
+     the minimum is either 2 * or 3 * SIZE_SZ.  */
+  if (clearsize > 9 * SIZE_SZ)
     return memset (d, 0, clearsize);
 
-  /* NB: The VRP pass in GCC 14.2 will optimize it out for the default size
-     calculations.  */
-  if (nclears < 3)
-    {
 #ifdef MALLOC_USER_SIZE_ALIGNMENT
-      return memset (d, 0, clearsize);
-#else
-      __builtin_unreachable ();
-#endif
-    }
-
-  /* Use repeated stores with 1 branch, instead of up to 3.  */
-  *(d + 0) = 0;
-  *(d + 1) = 0;
-  *(d + 2) = 0;
-  *(d + nclears - 2) = 0;
-  *(d + nclears - 2 + 1) = 0;
-  if (nclears > 5)
+  /* The 2-8 word sequence needs a usable size of at least 2 words.  */
+  _Static_assert (MALLOC_USER_SIZE_ALIGNMENT <= SIZE_SZ * 2,
+		  "MALLOC_USER_SIZE_ALIGNMENT too large for clear_memory");
+  if (MALLOC_USER_SIZE_ALIGNMENT == SIZE_SZ * 2)
     {
-      *(d + 3) = 0;
-      *(d + 3 + 1) = 0;
-      *(d + nclears - 4) = 0;
-      *(d + nclears - 4 + 1) = 0;
+      d[0] = 0;
+      d[1] = 0;
+      if (clearsize > 4 * SIZE_SZ)
+	{
+	  d[2] = 0;
+	  d[3] = 0;
+	  end[-4] = 0;
+	  end[-3] = 0;
+	}
+      end[-2] = 0;
+      end[-1] = 0;
+      return d;
+    }
+#endif
+
+  /* Clear 3-9 words using overlapping stores to reduce branching.  */
+  d[0] = 0;
+  d[1] = 0;
+  d[2] = 0;
+  end[-2] = 0;
+  end[-1] = 0;
+  if (clearsize > 5 * SIZE_SZ)
+    {
+      d[3] = 0;
+      d[4] = 0;
+      end[-4] = 0;
+      end[-3] = 0;
     }
 
   return d;
