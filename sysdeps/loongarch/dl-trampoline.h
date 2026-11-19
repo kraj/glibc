@@ -138,11 +138,9 @@ ENTRY (_dl_runtime_profile)
 	t3	      dl resolver entry point, no use in this function
 
 	Stack frame layout:
-	[sp,    #208] La_loongarch_regs
-	[sp,    #128] La_loongarch_retval // align: 16
-	[sp,    #112] frame size return from pltenter
-	[sp,    #80 ] dl_profile_call saved vec1
-	[sp,    #48 ] dl_profile_call saved vec0 // align: 16
+	[sp,    #128] La_loongarch_regs
+	[sp,    #48 ] La_loongarch_retval // align: 16
+	[sp,    #40 ] frame size return from pltenter
 	[sp,    #32 ] dl_profile_call saved a1
 	[sp,    #24 ] dl_profile_call saved a0
 	[sp,    #16 ] T1
@@ -151,8 +149,8 @@ ENTRY (_dl_runtime_profile)
 
 # define OFFSET_T1              16
 # define OFFSET_SAVED_CALL_A0   OFFSET_T1 + 8
-# define OFFSET_FS              OFFSET_SAVED_CALL_A0 + 16 + 8 + 64
-# define OFFSET_RV              OFFSET_FS + 8 + 8
+# define OFFSET_FS              OFFSET_SAVED_CALL_A0 + 16
+# define OFFSET_RV              OFFSET_FS + 8
 # define OFFSET_RG              OFFSET_RV + DL_SIZEOF_RV
 
 # define SF_SIZE                (-(-(OFFSET_RG + DL_SIZEOF_RG) & ALMASK))
