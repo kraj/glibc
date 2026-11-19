@@ -20,6 +20,20 @@ gen-as-const-headers += \
   dl-link.sym \
   # gen-as-const-headers
 
+tests += \
+  tst-audit29 \
+  # tests
+
+modules-names += \
+  tst-audit29mod \
+  tst-auditmod29 \
+  # modules-names
+
+$(objpfx)tst-audit29: $(objpfx)tst-audit29mod.so $(objpfx)tst-auditmod29.so
+$(objpfx)tst-audit29mod.so: $(libsupport)
+LDFLAGS-tst-audit29 += -Wl,-z,lazy
+tst-audit29-ENV = LD_AUDIT=$(objpfx)tst-auditmod29.so
+
 CFLAGS-tst-tunables-seal.c += -DTST_SEAL_TUNABLE_NAME=hwcaps
 tst-tunables-seal-TUNABLES += glibc.cpu.hwcaps=-LASX
 endif
