@@ -3099,22 +3099,22 @@ __libc_realloc (void *oldmem, size_t bytes)
     }
 #endif
 
+  if (bytes > PTRDIFF_MAX)
+    {
+      __set_errno (ENOMEM);
+      return NULL;
+    }
+
   /* chunk corresponding to oldmem */
   mchunkptr oldp = mem2chunk (oldmem);
   INTERNAL_SIZE_T oldsize = chunksize (oldp);
   size_t usable = chunksize2usable (oldsize);
 
-  /* Return the chunk as is if the request grows within usable bytes, typically
-     into the alignment padding.  We want to avoid reusing the block for
-     shrinkages because it ends up unnecessarily fragmenting the address space.
-     This is also why the heuristic misses alignment padding for THP for
-     now.  */
-  if (bytes <= usable)
-    {
-      size_t difference = usable - bytes;
-      if ((unsigned long) difference < 2 * sizeof (INTERNAL_SIZE_T))
-	return oldmem;
-    }
+  /* Return the chunk as is if the request is less than MINSIZE smaller than
+     usable bytes.  This means we can grow up to usable size or shrink up to
+     usable - MINSIZE without allocating a new chunk.  */
+  if (usable - bytes < MINSIZE)
+    return oldmem;
 
   /* Little security check which won't hurt performance: the allocator
      never wraps around at the end of the address space.  Therefore
@@ -3124,11 +3124,6 @@ __libc_realloc (void *oldmem, size_t bytes)
                         || misaligned_chunk (oldp)))
       malloc_printerr ("realloc(): invalid pointer");
 
-  if (bytes > PTRDIFF_MAX)
-    {
-      __set_errno (ENOMEM);
-      return NULL;
-    }
   nb = checked_request2size (bytes);
 
   if (chunk_is_mmapped (oldp))
@@ -4220,7 +4215,7 @@ _int_realloc (mstate av, mchunkptr oldp, INTERNAL_SIZE_T oldsize,
       /* allocate, copy, free */
       else
         {
-          newmem = _int_malloc (av, nb - MALLOC_ALIGN_MASK);
+          newmem = _int_malloc (av, chunksize2usable (nb));
           if (newmem == NULL)
             return NULL; /* propagate failure */
 
