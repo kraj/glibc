@@ -33,7 +33,20 @@ vulnerability as such.  The following guidelines can help with a decision.
   exploitable in practice, due to general system instability.
 * Bugs that crash `nscd` are generally security bugs, except if they can only
   be triggered by a trusted data source (DNS is not trusted, but NIS and LDAP
-  probably are).
+  are).
+* Bugs that can only be triggered through trusted inputs, such as the system
+  configuration, are not security bugs.  The section on trusted and untrusted
+  inputs below gives examples.
+* Bugs that only occur when an application breaks the documented interface
+  are not security bugs.  Examples include passing flag bits that the manual
+  does not document (some are reserved for internal use), and operations that
+  ISO C or POSIX leave undefined, such as reading from a stream right after
+  writing to it without a call to `fflush` or a file positioning function in
+  between.
+* A report should show the problem through the public interfaces of the
+  library.  A proof of concept that copies library code into a test program,
+  or calls internal functions with arguments that the library never passes to
+  them, does not show a vulnerability.
 * The [Security Exceptions](#SecurityExceptions) section below describes
   subsystems for which determining the security status of bugs is especially
   complicated.
@@ -48,6 +61,98 @@ through actual, concrete, non-synthetic applications. Or put differently, if
 the GNU C Library causes a security bug in an application (and the application
 uses the library in a standard-conforming manner or according to the manual),
 the GNU C Library bug should be treated as security-relevant.
+
+### Trusted and untrusted inputs
+
+Whether a bug is a security bug usually depends on who controls the data that
+triggers it.  The GNU C Library assumes that the system administrator controls
+the system configuration and the files installed in system locations, and that
+the user who starts a process controls that process, unless the process runs
+in secure-execution mode (`AT_SECURE`).  Bugs that only these trusted parties
+can trigger are not security bugs because they do not cross a trust boundary.
+
+The following inputs are untrusted:
+
+* Data that applications process on behalf of other parties: network data
+  (including DNS responses), file contents, and the strings that applications
+  pass to the library for conversion or parsing (for example to `iconv`, the
+  `scanf` family or `getaddrinfo`).  This includes the names of character sets,
+  which applications often take from the documents or messages they process.
+* The environment of an `AT_SECURE` process.  The library removes or ignores
+  variables such as `LD_PRELOAD`, `LD_LIBRARY_PATH`, `GLIBC_TUNABLES`,
+  `GCONV_PATH`, `LOCPATH` and `NLSPATH` in such processes, and a bug that lets
+  them take effect is a security bug.
+* The current directory of an `AT_SECURE` process.
+* The installation path of an `AT_SECURE` process.  That is, the directory in
+  which the program is installed, and all its parent directories.
+* The initial open file descriptors of an `AT_SECURE` process.
+* Locale names, including the values of `LANG`, `LC_ALL`, the other `LC_*`
+  variables and `LANGUAGE`.  These variables commonly cross trust boundaries
+  in processes that are not `AT_SECURE`, for example when an SSH server accepts
+  them from clients, so they are untrusted in every process.
+* Configuration values that network configuration software commonly copies
+  from the network, such as the name servers and search domains that a DHCP
+  or VPN server supplies for `/etc/resolv.conf`.
+* Fields that unprivileged users may change for their own account, in the
+  files databases or in identity management services, such as the GECOS
+  field (with `chfn`), the login shell (with `chsh`) or the password.
+
+The following inputs are trusted:
+
+* The dynamic loader configuration: `/etc/ld.so.conf` and the files it
+  includes, `/etc/ld.so.cache`, `/etc/ld.so.preload` and `/etc/tunables.conf`.
+* Executables and shared objects, including the objects that programs load
+  with `dlopen`.  The section on shared objects, `ldd` and `ldconfig` below
+  has more details.
+* The name service configuration and the databases that the administrator
+  maintains: `/etc/nsswitch.conf`, the files read by the `files` service (such
+  as `/etc/passwd`, `/etc/group`, `/etc/hosts` and `/etc/services`),
+  `/etc/host.conf` and `/etc/nscd.conf`.  The rest of `/etc/resolv.conf`,
+  apart from the values listed above, is trusted as well.
+* Data from identity management services such as NIS and Hesiod, or from NSS
+  modules for services such as LDAP: both its format on the wire and the data
+  it returns.  Malformed DNS messages are an exception (see below).
+* Buffer lengths that the kernel reports, for example the return value of a
+  successful `read` or `write` system call.
+* The standard installation directories chosen at configure time (`--prefix`,
+  `--libdir`, `--sysconfdir` and the others).
+* Locale data: the compiled locales in the system locale directory and locale
+  archive, and the sources (locale definitions, character maps and repertoire
+  maps) that `localedef` compiles into them.  `LOCPATH` is ignored in
+  `AT_SECURE` processes, so a locale loaded through it only affects processes
+  of the user who sets it, and crafted binary locale files are not a security
+  issue.
+* Message catalogs (`.mo` files) used by `gettext` and related functions.
+  Translations are used as `printf` format strings, so a crafted catalog can
+  take control of a program regardless of how carefully the library parses it.
+  Bugs triggered by crafted catalogs are not security bugs, but a bug that lets
+  untrusted input make a program load a catalog from a location that the
+  program did not select is a security bug.
+* The character set conversion configuration: the `gconv-modules` files, the
+  `gconv-modules.cache` file built by `iconvconfig`, and the conversion
+  modules.
+* The input of the tools that build system data, such as `ldconfig`,
+  `localedef`, `iconvconfig` and `zic`.  Like a compiler, these tools trust
+  their input, so untrusted input should only be processed in a sandbox.
+* For a process that is not `AT_SECURE`, anything that only the user who
+  starts it controls, apart from locale names: the environment (for example
+  `GLIBC_TUNABLES`, `LD_PRELOAD`, `LD_LIBRARY_PATH`, the `MALLOC_*` variables,
+  `LOCPATH` and `GCONV_PATH`), the command line and the resource limits.  This
+  user can already run arbitrary code in the process, for example with
+  `LD_PRELOAD`.
+
+The library treats these files as trusted whatever their ownership and
+permissions, and does not check them.  If the administrator lets untrusted
+users modify such a file, or a program points the library at a file or
+directory that untrusted users can modify (for example with `bindtextdomain`
+or by running `ldconfig` on it), those users gain the control that the file
+gives, and this is not a bug in the library.
+
+The DNS stub resolver does not authenticate responses.  An attacker who can
+observe or modify the traffic to the configured name servers can supply
+arbitrary answers, including Hesiod data, and this is not a bug in the
+library.  DNS messages themselves are untrusted whatever the query is for, so
+bugs in the processing of malformed DNS messages are security bugs.
 
 ### Security Exceptions
 
@@ -101,9 +206,26 @@ standard-conforming and has races and leaks.  Again, such bugs are only treated
 as security bugs if applications (as opposed to synthetic test cases) have
 security exposures due to these bugs.
 
-#### Crafted binaries and ldd
+#### Shared objects, ldd and ldconfig
+
+Loading a shared object runs code from it, such as ELF constructors and IFUNC
+resolvers, so the dynamic loader trusts the objects it loads.  Bugs triggered
+by crafted executables or shared objects are not security bugs, whether the
+objects are loaded at startup (through `DT_NEEDED` dependencies, or through
+`LD_PRELOAD` and `LD_AUDIT` in a process that is not `AT_SECURE`) or with
+`dlopen`.  A bug that makes an `AT_SECURE` process load an object from a
+location that the invoking user controls, for example through
+`LD_LIBRARY_PATH`, `LD_PRELOAD` or `$ORIGIN`, is a security bug.
 
 The `ldd` tool is not expected to be used with untrusted executables.
+
+The `ldconfig` tool is run by the administrator, usually as root.  Its
+configuration files and the shared objects in the directories it scans are
+trusted, including when the `-f`, `-C` or `-r` options point it to another
+configuration file, cache or root directory.  Crashes, hangs or excessive
+resource use caused by crafted configuration files or crafted shared objects
+(for example, malformed ELF notes) are not security bugs.  To run `ldconfig`
+on a directory tree that untrusted users can modify, use a sandbox.
 
 #### Post-exploitation countermeasures
 
