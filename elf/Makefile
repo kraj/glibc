@@ -3564,7 +3564,11 @@ $(objpfx)tst-dlclose-lazy.out: \
 $(objpfx)tst-decorate-maps: $(shared-thread-library)
 
 tst-decorate-maps-TUNABLES += \
-  glibc.malloc.arena_max=8:glibc.malloc.mmap_threshold=1024:glibc.mem.decorate_maps=1
+  glibc.malloc.arena_max=8 \
+  glibc.malloc.hugetlb=0 \
+  glibc.malloc.mmap_threshold=1024 \
+  glibc.mem.decorate_maps=1 \
+  # tst-decorate-maps-TUNABLES
 tst-decorate-maps-ARGS = 8
 
 LDFLAGS-tst-non-directory-mod.so = -Wl,-soname,tst-non-directory-mod.so
