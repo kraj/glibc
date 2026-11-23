@@ -311,6 +311,7 @@ tests-container := \
   tst-dl-cache-long-path \
   tst-dl-cache-old-format \
   tst-ldconfig-bad-aux-cache \
+  tst-ldconfig-bad-note \
   tst-ldconfig-ld_so_conf-update \
   # tests-container
 

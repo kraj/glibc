@@ -1,4 +1,5 @@
 /* Copyright (C) 1999-2026 Free Software Foundation, Inc.
+   Copyright The GNU Toolchain Authors.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -115,16 +116,43 @@ process_elf_file (const char *file_name, const char *lib, int *flag,
 	     notes with incorrect alignment.  */
 	  if (segment->p_align == (__ELF_NATIVE_CLASS / 8))
 	    {
-	      const ElfW(Nhdr) *note = (const void *) (file_contents
-						       + segment->p_offset);
-	      const ElfW(Addr) size = segment->p_filesz;
-	      const ElfW(Addr) align = segment->p_align;
+	      /* The segment must lie completely within the mapped file.  */
+	      if (segment->p_offset > file_length
+		  || segment->p_filesz > file_length - segment->p_offset)
+		break;
 
-	      const ElfW(Addr) start = (ElfW(Addr)) (uintptr_t) note;
+	      const unsigned char *seg
+		= (const unsigned char *) file_contents + segment->p_offset;
+	      const size_t seg_size = segment->p_filesz;
+	      const size_t align = segment->p_align;
+	      size_t off = 0;	/* Offset of the current note.  */
 	      unsigned int last_type = 0;
 
-	      while ((ElfW(Addr)) (uintptr_t) (note + 1) - start < size)
+	      /* Track the note and property positions as size_t offsets
+		 within the segment and check every name, descriptor and
+		 padding length against the remaining length before
+		 advancing.  Do not compare pointers truncated to
+		 ElfW(Addr), which is 32 bits in process_elf32_file.  */
+	      while (seg_size - off >= sizeof (ElfW(Nhdr)))
 		{
+		  const ElfW(Nhdr) *note = (const void *) (seg + off);
+		  size_t left = seg_size - off;	/* >= sizeof (ElfW(Nhdr)).  */
+
+		  /* The owner name and its padding must fit in the
+		     segment.  raw is the unaligned end offset of the
+		     name.  */
+		  if (note->n_namesz > left - sizeof (ElfW(Nhdr)))
+		    break;
+		  size_t raw = sizeof (ElfW(Nhdr)) + note->n_namesz;
+		  size_t pad = -raw & (align - 1);
+		  if (pad > left - raw)
+		    break;
+		  size_t desc_off = raw + pad;
+
+		  /* The descriptor must fit in the segment.  */
+		  if (note->n_descsz > left - desc_off)
+		    break;
+
 		  /* Find the NT_GNU_PROPERTY_TYPE_0 note.  */
 		  if (note->n_namesz == 4
 		      && note->n_type == NT_GNU_PROPERTY_TYPE_0
@@ -135,21 +163,24 @@ process_elf_file (const char *file_name, const char *lib, int *flag,
 			  || (note->n_descsz % sizeof (ElfW(Addr))) != 0)
 			goto done;
 
-		      /* Start and end of property array.  */
-		      unsigned char *ptr = (unsigned char *) (note + 1) + 4;
-		      unsigned char *ptr_end = ptr + note->n_descsz;
+		      /* Start and length of the property array.  */
+		      const unsigned char *desc = seg + off + desc_off;
+		      size_t dleft = note->n_descsz;
+		      size_t poff = 0;
 
 		      do
 			{
-			  unsigned int type = *(unsigned int *) ptr;
-			  unsigned int datasz = *(unsigned int *) (ptr + 4);
+			  unsigned int type
+			    = *(const unsigned int *) (desc + poff);
+			  unsigned int datasz
+			    = *(const unsigned int *) (desc + poff + 4);
 
 			  /* Property type must be in ascending order.  */
 			  if (type < last_type)
 			    goto done;
 
-			  ptr += 8;
-			  if ((ptr + datasz) > ptr_end)
+			  poff += 8;
+			  if (datasz > dleft - poff)
 			    goto done;
 
 			  last_type = type;
@@ -160,22 +191,27 @@ process_elf_file (const char *file_name, const char *lib, int *flag,
 			       true : Stop processing the properties.
 			   */
 			  if (read_gnu_property (isa_level, type,
-						 datasz, ptr))
+						 datasz,
+						 (void *) (desc + poff)))
 			    goto done;
 
 			  /* Check the next property item.  */
-			  ptr += ALIGN_UP (datasz, sizeof (ElfW(Addr)));
+			  poff += ALIGN_UP (datasz, sizeof (ElfW(Addr)));
 			}
-		      while ((ptr_end - ptr) >= 8);
+		      while (dleft - poff >= 8);
 
 		      /* Only handle one NT_GNU_PROPERTY_TYPE_0.  */
 		      goto done;
 		    }
 
-		  note = ((const void *) note
-			  + ELF_NOTE_NEXT_OFFSET (note->n_namesz,
-						  note->n_descsz,
-						  align));
+		  /* Advance to the next note.  raw is the unaligned end
+		     offset of the descriptor.  If the padding reaches
+		     the end of the segment there is no next note.  */
+		  raw = desc_off + note->n_descsz;
+		  pad = -raw & (align - 1);
+		  if (pad >= left - raw)
+		    break;
+		  off += raw + pad;
 		}
 	    }
 done:
