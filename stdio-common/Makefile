@@ -352,6 +352,7 @@ tests := \
   tst-vfprintf-width-prec-alloc \
   tst-vfscanf-bz34008 \
   tst-wc-printf \
+  tst-wprintf-as-buffer \
   tst-wscanf-bz34208 \
   tst-wscanf-nul \
   tstdiomisc \

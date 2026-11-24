@@ -70,7 +70,7 @@ __wprintf_buffer_as_file_overflow (FILE *fp, int ch)
   __wprintf_buffer_as_file_switch_to_buffer (file);
 
   if (!__wprintf_buffer_has_failed (file->next))
-    return (unsigned char) ch;
+    return ch;
   else
     return WEOF;
 }
