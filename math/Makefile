@@ -602,6 +602,7 @@ ifeq ($(have-GLIBC_2.26)$(build-shared),yesyes)
 tests += \
   test-matherr \
   test-matherr-2 \
+  test-signgam-compat \
   # tests
 tests-2.0 += \
   test-matherr-2 \
