@@ -97,6 +97,7 @@ The following bugs are resolved with this release:
     (CVE-2026-100290)
   [34993] glob: double free in prefix_array after a memory allocation
     failure (CVE-2026-126765)
+  [35052] math: erfc raises spurious underflow
   [35053] math: math: lgammaf@GLIBC_2.23 writes to signgam since 2.43
 
 Version 2.44
