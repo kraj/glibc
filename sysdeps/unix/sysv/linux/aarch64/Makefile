@@ -105,7 +105,7 @@ tst-bti-dep-prot-preload-TUNABLES += glibc.cpu.aarch64_bti=0
 
 $(objpfx)tst-bti-permissive-preload.out: $(objpfx)tst-bti-mod-unprot-preload.so
 tst-bti-permissive-preload-ENV = LD_PRELOAD=$(objpfx)tst-bti-mod-unprot-preload.so
-tst-bti-permissive-preload-TUNABLES += glibc.cpu.aarch64_bti=0
+tst-bti-permissive-preload-TUNABLES-only += glibc.cpu.aarch64_bti=0
 
 CFLAGS-tst-bti-abort-unprot.o += -mbranch-protection=none
 CFLAGS-tst-bti-ld-debug-exe.o += -mbranch-protection=none
@@ -122,8 +122,8 @@ tst-bti-dlopen-imm-TUNABLES += glibc.cpu.aarch64_bti=1
 tst-bti-dlopen-prot-TUNABLES += glibc.cpu.aarch64_bti=1
 tst-bti-dlopen-transitive-TUNABLES += glibc.cpu.aarch64_bti=1
 
-tst-bti-permissive-imm-TUNABLES += glibc.cpu.aarch64_bti=0
-tst-bti-permissive-transitive-TUNABLES += glibc.cpu.aarch64_bti=0
+tst-bti-permissive-imm-TUNABLES-only += glibc.cpu.aarch64_bti=0
+tst-bti-permissive-transitive-TUNABLES-only += glibc.cpu.aarch64_bti=0
 tst-bti-permissive-dlopen-TUNABLES-only = glibc.cpu.aarch64_bti=0
 
 $(objpfx)tst-bti-unprot-audit.out: $(objpfx)tst-bti-mod-unprot-audit.so
@@ -133,7 +133,7 @@ $(objpfx)tst-bti-prot-audit.out: $(objpfx)tst-bti-mod-prot-audit.so
 $(objpfx)tst-bti-prot-audit: $(objpfx)tst-bti-mod-prot.so
 tst-bti-prot-audit-ARGS = -- $(host-test-program-cmd)
 
-tst-bti-permissive-audit-TUNABLES += glibc.cpu.aarch64_bti=0
+tst-bti-permissive-audit-TUNABLES-only += glibc.cpu.aarch64_bti=0
 $(objpfx)tst-bti-permissive-audit.out: $(objpfx)tst-bti-mod-unprot-audit.so
 $(objpfx)tst-bti-permissive-audit: $(objpfx)tst-bti-mod.so
 tst-bti-permissive-audit-ARGS = -- $(host-test-program-cmd)

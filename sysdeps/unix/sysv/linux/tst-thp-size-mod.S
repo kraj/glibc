@@ -17,6 +17,8 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
+#include <elf-marking.h>
+
     .globl thp_size
 thp_size:
     .space 32 * 1024 * 1024

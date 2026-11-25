@@ -16,5 +16,7 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
+#include <elf-marking.h>
+
 	.text
 	.space 2 * THP_PAGE_SIZE

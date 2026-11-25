@@ -20,6 +20,7 @@
 #define _AARCH64_SYSDEP_H
 
 #include <sysdeps/generic/sysdep.h>
+#include <elf-marking.h>
 
 #ifdef	__ASSEMBLER__
 
@@ -36,54 +37,6 @@
 #define GCSPOPM(x)	sysl	x, #3, c7, c7, #1
 #define GCSSS1(x)	sys	#3, c7, c7, #2, x
 #define GCSSS2(x)	sysl	x, #3, c7, c7, #3
-
-/* GNU_PROPERTY_AARCH64_* macros from elf.h for use in asm code.  */
-#define FEATURE_1_AND 0xc0000000
-#define FEATURE_1_BTI 1
-#define FEATURE_1_PAC 2
-#define FEATURE_1_GCS 4
-
-#define GNU_PROPERTY(type, value)	\
-  .section .note.gnu.property, "a";	\
-  .p2align 3;				\
-  .word 4;				\
-  .word 16;				\
-  .word 5;				\
-  .asciz "GNU";				\
-  .word type;				\
-  .word 4;				\
-  .word value;				\
-  .word 0;				\
-  .text
-
-#ifdef __ARM_BUILDATTR64_FV
-/* Add AArch64 feature bits build attributes.  */
-# define FEATURE_1_AND_MARK(value)					\
-    .aeabi_subsection aeabi_feature_and_bits, optional, ULEB128;	\
-    .if ((value) & FEATURE_1_BTI);					\
-    .aeabi_attribute Tag_Feature_BTI, 1;				\
-    .else;								\
-    .aeabi_attribute Tag_Feature_BTI, 0;				\
-    .endif;								\
-    .if ((value) & FEATURE_1_GCS);					\
-    .aeabi_attribute Tag_Feature_GCS, 1;				\
-    .else;								\
-    .aeabi_attribute Tag_Feature_GCS, 0;				\
-    .endif;								\
-    .if ((value) & FEATURE_1_PAC);					\
-    .aeabi_attribute Tag_Feature_PAC, 1;				\
-    .else;								\
-    .aeabi_attribute Tag_Feature_PAC, 0;				\
-    .endif;								\
-    .text
-#else
-/* Add a NT_GNU_PROPERTY_TYPE_0 note.  */
-# define FEATURE_1_AND_MARK(value) GNU_PROPERTY (FEATURE_1_AND, value)
-#endif /* __ARM_BUILDATTR64_FV */
-
-/* Add marking with the supported features to all asm code where sysdep.h
-   is included.  */
-FEATURE_1_AND_MARK (FEATURE_1_BTI | FEATURE_1_PAC | FEATURE_1_GCS)
 
 /* Define an entry point visible from C.  */
 #define ENTRY(name)						\
