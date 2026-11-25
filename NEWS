@@ -93,6 +93,9 @@ The following bugs are resolved with this release:
     past the destination (CVE-2026-115819)
   [34991] regex: regex: double free after partial realloc failure
     (CVE-2026-100290)
+  [34993] glob: double free in prefix_array after a memory allocation
+    failure (CVE-2026-126765)
+  [35053] math: math: lgammaf@GLIBC_2.23 writes to signgam since 2.43
 
 Version 2.43
 
