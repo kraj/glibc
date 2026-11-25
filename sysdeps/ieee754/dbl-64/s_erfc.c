@@ -1,10 +1,10 @@
 /* Correctly-rounded complementary error function for the binary64 format
 
-Copyright (c) 2022-2025 Alexei Sibidanov, Paul Zimmermann, Tom Hubrecht and
+Copyright (c) 2022-2026 Alexei Sibidanov, Paul Zimmermann, Tom Hubrecht and
 Claude-Pierre Jeannerod.
 
 The original version of this file was copied from the CORE-MATH
-project (file src/binary64/erfc/erfc.c, revision 55e9869e).
+project (file src/binary64/erfc/erfc.c, revision ac1993d8).
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -43,6 +43,7 @@ SOFTWARE.
 */
 
 #include <array_length.h>
+#include <fenv.h>
 #include <math.h>
 #include <stdint.h>
 #include <errno.h>
@@ -266,6 +267,11 @@ erfc_asympt_fast (double *h, double *l, double x)
       return 1.0;
     }
 
+#ifdef FE_UNDERFLOW
+  /* is underflow raised at input */
+  int underflow = __fetestexcept (FE_UNDERFLOW);
+#endif
+
   /* first approximate exp(-x^2): */
   double eh, el, uh, ul;
   a_mul (&uh, &ul, x, x);
@@ -370,6 +376,15 @@ erfc_asympt_fast (double *h, double *l, double x)
      (1+2^-71.804)*(1+2^-74.139)*(1+2^-97.9)*(1+2^-67.184)*(1+2^-80)-1
      < 2^-67.115
   */
+
+#ifdef FE_UNDERFLOW
+  /* we have underflow iff x >= 0x1.a8b12fc6e4892p+4, whatever the rounding
+     mode, so since x < 0x1.9db1bb14e15cap+4 here any underflow raised by
+     the computation above is spurious */
+  if (underflow == 0 && __fetestexcept (FE_UNDERFLOW))
+    __feclearexcept (FE_UNDERFLOW);
+#endif
+
   // avoid a spurious underflow in 0x1.d9p-68 * h
   if (*h >= 0x1.151b9a3fdd5c9p-955)
     return 0x1.d9p-68 * *h; /* 2^-67.115 < 0x1.d9p-68 */
