@@ -42,6 +42,7 @@
 ENTRY (MEMCMP)
 .option push
 .option arch, +v
+    beqz num, L(equal)
 L(loop):
     vsetvli ivl, num, e8, ELEM_LMUL_SETTING, ta, ma
 
@@ -59,6 +60,7 @@ L(loop):
 
     bnez num, L(loop)
 
+L(equal):
     li result, 0
     ret
 L(found):

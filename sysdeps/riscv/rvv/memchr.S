@@ -39,6 +39,7 @@
 ENTRY (MEMCHR)
 .option push
 .option arch, +v
+    beqz num, L(not_found)
 L(loop):
     vsetvli zero, num, e8, ELEM_LMUL_SETTING, ta, ma
 
@@ -56,6 +57,7 @@ L(loop):
 
     bnez num, L(loop)
 
+L(not_found):
     li result, 0
     ret
 L(found):

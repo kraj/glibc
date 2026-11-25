@@ -55,6 +55,7 @@ weak_alias (__stpncpy, stpncpy)
 ENTRY (STPNCPY)
 .option push
 .option arch, +v
+    beqz length, L(done)
     mv dst_ptr, dst
     /* Copy src to dst_ptr.  */
 L(stpcpy_loop):
@@ -73,6 +74,7 @@ L(stpcpy_loop):
 #ifndef USE_AS_STRNCPY
     mv dst, dst_ptr
 #endif
+L(done):
     ret
 
     /* Fill the tail zero.  */

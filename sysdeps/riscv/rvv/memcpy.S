@@ -36,6 +36,7 @@
 ENTRY (MEMCPY)
 .option push
 .option arch, +v
+    beqz num, L(done)
     mv dst_ptr, dst
 L(loop):
     vsetvli ivl, num, e8, ELEM_LMUL_SETTING, ta, ma
@@ -48,6 +49,7 @@ L(loop):
 
     bnez num, L(loop)
 
+L(done):
     ret
 .option pop
 END (MEMCPY)
