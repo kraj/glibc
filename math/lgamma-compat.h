@@ -70,7 +70,7 @@
   ({							\
     TYPE lgamma_tmp;					\
     int local_signgam;					\
-    if (USE_AS_COMPAT)					\
+    if (USE_AS_COMPAT == 1)				\
       {							\
 	lgamma_tmp = FUNC ((ARG), &local_signgam);	\
 	if (_LIB_VERSION != _ISOC_)			\
