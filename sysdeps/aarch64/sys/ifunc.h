@@ -20,6 +20,7 @@
 #define _SYS_IFUNC_H
 
 #include <sys/cdefs.h>
+#include <stdint.h>
 
 /* A second argument is passed to the ifunc resolver.  */
 #define _IFUNC_ARG_HWCAP	(1ULL << 62)
@@ -46,7 +47,7 @@
    This buffer has its size in bytes at offset 0.  The HWCAP elements
    are available at offsets 8, 16, 24, 32... respectively for AT_HWCAP,
    AT_HWCAP2, AT_HWCAP3, AT_HWCAP4...  (these offsets are multiples of
-   sizeof (unsigned long)).
+   sizeof (uint64_t)).
 
    Indirect function resolvers must check availability of HWCAP
    elements at runtime before accessing them using the size of the
@@ -54,11 +55,11 @@
 
 struct __ifunc_arg_t
 {
-  unsigned long _size;    /* Size of the struct, so it can grow.  */
-  unsigned long _hwcap;
-  unsigned long _hwcap2;  /* End of 1st published struct.  */
-  unsigned long _hwcap3;
-  unsigned long _hwcap4;  /* End of 2nd published struct.  */
+  uint64_t _size;    /* Size of the struct, so it can grow.  */
+  uint64_t _hwcap;
+  uint64_t _hwcap2;  /* End of 1st published struct.  */
+  uint64_t _hwcap3;
+  uint64_t _hwcap4;  /* End of 2nd published struct.  */
 };
 
 typedef struct __ifunc_arg_t __ifunc_arg_t;
@@ -79,14 +80,14 @@ enum
    If there is no element available for the requested ID then 0 is
    returned.  If ID doesn't much any supported AT_HWCAP{,2,...} value,
    then 0 is also returned.  */
-static __inline unsigned long __attribute__ ((unused, always_inline))
-__ifunc_hwcap (unsigned long __id,
-	       unsigned long __arg0, const unsigned long *__arg1)
+static __inline uint64_t __attribute__ ((unused, always_inline))
+__ifunc_hwcap (uint64_t __id,
+	       uint64_t __arg0, const uint64_t *__arg1)
 {
   if (__glibc_likely (__arg0 & _IFUNC_ARG_HWCAP))
     {
-      const unsigned long size = __arg1[0];
-      const unsigned long offset = __id * sizeof (unsigned long);
+      const uint64_t size = __arg1[0];
+      const uint64_t offset = __id * sizeof (uint64_t);
       return offset < size && __id > 0 ? __arg1[__id] : 0;
     }
   return __id == 1 ? __arg0 : 0;

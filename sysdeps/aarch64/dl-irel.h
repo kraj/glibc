@@ -35,7 +35,7 @@ _Static_assert (sizeof (__ifunc_arg_t) == _IFUNC_ARG_SIZE_VER1,
   "sizeof (__ifunc_arg_t) != _IFUNC_ARG_SIZE_VER1");
 
 _Static_assert (_IFUNC_ARG_SIZE_VER1
-  == (_IFUNC_HWCAP_MAX + 1) * sizeof (unsigned long),
+  == (_IFUNC_HWCAP_MAX + 1) * sizeof (uint64_t),
   "_IFUNC_ARG_SIZE_VER1 and _IFUNC_HWCAP_MAX mismatch");
 
 #undef offsetofend
